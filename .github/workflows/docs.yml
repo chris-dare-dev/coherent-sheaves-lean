@@ -1,8 +1,17 @@
 name: Docs
 
+# Nightly rather than per-push. The build takes ~40 minutes because doc-gen4 documents
+# everything reachable from CohLean, which is a large part of Mathlib; on a repo where
+# several sessions push to main in a day that is most of a runner-day for output that is
+# usually identical. Docs are at most a day behind main, and `workflow_dispatch` is there
+# when that is not good enough.
+#
+# Two GitHub behaviours to know about: scheduled workflows only ever run on the default
+# branch, and GitHub disables them after 60 days with no repository activity. The minute is
+# deliberately not :00 -- schedules queue behind the top-of-hour crowd.
 on:
-  push:
-    branches: [main]
+  schedule:
+    - cron: '17 4 * * *'
   workflow_dispatch:
 
 # Unlike CI, do *not* cancel a run in progress. Pages allows one deployment at a time, and a
@@ -18,7 +27,33 @@ permissions:
   id-token: write
 
 jobs:
+  # A nightly build on a day when nobody pushed regenerates the same site for forty minutes.
+  # Skip it. A manual run always proceeds -- that is what it is for.
+  check:
+    runs-on: ubuntu-latest
+    outputs:
+      should-build: ${{ steps.check.outputs.should-build }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: check
+        run: |
+          if [ "${{ github.event_name }}" != schedule ]; then
+            echo "should-build=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          # `cron` is 24h, so anything older than that was covered by the previous run.
+          age=$(( $(date +%s) - $(git log -1 --format=%ct) ))
+          if [ "$age" -lt 86400 ]; then
+            echo "should-build=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "should-build=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::No commits in the last 24h -- the published docs are current."
+          fi
+
   build:
+    needs: check
+    if: needs.check.outputs.should-build == 'true'
     runs-on: ubuntu-latest
     # doc-gen4 documents every file reachable from the target, which here means a large part
     # of Mathlib as well as CohLean. Expect this to be slow. The cap is a runaway guard, not
