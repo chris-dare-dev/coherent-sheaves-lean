@@ -10,6 +10,16 @@ import CohLean
 
 open AlgebraicGeometry AlgebraicGeometry.Numerical
 
+-- Layer A: the graded-basis constructor. `ofGradedBasis` is what every concrete model
+-- goes through, so a sorry here would silently contaminate every instance in the repo.
+#print axioms gradedPiece
+#print axioms gradedPiece_eq_bot
+#print axioms gradedPiece_iSupIndep
+#print axioms gradedPiece_iSup_eq_top
+#print axioms gradedPiece_isInternal
+#print axioms gradedPiece_mul_mem
+#print axioms NumericalRing.ofGradedBasis
+
 -- Layer A: the general Riemann-Roch expansion and its surface specialisation.
 #print axioms NumericalVariety.degree_ch_mul_todd
 #print axioms NumericalVariety.chi_eq_sum
