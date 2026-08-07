@@ -34,7 +34,6 @@ following are *absent from this library* — not assumed, not `sorry`ed, simply 
 
 * `Coh X` is closed under kernels, cokernels and extensions in `X.Modules`;
 * consequently `Coh X` is abelian and the inclusion is exact;
-* `Coh X` is closed under isomorphisms (`IsClosedUnderIsomorphisms`);
 * on an affine `Spec R` with `R` noetherian, `Coh (Spec R) ≌ ModuleCat.FiniteModuleCat R`.
 
 Nothing downstream may assume any of them.
