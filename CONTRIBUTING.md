@@ -11,8 +11,8 @@ tags:
 
 # Contributing to CohLean
 
-This file is the whole of what a fresh session — human or agent — needs in order to work
-this repo correctly. You should not have to read the commit history to get a change right.
+This file is what a fresh session — human or agent — needs in order to work this repo
+correctly. You should not have to read the commit history to get a change right.
 
 Read [README.md](README.md) for what the library is and [ROADMAP.md](ROADMAP.md) for what
 is left to do. Work is tracked as
@@ -24,8 +24,8 @@ issues labelled `ready` have no unmet dependency and can be started immediately.
 Declarations go in **Mathlib-style namespaces** — `AlgebraicGeometry`,
 `AlgebraicGeometry.Numerical`, and so on. Never `CohLean.*`.
 
-`CohLean` is the *package* name and the module-path root; it is not a namespace and no
-declaration may live inside one. The reason is upstreaming: Layer B is written to be
+`CohLean` is the *package* name and the root of the module path. It is not a namespace, and
+nothing should ever open one. The reason is upstreaming: Layer B is written to be
 contributed to Mathlib a stage at a time, and a stage that already sits in
 `AlgebraicGeometry` goes up as a file move. A stage in `CohLean.Coh` goes up as a rename
 touching every reference, which is the kind of diff that does not get reviewed.
@@ -100,10 +100,10 @@ Two rules follow, and neither is negotiable:
   naming the Layer B stage that will discharge it. An axiom with no discharge plan is a
   permanent hole wearing a different hat.
 
-The counterweight to an axiomatic interface is models. `Numerical/Examples/Point.lean`
-(dimension zero) and `Numerical/Examples/K3Model.lean` (a K3 surface of degree `H² = 2d`)
-both satisfy the axioms, so nothing in Layer A is vacuously true. If you add axioms, check
-they still hold in the models — and if a model gets a new instance, audit it.
+The counterweight to an axiomatic interface is models. `CohLean/Numerical/Examples/` holds
+instances that satisfy the axioms — `Point.lean` in dimension zero, `K3Model.lean` for a K3
+surface of degree `H² = 2d` — so nothing in Layer A is vacuously true. If you add an axiom,
+check it still holds in every model there, and audit any new instance you build.
 
 ## Toolchain
 
@@ -115,12 +115,21 @@ The first real reason is Layer B stage 2, the divisor work, which wants upstream
 `Mathlib/AlgebraicGeometry/AlgebraicCycle/` and `OrderOfVanishing.lean` — both landed after
 v4.29.0. Do not bump before then.
 
-When the bump does happen, four things move together:
+When the bump does happen, five things move together:
 
 1. `lean-toolchain`
 2. the `mathlib` `rev` in `lakefile.toml`
-3. the `doc-gen4` `rev` in `docbuild/lakefile.toml` — it must match the toolchain
-4. the toolchain pin in `bridgeland-stab-lean` and `bstab`
+3. `docbuild/lean-toolchain`, and the `doc-gen4` `rev` in `docbuild/lakefile.toml` —
+   doc-gen4 tags one release per toolchain, and a mismatch is a hard build failure
+4. `docbuild/lake-manifest.json`, via `MATHLIB_NO_CACHE_ON_UPDATE=1 lake update doc-gen4`
+   run from `docbuild/`
+5. the toolchain pin in `bridgeland-stab-lean` and `bstab`
+
+Step 4 has a trap. `lake update doc-gen4` also re-pins doc-gen4's transitive dependencies,
+and `plausible` is shared with Mathlib. If the two manifests disagree on it, every
+alternation between `lake build` and a docs build re-checks-out that package, because
+`docbuild` shares the parent's `.lake/packages`. After updating, make every package that
+appears in both manifests agree with the top-level one.
 
 ## One file per issue
 
@@ -167,3 +176,15 @@ python3 -m http.server -d docbuild/.lake/build/doc
 
 `docbuild` shares the parent's `.lake/packages`, so it reuses the Mathlib build you already
 have and does not re-download anything.
+
+**Windows.** Two of doc-gen4's dependencies (`leansqlite`, `UnicodeBasic`) compile C, and
+their lakefiles invoke the compiler under the literal name `cc`; neither `CC` nor `LEAN_CC`
+overrides that. Without a `cc` on `PATH` the build stops at
+`failed to execute 'cc': no such file or directory`, having got as far as building doc-gen4
+itself. Install a toolchain that provides `cc` (MSYS2 / mingw-w64), or build the docs under
+WSL. Copying the Lean toolchain's bundled `clang.exe` to `cc.exe` elsewhere on `PATH` does
+*not* work — clang locates its own headers relative to its executable, so it then fails on
+`stdbool.h`.
+
+CI is unaffected: `cc` is `gcc` on the runner, so `main` is the reliable place to see the
+docs build.
