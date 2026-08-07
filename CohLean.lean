@@ -5,6 +5,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 import CohLean.Numerical.Defs
 import CohLean.Numerical.RiemannRoch
 import CohLean.Numerical.Surface
+import CohLean.Numerical.K3
 import CohLean.Numerical.Examples.Point
 import CohLean.Coh.Defs
 

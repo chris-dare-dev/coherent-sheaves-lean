@@ -17,6 +17,13 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms NumericalVariety.toddComp_eq_zero_of_lt
 #print axioms Surface.chi_eq
 #print axioms Surface.discriminant_mem_piece_two
+#print axioms Surface.degree_discriminant
+
+-- Layer A: the K3 specialisation.
+#print axioms K3.chi_eq
+#print axioms K3.chi_eq_rank_add_mukaiS
+#print axioms K3.mukaiSelfPairing_eq
+#print axioms K3.mukaiSelfPairing_of_rank_eq_zero
 
 -- Layer A: the consistency witness. If this depended on `sorryAx` the whole
 -- interface would be unmodelled.

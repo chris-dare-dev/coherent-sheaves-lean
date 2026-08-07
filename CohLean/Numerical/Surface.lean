@@ -74,6 +74,14 @@ theorem discriminant_mem_piece_two (E : N) :
   · exact mul_mem_piece (chComp_mem E 1) (chComp_mem E 1)
   · exact mul_mem_piece (algebraMap_mem_piece_zero _) (chComp_mem E 2)
 
+/-- `∫_X Δ(E) = ∫_X c₁(E)² − 2·rank(E)·∫_X ch₂(E)`: the scalar the
+Bogomolov–Gieseker inequality is about. -/
+theorem degree_discriminant (E : N) :
+    degree (n := 2) (discriminant (A := A) E)
+      = degree (n := 2) (chComp (A := A) E 1 * chComp (A := A) E 1)
+        - 2 * (rank (A := A) E : ℚ) * degree (n := 2) (chComp (A := A) E 2) := by
+  simp only [discriminant, map_sub, degree_algebraMap_mul]
+
 end Surface
 
 end AlgebraicGeometry.Numerical
