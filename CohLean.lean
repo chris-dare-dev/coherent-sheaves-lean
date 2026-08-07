@@ -12,6 +12,7 @@ import CohLean.Numerical.Examples.RankOneSurface
 import CohLean.Numerical.Examples.K3Model
 import CohLean.Numerical.Examples.ProjectivePlaneModel
 import CohLean.ForMathlib.PresentationIsFinite
+import CohLean.ForMathlib.FinitePresentationOfPresentation
 import CohLean.Coh.Defs
 
 /-!

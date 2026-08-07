@@ -66,34 +66,24 @@ instance Presentation.isFinite_map {M : SheafOfModules.{u} R} (P : M.Presentatio
     rw [Presentation.map_relations_I]
     exact inferInstanceAs (Finite P.relations.I)
 
-/-! ### What these unblock, and the state of the corollary
+/-! ### What these unblock
 
-These two are what every downstream statement about finite presentation needs:
-`Presentation.quasicoherentData` (the global case, issue #11) and `QuasicoherentData.bind`
-(local-to-global, issue #12) are both built out of exactly `map` and `of_isIso`.
+`Presentation.quasicoherentData` and `QuasicoherentData.bind` are both built out of exactly
+`map` and `of_isIso`, so these two instances are what any statement about finite presentation
+has to go through.
 
-Neither corollary is included. `IsFinitePresentation.of_presentation` was attempted in an
-isolated file and removed rather than left broken. What is now **known**, having tried it:
+The global case is done, in `CohLean/ForMathlib/FinitePresentationOfPresentation.lean`:
+`IsFinitePresentation.of_presentation`. Two things were needed on top of the instances here,
+both recorded there — a hand-supplied `preservesColimitsOfSize_shrink`, and pinning `S` when
+applying `isFinite_map`, without which `J'` stays a metavariable and instance synthesis fails
+with a misleading "missing `HasSheafify`".
 
-* The `PreservesColimitsOfSize.{u, u}` half is solved. `pushforward (𝟙 (R.over x))` is a left
-  adjoint (`Sheaf/PushforwardContinuous.lean:275`) and `preservesColimitsOfSize_shrink _`
-  bridges the universe by hand — it cannot be a global instance because it loops.
-* The blocker is `HasSheafify (J.over x) AddCommGrpCat` failing to synthesise inside the proof.
-  With `set_option pp.universes true` the requirement prints as
-  `HasSheafify.{v₁, u, max u₁ v₁, u + 1} (GrothendieckTopology.over.{v₁, u₁} J x) AddCommGrpCat.{u}`,
-  which is **exactly** what `[∀ X, HasSheafify (J.over X) AddCommGrpCat.{u}]` provides.
-* Ruled out, each by a separate attempt: universe drift on an unannotated `AddCommGrpCat`
-  (pinning every occurrence to `.{u}` changes nothing); contamination from a second sheaf of
-  rings in scope (an isolated file with Mathlib's variable block copied verbatim fails
-  identically); `variable` auto-inclusion (writing all binders explicitly in the signature
-  fails identically); and instance search declining to instantiate a `∀`-quantified hypothesis
-  (naming the binder and applying it at `x` with `haveI` fails identically).
+The local-to-global case, `IsFinitePresentation.of_coversTop` via `bind`, is still open — see
+issue #12. It needs the same two fixes plus one more: `QuasicoherentData.I` lives in its own
+universe `w`, and `bind` returns `Σ i, (D i).I`, so `of_coversTop` has to be stated with that
+universe explicit for the `w` from `exists_quasicoherentData` to match the `w` `bind` produces.
 
-The next step is to read a `set_option trace.Meta.synthInstance true` trace on that goal. That
-is a different kind of session from writing the lemma, so it is recorded rather than guessed
-at further.
-
-A practical note regardless: introduce local data with `choose D hD using …`, not
+A practical note for that work: introduce local data with `choose D hD using …`, not
 `have D := ….choose`. With `have`, `D i` is opaque and `choose_spec` types against `_.choose`
 rather than `D i` — an error with nothing to do with the real problem.
 -/

@@ -61,6 +61,8 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 -- Layer B: the Mathlib gap that blocks the local-to-global criterion for coherence.
 #print axioms SheafOfModules.Presentation.isFinite_of_isIso
 #print axioms SheafOfModules.Presentation.isFinite_map
+#print axioms SheafOfModules.Presentation.isFinitePresentation_quasicoherentData
+#print axioms SheafOfModules.IsFinitePresentation.of_presentation
 
 -- Layer B stage 1.
 #print axioms Scheme.Modules.IsCoherent
