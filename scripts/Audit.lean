@@ -37,6 +37,23 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms CalabiYauThreefold.chi_eq_of_chComp_eq
 #print axioms Fourfold.chi_eq
 
+-- Layer A: the dual involution and the Euler pairing. chi2 is what Bridgeland stability
+-- is defined against, so a sorry here would contaminate the downstream repos.
+#print axioms NumericalRingWithDual
+#print axioms NumericalVariety.dual_ch
+#print axioms NumericalVariety.chDual_add
+#print axioms NumericalVariety.chi₂_eq_sum
+#print axioms NumericalVariety.chi₂_eq_degree_dual_ch
+#print axioms NumericalVariety.chi₂_add_left
+#print axioms NumericalVariety.chi₂_add_right
+#print axioms Surface.chi₂_eq
+#print axioms Surface.chi₂_eq_chi_of_isStructureSheafLike
+#print axioms Surface.chi₂_sub_chi₂_swap
+#print axioms Surface.chi₂_symm_of_toddComp_one_eq_zero
+#print axioms K3.mukaiPairing_self
+#print axioms K3.chi₂_eq_neg_mukaiPairing
+#print axioms K3.chi₂_self
+
 -- Layer A: the K3 specialisation.
 #print axioms K3.chi_eq
 #print axioms K3.chi_eq_rank_add_mukaiS
