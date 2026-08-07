@@ -72,9 +72,13 @@ Layer A's fields are the trust boundary. Layer B's job is to discharge them.
 **Picking this up cold? Read [HANDOFF.md](HANDOFF.md).** It carries the current state, the live
 piece of work, and the Lean/Mathlib traps this repo has already paid for.
 
-Layer A is complete and audited: the general Riemann–Roch expansion in any dimension, the
-surface and K3 specialisations, and a K3 model realising them. Layer B is at stage 1
-(definitions only). See [ROADMAP.md](ROADMAP.md).
+Layer A is complete and audited for the general expansion, surface and K3 specialisations,
+and the point, K3, and projective-plane models. Threefold/fourfold and Euler-pairing follow-ups
+are tracked explicitly. Layer B stage B1 is active:
+closure under isomorphisms, finite-presentation locality, and the open-immersion restriction
+equivalence are in [PR #16](https://github.com/chris-dare-dev/coherent-sheaves-lean/pull/16).
+Every later Layer B stage now has a milestone and issue-level dependency graph; see
+[ROADMAP.md](ROADMAP.md).
 
 ```bash
 lake build && lake env lean scripts/Audit.lean

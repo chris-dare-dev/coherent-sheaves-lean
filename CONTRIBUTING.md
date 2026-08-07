@@ -19,6 +19,27 @@ is left to do. Work is tracked as
 [milestones and issues](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues);
 issues labelled `ready` have no unmet dependency and can be started immediately.
 
+## Tracker discipline
+
+The issue tracker is the durable handoff between sessions. A recommendation or deferred
+follow-up is not considered recorded until it has an issue.
+
+* Every implementation issue belongs to a milestone, names its exact file, and has explicit
+  goal, deliverables, dependencies, and acceptance criteria.
+* `ready` and `blocked` are mutually exclusive. A blocked issue names the exact prerequisite
+  issue or pull request in a `## Blocked by` section. `in-progress` means an implementation or
+  pull request already exists and must link that work from the issue body.
+* Cross-cutting lemmas and API bridges use `prerequisite`; Mathlib-shaped work uses
+  `upstream-candidate`; design/API reconnaissance uses `research`; version work uses
+  `toolchain`.
+* Each milestone description records its ready entry points, dependency arrows, and exit
+  condition. Update it when adding, closing, blocking, or unblocking a prerequisite.
+* When a pull request merges, close the issues it completes and immediately replace `blocked`
+  with `ready` on newly unblocked work. Do not leave a completed prerequisite advertised as a
+  new task.
+* Keep the stage summary and current entry points in [ROADMAP.md](ROADMAP.md) aligned with the
+  live tracker. The issue bodies and milestone descriptions remain the detailed source of truth.
+
 ## Namespaces
 
 Declarations go in **Mathlib-style namespaces** — `AlgebraicGeometry`,

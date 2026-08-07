@@ -3,10 +3,21 @@
 Work is tracked as [milestones and issues](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues).
 Every issue names the exact file it creates, so issues labelled `ready` can be picked up
 simultaneously without merge conflicts. `lakefile.toml` is the one shared file — coordinate
-before touching it.
+before touching it. The live dependency graph is recorded in each milestone description;
+`ready` and `blocked` are mutually exclusive, while `in-progress` means an implementation or
+pull request already exists.
 
-Twelve issues are startable today; the dependency structure is only
-#1 → {#2, #3} and {#7, #8, #9} → #10.
+Current independent entry points are [#4](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/4),
+[#5](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/5),
+[#6](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/6),
+[#13](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/13),
+[#11](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/11),
+[#21](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/21),
+[#26](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/26),
+[#27](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/27), and
+[#33](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/33).
+[PR #16](https://github.com/chris-dare-dev/coherent-sheaves-lean/pull/16) is the active B1
+locality/open-immersion work.
 
 
 Target: Riemann–Roch for smooth projective varieties over a field, general dimension,
@@ -27,8 +38,8 @@ Estimates assume heavy agent assistance. A solo human should multiply by roughly
 | A6a | `K3.IsK3` (`td₁ = 0`, `∫td₂ = 2`), `K3.chi_eq`, Mukai self-pairing, `⟨v,v⟩ = ∫Δ − 2r²` | **done** |
 | A6b | A K3 *model*: `A = ℚ[t]/(t³)` with `∫t² = 2d`, satisfying `IsK3` | **done** |
 | A6c | `Examples.RankOneSurface` — the shared ring; `Examples.ProjectivePlaneModel` — `ℙ²`, `td₁ ≠ 0` | **done** |
-| A7 | Threefold specialisation (`n = 3`), then fourfold (`n = 4`) | next |
-| A8 | Euler pairing `χ(E,F)` and the numerical lattice `N(X)` as a `ZLattice` | after A7 |
+| A7 | Threefold and fourfold specialisations | ready: [#4](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/4), [#5](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/5) |
+| A8 | Euler pairing and the numerical lattice | [#6](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/6) → [#17](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/17) |
 
 A6a is the mathematics: `IsK3` asserts only the two numerical facts about the Todd class,
 so `chi_eq` and `mukaiSelfPairing_eq` are consequences of *those*, visibly and nothing else.
@@ -47,24 +58,30 @@ the grading, the Chern character and `surfaceDegree_ch_mul_todd` — the reducti
 `td₁ = (3/2)H` is nonzero: the K3 model multiplies that term by zero and so cannot detect a
 sign error in it. `p2Chi_lineBundle` pins it down by recovering `χ(O(nH)) = (n+1)(n+2)/2`.
 
+A7 can now proceed in dimensions three and four independently. A8 is deliberately split into
+the Euler-pairing construction and the quotient/lattice construction so that the milestone
+title has a concrete deliverable for both halves.
+
 ## Layer B — the construction
 
 | # | Stage | Estimate | Gate |
 |---|---|---|---|
-| B1 | `IsCoherent`, `Coh X`; closure under kernels, cokernels, extensions; `Coh X` abelian; affine comparison `Coh (Spec R) ≌ finite `R`-modules` | 2–3 months | definitions **done**, theorems not started |
-| B2 | Invertible sheaves, `Pic X`, Cartier divisors, `O_X(D)`, the sequence `0 → O(−D) → O → O_D → 0` | 2–3 months | blocked on B1 |
-| B3 | `χ(F)`: finiteness of `Hⁱ(X,F)` for coherent `F` on proper `X` over a field, and additivity of `χ` on short exact sequences | 4–6 months | **the real gate** |
-| B4 | Snapper polynomials ⟹ intersection numbers, any dimension | ~3 months | blocked on B3 |
-| B5 | Serre duality ⟹ `χ(O(D)) = χ(O) + ½D·(D−K)`, then dévissage to rank `r`; discharge `hirzebruch_riemannRoch` | ~6 months | blocked on B3, B4 |
+| B1 | Coherent category, locality, affine comparison, closure, abelian/exact inclusion | 2–3 months | [milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/4); PR #16 active, #11 ready |
+| B2 | Invertible sheaves, `Pic X`, Cartier divisors, `O_X(D)`, determinant, effective-divisor sequence | 2–3 months | [milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/7); #21 ready, remainder gated |
+| B3 | Affine vanishing, cohomology finiteness/boundedness, geometric `χ`, additivity | 4–6 months | [milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/5); #13, #26, #27 ready |
+| B4 | Numerical polynomials, Snapper, intersections, numerical Chern data | ~3 months | [milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/9); #33 ready |
+| B5 | Canonical sheaf, Serre duality, surface RR, dévissage, Layer A discharge | ~6 months | [milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/8); blocked on B2–B4 |
 
 Total 18–30 months. Layer A exists so that nothing waits on this.
 
 ### Notes on individual stages
 
 **B1.** Mathlib gives `X.Modules` abelian plus `IsFinitePresentation ⟹ IsQuasicoherent` and
-`⟹ IsFiniteType` as instances. The missing content is closure of the *subcategory*.
-`Mathlib/CategoryTheory/ObjectProperty/{Kernels,Extensions,ClosedUnderIsomorphisms}.lean`
-are the right vehicles.
+`⟹ IsFiniteType` as instances. PR #16 proves closure under isomorphisms, finite-presentation
+locality, and the equivalence connecting slice restriction to scheme-level restriction along
+an open immersion. The remaining graph is explicit in the milestone: global presentations and
+the affine comparison feed kernels/cokernels; locality feeds extensions; those closure results
+feed the abelian/exact-inclusion assembly.
 
 On the affine-local criterion (issue #12): Mathlib has
 `SheafOfModules.QuasicoherentData.bind` and `IsQuasicoherent.of_coversTop`, so local-to-global
