@@ -66,39 +66,36 @@ instance Presentation.isFinite_map {M : SheafOfModules.{u} R} (P : M.Presentatio
     rw [Presentation.map_relations_I]
     exact inferInstanceAs (Finite P.relations.I)
 
-/-! ### What these unblock, and the one thing still in the way
+/-! ### What these unblock, and the state of the corollary
 
-These two are what every downstream statement about finite presentation needs, and both
+These two are what every downstream statement about finite presentation needs:
 `Presentation.quasicoherentData` (the global case, issue #11) and `QuasicoherentData.bind`
-(the local-to-global case, issue #12) are built out of exactly `map` and `of_isIso`.
+(local-to-global, issue #12) are both built out of exactly `map` and `of_isIso`.
 
-Neither corollary is included here. Both were attempted and backed out rather than left
-half-proved, and the obstruction is **not** the presentations — it is instance plumbing:
+Neither corollary is included. `IsFinitePresentation.of_presentation` was attempted in an
+isolated file and removed rather than left broken. What is now **known**, having tried it:
 
-1. `Presentation.isFinite_map` wants `[PreservesColimitsOfSize.{u, u} F]`. For
-   `pushforward (𝟙 (R.over x))` this is available but not at the right universe: the functor is
-   a left adjoint (`Sheaf/PushforwardContinuous.lean:275`), and the bridge must be supplied by
-   hand as `preservesColimitsOfSize_shrink _`, because that lemma is deliberately not a global
-   instance — it loops. *This part works.*
-2. What does not: with `[∀ X, HasSheafify (J.over X) AddCommGrpCat]` literally in scope,
-   `HasSheafify (J.over x) AddCommGrpCat` still fails to synthesize inside
-   `Presentation.quasicoherentData`. The unannotated `AddCommGrpCat` in a `variable` line binds
-   its universe from the *first* block that mentions it, so a section that also carries a second
-   sheaf of rings `S` on a second site `J'` — as this file does, for `map` — ends up with an
-   `AddCommGrpCat` at a different universe from the one `quasicoherentData` requires. Writing
-   `AddCommGrpCat.{u}` explicitly does not help; it picks a third.
+* The `PreservesColimitsOfSize.{u, u}` half is solved. `pushforward (𝟙 (R.over x))` is a left
+  adjoint (`Sheaf/PushforwardContinuous.lean:275`) and `preservesColimitsOfSize_shrink _`
+  bridges the universe by hand — it cannot be a global instance because it loops.
+* The blocker is `HasSheafify (J.over x) AddCommGrpCat` failing to synthesise inside the proof.
+  With `set_option pp.universes true` the requirement prints as
+  `HasSheafify.{v₁, u, max u₁ v₁, u + 1} (GrothendieckTopology.over.{v₁, u₁} J x) AddCommGrpCat.{u}`,
+  which is **exactly** what `[∀ X, HasSheafify (J.over X) AddCommGrpCat.{u}]` provides.
+* Ruled out, each by a separate attempt: universe drift on an unannotated `AddCommGrpCat`
+  (pinning every occurrence to `.{u}` changes nothing); contamination from a second sheaf of
+  rings in scope (an isolated file with Mathlib's variable block copied verbatim fails
+  identically); `variable` auto-inclusion (writing all binders explicitly in the signature
+  fails identically); and instance search declining to instantiate a `∀`-quantified hypothesis
+  (naming the binder and applying it at `x` with `haveI` fails identically).
 
-   The fix is almost certainly to state the global corollary in its **own file**, with the
-   variable block copied verbatim from Mathlib's `Presentation.quasicoherentData` section and
-   nothing else in scope. That is cheap to try and was not worth doing badly here.
-3. For `bind` there is a further one: `QuasicoherentData.I` lives in its own universe `w`, and
-   `bind` returns `Σ i, (D i).I`. `of_coversTop` has to be stated with that universe explicit
-   for the `w` from `exists_quasicoherentData` to match the `w` `bind` produces.
+The next step is to read a `set_option trace.Meta.synthInstance true` trace on that goal. That
+is a different kind of session from writing the lemma, so it is recorded rather than guessed
+at further.
 
-A practical note for whoever picks this up: introduce the local data with
-`choose D hD using …`, not `have D := ….choose`. With `have`, `D i` is opaque and
-`choose_spec` types against `_.choose` rather than `D i` — a third error with nothing to do
-with the real problem.
+A practical note regardless: introduce local data with `choose D hD using …`, not
+`have D := ….choose`. With `have`, `D i` is opaque and `choose_spec` types against `_.choose`
+rather than `D i` — an error with nothing to do with the real problem.
 -/
 
 end SheafOfModules
