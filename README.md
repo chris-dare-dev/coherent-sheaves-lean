@@ -50,9 +50,9 @@ states exactly that much, as a typeclass, with no schemes anywhere:
   Hirzebruch–Riemann–Roch.
 
 This unblocks downstream stability work immediately, and is falsifiable: the axioms are
-visible in the type, and two models exist — `Numerical/Examples/Point.lean` in dimension
-zero and `Numerical/Examples/K3Model.lean`, a K3 surface of degree `H² = 2d` — so nothing
-here is vacuously true.
+visible in the type, and three models exist — a point, a K3 surface of degree `H² = 2d`, and
+`ℙ²` — so nothing here is vacuously true. `ℙ²` is there specifically because its
+`td₁ = (3/2)H` is nonzero, which the K3 model cannot test.
 
 ### Layer B — `CohLean.Coh` (the construction)
 

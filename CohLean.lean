@@ -8,7 +8,9 @@ import CohLean.Numerical.RiemannRoch
 import CohLean.Numerical.Surface
 import CohLean.Numerical.K3
 import CohLean.Numerical.Examples.Point
+import CohLean.Numerical.Examples.RankOneSurface
 import CohLean.Numerical.Examples.K3Model
+import CohLean.Numerical.Examples.ProjectivePlaneModel
 import CohLean.Coh.Defs
 
 /-!

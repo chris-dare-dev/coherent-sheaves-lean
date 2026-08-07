@@ -26,6 +26,7 @@ Estimates assume heavy agent assistance. A solo human should multiply by roughly
 | A5 | `Examples.Point` — consistency witness, `n = 0` | **done** |
 | A6a | `K3.IsK3` (`td₁ = 0`, `∫td₂ = 2`), `K3.chi_eq`, Mukai self-pairing, `⟨v,v⟩ = ∫Δ − 2r²` | **done** |
 | A6b | A K3 *model*: `A = ℚ[t]/(t³)` with `∫t² = 2d`, satisfying `IsK3` | **done** |
+| A6c | `Examples.RankOneSurface` — the shared ring; `Examples.ProjectivePlaneModel` — `ℙ²`, `td₁ ≠ 0` | **done** |
 | A7 | Threefold specialisation (`n = 3`), then fourfold (`n = 4`) | next |
 | A8 | Euler pairing `χ(E,F)` and the numerical lattice `N(X)` as a `ZLattice` | after A7 |
 
@@ -38,6 +39,13 @@ turns it into the graded ring, and `k3_isK3` checks `td₁ = 0` and `∫td₂ = 
 
 The degree `H² = 2d` is a parameter, and `d : ℕ` rather than `ℚ` because `χ` must be integral:
 Riemann–Roch on this model reads `χ(r, c, s) = 2r + 2ds`.
+
+A6c factored the two models. Every Picard-rank-one surface has the same intersection ring
+`ℚ[t]/(t³)` up to the single number `∫H²`, so `Examples/RankOneSurface.lean` carries the ring,
+the grading, the Chern character and `surfaceDegree_ch_mul_todd` — the reduction of
+`ch·td` modulo `H³ = H⁴ = 0` — and a model costs only a Todd class. `ℙ²` matters because its
+`td₁ = (3/2)H` is nonzero: the K3 model multiplies that term by zero and so cannot detect a
+sign error in it. `p2Chi_lineBundle` pins it down by recovering `χ(O(nH)) = (n+1)(n+2)/2`.
 
 ## Layer B — the construction
 

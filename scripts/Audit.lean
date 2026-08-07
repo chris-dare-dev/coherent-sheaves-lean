@@ -43,12 +43,20 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 
 -- Layer A: the K3 model. If these carried a sorry the K3 theorems would still be
 -- conditional, which is exactly what this model exists to stop being true.
-#print axioms Examples.K3Ring
+#print axioms Examples.SurfaceRing
 #print axioms Examples.H_pow_three
-#print axioms Examples.k3NumericalRing
-#print axioms Examples.k3Degree_normalForm
+#print axioms Examples.surfaceNumericalRing
+#print axioms Examples.surfaceDegree_normalForm
+#print axioms Examples.surfaceDegree_ch_mul_todd
 #print axioms Examples.k3NumericalVariety
 #print axioms Examples.k3_isK3
+
+-- Layer A: the projective plane. Its td1 is nonzero, so it is the model that can
+-- detect an error in the c1.td1 term of Surface.chi_eq.
+#print axioms Examples.p2NumericalVariety
+#print axioms Examples.p2_chi_structureSheaf
+#print axioms Examples.p2Chi_lineBundle
+#print axioms Examples.p2ChCoeff_lineBundle
 
 -- Layer B stage 1.
 #print axioms Scheme.Modules.IsCoherent
