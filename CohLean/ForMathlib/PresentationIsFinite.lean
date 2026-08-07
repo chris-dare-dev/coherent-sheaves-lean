@@ -66,26 +66,39 @@ instance Presentation.isFinite_map {M : SheafOfModules.{u} R} (P : M.Presentatio
     rw [Presentation.map_relations_I]
     exact inferInstanceAs (Finite P.relations.I)
 
-/-! ### What these unblock, and what still stands in the way
+/-! ### What these unblock, and the one thing still in the way
 
-With both instances above, `QuasicoherentData.bind`'s presentations — built as
-`(P.map _ _).of_isIso _` — are finite whenever the local data are, which is the missing step
-in `SheafOfModules.IsFinitePresentation.of_coversTop` (issues #11 and #12).
+These two are what every downstream statement about finite presentation needs, and both
+`Presentation.quasicoherentData` (the global case, issue #11) and `QuasicoherentData.bind`
+(the local-to-global case, issue #12) are built out of exactly `map` and `of_isIso`.
 
-An attempt at that corollary is **not** included here, because it does not follow by
-`infer_instance` and the obstructions are not about presentations at all:
+Neither corollary is included here. Both were attempted and backed out rather than left
+half-proved, and the obstruction is **not** the presentations — it is instance plumbing:
 
-1. `Presentation.isFinite_map` needs `[PreservesColimitsOfSize.{u, u} F]`, and the `F` inside
-   `bind` is `(pushforwardPushforwardEquivalence …).inverse`. Instance search does not produce
-   the universe-matched `PreservesColimitsOfSize` for an equivalence's inverse; Mathlib's own
-   file works around this with `local instance : PreservesColimitsOfSize.{0, 0} F :=
-   preservesColimitsOfSize_shrink _`, so the same workaround is likely needed, universe-matched.
-2. `QuasicoherentData.I` lives in its own universe `w`, and `bind` produces `Σ i, (D i).I`.
-   Stating `of_coversTop` so that the `w` coming out of `exists_quasicoherentData` matches the
-   one `bind` returns needs the universes written explicitly rather than inferred.
+1. `Presentation.isFinite_map` wants `[PreservesColimitsOfSize.{u, u} F]`. For
+   `pushforward (𝟙 (R.over x))` this is available but not at the right universe: the functor is
+   a left adjoint (`Sheaf/PushforwardContinuous.lean:275`), and the bridge must be supplied by
+   hand as `preservesColimitsOfSize_shrink _`, because that lemma is deliberately not a global
+   instance — it loops. *This part works.*
+2. What does not: with `[∀ X, HasSheafify (J.over X) AddCommGrpCat]` literally in scope,
+   `HasSheafify (J.over x) AddCommGrpCat` still fails to synthesize inside
+   `Presentation.quasicoherentData`. The unannotated `AddCommGrpCat` in a `variable` line binds
+   its universe from the *first* block that mentions it, so a section that also carries a second
+   sheaf of rings `S` on a second site `J'` — as this file does, for `map` — ends up with an
+   `AddCommGrpCat` at a different universe from the one `quasicoherentData` requires. Writing
+   `AddCommGrpCat.{u}` explicitly does not help; it picks a third.
 
-Neither is deep, but both are elaboration work rather than mathematics, and doing them badly
-would bury the two clean lemmas above. Recorded on the issues instead of guessed at here.
+   The fix is almost certainly to state the global corollary in its **own file**, with the
+   variable block copied verbatim from Mathlib's `Presentation.quasicoherentData` section and
+   nothing else in scope. That is cheap to try and was not worth doing badly here.
+3. For `bind` there is a further one: `QuasicoherentData.I` lives in its own universe `w`, and
+   `bind` returns `Σ i, (D i).I`. `of_coversTop` has to be stated with that universe explicit
+   for the `w` from `exists_quasicoherentData` to match the `w` `bind` produces.
+
+A practical note for whoever picks this up: introduce the local data with
+`choose D hD using …`, not `have D := ….choose`. With `have`, `D i` is opaque and
+`choose_spec` types against `_.choose` rather than `D i` — a third error with nothing to do
+with the real problem.
 -/
 
 end SheafOfModules
