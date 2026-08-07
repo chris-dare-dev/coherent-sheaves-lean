@@ -132,6 +132,23 @@ equivalence, not a triviality; `bind` handles it with `pushforwardPushforwardEqu
 The full plan is on the issue. Issue #11 does not depend on any of this and is the better
 first pick for the milestone.
 
+The forward half of #11 is now done (`CohLean/Coh/Affine.lean`): `M^~` is of finite
+presentation whenever `M` is, because `AlgebraicGeometry.presentationTilde` already builds
+the global presentation and its index types are the two generating sets that
+`Module.FinitePresentation` hands over. The converse is **blocked, and not on effort** —
+`SheafOfModules.IsFinitePresentation` is by definition local data (an existential over
+`QuasicoherentData`), and the bridge from that to global sections is the affine comparison
+theorem `IsIso M.fromTildeΓ` for quasi-coherent `M`, which Mathlib does not have at
+v4.29.0. That is issue #46, and it gates the converse, the equivalence, and anything else
+in B1 that has to read finiteness off global sections.
+
+One smaller Mathlib gap surfaced on the way and is discharged in
+`CohLean/ForMathlib/OpensBinaryProducts.lean`: `Presentation.quasicoherentData` assumes
+`[HasBinaryProducts C]` for the site, and that instance does not fire on `X.Opens`, because
+`Opens` reaches its order twice over and instance search will not unfold the
+`CompleteLattice.copy` that reconciles them. Without it a global presentation cannot be
+turned into finite presentation on a scheme at all.
+
 **B2.** Upstream Mathlib gained `AlgebraicGeometry/AlgebraicCycle/Basic.lean` (cycles as
 locally-finite-support functions, proper pushforward) and `OrderOfVanishing.lean` after
 v4.29.0. Neither defines divisors, rational equivalence or Chow groups yet. **Do not

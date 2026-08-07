@@ -126,3 +126,12 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 
 -- Layer B stage 1: the scheme-level affine-local criterion, stated without `Over`.
 #print axioms Scheme.Modules.isCoherent_iff_restrict_affineOpenCover
+-- Layer B stage 1: the site has binary products, which is what lets a global
+-- presentation be turned into finite presentation on a scheme at all.
+#print axioms TopologicalSpace.Opens.hasBinaryProducts
+
+-- Layer B stage 1: the affine comparison, forward direction. The converse is not
+-- proved -- see the module docstring of CohLean/Coh/Affine.lean.
+#print axioms isFinitePresentation_tilde
+#print axioms isCoherent_tilde
+#print axioms isCoherent_tilde_of_finite
