@@ -69,6 +69,9 @@ Layer A's fields are the trust boundary. Layer B's job is to discharge them.
 
 ## Status
 
+**Picking this up cold? Read [HANDOFF.md](HANDOFF.md).** It carries the current state, the live
+piece of work, and the Lean/Mathlib traps this repo has already paid for.
+
 Layer A is complete and audited: the general Riemann–Roch expansion in any dimension, the
 surface and K3 specialisations, and a K3 model realising them. Layer B is at stage 1
 (definitions only). See [ROADMAP.md](ROADMAP.md).
