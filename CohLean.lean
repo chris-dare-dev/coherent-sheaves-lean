@@ -18,6 +18,7 @@ import CohLean.Numerical.Examples.ProjectivePlaneModel
 import CohLean.ForMathlib.PresentationIsFinite
 import CohLean.ForMathlib.FinitePresentationOfPresentation
 import CohLean.ForMathlib.OpensBinaryProducts
+import CohLean.ForMathlib.AffineComparison
 import CohLean.AlgebraicGeometry.Modules.RestrictOver
 import CohLean.Coh.Defs
 import CohLean.Coh.ClosedUnderIso
