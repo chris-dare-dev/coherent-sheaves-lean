@@ -1,0 +1,24 @@
+name = "CohLean"
+version = "0.1.0"
+defaultTargets = ["CohLean"]
+keywords = ["math", "algebraic-geometry", "coherent-sheaves", "riemann-roch"]
+
+[leanOptions]
+autoImplicit = false
+relaxedAutoImplicit = false
+
+# Pinned to v4.29.0 to match the rest of the stack: bridgeland-stab-lean and
+# bstab both sit on leanprover/lean4:v4.29.0, and the whole point of this
+# package is that they can `require` it without a toolchain fight.
+#
+# BUMP TRIGGER: Layer B stage 2 (divisors) wants upstream
+# Mathlib/AlgebraicGeometry/AlgebraicCycle/ and OrderOfVanishing.lean, which
+# landed on master after v4.29.0. Do not bump before then -- a bump here forces
+# a bump in two downstream repos.
+[[require]]
+name = "mathlib"
+scope = "leanprover-community"
+rev = "v4.29.0"
+
+[[lean_lib]]
+name = "CohLean"
