@@ -18,9 +18,6 @@ universe u
 
 open CategoryTheory TopologicalSpace
 
-set_option maxHeartbeats 1600000
-set_option synthInstance.maxHeartbeats 400000
-
 namespace CategoryTheory.Over
 
 variable {C D : Type u} [Category.{u} C] [Category.{u} D]
@@ -429,6 +426,12 @@ noncomputable def restrictFunctorIsoOver :
       Scheme.Modules.restrictFunctor f :=
   Iso.refl _
 
+-- Needs both budgets raised: it times out in `isDefEq` on the default 200000, and its
+-- `HasSheafify` goals for the doubly-sliced site time out on the default 20000 synthesis
+-- heartbeats. Scoped with `in` rather than set for the whole file, so a future slowdown in any
+-- other declaration surfaces as a failure there instead of being silently absorbed.
+set_option maxHeartbeats 1600000 in
+set_option synthInstance.maxHeartbeats 400000 in
 /-- Transport local presentation data on the slice over the range of an open immersion to local
 presentation data for the scheme-level restriction. -/
 noncomputable def restrictQuasicoherentData (M : Y.Modules)
@@ -445,6 +448,8 @@ noncomputable def restrictQuasicoherentData (M : Y.Modules)
         (f.opensRangeOverModulesEquivalenceInverseUnitIso (q.X i)))
       (f.restrictOverIso M (q.X i)).hom
 
+-- Instance search only; the elaborator itself stays within the default budget here.
+set_option synthInstance.maxHeartbeats 400000 in
 /-- Transporting finite local presentation data from the range slice to the source preserves
 finiteness. -/
 instance restrictQuasicoherentData_isFinitePresentation (M : Y.Modules)
