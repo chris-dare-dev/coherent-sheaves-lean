@@ -36,6 +36,16 @@ those all check out in isolation.
 * `IsFinitePresentation.of_presentation`
 
 Destined for `Mathlib/Algebra/Category/ModuleCat/Sheaf/Quasicoherent.lean`.
+
+## Note for callers
+
+Applying `of_presentation` at a concrete presentation is fiddlier than it looks, and the
+symptom is always a universe defaulted to `0`. Both this theorem and Mathlib's
+`Presentation.IsFinite` carry universe parameters that a goal phrased in other terms — say
+`Scheme.Modules.IsCoherent …` — does not pin, and Lean then elaborates them at `.{0, 0, 0}`
+and reports a type mismatch at `Type 1` rather than an ambiguity. `(M := …)` does not fix it,
+because the universes bind before `M`; `Presentation.IsFinite.{u, u, u}` does. Expect to
+annotate.
 -/
 
 universe w u v₁ v₂ u₁ u₂
