@@ -7,9 +7,7 @@ before touching it. The live dependency graph is recorded in each milestone desc
 `ready` and `blocked` are mutually exclusive, while `in-progress` means an implementation or
 pull request already exists.
 
-Current independent entry points are [#4](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/4),
-[#5](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/5),
-[#6](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/6),
+Current independent entry points are [#6](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/6),
 [#13](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/13),
 [#11](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/11),
 [#21](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/21),
@@ -38,7 +36,8 @@ Estimates assume heavy agent assistance. A solo human should multiply by roughly
 | A6a | `K3.IsK3` (`td₁ = 0`, `∫td₂ = 2`), `K3.chi_eq`, Mukai self-pairing, `⟨v,v⟩ = ∫Δ − 2r²` | **done** |
 | A6b | A K3 *model*: `A = ℚ[t]/(t³)` with `∫t² = 2d`, satisfying `IsK3` | **done** |
 | A6c | `Examples.RankOneSurface` — the shared ring; `Examples.ProjectivePlaneModel` — `ℙ²`, `td₁ ≠ 0` | **done** |
-| A7 | Threefold and fourfold specialisations | ready: [#4](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/4), [#5](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/5) |
+| A7a | `Threefold.chi_eq` (`n = 3`) and `CalabiYauThreefold.IsCalabiYau` | **done** ([#4](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/4)) |
+| A7b | `Fourfold.chi_eq` (`n = 4`) | **done** ([#5](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/5)) |
 | A8 | Euler pairing and the numerical lattice | [#6](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/6) → [#17](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/17) |
 
 A6a is the mathematics: `IsK3` asserts only the two numerical facts about the Todd class,
@@ -58,9 +57,25 @@ the grading, the Chern character and `surfaceDegree_ch_mul_todd` — the reducti
 `td₁ = (3/2)H` is nonzero: the K3 model multiplies that term by zero and so cannot detect a
 sign error in it. `p2Chi_lineBundle` pins it down by recovering `χ(O(nH)) = (n+1)(n+2)/2`.
 
-A7 can now proceed in dimensions three and four independently. A8 is deliberately split into
-the Euler-pairing construction and the quotient/lattice construction so that the milestone
-title has a concrete deliverable for both halves.
+A7 cashes the dimension-general claim. `Threefold.chi_eq` and `Fourfold.chi_eq` are the same
+proof as `Surface.chi_eq` with `Finset.sum_range_succ` fired one and two more times; no lemma
+in `Numerical/RiemannRoch.lean` had to change, which is the evidence that `degree_ch_mul_todd`
+is general rather than a surface theorem stated with a variable in it.
+
+`CalabiYauThreefold.IsCalabiYau` mirrors `K3.IsK3`: two conditions on the Todd class
+(`td₁ = 0`, `∫td₃ = 0`) and nothing else. Both the rank term and the `ch₂` term of
+`Threefold.chi_eq` drop, leaving `χ(E) = ∫c₁(E)·td₂ + ∫ch₃(E)` — two terms, not the three the
+A7 issue sketched, because `td₁ = 0` kills `∫ch₂(E)·td₁` as well.
+
+Neither dimension has a **model** yet, so A7 is in the state A6a was in before A6b: the
+theorems are conditional on a `NumericalVariety 3 A N` (resp. `4`) existing. The rank-one
+analogues are `ℚ[t]/(t⁴)` with `∫t³ = d` and `ℚ[t]/(t⁵)` with `∫t⁴ = d`, both reachable from
+`NumericalRing.ofGradedBasis` the way `Examples/RankOneSurface.lean` is. A Calabi–Yau
+threefold model is the one that earns its keep — it is the first place `IsCalabiYau` could be
+shown non-vacuous.
+
+A8 is deliberately split into the Euler-pairing construction and the quotient/lattice
+construction so that the milestone title has a concrete deliverable for both halves.
 
 ## Layer B — the construction
 

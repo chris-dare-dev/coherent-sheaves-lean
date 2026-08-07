@@ -29,6 +29,14 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms Surface.discriminant_mem_piece_two
 #print axioms Surface.degree_discriminant
 
+-- Layer A: the threefold and fourfold specialisations. These are the check that
+-- degree_ch_mul_todd is dimension-general, so they must not acquire axioms that the
+-- n = 2 case does not have.
+#print axioms Threefold.chi_eq
+#print axioms CalabiYauThreefold.chi_eq
+#print axioms CalabiYauThreefold.chi_eq_of_chComp_eq
+#print axioms Fourfold.chi_eq
+
 -- Layer A: the K3 specialisation.
 #print axioms K3.chi_eq
 #print axioms K3.chi_eq_rank_add_mukaiS
