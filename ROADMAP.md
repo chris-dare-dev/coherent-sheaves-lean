@@ -25,22 +25,19 @@ Estimates assume heavy agent assistance. A solo human should multiply by roughly
 | A4 | `Surface.discriminant` — Bogomolov–Gieseker `Δ = c₁² − 2r·ch₂` | **done** |
 | A5 | `Examples.Point` — consistency witness, `n = 0` | **done** |
 | A6a | `K3.IsK3` (`td₁ = 0`, `∫td₂ = 2`), `K3.chi_eq`, Mukai self-pairing, `⟨v,v⟩ = ∫Δ − 2r²` | **done** |
-| A6b | A K3 *model*: `A = ℚ[t]/(t³)` with `∫t² = 2d`, satisfying `IsK3` | next |
-| A7 | Threefold specialisation (`n = 3`), then fourfold (`n = 4`) | after A6b |
+| A6b | A K3 *model*: `A = ℚ[t]/(t³)` with `∫t² = 2d`, satisfying `IsK3` | **done** |
+| A7 | Threefold specialisation (`n = 3`), then fourfold (`n = 4`) | next |
 | A8 | Euler pairing `χ(E,F)` and the numerical lattice `N(X)` as a `ZLattice` | after A7 |
 
 A6a is the mathematics: `IsK3` asserts only the two numerical facts about the Todd class,
 so `chi_eq` and `mukaiSelfPairing_eq` are consequences of *those*, visibly and nothing else.
 
-A6b is the model, and it is the only thing standing between Layer A and a non-vacuous
-statement in dimension two. The obstacle is `NumericalRing.isInternal`: it needs
-`1, t, t²` linearly independent over `ℚ` in `AdjoinRoot (X³)`, converted from
-`AdjoinRoot.powerBasis` into an `iSupIndep`-plus-`iSup = ⊤` statement about the
-`ℕ`-indexed family of spans. `LinearIndependent.iSupIndep_span_singleton` does the
-independence half; the `Fin 3 → ℕ` reindexing and the `⊥`-above-the-dimension tail are the
-glue that has to be written. Worth doing once as a reusable
-`NumericalRing.ofGradedBasis`, since A7 needs exactly the same thing in dimensions 3
-and 4.
+A6b is done: `AdjoinRoot (X³)` carries the power basis `1, H, H²`, `NumericalRing.ofGradedBasis`
+turns it into the graded ring, and `k3_isK3` checks `td₁ = 0` and `∫td₂ = 2`. Every theorem in
+`CohLean/Numerical/K3.lean` is now a statement about an object that exists.
+
+The degree `H² = 2d` is a parameter, and `d : ℕ` rather than `ℚ` because `χ` must be integral:
+Riemann–Roch on this model reads `χ(r, c, s) = 2r + 2ds`.
 
 ## Layer B — the construction
 

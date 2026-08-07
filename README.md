@@ -50,8 +50,9 @@ states exactly that much, as a typeclass, with no schemes anywhere:
   Hirzebruch–Riemann–Roch.
 
 This unblocks downstream stability work immediately, and is falsifiable: the axioms are
-visible in the type, and `Numerical/Examples/Point.lean` exhibits a model, so the interface
-is not vacuous.
+visible in the type, and two models exist — `Numerical/Examples/Point.lean` in dimension
+zero and `Numerical/Examples/K3Model.lean`, a K3 surface of degree `H² = 2d` — so nothing
+here is vacuously true.
 
 ### Layer B — `CohLean.Coh` (the construction)
 
@@ -68,8 +69,9 @@ Layer A's fields are the trust boundary. Layer B's job is to discharge them.
 
 ## Status
 
-Layer A is complete and audited for the general expansion and the surface specialisation.
-Layer B is at stage 1 (definitions only). See [ROADMAP.md](ROADMAP.md).
+Layer A is complete and audited: the general Riemann–Roch expansion in any dimension, the
+surface and K3 specialisations, and a K3 model realising them. Layer B is at stage 1
+(definitions only). See [ROADMAP.md](ROADMAP.md).
 
 ```bash
 lake build && lake env lean scripts/Audit.lean

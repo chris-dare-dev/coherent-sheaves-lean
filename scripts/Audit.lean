@@ -41,6 +41,15 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms Examples.instNumericalVarietyPoint
 #print axioms Examples.pointPiece_isInternal
 
+-- Layer A: the K3 model. If these carried a sorry the K3 theorems would still be
+-- conditional, which is exactly what this model exists to stop being true.
+#print axioms Examples.K3Ring
+#print axioms Examples.H_pow_three
+#print axioms Examples.k3NumericalRing
+#print axioms Examples.k3Degree_normalForm
+#print axioms Examples.k3NumericalVariety
+#print axioms Examples.k3_isK3
+
 -- Layer B stage 1.
 #print axioms Scheme.Modules.IsCoherent
 #print axioms Coh
