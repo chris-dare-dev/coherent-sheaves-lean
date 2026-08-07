@@ -1,0 +1,60 @@
+name: Docs
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Unlike CI, do *not* cancel a run in progress. Pages allows one deployment at a time, and a
+# cancelled deploy can leave the published site on an older commit than the one that won the
+# race. Queue instead.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    # doc-gen4 documents every file reachable from the target, which here means a large part
+    # of Mathlib as well as CohLean. Expect this to be slow. The cap is a runaway guard, not
+    # an expectation.
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+
+      # Installs the toolchain from lean-toolchain, fetches the Mathlib olean cache and runs
+      # `lake build`. Two reasons this comes first: doc-gen4 can only document a library that
+      # already builds, and the docs package shares this package directory, so the oleans
+      # fetched here are the ones it reuses.
+      - name: Build CohLean
+        uses: leanprover/lean-action@v1
+
+      # doc-gen4 is required from `docbuild/`, a nested package, so that neither `lake build`
+      # here nor any downstream package that requires CohLean has to fetch it. See
+      # docbuild/lakefile.toml.
+      - name: Build documentation
+        working-directory: docbuild
+        run: lake build CohLean:docs
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docbuild/.lake/build/doc
+
+  # Split from the build so that the Pages deployment -- the only step with write
+  # permissions on anything -- runs on an artifact that is already final.
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
