@@ -58,6 +58,10 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms Examples.p2Chi_lineBundle
 #print axioms Examples.p2ChCoeff_lineBundle
 
+-- Layer B: the Mathlib gap that blocks the local-to-global criterion for coherence.
+#print axioms SheafOfModules.Presentation.isFinite_of_isIso
+#print axioms SheafOfModules.Presentation.isFinite_map
+
 -- Layer B stage 1.
 #print axioms Scheme.Modules.IsCoherent
 #print axioms Coh
