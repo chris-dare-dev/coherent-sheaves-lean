@@ -1,5 +1,14 @@
 # Roadmap
 
+Work is tracked as [milestones and issues](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues).
+Every issue names the exact file it creates, so issues labelled `ready` can be picked up
+simultaneously without merge conflicts. `lakefile.toml` is the one shared file — coordinate
+before touching it.
+
+Twelve issues are startable today; the dependency structure is only
+#1 → {#2, #3} and {#7, #8, #9} → #10.
+
+
 Target: Riemann–Roch for smooth projective varieties over a field, general dimension,
 with K3 surfaces as the first worked instance and threefolds/fourfolds as the reason the
 whole development is dimension-general.
