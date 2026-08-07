@@ -7,8 +7,7 @@ before touching it. The live dependency graph is recorded in each milestone desc
 `ready` and `blocked` are mutually exclusive, while `in-progress` means an implementation or
 pull request already exists.
 
-Current independent entry points are [#6](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/6),
-[#13](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/13),
+Current independent entry points are [#13](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/13),
 [#11](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/11),
 [#21](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/21),
 [#26](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/26),
@@ -38,7 +37,8 @@ Estimates assume heavy agent assistance. A solo human should multiply by roughly
 | A6c | `Examples.RankOneSurface` — the shared ring; `Examples.ProjectivePlaneModel` — `ℙ²`, `td₁ ≠ 0` | **done** |
 | A7a | `Threefold.chi_eq` (`n = 3`) and `CalabiYauThreefold.IsCalabiYau` | **done** ([#4](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/4)) |
 | A7b | `Fourfold.chi_eq` (`n = 4`) | **done** ([#5](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/5)) |
-| A8 | Euler pairing and the numerical lattice | [#6](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/6) → [#17](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/17) |
+| A8a | `NumericalRingWithDual`, `chi₂` (the Euler pairing), `K3.chi₂ = −⟨v,v⟩` | **done** ([#6](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/6)) |
+| A8b | The numerical lattice `N(X)` as a `ZLattice`; the radical of `chi₂` | [#17](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/17) |
 
 A6a is the mathematics: `IsK3` asserts only the two numerical facts about the Todd class,
 so `chi_eq` and `mukaiSelfPairing_eq` are consequences of *those*, visibly and nothing else.
@@ -76,6 +76,31 @@ shown non-vacuous.
 
 A8 is deliberately split into the Euler-pairing construction and the quotient/lattice
 construction so that the milestone title has a concrete deliverable for both halves.
+
+A8a landed with one correction to its issue. Issue #6 asked for `chi₂ E F = chi₂ F E` in even
+dimension; that is **false**, and `Surface.chi₂_sub_chi₂_swap` measures the failure exactly:
+
+`χ(E,F) − χ(F,E) = 2·(r_E·∫c₁(F)·td₁ − r_F·∫c₁(E)·td₁)`.
+
+`ℙ²` has `td₁ = (3/2)H ≠ 0`, so the obstruction is real and the repo already contains a model
+that exhibits it. Symmetry holds exactly when `td₁ = 0`
+(`Surface.chi₂_symm_of_toddComp_one_eq_zero`), hence on K3s and Calabi–Yaus. The general
+`χ(E,F) = (-1)ⁿ χ(F,E)` is Serre duality, a B5 theorem about `Ext`, not an identity between
+these integrals — it is not asserted at Layer A.
+
+Two design points worth keeping. `NumericalRingWithDual` is a **mixin** over `NumericalRing`,
+not a field and not an `extends`: a field breaks every instance in `Numerical/Examples/`, and
+an `extends` creates a second path to `NumericalRing n A` whenever a `NumericalVariety` is
+also in scope. And `chi₂` needs **no** dual instance at all — `chDual` is the explicit
+alternating sum, which the grading alone supplies, so the pairing and all of its consequences
+work on any `NumericalVariety`. The involution is used in exactly one lemma,
+`chi₂_eq_degree_dual_ch`, which is what earns `chDual` its name.
+
+`NumericalRingWithDual` consequently has **no instance** in the repo yet, so that one bridge
+lemma is conditional. The falsifiability check the issue actually asked for —
+`K3.chi₂_eq_neg_mukaiPairing`, which pins the `(-1)ⁱ` sign convention — is proved and does not
+depend on it. The cheapest instance would be `Examples/RankOneSurface`: `H ↦ −H` extends to
+`ℚ[t]/(t³)` because `(−H)³ = 0`, and the grading is by the power basis.
 
 ## Layer B — the construction
 
