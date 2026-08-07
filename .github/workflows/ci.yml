@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+# A push that lands while an older run is still going should cancel it: the only
+# result anyone acts on is the one for the tip of the branch.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Installs the toolchain named in lean-toolchain, fetches the Mathlib
+      # olean cache, and runs `lake build`. Building Mathlib from source would
+      # take hours, so a cache miss here is a real failure, not a slow success.
+      - name: Build
+        uses: leanprover/lean-action@v1
+
+      # The gate. `lake build` succeeds on a sorry-backed declaration -- it only
+      # warns -- so a green build is not by itself evidence of anything.
+      - name: Axiom audit
+        run: |
+          set -o pipefail
+          lake env lean scripts/Audit.lean | tee audit.txt
+          if grep -q 'sorryAx' audit.txt; then
+            echo "::error::sorryAx reached the audit: a listed declaration is backed by a sorry"
+            exit 1
+          fi
+
+      # Catches a sorry in a declaration that Audit.lean does not list. Re-elaborates
+      # each source file rather than grepping the sources, so the docstring in
+      # Coh/Defs.lean that discusses the word "sorry" does not trip it, and so a
+      # `sorry` reached through a macro is still caught. A plain `lake build` here
+      # would be a no-op (everything is already built) and would emit nothing.
+      - name: No declaration uses sorry
+        run: |
+          : > lint.txt
+          for f in $(git ls-files '*.lean' | grep -v '^scripts/'); do
+            echo "-- $f"
+            lake env lean "$f" 2>&1 | tee -a lint.txt
+          done
+          if grep -q "declaration uses 'sorry'" lint.txt; then
+            echo "::error::a declaration uses sorry"
+            exit 1
+          fi
