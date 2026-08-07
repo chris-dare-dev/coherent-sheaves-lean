@@ -135,3 +135,14 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms isFinitePresentation_tilde
 #print axioms isCoherent_tilde
 #print axioms isCoherent_tilde_of_finite
+-- Layer B stage 1: the geometric half of the affine comparison theorem. The first two
+-- are general sheaf theory; the rest reduce `IsIso fromTildeΓ` to a statement about
+-- localisation of modules. The remaining half -- that quasi-coherence supplies that
+-- statement -- is NOT proved; see CohLean/ForMathlib/AffineComparison.lean.
+#print axioms TopCat.Presheaf.stalkFunctor_map_surjective_of_isBasis
+#print axioms TopCat.Sheaf.isIso_of_isIso_app_of_isBasis
+#print axioms Scheme.Modules.basicOpenRestriction
+#print axioms Scheme.Modules.toOpen_comp_fromTildeΓ_app
+#print axioms Scheme.Modules.isLocalizedModule_basicOpenRestriction_tilde
+#print axioms isIso_fromTildeΓ_app_basicOpen
+#print axioms isIso_fromTildeΓ_of_isLocalizedModule
