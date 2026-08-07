@@ -1,0 +1,31 @@
+# Documentation build. Nested on purpose.
+#
+# `doc-gen4` is not a dependency of CohLean and must not become one: `bridgeland-stab-lean`
+# and `bstab` `require` this package, and a `[[require]]` at the top level would make them
+# fetch and build a documentation generator they will never run. Keeping it here means the
+# ordinary `lake build` -- theirs and ours -- does not pay for it, and it keeps the docs
+# work off `lakefile.toml`, the one file in this repo that parallel sessions share.
+#
+# Build with `lake build CohLean:docs` from this directory; output lands in
+# `.lake/build/doc`. See CONTRIBUTING.md.
+name = "docbuild"
+version = "0.1.0"
+reservoir = false
+
+# Share the parent's package directory rather than cloning Mathlib a second time. CI builds
+# the parent first, so by the time this runs the oleans are already there.
+packagesDir = "../.lake/packages"
+
+# CohLean is required *first* deliberately. Lake resolves each package name once, and this
+# ordering makes the shared transitive dependencies -- Mathlib above all -- resolve to the
+# revisions pinned in the top-level `lake-manifest.json`, not to doc-gen4's.
+[[require]]
+name = "CohLean"
+path = "../"
+
+# Must track `lean-toolchain`. doc-gen4 tags a release per toolchain, and a mismatch here is
+# a build failure, not a degraded doc build. Bump this in the same commit as the toolchain.
+[[require]]
+scope = "leanprover"
+name = "doc-gen4"
+rev = "v4.29.0"

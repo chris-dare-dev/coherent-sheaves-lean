@@ -1,0 +1,2 @@
+# The parent .gitignore anchors `/.lake/` at the repo root, so this package needs its own.
+/.lake/

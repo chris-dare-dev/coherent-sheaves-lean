@@ -66,6 +66,15 @@ Total 18–30 months. Layer A exists so that nothing waits on this.
 `Mathlib/CategoryTheory/ObjectProperty/{Kernels,Extensions,ClosedUnderIsomorphisms}.lean`
 are the right vehicles.
 
+On the affine-local criterion (issue #12): Mathlib has
+`SheafOfModules.QuasicoherentData.bind` and `IsQuasicoherent.of_coversTop`, so local-to-global
+is done — **for quasicoherence only**. There is no finite-presentation analogue, and supplying
+one is a real Mathlib gap rather than an unwrapping exercise. Note also that `M.over U` lives
+on the site `Over U` with topology `J.over U`, so composing restrictions is a site
+equivalence, not a triviality; `bind` handles it with `pushforwardPushforwardEquivalence`.
+The full plan is on the issue. Issue #11 does not depend on any of this and is the better
+first pick for the milestone.
+
 **B2.** Upstream Mathlib gained `AlgebraicGeometry/AlgebraicCycle/Basic.lean` (cycles as
 locally-finite-support functions, proper pushforward) and `OrderOfVanishing.lean` after
 v4.29.0. Neither defines divisors, rational equivalence or Chow groups yet. **Do not
