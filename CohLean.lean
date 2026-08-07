@@ -13,7 +13,10 @@ import CohLean.Numerical.Examples.K3Model
 import CohLean.Numerical.Examples.ProjectivePlaneModel
 import CohLean.ForMathlib.PresentationIsFinite
 import CohLean.ForMathlib.FinitePresentationOfPresentation
+import CohLean.AlgebraicGeometry.Modules.RestrictOver
 import CohLean.Coh.Defs
+import CohLean.Coh.ClosedUnderIso
+import CohLean.Coh.Local
 
 /-!
 # CohLean
