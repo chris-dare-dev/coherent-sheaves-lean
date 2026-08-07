@@ -148,6 +148,26 @@ keeps to it.
   `scripts/Audit.lean`. These two files are append-only in practice, so concurrent
   additions merge cleanly; adding at the end of the relevant section keeps it that way.
 
+### Stage by path, never `-a` or `-A`
+
+Parallel sessions usually share one clone, so the working tree is not yours alone. `git
+add -A`, `git add .` and `git commit -a` stage whatever another session happens to have
+half-written, and it lands under your commit message.
+
+```bash
+git add CohLean/Numerical/YourFile.lean CohLean.lean scripts/Audit.lean
+git commit -m "..."
+```
+
+Run `git status` first and expect to recognise every path you stage. Anything you do not
+recognise belongs to someone else — leave it. This has already happened once: `5317c4b`
+carries `CONTRIBUTING.md` and the whole of `docbuild/` under a message about the
+affine-local criterion.
+
+The same goes for pushing. `git push` sends every commit on the branch, including another
+session's, so a push is a decision about their work as much as yours — check `git log
+origin/main..HEAD` before you make it.
+
 ## Before you push
 
 1. `lake build` — clean.
