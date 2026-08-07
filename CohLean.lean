@@ -6,6 +6,8 @@ import CohLean.Numerical.Defs
 import CohLean.Numerical.OfGradedBasis
 import CohLean.Numerical.RiemannRoch
 import CohLean.Numerical.Surface
+import CohLean.Numerical.Threefold
+import CohLean.Numerical.Fourfold
 import CohLean.Numerical.K3
 import CohLean.Numerical.Examples.Point
 import CohLean.Numerical.Examples.RankOneSurface
