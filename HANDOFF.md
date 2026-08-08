@@ -1,8 +1,14 @@
 # Handoff
 
-Written 2026-08-07, at commit `17937fd`. For a session picking this repo up cold.
+Written 2026-08-08, at commit `33bafa8`. For a session picking this repo up cold.
 
 Read §1 and §7. Everything else is reference.
+
+> Revised 2026-08-08. The previous revision described issue #11 as the live work and Layer A
+> as finished at A6; both have moved. **Several sessions work this clone concurrently** — the
+> log below interleaves at least three — so treat any "current" claim here as a snapshot and
+> check `git log origin/main` before trusting it. §12 is new and is about the machine, not
+> the mathematics; read it before your first commit.
 
 ---
 
@@ -20,11 +26,20 @@ lake env lean scripts/Audit.lean
 The audit must print `[propext, Classical.choice, Quot.sound]` on every line and never
 `sorryAx`. There is no `sorry` in this library and there never has been.
 
-**State:** 19 commits, 14 Lean files, ~1600 lines. CI and Docs both green. Docs live at
-<https://chris-dare-dev.github.io/coherent-sheaves-lean/>. 44 issues, 6 closed.
+**State:** 32 commits, 25 Lean files, ~3975 lines, 100 audited declarations. CI green on
+`main`. Docs live at <https://chris-dare-dev.github.io/coherent-sheaves-lean/>. 49 issues,
+15 closed.
 
-**Layer A is done.** **Layer B is 2 lemmas past its definitions.** The live piece of work is
-issue #11, §7 below.
+**Layer A is done through A8a** — the general RR expansion, the `n = 2/3/4` specialisations,
+the K3 and Calabi–Yau-threefold cases, and the Euler pairing `χ(E,F)`. Only A8b (the numerical
+lattice, #17) remains.
+
+**Layer B is well past its definitions.** B1 has the affine-local criterion, closure under
+isomorphism, the slice-equivalence transport, and the affine comparison reduced to
+localisation of modules; B3 has an opening result. `Coh X` is still **not** abelian and `χ`
+does not exist yet — B3 remains the gate.
+
+The live work is §7.
 
 ---
 
@@ -72,8 +87,31 @@ If you find yourself about to build a Chow ring, stop and re-read this.
 | `Numerical/Defs.lean` | `NumericalRing n A`, `NumericalVariety n A N` |
 | `Numerical/RiemannRoch.lean` | `degree_ch_mul_todd` — the RR expansion, proved once **for all `n`** |
 | `Numerical/Surface.lean` | `chi_eq` at `n = 2`, *derived* from the above; `discriminant`; `degree_discriminant` |
+| `Numerical/Threefold.lean` | `chi_eq` at `n = 3`; `CalabiYauThreefold.IsCalabiYau` (`td₁ = 0`, `∫td₃ = 0`) and its two-term `chi_eq` |
+| `Numerical/Fourfold.lean` | `chi_eq` at `n = 4` |
 | `Numerical/K3.lean` | `IsK3` (asserts only `td₁ = 0` and `∫td₂ = 2`), `chi_eq`, Mukai self-pairing, `⟨v,v⟩ = ∫Δ − 2r²` |
+| `Numerical/Dual.lean` | `NumericalRingWithDual` — the `(-1)ⁱ` involution, as a **mixin** over `NumericalRing`; `chDual`, `ch_add` |
+| `Numerical/EulerPairing.lean` | `chi₂ E F = ∫ch(E)^∨·ch(F)·td(X)`, its general expansion, the `n = 2` case, and `K3.chi₂ = −⟨v,v⟩` |
 | `Numerical/OfGradedBasis.lean` | `NumericalRing.ofGradedBasis` — builds the graded ring from a basis, discharging the internality obligation once |
+
+`Surface.lean`, `Threefold.lean` and `Fourfold.lean` are the same proof with
+`Finset.sum_range_succ` fired one and two more times. Nothing in `RiemannRoch.lean` changed to
+admit them — that is the evidence `degree_ch_mul_todd` is dimension-general rather than a
+surface theorem with a variable in it.
+
+Two things about the Euler pairing that are easy to get wrong:
+
+* **`chi₂` needs no `NumericalRingWithDual` instance.** `chDual` is the explicit alternating
+  sum `Σᵢ (-1)ⁱchᵢ(E)`, which the grading alone supplies, so the pairing and every consequence
+  work on any `NumericalVariety`. The involution appears in exactly one lemma,
+  `chi₂_eq_degree_dual_ch`, which is what earns `chDual` its name. There is still **no
+  instance** of the mixin in the repo, so that one bridge lemma is conditional; the sign
+  convention is pinned independently by `K3.chi₂_eq_neg_mukaiPairing`.
+* **`chi₂` is not symmetric**, and issue #6 asked for symmetry in even dimension.
+  `Surface.chi₂_sub_chi₂_swap` measures the failure: `χ(E,F) − χ(F,E) = 2(r_E∫c₁(F)td₁ −
+  r_F∫c₁(E)td₁)`, nonzero on `ℙ²`. Symmetry holds exactly when `td₁ = 0`. The general
+  `χ(E,F) = (-1)ⁿχ(F,E)` is Serre duality — a B5 theorem about `Ext`, not an identity between
+  these integrals. The correction is recorded on the issue.
 
 Three models, so nothing is vacuous:
 
@@ -87,21 +125,36 @@ Three models, so nothing is vacuous:
 surface has the same ring `ℚ[t]/(t³)` up to the single number `∫H²`. A new rank-one model costs
 a Todd class and nothing else.
 
-### Layer B — definitions plus two upstream-bound lemmas
+### Layer B — locality, the slice equivalence, and the affine comparison half-proved
+
+> Everything in this subsection except `Coh/Defs.lean` and the two original `ForMathlib` files
+> was written by **other sessions**. What follows is read off commit subjects, file names and
+> `scripts/Audit.lean`; the internals were not re-derived here. Read the module docstrings
+> before building on any of it.
 
 | File | Content |
 |---|---|
 | `Coh/Defs.lean` | `IsCoherent` (= finite presentation; correct on locally noetherian schemes, documented as strictly stronger elsewhere), the `coherent` `ObjectProperty`, `Coh X`, the inclusion `ι` |
+| `Coh/ClosedUnderIso.lean` | `Coh X` closed under isomorphism |
+| `Coh/Local.lean` | the affine-local criterion: `isCoherent_iff_of_affineOpenCover`, and the `Over`-free `isCoherent_iff_restrict_affineOpenCover` |
+| `Coh/Affine.lean` | `isFinitePresentation_tilde`, `isCoherent_tilde`, `isCoherent_tilde_of_finite` — the forward half of the affine comparison (closes the old §7) |
+| `AlgebraicGeometry/Modules/RestrictOver.lean` | the slice-vs-scheme restriction equivalence; finite presentation invariant in **both** directions |
 | `ForMathlib/PresentationIsFinite.lean` | `Presentation.isFinite_of_isIso`, `Presentation.isFinite_map` |
 | `ForMathlib/FinitePresentationOfPresentation.lean` | `Presentation.isFinitePresentation_quasicoherentData`, `IsFinitePresentation.of_presentation` |
+| `ForMathlib/OpensLimits.lean` | limit/product instances on the opens site |
+| `ForMathlib/AffineComparison.lean` | reduces `IsIso fromTildeΓ` to a statement about localisation of modules, and makes it an `iff` |
+| `Cohomology/Strategy.lean` | B3's opening result — vanishing, **not** finite-dimensionality (see below) |
 
-The two `ForMathlib` files fill a real Mathlib gap: Mathlib has `IsQuasicoherent.of_coversTop`
-but **no finite-presentation analogue**, because nothing said that transporting a presentation
-preserves `Presentation.IsFinite`. Both files are in Mathlib namespaces so upstreaming is a
-file move.
+The two original `ForMathlib` files fill a real Mathlib gap: Mathlib has
+`IsQuasicoherent.of_coversTop` but **no finite-presentation analogue**, because nothing said
+that transporting a presentation preserves `Presentation.IsFinite`. Both files are in Mathlib
+namespaces so upstreaming is a file move.
 
-**Not proved:** `Coh X` closed under kernels/cokernels/extensions, `Coh X` abelian, the affine
-comparison, and everything in B2–B5.
+**Still not proved:** `Coh X` closed under kernels/cokernels/extensions; `Coh X` abelian; the
+quasi-coherent half of the affine comparison (the remaining `iff` side); `χ` and every
+finiteness statement; all of B2, B4, B5. Commit `33bafa8` is worth reading before touching
+B3 — its subject is *"B3 proves vanishing, not finite-dimensionality"*, i.e. someone already
+had to correct an over-claim in exactly this area.
 
 ---
 
@@ -140,87 +193,54 @@ what its failed retry ruled out. That is why the next attempt was cheap.
 
 ## 6. Where the work is
 
-7 milestones, 38 open issues. Every issue names the exact file it creates, so `ready` issues can
+7 milestones, 34 open issues. Every issue names the exact file it creates, so `ready` issues can
 be worked simultaneously without merge conflicts. `lakefile.toml` is the one genuinely shared
-file.
+file — in practice `CohLean.lean`, `scripts/Audit.lean`, `ROADMAP.md` and `README.md` are
+shared too, and they are where every merge conflict this project has had actually happened.
 
 | Milestone | Open | Gist |
 |---|---|---|
-| A7 | 2 | Threefold (`n = 3`) and fourfold (`n = 4`) RR — both pure specialisations of `degree_ch_mul_todd`, both startable now |
-| A8 | 2 | Dual involution, Euler pairing `χ(E,F)`, numerical lattice |
-| B1 | 9 | `Coh X` abelian; the affine comparison |
+| A7 | 0 | **done** — threefold and fourfold RR |
+| A8 | 1 | Euler pairing **done**; the numerical lattice (#17) remains |
+| B1 | 6 | `Coh X` abelian; the remaining half of the affine comparison |
 | B2 | 6 | Divisors, `Pic X`, `O_X(D)` |
-| B3 | 8 | Cohomology and `χ` — **the real gate** |
+| B3 | 9 | Cohomology and `χ` — **still the real gate** |
 | B4 | 5 | Snapper polynomials → intersection numbers |
 | B5 | 7 | Serre duality → RR for surfaces → discharge `hirzebruch_riemannRoch` |
 
-**Startable today** (`ready`): #4, #5 (threefold/fourfold RR — genuinely easy, good warm-up),
-#6 (Euler pairing), #11 (see §7), #13, #21, #26, #27, #33.
+**Startable today** (`ready`): #59, #33, #27, #21, #13, #9. (#56 closed with `c349741`.)
 
-**#4 or #5 is the right first task for a fresh session.** They are short, they are pure Layer A,
-they need none of the plumbing that has been eating time, and they exercise the claim that
-`degree_ch_mul_todd` really is dimension-general.
-
----
-
-## 7. In flight: #11, the tilde step
-
-This is where the last session stopped, and the state of knowledge matters more than the code.
-
-### The goal
-
-`M~` is coherent when `M` is a finitely presented `R`-module — the affine half of
-`Coh (Spec R) ≌ finitely generated R-modules`.
-
-### It is not a theorem to prove. It is a call to make.
-
-Mathlib already does the mathematics:
-
-* `AlgebraicGeometry.presentationTilde` (`Mathlib/AlgebraicGeometry/Modules/Tilde.lean`) builds
-  a global `SheafOfModules.Presentation (tilde M)` from a generating set `s` for `M` and a
-  generating set `t` for the kernel of `R^s → M`. Mathlib uses it to prove
-  `(tilde M).IsQuasicoherent`.
-* `Module.FinitePresentation.out` is
-  `∃ s : Finset M, span R s = ⊤ ∧ (ker (Finsupp.linearCombination R ((↑) : s → M))).FG`
-  — exactly that input.
-* `IsFinitePresentation.of_presentation`, in this repo, converts a finite presentation into
-  `IsFinitePresentation`.
-
-So the proof is: unpack `out`, feed `presentationTilde`, observe that its index types **are**
-`t` and `s`, apply `of_presentation`.
-
-Earlier plans that routed through `Module.FinitePresentation.exists_fin` and
-`presentationOfIsCokernelFree` by hand are **wrong** — that work is already written. Ignore
-those comments on the issue; the later ones supersede them.
-
-### What stopped it — both plumbing, neither mathematics
-
-**1. Universe defaulting.** `Presentation.IsFinite` and `of_presentation` carry universe
-parameters that a goal phrased as `Scheme.Modules.IsCoherent …` does not pin. Lean defaults them
-to `0` and reports
-
-```
-has type  Presentation.{u, u, u} (tilde Mod)
-expected  Presentation.{0, 0, 0} ?m
-```
-
-`(M := tilde Mod)` does **not** help — the universes bind before `M`.
-`Presentation.IsFinite.{u, u, u}` fixes that occurrence; after it, the site `J` inside the
-ambient `WEqualsLocallyBijective` instance is still a metavariable. I did not get past that.
-
-**2. `Finset` vs `Set`.** `out` yields `s : Finset M`; `presentationTilde` wants `s : Set M` and
-`t : Set (↥s →₀ R)`. The subtypes are defeq but not syntactically equal, and the coercion has to
-be threaded through `t`'s type too.
-
-### How to actually do it
-
-**In an editor, with the goal state visible.** Not through build logs. Every failure here is an
-elaboration-order problem whose error message names something other than the cause. Eighteen
-build iterations went into this across two sittings and did not converge; reading the goal
-interactively is worth more than any amount of reasoning from error text. See §9.
+There is no longer an easy pure-Layer-A warm-up: A7 and A8a took them. A fresh session should
+expect to land in Layer B, where the cost is Mathlib plumbing rather than mathematics — read
+§8 first, it is most of what that costs.
 
 ---
 
+## 7. In flight
+
+**§7 in the previous revision was issue #11, the tilde step. That is done** — `Coh/Affine.lean`
+(commit `a0918bd`) carries `isFinitePresentation_tilde` / `isCoherent_tilde`. The plumbing
+described there (universe defaulting, `Finset` vs `Set`) was real and the fixes are preserved
+in §8; the task itself is not open. The issue is still open only because it also asks for the
+full equivalence `Coh (Spec R) ≌ finitely generated R-modules`, of which this is the forward
+half.
+
+Nothing is half-written in the tree as of `33bafa8`. The two live fronts are:
+
+**The affine comparison, remaining half (toward #46).** `ForMathlib/AffineComparison.lean`
+reduces `IsIso fromTildeΓ` to a statement about localisation of modules and makes it an `iff`;
+what is left is exactly the quasi-coherent case of the right-hand side. Read that file's
+module docstring — it names what remains precisely.
+
+**B3, and it is still the gate.** `Cohomology/Strategy.lean` exists but commit `33bafa8` is
+titled *"B3 proves vanishing, not finite-dimensionality"* — a correction to an earlier
+over-claim. Everything downstream (`χ`, Snapper, RR) waits on genuine finiteness. #13
+(affine Čech vanishing) and #27 (compare Čech with derived sheaf cohomology) are the two
+`ready` issues that decide the route; #26 was closed by `33bafa8`.
+
+PR #58 ("The forgetful functor to abelian sheaves is exact", closed #56) landed as
+`c349741` while this revision was being written — a fair illustration of how fast `main` moves
+here. There are no open PRs as of `411a599`.
 ## 8. Gotchas — the expensive part of this repo's history
 
 Each of these cost real time. None is recoverable from reading the code.
@@ -278,6 +298,35 @@ pattern-matching `def`, an explicit `rfl` is often needed.
   reachable. Do not restrict to injective weights.
 * `simp` is the wrong tool near `PowerBasis`: `coe_basis` fires first and rewrites `basis i` to
   `gen ^ i`, after which `Basis.repr_self` no longer matches. Rewrite by hand.
+* **`→ₐ[ℚ]` needs `Mathlib.Algebra.Algebra.Hom`.** `Numerical/Defs.lean` imports
+  `Mathlib.Algebra.Algebra.Rat`, which does not carry the notation. The error is
+  `expected token` pointing at the arrow, and every field of the class then reports as an
+  unknown identifier — four cascading errors from one missing import.
+
+### The A7/A8 additions cost these four (2026-08-08)
+
+* **`norm_num` destroys `algebraMap`.** Expanding `chi₂` at `n = 2` needs
+  `degree (algebraMap ℚ A q * x * y) = q * degree (x * y)`. `norm_num` rewrites
+  `algebraMap ℚ A ↑(rank E)` into a plain cast, after which no `degree_algebraMap_*` lemma
+  matches and `ring` cannot finish. Use `simp only` with an explicit lemma list. The same
+  caution applies anywhere `algebraMap` meets a numeric tactic.
+* **`simp only` will not reduce `n - i - j` for you at the point you need it.** In the same
+  proof the Todd index stayed `2 - 0 - 2` while `toddComp_zero` was in the simp set, so the
+  rewrite silently did nothing and the lemma reported as unused. Reduce the indices first with
+  the repo's existing idiom, `show (2 : ℕ) - 0 - 2 = 0 from rfl` — the same one `Surface.chi_eq`
+  uses. A "this simp argument is unused" warning next to a term that visibly matches means the
+  term is not yet in the shape you think it is.
+* **Prefer a truncated `Finset.range` to a summand guarded by `if`.** `chi₂_eq_sum` was first
+  written as `∑ i ∈ range (n+1), ∑ j ∈ range (n+1), if i + j ≤ n then … else 0`. Specialising it
+  then required reducing nine `if`s, and `rw [if_pos …]` only rewrites the occurrences sharing
+  one instantiation, so they came out piecemeal. Restating the inner sum over `range (n + 1 - i)`
+  removed the `if` entirely and made the `n = 2` case pure `Finset.sum_range_succ`. Widening the
+  range back for the proof is one `Finset.sum_subset`.
+* **`omega` is not always the cheapest route to a `Finset.range` subset.** `Finset.range_subset`
+  resolved to something whose `.mpr` wanted `∀ x < m, x ∈ range n`, not `m ≤ n`, and a `by omega`
+  in that position failed with a counterexample naming `n + 1 - i` as an opaque atom. An explicit
+  `fun x hx => Finset.mem_range.mpr (lt_of_lt_of_le (Finset.mem_range.mp hx) (Nat.sub_le _ _))`
+  is shorter than diagnosing it.
 
 ### Modelling
 
@@ -325,17 +374,25 @@ present, the error is about *when* Lean looked, not *what* it found.
 
 ## 10. Suggested order
 
-1. **#4 / #5** (threefold and fourfold RR). Short, pure Layer A, no plumbing. Good calibration
-   for a fresh session and they validate the dimension-general claim.
-2. **#11** (§7), in an editor. Small once the goal state is visible.
-3. **#6** (Euler pairing) — this is what Bridgeland stability conditions are actually defined
-   against, so it is the highest-value Layer A item remaining. Must **not** add fields to
-   `NumericalRing`/`NumericalVariety`; extend by a new class or every model breaks.
-4. **#21** (toolchain bump and divisor API audit) before any B2 work. Upstream Mathlib gained
+1. **#13 and #27** (B3 research: affine Čech vanishing, and comparing Čech with derived sheaf
+   cohomology). B3 is the gate and everything after it waits. #26 is already closed, and
+   `33bafa8` shows the honest state — vanishing is proved, finite-dimensionality is not. Decide
+   the route before writing more cohomology.
+2. **#59** (bridge `Scheme.Modules` to `SheafOfModules` for instance search) is the cheapest
+   remaining B1 item and unblocks the others in that milestone.
+3. **#21** (toolchain bump and divisor API audit) before any B2 work. Upstream Mathlib gained
    `AlgebraicGeometry/AlgebraicCycle/` and `OrderOfVanishing.lean` after v4.29.0 — build on
-   those rather than duplicating them.
-5. **B3** is the real gate and everything after it waits. #26 and #27 are the research issues
-   that decide the route; do them before writing any cohomology.
+   those rather than duplicating them. Note the bump also forces bumps in
+   `bridgeland-stab-lean` and `bstab`.
+4. **#17** (numerical lattice) if you want a pure Layer A task. It closes A8 and is what
+   `chi₂`'s radical needs; it has to fix a `ℤ`- versus `ℚ`-structure on `N` first, which is
+   the decision the Euler-pairing work deliberately left open.
+
+A **rank-one model for a Calabi–Yau threefold** is not an issue yet but is the highest-value
+small task in Layer A: `ℚ[t]/(t⁴)` with `∫t³ = d` via `NumericalRing.ofGradedBasis`, exactly
+as `Examples/RankOneSurface.lean` does it. It would make `CalabiYauThreefold.IsCalabiYau`
+non-vacuous, and a `NumericalRingWithDual` instance (`H ↦ −H`, valid since `(−H)⁴ = 0`) falls
+out of the same file — which is the one thing keeping `chi₂_eq_degree_dual_ch` conditional.
 
 ## 11. Related repos
 
@@ -347,3 +404,50 @@ Same machine, `Source Code/`:
 * `stability-mflds` — Python, exact arithmetic: DLP curve, Bogomolov–Gieseker, Bridgeland walls,
   **K3 Mukai lattice**. Useful as an oracle: `mukai.py` computes the same pairing that
   `Numerical/K3.lean` states, so numeric cross-checks are cheap and worth adding to new models.
+
+---
+
+## 12. The machine, not the mathematics
+
+This clone lives inside an Obsidian vault, and the vault's tooling writes to it. None of the
+following is about Lean, and all of it will confuse you if you meet it cold.
+
+**`README.md`, `CLAUDE.md`, `HANDOFF.md`, `plans/**` and `docs/**` carry YAML frontmatter in
+the working tree that git does not store.** A machine-global `obsidian-strip` clean filter
+(`~/.config/git/attributes` + `filter.obsidian-strip.*` in global config) removes it on the way
+into a blob. This is deliberate: Obsidian needs the metadata, git should not carry it.
+
+* **Never hand-strip it and never commit it.** If you see `project:` / `type:` /
+  `authorship:` at the top of a tracked doc, that is the intended working-tree state.
+* **`git status` can report ` M` on those files while `git diff` shows nothing.** `git diff` is
+  the truth — it runs the filter. A stale entry is cleared with `git add --renormalize -- <paths>`,
+  scoped to the files in question, never `.` (a bare renormalize will stage any real edit
+  another session has in flight).
+* **A tracked blob must never contain that frontmatter.** As of 2026-08-08 none in this repo
+  does. If one ever does again, the fix is to normalise the *blob* and leave the worktree
+  alone: `git cat-file -p HEAD:<f> | python ~/.config/git/strip-obsidian-frontmatter.py |
+  git hash-object -w --stdin`, then `git update-index --cacheinfo <mode>,<sha>,<f>`. Do **not**
+  `git add --renormalize` the file, which would also stage whatever else is uncommitted in it.
+
+**Worktrees are the right way to work here, and they are now safe.** The shared clone is used
+by several sessions at once and its `HEAD` moves without warning — during one session it changed
+branch three times mid-task. Prefer:
+
+```bash
+git worktree add ../coherent-sheaves-lean-<topic>-worktree -b agent/<topic> main
+```
+
+Junction `.lake/packages` from the main clone into the new worktree (Windows:
+`New-Item -ItemType Junction`) and `lake build` reuses the Mathlib oleans instead of re-cloning
+~2 GB. Keep `.lake/build` per-worktree so two sessions cannot clobber each other's artifacts.
+
+Until 2026-08-08 the vault indexer treated each sibling worktree as its own *project*, stamping
+`project: coherent-sheaves-lean-a7-worktree` and minting a bogus hub note. That is fixed
+(`<vault>/.obsidian/vault_paths.py` detects a linked worktree structurally), so worktrees are no
+longer indexed at all. If you see a worktree-named project reappear in the vault, that fix
+regressed.
+
+**Merge conflicts here are always in the same four files** — `CohLean.lean`,
+`scripts/Audit.lean`, `ROADMAP.md`, `README.md`. Keep your hunks small and localised in them and
+`git rebase origin/main` stays a two-minute job. Everything else in the repo is per-issue by
+design.
