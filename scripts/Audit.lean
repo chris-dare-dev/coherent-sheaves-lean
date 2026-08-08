@@ -166,6 +166,19 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms SheafOfModules.preservesEpimorphisms_toSheaf
 #print axioms SheafOfModules.shortExact_map_toSheaf
 
+-- Layer B stage 3: the same results reached from the `X.Modules` wrapper, which instance
+-- search does not see through on its own. `Scheme.Modules.toSheaf` is the retyped functor
+-- downstream work should use; the two transfer instances cover the goals that still arrive
+-- on the wrong side.
+#print axioms Scheme.Modules.epi_sheafOfModules
+#print axioms Scheme.Modules.mono_sheafOfModules
+#print axioms Scheme.Modules.toSheaf
+#print axioms Scheme.Modules.additive_toSheaf
+#print axioms Scheme.Modules.preservesFiniteLimits_toSheaf
+#print axioms Scheme.Modules.preservesFiniteColimits_toSheaf
+#print axioms Scheme.Modules.preservesEpimorphisms_toSheaf
+#print axioms Scheme.Modules.shortExact_map_toSheaf
+
 -- Layer B stage 3: `CohLean/Cohomology/Strategy.lean` contributes nothing here on
 -- purpose. It is the compile-only API map for the B3 route decision and declares only
 -- `example`s, which are anonymous and cannot be audited. Its guarantee is that it builds:

@@ -21,6 +21,7 @@ import CohLean.ForMathlib.OpensLimits
 import CohLean.ForMathlib.AffineComparison
 import CohLean.ForMathlib.ToSheafExact
 import CohLean.AlgebraicGeometry.Modules.RestrictOver
+import CohLean.AlgebraicGeometry.Modules.ModulesEquiv
 import CohLean.Coh.Defs
 import CohLean.Coh.ClosedUnderIso
 import CohLean.Coh.Local
