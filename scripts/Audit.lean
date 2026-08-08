@@ -123,3 +123,6 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms Scheme.Modules.IsCoherent.of_affineOpenCover
 #print axioms Scheme.Modules.isCoherent_iff_of_affineOpenCover
 #print axioms Scheme.Modules.IsCoherent.restrict_affineOpenCover
+
+-- Layer B stage 1: the scheme-level affine-local criterion, stated without `Over`.
+#print axioms Scheme.Modules.isCoherent_iff_restrict_affineOpenCover
