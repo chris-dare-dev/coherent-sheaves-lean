@@ -12,8 +12,10 @@ by `~`: the counit `Scheme.Modules.fromTildeΓ` should be an isomorphism. This i
 [01I8](https://stacks.math.columbia.edu/tag/01I8) / Hartshorne II.5.5, and it is missing from
 Mathlib at `v4.29.0`.
 
-This file supplies the **geometric half** of it, reducing the theorem to a statement about
-localisation of modules, and stops there. See "Not proved here" below.
+This file reduces that theorem to a statement about localisation of modules, and proves the
+reduction is *exact*: the counit is an isomorphism **if and only if** restriction to every
+basic open is a localisation. What is left of the comparison theorem is therefore precisely
+one implication — that quasi-coherence supplies that condition. See "Not proved here".
 
 ## Main results
 
@@ -30,6 +32,11 @@ localisation of modules, and stops there. See "Not proved here" below.
 * `AlgebraicGeometry.Scheme.Modules.isLocalizedModule_basicOpenRestriction_tilde` — the base
   case, `M = N^~`, where that hypothesis holds. It is both the starting point of the general
   argument and the check that the hypothesis is satisfiable rather than vacuous.
+* `AlgebraicGeometry.Scheme.Modules.isLocalizedModule_basicOpenRestriction_of_isIso` — the
+  converse of the reduction, obtained by transporting the base case along the counit.
+* `AlgebraicGeometry.Scheme.Modules.isIso_fromTildeΓ_iff_isLocalizedModule` — the two put
+  together: **`IsIso M.fromTildeΓ ↔ ∀ f, IsLocalizedModule (powers f) (restriction to D(f))`.**
+  This is the statement to quote.
 
 ## Why this is the right reduction
 
@@ -48,18 +55,25 @@ the whole content of the comparison theorem is concentrated in the single hypoth
 
 ## Not proved here
 
-That hypothesis is **not discharged for quasi-coherent sheaves**, which is the mathematical
-content of the comparison theorem and is *absent from this library* — not assumed, not
-`sorry`ed, simply not done. Nothing downstream may assume it.
+Exactly one implication is missing, and it is the mathematical content of the comparison
+theorem. It is *absent from this library* — not assumed, not `sorry`ed, simply not done, and
+nothing downstream may assume it:
 
-What is missing is: for `M` quasi-coherent on `Spec R` and `f : R`, that
-`Γ(M, ⊤) → Γ(M, D(f))` exhibits its target as the localisation at `Submonoid.powers f`. The
-classical proof covers `D(f)` by finitely many basic opens on which `M` is a cokernel of free
-sheaves, hence a tilde, and glues with the sheaf axiom; in Lean the step that identifies
-sheaves on `D(g)` with `R_g`-modules is the one that wants the open-immersion/slice machinery
-being developed in issue #18 and PR #16 (`opensRangeEquivalence`, `restrictFunctorIsoOver`).
+> for `M` **quasi-coherent** on `Spec R` and `f : R`, the restriction `Γ(M, ⊤) → Γ(M, D(f))`
+> exhibits its target as the localisation at `Submonoid.powers f`
 
-Tracked as issue #46, whose remaining deliverables are that statement and the two finiteness
+equivalently, by `isIso_fromTildeΓ_iff_isLocalizedModule`, that a quasi-coherent sheaf on an
+affine scheme lies in the essential image of `~`.
+
+Because that characterisation is an `↔`, the boundary is sharp: everything on the geometric
+side is done, and no further reduction will help. The remaining work is the classical covering
+argument — cover `D(f)` by finitely many basic opens on which `M` is a cokernel of free
+sheaves, hence a tilde, and glue with the sheaf axiom. The step identifying sheaves on `D(g)`
+with `R_g`-modules is served by `CohLean/AlgebraicGeometry/Modules/RestrictOver.lean`
+(`opensRangeEquivalence`, `restrictFunctorIsoOver`, and the two-way transport
+`isFinitePresentation_over_iff_restrict`), all of which are now on `main`.
+
+Tracked as issue #46, whose remaining deliverables are that implication and the two finiteness
 corollaries that issue #11 consumes.
 
 ## References
@@ -226,5 +240,57 @@ theorem isIso_fromTildeΓ_of_isLocalizedModule (M : (Spec R).Modules)
   rintro U ⟨f, rfl⟩
   haveI := h f
   exact isIso_fromTildeΓ_app_basicOpen M f
+
+/-- `basicOpenRestriction` is a presheaf restriction map, so it is natural in `M`. -/
+lemma Scheme.Modules.basicOpenRestriction_naturality {M N : (Spec R).Modules} (φ : M ⟶ N)
+    (f : R) :
+    M.basicOpenRestriction f ≫
+        (modulesSpecToSheaf.map φ).hom.app (op (PrimeSpectrum.basicOpen f)) =
+      (modulesSpecToSheaf.map φ).hom.app (op ⊤) ≫ N.basicOpenRestriction f :=
+  (modulesSpecToSheaf.map φ).hom.naturality _
+
+/-- **The converse of `isIso_fromTildeΓ_of_isLocalizedModule`.**
+
+If `M` is in the essential image of `~` — equivalently, if its counit is an isomorphism — then
+restriction to each basic open is a localisation, by transporting
+`isLocalizedModule_basicOpenRestriction_tilde` across that isomorphism. -/
+theorem Scheme.Modules.isLocalizedModule_basicOpenRestriction_of_isIso (M : (Spec R).Modules)
+    [IsIso M.fromTildeΓ] (f : R) :
+    IsLocalizedModule (Submonoid.powers f) (M.basicOpenRestriction f).hom := by
+  set N := (modulesSpecToSheaf.obj M).presheaf.obj (op ⊤) with hN
+  -- `modulesSpecToSheaf` sends the counit to an isomorphism of sheaves; `sheafToPresheaf`
+  -- carries that to the underlying natural transformation, and `NatIso.isIso_app_of_isIso`
+  -- then makes every component invertible.
+  haveI : IsIso (modulesSpecToSheaf.map M.fromTildeΓ) := inferInstance
+  haveI : IsIso (modulesSpecToSheaf.map M.fromTildeΓ).hom := by
+    change IsIso ((sheafToPresheaf _ _).map (modulesSpecToSheaf.map M.fromTildeΓ))
+    infer_instance
+  -- the naturality square, with both verticals invertible
+  have key := Scheme.Modules.basicOpenRestriction_naturality (M := tilde N) (N := M)
+    M.fromTildeΓ f
+  let eTop := (asIso ((modulesSpecToSheaf.map M.fromTildeΓ).hom.app (op ⊤))).toLinearEquiv
+  let eBas := (asIso ((modulesSpecToSheaf.map M.fromTildeΓ).hom.app
+    (op (PrimeSpectrum.basicOpen f)))).toLinearEquiv
+  -- restriction on `tilde N` is a localisation; push it across the two isomorphisms
+  haveI h1 := IsLocalizedModule.of_linearEquiv (Submonoid.powers f)
+    ((tilde N).basicOpenRestriction f).hom eBas
+  haveI h2 := IsLocalizedModule.of_linearEquiv_right (Submonoid.powers f)
+    (eBas.toLinearMap ∘ₗ ((tilde N).basicOpenRestriction f).hom) eTop.symm
+  convert h2 using 1
+  apply LinearMap.ext
+  intro x
+  obtain ⟨y, rfl⟩ := eTop.surjective x
+  have hy := congrArg (fun g => ModuleCat.Hom.hom g y) key
+  simpa [eTop, eBas] using hy.symm
+
+/-- **The affine comparison, as a characterisation.**
+
+The counit is an isomorphism exactly when restriction to every basic open is a localisation.
+Both directions are now available, so this is the statement to quote. -/
+theorem Scheme.Modules.isIso_fromTildeΓ_iff_isLocalizedModule (M : (Spec R).Modules) :
+    IsIso M.fromTildeΓ ↔
+      ∀ f : R, IsLocalizedModule (Submonoid.powers f) (M.basicOpenRestriction f).hom :=
+  ⟨fun _ f => M.isLocalizedModule_basicOpenRestriction_of_isIso f,
+    isIso_fromTildeΓ_of_isLocalizedModule M⟩
 
 end AlgebraicGeometry
