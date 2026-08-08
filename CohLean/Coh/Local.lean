@@ -3,6 +3,7 @@ Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 -/
 import CohLean.Coh.ClosedUnderIso
+import CohLean.ForMathlib.OpensLimits
 import CohLean.AlgebraicGeometry.Modules.RestrictOver
 import Mathlib.AlgebraicGeometry.Cover.Open
 import Mathlib.CategoryTheory.Limits.Constructions.Over.Products
@@ -180,22 +181,6 @@ namespace AlgebraicGeometry.Scheme
 
 variable {X : Scheme.{u}} (M : X.Modules)
   (𝒰 : AlgebraicGeometry.Scheme.AffineOpenCover.{v, u} X)
-
-local instance : OrderTop (TopologicalSpace.Opens X) :=
-  (@CompleteLattice.toBoundedOrder _
-    (inferInstance : CompleteLattice (TopologicalSpace.Opens X))).toOrderTop
-
-local instance : SemilatticeInf (TopologicalSpace.Opens X) :=
-  (@CompleteLattice.toLattice _
-    (inferInstance : CompleteLattice (TopologicalSpace.Opens X))).toSemilatticeInf
-
-local instance : HasBinaryProducts (TopologicalSpace.Opens X) :=
-  @CategoryTheory.Limits.CompleteLattice.instHasBinaryProductsOfOrderTop _ inferInstance
-    inferInstance
-
-local instance : HasFiniteLimits (TopologicalSpace.Opens X) :=
-  @CategoryTheory.Limits.CompleteLattice.hasFiniteLimits_of_semilatticeInf_orderTop _
-    inferInstance inferInstance
 
 /-- A coherent module restricts to a finitely presented module along an open immersion. -/
 theorem Modules.IsCoherent.restrict_of_isOpenImmersion {Y : Scheme.{u}}

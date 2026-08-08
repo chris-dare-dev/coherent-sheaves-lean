@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 -/
 import CohLean.Coh.Defs
 import CohLean.ForMathlib.FinitePresentationOfPresentation
-import CohLean.ForMathlib.OpensBinaryProducts
+import CohLean.ForMathlib.OpensLimits
 import Mathlib.AlgebraicGeometry.Modules.Tilde
 import Mathlib.Algebra.Module.FinitePresentation
 
