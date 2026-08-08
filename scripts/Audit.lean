@@ -110,6 +110,15 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms Scheme.Hom.opensRangeModulesEquivalence
 #print axioms Scheme.Hom.restrictFunctorIsoOver
 #print axioms Scheme.Hom.isFinitePresentation_restrict
+
+-- Layer B stage 1: the reverse transport, making finite presentation invariant under the
+-- open-immersion/slice equivalence rather than merely carried one way.
+#print axioms Scheme.Hom.presentationOverOfEq
+#print axioms Scheme.Hom.presentationOverOfEq_isFinite
+#print axioms Scheme.Hom.overQuasicoherentData
+#print axioms Scheme.Hom.overQuasicoherentData_isFinitePresentation
+#print axioms Scheme.Hom.isFinitePresentation_over_of_restrict
+#print axioms Scheme.Hom.isFinitePresentation_over_iff_restrict
 #print axioms Scheme.Modules.IsCoherent.restrict_of_isOpenImmersion
 #print axioms Scheme.Modules.IsCoherent.of_affineOpenCover
 #print axioms Scheme.Modules.isCoherent_iff_of_affineOpenCover
