@@ -106,6 +106,7 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms SheafOfModules.IsFinitePresentation.over
 #print axioms SheafOfModules.IsFinitePresentation.of_coversTop
 #print axioms TopCat.Opens.grothendieckTopology_coversTop
+#print axioms basicOpen_coversTop_of_span_eq_top
 #print axioms Scheme.Hom.opensRangeEquivalence
 #print axioms Scheme.Hom.opensRangeModulesEquivalence
 #print axioms Scheme.Hom.restrictFunctorIsoOver
