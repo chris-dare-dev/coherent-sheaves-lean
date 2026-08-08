@@ -234,4 +234,20 @@ theorem Modules.IsCoherent.restrict_affineOpenCover
     SheafOfModules.IsFinitePresentation.{u, u, u} (M.restrict (𝒰.f i)) :=
   Modules.IsCoherent.restrict_of_isOpenImmersion (𝒰.f i) M hM
 
+/-- **The scheme-level affine-local criterion for coherence.**
+
+A sheaf of modules is coherent exactly when it is of finite presentation after *scheme-level*
+restriction along each member of an affine open cover.
+
+This is `isCoherent_iff_of_affineOpenCover` carried across the open-immersion/slice
+equivalence by `Scheme.Hom.isFinitePresentation_over_iff_restrict`, whose reverse half is what
+makes the `↔` available rather than just the forward implication. The slice-level statement
+remains the engine and is not reproved here; the point of this one is that downstream
+arguments never have to mention `Over` or `M.over`. -/
+theorem Modules.isCoherent_iff_restrict_affineOpenCover :
+    Modules.IsCoherent X M ↔
+      ∀ i, SheafOfModules.IsFinitePresentation.{u, u, u} (M.restrict (𝒰.f i)) := by
+  rw [Modules.isCoherent_iff_of_affineOpenCover M 𝒰]
+  exact forall_congr' fun i => (𝒰.f i).isFinitePresentation_over_iff_restrict M
+
 end AlgebraicGeometry.Scheme
