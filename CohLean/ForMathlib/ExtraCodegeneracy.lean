@@ -3,7 +3,11 @@ Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 -/
 import Mathlib.AlgebraicTopology.AlternatingFaceMapComplex
+import Mathlib.AlgebraicTopology.ExtraDegeneracy
 import Mathlib.Algebra.Homology.Opposite
+import Mathlib.Algebra.Homology.QuasiIso
+import Mathlib.Algebra.Homology.SingleHomology
+import Mathlib.CategoryTheory.Abelian.Opposite
 
 /-!
 # The alternating coface complex is the opposite of an alternating face complex
@@ -37,22 +41,35 @@ particular `CategoryTheory.Limits.FormalCoproduct.extraDegeneracyCech` — the �
 family has an extra degeneracy once the terminal object maps into one of its members — is
 already upstream and can be used as it stands.
 
+## The payoff
+
+`exactAt_succ_of_extraDegeneracy` is what #13 consumes: an extra degeneracy on an augmented
+simplicial object in `Aᵒᵖ` whose underlying object is `Y.op` forces the alternating coface
+complex of `Y` to be exact in every positive degree. The chain is
+`ExtraDegeneracy.homotopyEquiv` (upstream) → quasi-isomorphism → `exactAt_iff_of_quasiIsoAt`
+→ `ChainComplex.exactAt_succ_single_obj`, carried across `opIso`.
+
+`exactAt_succ_of_extraDegeneracy_map` adds the contravariant transport. `ExtraDegeneracy.map`
+takes a covariant functor, while Čech cohomology applies `FormalCoproduct.evalOp` of a
+presheaf, which is contravariant on the site; `Functor.rightOp` turns one into the other, and
+this lemma is the composite in the form the caller wants.
+
 ## Not done here
 
-This is one link of the chain in issue #62, not the whole of it. Still missing, and
-deliberately not attempted here:
+An augmentation `ε` for `alternatingCofaceMapComplex`, dual to `AlternatingFaceMapComplex.ε`,
+was expected to be needed and **is not**. The augmentation is handled on the simplicial side
+by `homotopyEquiv`, and the coface complex only ever appears unaugmented, so adding one would
+be dead weight. Recorded because the issue asked for it.
 
-* an augmentation `ε` for `alternatingCofaceMapComplex`, dual to
-  `AlternatingFaceMapComplex.ε`, so that "the augmented complex" is a statement rather than
-  an assembly of pieces at each use;
-* the transport of an extra degeneracy along a *contravariant* functor. `ExtraDegeneracy.map`
-  takes a covariant `C ⥤ D`, and the functor in play for Čech cohomology —
-  `FormalCoproduct.evalOp` applied to a presheaf — is contravariant on the site. The
-  op-juggling this needs is mechanical but is not free;
-* the positive-degree exactness corollary that #13 actually consumes.
+What is genuinely left before #13 can be proved is not in this file: identifying the Čech
+cosimplicial object of a cover of `Spec R` with a concrete complex of localisations, and the
+descent along `LinearMap.exact_of_localized_span`.
 
-Nothing here is stated for augmented objects at all: the isomorphism is between the two
-unaugmented complexes, which is what makes it cheap.
+The `Abelian A` hypothesis is stronger than the argument needs — `Preadditive`, a zero object
+and homology would do — but the two `HasZeroMorphisms Aᵒᵖ` instances (`Preadditive`'s and
+`Limits.hasZeroMorphismsOpposite`) are only definitionally equal, and `rw` sees through
+neither. Assuming `Abelian` makes instance search pick one consistently. Every intended
+caller is abelian.
 
 ## References
 
@@ -96,5 +113,43 @@ lemma opIso_inv_f (Y : CosimplicialObject A) (n : ℕ) :
   rfl
 
 end AlternatingCofaceMapComplex
+
+section Exactness
+
+open SimplicialObject.Augmented
+
+variable {A : Type u} [Category.{v} A] [Abelian A]
+
+/-- **Positive-degree exactness from an extra degeneracy.** If the opposite of a cosimplicial
+object `Y` in `A` underlies an augmented simplicial object in `Aᵒᵖ` carrying an extra
+degeneracy, then the alternating coface complex of `Y` is exact in every positive degree.
+
+The augmentation is not visible in the conclusion, which is the point: it lives on the
+simplicial side, where `ExtraDegeneracy.homotopyEquiv` already handles it. -/
+lemma exactAt_succ_of_extraDegeneracy {Y : CosimplicialObject A}
+    {X : SimplicialObject.Augmented Aᵒᵖ} (e : drop.obj X ≅ Y.op)
+    (ed : ExtraDegeneracy X) (n : ℕ) :
+    ((alternatingCofaceMapComplex A).obj Y).ExactAt (n + 1) := by
+  have H : ((alternatingFaceMapComplex Aᵒᵖ).obj Y.op).ExactAt (n + 1) := by
+    rw [← exactAt_iff_of_quasiIsoAt ((alternatingFaceMapComplex Aᵒᵖ).map e.hom) (n + 1)]
+    show (AlternatingFaceMapComplex.obj (drop.obj X)).ExactAt (n + 1)
+    rw [exactAt_iff_of_quasiIsoAt ed.homotopyEquiv.hom]
+    exact ChainComplex.exactAt_succ_single_obj _ _
+  exact (HomologicalComplex.exactAt_op_iff _).mp
+    ((exactAt_iff_of_quasiIsoAt (AlternatingCofaceMapComplex.opIso Y).hom (n + 1)).mpr H)
+
+/-- The same, with the **contravariant** transport folded in.
+
+`ExtraDegeneracy.map` applies a covariant functor. Čech cohomology applies
+`FormalCoproduct.evalOp` of a presheaf, which is contravariant on the site; `Functor.rightOp`
+converts one to the other. This is the form a Čech vanishing argument calls. -/
+lemma exactAt_succ_of_extraDegeneracy_map {D : Type*} [Category D]
+    {X : SimplicialObject.Augmented D} (ed : ExtraDegeneracy X) (G : Dᵒᵖ ⥤ A)
+    {Y : CosimplicialObject A}
+    (e : drop.obj (((whiskering _ _).obj G.rightOp).obj X) ≅ Y.op) (n : ℕ) :
+    ((alternatingCofaceMapComplex A).obj Y).ExactAt (n + 1) :=
+  exactAt_succ_of_extraDegeneracy e (ed.map G.rightOp) n
+
+end Exactness
 
 end AlgebraicTopology

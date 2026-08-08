@@ -173,6 +173,8 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicTopology.AlternatingCofaceMapComplex.opIso
 #print axioms AlgebraicTopology.AlternatingCofaceMapComplex.opIso_hom_f
 #print axioms AlgebraicTopology.AlternatingCofaceMapComplex.opIso_inv_f
+#print axioms AlgebraicTopology.exactAt_succ_of_extraDegeneracy
+#print axioms AlgebraicTopology.exactAt_succ_of_extraDegeneracy_map
 
 -- Layer B stage 3: the same results reached from the `X.Modules` wrapper, which instance
 -- search does not see through on its own. `Scheme.Modules.toSheaf` is the retyped functor
