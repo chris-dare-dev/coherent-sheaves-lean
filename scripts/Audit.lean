@@ -167,6 +167,13 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms SheafOfModules.preservesEpimorphisms_toSheaf
 #print axioms SheafOfModules.shortExact_map_toSheaf
 
+-- Layer B stage 3: the link between cosimplicial (Cech) and simplicial (extra degeneracy)
+-- machinery. Not the whole of the Cech vanishing chain -- see the module docstring of
+-- CohLean/ForMathlib/ExtraCodegeneracy.lean for what is still missing.
+#print axioms AlgebraicTopology.AlternatingCofaceMapComplex.opIso
+#print axioms AlgebraicTopology.AlternatingCofaceMapComplex.opIso_hom_f
+#print axioms AlgebraicTopology.AlternatingCofaceMapComplex.opIso_inv_f
+
 -- Layer B stage 3: the same results reached from the `X.Modules` wrapper, which instance
 -- search does not see through on its own. `Scheme.Modules.toSheaf` is the retyped functor
 -- downstream work should use; the two transfer instances cover the goals that still arrive
