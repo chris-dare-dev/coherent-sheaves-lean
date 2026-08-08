@@ -220,10 +220,11 @@ expect to land in Layer B, where the cost is Mathlib plumbing rather than mathem
 
 **§7 in the previous revision was issue #11, the tilde step. That is done** — `Coh/Affine.lean`
 (commit `a0918bd`) carries `isFinitePresentation_tilde` / `isCoherent_tilde`. The plumbing
-described there (universe defaulting, `Finset` vs `Set`) was real and the fixes are preserved
-in §8; the task itself is not open. The issue is still open only because it also asks for the
-full equivalence `Coh (Spec R) ≌ finitely generated R-modules`, of which this is the forward
-half.
+described there was **half right**. Universe defaulting is real and the fix is preserved in §8.
+**The `Finset` vs `Set` coercion problem is not real** — it is accepted exactly as written, and
+that warning cost two sessions preparatory work before anyone tried it. It is retracted in §8.
+The task itself is not open. The issue is still open only because it also asks for the full
+equivalence `Coh (Spec R) ≌ finitely generated R-modules`, of which this is the forward half.
 
 Nothing is half-written in the tree as of `33bafa8`. The two live fronts are:
 
@@ -245,6 +246,13 @@ here. There are no open PRs as of `411a599`.
 
 Each of these cost real time. None is recoverable from reading the code.
 
+### Retracted — do not budget for this
+
+**`Finset` vs `Set` in `presentationTilde` is NOT a problem.** Revisions of this document before
+2026-08-08 said to budget for threading a coercion from `Module.FinitePresentation.out`'s
+`s : Finset M` into `presentationTilde`'s `s : Set M`, and through `t`'s type as well. It is
+accepted exactly as written. Two sessions prepared for a problem that does not exist.
+
 ### Instance resolution and universes
 
 **A metavariable in an instance argument fails loudly and misleadingly.**
@@ -260,8 +268,26 @@ section contamination, `variable` auto-inclusion, and `∀`-quantified instance 
 disproved by a three-line probe. See §9.
 
 **Universes default to `0` when nothing pins them.** Symptom is always a type mismatch at
-`Type 1`. Annotate explicitly (`Foo.{u, u, u}`); named-argument pinning does not work when the
-universes bind before the argument.
+`Type 1`, never an ambiguity. Annotate explicitly (`Foo.{u, u, u}`); named-argument pinning does
+not work when the universes bind before the argument. Annotate in your own theorem's
+**statement** too, not only at use sites — that is the easiest place to forget.
+
+**`constructor`, not `refine ⟨…⟩`, for a universe-pinned structure goal.** Against a *ground*
+`Presentation.IsFinite.{u,u,u} …` goal, `refine ⟨⟨?_⟩, ?_⟩` still elaborates at universe `0`,
+and `refine Presentation.IsFinite.mk ?_ ?_` gets stuck synthesising
+`WEqualsLocallyBijective ?J AddCommGrpCat` because the head elaborates before the goal unifies.
+`constructor` unifies with the goal first and goes through. This is the second half of the
+universe-defaulting fix and does not follow from the first.
+
+**`variable` auto-inclusion drops instance binders whose type parameters do not appear in your
+statement.** In a `ConcreteCategory` block, `FC` and `CC` often do not occur in the theorem you
+are writing — so the `ConcreteCategory` and `forget`-preservation binders are silently dropped
+along with them. The failure surfaces much later as an unsolved `Category` metavariable naming
+nothing relevant. Write the binders out in the signature. (Note this is a *real* instance of the
+mechanism disproved as a theory two items above; it does happen, just not there.)
+
+**`Presheaf.stalkFunctor` forces the space universe to equal `C`'s hom universe.**
+`{X : TopCat.{w}}` with `[Category.{v} C]` is unsolvable; it must be `{X : TopCat.{v}}`.
 
 **`preservesColimitsOfSize_shrink` is not a global instance** — it loops. `pushforward (𝟙 _)` is
 a left adjoint (`Sheaf/PushforwardContinuous.lean:275`) but only at its own hom universe, so
@@ -270,6 +296,28 @@ supply `haveI : PreservesColimitsOfSize.{u, u} … := preservesColimitsOfSize_sh
 **`choose D hD using …`, not `have D := (…).choose`.** With `have`, `D i` is opaque and
 `choose_spec` types against `_.choose` rather than `D i` — an error with nothing to do with your
 actual problem.
+
+### The `Opens` transparency gap — why `ForMathlib/OpensLimits.lean` exists
+
+`TopologicalSpace.Opens X` reaches its order twice: through the bespoke `SetLike`-derived
+`PartialOrder`, and through the `CompleteLattice.copy` built to be *definitionally* equal to it.
+Instance search unifies at reducible transparency, where the copy does not unfold — so
+**`OrderTop (Opens X)` and `BoundedOrder (Opens X)` do not synthesise**, even though
+`CompleteLattice`, `Order.Frame`, `SemilatticeInf`, `Lattice` and `Top` all do.
+
+Everything in `CategoryTheory.Limits.CompleteLattice` sits above `OrderTop`, so no limit instance
+on the site `X.Opens` is reachable by default — and without one, a global presentation cannot
+become finite presentation on *any* scheme. Mathlib never instantiates
+`Presentation.quasicoherentData` at a scheme site, which is why this has not surfaced upstream.
+
+Two sessions hit it and worked around it differently — five workarounds for one gap — before
+`ForMathlib/OpensLimits.lean` consolidated them (#51). **Do not add a global `OrderTop`
+instance:** `OrderTop` extends `Top`, `Opens` already has one, and that is a data-carrying
+diamond that could change which `Top` existing `simp` lemmas are stated against. The bridges in
+that file are `private` for exactly that reason, and there is a regression check worth keeping —
+**`OrderTop (Opens X)` must still fail to synthesise.**
+
+Expect the shape again; it is not specific to `Opens`.
 
 ### Elaboration
 
@@ -287,8 +335,25 @@ tactic block: `letI := k3NumericalVariety d hd` as the first line of the proof.
 **`rw` only closes goals by `rfl` at reducible transparency.** After unfolding a
 pattern-matching `def`, an explicit `rfl` is often needed.
 
+**Dot notation does not fire through a `def`-wrapped type.** `tilde N`'s inferred head symbol is
+`SheafOfModules`, not `Scheme.Modules`, so `(tilde N).basicOpenRestriction` fails even though the
+namespace is right. It works for terms *declared* at type `(Spec R).Modules`. Issue #59 exists to
+address this.
+
+**A dependent rewrite across a change of ambient category is far easier as a `subst`.** When a
+`Presentation` must move between `(M.restrict f).over U` for two propositionally-equal `U`, do
+not rewrite at the use site — the ambient category depends on `U`. Take the equality as a
+hypothesis in a helper lemma and `subst` it there, once. That is the whole technique behind
+`Scheme.Hom.presentationOverOfEq`.
+
 ### Mathlib specifics at v4.29.0
 
+* Mathlib has **no** "f.p. + f.p. ⟹ f.p. in a short exact sequence". The usable statement is
+  `Module.finitePresentation_of_ker`.
+* For "epi ⟹ locally surjective", `Sheaf.isLocallySurjective_iff_epi` in
+  `Sites/LocallySurjective.lean` is the prominent one but covers **sheaves of types only**. The
+  general version is `Sheaf.isLocallySurjective_iff_epi'`, in `Sites/EpiMono.lean`, and its
+  `Balanced (Sheaf J A)` hypothesis does not synthesise on its own.
 * It is `Module.Basis`, not `Basis`.
 * `Submodule` lives in `Mathlib.Algebra.Module.Submodule.Basic`; `DirectSum.IsInternal` in
   `Algebra/DirectSum/Basic.lean`; the `iSupIndep`-and-`iSup = ⊤` characterisation in
@@ -346,6 +411,11 @@ When you add a model, ask what it can falsify.
   with a quoted heredoc (`<<'EOF'`).
 * `gh api /repos/…` on Git Bash gets its path rewritten to a Windows path. Omit the leading
   slash: `gh api repos/…`.
+* **A probe importing a repo module reads the olean, not your edited source.** Run
+  `lake build <Module>` before the probe, or you will debug a stale definition.
+* **`gh pr merge` can return 502 and still not have merged**, then hold a stale "merge already in
+  progress" lock for several minutes. Confirm against `origin/main`; trust neither the error nor
+  its absence.
 
 ---
 
@@ -450,4 +520,20 @@ regressed.
 **Merge conflicts here are always in the same four files** — `CohLean.lean`,
 `scripts/Audit.lean`, `ROADMAP.md`, `README.md`. Keep your hunks small and localised in them and
 `git rebase origin/main` stays a two-minute job. Everything else in the repo is per-issue by
-design.
+design. They are append-only in practice, so conflict resolution is always "keep both sides";
+and merging any one PR makes every other open PR conflict, so rebase them one at a time and
+rebuild each.
+
+**If you are not in a worktree, you will meet these three situations. The fixes:**
+
+* **A shared file already carries another session's uncommitted edits and you need to commit only
+  yours.** Write your changes, then stage a patch containing *only* your hunks:
+  `git apply --cached --recount <your.patch>`. The working tree is never touched, so the other
+  session notices nothing. Verify with `git diff --cached` before committing.
+* **`git checkout <branch>` refuses because a shared file differs between the branches.** Back the
+  file up outside the repo, `git checkout -- <file>` to restore it to `HEAD`, switch, then write
+  the backup back. Confirm with `md5sum` that you restored it byte-identically. Do **not** force
+  the checkout — that discards whatever the other session had in flight.
+* **You are about to edit a shared prose file.** Check whether someone is mid-write first:
+  compare `stat -c %Y <file>` across a 60–90 second window. This document was being rewritten by
+  another session while these very paragraphs were being added.
