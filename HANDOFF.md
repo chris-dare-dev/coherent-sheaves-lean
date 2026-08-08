@@ -36,8 +36,9 @@ lattice, #17) remains.
 
 **Layer B is well past its definitions.** B1 has the affine-local criterion, closure under
 isomorphism, the slice-equivalence transport, and the affine comparison reduced to
-localisation of modules; B3 has an opening result. `Coh X` is still **not** abelian and `χ`
-does not exist yet — B3 remains the gate.
+localisation of modules. **B3 has no results yet** — `Cohomology/Strategy.lean` is
+reconnaissance, not a theorem. `Coh X` is still **not** abelian and `χ` does not exist, so
+B3 remains the gate.
 
 The live work is §7.
 
@@ -128,9 +129,10 @@ a Todd class and nothing else.
 ### Layer B — locality, the slice equivalence, and the affine comparison half-proved
 
 > Everything in this subsection except `Coh/Defs.lean` and the two original `ForMathlib` files
-> was written by **other sessions**. What follows is read off commit subjects, file names and
-> `scripts/Audit.lean`; the internals were not re-derived here. Read the module docstrings
-> before building on any of it.
+> was written by **other sessions**. This table was checked against each file's module
+> docstring, `scripts/Audit.lean`, and the commits that introduced them; the proofs themselves
+> were not re-derived. Each of those docstrings has a "Not proved here" section and they are
+> unusually precise — read the one for any file you build on.
 
 | File | Content |
 |---|---|
@@ -141,9 +143,10 @@ a Todd class and nothing else.
 | `AlgebraicGeometry/Modules/RestrictOver.lean` | the slice-vs-scheme restriction equivalence; finite presentation invariant in **both** directions |
 | `ForMathlib/PresentationIsFinite.lean` | `Presentation.isFinite_of_isIso`, `Presentation.isFinite_map` |
 | `ForMathlib/FinitePresentationOfPresentation.lean` | `Presentation.isFinitePresentation_quasicoherentData`, `IsFinitePresentation.of_presentation` |
-| `ForMathlib/OpensLimits.lean` | limit/product instances on the opens site |
+| `ForMathlib/OpensLimits.lean` | `HasBinaryProducts` and `HasFiniteLimits` on `Opens X`. Mathlib's general lattice instances do not fire because `OrderTop (Opens X)` is unreachable at reducible transparency. **This file replaced two independent workarounds for the same gap** — do not write a third |
 | `ForMathlib/AffineComparison.lean` | reduces `IsIso fromTildeΓ` to a statement about localisation of modules, and makes it an `iff` |
-| `Cohomology/Strategy.lean` | B3's opening result — vanishing, **not** finite-dimensionality (see below) |
+| `ForMathlib/ToSheafExact.lean` | `SheafOfModules.toSheaf` preserves finite colimits, hence epis and short exact sequences. Needed because `Sheaf.H` is `Ext` from the constant sheaf, so the cohomology long exact sequence runs on the *image* of a sequence in `Sheaf J AddCommGrpCat` — and nothing upstream said it survives the trip |
+| `Cohomology/Strategy.lean` | **Proves nothing.** A compile-only API map of the upstream declarations B3 can build on: 0 theorems, 6 `example`s, deliberately built to break the day one of them moves. Records the #26 reconnaissance so it is not repeated |
 
 The two original `ForMathlib` files fill a real Mathlib gap: Mathlib has
 `IsQuasicoherent.of_coversTop` but **no finite-presentation analogue**, because nothing said
@@ -152,9 +155,8 @@ namespaces so upstreaming is a file move.
 
 **Still not proved:** `Coh X` closed under kernels/cokernels/extensions; `Coh X` abelian; the
 quasi-coherent half of the affine comparison (the remaining `iff` side); `χ` and every
-finiteness statement; all of B2, B4, B5. Commit `33bafa8` is worth reading before touching
-B3 — its subject is *"B3 proves vanishing, not finite-dimensionality"*, i.e. someone already
-had to correct an over-claim in exactly this area.
+finiteness statement; all of B2, B4, B5. Note that "every finiteness statement" is now the
+*scoped* position rather than a gap waiting to be filled — see §7.
 
 ---
 
@@ -233,11 +235,23 @@ reduces `IsIso fromTildeΓ` to a statement about localisation of modules and mak
 what is left is exactly the quasi-coherent case of the right-hand side. Read that file's
 module docstring — it names what remains precisely.
 
-**B3, and it is still the gate.** `Cohomology/Strategy.lean` exists but commit `33bafa8` is
-titled *"B3 proves vanishing, not finite-dimensionality"* — a correction to an earlier
-over-claim. Everything downstream (`χ`, Snapper, RR) waits on genuine finiteness. #13
-(affine Čech vanishing) and #27 (compare Čech with derived sheaf cohomology) are the two
-`ready` issues that decide the route; #26 was closed by `33bafa8`.
+**B3, and it is still the gate — but its scope shrank.** Commit `33bafa8` closed the #26
+reconnaissance and **narrowed the milestone**: B3's roadmap line went from "cohomology
+finiteness/boundedness" to "cohomology boundedness", with finiteness deferred. Read that
+decision before planning anything here:
+
+* The **Čech route on a finite affine cover is supported**, on `IsNoetherian X` plus an affine
+  diagonal — *not* properness and *not* a base field. It carries #13, #27, #28, #30.
+* **Serre finiteness (#29) is not supported and is not close.**
+  `Mathlib/AlgebraicGeometry/ProjectiveSpectrum/` has no modules at all — no
+  graded-module-to-sheaf construction, no `O(d)`, no twist. The machinery `H^i(ℙⁿ, O(d))` is
+  stated in has to be built first, which is a bigger job than B1.
+* **#31 and #32 therefore carry finite-dimensionality as a hypothesis** rather than deriving
+  it, and become unconditional unchanged the day #29 lands.
+
+`Cohomology/Strategy.lean` records all of this and proves nothing; `scripts/Audit.lean` says
+so in as many words. #13 (affine Čech vanishing) and #27 (Čech vs derived sheaf cohomology)
+are the two `ready` issues that start the supported route.
 
 PR #58 ("The forgetful functor to abelian sheaves is exact", closed #56) landed as
 `c349741` while this revision was being written — a fair illustration of how fast `main` moves
