@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 -/
 import CohLean.Coh.ClosedUnderIso
 import CohLean.ForMathlib.OpensLimits
+import CohLean.ForMathlib.OpensCoversTop
 import CohLean.AlgebraicGeometry.Modules.RestrictOver
 import Mathlib.AlgebraicGeometry.Cover.Open
 import Mathlib.CategoryTheory.Limits.Constructions.Over.Products
@@ -159,23 +160,6 @@ theorem IsFinitePresentation.of_coversTop (M : SheafOfModules.{u} R) {I : Type v
     infer_instance
 
 end SheafOfModules
-
-namespace TopCat.Opens
-
-variable {X : TopCat.{u}} {I : Type v}
-
-/-- A family of open sets whose supremum is `⊤` covers the terminal object of the open-set
-site. -/
-lemma grothendieckTopology_coversTop
-    (U : I → TopologicalSpace.Opens X) (hU : ⨆ i, U i = ⊤) :
-    (_root_.Opens.grothendieckTopology X).CoversTop U := by
-  intro V x hxV
-  have hxTop : x ∈ (⊤ : TopologicalSpace.Opens X) := by simp
-  rw [← hU, TopologicalSpace.Opens.mem_iSup] at hxTop
-  obtain ⟨i, hxi⟩ := hxTop
-  exact ⟨U i ⊓ V, homOfLE inf_le_right, ⟨i, ⟨homOfLE inf_le_left⟩⟩, hxi, hxV⟩
-
-end TopCat.Opens
 
 namespace AlgebraicGeometry.Scheme
 

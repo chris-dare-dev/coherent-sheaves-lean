@@ -18,6 +18,7 @@ import CohLean.Numerical.Examples.ProjectivePlaneModel
 import CohLean.ForMathlib.PresentationIsFinite
 import CohLean.ForMathlib.FinitePresentationOfPresentation
 import CohLean.ForMathlib.OpensLimits
+import CohLean.ForMathlib.OpensCoversTop
 import CohLean.ForMathlib.AffineComparison
 import CohLean.ForMathlib.ToSheafExact
 import CohLean.AlgebraicGeometry.Modules.RestrictOver

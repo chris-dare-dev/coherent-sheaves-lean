@@ -1,0 +1,87 @@
+/-
+Copyright (c) 2026 Chris Dare. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+-/
+import Mathlib.CategoryTheory.Sites.CoversTop
+import Mathlib.CategoryTheory.Sites.Spaces
+import Mathlib.AlgebraicGeometry.Scheme
+import Mathlib.RingTheory.Spectrum.Prime.Topology
+
+/-!
+# Covering the terminal object of an open-set site
+
+`GrothendieckTopology.CoversTop` is the hypothesis every local-to-global statement on a site
+takes. On the open-set site of a topological space it is implied by the far more familiar
+condition that the family's supremum is `⊤`, and on `Spec R` that condition is in turn implied
+by the purely algebraic one that the defining elements generate the unit ideal. This file
+supplies both bridges.
+
+## Main results
+
+* `TopCat.Opens.grothendieckTopology_coversTop` — a family of opens with `⨆ i, U i = ⊤` covers
+  the terminal object.
+* `AlgebraicGeometry.basicOpen_coversTop_of_span_eq_top` — on `Spec R`, basic opens `D(gᵢ)`
+  cover the terminal object as soon as `Ideal.span (Set.range g) = ⊤`.
+
+## Why this is its own file
+
+`grothendieckTopology_coversTop` previously lived in `CohLean/Coh/Local.lean`. It is a statement
+about topological spaces with no reference to coherence, sheaves of modules, or schemes, and its
+position there made it **unreachable from `ForMathlib`**: the layering in this repository runs
+`ForMathlib → Coh`, so a `ForMathlib` file cannot import `Coh.Local` without inverting it.
+
+That was a live constraint rather than an aesthetic one — the remaining half of the affine
+comparison theorem (issue #46) needs `basicOpen_coversTop_of_span_eq_top` in
+`ForMathlib/AffineComparison.lean`, which is exactly where the old placement blocked it. Moving
+the lemma down costs `Coh/Local.lean` nothing, since it already imports `ForMathlib`.
+
+## Where the second one is used
+
+Quasi-compactness of `Spec R` produces a *finite* subfamily of basic opens covering it, and
+`PrimeSpectrum.iSup_basicOpen_eq_top_iff` turns that into `Ideal.span (Set.range g) = ⊤`. So the
+shape a local-to-global argument actually has in hand is the algebraic condition, and
+`basicOpen_coversTop_of_span_eq_top` is what converts it back into something the site machinery
+(`SheafOfModules.IsFinitePresentation.of_coversTop`, `QuasicoherentData.coversTop`) accepts.
+
+Destined for `Mathlib/CategoryTheory/Sites/Spaces.lean` and
+`Mathlib/AlgebraicGeometry/Scheme.lean` respectively; both are in Mathlib namespaces, so
+upstreaming is a file move.
+-/
+
+universe u v
+
+open CategoryTheory TopologicalSpace
+
+namespace TopCat.Opens
+
+variable {X : TopCat.{u}} {I : Type v}
+
+/-- A family of open sets whose supremum is `⊤` covers the terminal object of the open-set
+site. -/
+lemma grothendieckTopology_coversTop
+    (U : I → TopologicalSpace.Opens X) (hU : ⨆ i, U i = ⊤) :
+    (_root_.Opens.grothendieckTopology X).CoversTop U := by
+  intro V x hxV
+  have hxTop : x ∈ (⊤ : TopologicalSpace.Opens X) := by simp
+  rw [← hU, TopologicalSpace.Opens.mem_iSup] at hxTop
+  obtain ⟨i, hxi⟩ := hxTop
+  exact ⟨U i ⊓ V, homOfLE inf_le_right, ⟨i, ⟨homOfLE inf_le_left⟩⟩, hxi, hxV⟩
+
+end TopCat.Opens
+
+namespace AlgebraicGeometry
+
+variable {R : CommRingCat.{u}} {I : Type v}
+
+/-- **Basic opens whose defining elements generate the unit ideal cover `Spec R`.**
+
+This is the bridge from the algebraic side of quasi-compactness — a finite family with
+`Ideal.span (Set.range g) = ⊤` — to the `CoversTop` hypothesis that the site machinery takes. -/
+lemma basicOpen_coversTop_of_span_eq_top (g : I → R)
+    (hg : Ideal.span (Set.range g) = ⊤) :
+    (_root_.Opens.grothendieckTopology (Spec R)).CoversTop
+      (fun i => PrimeSpectrum.basicOpen (g i)) :=
+  TopCat.Opens.grothendieckTopology_coversTop _
+    (PrimeSpectrum.iSup_basicOpen_eq_top_iff.mpr hg)
+
+end AlgebraicGeometry
