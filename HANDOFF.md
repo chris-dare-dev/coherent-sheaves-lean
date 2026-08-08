@@ -536,6 +536,26 @@ Junction `.lake/packages` from the main clone into the new worktree (Windows:
 `New-Item -ItemType Junction`) and `lake build` reuses the Mathlib oleans instead of re-cloning
 ~2 GB. Keep `.lake/build` per-worktree so two sessions cannot clobber each other's artifacts.
 
+> **If you do that, you MUST delete the junction before removing the worktree.**
+> `git worktree remove` follows a Windows junction and deletes the **target's** contents —
+> the main clone's `.lake/packages` — while leaving the target directory itself in place. It
+> exits 0 and prints nothing. Reproduced deliberately on 2026-08-08 in a throwaway repo: target
+> 2 files before, 0 after, `exit 0`, no output.
+>
+> This is not hypothetical here. It happened: removing the `-a8-worktree` emptied the shared
+> packages for **every** checkout pointing at it, and the next session's `lake` run failed with
+> `mathlib: URL has changed` then `git exited with code 128` — symptoms, not the cause. Recovery
+> was `lake exe cache get` (~84 s, the compressed store survived, so nothing re-downloaded).
+>
+> ```bash
+> # before EVERY `git worktree remove` on a junctioned worktree:
+> powershell -c "(Get-Item '<wt>/.lake/packages' -Force).LinkType"   # 'Junction' = danger
+> powershell -c "(Get-Item '<wt>/.lake/packages' -Force).Delete()"   # removes the link only
+> git worktree remove <wt>
+> ```
+>
+> Note `.lake/build` is safe — it is per-worktree and never junctioned.
+
 Until 2026-08-08 the vault indexer treated each sibling worktree as its own *project*, stamping
 `project: coherent-sheaves-lean-a7-worktree` and minting a bogus hub note. That is fixed
 (`<vault>/.obsidian/vault_paths.py` detects a linked worktree structurally), so worktrees are no
