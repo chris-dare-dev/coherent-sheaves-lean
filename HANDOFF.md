@@ -210,7 +210,13 @@ shared too, and they are where every merge conflict this project has had actuall
 | B4 | 5 | Snapper polynomials → intersection numbers |
 | B5 | 7 | Serre duality → RR for surfaces → discharge `hirzebruch_riemannRoch` |
 
-**Startable today** (`ready`): #59, #33, #27, #21, #13, #9. (#56 closed with `c349741`.)
+**Startable today** — the `ready` label, checked 2026-08-08 against the tracker: **#9, #21,
+#27, #33, #62**. (#56 and #59 are closed; #11, #13 and #17 are now labelled `blocked`.)
+
+Two sources describe this and they do not quite agree. `ROADMAP.md`'s "current independent
+entry points" line lists #11 where the label set has #9 — and #11 is labelled `blocked` on
+#46. **Trust the label**, and expect this list to be stale again within a day; regenerate it
+with `gh issue list --label ready`.
 
 There is no longer an easy pure-Layer-A warm-up: A7 and A8a took them. A fresh session should
 expect to land in Layer B, where the cost is Mathlib plumbing rather than mathematics — read
@@ -458,22 +464,27 @@ present, the error is about *when* Lean looked, not *what* it found.
 
 ## 10. Suggested order
 
-1. **#13 and #27** (B3 research: affine Čech vanishing, and comparing Čech with derived sheaf
-   cohomology). B3 is the gate and everything after it waits. #26 is already closed, and
-   `33bafa8` shows the honest state — vanishing is proved, finite-dimensionality is not. Decide
-   the route before writing more cohomology.
-2. **#59** (bridge `Scheme.Modules` to `SheafOfModules` for instance search) is the cheapest
-   remaining B1 item and unblocks the others in that milestone.
-3. **#21** (toolchain bump and divisor API audit) before any B2 work. Upstream Mathlib gained
-   `AlgebraicGeometry/AlgebraicCycle/` and `OrderOfVanishing.lean` after v4.29.0 — build on
-   those rather than duplicating them. Note the bump also forces bumps in
-   `bridgeland-stab-lean` and `bstab`.
-4. **#17** (numerical lattice) if you want a pure Layer A task. It closes A8 and is what
-   `chi₂`'s radical needs; it has to fix a `ℤ`- versus `ℚ`-structure on `N` first, which is
-   the decision the Euler-pairing work deliberately left open.
+> The previous revision recommended starting with #13, then #59, then #17. **All three are
+> wrong now**: #59 is closed, and #13 and #17 are labelled `blocked`. If you are working from
+> a cached copy of this file, re-check before you plan.
 
-A **rank-one model for a Calabi–Yau threefold** is not an issue yet but is the highest-value
-small task in Layer A: `ℚ[t]/(t⁴)` with `∫t³ = d` via `NumericalRing.ofGradedBasis`, exactly
+1. **#62** — the highest-leverage item in the repo right now. It is the Mathlib gap that #13's
+   own reconnaissance turned up: `ExtraDegeneracy` is stated for **simplicial** objects against
+   `alternatingFaceMapComplex`, while Čech cohomology is **cosimplicial** and built from
+   `alternatingCofaceMapComplex`, with no homotopy-equivalence result and no op-duality lemma
+   between them. Every Čech vanishing argument lands on the cosimplicial side, so #13 — and
+   with it the whole supported B3 route — has nowhere to go until this exists.
+2. **#27** (compare Čech with derived sheaf cohomology) is the other `ready` B3 research issue
+   and is independent of #62.
+3. **#9** (`Coh X` closed under extensions) is the remaining `ready` B1 closure result, and
+   closure is what `Coh X` being abelian is waiting on.
+4. **#21** (toolchain bump and divisor API audit) before any B2 work. Upstream Mathlib gained
+   `AlgebraicGeometry/AlgebraicCycle/` and `OrderOfVanishing.lean` after v4.29.0 — build on
+   those rather than duplicating them. The bump also forces bumps in `bridgeland-stab-lean`
+   and `bstab`.
+
+A **rank-one model for a Calabi–Yau threefold** is not an issue yet — which today makes it
+the only unblocked Layer A task, since #17 is labelled `blocked`. It is also cheap: `ℚ[t]/(t⁴)` with `∫t³ = d` via `NumericalRing.ofGradedBasis`, exactly
 as `Examples/RankOneSurface.lean` does it. It would make `CalabiYauThreefold.IsCalabiYau`
 non-vacuous, and a `NumericalRingWithDual` instance (`H ↦ −H`, valid since `(−H)⁴ = 0`) falls
 out of the same file — which is the one thing keeping `chi₂_eq_degree_dual_ch` conditional.
