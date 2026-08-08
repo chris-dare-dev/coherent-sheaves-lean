@@ -20,6 +20,7 @@ import CohLean.ForMathlib.FinitePresentationOfPresentation
 import CohLean.ForMathlib.OpensLimits
 import CohLean.ForMathlib.AffineComparison
 import CohLean.ForMathlib.ToSheafExact
+import CohLean.ForMathlib.ExtraCodegeneracy
 import CohLean.AlgebraicGeometry.Modules.RestrictOver
 import CohLean.AlgebraicGeometry.Modules.ModulesEquiv
 import CohLean.Coh.Defs
