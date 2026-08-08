@@ -155,6 +155,17 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms Scheme.Modules.isLocalizedModule_basicOpenRestriction_of_isIso
 #print axioms Scheme.Modules.isIso_fromTildeΓ_iff_isLocalizedModule
 
+-- Layer B stage 3: exactness of the bridge from sheaves of modules to abelian sheaves.
+-- This is what lets a short exact sequence in `X.Modules` reach `Ext`, and hence the
+-- cohomology long exact sequence. The first two are general category theory and have
+-- nothing to do with sheaves.
+#print axioms CategoryTheory.Adjunction.preservesColimit_comp_left
+#print axioms CategoryTheory.Adjunction.preservesColimitsOfShape_of_comp_left
+#print axioms SheafOfModules.preservesFiniteColimits_toSheaf
+#print axioms SheafOfModules.preservesFiniteColimits_toSheaf'
+#print axioms SheafOfModules.preservesEpimorphisms_toSheaf
+#print axioms SheafOfModules.shortExact_map_toSheaf
+
 -- Layer B stage 3: `CohLean/Cohomology/Strategy.lean` contributes nothing here on
 -- purpose. It is the compile-only API map for the B3 route decision and declares only
 -- `example`s, which are anonymous and cannot be audited. Its guarantee is that it builds:
