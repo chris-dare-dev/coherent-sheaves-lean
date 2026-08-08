@@ -10,7 +10,6 @@ pull request already exists.
 Current independent entry points are [#13](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/13),
 [#11](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/11),
 [#21](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/21),
-[#26](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/26),
 [#27](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/27), and
 [#33](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/33).
 [PR #16](https://github.com/chris-dare-dev/coherent-sheaves-lean/pull/16) is the active B1
@@ -108,7 +107,7 @@ depend on it. The cheapest instance would be `Examples/RankOneSurface`: `H ↦ �
 |---|---|---|---|
 | B1 | Coherent category, locality, affine comparison, closure, abelian/exact inclusion | 2–3 months | [milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/4); PR #16 active, #11 ready |
 | B2 | Invertible sheaves, `Pic X`, Cartier divisors, `O_X(D)`, determinant, effective-divisor sequence | 2–3 months | [milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/7); #21 ready, remainder gated |
-| B3 | Affine vanishing, cohomology finiteness/boundedness, geometric `χ`, additivity | 4–6 months | [milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/5); #13, #26, #27 ready |
+| B3 | Affine vanishing, cohomology boundedness, geometric `χ`, additivity | 4–6 months | [milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/5); #13, #27 ready; finiteness deferred, see below |
 | B4 | Numerical polynomials, Snapper, intersections, numerical Chern data | ~3 months | [milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/9); #33 ready |
 | B5 | Canonical sheaf, Serre duality, surface RR, dévissage, Layer A discharge | ~6 months | [milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/8); blocked on B2–B4 |
 
@@ -158,6 +157,17 @@ duplicate that work** — bump the toolchain at B2 and build on it, or contribut
 is `Ext` from the constant sheaf, which is the right general definition but not obviously
 the one that makes finiteness provable; expect to need Čech cohomology
 (`CategoryTheory/Sites/SheafCohomology/Cech.lean`) and the affine vanishing theorem first.
+
+Issue #26 settled how far that goes, and the answer split the stage.
+`CohLean/Cohomology/Strategy.lean` records it in full; in one line, **B3 proves vanishing,
+not finite-dimensionality.** The Čech route on a finite affine cover is supported — the
+hypotheses are `IsNoetherian X` plus an affine diagonal, not properness and not a base
+field — and it carries #13, #27, #28 and #30. Serre finiteness (#29) is not supported and
+is not close: `Mathlib/AlgebraicGeometry/ProjectiveSpectrum/` has no modules at all, no
+graded-module-to-sheaf construction and no twisting sheaf, so the machinery `H^i(ℙⁿ, O(d))`
+is stated in has to be built before the classical proof can begin. #31 and #32 therefore
+carry finite-dimensionality as a hypothesis rather than deriving it, and become
+unconditional unchanged the day #29 lands.
 
 **B4.** Snapper's theorem is dimension-general, so B4 serves threefolds and fourfolds at no
 extra cost. Reuse Hilbert-polynomial machinery from `jjaassoonn/DimensionTheory`.
