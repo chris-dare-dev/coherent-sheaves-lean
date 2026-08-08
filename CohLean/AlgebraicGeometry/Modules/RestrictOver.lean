@@ -2,6 +2,7 @@
 Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 -/
+import CohLean.ForMathlib.PresentationIsFinite
 import Mathlib.AlgebraicGeometry.Modules.Sheaf
 import Mathlib.Algebra.Category.ModuleCat.Sheaf.Quasicoherent
 import Mathlib.Topology.Sheaves.Over
@@ -486,6 +487,89 @@ theorem isFinitePresentation_restrict (M : Y.Modules)
   letI := hq
   constructor
   exact ⟨f.restrictQuasicoherentData M q, inferInstance⟩
+
+/-! ### The reverse transport
+
+Everything above carries finite presentation from the range slice to the scheme-level
+restriction. This section supplies the other direction, so that finite presentation is
+*invariant* under the equivalence rather than merely transported one way.
+
+One asymmetry drives the shape of what follows. The forward direction never round-trips:
+`restrictOverIso` is stated at `f.opensRangeEquivalence.functor.obj W` for a `W` taken
+straight from the quasicoherent data, so the object is already in the form it is needed in.
+The reverse direction must round-trip, because the data now lives on `X.Opens` and its cover
+has to be pulled back to `Over f.opensRange`.
+
+That round trip is an *equality* of opens rather than merely an isomorphism —
+`opensRangeEquivalence`'s counit is `eqToIso (f.preimage_image_eq _)` — which is what makes it
+tractable. It is discharged once, by `subst`, in `presentationOverOfEq`, rather than by a
+dependent rewrite at each use site: the ambient category of `(M.restrict f).over U` depends on
+`U`, so rewriting `U` after the fact means transporting across a change of category. -/
+
+/-- Transport a presentation of the scheme-level restriction over `U` to a presentation of the
+range-slice restriction over `W`, given that `W` maps to `U` under the site equivalence.
+
+The equality hypothesis is what lets `subst` do the dependent work in one place. -/
+noncomputable def presentationOverOfEq (M : Y.Modules) (W : Over f.opensRange) (U : X.Opens)
+    (h : f.opensRangeEquivalence.functor.obj W = U)
+    (P : ((M.restrict f).over U).Presentation) :
+    ((M.over f.opensRange).over W).Presentation := by
+  subst h
+  exact SheafOfModules.Presentation.of_isIso.{u, u, u}
+    (σ := P.map (f.opensRangeOverModulesEquivalence W).functor
+      (f.opensRangeOverModulesEquivalenceUnitIso W))
+    (f.restrictOverIsoForward M W).hom
+
+/-- The transported presentation is finite when the original is: neither `Presentation.map` nor
+`Presentation.of_isIso` touches the generator and relation index types. -/
+instance presentationOverOfEq_isFinite (M : Y.Modules) (W : Over f.opensRange) (U : X.Opens)
+    (h : f.opensRangeEquivalence.functor.obj W = U)
+    (P : ((M.restrict f).over U).Presentation) [P.IsFinite] :
+    (f.presentationOverOfEq M W U h P).IsFinite := by
+  subst h
+  dsimp only [presentationOverOfEq]
+  infer_instance
+
+/-- Transport local presentation data for the scheme-level restriction back to local
+presentation data on the slice over the range. -/
+noncomputable def overQuasicoherentData (M : Y.Modules)
+    (q : (M.restrict f).QuasicoherentData) :
+    (M.over f.opensRange).QuasicoherentData where
+  I := q.I
+  X i := f.opensRangeEquivalence.inverse.obj (q.X i)
+  coversTop := GrothendieckTopology.CoversTop.map_equivalence q.coversTop
+    f.opensRangeEquivalence.symm f.opensRangeEquivalence_inverse_coverPreserving
+  presentation i :=
+    f.presentationOverOfEq M _ (q.X i) (f.preimage_image_eq (q.X i)) (q.presentation i)
+
+/-- Transporting finite local presentation data back to the range slice preserves
+finiteness. -/
+instance overQuasicoherentData_isFinitePresentation (M : Y.Modules)
+    (q : (M.restrict f).QuasicoherentData) [hq : q.IsFinitePresentation] :
+    (f.overQuasicoherentData M q).IsFinitePresentation where
+  isFinite_presentation i := by
+    haveI : (q.presentation i).IsFinite := hq.isFinite_presentation i
+    dsimp only [overQuasicoherentData]
+    exact f.presentationOverOfEq_isFinite M _ (q.X i) _ (q.presentation i)
+
+/-- Finite presentation after scheme-level restriction along an open immersion implies finite
+presentation on the range slice — the converse of `isFinitePresentation_restrict`. -/
+theorem isFinitePresentation_over_of_restrict (M : Y.Modules)
+    (hM : SheafOfModules.IsFinitePresentation.{u, u, u} (M.restrict f)) :
+    SheafOfModules.IsFinitePresentation.{u, u, u} (M.over f.opensRange) := by
+  obtain ⟨q, hq⟩ := hM.exists_quasicoherentData
+  letI := hq
+  constructor
+  exact ⟨f.overQuasicoherentData M q, inferInstance⟩
+
+/-- **Finite presentation is invariant under the open-immersion/slice equivalence.**
+
+This is the statement downstream work should quote; the two one-directional theorems remain
+available for when only one implication is wanted. -/
+theorem isFinitePresentation_over_iff_restrict (M : Y.Modules) :
+    SheafOfModules.IsFinitePresentation.{u, u, u} (M.over f.opensRange) ↔
+      SheafOfModules.IsFinitePresentation.{u, u, u} (M.restrict f) :=
+  ⟨f.isFinitePresentation_restrict M, f.isFinitePresentation_over_of_restrict M⟩
 
 end Scheme.Hom
 
