@@ -24,6 +24,7 @@ import CohLean.Coh.Defs
 import CohLean.Coh.ClosedUnderIso
 import CohLean.Coh.Local
 import CohLean.Coh.Affine
+import CohLean.Cohomology.Strategy
 
 /-!
 # CohLean
