@@ -146,3 +146,9 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms Scheme.Modules.isLocalizedModule_basicOpenRestriction_tilde
 #print axioms isIso_fromTildeΓ_app_basicOpen
 #print axioms isIso_fromTildeΓ_of_isLocalizedModule
+
+-- Layer B stage 1: the converse, making the affine comparison a characterisation. What
+-- remains of the theorem is exactly the quasi-coherent case of the right-hand side.
+#print axioms Scheme.Modules.basicOpenRestriction_naturality
+#print axioms Scheme.Modules.isLocalizedModule_basicOpenRestriction_of_isIso
+#print axioms Scheme.Modules.isIso_fromTildeΓ_iff_isLocalizedModule
