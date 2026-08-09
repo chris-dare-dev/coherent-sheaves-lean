@@ -22,6 +22,7 @@ import CohLean.ForMathlib.OpensCoversTop
 import CohLean.ForMathlib.AffineComparison
 import CohLean.ForMathlib.QuasicoherentBasicOpen
 import CohLean.ForMathlib.AffineComparisonGluing
+import CohLean.ForMathlib.AffineComparisonFiniteness
 import CohLean.ForMathlib.ToSheafExact
 import CohLean.ForMathlib.ExtraCodegeneracy
 import CohLean.AlgebraicGeometry.Modules.RestrictOver

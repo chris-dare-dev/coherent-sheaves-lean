@@ -3,6 +3,7 @@ Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 -/
 import CohLean.Coh.Defs
+import CohLean.ForMathlib.AffineComparisonFiniteness
 import CohLean.ForMathlib.FinitePresentationOfPresentation
 import CohLean.ForMathlib.OpensLimits
 import Mathlib.AlgebraicGeometry.Modules.Tilde
@@ -21,7 +22,11 @@ finitely presented `R`-modules.
 * `AlgebraicGeometry.isCoherent_tilde` — the same statement phrased with
   `Scheme.Modules.IsCoherent`, which is what `Coh (Spec R)` is carved out of;
 * `AlgebraicGeometry.isCoherent_tilde_of_finite` — over a noetherian ring the hypothesis
-  weakens to finite generation.
+  weakens to finite generation;
+* `AlgebraicGeometry.moduleFinite_globalSections_of_isFiniteType` — finite-type
+  quasi-coherent sheaves have finite global sections on an affine noetherian scheme;
+* `AlgebraicGeometry.moduleFinitePresentation_globalSections_of_isCoherent` — coherent
+  sheaves have finitely presented global sections.
 
 ## Proof strategy
 
@@ -55,22 +60,24 @@ The `Finset`/`Set` mismatch that an earlier investigation predicted — `FiniteP
 gives `s : Finset M` while `presentationTilde` wants `s : Set M` and `t : Set (↥s →₀ R)` —
 does not in fact bite: the coercion is accepted as written.
 
-## Not yet proved
+The converse finiteness results use the affine comparison and localisation patching developed
+in `CohLean.ForMathlib.AffineComparisonFiniteness`.
 
-Only the forward direction is proved in this file. The converse and the equivalence itself are
-not yet assembled here:
+## Not yet assembled
 
-* that a coherent sheaf on `Spec R` has finitely presented global sections, for `R`
-  noetherian;
-* consequently the equivalence `Coh (Spec R) ≌` finitely generated `R`-modules.
+The two object-level directions needed for the affine equivalence are now proved, but the
+categorical equivalence itself is not yet assembled here:
 
-Nothing downstream may assume either.
+* `Coh (Spec R) ≌` finitely generated `R`-modules.
+
+Nothing downstream may assume the equivalence until #11 packages the functors and natural
+isomorphisms.
 
 The required bridge is now available as
 `Scheme.Modules.isIso_fromTildeΓ_of_isQuasicoherent`, proved by the gluing argument in
-`CohLean.ForMathlib.AffineComparisonGluing`. The remaining work is to use that bridge to read
-finite presentation from global sections and assemble the equivalence; that is the assembly
-point tracked by #46 and the converse half of #11.
+`CohLean.ForMathlib.AffineComparisonGluing`. Its finiteness consequences are now supplied by
+`CohLean.ForMathlib.AffineComparisonFiniteness`; only the categorical assembly tracked by #11
+remains.
 
 ## References
 
@@ -123,5 +130,25 @@ theorem isCoherent_tilde_of_finite [IsNoetherianRing R] (M : ModuleCat.{u} R)
     [Module.Finite R M] : Scheme.Modules.IsCoherent (Spec R) (tilde M) :=
   haveI := Module.finitePresentation_of_finite (R := R) (M := M)
   isCoherent_tilde M
+
+/-- A quasi-coherent finite-type module sheaf on an affine noetherian scheme has finitely
+generated global sections. The underlying finite-generation theorem does not need the
+noetherian hypothesis; it is retained here because this is the public corollary consumed by the
+noetherian affine equivalence. -/
+theorem moduleFinite_globalSections_of_isFiniteType [IsNoetherianRing R]
+    (M : (Spec R).Modules) [M.IsQuasicoherent]
+    (hM : SheafOfModules.IsFiniteType.{u, u, u} M) :
+    Module.Finite R (moduleSpecΓFunctor.obj M) :=
+  Scheme.Modules.moduleFinite_globalSections_of_isFiniteType M hM
+
+/-- A coherent module sheaf on an affine noetherian scheme has finitely presented global
+sections. -/
+theorem moduleFinitePresentation_globalSections_of_isCoherent [IsNoetherianRing R]
+    (M : (Spec R).Modules) (hM : Scheme.Modules.IsCoherent (Spec R) M) :
+    Module.FinitePresentation R (moduleSpecΓFunctor.obj M) := by
+  have hM' : SheafOfModules.IsFinitePresentation.{u, u, u} M := hM
+  letI : Module.Finite R (moduleSpecΓFunctor.obj M) :=
+    Scheme.Modules.moduleFinite_globalSections M hM'
+  exact Module.finitePresentation_of_finite R (moduleSpecΓFunctor.obj M)
 
 end AlgebraicGeometry

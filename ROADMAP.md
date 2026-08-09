@@ -102,7 +102,7 @@ depend on it. The cheapest instance would be `Examples/RankOneSurface`: `H ↦ �
 
 | # | Stage | Estimate | Gate |
 |---|---|---|---|
-| B1 | Coherent category, locality, affine comparison, closure, abelian/exact inclusion | 2–3 months | [milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/4); PR #16 active, #11 ready |
+| B1 | Coherent category, locality, affine comparison, closure, abelian/exact inclusion | 2–3 months | [milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/4); affine comparison complete, #11 next |
 | B2 | Invertible sheaves, `Pic X`, Cartier divisors, `O_X(D)`, determinant, effective-divisor sequence | 2–3 months | [milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/7); #21 ready, remainder gated |
 | B3 | Affine vanishing, cohomology boundedness, geometric `χ`, additivity | 4–6 months | [milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/5); explicit affine Čech vanishing done; #27 ready, #28 blocked on #27; finiteness deferred, see below |
 | B4 | Numerical polynomials, Snapper, intersections, numerical Chern data | ~3 months | [milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/9); #33 ready |
@@ -113,11 +113,11 @@ Total 18–30 months. Layer A exists so that nothing waits on this.
 ### Notes on individual stages
 
 **B1.** Mathlib gives `X.Modules` abelian plus `IsFinitePresentation ⟹ IsQuasicoherent` and
-`⟹ IsFiniteType` as instances. PR #16 proves closure under isomorphisms, finite-presentation
+`⟹ IsFiniteType` as instances. CohLean proves closure under isomorphisms, finite-presentation
 locality, and the equivalence connecting slice restriction to scheme-level restriction along
-an open immersion. The remaining graph is explicit in the milestone: global presentations and
-the affine comparison feed kernels/cokernels; locality feeds extensions; those closure results
-feed the abelian/exact-inclusion assembly.
+an open immersion. The remaining graph is explicit in the milestone: the completed affine
+comparison feeds #11 and then kernels/cokernels; locality feeds extensions; those closure
+results feed the abelian/exact-inclusion assembly.
 
 On the affine-local criterion (issue #12): Mathlib has
 `SheafOfModules.QuasicoherentData.bind` and `IsQuasicoherent.of_coversTop`, so local-to-global
@@ -128,19 +128,18 @@ equivalence, not a triviality; `bind` handles it with `pushforwardPushforwardEqu
 The full plan is on the issue. Issue #11 does not depend on any of this and is the better
 first pick for the milestone.
 
-The forward half of #11 is now done (`CohLean/Coh/Affine.lean`): `M^~` is of finite
+The object-level content of #11 is now done (`CohLean/Coh/Affine.lean`): `M^~` is of finite
 presentation whenever `M` is, because `AlgebraicGeometry.presentationTilde` already builds
 the global presentation and its index types are the two generating sets that
-`Module.FinitePresentation` hands over. The converse is **blocked, and not on effort** —
-`SheafOfModules.IsFinitePresentation` is by definition local data (an existential over
-`QuasicoherentData`), and the bridge from that to global sections is the affine comparison
-theorem `IsIso M.fromTildeΓ` for quasi-coherent `M`, which Mathlib does not have at
-v4.29.0. CohLean now proves that bridge in
-`ForMathlib/AffineComparisonGluing.lean`; #46 is the remaining assembly point for its
-finiteness corollaries, and #11 uses those to construct the equivalence.
+`Module.FinitePresentation` hands over. Conversely,
+`ForMathlib/AffineComparisonGluing.lean` proves `IsIso M.fromTildeΓ` for quasi-coherent `M`,
+and `ForMathlib/AffineComparisonFiniteness.lean` transports finite generators and
+presentations to a basic-open cover and patches their localized global sections. Thus coherent
+sheaves on `Spec R` have finitely presented global sections when `R` is noetherian. #11 now
+only has to package these object-level results as the categorical equivalence.
 
 One smaller Mathlib gap surfaced on the way and is discharged in
-`CohLean/ForMathlib/OpensBinaryProducts.lean`: `Presentation.quasicoherentData` assumes
+`CohLean/ForMathlib/OpensLimits.lean`: `Presentation.quasicoherentData` assumes
 `[HasBinaryProducts C]` for the site, and that instance does not fire on `X.Opens`, because
 `Opens` reaches its order twice over and instance search will not unfold the
 `CompleteLattice.copy` that reconciles them. Without it a global presentation cannot be

@@ -1,6 +1,6 @@
 # Handoff
 
-Written 2026-08-08, at commit `33bafa8`. For a session picking this repo up cold.
+Updated 2026-08-09 for the #46 branch, based on `41d50bf`. For a session picking this repo up cold.
 
 Read §1 and §7. Everything else is reference.
 
@@ -26,19 +26,19 @@ lake env lean scripts/Audit.lean
 The audit must print `[propext, Classical.choice, Quot.sound]` on every line and never
 `sorryAx`. There is no `sorry` in this library and there never has been.
 
-**State:** 32 commits, 25 Lean files, ~3975 lines, 100 audited declarations. CI green on
-`main`. Docs live at <https://chris-dare-dev.github.io/coherent-sheaves-lean/>. 49 issues,
-15 closed.
+**State after #46:** 49 commits, 33 Lean files, ~6421 lines, 156 audited declarations. The
+branch passes the full build and axiom audit. Docs live at
+<https://chris-dare-dev.github.io/coherent-sheaves-lean/>.
 
 **Layer A is done through A8a** — the general RR expansion, the `n = 2/3/4` specialisations,
 the K3 and Calabi–Yau-threefold cases, and the Euler pairing `χ(E,F)`. Only A8b (the numerical
 lattice, #17) remains.
 
 **Layer B is well past its definitions.** B1 has the affine-local criterion, closure under
-isomorphism, the slice-equivalence transport, and the affine comparison reduced to
-localisation of modules. **B3 has no results yet** — `Cohomology/Strategy.lean` is
-reconnaissance, not a theorem. `Coh X` is still **not** abelian and `χ` does not exist, so
-B3 remains the gate.
+isomorphism, the slice-equivalence transport, the full affine comparison, and its noetherian
+finiteness corollaries. B3 has explicit affine Čech exactness, but not yet the comparison with
+derived-functor sheaf cohomology. `Coh X` is still **not** abelian and geometric `χ` does not
+exist, so B3 remains the gate.
 
 The live work is §7.
 
@@ -126,7 +126,7 @@ Three models, so nothing is vacuous:
 surface has the same ring `ℚ[t]/(t³)` up to the single number `∫H²`. A new rank-one model costs
 a Todd class and nothing else.
 
-### Layer B — locality, the slice equivalence, and the affine comparison half-proved
+### Layer B — locality, the slice equivalence, and the affine comparison
 
 > Everything in this subsection except `Coh/Defs.lean` and the two original `ForMathlib` files
 > was written by **other sessions**. This table was checked against each file's module
@@ -139,12 +139,15 @@ a Todd class and nothing else.
 | `Coh/Defs.lean` | `IsCoherent` (= finite presentation; correct on locally noetherian schemes, documented as strictly stronger elsewhere), the `coherent` `ObjectProperty`, `Coh X`, the inclusion `ι` |
 | `Coh/ClosedUnderIso.lean` | `Coh X` closed under isomorphism |
 | `Coh/Local.lean` | the affine-local criterion: `isCoherent_iff_of_affineOpenCover`, and the `Over`-free `isCoherent_iff_restrict_affineOpenCover` |
-| `Coh/Affine.lean` | `isFinitePresentation_tilde`, `isCoherent_tilde`, `isCoherent_tilde_of_finite` — the forward half of the affine comparison (closes the old §7) |
+| `Coh/Affine.lean` | finite presentation of `M^~`, finite global sections of finite-type quasi-coherent sheaves, and finite presentation of global sections of coherent sheaves over a noetherian ring |
 | `AlgebraicGeometry/Modules/RestrictOver.lean` | the slice-vs-scheme restriction equivalence; finite presentation invariant in **both** directions |
 | `ForMathlib/PresentationIsFinite.lean` | `Presentation.isFinite_of_isIso`, `Presentation.isFinite_map` |
 | `ForMathlib/FinitePresentationOfPresentation.lean` | `Presentation.isFinitePresentation_quasicoherentData`, `IsFinitePresentation.of_presentation` |
 | `ForMathlib/OpensLimits.lean` | `HasBinaryProducts` and `HasFiniteLimits` on `Opens X`. Mathlib's general lattice instances do not fire because `OrderTop (Opens X)` is unreachable at reducible transparency. **This file replaced two independent workarounds for the same gap** — do not write a third |
 | `ForMathlib/AffineComparison.lean` | reduces `IsIso fromTildeΓ` to a statement about localisation of modules, and makes it an `iff` |
+| `ForMathlib/QuasicoherentBasicOpen.lean` | refines quasi-coherent presentation data to a basic-open cover |
+| `ForMathlib/AffineComparisonGluing.lean` | Hartshorne II.5.1 gluing and `isIso_fromTildeΓ_of_isQuasicoherent` |
+| `ForMathlib/AffineComparisonFiniteness.lean` | transports finite generators/presentations to basic opens and patches the localized finite modules |
 | `ForMathlib/ToSheafExact.lean` | `SheafOfModules.toSheaf` preserves finite colimits, hence epis and short exact sequences. Needed because `Sheaf.H` is `Ext` from the constant sheaf, so the cohomology long exact sequence runs on the *image* of a sequence in `Sheaf J AddCommGrpCat` — and nothing upstream said it survives the trip |
 | `Cohomology/Strategy.lean` | **Proves nothing.** A compile-only API map of the upstream declarations B3 can build on: 0 theorems, 6 `example`s, deliberately built to break the day one of them moves. Records the #26 reconnaissance so it is not repeated |
 
@@ -153,10 +156,11 @@ The two original `ForMathlib` files fill a real Mathlib gap: Mathlib has
 that transporting a presentation preserves `Presentation.IsFinite`. Both files are in Mathlib
 namespaces so upstreaming is a file move.
 
-**Still not proved:** `Coh X` closed under kernels/cokernels/extensions; `Coh X` abelian; the
-quasi-coherent half of the affine comparison (the remaining `iff` side); `χ` and every
-finiteness statement; all of B2, B4, B5. Note that "every finiteness statement" is now the
-*scoped* position rather than a gap waiting to be filled — see §7.
+**Still not proved:** the categorical packaging
+`Coh (Spec R) ≌` finitely generated modules; `Coh X` closed under
+kernels/cokernels/extensions; `Coh X` abelian; geometric `χ`; all of B2, B4, B5. General
+cohomology finiteness remains deliberately deferred; the affine global-sections finiteness
+needed by B1 is now proved.
 
 ---
 
@@ -226,20 +230,14 @@ expect to land in Layer B, where the cost is Mathlib plumbing rather than mathem
 
 ## 7. In flight
 
-**§7 in the previous revision was issue #11, the tilde step. That is done** — `Coh/Affine.lean`
-(commit `a0918bd`) carries `isFinitePresentation_tilde` / `isCoherent_tilde`. The plumbing
-described there was **half right**. Universe defaulting is real and the fix is preserved in §8.
-**The `Finset` vs `Set` coercion problem is not real** — it is accepted exactly as written, and
-that warning cost two sessions preparatory work before anyone tried it. It is retracted in §8.
-The task itself is not open. The issue is still open only because it also asks for the full
-equivalence `Coh (Spec R) ≌ finitely generated R-modules`, of which this is the forward half.
+**The affine comparison (#46) is complete after this branch.** The critical-path B1 task is
+now #11: package the already-proved object-level statements into
+`Coh (Spec R) ≌` finitely generated `R`-modules. That unlocks #8 (kernels/cokernels). #9
+(extensions) remains independent and should use local lifts plus
+`IsFinitePresentation.of_coversTop`, not affine `H¹` vanishing.
 
-Nothing is half-written in the tree as of `33bafa8`. The two live fronts are:
-
-**The affine comparison, remaining half (toward #46).** `ForMathlib/AffineComparison.lean`
-reduces `IsIso fromTildeΓ` to a statement about localisation of modules and makes it an `iff`;
-what is left is exactly the quasi-coherent case of the right-hand side. Read that file's
-module docstring — it names what remains precisely.
+Universe defaulting and iterated-slice elaboration are still the dominant implementation
+hazards; the fixes are preserved in §8. The `Finset`/`Set` warning remains retracted.
 
 **B3, and it is still the gate — but its scope shrank.** Commit `33bafa8` closed the #26
 reconnaissance and **narrowed the milestone**: B3's roadmap line went from "cohomology

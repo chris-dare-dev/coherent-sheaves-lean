@@ -172,6 +172,30 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms Scheme.Modules.isLocalizedModule_basicOpenRestriction_of_isQuasicoherent
 #print axioms Scheme.Modules.isIso_fromTildeΓ_of_isQuasicoherent
 
+-- Layer B stage 1: the finiteness corollaries of the affine comparison. Finite local
+-- generators and presentations are transported to affine basic opens, where the comparison
+-- turns them into finite modules; localisation patching then returns to `Spec R`.
+#print axioms SheafOfModules.GeneratingSections.map
+#print axioms SheafOfModules.GeneratingSections.isFiniteType_map
+#print axioms SheafOfModules.GeneratingSections.over
+#print axioms SheafOfModules.GeneratingSections.isFiniteType_over
+#print axioms Scheme.Modules.basicOpenSpecMap
+#print axioms Scheme.Modules.basicOpenSpecMap_opensRange
+#print axioms Scheme.Modules.restrictBasicOpenTopLinearEquiv
+#print axioms Scheme.Modules.GeneratingSections.restrictBasicOpen
+#print axioms Scheme.Modules.GeneratingSections.isFiniteType_restrictBasicOpen
+#print axioms Scheme.Modules.QuasicoherentData.restrictBasicOpen
+#print axioms Scheme.Modules.exists_basicOpen_presentation_cover_of_quasicoherentData
+#print axioms Scheme.Modules.isIso_fromTildeΓ_of_quasicoherentData
+#print axioms Scheme.Modules.isIso_fromTildeΓ_restrictBasicOpen_of_quasicoherentData
+#print axioms Scheme.Modules.moduleFinite_globalSections_of_generatingSections
+#print axioms Scheme.Modules.moduleFinite_globalSections_of_presentation
+#print axioms Scheme.Modules.exists_basicOpen_finiteGenerating_cover
+#print axioms Scheme.Modules.moduleFinite_globalSections_of_isFiniteType
+#print axioms Scheme.Modules.moduleFinite_globalSections
+#print axioms moduleFinite_globalSections_of_isFiniteType
+#print axioms moduleFinitePresentation_globalSections_of_isCoherent
+
 -- Layer B stage 3: exactness of the bridge from sheaves of modules to abelian sheaves.
 -- This is what lets a short exact sequence in `X.Modules` reach `Ext`, and hence the
 -- cohomology long exact sequence. The first two are general category theory and have
