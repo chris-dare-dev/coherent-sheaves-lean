@@ -156,6 +156,11 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms Scheme.Modules.isLocalizedModule_basicOpenRestriction_of_isIso
 #print axioms Scheme.Modules.isIso_fromTildeΓ_iff_isLocalizedModule
 
+-- Layer B stage 1: a quasi-coherent sheaf on an affine scheme has presentations on a
+-- basic-open cover. The first declaration is the reusable iterated-slice restriction step.
+#print axioms SheafOfModules.Presentation.over
+#print axioms Scheme.Modules.exists_basicOpen_presentation_cover
+
 -- Layer B stage 3: exactness of the bridge from sheaves of modules to abelian sheaves.
 -- This is what lets a short exact sequence in `X.Modules` reach `Ext`, and hence the
 -- cohomology long exact sequence. The first two are general category theory and have
