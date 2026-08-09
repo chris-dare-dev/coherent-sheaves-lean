@@ -10,7 +10,6 @@ pull request already exists.
 Current independent entry points are [#11](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/11),
 [#21](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/21),
 [#27](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/27),
-[#28](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/28),
 and [#33](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/33).
 
 
@@ -105,7 +104,7 @@ depend on it. The cheapest instance would be `Examples/RankOneSurface`: `H ↦ �
 |---|---|---|---|
 | B1 | Coherent category, locality, affine comparison, closure, abelian/exact inclusion | 2–3 months | [milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/4); PR #16 active, #11 ready |
 | B2 | Invertible sheaves, `Pic X`, Cartier divisors, `O_X(D)`, determinant, effective-divisor sequence | 2–3 months | [milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/7); #21 ready, remainder gated |
-| B3 | Affine vanishing, cohomology boundedness, geometric `χ`, additivity | 4–6 months | [milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/5); explicit affine Čech vanishing done; #27 and #28 ready; finiteness deferred, see below |
+| B3 | Affine vanishing, cohomology boundedness, geometric `χ`, additivity | 4–6 months | [milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/5); explicit affine Čech vanishing done; #27 ready, #28 blocked on #27; finiteness deferred, see below |
 | B4 | Numerical polynomials, Snapper, intersections, numerical Chern data | ~3 months | [milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/9); #33 ready |
 | B5 | Canonical sheaf, Serre duality, surface RR, dévissage, Layer A discharge | ~6 months | [milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/8); blocked on B2–B4 |
 
@@ -174,7 +173,8 @@ affine Čech vanishing chain is also done: #62 connects Mathlib's simplicial
 `CohLean/Cohomology/AffineCech.lean` contracts the complex after restriction to each member
 of a finite distinguished-open cover and descends exactness along the spanning family. This
 proves exactness of the explicit Čech complex in positive degrees; it deliberately does not
-claim a comparison with derived-functor sheaf cohomology. Issue #28 is the next consumer.
+claim a comparison with derived-functor sheaf cohomology. Issue #27 supplies that comparison;
+#28 is then the short derived-affine-vanishing corollary.
 
 **B4.** Snapper's theorem is dimension-general, so B4 serves threefolds and fourfolds at no
 extra cost. Reuse Hilbert-polynomial machinery from `jjaassoonn/DimensionTheory`.
