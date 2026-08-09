@@ -10,8 +10,8 @@ pull request already exists.
 Current independent entry points are [#11](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/11),
 [#21](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/21),
 [#27](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/27),
-[#33](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/33), and
-[#62](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/62).
+[#28](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/28),
+and [#33](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/33).
 
 
 Target: Riemann–Roch for smooth projective varieties over a field, general dimension,
@@ -105,7 +105,7 @@ depend on it. The cheapest instance would be `Examples/RankOneSurface`: `H ↦ �
 |---|---|---|---|
 | B1 | Coherent category, locality, affine comparison, closure, abelian/exact inclusion | 2–3 months | [milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/4); PR #16 active, #11 ready |
 | B2 | Invertible sheaves, `Pic X`, Cartier divisors, `O_X(D)`, determinant, effective-divisor sequence | 2–3 months | [milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/7); #21 ready, remainder gated |
-| B3 | Affine vanishing, cohomology boundedness, geometric `χ`, additivity | 4–6 months | [milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/5); #27, #62 ready; finiteness deferred, see below |
+| B3 | Affine vanishing, cohomology boundedness, geometric `χ`, additivity | 4–6 months | [milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/5); explicit affine Čech vanishing done; #27 and #28 ready; finiteness deferred, see below |
 | B4 | Numerical polynomials, Snapper, intersections, numerical Chern data | ~3 months | [milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/9); #33 ready |
 | B5 | Canonical sheaf, Serre duality, surface RR, dévissage, Layer A discharge | ~6 months | [milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/8); blocked on B2–B4 |
 
@@ -168,12 +168,13 @@ carry finite-dimensionality as a hypothesis rather than deriving it, and become
 unconditional unchanged the day #29 lands.
 
 The bridge that carries a short exact sequence of `𝒪ₓ`-modules into `Ext` is done — #56 for
-`SheafOfModules`, #59 for the `X.Modules` wrapper; use `Scheme.Modules.toSheaf`. What #13
-still waits on is #62. Mathlib's `ExtraDegeneracy` is stated for **simplicial** objects
-against `alternatingFaceMapComplex`, while Čech cohomology is built from
-`alternatingCofaceMapComplex` and is **cosimplicial**, with no homotopy-equivalence result
-and no op-duality lemma between the two. Every Čech vanishing argument lands on the
-cosimplicial side, so the dual has to exist before the vanishing proof has anywhere to go.
+`SheafOfModules`, #59 for the `X.Modules` wrapper; use `Scheme.Modules.toSheaf`. The explicit
+affine Čech vanishing chain is also done: #62 connects Mathlib's simplicial
+`ExtraDegeneracy` theory to `alternatingCofaceMapComplex`, and
+`CohLean/Cohomology/AffineCech.lean` contracts the complex after restriction to each member
+of a finite distinguished-open cover and descends exactness along the spanning family. This
+proves exactness of the explicit Čech complex in positive degrees; it deliberately does not
+claim a comparison with derived-functor sheaf cohomology. Issue #28 is the next consumer.
 
 **B4.** Snapper's theorem is dimension-general, so B4 serves threefolds and fourfolds at no
 extra cost. Reuse Hilbert-polynomial machinery from `jjaassoonn/DimensionTheory`.

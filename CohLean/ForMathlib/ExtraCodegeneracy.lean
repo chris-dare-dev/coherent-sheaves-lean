@@ -61,9 +61,9 @@ was expected to be needed and **is not**. The augmentation is handled on the sim
 by `homotopyEquiv`, and the coface complex only ever appears unaugmented, so adding one would
 be dead weight. Recorded because the issue asked for it.
 
-What is genuinely left before #13 can be proved is not in this file: identifying the Čech
-cosimplicial object of a cover of `Spec R` with a concrete complex of localisations, and the
-descent along `LinearMap.exact_of_localized_span`.
+`CohLean/Cohomology/AffineCech.lean` now supplies the remaining affine argument: it identifies
+the restriction maps degreewise as localizations and descends exactness from a finite
+distinguished-open cover whose defining elements span the unit ideal.
 
 The `Abelian A` hypothesis is stronger than the argument needs — `Preadditive`, a zero object
 and homology would do — but the two `HasZeroMorphisms Aᵒᵖ` instances (`Preadditive`'s and

@@ -176,6 +176,13 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicTopology.exactAt_succ_of_extraDegeneracy
 #print axioms AlgebraicTopology.exactAt_succ_of_extraDegeneracy_map
 
+-- Layer B stage 3: positive-degree exactness of the explicit Cech complex for a module
+-- sheaf on a finite distinguished-open cover of an affine scheme. This is the affine Cech
+-- vanishing theorem, not a comparison with derived-functor sheaf cohomology.
+#print axioms CategoryTheory.cechComplex_exactAt_succ_of_isTerminal
+#print axioms AlgebraicGeometry.tilde_cechComplex_exactAt_succ
+#print axioms AlgebraicGeometry.tilde_cechComplex_exactAt_of_pos
+
 -- Layer B stage 3: the same results reached from the `X.Modules` wrapper, which instance
 -- search does not see through on its own. `Scheme.Modules.toSheaf` is the retyped functor
 -- downstream work should use; the two transfer instances cover the goals that still arrive
