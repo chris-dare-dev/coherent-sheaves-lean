@@ -77,9 +77,10 @@ fourfold specialisations, the K3 and Calabi–Yau-threefold cases, the Euler pai
 `χ(E,F)` that Bridgeland stability is defined against, and the point, K3, and
 projective-plane models. Layer B stage B1 is active: closure under isomorphisms,
 finite-presentation locality, the open-immersion restriction equivalence, and the affine
-comparison with its noetherian finiteness corollaries are complete. The next critical-path task
-is packaging the affine equivalence in #11, followed by kernels and cokernels. Every later
-Layer B stage has a milestone and issue-level dependency graph; see [ROADMAP.md](ROADMAP.md).
+comparison with its noetherian finiteness corollaries and restricted equivalence are complete.
+The next critical-path task is kernels and cokernels (#8); closure under extensions (#9) is
+independent. Every later Layer B stage has a milestone and issue-level dependency graph; see
+[ROADMAP.md](ROADMAP.md).
 
 ```bash
 lake build && lake env lean scripts/Audit.lean

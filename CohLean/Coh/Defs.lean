@@ -33,10 +33,11 @@ Stage 1 is not complete. `Coh X` is defined and inherits its category structure,
 following are *absent from this library* — not assumed, not `sorry`ed, simply not done:
 
 * `Coh X` is closed under kernels, cokernels and extensions in `X.Modules`;
-* consequently `Coh X` is abelian and the inclusion is exact;
-* on an affine `Spec R` with `R` noetherian, `Coh (Spec R) ≌ ModuleCat.FiniteModuleCat R`.
+* consequently `Coh X` is abelian and the inclusion is exact.
 
-Nothing downstream may assume any of them.
+The affine equivalence `Coh (Spec R) ≌ FGModuleCat R` is proved in `CohLean.Coh.Affine`.
+
+Nothing downstream may assume either missing closure result.
 
 ## References
 

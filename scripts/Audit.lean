@@ -196,6 +196,16 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms moduleFinite_globalSections_of_isFiniteType
 #print axioms moduleFinitePresentation_globalSections_of_isCoherent
 
+-- Layer B stage 1: the affine equivalence. The two objectwise finiteness directions
+-- restrict Mathlib's tilde-global-sections adjunction to the corresponding full
+-- subcategories; its unit and counit are then pointwise isomorphisms.
+#print axioms Coh.affineGlobalSections
+#print axioms FGModuleCat.affineTilde
+#print axioms Coh.affineAdjunction
+#print axioms Coh.affineEquivalence
+#print axioms Coh.affineEquivalence_functor
+#print axioms Coh.affineEquivalence_inverse
+
 -- Layer B stage 3: exactness of the bridge from sheaves of modules to abelian sheaves.
 -- This is what lets a short exact sequence in `X.Modules` reach `Ext`, and hence the
 -- cohomology long exact sequence. The first two are general category theory and have
