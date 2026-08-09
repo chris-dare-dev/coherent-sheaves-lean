@@ -148,6 +148,7 @@ a Todd class and nothing else.
 | `ForMathlib/QuasicoherentBasicOpen.lean` | refines quasi-coherent presentation data to a basic-open cover |
 | `ForMathlib/AffineComparisonGluing.lean` | Hartshorne II.5.1 gluing and `isIso_fromTildeΓ_of_isQuasicoherent` |
 | `ForMathlib/AffineComparisonFiniteness.lean` | transports finite generators/presentations to basic opens and patches the localized finite modules |
+| `Coh/Kernels.lean` | finite-limit preservation for restriction, localization through kernels, affine/global kernel and cokernel closure, and the two object-property closure instances |
 | `ForMathlib/ToSheafExact.lean` | `SheafOfModules.toSheaf` preserves finite colimits, hence epis and short exact sequences. Needed because `Sheaf.H` is `Ext` from the constant sheaf, so the cohomology long exact sequence runs on the *image* of a sequence in `Sheaf J AddCommGrpCat` — and nothing upstream said it survives the trip |
 | `Cohomology/Strategy.lean` | **Proves nothing.** A compile-only API map of the upstream declarations B3 can build on: 0 theorems, 6 `example`s, deliberately built to break the day one of them moves. Records the #26 reconnaissance so it is not repeated |
 
@@ -156,7 +157,7 @@ The two original `ForMathlib` files fill a real Mathlib gap: Mathlib has
 that transporting a presentation preserves `Presentation.IsFinite`. Both files are in Mathlib
 namespaces so upstreaming is a file move.
 
-**Still not proved:** `Coh X` closed under kernels/cokernels/extensions; `Coh X` abelian;
+**Still not proved:** `Coh X` closed under extensions; `Coh X` abelian;
 geometric `χ`; all of B2, B4, B5. General cohomology finiteness remains deliberately
 deferred; the affine global-sections finiteness needed by B1 is now proved.
 
@@ -197,7 +198,7 @@ what its failed retry ruled out. That is why the next attempt was cheap.
 
 ## 6. Where the work is
 
-7 milestones, 29 open issues after this branch. Every issue names the exact file it creates, so `ready` issues can
+7 milestones, 28 open issues after this branch. Every issue names the exact file it creates, so `ready` issues can
 be worked simultaneously without merge conflicts. `lakefile.toml` is the one genuinely shared
 file — in practice `CohLean.lean`, `scripts/Audit.lean`, `ROADMAP.md` and `README.md` are
 shared too, and they are where every merge conflict this project has had actually happened.
@@ -206,14 +207,14 @@ shared too, and they are where every merge conflict this project has had actuall
 |---|---|---|
 | A7 | 0 | **done** — threefold and fourfold RR |
 | A8 | 1 | Euler pairing **done**; the numerical lattice (#17) remains |
-| B1 | 3 | `Coh X` abelian; kernels/cokernels and extensions are next |
+| B1 | 2 | `Coh X` abelian; extensions and the final assembly remain |
 | B2 | 6 | Divisors, `Pic X`, `O_X(D)` |
 | B3 | 7 | Cohomology and `χ` — **still the real gate** |
 | B4 | 5 | Snapper polynomials → intersection numbers |
 | B5 | 7 | Serre duality → RR for surfaces → discharge `hirzebruch_riemannRoch` |
 
-**Startable after this branch merges:** **#8, #9, #21, #33**. #8 is the B1 critical path;
-#9 is independent. Regenerate this list with `gh issue list --label ready` before choosing,
+**Startable after this branch merges:** **#9, #21, #33**. #9 is the B1 critical path.
+Regenerate this list with `gh issue list --label ready` before choosing,
 because tracker labels move faster than this file.
 
 There is no longer an easy pure-Layer-A warm-up: A7 and A8a took them. A fresh session should
@@ -224,9 +225,8 @@ expect to land in Layer B, where the cost is Mathlib plumbing rather than mathem
 
 ## 7. In flight
 
-**The affine equivalence (#11) is complete after this branch.** The critical-path B1 task is
-now #8 (kernels/cokernels), using the equivalence to reduce affine restrictions to finite
-modules over noetherian rings. #9 (extensions) remains independent and should use local lifts plus
+**Kernel and cokernel closure (#8) is complete after this branch.** The critical-path B1 task is
+now #9 (extensions), which should use local lifts plus
 `IsFinitePresentation.of_coversTop`, not affine `H¹` vanishing.
 
 Universe defaulting and iterated-slice elaboration are still the dominant implementation
@@ -457,10 +457,10 @@ present, the error is about *when* Lean looked, not *what* it found.
 
 > This order is a snapshot. Re-check tracker labels before starting.
 
-1. **#8** — kernels and cokernels, now unblocked by the affine equivalence. This is the B1
-   critical path to the abelian structure.
-2. **#9** — closure under extensions, independent of #8. Use local lifts plus
+1. **#9** — closure under extensions. Use local lifts plus
    `IsFinitePresentation.of_coversTop`; do not import B3 affine vanishing.
+2. **#10** — assemble the abelian structure and exact inclusion after #9 lands; kernel and
+   cokernel closure are supplied by this branch.
 3. **#21** — toolchain bump and divisor API audit before any B2 work. Upstream Mathlib gained
    `AlgebraicGeometry/AlgebraicCycle/` and `OrderOfVanishing.lean` after v4.29.0 — build on
    those rather than duplicating them. The bump also forces bumps in `bridgeland-stab-lean`

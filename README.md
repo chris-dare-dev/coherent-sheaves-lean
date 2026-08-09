@@ -78,9 +78,9 @@ fourfold specialisations, the K3 and Calabi–Yau-threefold cases, the Euler pai
 projective-plane models. Layer B stage B1 is active: closure under isomorphisms,
 finite-presentation locality, the open-immersion restriction equivalence, and the affine
 comparison with its noetherian finiteness corollaries and restricted equivalence are complete.
-The next critical-path task is kernels and cokernels (#8); closure under extensions (#9) is
-independent. Every later Layer B stage has a milestone and issue-level dependency graph; see
-[ROADMAP.md](ROADMAP.md).
+Closure under ambient kernels and cokernels is also complete. The next B1 task is closure under
+extensions (#9), followed by the abelian/exact-inclusion assembly (#10). Every later Layer B
+stage has a milestone and issue-level dependency graph; see [ROADMAP.md](ROADMAP.md).
 
 ```bash
 lake build && lake env lean scripts/Audit.lean
