@@ -225,6 +225,28 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms Scheme.coherent_isClosedUnderKernels
 #print axioms Scheme.coherent_isClosedUnderCokernels
 
+-- Layer B stage 1: extensions. Local lifts of finite generators and relations produce a
+-- finite horseshoe presentation of the middle term, without a noetherian hypothesis.
+#print axioms SheafOfModules.IsFinitePresentation.middle_of_shortExact
+#print axioms SheafOfModules.isFinitePresentation_isClosedUnderExtensions
+#print axioms Scheme.coherent_isClosedUnderExtensions
+
+-- Layer B stage 1: abelianity and the exact inclusion. The full subcategory contains zero
+-- and finite products; kernel/cokernel closure then supplies the abelian structure and makes
+-- the inclusion preserve all finite limits and colimits.
+#print axioms SheafOfModules.isFinitePresentation_containsZero
+#print axioms Scheme.coherent_containsZero
+#print axioms Scheme.coherent_isClosedUnderBinaryProducts
+#print axioms Scheme.coherent_isClosedUnderFiniteProducts
+#print axioms Coh.preadditive
+#print axioms Coh.abelian
+#print axioms Coh.ι_preservesZeroMorphisms
+#print axioms Coh.ι_additive
+#print axioms Coh.ι_preservesFiniteLimits
+#print axioms Coh.ι_preservesFiniteColimits
+#print axioms Coh.exactInclusion
+#print axioms Coh.shortExact_map_ι
+
 -- Layer B stage 3: exactness of the bridge from sheaves of modules to abelian sheaves.
 -- This is what lets a short exact sequence in `X.Modules` reach `Ext`, and hence the
 -- cohomology long exact sequence. The first two are general category theory and have

@@ -30,13 +30,13 @@ revisiting this.
 ## Stage 1 status
 
 `Coh X` is defined here and inherits its category structure. Closure under kernels and
-cokernels in `X.Modules` is proved later in `CohLean.Coh.Kernels`. Closure under extensions,
-the abelian instance, and exactness of the inclusion remain absent — not assumed and not
-`sorry`ed.
+cokernels in `X.Modules` is proved in `CohLean.Coh.Kernels`; closure under extensions is
+proved in `CohLean.Coh.Extensions`. `CohLean.Coh.Abelian` installs the abelian instance and
+packages the inclusion as an exact functor.
 
 The affine equivalence `Coh (Spec R) ≌ FGModuleCat R` is proved in `CohLean.Coh.Affine`.
 
-Nothing downstream may assume either missing closure result.
+Downstream developments should import `CohLean.Coh.Abelian` for the completed stage-1 API.
 
 ## References
 

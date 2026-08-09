@@ -7,8 +7,7 @@ before touching it. The live dependency graph is recorded in each milestone desc
 `ready` and `blocked` are mutually exclusive, while `in-progress` means an implementation or
 pull request already exists.
 
-Current independent entry points are [#9](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/9),
-[#21](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/21),
+Current independent entry points are [#21](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/21),
 [#27](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/27),
 and [#33](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/33).
 
@@ -102,7 +101,7 @@ depend on it. The cheapest instance would be `Examples/RankOneSurface`: `H ↦ �
 
 | # | Stage | Estimate | Gate |
 |---|---|---|---|
-| B1 | Coherent category, locality, affine comparison, closure, abelian/exact inclusion | 2–3 months | [milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/4); kernels/cokernels complete, #9 then #10 |
+| B1 | Coherent category, locality, affine comparison, closure, abelian/exact inclusion | 2–3 months | **done** ([milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/4)) |
 | B2 | Invertible sheaves, `Pic X`, Cartier divisors, `O_X(D)`, determinant, effective-divisor sequence | 2–3 months | [milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/7); #21 ready, remainder gated |
 | B3 | Affine vanishing, cohomology boundedness, geometric `χ`, additivity | 4–6 months | [milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/5); explicit affine Čech vanishing done; #27 ready, #28 blocked on #27; finiteness deferred, see below |
 | B4 | Numerical polynomials, Snapper, intersections, numerical Chern data | ~3 months | [milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/9); #33 ready |
@@ -116,8 +115,9 @@ Total 18–30 months. Layer A exists so that nothing waits on this.
 `⟹ IsFiniteType` as instances. CohLean proves closure under isomorphisms, finite-presentation
 locality, and the equivalence connecting slice restriction to scheme-level restriction along
 an open immersion. The affine equivalence now feeds the completed kernel/cokernel closure.
-Locality feeds the remaining extension closure, after which those closure results feed the
-abelian/exact-inclusion assembly.
+Locality feeds extension closure via two finite refinements carrying local lifts of generators
+and relations. Together with kernel/cokernel closure, this gives the abelian structure and the
+exact inclusion `Coh X ⟶ X.Modules`.
 
 On the affine-local criterion (issue #12): Mathlib has
 `SheafOfModules.QuasicoherentData.bind` and `IsQuasicoherent.of_coversTop`, so local-to-global
