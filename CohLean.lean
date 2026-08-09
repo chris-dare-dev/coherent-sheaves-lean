@@ -25,6 +25,10 @@ import CohLean.ForMathlib.AffineComparisonGluing
 import CohLean.ForMathlib.AffineComparisonFiniteness
 import CohLean.ForMathlib.ToSheafExact
 import CohLean.ForMathlib.ExtraCodegeneracy
+import CohLean.ForMathlib.SpectralObjectSpectralSequence
+import CohLean.ForMathlib.SpectralObjectFirstPage
+import CohLean.ForMathlib.FilteredComplexSpectralObject
+import CohLean.ForMathlib.FilteredTotalComplex
 import CohLean.AlgebraicGeometry.Modules.RestrictOver
 import CohLean.AlgebraicGeometry.Modules.ModulesEquiv
 import CohLean.Coh.Defs
@@ -32,6 +36,8 @@ import CohLean.Coh.ClosedUnderIso
 import CohLean.Coh.Local
 import CohLean.Coh.Affine
 import CohLean.Cohomology.AffineCech
+import CohLean.Cohomology.CechBicomplex
+import CohLean.Cohomology.CechComparison
 import CohLean.Cohomology.Strategy
 
 /-!

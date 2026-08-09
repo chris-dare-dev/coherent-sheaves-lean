@@ -216,12 +216,67 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicTopology.exactAt_succ_of_extraDegeneracy
 #print axioms AlgebraicTopology.exactAt_succ_of_extraDegeneracy_map
 
+-- Layer B stage 3: backport of the completed Mathlib construction assembling a
+-- spectral object into a spectral sequence. The pinned Mathlib source stops after
+-- the kernel half; these declarations add the cokernel half and page-homology isomorphism.
+#print axioms CategoryTheory.Abelian.SpectralObject.SpectralSequence.HomologyData.isColimitCc
+#print axioms CategoryTheory.Abelian.SpectralObject.SpectralSequence.homologyData
+#print axioms CategoryTheory.Abelian.SpectralObject.spectralSequence
+#print axioms CategoryTheory.Abelian.SpectralObject.spectralSequencePageXIso
+#print axioms CategoryTheory.Abelian.SpectralObject.spectralSequence_page_d_eq
+#print axioms CategoryTheory.Abelian.SpectralObject.spectralSequenceFirstPageXIso
+#print axioms CategoryTheory.Abelian.SpectralObject.spectralSequence_first_page_d_eq
+
+-- Layer B stage 3: filtered complexes and column-filtered total complexes now feed the
+-- spectral-object constructor above.  The last declaration is the packaged E₂ sequence.
+#print axioms CategoryTheory.Triangulated.SpectralObject.mapHomologicalFunctor
+#print axioms HomotopyCategory.filteredComplexSpectralObject
+#print axioms CategoryTheory.Abelian.SpectralObject.coreE₂CohomologicalInt
+#print axioms HomologicalComplex.stupidTruncGEι
+#print axioms HomologicalComplex.stupidTruncGEMap
+#print axioms HomologicalComplex₂.columnFiltrationBicomplex
+#print axioms HomologicalComplex₂.columnFilteredTotalComplex
+#print axioms HomologicalComplex₂.columnFilteredTotalι
+#print axioms HomologicalComplex₂.columnFilteredTotal_map_comp_ι
+#print axioms HomologicalComplex₂.columnFilteredTotalιNat
+#print axioms HomologicalComplex₂.columnFilteredTotalSpectralObject
+#print axioms HomologicalComplex₂.columnFilteredTotalSpectralSequence
+
+-- Layer B stage 3: an explicit injective resolution now produces the augmented Cech
+-- bicomplex, its total complex, the column-filtered spectral sequence, and the formal
+-- initial-page identification. The pin still has no EnoughInjectives instance for sheaves
+-- and no convergence/abutment field in SpectralSequence; neither gap is hidden by an axiom.
+#print axioms CategoryTheory.Limits.FormalCoproduct.evalOp_additive
+#print axioms CategoryTheory.Sheaf.cechComplexFunctor_additive
+#print axioms CategoryTheory.Sheaf.cechCochainFunctorInt
+#print axioms CategoryTheory.Sheaf.cechResolutionBicomplexUnflipped
+#print axioms CategoryTheory.Sheaf.cechInjectiveBicomplex
+#print axioms CategoryTheory.Sheaf.cechInjectiveBicomplexXXIso
+#print axioms CategoryTheory.Sheaf.cechInjectiveBicomplexAugmentation
+#print axioms CategoryTheory.Sheaf.cechInjectiveTotalComplex
+#print axioms CategoryTheory.Sheaf.cechInjectiveFilteredToTotal
+#print axioms CategoryTheory.Sheaf.cechInjectiveFilteredToTotalNat
+#print axioms CategoryTheory.Sheaf.cechInjectiveSpectralObject
+#print axioms CategoryTheory.Sheaf.cechInjectiveSpectralSequence
+#print axioms CategoryTheory.Sheaf.cechInjectiveInitialPageXIso
+
 -- Layer B stage 3: positive-degree exactness of the explicit Cech complex for a module
 -- sheaf on a finite distinguished-open cover of an affine scheme. This is the affine Cech
 -- vanishing theorem, not a comparison with derived-functor sheaf cohomology.
 #print axioms CategoryTheory.cechComplex_exactAt_succ_of_isTerminal
 #print axioms AlgebraicGeometry.tilde_cechComplex_exactAt_succ
 #print axioms AlgebraicGeometry.tilde_cechComplex_exactAt_of_pos
+
+-- Layer B stage 3: the first Cech-to-derived comparison layer. The terminal-object
+-- natural isomorphism closes the explicit TODO in Mathlib's sheaf-cohomology API; the
+-- singleton theorem is the first positive-degree case of the Leray comparison.
+#print axioms CategoryTheory.cechCohomology_isZero_of_exactAt
+#print axioms CategoryTheory.Sheaf.freeAbelianYonedaPresheafIsoConstant
+#print axioms CategoryTheory.Sheaf.freeAbelianYonedaSheafIsoConstant
+#print axioms CategoryTheory.Sheaf.HPrimeNatIsoH
+#print axioms CategoryTheory.Sheaf.HPrimeAddEquivH
+#print axioms CategoryTheory.Sheaf.subsingleton_HPrime_iff_H
+#print axioms CategoryTheory.Sheaf.cechComputesDerivedCohomologyAt_singleton_terminal_of_pos
 
 -- Layer B stage 3: the same results reached from the `X.Modules` wrapper, which instance
 -- search does not see through on its own. `Scheme.Modules.toSheaf` is the retyped functor
