@@ -27,13 +27,12 @@ non-noetherian scheme this definition is finite presentation, which is strictly 
 than Serre-coherence. Do not use `Coh` outside the locally noetherian setting without
 revisiting this.
 
-## Not yet proved
+## Stage 1 status
 
-Stage 1 is not complete. `Coh X` is defined and inherits its category structure, but the
-following are *absent from this library* — not assumed, not `sorry`ed, simply not done:
-
-* `Coh X` is closed under kernels, cokernels and extensions in `X.Modules`;
-* consequently `Coh X` is abelian and the inclusion is exact.
+`Coh X` is defined here and inherits its category structure. Closure under kernels and
+cokernels in `X.Modules` is proved later in `CohLean.Coh.Kernels`. Closure under extensions,
+the abelian instance, and exactness of the inclusion remain absent — not assumed and not
+`sorry`ed.
 
 The affine equivalence `Coh (Spec R) ≌ FGModuleCat R` is proved in `CohLean.Coh.Affine`.
 

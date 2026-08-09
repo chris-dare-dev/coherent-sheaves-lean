@@ -206,6 +206,25 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms Coh.affineEquivalence_functor
 #print axioms Coh.affineEquivalence_inverse
 
+-- Layer B stage 1: kernels and cokernels. Restriction along open immersions is left exact,
+-- localization commutes with kernels, and the affine comparison transports both ambient
+-- (co)kernels to finite modules. The final instances create (co)kernels in `Coh X`.
+#print axioms AlgebraicGeometry.modulesSpecToSheaf_preservesFiniteLimits
+#print axioms Scheme.Modules.restrictFunctor_preservesFiniteLimits
+#print axioms LinearMap.kerMap
+#print axioms IsLocalizedModule.kerMap
+#print axioms IsLocalizedModule.kernelMap
+#print axioms IsLocalizedModule.kernelNatTrans
+#print axioms Scheme.Modules.isLocalizedModule_basicOpenRestriction_kernel
+#print axioms Scheme.Modules.isCoherent_kernel_affine
+#print axioms Scheme.Modules.isCoherent_cokernel_affine
+#print axioms Scheme.Modules.restrictKernelIso
+#print axioms Scheme.Modules.restrictCokernelIso
+#print axioms Scheme.Modules.isCoherent_kernel
+#print axioms Scheme.Modules.isCoherent_cokernel
+#print axioms Scheme.coherent_isClosedUnderKernels
+#print axioms Scheme.coherent_isClosedUnderCokernels
+
 -- Layer B stage 3: exactness of the bridge from sheaves of modules to abelian sheaves.
 -- This is what lets a short exact sequence in `X.Modules` reach `Ext`, and hence the
 -- cohomology long exact sequence. The first two are general category theory and have
