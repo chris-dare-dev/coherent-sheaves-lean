@@ -278,6 +278,22 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms CategoryTheory.Sheaf.subsingleton_HPrime_iff_H
 #print axioms CategoryTheory.Sheaf.cechComputesDerivedCohomologyAt_singleton_terminal_of_pos
 
+-- Layer B stage 3: sections of an explicit injective resolution compute the local `H'`
+-- groups, and a fixed Cech column is their product over finite intersections. Local
+-- acyclicity therefore kills every positive-resolution-degree column homology object.
+#print axioms CategoryTheory.Sheaf.freeAbelianYonedaPresheafHomAddEquiv
+#print axioms CategoryTheory.Sheaf.freeAbelianYonedaSheafHomAddEquiv
+#print axioms CategoryTheory.Sheaf.sectionsAtFunctor
+#print axioms CategoryTheory.Sheaf.injectiveResolutionSectionsComplex
+#print axioms CategoryTheory.Sheaf.freeAbelianYonedaHomComplexIsoSections
+#print axioms CategoryTheory.Sheaf.injectiveResolutionSectionsCohomologyAddEquivHPrime
+#print axioms CategoryTheory.Sheaf.cechInjectiveBicomplexColumnXIso
+#print axioms CategoryTheory.Sheaf.cechColumnSectionsComplex
+#print axioms CategoryTheory.Sheaf.cechInjectiveBicomplexColumnIsoSectionsComplex
+#print axioms CategoryTheory.Sheaf.cechColumnSectionsComplex_exactAt
+#print axioms CategoryTheory.Sheaf.cechInjectiveBicomplexColumn_exactAt_of_isCechAcyclicFor
+#print axioms CategoryTheory.Sheaf.subsingleton_cechInjectiveBicomplexColumnHomology_of_isCechAcyclicFor
+
 -- Layer B stage 3: the same results reached from the `X.Modules` wrapper, which instance
 -- search does not see through on its own. `Scheme.Modules.toSheaf` is the retyped functor
 -- downstream work should use; the two transfer instances cover the goals that still arrive

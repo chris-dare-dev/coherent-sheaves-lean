@@ -5,6 +5,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 import CohLean.Cohomology.AffineCech
 import CohLean.Cohomology.CechBicomplex
 import Mathlib.Algebra.Category.Grp.Limits
+import Mathlib.Algebra.Category.Grp.Ulift
+import Mathlib.CategoryTheory.Adjunction.Additive
+import Mathlib.CategoryTheory.Limits.Shapes.ConcreteCategory
 import Mathlib.CategoryTheory.Sites.CoversTop
 import Mathlib.CategoryTheory.Sites.SheafCohomology.Basic
 import Mathlib.CategoryTheory.Sites.SheafCohomology.Cech
@@ -39,8 +42,9 @@ boundaries remain:
 
 * this Mathlib revision has no `EnoughInjectives` instance for abelian sheaves, so an injective
   resolution cannot yet be chosen from the current hypotheses;
-* the filtration-layer homology still has to be identified with the appropriate products of
-  `F.H' q` and then collapsed under `IsCechAcyclicFor`; and
+* fixed Cech columns are now explicit products of intersection-wise section complexes and their
+  positive resolution homology collapses under `IsCechAcyclicFor`; the remaining page-level step
+  is to identify the adjacent filtered-total mapping cone with the corresponding shifted column;
 * Mathlib's `SpectralSequence` structure records pages and page-to-page homology isomorphisms but
   has no convergence or abutment field, so comparison with the named total complex must be proved
   as a separate theorem.
@@ -48,7 +52,7 @@ boundaries remain:
 
 universe i h a v u
 
-open CategoryTheory Limits
+open CategoryTheory Category Limits Opposite
 
 namespace CategoryTheory
 
@@ -82,6 +86,195 @@ noncomputable abbrev freeAbelianYonedaSheaf (J : GrothendieckTopology C)
     [HasSheafify J AddCommGrpCat.{a}] (X : C) :
     Sheaf J AddCommGrpCat.{a} :=
   (presheafToSheaf J _).obj (yoneda.obj X ⋙ AddCommGrpCat.free)
+
+/-- Maps from the free abelian representable presheaf are sections. -/
+noncomputable def freeAbelianYonedaPresheafHomAddEquiv (X : C)
+    (G : Cᵒᵖ ⥤ AddCommGrpCat.{a}) :
+    ((yoneda.obj X ⋙ AddCommGrpCat.free) ⟶ G) ≃+ G.obj (op X) where
+  toFun f := f.app (op X) (FreeAbelianGroup.of (𝟙 X))
+  invFun s :=
+    { app := fun Y => AddCommGrpCat.ofHom
+        (FreeAbelianGroup.lift fun φ => G.map φ.op s)
+      naturality := fun {Y Z} f => by
+        apply AddCommGrpCat.hom_ext
+        apply FreeAbelianGroup.lift_ext
+        intro φ
+        simp only [Functor.comp_map, AddCommGrpCat.hom_comp]
+        change (FreeAbelianGroup.lift fun φ => G.map φ.op s)
+            ((AddCommGrpCat.free.map ((yoneda.obj X).map f)).hom
+              (FreeAbelianGroup.of φ)) =
+          (G.map f).hom
+            ((FreeAbelianGroup.lift fun φ => G.map φ.op s) (FreeAbelianGroup.of φ))
+        rw [AddCommGrpCat.free_map_coe, FreeAbelianGroup.map_of,
+          FreeAbelianGroup.lift_apply_of, FreeAbelianGroup.lift_apply_of]
+        change G.map (((yoneda.obj X).map f) φ).op s = G.map f (G.map φ.op s)
+        simp }
+  left_inv f := by
+    apply NatTrans.ext
+    funext Y
+    apply AddCommGrpCat.hom_ext
+    apply FreeAbelianGroup.lift_ext
+    intro φ
+    dsimp
+    change (FreeAbelianGroup.lift fun ψ =>
+        G.map ψ.op (f.app (op X) (FreeAbelianGroup.of (𝟙 X))))
+      (FreeAbelianGroup.of φ) = f.app Y (FreeAbelianGroup.of φ)
+    rw [FreeAbelianGroup.lift_apply_of]
+    symm
+    have h := CategoryTheory.congr_fun (f.naturality φ.op)
+      (FreeAbelianGroup.of (𝟙 X))
+    simp only [CategoryTheory.comp_apply] at h
+    change f.app Y
+      ((AddCommGrpCat.free.map ((yoneda.obj X).map φ.op)).hom
+        (FreeAbelianGroup.of (𝟙 X))) =
+      G.map φ.op (f.app (op X) (FreeAbelianGroup.of (𝟙 X))) at h
+    rw [AddCommGrpCat.free_map_coe, FreeAbelianGroup.map_of] at h
+    simpa using h
+  right_inv s := by
+    dsimp
+    change (FreeAbelianGroup.lift fun φ => G.map φ.op s)
+      (FreeAbelianGroup.of (𝟙 X)) = s
+    rw [FreeAbelianGroup.lift_apply_of]
+    simp
+  map_add' f g := rfl
+
+lemma freeAbelianYonedaPresheafHomAddEquiv_comp (X : C)
+    {G H : Cᵒᵖ ⥤ AddCommGrpCat.{a}}
+    (f : yoneda.obj X ⋙ AddCommGrpCat.free ⟶ G) (g : G ⟶ H) :
+    freeAbelianYonedaPresheafHomAddEquiv X H (f ≫ g) =
+      g.app (op X) (freeAbelianYonedaPresheafHomAddEquiv X G f) := by
+  rfl
+
+/-- Maps from the free abelian representable sheaf are sections. -/
+noncomputable def freeAbelianYonedaSheafHomAddEquiv (X : C)
+    (G : Sheaf J AddCommGrpCat.{a}) :
+    (freeAbelianYonedaSheaf J X ⟶ G) ≃+ G.obj.obj (op X) :=
+  ((sheafificationAdjunction J AddCommGrpCat.{a}).homAddEquiv
+    (yoneda.obj X ⋙ AddCommGrpCat.free) G).trans
+      (freeAbelianYonedaPresheafHomAddEquiv X G.obj)
+
+omit [HasExt.{h} (Sheaf J AddCommGrpCat.{a})] in
+lemma freeAbelianYonedaSheafHomAddEquiv_comp (X : C)
+    {G H : Sheaf J AddCommGrpCat.{a}}
+    (f : freeAbelianYonedaSheaf J X ⟶ G) (g : G ⟶ H) :
+    freeAbelianYonedaSheafHomAddEquiv X H (f ≫ g) =
+      g.hom.app (op X) (freeAbelianYonedaSheafHomAddEquiv X G f) := by
+  change freeAbelianYonedaPresheafHomAddEquiv X H.obj
+      ((sheafificationAdjunction J AddCommGrpCat.{a}).homEquiv _ _ (f ≫ g)) = _
+  rw [Adjunction.homEquiv_naturality_right]
+  exact freeAbelianYonedaPresheafHomAddEquiv_comp X _ _
+
+/-- Sections over `X`, as an additive functor on abelian sheaves. -/
+noncomputable def sectionsAtFunctorUnlifted (X : C) :
+    Sheaf J AddCommGrpCat.{a} ⥤ AddCommGrpCat.{a} :=
+  sheafToPresheaf J AddCommGrpCat.{a} ⋙
+    (evaluation Cᵒᵖ AddCommGrpCat.{a}).obj (op X)
+
+noncomputable instance sectionsAtFunctorUnlifted_additive (X : C) :
+    (sectionsAtFunctorUnlifted (J := J) X).Additive := by
+  dsimp only [sectionsAtFunctorUnlifted]
+  infer_instance
+
+/-- Sections over `X`, lifted to the universe in which morphisms of sheaves live. -/
+noncomputable def sectionsAtFunctor (X : C) :
+    Sheaf J AddCommGrpCat.{a} ⥤ AddCommGrpCat.{max a u} :=
+  sectionsAtFunctorUnlifted X ⋙ AddCommGrpCat.uliftFunctor.{u, a}
+
+noncomputable instance sectionsAtFunctor_additive (X : C) :
+    (sectionsAtFunctor (J := J) X).Additive := by
+  dsimp only [sectionsAtFunctor]
+  infer_instance
+
+/-- Apply ordinary, unlifted sections over `X` degreewise to an explicit injective resolution. -/
+noncomputable def injectiveResolutionSectionsComplexUnlifted
+    {F : Sheaf J AddCommGrpCat.{a}} (X : C) (I : InjectiveResolution F) :
+    CochainComplex AddCommGrpCat.{a} ℤ :=
+  ((sectionsAtFunctorUnlifted X).mapHomologicalComplex (ComplexShape.up ℤ)).obj
+    I.cochainComplex
+
+/-- Apply sections over `X` degreewise to an explicit injective resolution. -/
+noncomputable def injectiveResolutionSectionsComplex
+    {F : Sheaf J AddCommGrpCat.{a}} (X : C) (I : InjectiveResolution F) :
+    CochainComplex AddCommGrpCat.{max a u} ℤ :=
+  ((sectionsAtFunctor X).mapHomologicalComplex (ComplexShape.up ℤ)).obj
+    I.cochainComplex
+
+/-- In each degree, cochains from the free abelian representable sheaf are sections. -/
+noncomputable def freeAbelianYonedaHomComplexXIso
+    {F : Sheaf J AddCommGrpCat.{a}} (X : C) (I : InjectiveResolution F) (n : ℤ) :
+    (CochainComplex.HomComplex
+      ((CochainComplex.singleFunctor (Sheaf J AddCommGrpCat.{a}) 0).obj
+        (freeAbelianYonedaSheaf J X)) I.cochainComplex).X n ≅
+      (injectiveResolutionSectionsComplex X I).X n :=
+  ((CochainComplex.HomComplex.Cochain.fromSingleEquiv
+      (X := freeAbelianYonedaSheaf J X) (K := I.cochainComplex) (zero_add n)).trans
+    ((freeAbelianYonedaSheafHomAddEquiv X (I.cochainComplex.X n)).trans
+      AddEquiv.ulift.symm)).toAddCommGrpIso
+
+omit [HasExt.{h} (Sheaf J AddCommGrpCat.{a})] in
+@[simp]
+lemma freeAbelianYonedaHomComplexXIso_hom_apply
+    {F : Sheaf J AddCommGrpCat.{a}} (X : C) (I : InjectiveResolution F) (n : ℤ)
+    (α : CochainComplex.HomComplex.Cochain
+      ((CochainComplex.singleFunctor (Sheaf J AddCommGrpCat.{a}) 0).obj
+        (freeAbelianYonedaSheaf J X)) I.cochainComplex n) :
+    (freeAbelianYonedaHomComplexXIso X I n).hom α =
+      ULift.up (freeAbelianYonedaSheafHomAddEquiv X (I.cochainComplex.X n)
+        (CochainComplex.HomComplex.Cochain.fromSingleEquiv (zero_add n) α)) := by
+  rfl
+
+/-- The Hom complex from the free abelian representable sheaf is the sections complex. -/
+noncomputable def freeAbelianYonedaHomComplexIsoSections
+    {F : Sheaf J AddCommGrpCat.{a}} (X : C) (I : InjectiveResolution F) :
+    CochainComplex.HomComplex
+      ((CochainComplex.singleFunctor (Sheaf J AddCommGrpCat.{a}) 0).obj
+        (freeAbelianYonedaSheaf J X)) I.cochainComplex ≅
+      injectiveResolutionSectionsComplex X I :=
+  HomologicalComplex.Hom.isoOfComponents
+    (freeAbelianYonedaHomComplexXIso X I) (by
+      intro i j hij
+      apply AddCommGrpCat.hom_ext
+      apply AddMonoidHom.ext
+      intro α
+      obtain ⟨f, rfl⟩ :=
+        CochainComplex.HomComplex.Cochain.fromSingleMk_surjective
+          (X := freeAbelianYonedaSheaf J X) (K := I.cochainComplex) α i (zero_add i)
+      change i + 1 = j at hij
+      simp only [CategoryTheory.comp_apply,
+        freeAbelianYonedaHomComplexXIso_hom_apply,
+        CochainComplex.HomComplex.Cochain.fromSingleEquiv_fromSingleMk]
+      dsimp [injectiveResolutionSectionsComplex, sectionsAtFunctor]
+      change ULift.up
+          ((I.cochainComplex.d i j).hom.app (op X)
+            (freeAbelianYonedaSheafHomAddEquiv X (I.cochainComplex.X i) f)) =
+        ULift.up
+          (freeAbelianYonedaSheafHomAddEquiv X (I.cochainComplex.X j)
+            (CochainComplex.HomComplex.Cochain.fromSingleEquiv (zero_add j)
+              (CochainComplex.HomComplex.δ i j
+                (CochainComplex.HomComplex.Cochain.fromSingleMk f (zero_add i)))))
+      apply ULift.ext
+      change (I.cochainComplex.d i j).hom.app (op X)
+          (freeAbelianYonedaSheafHomAddEquiv X (I.cochainComplex.X i) f) =
+        freeAbelianYonedaSheafHomAddEquiv X (I.cochainComplex.X j)
+          (CochainComplex.HomComplex.Cochain.fromSingleEquiv (zero_add j)
+            (CochainComplex.HomComplex.δ i j
+              (CochainComplex.HomComplex.Cochain.fromSingleMk f (zero_add i))))
+      rw [CochainComplex.HomComplex.Cochain.δ_fromSingleMk f (zero_add i)
+        j j (zero_add j)]
+      rw [CochainComplex.HomComplex.Cochain.fromSingleEquiv_fromSingleMk]
+      exact (freeAbelianYonedaSheafHomAddEquiv_comp X f
+        (I.cochainComplex.d i j)).symm)
+
+/-- The cohomology of the sections of an explicit injective resolution computes `H'`. -/
+noncomputable def injectiveResolutionSectionsCohomologyAddEquivHPrime
+    {F : Sheaf J AddCommGrpCat.{a}} (X : C) (I : InjectiveResolution F) (n : ℕ) :
+    (injectiveResolutionSectionsComplex X I).homology (n : ℤ) ≃+ F.H' n X :=
+  ((HomologicalComplex.homologyMapIso
+      (freeAbelianYonedaHomComplexIsoSections X I).symm (n : ℤ)).addCommGroupIsoToAddEquiv).trans
+    ((CochainComplex.HomComplex.homologyAddEquiv
+      ((CochainComplex.singleFunctor (Sheaf J AddCommGrpCat.{a}) 0).obj
+        (freeAbelianYonedaSheaf J X)) I.cochainComplex (n : ℤ)).trans
+      I.extAddEquivCohomologyClass.symm)
 
 /-- At a terminal object, the free abelian representable presheaf is the constant presheaf
 `ULift ℤ`. -/
@@ -151,6 +344,120 @@ lemma subsingleton_HPrime_iff_H {T : C} (hT : IsTerminal T)
 
 variable [HasFiniteProducts C]
 
+/-- In a nonnegative Čech degree, a column of the injective bicomplex is degreewise the
+product of sections over the corresponding finite intersections. -/
+noncomputable def cechInjectiveBicomplexColumnXIso
+    {F : Sheaf J AddCommGrpCat.{a}} (U : ι → C) (I : InjectiveResolution F)
+    (p : ℕ) (q : ℤ) :
+    ((cechInjectiveBicomplex U I).X (p : ℤ)).X q ≅
+      ∏ᶜ fun x : Fin (p + 1) → ι =>
+        (I.cochainComplex.X q).obj.obj (op (∏ᶜ fun k => U (x k))) := by
+  dsimp [cechInjectiveBicomplex, cechResolutionBicomplexUnflipped,
+    cechCochainFunctorInt, cechComplexFunctor,
+    Limits.FormalCoproduct.cochainComplexFunctor,
+    Limits.FormalCoproduct.cosimplicialObjectFunctor]
+  let K := AlgebraicTopology.AlternatingCofaceMapComplex.obj
+    (Functor.rightOp (Limits.FormalCoproduct.mk ι U).cech ⋙
+      (Limits.FormalCoproduct.evalOp C AddCommGrpCat.{a}).obj
+        (I.cochainComplex.X q).obj)
+  refine K.extendXIso ComplexShape.embeddingUpNat rfl ≪≫ ?_
+  exact Iso.refl _
+
+/-- The explicit product complex of sections over the intersections in a fixed Cech degree. -/
+noncomputable def cechColumnSectionsComplex
+    {F : Sheaf J AddCommGrpCat.{a}} (U : ι → C) (I : InjectiveResolution F)
+    (p : ℕ) : CochainComplex AddCommGrpCat.{a} ℤ where
+  X q := ∏ᶜ fun x : Fin (p + 1) → ι =>
+    (I.cochainComplex.X q).obj.obj (op (∏ᶜ fun k => U (x k)))
+  d q r := Limits.Pi.map fun x =>
+    (I.cochainComplex.d q r).hom.app (op (∏ᶜ fun k => U (x k)))
+  shape q r hqr := by
+    apply Limits.Pi.hom_ext
+    intro x
+    rw [Limits.Pi.map_π]
+    rw [I.cochainComplex.shape q r hqr]
+    simp
+  d_comp_d' q r s hqr hrs := by
+    apply Limits.Pi.hom_ext
+    intro x
+    rw [Category.assoc, Limits.Pi.map_π, ← Category.assoc, Limits.Pi.map_π]
+    change Pi.π
+        (fun x : Fin (p + 1) → ι =>
+          (I.cochainComplex.X q).obj.obj (op (∏ᶜ fun k => U (x k)))) x ≫
+      ((I.cochainComplex.d q r ≫ I.cochainComplex.d r s).hom.app
+        (op (∏ᶜ fun k => U (x k)))) = _
+    rw [I.cochainComplex.d_comp_d]
+    simp
+
+/-- A fixed column of the Cech-injective bicomplex is the product of the corresponding
+intersection-wise section complexes, including its resolution differential. -/
+noncomputable def cechInjectiveBicomplexColumnIsoSectionsComplex
+    {F : Sheaf J AddCommGrpCat.{a}} (U : ι → C) (I : InjectiveResolution F)
+    (p : ℕ) :
+    (cechInjectiveBicomplex U I).X (p : ℤ) ≅ cechColumnSectionsComplex U I p :=
+  HomologicalComplex.Hom.isoOfComponents
+    (cechInjectiveBicomplexColumnXIso U I p) (by
+      intro q r hqr
+      dsimp [cechInjectiveBicomplexColumnXIso, cechColumnSectionsComplex,
+        cechInjectiveBicomplex, cechResolutionBicomplexUnflipped,
+        cechCochainFunctorInt, cechComplexFunctor,
+        Limits.FormalCoproduct.cochainComplexFunctor,
+        Limits.FormalCoproduct.cosimplicialObjectFunctor]
+      rw [HomologicalComplex.extendMap_f _ ComplexShape.embeddingUpNat
+        (i := p) (i' := (p : ℤ)) rfl]
+      simp only [Category.assoc, Iso.inv_hom_id_assoc]
+      rfl)
+
+omit [HasExt.{h} (Sheaf J AddCommGrpCat.{a})] in
+/-- Exactness of all the intersection-wise section complexes is preserved by the product that
+forms a fixed Cech column. -/
+lemma cechColumnSectionsComplex_exactAt
+    {F : Sheaf J AddCommGrpCat.{a}} (U : ι → C) (I : InjectiveResolution F)
+    (p : ℕ) (q : ℤ)
+    (hlocal : ∀ x : Fin (p + 1) → ι,
+      (injectiveResolutionSectionsComplexUnlifted
+        (∏ᶜ fun k => U (x k)) I).ExactAt q) :
+    (cechColumnSectionsComplex U I p).ExactAt q := by
+  rw [HomologicalComplex.exactAt_iff, ShortComplex.ab_exact_iff]
+  intro y hy
+  let K := fun x : Fin (p + 1) → ι =>
+    injectiveResolutionSectionsComplexUnlifted (∏ᶜ fun k => U (x k)) I
+  have hlocal' (x : Fin (p + 1) → ι) :
+      ∀ (yx : ((K x).sc q).X₂), ((K x).sc q).g yx = 0 →
+        ∃ zx : ((K x).sc q).X₁, ((K x).sc q).f zx = yx := by
+    rw [← ShortComplex.ab_exact_iff, ← HomologicalComplex.exactAt_iff]
+    exact hlocal x
+  have hyx (x : Fin (p + 1) → ι) :
+      ((K x).sc q).g
+        (Concrete.productEquiv (fun x => ((K x).sc q).X₂) y x) = 0 := by
+    have hx := congrArg
+      (fun z => Concrete.productEquiv (fun x => ((K x).sc q).X₃) z x) hy
+    simp only [Concrete.productEquiv_apply_apply] at hx
+    dsimp [cechColumnSectionsComplex, HomologicalComplex.sc, K] at hx
+    change (Pi.π (fun x => ((K x).sc q).X₃) x)
+      ((Limits.Pi.map (fun x => ((K x).sc q).g)) y) =
+        (Pi.π (fun x => ((K x).sc q).X₃) x) 0 at hx
+    have hπ := CategoryTheory.congr_fun
+      (Limits.Pi.map_π (fun x => ((K x).sc q).g) x) y
+    simp only [CategoryTheory.comp_apply] at hπ
+    rw [hπ] at hx
+    rw [Concrete.productEquiv_apply_apply]
+    change ((K x).sc q).g
+      ((Pi.π (fun x => ((K x).sc q).X₂) x) y) = 0
+    simpa only [map_zero] using hx
+  choose z hz using fun x => hlocal' x _ (hyx x)
+  refine ⟨(Concrete.productEquiv (fun x => ((K x).sc q).X₁)).symm z, ?_⟩
+  apply (Concrete.productEquiv (fun x => ((K x).sc q).X₂)).injective
+  funext x
+  simp only [Concrete.productEquiv_apply_apply]
+  change ((Limits.Pi.map (fun x => ((K x).sc q).f) ≫
+    Pi.π (fun x => ((K x).sc q).X₂) x)
+      ((Concrete.productEquiv (fun x => ((K x).sc q).X₁)).symm z)) =
+    Pi.π (fun x => ((K x).sc q).X₂) x y
+  rw [Limits.Pi.map_π, CategoryTheory.comp_apply,
+    Concrete.productEquiv_symm_apply_π]
+  simpa only [Concrete.productEquiv_apply_apply] using hz x
+
 /-- A cover is Cech-acyclic for `F` when `F` has no positive cohomology on any nonempty finite
 intersection occurring in its Cech nerve.
 
@@ -159,6 +466,68 @@ Use `IsCechAcyclicCover` for the complete Leray hypothesis. -/
 def IsCechAcyclicFor (U : ι → C) (F : Sheaf J AddCommGrpCat.{a}) : Prop :=
   ∀ (q : ℕ), 0 < q → ∀ (n : ℕ) (x : Fin (n + 1) → ι),
     Subsingleton (F.H' q (∏ᶜ fun k ↦ U (x k)))
+
+/-- Under the local acyclicity hypothesis, the positive-degree cohomology of the sections
+complex of the chosen injective resolution vanishes on every Čech intersection. -/
+lemma subsingleton_injectiveResolutionSectionsHomology_of_isCechAcyclicFor
+    {F : Sheaf J AddCommGrpCat.{a}} (U : ι → C) (I : InjectiveResolution F)
+    (hacyclic : IsCechAcyclicFor U F) (q : ℕ) (hq : 0 < q)
+    (n : ℕ) (x : Fin (n + 1) → ι) :
+    Subsingleton
+      ((injectiveResolutionSectionsComplex (∏ᶜ fun k ↦ U (x k)) I).homology (q : ℤ)) :=
+  (injectiveResolutionSectionsCohomologyAddEquivHPrime
+    (∏ᶜ fun k ↦ U (x k)) I q).toEquiv.subsingleton_congr.mpr
+      (hacyclic q hq n x)
+
+/-- If the homology of the universe-lifted complex vanishes, then the original complex is exact
+in the same degree. -/
+lemma exactAt_of_subsingleton_map_ulift_homology
+    (K : CochainComplex AddCommGrpCat.{a} ℤ) (q : ℤ)
+    (h : Subsingleton
+      ((((AddCommGrpCat.uliftFunctor.{u, a}).mapHomologicalComplex
+        (ComplexShape.up ℤ)).obj K).homology q)) :
+    K.ExactAt q := by
+  let L := ((AddCommGrpCat.uliftFunctor.{u, a}).mapHomologicalComplex
+    (ComplexShape.up ℤ)).obj K
+  letI : Subsingleton (L.homology q) := h
+  have hL : L.ExactAt q :=
+    (HomologicalComplex.exactAt_iff_isZero_homology L q).2
+      (AddCommGrpCat.isZero_of_subsingleton _)
+  rw [HomologicalComplex.exactAt_iff, ShortComplex.ab_exact_iff] at hL ⊢
+  intro y hy
+  have hy' : (L.sc q).g (ULift.up y) = 0 := by
+    apply ULift.ext
+    exact hy
+  obtain ⟨z, hz⟩ := hL (ULift.up y) hy'
+  obtain ⟨z⟩ := z
+  refine ⟨z, ?_⟩
+  exact congrArg ULift.down hz
+
+/-- Local acyclicity makes every fixed Cech column exact in positive resolution degree. -/
+lemma cechInjectiveBicomplexColumn_exactAt_of_isCechAcyclicFor
+    {F : Sheaf J AddCommGrpCat.{a}} (U : ι → C) (I : InjectiveResolution F)
+    (hacyclic : IsCechAcyclicFor U F) (p q : ℕ) (hq : 0 < q) :
+    ((cechInjectiveBicomplex U I).X (p : ℤ)).ExactAt (q : ℤ) := by
+  apply HomologicalComplex.ExactAt.of_iso
+    (cechColumnSectionsComplex_exactAt U I p (q : ℤ) (fun x => ?_))
+    (cechInjectiveBicomplexColumnIsoSectionsComplex U I p).symm
+  apply exactAt_of_subsingleton_map_ulift_homology
+  simpa only [injectiveResolutionSectionsComplex,
+    injectiveResolutionSectionsComplexUnlifted, sectionsAtFunctor,
+    sectionsAtFunctorUnlifted] using
+    (subsingleton_injectiveResolutionSectionsHomology_of_isCechAcyclicFor
+      U I hacyclic q hq p x)
+
+/-- Equivalently, every positive-resolution-degree homology object of a fixed Cech column
+vanishes under local acyclicity. -/
+lemma subsingleton_cechInjectiveBicomplexColumnHomology_of_isCechAcyclicFor
+    {F : Sheaf J AddCommGrpCat.{a}} (U : ι → C) (I : InjectiveResolution F)
+    (hacyclic : IsCechAcyclicFor U F) (p q : ℕ) (hq : 0 < q) :
+    Subsingleton
+      (((cechInjectiveBicomplex U I).X (p : ℤ)).homology (q : ℤ)) :=
+  AddCommGrpCat.subsingleton_of_isZero
+    (cechInjectiveBicomplexColumn_exactAt_of_isCechAcyclicFor
+      U I hacyclic p q hq).isZero_homology
 
 /-- The standard Leray hypothesis for a Cech-to-derived comparison: `U` covers the terminal
 object and `F` is acyclic on every nonempty finite intersection in the Cech nerve. -/
