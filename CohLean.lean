@@ -29,6 +29,7 @@ import CohLean.ForMathlib.SpectralObjectSpectralSequence
 import CohLean.ForMathlib.SpectralObjectFirstPage
 import CohLean.ForMathlib.FilteredComplexSpectralObject
 import CohLean.ForMathlib.FilteredTotalComplex
+import CohLean.ForMathlib.FilteredTotalComplexAdjacent
 import CohLean.AlgebraicGeometry.Modules.RestrictOver
 import CohLean.AlgebraicGeometry.Modules.ModulesEquiv
 import CohLean.Coh.Defs

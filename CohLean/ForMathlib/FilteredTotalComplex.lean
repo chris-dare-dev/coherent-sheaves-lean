@@ -60,6 +60,43 @@ instance (E : SpectralObject C ℤ) : E.HasSpectralSequence coreE₂Cohomologica
     exfalso
     exact hpq (pq - (r, 1 - r)) (by simp)
 
+/-- The cohomological spectral-sequence coordinates for the increasing reindexing of a
+decreasing column filtration.  At the initial page, `(p, q)` uses the adjacent filtration
+stages `-p-1 ≤ -p`; their quotient is column `p`, and total degree `p+q` leaves vertical
+degree `q`. -/
+@[simps!]
+def coreE₂ColumnFilteredCohomologicalInt :
+    SpectralSequenceDataCore ℤ
+      (fun r ↦ ComplexShape.up' (⟨r - 1, 2 - r⟩ : ℤ × ℤ)) 2 where
+  deg pq := pq.1 + pq.2
+  i₀ r pq hr := -pq.1 - r + 1
+  i₁ pq := -pq.1 - 1
+  i₂ pq := -pq.1
+  i₃ r pq hr := -pq.1 + r - 2
+  le₀₁ r pq hr := by omega
+  le₁₂ pq := by omega
+  le₂₃ r pq hr := by omega
+  hc := by rintro r pq _ rfl _; dsimp; omega
+  hc₀₂ := by rintro r pq _ rfl _; dsimp; omega
+  hc₁₃ := by rintro r pq _ rfl _; dsimp; omega
+  antitone_i₀ := by intros; omega
+  monotone_i₃ := by intros; omega
+  i₀_prev := by rintro r r' pq _ rfl _ _; dsimp; omega
+  i₃_next := by rintro r r' pq _ rfl _ _; dsimp; omega
+
+instance : coreE₂ColumnFilteredCohomologicalInt.HasFirstPageComputation where
+  hi₀₁ pq := by dsimp [coreE₂ColumnFilteredCohomologicalInt]; omega
+  hi₂₃ pq := by dsimp [coreE₂ColumnFilteredCohomologicalInt]; omega
+
+instance (E : SpectralObject C ℤ) :
+    E.HasSpectralSequence coreE₂ColumnFilteredCohomologicalInt where
+  isZero_H_obj_mk₁_i₀_le r r' pq hpq n hn hrr' hr := by
+    exfalso
+    exact hpq _ rfl
+  isZero_H_obj_mk₁_i₃_le r r' pq hpq n hn hrr' hr := by
+    exfalso
+    exact hpq (pq - (r - 1, 2 - r)) (by simp)
+
 end CategoryTheory.Abelian.SpectralObject
 
 namespace HomologicalComplex
@@ -264,8 +301,8 @@ noncomputable def columnFilteredTotalSpectralSequence
     (K : HomologicalComplex₂ C (ComplexShape.up ℤ) (ComplexShape.up ℤ))
     [∀ p : ℤ, ((columnFiltrationBicomplex K).obj p).HasTotal (ComplexShape.up ℤ)] :
     CategoryTheory.SpectralSequence C
-      (fun r ↦ ComplexShape.up' (⟨r, 1 - r⟩ : ℤ × ℤ)) 2 :=
+      (fun r ↦ ComplexShape.up' (⟨r - 1, 2 - r⟩ : ℤ × ℤ)) 2 :=
   (columnFilteredTotalSpectralObject K).spectralSequence
-    CategoryTheory.Abelian.SpectralObject.coreE₂CohomologicalInt
+    CategoryTheory.Abelian.SpectralObject.coreE₂ColumnFilteredCohomologicalInt
 
 end HomologicalComplex₂

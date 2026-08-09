@@ -42,9 +42,9 @@ boundaries remain:
 
 * this Mathlib revision has no `EnoughInjectives` instance for abelian sheaves, so an injective
   resolution cannot yet be chosen from the current hypotheses;
-* fixed Cech columns are now explicit products of intersection-wise section complexes and their
-  positive resolution homology collapses under `IsCechAcyclicFor`; the remaining page-level step
-  is to identify the adjacent filtered-total mapping cone with the corresponding shifted column;
+* the initial page is identified with fixed-column homology, and its positive resolution rows
+  vanish under `IsCechAcyclicFor`; the remaining page computation is to identify the degree-zero
+  row and its horizontal differential with the Cech complex;
 * Mathlib's `SpectralSequence` structure records pages and page-to-page homology isomorphisms but
   has no convergence or abutment field, so comparison with the named total complex must be proved
   as a separate theorem.
@@ -528,6 +528,28 @@ lemma subsingleton_cechInjectiveBicomplexColumnHomology_of_isCechAcyclicFor
   AddCommGrpCat.subsingleton_of_isZero
     (cechInjectiveBicomplexColumn_exactAt_of_isCechAcyclicFor
       U I hacyclic p q hq).isZero_homology
+
+/-- Under local acyclicity, every positive-resolution-degree entry on the initial page of the
+column-filtration spectral sequence is zero. -/
+lemma isZero_cechInjectiveInitialPage_of_isCechAcyclicFor
+    {F : Sheaf J AddCommGrpCat.{a}} (U : ι → C) (I : InjectiveResolution F)
+    (hacyclic : IsCechAcyclicFor U F) (p q : ℕ) (hq : 0 < q) :
+    IsZero (((cechInjectiveSpectralSequence U I).page 2).X
+      ((p : ℤ), (q : ℤ))) :=
+  IsZero.of_iso
+    (cechInjectiveBicomplexColumn_exactAt_of_isCechAcyclicFor
+      U I hacyclic p q hq).isZero_homology
+    (cechInjectiveInitialPageColumnHomologyIso U I (p : ℤ) (q : ℤ))
+
+/-- Elementwise form of `isZero_cechInjectiveInitialPage_of_isCechAcyclicFor`. -/
+lemma subsingleton_cechInjectiveInitialPage_of_isCechAcyclicFor
+    {F : Sheaf J AddCommGrpCat.{a}} (U : ι → C) (I : InjectiveResolution F)
+    (hacyclic : IsCechAcyclicFor U F) (p q : ℕ) (hq : 0 < q) :
+    Subsingleton (((cechInjectiveSpectralSequence U I).page 2).X
+      ((p : ℤ), (q : ℤ))) :=
+  AddCommGrpCat.subsingleton_of_isZero
+    (isZero_cechInjectiveInitialPage_of_isCechAcyclicFor
+      U I hacyclic p q hq)
 
 /-- The standard Leray hypothesis for a Cech-to-derived comparison: `U` covers the terminal
 object and `F` is acyclic on every nonempty finite intersection in the Cech nerve. -/

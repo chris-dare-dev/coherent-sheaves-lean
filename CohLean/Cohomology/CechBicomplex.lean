@@ -2,7 +2,7 @@
 Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 -/
-import CohLean.ForMathlib.FilteredTotalComplex
+import CohLean.ForMathlib.FilteredTotalComplexAdjacent
 import Mathlib.Algebra.Category.Grp.Limits
 import Mathlib.CategoryTheory.Abelian.Injective.Extend
 import Mathlib.CategoryTheory.Abelian.Injective.Ext
@@ -210,21 +210,64 @@ resolution. -/
 noncomputable def cechInjectiveSpectralSequence
     {F : Sheaf J AddCommGrpCat.{a}} (U : index → C) (I : InjectiveResolution F) :
     SpectralSequence AddCommGrpCat.{a}
-      (fun r ↦ ComplexShape.up' (⟨r, 1 - r⟩ : ℤ × ℤ)) 2 :=
+      (fun r ↦ ComplexShape.up' (⟨r - 1, 2 - r⟩ : ℤ × ℤ)) 2 :=
   (cechInjectiveSpectralObject U I).spectralSequence
-    Abelian.SpectralObject.coreE₂CohomologicalInt
+    Abelian.SpectralObject.coreE₂ColumnFilteredCohomologicalInt
 
 /-- The formal initial-page computation: an object on page `2` is the homology of the adjacent
-filtration layer selected by `q ≤ q + 1`.  Identifying that layer with iterated row/column
-cohomology is the next comparison step. -/
+filtration layer selected by the stages `-p - 1 ≤ -p`. -/
 noncomputable def cechInjectiveInitialPageXIso
     {F : Sheaf J AddCommGrpCat.{a}} (U : index → C) (I : InjectiveResolution F)
     (p q : ℤ) :
     ((cechInjectiveSpectralSequence U I).page 2).X (p, q) ≅
       ((cechInjectiveSpectralObject U I).H (p + q)).obj
-        (ComposableArrows.mk₁ (homOfLE (show q ≤ q + 1 by omega))) :=
+        (ComposableArrows.mk₁ (homOfLE (show -p - 1 ≤ -p by omega))) :=
   (cechInjectiveSpectralObject U I).spectralSequenceFirstPageXIso
-    Abelian.SpectralObject.coreE₂CohomologicalInt (p, q)
-      q (q + 1) rfl rfl (p + q) rfl
+    Abelian.SpectralObject.coreE₂ColumnFilteredCohomologicalInt (p, q)
+      (-p - 1) (-p) rfl rfl (p + q) rfl
+
+/-- The adjacent filtered-total mapping cone contributing Cech column `p` to the initial page. -/
+noncomputable def cechInjectiveAdjacentLayerComplex
+    {F : Sheaf J AddCommGrpCat.{a}} (U : index → C) (I : InjectiveResolution F)
+    (p : ℤ) : CochainComplex AddCommGrpCat.{a} ℤ :=
+  HomologicalComplex₂.columnFilteredAdjacentLayerComplex
+    (cechInjectiveBicomplex U I) p
+
+/-- The spectral object's adjacent-layer term is ordinary homology of the corresponding mapping
+cone. -/
+noncomputable def cechInjectiveAdjacentLayerHomologyIso
+    {F : Sheaf J AddCommGrpCat.{a}} (U : index → C) (I : InjectiveResolution F)
+    (p q : ℤ) :
+    ((cechInjectiveSpectralObject U I).H (p + q)).obj
+        (ComposableArrows.mk₁ (homOfLE (show -p - 1 ≤ -p by omega))) ≅
+      (cechInjectiveAdjacentLayerComplex U I p).homology (p + q) := by
+  dsimp [cechInjectiveSpectralObject,
+    HomologicalComplex₂.columnFilteredTotalSpectralObject,
+    HomotopyCategory.filteredComplexSpectralObject,
+    CategoryTheory.Triangulated.SpectralObject.mapHomologicalFunctor,
+    HomotopyCategory.spectralObjectMappingCone,
+    HomotopyCategory.composableArrowsFunctor,
+    cechInjectiveAdjacentLayerComplex,
+    HomologicalComplex₂.columnFilteredAdjacentLayerComplex]
+  change ((HomotopyCategory.quotient AddCommGrpCat.{a} (ComplexShape.up ℤ) ⋙
+      HomotopyCategory.homologyFunctor AddCommGrpCat.{a}
+        (ComplexShape.up ℤ) (p + q)).obj
+      (cechInjectiveAdjacentLayerComplex U I p)) ≅ _
+  exact (HomotopyCategory.homologyFunctorFactors AddCommGrpCat.{a}
+    (ComplexShape.up ℤ) (p + q)).app _
+
+/-- The initial page of the column-filtration spectral sequence is vertical homology of the fixed
+Cech column: `E₂^{p,q} ≅ H^q(C^{p,*})`. -/
+noncomputable def cechInjectiveInitialPageColumnHomologyIso
+    {F : Sheaf J AddCommGrpCat.{a}} (U : index → C) (I : InjectiveResolution F)
+    (p q : ℤ) :
+    ((cechInjectiveSpectralSequence U I).page 2).X (p, q) ≅
+      ((cechInjectiveBicomplex U I).X p).homology q :=
+  cechInjectiveInitialPageXIso U I p q ≪≫
+    cechInjectiveAdjacentLayerHomologyIso U I p q ≪≫
+    HomologicalComplex₂.columnFilteredAdjacentLayerHomologyIso
+      (cechInjectiveBicomplex U I) p (p + q) ≪≫
+    (CochainComplex.ShiftSequence.shiftIso AddCommGrpCat.{a}
+      (-p) (p + q) q (by omega)).app ((cechInjectiveBicomplex U I).X p)
 
 end CategoryTheory.Sheaf

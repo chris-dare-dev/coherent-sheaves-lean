@@ -232,6 +232,7 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms CategoryTheory.Triangulated.SpectralObject.mapHomologicalFunctor
 #print axioms HomotopyCategory.filteredComplexSpectralObject
 #print axioms CategoryTheory.Abelian.SpectralObject.coreE₂CohomologicalInt
+#print axioms CategoryTheory.Abelian.SpectralObject.coreE₂ColumnFilteredCohomologicalInt
 #print axioms HomologicalComplex.stupidTruncGEι
 #print axioms HomologicalComplex.stupidTruncGEMap
 #print axioms HomologicalComplex₂.columnFiltrationBicomplex
@@ -241,6 +242,43 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms HomologicalComplex₂.columnFilteredTotalιNat
 #print axioms HomologicalComplex₂.columnFilteredTotalSpectralObject
 #print axioms HomologicalComplex₂.columnFilteredTotalSpectralSequence
+
+-- Layer B stage 3: consecutive column truncations form a degreewise split short exact
+-- sequence. Its totalized mapping cone is quasi-isomorphic to the newly added shifted column,
+-- which identifies an adjacent filtration layer with fixed-column homology.
+#print axioms HomologicalComplex₂.truncatedBicomplex
+#print axioms HomologicalComplex₂.singleColumnBicomplex
+#print axioms HomologicalComplex₂.singleColumnXIso
+#print axioms HomologicalComplex₂.singleColumnXIso_hom_inv_f
+#print axioms HomologicalComplex₂.singleColumnXIso_inv_hom_f
+#print axioms HomologicalComplex₂.adjacentColumnInclusion
+#print axioms HomologicalComplex₂.adjacentColumnProjection
+#print axioms HomologicalComplex₂.adjacentColumnBicomplexShortComplex
+#print axioms HomologicalComplex₂.totalFunctor_additive
+#print axioms HomologicalComplex₂.adjacentColumnTotalShortComplex
+#print axioms HomologicalComplex₂.stupidTruncGEXIso
+#print axioms HomologicalComplex₂.stupidTruncXIso_eq_stupidTruncGEXIso
+#print axioms HomologicalComplex₂.stupidTruncGEXIso_inv_hom_f
+#print axioms HomologicalComplex₂.stupidTruncGEXIso_hom_inv_f
+#print axioms HomologicalComplex₂.complexIso_inv_hom_f
+#print axioms HomologicalComplex₂.complexIso_hom_inv_f
+#print axioms HomologicalComplex₂.adjacentColumnTotalRetraction
+#print axioms HomologicalComplex₂.adjacentColumnTotalSection
+#print axioms HomologicalComplex₂.adjacentColumnTotalDegreewiseSplitting
+#print axioms HomologicalComplex₂.singleZeroBicomplex
+#print axioms HomologicalComplex₂.singleZeroXIso
+#print axioms HomologicalComplex₂.singleZeroTotalXIso
+#print axioms HomologicalComplex₂.singleZeroTotalIso
+#print axioms HomologicalComplex₂.singleColumnShiftIso
+#print axioms HomologicalComplex₂.singleColumnTotalIso
+#print axioms HomologicalComplex₂.adjacentColumnTotalShortExact
+#print axioms HomologicalComplex₂.adjacentColumnConeToShift
+#print axioms HomologicalComplex₂.adjacentColumnConeToShift_quasiIso
+#print axioms HomologicalComplex₂.columnFilteredAdjacentLayerComplex
+#print axioms HomologicalComplex₂.columnFilteredAdjacentLayerComplex_eq
+#print axioms HomologicalComplex₂.columnFilteredAdjacentLayerConeToShift
+#print axioms HomologicalComplex₂.columnFilteredAdjacentLayerConeToShift_quasiIso
+#print axioms HomologicalComplex₂.columnFilteredAdjacentLayerHomologyIso
 
 -- Layer B stage 3: an explicit injective resolution now produces the augmented Cech
 -- bicomplex, its total complex, the column-filtered spectral sequence, and the formal
@@ -259,6 +297,9 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms CategoryTheory.Sheaf.cechInjectiveSpectralObject
 #print axioms CategoryTheory.Sheaf.cechInjectiveSpectralSequence
 #print axioms CategoryTheory.Sheaf.cechInjectiveInitialPageXIso
+#print axioms CategoryTheory.Sheaf.cechInjectiveAdjacentLayerComplex
+#print axioms CategoryTheory.Sheaf.cechInjectiveAdjacentLayerHomologyIso
+#print axioms CategoryTheory.Sheaf.cechInjectiveInitialPageColumnHomologyIso
 
 -- Layer B stage 3: positive-degree exactness of the explicit Cech complex for a module
 -- sheaf on a finite distinguished-open cover of an affine scheme. This is the affine Cech
@@ -293,6 +334,8 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms CategoryTheory.Sheaf.cechColumnSectionsComplex_exactAt
 #print axioms CategoryTheory.Sheaf.cechInjectiveBicomplexColumn_exactAt_of_isCechAcyclicFor
 #print axioms CategoryTheory.Sheaf.subsingleton_cechInjectiveBicomplexColumnHomology_of_isCechAcyclicFor
+#print axioms CategoryTheory.Sheaf.isZero_cechInjectiveInitialPage_of_isCechAcyclicFor
+#print axioms CategoryTheory.Sheaf.subsingleton_cechInjectiveInitialPage_of_isCechAcyclicFor
 
 -- Layer B stage 3: the same results reached from the `X.Modules` wrapper, which instance
 -- search does not see through on its own. `Scheme.Modules.toSheaf` is the retyped functor
