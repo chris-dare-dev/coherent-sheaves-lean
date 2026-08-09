@@ -133,15 +133,13 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms TopologicalSpace.Opens.hasBinaryProducts
 #print axioms TopologicalSpace.Opens.hasFiniteLimits
 
--- Layer B stage 1: the affine comparison, forward direction. The converse is not
--- proved -- see the module docstring of CohLean/Coh/Affine.lean.
+-- Layer B stage 1: the affine comparison, forward direction.
 #print axioms isFinitePresentation_tilde
 #print axioms isCoherent_tilde
 #print axioms isCoherent_tilde_of_finite
 -- Layer B stage 1: the geometric half of the affine comparison theorem. The first two
 -- are general sheaf theory; the rest reduce `IsIso fromTildeΓ` to a statement about
--- localisation of modules. The remaining half -- that quasi-coherence supplies that
--- statement -- is NOT proved; see CohLean/ForMathlib/AffineComparison.lean.
+-- localisation of modules.
 #print axioms TopCat.Presheaf.stalkFunctor_map_surjective_of_isBasis
 #print axioms TopCat.Sheaf.isIso_of_isIso_app_of_isBasis
 #print axioms Scheme.Modules.basicOpenRestriction
@@ -150,16 +148,29 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms isIso_fromTildeΓ_app_basicOpen
 #print axioms isIso_fromTildeΓ_of_isLocalizedModule
 
--- Layer B stage 1: the converse, making the affine comparison a characterisation. What
--- remains of the theorem is exactly the quasi-coherent case of the right-hand side.
+-- Layer B stage 1: the converse, making the affine comparison a characterisation.
 #print axioms Scheme.Modules.basicOpenRestriction_naturality
 #print axioms Scheme.Modules.isLocalizedModule_basicOpenRestriction_of_isIso
+#print axioms Scheme.Modules.isLocalizedModule_basicOpenRestriction_of_presentation
 #print axioms Scheme.Modules.isIso_fromTildeΓ_iff_isLocalizedModule
 
 -- Layer B stage 1: a quasi-coherent sheaf on an affine scheme has presentations on a
 -- basic-open cover. The first declaration is the reusable iterated-slice restriction step.
 #print axioms SheafOfModules.Presentation.over
 #print axioms Scheme.Modules.exists_basicOpen_presentation_cover
+#print axioms Scheme.Hom.opensRangeModulesEquivalenceInverseUnitIso
+#print axioms Scheme.Hom.restrictPresentation
+
+-- Layer B stage 1: Hartshorne II.5.1. Presentations on a basic-open cover supply uniform
+-- exponents for both localisation clauses; the sheaf axiom glues the normalized lifts.
+#print axioms IsLocalizedModule.restrictScalars_algebraMapSubmonoid
+#print axioms Scheme.Modules.basicOpenRestrictionOver
+#print axioms Scheme.Modules.isLocalizedModule_basicOpenRestrictionOver_of_presentation
+#print axioms Scheme.Modules.exists_power_smul_eq_of_basicOpenRestriction_eq_of_cover
+#print axioms Scheme.Modules.exists_power_smul_eq_basicOpenRestriction_of_cover
+#print axioms Scheme.Modules.isLocalizedModule_basicOpenRestriction_of_cover
+#print axioms Scheme.Modules.isLocalizedModule_basicOpenRestriction_of_isQuasicoherent
+#print axioms Scheme.Modules.isIso_fromTildeΓ_of_isQuasicoherent
 
 -- Layer B stage 3: exactness of the bridge from sheaves of modules to abelian sheaves.
 -- This is what lets a short exact sequence in `X.Modules` reach `Ext`, and hence the

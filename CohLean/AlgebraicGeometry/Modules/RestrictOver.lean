@@ -419,6 +419,57 @@ noncomputable def opensRangeModulesEquivalence :
       rw [show k = 𝟙 _ from Subsingleton.elim _ _]
       exact congr_arg (fun q => q.hom x) (Y.presheaf.map_id _))
 
+/-- The inverse open-immersion equivalence sends the unit module on the range slice to the
+unit module on the source. -/
+noncomputable def opensRangeModulesEquivalenceInverseUnitIso :
+    f.opensRangeModulesEquivalence.inverse.obj
+        (.unit (Y.ringCatSheaf.over f.opensRange)) ≅
+      .unit X.ringCatSheaf := by
+  refine (SheafOfModules.fullyFaithfulForget _).preimageIso <|
+    PresheafOfModules.isoMk (fun U => ?_) ?_
+  · refine
+      { hom := ConcreteCategory.ofHom (C := ModuleCat _)
+          { toFun := (f.appIso U.unop).hom
+            map_add' := fun (x y : Γ(Y, f ''ᵁ U.unop)) =>
+              (f.appIso U.unop).hom.hom.map_add x y
+            map_smul' := fun (r : Γ(X, U.unop)) (x : Γ(Y, f ''ᵁ U.unop)) => by
+              change (f.appIso U.unop).hom ((f.appIso U.unop).inv r * x) =
+                r * (f.appIso U.unop).hom x
+              simp }
+        inv := ConcreteCategory.ofHom (C := ModuleCat _)
+          { toFun := (f.appIso U.unop).inv
+            map_add' := fun (x y : Γ(X, U.unop)) =>
+              (f.appIso U.unop).inv.hom.map_add x y
+            map_smul' := fun (r x : Γ(X, U.unop)) => by
+              change (f.appIso U.unop).inv (r * x) =
+                (f.appIso U.unop).inv r * (f.appIso U.unop).inv x
+              simp }
+        hom_inv_id := by
+          apply ModuleCat.hom_ext
+          apply LinearMap.ext
+          intro x
+          exact Iso.hom_inv_id_apply (C := CommRingCat) (f.appIso U.unop) x
+        inv_hom_id := by
+          apply ModuleCat.hom_ext
+          apply LinearMap.ext
+          intro x
+          exact Iso.inv_hom_id_apply (C := CommRingCat) (f.appIso U.unop) x }
+  · intro U V g
+    have h : Y.presheaf.map (f.opensFunctor.op.map g) ≫
+        (f.appIso V.unop).hom =
+        (f.appIso U.unop).hom ≫ X.presheaf.map g := by
+      simp [Scheme.Hom.appIso_hom']
+    ext x
+    exact congr($(h) x)
+
+/-- A presentation on the range slice of an open immersion transports to a presentation of the
+scheme-level restriction on its source. -/
+noncomputable def restrictPresentation (M : Y.Modules)
+    (P : (M.over f.opensRange).Presentation) :
+    (M.restrict f).Presentation :=
+  P.map f.opensRangeModulesEquivalence.inverse
+    f.opensRangeModulesEquivalenceInverseUnitIso
+
 /-- Restriction to the slice over the range, transported back across
 `opensRangeModulesEquivalence`, agrees with scheme-level restriction. -/
 noncomputable def restrictFunctorIsoOver :

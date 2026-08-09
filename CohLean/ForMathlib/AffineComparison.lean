@@ -5,17 +5,17 @@ Released under Apache 2.0 license as described in the file LICENSE.
 import Mathlib.AlgebraicGeometry.Modules.Tilde
 
 /-!
-# Towards the affine comparison theorem
+# The localisation criterion for the affine comparison theorem
 
 On `Spec R`, a quasi-coherent sheaf of modules should be recovered from its global sections
 by `~`: the counit `Scheme.Modules.fromTildeΓ` should be an isomorphism. This is Stacks
-[01I8](https://stacks.math.columbia.edu/tag/01I8) / Hartshorne II.5.5, and it is missing from
+[01IA](https://stacks.math.columbia.edu/tag/01IA) / Hartshorne II.5.1, and it is missing from
 Mathlib at `v4.29.0`.
 
 This file reduces that theorem to a statement about localisation of modules, and proves the
 reduction is *exact*: the counit is an isomorphism **if and only if** restriction to every
-basic open is a localisation. What is left of the comparison theorem is therefore precisely
-one implication — that quasi-coherence supplies that condition. See "Not proved here".
+basic open is a localisation. `CohLean.ForMathlib.AffineComparisonGluing` proves that
+quasi-coherence supplies this condition and completes the comparison theorem.
 
 ## Main results
 
@@ -34,6 +34,9 @@ one implication — that quasi-coherence supplies that condition. See "Not prove
   argument and the check that the hypothesis is satisfiable rather than vacuous.
 * `AlgebraicGeometry.Scheme.Modules.isLocalizedModule_basicOpenRestriction_of_isIso` — the
   converse of the reduction, obtained by transporting the base case along the counit.
+* `AlgebraicGeometry.Scheme.Modules.isLocalizedModule_basicOpenRestriction_of_presentation` —
+  the local input for the gluing argument: a global presentation makes every basic-open
+  restriction a localisation.
 * `AlgebraicGeometry.Scheme.Modules.isIso_fromTildeΓ_iff_isLocalizedModule` — the two put
   together: **`IsIso M.fromTildeΓ ↔ ∀ f, IsLocalizedModule (powers f) (restriction to D(f))`.**
   This is the statement to quote.
@@ -53,32 +56,27 @@ already stated in Mathlib for an *arbitrary* `M : (Spec R).Modules`, not only fo
 the whole content of the comparison theorem is concentrated in the single hypothesis of
 `isIso_fromTildeΓ_of_isLocalizedModule`.
 
-## Not proved here
+## Completion
 
-Exactly one implication is missing, and it is the mathematical content of the comparison
-theorem. It is *absent from this library* — not assumed, not `sorry`ed, simply not done, and
-nothing downstream may assume it:
+The mathematical implication deliberately left out of this reduction is:
 
 > for `M` **quasi-coherent** on `Spec R` and `f : R`, the restriction `Γ(M, ⊤) → Γ(M, D(f))`
 > exhibits its target as the localisation at `Submonoid.powers f`
 
 equivalently, by `isIso_fromTildeΓ_iff_isLocalizedModule`, that a quasi-coherent sheaf on an
-affine scheme lies in the essential image of `~`.
+affine scheme lies in the essential image of `~`. It is proved in
+`CohLean.ForMathlib.AffineComparisonGluing` as
+`Scheme.Modules.isLocalizedModule_basicOpenRestriction_of_isQuasicoherent`; the resulting
+counit theorem is `Scheme.Modules.isIso_fromTildeΓ_of_isQuasicoherent`.
 
-Because that characterisation is an `↔`, the boundary is sharp: everything on the geometric
-side is done, and no further reduction will help. The remaining work is the classical covering
-argument — cover `D(f)` by finitely many basic opens on which `M` is a cokernel of free
-sheaves, hence a tilde, and glue with the sheaf axiom. The step identifying sheaves on `D(g)`
-with `R_g`-modules is served by `CohLean/AlgebraicGeometry/Modules/RestrictOver.lean`
-(`opensRangeEquivalence`, `restrictFunctorIsoOver`, and the two-way transport
-`isFinitePresentation_over_iff_restrict`), all of which are now on `main`.
-
-Tracked as issue #46, whose remaining deliverables are that implication and the two finiteness
-corollaries that issue #11 consumes.
+The completion is the classical covering argument: choose a finite basic-open subcover carrying
+presentations, choose uniform powers of `f` for equality and extension, and glue the normalized
+local lifts with the sheaf axiom. The scheme/slice transport used by its local input is in
+`CohLean.AlgebraicGeometry.Modules.RestrictOver`.
 
 ## References
 
-* [Stacks, Tag 01I8](https://stacks.math.columbia.edu/tag/01I8)
+* [Stacks, Tag 01IA](https://stacks.math.columbia.edu/tag/01IA)
 -/
 
 universe v u
@@ -282,6 +280,15 @@ theorem Scheme.Modules.isLocalizedModule_basicOpenRestriction_of_isIso (M : (Spe
   obtain ⟨y, rfl⟩ := eTop.surjective x
   have hy := congrArg (fun g => ModuleCat.Hom.hom g y) key
   simpa [eTop, eBas] using hy.symm
+
+/-- A presented sheaf of modules on an affine scheme restricts to a localisation on every
+basic open. This is the per-member input for gluing the affine comparison from a basic-open
+cover carrying presentations. -/
+theorem Scheme.Modules.isLocalizedModule_basicOpenRestriction_of_presentation
+    (M : (Spec R).Modules) (P : M.Presentation) (f : R) :
+    IsLocalizedModule (Submonoid.powers f) (M.basicOpenRestriction f).hom := by
+  letI := isIso_fromTildeΓ_of_presentation M P
+  exact M.isLocalizedModule_basicOpenRestriction_of_isIso f
 
 /-- **The affine comparison, as a characterisation.**
 

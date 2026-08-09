@@ -57,8 +57,8 @@ does not in fact bite: the coercion is accepted as written.
 
 ## Not yet proved
 
-Only the forward direction is here. The converse and the equivalence itself are **absent
-from this library** — not assumed, not `sorry`ed, simply not done:
+Only the forward direction is proved in this file. The converse and the equivalence itself are
+not yet assembled here:
 
 * that a coherent sheaf on `Spec R` has finitely presented global sections, for `R`
   noetherian;
@@ -66,18 +66,15 @@ from this library** — not assumed, not `sorry`ed, simply not done:
 
 Nothing downstream may assume either.
 
-The obstruction is identified and is not a matter of effort in this file. Both statements
-need the **affine comparison theorem** — that a quasi-coherent sheaf on `Spec R` is
-recovered from its global sections, `IsIso M.fromTildeΓ` — and that theorem is missing from
-Mathlib at `v4.29.0`. `SheafOfModules.IsFinitePresentation` is by definition *local* data,
-an existential over `QuasicoherentData`, and Mathlib supplies no bridge from it to global
-sections: `isIso_fromTildeΓ_of_presentation` needs a **global** presentation as its input,
-and the only `IsIso (fromTildeΓ …)` instances are for `unit` and `free ι`. Supplying the
-comparison is issue #46; the converse half of #11 waits on it.
+The required bridge is now available as
+`Scheme.Modules.isIso_fromTildeΓ_of_isQuasicoherent`, proved by the gluing argument in
+`CohLean.ForMathlib.AffineComparisonGluing`. The remaining work is to use that bridge to read
+finite presentation from global sections and assemble the equivalence; that is the assembly
+point tracked by #46 and the converse half of #11.
 
 ## References
 
-* [Stacks, Tag 01I8](https://stacks.math.columbia.edu/tag/01I8) — quasi-coherent modules on
+* [Stacks, Tag 01IA](https://stacks.math.columbia.edu/tag/01IA) — quasi-coherent modules on
   an affine scheme
 -/
 
