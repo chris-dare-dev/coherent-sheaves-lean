@@ -6,8 +6,10 @@ import CohLean.Coh.Defs
 import CohLean.ForMathlib.AffineComparisonFiniteness
 import CohLean.ForMathlib.FinitePresentationOfPresentation
 import CohLean.ForMathlib.OpensLimits
+import Mathlib.Algebra.Category.FGModuleCat.Basic
 import Mathlib.AlgebraicGeometry.Modules.Tilde
 import Mathlib.Algebra.Module.FinitePresentation
+import Mathlib.CategoryTheory.Adjunction.Restrict
 
 /-!
 # Coherent sheaves on an affine scheme
@@ -27,6 +29,8 @@ finitely presented `R`-modules.
   quasi-coherent sheaves have finite global sections on an affine noetherian scheme;
 * `AlgebraicGeometry.moduleFinitePresentation_globalSections_of_isCoherent` — coherent
   sheaves have finitely presented global sections.
+* `AlgebraicGeometry.Coh.affineEquivalence` — coherent sheaves on `Spec R` are equivalent
+  to finitely generated `R`-modules when `R` is noetherian.
 
 ## Proof strategy
 
@@ -63,21 +67,18 @@ does not in fact bite: the coercion is accepted as written.
 The converse finiteness results use the affine comparison and localisation patching developed
 in `CohLean.ForMathlib.AffineComparisonFiniteness`.
 
-## Not yet assembled
+## Affine equivalence
 
-The two object-level directions needed for the affine equivalence are now proved, but the
-categorical equivalence itself is not yet assembled here:
+The object-level finiteness results restrict Mathlib's `tilde ⊣ Γ` adjunction to
+`FGModuleCat R` and `Coh (Spec R)`. The restricted unit is inherited from Mathlib's tilde
+comparison, while the restricted counit is an isomorphism by the affine comparison theorem
+`Scheme.Modules.isIso_fromTildeΓ_of_isQuasicoherent`. Thus the restricted adjunction is an
+equivalence.
 
-* `Coh (Spec R) ≌` finitely generated `R`-modules.
-
-Nothing downstream may assume the equivalence until #11 packages the functors and natural
-isomorphisms.
-
-The required bridge is now available as
-`Scheme.Modules.isIso_fromTildeΓ_of_isQuasicoherent`, proved by the gluing argument in
-`CohLean.ForMathlib.AffineComparisonGluing`. Its finiteness consequences are now supplied by
-`CohLean.ForMathlib.AffineComparisonFiniteness`; only the categorical assembly tracked by #11
-remains.
+The global-sections functor `Coh.affineGlobalSections` itself does not need noetherianity:
+finite presentation already implies finite global sections on an affine scheme. The
+noetherian hypothesis first appears on `FGModuleCat.affineTilde`, where it upgrades a finite
+module to a finitely presented module, and consequently on the adjunction and equivalence.
 
 ## References
 
@@ -150,5 +151,108 @@ theorem moduleFinitePresentation_globalSections_of_isCoherent [IsNoetherianRing 
   letI : Module.Finite R (moduleSpecΓFunctor.obj M) :=
     Scheme.Modules.moduleFinite_globalSections M hM'
   exact Module.finitePresentation_of_finite R (moduleSpecΓFunctor.obj M)
+
+/-- Global sections restrict from coherent sheaves on `Spec R` to finitely generated
+`R`-modules. No noetherian hypothesis is needed in this direction. -/
+noncomputable def Coh.affineGlobalSections (R : CommRingCat.{u}) :
+    Coh (Spec R) ⥤ FGModuleCat.{u} R :=
+  (ModuleCat.isFG R).lift
+    (Coh.ι (Spec R) ⋙ moduleSpecΓFunctor)
+    fun M => by
+      have hM : SheafOfModules.IsFinitePresentation.{u, u, u} M.obj := M.property
+      exact Scheme.Modules.moduleFinite_globalSections M.obj hM
+
+/-- Over a noetherian ring, tilde restricts from finitely generated modules to coherent
+sheaves on the affine spectrum. -/
+noncomputable def FGModuleCat.affineTilde [IsNoetherianRing R] :
+    FGModuleCat.{u} R ⥤ Coh (Spec R) :=
+  (Scheme.coherent (Spec R)).lift
+    ((ModuleCat.isFG R).ι ⋙ tilde.functor R)
+    fun M => by
+      letI : Module.Finite R M.obj := M.property
+      exact isCoherent_tilde_of_finite M.obj
+
+private noncomputable def affineTildeCompιIso [IsNoetherianRing R] :
+    (ModuleCat.isFG R).ι ⋙ tilde.functor R ≅
+      FGModuleCat.affineTilde (R := R) ⋙ (Scheme.coherent (Spec R)).ι :=
+  .refl _
+
+private noncomputable def affineGlobalSectionsCompιIso :
+    (Scheme.coherent (Spec R)).ι ⋙ moduleSpecΓFunctor ≅
+      Coh.affineGlobalSections R ⋙ (ModuleCat.isFG R).ι :=
+  .refl _
+
+/-- Mathlib's tilde-global-sections adjunction restricted to finitely generated modules and
+coherent sheaves on an affine noetherian scheme. -/
+noncomputable def Coh.affineAdjunction [IsNoetherianRing R] :
+    FGModuleCat.affineTilde (R := R) ⊣ Coh.affineGlobalSections R :=
+  (tilde.adjunction (R := R)).restrictFullyFaithful
+    (ModuleCat.isFG R).fullyFaithfulι
+    (Scheme.coherent (Spec R)).fullyFaithfulι
+    affineTildeCompιIso affineGlobalSectionsCompιIso
+
+private theorem affineAdjunction_unit_isIso [IsNoetherianRing R]
+    (M : FGModuleCat.{u} R) :
+    IsIso ((Coh.affineAdjunction (R := R)).unit.app M) := by
+  let hUnit : IsIso ((tilde.adjunction (R := R)).unit.app
+      ((ModuleCat.isFG R).ι.obj M)) := by
+    dsimp [tilde.adjunction]
+    exact NatIso.hom_app_isIso (tilde.toTildeΓNatIso (R := R)) M.obj
+  let hMap : IsIso (moduleSpecΓFunctor.map (affineTildeCompιIso.hom.app M)) :=
+    Functor.map_isIso moduleSpecΓFunctor (affineTildeCompιIso.hom.app M)
+  let hComm₂ : IsIso (affineGlobalSectionsCompιIso.hom.app
+      (FGModuleCat.affineTilde (R := R).obj M)) :=
+    NatIso.hom_app_isIso affineGlobalSectionsCompιIso _
+  haveI : IsIso ((ModuleCat.isFG R).ι.map
+      ((Coh.affineAdjunction (R := R)).unit.app M)) := by
+    have h :=
+      (tilde.adjunction (R := R)).map_restrictFullyFaithful_unit_app
+        (ModuleCat.isFG R).fullyFaithfulι
+        (Scheme.coherent (Spec R)).fullyFaithfulι
+        affineTildeCompιIso affineGlobalSectionsCompιIso M
+    exact h.symm ▸ IsIso.comp_isIso' hUnit (IsIso.comp_isIso' hMap hComm₂)
+  exact (ModuleCat.isFG R).fullyFaithfulι.isIso_of_isIso_map _
+
+private theorem affineAdjunction_counit_isIso [IsNoetherianRing R]
+    (M : Coh (Spec R)) :
+    IsIso ((Coh.affineAdjunction (R := R)).counit.app M) := by
+  letI : SheafOfModules.IsFinitePresentation.{u, u, u} M.obj := M.property
+  let hCounit : IsIso ((tilde.adjunction (R := R)).counit.app
+      ((Scheme.coherent (Spec R)).ι.obj M)) := by
+    dsimp [tilde.adjunction, Scheme.Modules.fromTildeΓNatTrans]
+    exact Scheme.Modules.isIso_fromTildeΓ_of_isQuasicoherent M.obj
+  let hComm₁ : IsIso (affineTildeCompιIso.inv.app
+      ((Coh.affineGlobalSections R).obj M)) :=
+    NatIso.inv_app_isIso affineTildeCompιIso _
+  let hMap : IsIso ((tilde.functor R).map
+      (affineGlobalSectionsCompιIso.inv.app M)) :=
+    Functor.map_isIso (tilde.functor R) (affineGlobalSectionsCompιIso.inv.app M)
+  haveI : IsIso ((Scheme.coherent (Spec R)).ι.map
+      ((Coh.affineAdjunction (R := R)).counit.app M)) := by
+    have h :=
+      (tilde.adjunction (R := R)).map_restrictFullyFaithful_counit_app
+        (ModuleCat.isFG R).fullyFaithfulι
+        (Scheme.coherent (Spec R)).fullyFaithfulι
+        affineTildeCompιIso affineGlobalSectionsCompιIso M
+    exact h.symm ▸ IsIso.comp_isIso' hComm₁ (IsIso.comp_isIso' hMap hCounit)
+  exact (Scheme.coherent (Spec R)).fullyFaithfulι.isIso_of_isIso_map _
+
+/-- For a noetherian ring `R`, coherent sheaves on `Spec R` are equivalent to finitely
+generated `R`-modules. The forward functor is global sections and the inverse is tilde. -/
+noncomputable def Coh.affineEquivalence [IsNoetherianRing R] :
+    Coh (Spec R) ≌ FGModuleCat.{u} R := by
+  letI (M : FGModuleCat.{u} R) := affineAdjunction_unit_isIso M
+  letI (M : Coh (Spec R)) := affineAdjunction_counit_isIso M
+  exact (Coh.affineAdjunction (R := R)).toEquivalence.symm
+
+@[simp]
+theorem Coh.affineEquivalence_functor [IsNoetherianRing R] :
+    (Coh.affineEquivalence (R := R)).functor = Coh.affineGlobalSections R :=
+  rfl
+
+@[simp]
+theorem Coh.affineEquivalence_inverse [IsNoetherianRing R] :
+    (Coh.affineEquivalence (R := R)).inverse = FGModuleCat.affineTilde (R := R) :=
+  rfl
 
 end AlgebraicGeometry

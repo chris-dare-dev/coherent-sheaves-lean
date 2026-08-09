@@ -7,7 +7,7 @@ before touching it. The live dependency graph is recorded in each milestone desc
 `ready` and `blocked` are mutually exclusive, while `in-progress` means an implementation or
 pull request already exists.
 
-Current independent entry points are [#11](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/11),
+Current independent entry points are [#8](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/8),
 [#21](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/21),
 [#27](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/27),
 and [#33](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/33).
@@ -102,7 +102,7 @@ depend on it. The cheapest instance would be `Examples/RankOneSurface`: `H ↦ �
 
 | # | Stage | Estimate | Gate |
 |---|---|---|---|
-| B1 | Coherent category, locality, affine comparison, closure, abelian/exact inclusion | 2–3 months | [milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/4); affine comparison complete, #11 next |
+| B1 | Coherent category, locality, affine comparison, closure, abelian/exact inclusion | 2–3 months | [milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/4); affine equivalence complete, #8 next |
 | B2 | Invertible sheaves, `Pic X`, Cartier divisors, `O_X(D)`, determinant, effective-divisor sequence | 2–3 months | [milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/7); #21 ready, remainder gated |
 | B3 | Affine vanishing, cohomology boundedness, geometric `χ`, additivity | 4–6 months | [milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/5); explicit affine Čech vanishing done; #27 ready, #28 blocked on #27; finiteness deferred, see below |
 | B4 | Numerical polynomials, Snapper, intersections, numerical Chern data | ~3 months | [milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/9); #33 ready |
@@ -116,8 +116,8 @@ Total 18–30 months. Layer A exists so that nothing waits on this.
 `⟹ IsFiniteType` as instances. CohLean proves closure under isomorphisms, finite-presentation
 locality, and the equivalence connecting slice restriction to scheme-level restriction along
 an open immersion. The remaining graph is explicit in the milestone: the completed affine
-comparison feeds #11 and then kernels/cokernels; locality feeds extensions; those closure
-results feed the abelian/exact-inclusion assembly.
+equivalence feeds kernels/cokernels; locality feeds extensions; those closure results feed the
+abelian/exact-inclusion assembly.
 
 On the affine-local criterion (issue #12): Mathlib has
 `SheafOfModules.QuasicoherentData.bind` and `IsQuasicoherent.of_coversTop`, so local-to-global
@@ -125,18 +125,20 @@ is done — **for quasicoherence only**. There is no finite-presentation analogu
 one is a real Mathlib gap rather than an unwrapping exercise. Note also that `M.over U` lives
 on the site `Over U` with topology `J.over U`, so composing restrictions is a site
 equivalence, not a triviality; `bind` handles it with `pushforwardPushforwardEquivalence`.
-The full plan is on the issue. Issue #11 does not depend on any of this and is the better
-first pick for the milestone.
+The full plan is on the issue.
 
-The object-level content of #11 is now done (`CohLean/Coh/Affine.lean`): `M^~` is of finite
+Issue #11 is now done (`CohLean/Coh/Affine.lean`): `M^~` is of finite
 presentation whenever `M` is, because `AlgebraicGeometry.presentationTilde` already builds
 the global presentation and its index types are the two generating sets that
 `Module.FinitePresentation` hands over. Conversely,
 `ForMathlib/AffineComparisonGluing.lean` proves `IsIso M.fromTildeΓ` for quasi-coherent `M`,
 and `ForMathlib/AffineComparisonFiniteness.lean` transports finite generators and
 presentations to a basic-open cover and patches their localized global sections. Thus coherent
-sheaves on `Spec R` have finitely presented global sections when `R` is noetherian. #11 now
-only has to package these object-level results as the categorical equivalence.
+sheaves on `Spec R` have finitely presented global sections when `R` is noetherian.
+`Coh.affineGlobalSections` and `FGModuleCat.affineTilde` restrict Mathlib's `tilde ⊣ Γ`
+adjunction to the two full subcategories, and `Coh.affineEquivalence` packages the resulting
+`Coh (Spec R) ≌ FGModuleCat R`. The global-sections restriction itself needs no noetherian
+hypothesis; noetherianity first appears in the tilde direction.
 
 One smaller Mathlib gap surfaced on the way and is discharged in
 `CohLean/ForMathlib/OpensLimits.lean`: `Presentation.quasicoherentData` assumes
