@@ -1,6 +1,7 @@
 # Handoff
 
-Updated 2026-08-09 for the #11 branch, based on `93d8b3c`. For a session picking this repo up cold.
+Updated 2026-08-09 for the #9/#10 branch, based on `642a7a3`. For a session picking this repo
+up cold.
 
 Read §1 and §7. Everything else is reference.
 
@@ -26,19 +27,20 @@ lake env lean scripts/Audit.lean
 The audit must print `[propext, Classical.choice, Quot.sound]` on every line and never
 `sorryAx`. There is no `sorry` in this library and there never has been.
 
-**State after #11:** 50 commits, 33 Lean files, ~6535 lines, 162 audited declarations. The
-branch passes the full build and axiom audit. Docs live at
+**State after #9/#10:** `lake build` completes 2963 jobs and 192 declarations are audited.
+Every audit line uses only `[propext, Classical.choice, Quot.sound]`; there is no `sorryAx`.
+Docs live at
 <https://chris-dare-dev.github.io/coherent-sheaves-lean/>.
 
 **Layer A is done through A8a** — the general RR expansion, the `n = 2/3/4` specialisations,
 the K3 and Calabi–Yau-threefold cases, and the Euler pairing `χ(E,F)`. Only A8b (the numerical
 lattice, #17) remains.
 
-**Layer B is well past its definitions.** B1 has the affine-local criterion, closure under
-isomorphism, the slice-equivalence transport, the full affine comparison, its noetherian
-finiteness corollaries, and `Coh (Spec R) ≌ FGModuleCat R`. B3 has explicit affine Čech
-exactness, but not yet the comparison with derived-functor sheaf cohomology. `Coh X` is still
-**not** abelian and geometric `χ` does not exist, so B3 remains the gate.
+**Layer B stage B1 is complete.** It includes the affine-local criterion, closure under
+isomorphism, the slice-equivalence transport, the affine comparison and equivalence, closure
+under kernels, cokernels, and extensions, and finally the abelian structure on `Coh X` with
+exact inclusion into `X.Modules`. B3 has explicit affine Čech exactness, but not yet the
+comparison with derived-functor sheaf cohomology; geometric `χ` does not yet exist.
 
 The live work is §7.
 
@@ -126,7 +128,7 @@ Three models, so nothing is vacuous:
 surface has the same ring `ℚ[t]/(t³)` up to the single number `∫H²`. A new rank-one model costs
 a Todd class and nothing else.
 
-### Layer B — locality, the slice equivalence, and the affine comparison
+### Layer B — coherent sheaves form an abelian category
 
 > Everything in this subsection except `Coh/Defs.lean` and the two original `ForMathlib` files
 > was written by **other sessions**. This table was checked against each file's module
@@ -149,6 +151,8 @@ a Todd class and nothing else.
 | `ForMathlib/AffineComparisonGluing.lean` | Hartshorne II.5.1 gluing and `isIso_fromTildeΓ_of_isQuasicoherent` |
 | `ForMathlib/AffineComparisonFiniteness.lean` | transports finite generators/presentations to basic opens and patches the localized finite modules |
 | `Coh/Kernels.lean` | finite-limit preservation for restriction, localization through kernels, affine/global kernel and cokernel closure, and the two object-property closure instances |
+| `Coh/Extensions.lean` | local lifting on two finite refinements and the finite horseshoe presentation proving closure under extensions, with no noetherian hypothesis |
+| `Coh/Abelian.lean` | zero and finite-product closure, the abelian instance on `Coh X`, and the exact inclusion into `X.Modules` |
 | `ForMathlib/ToSheafExact.lean` | `SheafOfModules.toSheaf` preserves finite colimits, hence epis and short exact sequences. Needed because `Sheaf.H` is `Ext` from the constant sheaf, so the cohomology long exact sequence runs on the *image* of a sequence in `Sheaf J AddCommGrpCat` — and nothing upstream said it survives the trip |
 | `Cohomology/Strategy.lean` | **Proves nothing.** A compile-only API map of the upstream declarations B3 can build on: 0 theorems, 6 `example`s, deliberately built to break the day one of them moves. Records the #26 reconnaissance so it is not repeated |
 
@@ -157,9 +161,8 @@ The two original `ForMathlib` files fill a real Mathlib gap: Mathlib has
 that transporting a presentation preserves `Presentation.IsFinite`. Both files are in Mathlib
 namespaces so upstreaming is a file move.
 
-**Still not proved:** `Coh X` closed under extensions; `Coh X` abelian;
-geometric `χ`; all of B2, B4, B5. General cohomology finiteness remains deliberately
-deferred; the affine global-sections finiteness needed by B1 is now proved.
+**Still not proved:** geometric `χ`; all of B2, B4, B5. General cohomology finiteness
+remains deliberately deferred; the affine global-sections finiteness needed by B1 is proved.
 
 ---
 
@@ -207,13 +210,13 @@ shared too, and they are where every merge conflict this project has had actuall
 |---|---|---|
 | A7 | 0 | **done** — threefold and fourfold RR |
 | A8 | 1 | Euler pairing **done**; the numerical lattice (#17) remains |
-| B1 | 2 | `Coh X` abelian; extensions and the final assembly remain |
+| B1 | 0 | **done** — `Coh X` abelian with exact inclusion into `X.Modules` |
 | B2 | 6 | Divisors, `Pic X`, `O_X(D)` |
 | B3 | 7 | Cohomology and `χ` — **still the real gate** |
 | B4 | 5 | Snapper polynomials → intersection numbers |
 | B5 | 7 | Serre duality → RR for surfaces → discharge `hirzebruch_riemannRoch` |
 
-**Startable after this branch merges:** **#9, #21, #33**. #9 is the B1 critical path.
+**Startable after this branch merges:** **#21, #27, #33**.
 Regenerate this list with `gh issue list --label ready` before choosing,
 because tracker labels move faster than this file.
 
@@ -225,9 +228,9 @@ expect to land in Layer B, where the cost is Mathlib plumbing rather than mathem
 
 ## 7. In flight
 
-**Kernel and cokernel closure (#8) is complete after this branch.** The critical-path B1 task is
-now #9 (extensions), which should use local lifts plus
-`IsFinitePresentation.of_coversTop`, not affine `H¹` vanishing.
+**B1 is complete after this branch.** Extension closure uses local lifts plus
+`IsFinitePresentation.of_coversTop`, not affine `H¹` vanishing; the final assembly makes
+`Coh X` abelian and packages its inclusion into all module sheaves as exact.
 
 Universe defaulting and iterated-slice elaboration are still the dominant implementation
 hazards; the fixes are preserved in §8. The `Finset`/`Set` warning remains retracted.
@@ -457,15 +460,12 @@ present, the error is about *when* Lean looked, not *what* it found.
 
 > This order is a snapshot. Re-check tracker labels before starting.
 
-1. **#9** — closure under extensions. Use local lifts plus
-   `IsFinitePresentation.of_coversTop`; do not import B3 affine vanishing.
-2. **#10** — assemble the abelian structure and exact inclusion after #9 lands; kernel and
-   cokernel closure are supplied by this branch.
-3. **#21** — toolchain bump and divisor API audit before any B2 work. Upstream Mathlib gained
+1. **#21** — toolchain bump and divisor API audit before any B2 work. Upstream Mathlib gained
    `AlgebraicGeometry/AlgebraicCycle/` and `OrderOfVanishing.lean` after v4.29.0 — build on
    those rather than duplicating them. The bump also forces bumps in `bridgeland-stab-lean`
    and `bstab`.
-4. **#33** — multivariable numerical polynomials and finite differences, the independent B4
+2. **#27** — compare the explicit affine Čech complex with derived sheaf cohomology.
+3. **#33** — multivariable numerical polynomials and finite differences, the independent B4
    entry point.
 
 A **rank-one model for a Calabi–Yau threefold** is not an issue yet — which today makes it

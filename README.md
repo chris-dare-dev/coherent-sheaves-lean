@@ -75,12 +75,11 @@ piece of work, and the Lean/Mathlib traps this repo has already paid for.
 Layer A is complete and audited for the general expansion, the surface, threefold and
 fourfold specialisations, the K3 and Calabi–Yau-threefold cases, the Euler pairing
 `χ(E,F)` that Bridgeland stability is defined against, and the point, K3, and
-projective-plane models. Layer B stage B1 is active: closure under isomorphisms,
-finite-presentation locality, the open-immersion restriction equivalence, and the affine
-comparison with its noetherian finiteness corollaries and restricted equivalence are complete.
-Closure under ambient kernels and cokernels is also complete. The next B1 task is closure under
-extensions (#9), followed by the abelian/exact-inclusion assembly (#10). Every later Layer B
-stage has a milestone and issue-level dependency graph; see [ROADMAP.md](ROADMAP.md).
+projective-plane models. Layer B stage B1 is complete: `Coh X` is abelian on a locally
+noetherian scheme, and its inclusion into `X.Modules` is exact. The proof includes locality,
+the affine comparison and equivalence, and closure under kernels, cokernels, and extensions.
+Every later Layer B stage has a milestone and issue-level dependency graph; see
+[ROADMAP.md](ROADMAP.md).
 
 ```bash
 lake build && lake env lean scripts/Audit.lean

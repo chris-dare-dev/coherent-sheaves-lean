@@ -32,6 +32,8 @@ import CohLean.Coh.ClosedUnderIso
 import CohLean.Coh.Local
 import CohLean.Coh.Affine
 import CohLean.Coh.Kernels
+import CohLean.Coh.Extensions
+import CohLean.Coh.Abelian
 import CohLean.Cohomology.AffineCech
 import CohLean.Cohomology.Strategy
 
