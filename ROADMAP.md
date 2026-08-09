@@ -135,8 +135,9 @@ the global presentation and its index types are the two generating sets that
 `SheafOfModules.IsFinitePresentation` is by definition local data (an existential over
 `QuasicoherentData`), and the bridge from that to global sections is the affine comparison
 theorem `IsIso M.fromTildeΓ` for quasi-coherent `M`, which Mathlib does not have at
-v4.29.0. That is issue #46, and it gates the converse, the equivalence, and anything else
-in B1 that has to read finiteness off global sections.
+v4.29.0. CohLean now proves that bridge in
+`ForMathlib/AffineComparisonGluing.lean`; #46 is the remaining assembly point for its
+finiteness corollaries, and #11 uses those to construct the equivalence.
 
 One smaller Mathlib gap surfaced on the way and is discharged in
 `CohLean/ForMathlib/OpensBinaryProducts.lean`: `Presentation.quasicoherentData` assumes
