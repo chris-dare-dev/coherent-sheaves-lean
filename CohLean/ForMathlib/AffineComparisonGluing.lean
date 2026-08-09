@@ -62,15 +62,15 @@ local instance (U : TopologicalSpace.Opens (Spec R)) : HasBinaryProducts (Over U
   Over.ConstructProducts.over_binaryProduct_of_pullback
 
 /-- The canonical open immersion `Spec R[1/g] ⟶ Spec R`. -/
-private noncomputable def basicOpenSpecMap (g : R) :
+noncomputable def basicOpenSpecMap (g : R) :
     Spec (.of (Localization.Away g)) ⟶ Spec R :=
   Spec.map (CommRingCat.ofHom (algebraMap R (Localization.Away g)))
 
-private instance (g : R) : IsOpenImmersion (basicOpenSpecMap g) :=
+instance (g : R) : IsOpenImmersion (basicOpenSpecMap g) :=
   Scheme.isOpenImmersion_SpecMap_localizationAway g
 
 /-- The range of `Spec R[1/g] ⟶ Spec R` is `D(g)`. -/
-private lemma basicOpenSpecMap_opensRange (g : R) :
+lemma basicOpenSpecMap_opensRange (g : R) :
     (basicOpenSpecMap g).opensRange = PrimeSpectrum.basicOpen g := by
   apply TopologicalSpace.Opens.ext
   exact PrimeSpectrum.localization_away_comap_range (Localization.Away g) g
@@ -303,7 +303,7 @@ private lemma restrictBasicOpen_smul (M : (Spec R).Modules) (g : R)
 
 /-- Identify sections of the restriction to `Spec R[1/g]` over its top open with sections of
 the original sheaf over `D(g)`, after restricting scalars to `R`. -/
-private noncomputable def restrictBasicOpenTopLinearEquiv (M : (Spec R).Modules) (g : R) :
+noncomputable def restrictBasicOpenTopLinearEquiv (M : (Spec R).Modules) (g : R) :
     (ModuleCat.restrictScalars (algebraMap R (Localization.Away g))).obj
         ((modulesSpecToSheaf.obj
           (M.restrict (basicOpenSpecMap g))).presheaf.obj (op ⊤)) ≃ₗ[R]
@@ -787,11 +787,23 @@ theorem isLocalizedModule_basicOpenRestriction_of_isQuasicoherent
   obtain ⟨I, g, hg, hP⟩ := M.exists_basicOpen_presentation_cover
   exact M.isLocalizedModule_basicOpenRestriction_of_cover g hg hP f
 
+/-- Explicit quasi-coherent presentation data suffices for the affine comparison. This form is
+useful when the data has just been transported across an equivalence and constructing a
+typeclass witness would force Lean to normalize that transport repeatedly. -/
+theorem isIso_fromTildeΓ_of_quasicoherentData
+    (M : (Spec R).Modules) (q : SheafOfModules.QuasicoherentData.{u, u, u, u} M) :
+    IsIso M.fromTildeΓ := by
+  apply M.isIso_fromTildeΓ_iff_isLocalizedModule.mpr
+  intro f
+  obtain ⟨I, g, hg, hP⟩ :=
+    M.exists_basicOpen_presentation_cover_of_quasicoherentData q
+  exact M.isLocalizedModule_basicOpenRestriction_of_cover g hg hP f
+
 /-- The affine comparison counit is an isomorphism for every quasi-coherent sheaf. -/
 theorem isIso_fromTildeΓ_of_isQuasicoherent
     (M : (Spec R).Modules) [M.IsQuasicoherent] : IsIso M.fromTildeΓ :=
-  M.isIso_fromTildeΓ_iff_isLocalizedModule.mpr
-    M.isLocalizedModule_basicOpenRestriction_of_isQuasicoherent
+  let q := SheafOfModules.IsQuasicoherent.nonempty_quasicoherentData (M := M).some
+  M.isIso_fromTildeΓ_of_quasicoherentData q
 
 end Scheme.Modules
 
