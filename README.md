@@ -46,7 +46,9 @@ comparison data and a two-term perfect coherent-sheaf interface. Ampleness, high
 images, Serre finiteness, Serre duality, higher Chern classes, intersection numbers, and
 geometric Riemann–Roch are not yet present. The cohomological Euler characteristic `χ(F)` is
 now defined relative to explicit finite-dimensionality and eventual-vanishing data, so it
-becomes unconditional without an API change when Serre finiteness is proved.
+becomes unconditional without an API change when Serre finiteness is proved. It is additive
+on short exact sequences once the `Ext` connecting maps are supplied as base-field-linear
+maps, and therefore descends through an explicit presentation of `K₀(Coh X)`.
 
 ## Architecture
 
@@ -70,7 +72,10 @@ sheaves map additively through short exact sequences to numerical classes, while
 `toddComp` are computed from geometric Chern-class data by universal formulas through
 codimension four. Its Euler characteristic is no longer an arbitrary geometric function:
 `Cohomology.FiniteCohomology` lifts the actual derived sheaf-cohomology functors to
-finite-dimensional vector spaces and constructs the alternating sum.
+finite-dimensional vector spaces and constructs the alternating sum. The companion
+`Cohomology.EulerCharacteristicAdditivity` module transports Mathlib's `Ext` exactness to
+those vector spaces, proves the bounded alternating-dimension cancellation, and constructs
+the Euler homomorphism `K₀(Coh X) → ℤ`.
 
 This unblocks downstream stability work immediately, and is falsifiable: the axioms are
 visible in the type, and three models exist — a point, a K3 surface of degree `H² = 2d`, and

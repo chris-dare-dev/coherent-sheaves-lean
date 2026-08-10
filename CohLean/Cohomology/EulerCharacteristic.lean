@@ -32,9 +32,9 @@ The alternating sum reuses `GradedObject.eulerChar` from Mathlib. The support th
 removes its possible infinite-support junk value, and `eulerCharacteristic_eq_sum` exposes the
 usual finite formula. Functoriality gives invariance under isomorphism of coherent sheaves.
 
-Additivity in short exact sequences is deliberately the next layer: it requires the linear
-long exact cohomology sequence, not merely the additive `Ext` sequence currently exposed by
-`Sheaf.H`.
+Additivity in short exact sequences is the next layer, implemented in
+`CohLean.Cohomology.EulerCharacteristicAdditivity`: it uses Mathlib's additive `Ext` sequence
+and requests precisely the scalar-linearity of its connecting maps.
 -/
 
 universe u
@@ -123,6 +123,22 @@ theorem eulerCharacteristic_eq_sum (D : FiniteCohomology X) (F : Coh X.toScheme)
     GradedObject.eulerChar_eq_sum_finSet_of_finrankSupport_subset
       (ComplexShape.up ℕ) (D.gradedModule F) (Finset.range (D.bound F + 1))
         (D.finrankSupport_subset_range F)
+
+/-- The Euler characteristic may be summed through any bound at least as large as the
+sheaf-dependent vanishing bound. -/
+theorem eulerCharacteristic_eq_sum_of_bound (D : FiniteCohomology X)
+    (F : Coh X.toScheme) (n : ℕ) (h : D.bound F ≤ n) :
+    D.eulerCharacteristic F =
+      ∑ i ∈ Finset.range (n + 1), (-1 : ℤ) ^ i * D.dimension F i := by
+  simpa only [eulerCharacteristic, dimension, gradedModule, upNat_sign] using
+    GradedObject.eulerChar_eq_sum_finSet_of_finrankSupport_subset
+      (ComplexShape.up ℕ) (D.gradedModule F) (Finset.range (n + 1)) (by
+        intro i hi
+        have hi' := D.finrankSupport_subset_range F hi
+        have hi_lt : i < D.bound F + 1 := by
+          simpa only [Finset.mem_coe, Finset.mem_range] using hi'
+        simpa only [Finset.mem_coe, Finset.mem_range] using
+          lt_of_lt_of_le hi_lt (Nat.add_le_add_right h 1))
 
 /-- Isomorphic coherent sheaves have equal cohomology dimensions in every degree. -/
 theorem dimension_iso (D : FiniteCohomology X) {F G : Coh X.toScheme} (e : F ≅ G) (i : ℕ) :

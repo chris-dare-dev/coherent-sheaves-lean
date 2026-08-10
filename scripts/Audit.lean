@@ -35,8 +35,21 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms Cohomology.FiniteCohomology.eulerCharacteristic
 #print axioms Cohomology.FiniteCohomology.finrankSupport_subset_range
 #print axioms Cohomology.FiniteCohomology.eulerCharacteristic_eq_sum
+#print axioms Cohomology.FiniteCohomology.eulerCharacteristic_eq_sum_of_bound
 #print axioms Cohomology.FiniteCohomology.dimension_iso
 #print axioms Cohomology.FiniteCohomology.eulerCharacteristic_iso
+#print axioms Cohomology.coherentConnectingMap
+#print axioms Cohomology.FiniteCohomology.LinearConnectingMaps
+#print axioms Cohomology.FiniteCohomology.exact₂
+#print axioms Cohomology.FiniteCohomology.LinearConnectingMaps.exact₃
+#print axioms Cohomology.FiniteCohomology.LinearConnectingMaps.exact₁
+#print axioms Cohomology.FiniteCohomology.alternating_finrank_eq_zero_of_exact
+#print axioms Cohomology.FiniteCohomology.eulerCharacteristic_additive
+#print axioms Cohomology.FiniteCohomology.eulerCharacteristic_additive_modules
+#print axioms Cohomology.CoherentGrothendieckRelation
+#print axioms Cohomology.FiniteCohomology.coherentGrothendieckRelations_le_ker
+#print axioms Cohomology.FiniteCohomology.grothendieckEulerHom
+#print axioms Cohomology.FiniteCohomology.grothendieckEulerHom_class
 
 -- Layer A: the graded-basis constructor. `ofGradedBasis` is what every concrete model
 -- goes through, so a sorry here would silently contaminate every instance in the repo.
