@@ -46,6 +46,8 @@ import CohLean.Coh.Affine
 import CohLean.Coh.Kernels
 import CohLean.Coh.Extensions
 import CohLean.Coh.Abelian
+import CohLean.Divisors.Effective
+import CohLean.Divisors.Determinant
 import CohLean.Cohomology.AffineCech
 import CohLean.Cohomology.CechBicomplex
 import CohLean.Cohomology.CechComparison

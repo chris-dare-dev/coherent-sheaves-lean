@@ -19,7 +19,7 @@ gate.
 | `CohLean/AlgebraicGeometry/Variety/Numerical.lean` | Certified descent from coherent sheaves and geometric Chern classes to `NumericalVariety` |
 | `CohLean/AlgebraicGeometry/Modules` | Module and sheaf-of-modules constructions over schemes |
 | `CohLean/Coh` | Coherent sheaves and their categorical properties |
-| `CohLean/Divisors` | Cartier divisors, invertible sheaves, tensor structure, and the Picard group |
+| `CohLean/Divisors` | Cartier and effective divisors, invertible sheaves, tensor/Picard structure, determinant lines, and first Chern classes |
 | `CohLean/Cohomology` | Čech and spectral-sequence infrastructure, finite-dimensional cohomology data, and geometric Euler characteristics |
 | `CohLean/Topology` | General open-set-site infrastructure used by the geometric packages |
 | `CohLean/Development` | Compile-only API audits and development probes; not part of the root import |
