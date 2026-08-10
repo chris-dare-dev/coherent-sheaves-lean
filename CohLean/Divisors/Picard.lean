@@ -21,12 +21,9 @@ isomorphism, implies upstream local freeness, and contains the structure sheaf.
 For a scheme, `Scheme.Modules.tensorObj M N` is the associated sheaf of the objectwise tensor
 product of the underlying presheaves. The unit, symmetry, and the associator before iterated
 sheafification are exported. `Scheme.Modules.PicardClass X` is the set of isomorphism classes of
-invertible sheaves, with its distinguished structure-sheaf class.
-
-The remaining theorem required to install the commutative group structure is that tensoring the
-unit of module sheafification with a locally free rank-one sheaf is again inverted by
-sheafification. That is the precise coherence boundary between the raw construction here and
-the final `Pic X` group; no monoidal or group law is postulated in the meantime.
+invertible sheaves, with its distinguished structure-sheaf class. The tensor-closure and
+coherence proofs, symmetric monoidal structure, and resulting `Pic X` group are built in
+`Tensor`, `Monoidal`, `Symmetric`, and `PicardGroup` respectively.
 -/
 
 open CategoryTheory Limits MonoidalCategory BraidedCategory
@@ -223,7 +220,7 @@ def isInvertible (X : Scheme.{u}) : ObjectProperty X.Modules :=
 /-- The category of invertible sheaves on a scheme. -/
 abbrev InvertibleSheaf (X : Scheme.{u}) := (isInvertible X).FullSubcategory
 
-/-- Isomorphism classes of invertible sheaves, before the tensor group law is installed. -/
+/-- Isomorphism classes of invertible sheaves. -/
 def PicardClass (X : Scheme.{u}) := Skeleton (InvertibleSheaf X)
 
 namespace PicardClass

@@ -442,6 +442,55 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Scheme.Modules.tensorTripleAssocIso
 #print axioms AlgebraicGeometry.Scheme.Modules.PicardClass.mk_eq_mk_iff
 
+-- Layer B stage 2: tensor/sheafification descent for invertible sheaves. Local rank-one
+-- trivializations make tensor preserve locally bijective maps; this supplies both comparison
+-- orientations, restriction compatibility, tensor closure, and the sheafified associator.
+#print axioms CategoryTheory.Presheaf.isLocallyInjective_of_coversTop
+#print axioms SheafOfModules.LocalGeneratorsData.rankOneTrivialization
+#print axioms SheafOfModules.isLocallySurjective_whiskerLeft
+#print axioms SheafOfModules.isLocallyInjective_whiskerLeft_of_isoUnit
+#print axioms SheafOfModules.isLocallyInjective_whiskerLeft_of_rankOneData
+#print axioms SheafOfModules.W_whiskerLeft_of_rankOneData
+#print axioms SheafOfModules.isIso_sheafification_map_whiskerLeft_of_rankOneData
+#print axioms SheafOfModules.isIso_sheafification_map_whiskerRight_of_rankOneData
+#print axioms SheafOfModules.isIso_sheafification_map_whiskerLeft_unit_of_rankOneData
+#print axioms SheafOfModules.isIso_sheafification_map_whiskerRight_unit_of_rankOneData
+#print axioms SheafOfModules.LocalGeneratorsData.rankOneTrivializationOver
+#print axioms SheafOfModules.IsInvertible.of_trivializations
+#print axioms AlgebraicGeometry.Scheme.Modules.overSheafificationComparison
+#print axioms AlgebraicGeometry.Scheme.Modules.isIso_overSheafificationComparison
+#print axioms AlgebraicGeometry.Scheme.Modules.overTensorPresheafIso
+#print axioms AlgebraicGeometry.Scheme.Modules.tensorOverIsoOfTrivializations
+#print axioms AlgebraicGeometry.Scheme.Modules.isInvertible_tensorObj
+#print axioms AlgebraicGeometry.Scheme.Modules.tensorSheafificationComparisonLeft
+#print axioms AlgebraicGeometry.Scheme.Modules.tensorSheafificationComparisonRight
+#print axioms AlgebraicGeometry.Scheme.Modules.isIso_tensorSheafificationComparisonLeft
+#print axioms AlgebraicGeometry.Scheme.Modules.isIso_tensorSheafificationComparisonRight
+#print axioms AlgebraicGeometry.Scheme.Modules.tensorAssocIso
+
+-- Layer B stage 2: the descended tensor product is coherently symmetric monoidal on
+-- invertible sheaves, and its skeleton yields the Picard group. Pentagon and both hexagons
+-- reduce to the corresponding presheaf identities; no coherence law is postulated.
+#print axioms AlgebraicGeometry.Scheme.Modules.tensorSheafificationComparisonRight_naturality
+#print axioms AlgebraicGeometry.Scheme.Modules.tensorSheafificationComparisonLeft_naturality
+#print axioms AlgebraicGeometry.Scheme.Modules.tensorAssocIso_naturality
+#print axioms AlgebraicGeometry.Scheme.Modules.tensorHom_id_id
+#print axioms AlgebraicGeometry.Scheme.Modules.tensorHom_comp_tensorHom
+#print axioms AlgebraicGeometry.Scheme.Modules.tensorSheafificationComparisonRight_comp_tensorAssocIso
+#print axioms AlgebraicGeometry.Scheme.Modules.invertibleSheafMonoidalCategoryStruct
+#print axioms AlgebraicGeometry.Scheme.Modules.invertibleSheafMonoidalCategory
+#print axioms AlgebraicGeometry.Scheme.Modules.tensorCommIso_naturality
+#print axioms AlgebraicGeometry.Scheme.Modules.tensorCommIso_symmetry
+#print axioms AlgebraicGeometry.Scheme.Modules.tensorCommIso_inv
+#print axioms AlgebraicGeometry.Scheme.Modules.invertibleSheafBraidedCategory
+#print axioms AlgebraicGeometry.Scheme.Modules.invertibleSheafSymmetricCategory
+#print axioms AlgebraicGeometry.Scheme.Modules.picardClassCommMonoid
+#print axioms AlgebraicGeometry.Scheme.Modules.PicardClass.one_eq_one
+#print axioms AlgebraicGeometry.Scheme.Modules.PicardClass.mk_mul_mk
+#print axioms AlgebraicGeometry.Scheme.Modules.Pic.mkOfTensorInverse
+#print axioms AlgebraicGeometry.Scheme.Modules.Pic.coe_mkOfTensorInverse
+#print axioms AlgebraicGeometry.Scheme.Modules.Pic.coe_one
+
 -- Layer B stage 3: `CohLean/Cohomology/Strategy.lean` contributes nothing here on
 -- purpose. It is the compile-only API map for the B3 route decision and declares only
 -- `example`s, which are anonymous and cannot be audited. Its guarantee is that it builds:

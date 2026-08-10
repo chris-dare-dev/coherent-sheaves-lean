@@ -34,10 +34,10 @@ provides locally finite `AlgebraicCycle`s with pushforward, `Scheme.ord`/`ordHom
 `SheafOfModules.IsLocallyFree`, ring-level `Module.Invertible` and `CommRing.Pic`, generic
 presheaf-of-modules sheafification, and ideal-sheaf subschemes.
 
-CohLean now supplies coherence and the abelian category `Coh X`. The active B2 construction also
-supplies a rank-one/invertible-sheaf predicate and the raw sheafification of the presheaf tensor.
-Tensor/sheafification coherence and the resulting scheme-level `Pic X` group are still missing,
-as are Cartier and effective Cartier divisors, `O_X(D)`, ampleness, higher direct images,
+CohLean now supplies coherence and the abelian category `Coh X`. The B2 construction also
+supplies a rank-one/invertible-sheaf predicate, the sheafified tensor product with symmetric
+monoidal coherence, and the resulting scheme-level `Pic X` group. Cartier divisors are present;
+effective Cartier divisors, `O_X(D)`, ampleness, higher direct images,
 finiteness of cohomology, `χ(F)`, Serre duality, Chern classes, intersection numbers, and
 Riemann–Roch.
 
@@ -87,7 +87,9 @@ the affine comparison and equivalence, and closure under kernels, cokernels, and
 Layer B stage B2 now has its Cartier-divisor foundation: on an integral scheme,
 `Scheme.CartierDivisor X` is the abelian group of locally representable sections of
 `K(X)ˣ / 𝒪_{X,x}ˣ`, with principal divisors, divisor classes, order-of-vanishing coefficients,
-and pullback from explicit compatible function-field data.
+and pullback from explicit compatible function-field data. It also has invertible sheaves,
+their symmetric monoidal tensor product, and the scheme-level Picard group `Pic X`; the next
+step is constructing `O_X(D)`.
 Every later Layer B stage has a milestone and issue-level dependency graph; see
 [ROADMAP.md](ROADMAP.md).
 
