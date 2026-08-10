@@ -25,6 +25,10 @@ import CohLean.ForMathlib.AffineComparisonGluing
 import CohLean.ForMathlib.AffineComparisonFiniteness
 import CohLean.ForMathlib.ToSheafExact
 import CohLean.ForMathlib.ExtraCodegeneracy
+import CohLean.ForMathlib.FilteredComplexSpectralObject
+import CohLean.ForMathlib.FilteredTotalComplex
+import CohLean.ForMathlib.FilteredTotalComplexAdjacent
+import CohLean.ForMathlib.FilteredTotalComplexFirstPageDifferential
 import CohLean.ForMathlib.DivisorAPIAudit
 import CohLean.Divisors.Cartier
 import CohLean.Divisors.Picard
@@ -38,6 +42,9 @@ import CohLean.Coh.Kernels
 import CohLean.Coh.Extensions
 import CohLean.Coh.Abelian
 import CohLean.Cohomology.AffineCech
+import CohLean.Cohomology.CechBicomplex
+import CohLean.Cohomology.CechComparison
+import CohLean.Cohomology.CechInitialPage
 import CohLean.Cohomology.Strategy
 
 /-!
