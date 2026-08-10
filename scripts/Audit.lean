@@ -30,6 +30,13 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms Variety.NumericalData.chi_classOf
 #print axioms Variety.NumericalData.coherentChernCharacter_shortExact
 #print axioms Variety.NumericalData.coherentEulerCharacteristic_shortExact
+#print axioms Cohomology.coherentH
+#print axioms Cohomology.FiniteCohomology
+#print axioms Cohomology.FiniteCohomology.eulerCharacteristic
+#print axioms Cohomology.FiniteCohomology.finrankSupport_subset_range
+#print axioms Cohomology.FiniteCohomology.eulerCharacteristic_eq_sum
+#print axioms Cohomology.FiniteCohomology.dimension_iso
+#print axioms Cohomology.FiniteCohomology.eulerCharacteristic_iso
 
 -- Layer A: the graded-basis constructor. `ofGradedBasis` is what every concrete model
 -- goes through, so a sorry here would silently contaminate every instance in the repo.

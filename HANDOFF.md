@@ -1,7 +1,7 @@
 # Handoff
 
-Updated 2026-08-10 for the completed #23/#79 Picard-group branch. For a session
-picking this repo up cold.
+Updated 2026-08-10 for the merged repository-architecture work and the in-flight conditional
+geometric Euler-characteristic milestone. For a session picking this repo up cold.
 
 Read §1 and §7. Everything else is reference.
 
@@ -31,7 +31,7 @@ lake env lean scripts/Audit.lean
 The audit must print `[propext, Classical.choice, Quot.sound]` on every line and never
 `sorryAx`. There is no `sorry` in this library and there never has been.
 
-**State on the completed #23/#79 branch:** `lake build CohLean` and the declaration audit pass.
+**State on `main` through merge `1c579cc`:** `lake build CohLean` and the declaration audit pass.
 Every audit line uses only `[propext, Classical.choice, Quot.sound]`; there is no `sorryAx`.
 Docs live at
 <https://chris-dare-dev.github.io/coherent-sheaves-lean/>.
@@ -43,8 +43,10 @@ lattice, #17) remains.
 **Layer B stage B1 is complete.** It includes the affine-local criterion, closure under
 isomorphism, the slice-equivalence transport, the affine comparison and equivalence, closure
 under kernels, cokernels, and extensions, and finally the abelian structure on `Coh X` with
-exact inclusion into `X.Modules`. B3 has explicit affine Čech exactness, but not yet the
-comparison with derived-functor sheaf cohomology; geometric `χ` does not yet exist.
+exact inclusion into `X.Modules`. B3 has explicit affine Čech exactness and substantial
+Čech/derived comparison infrastructure. On the in-flight branch,
+`Cohomology.FiniteCohomology` constructs geometric `χ` from the actual `Sheaf.H` functors under
+explicit linearity, finite-dimensionality, and eventual-vanishing data.
 
 The live work is §7.
 
@@ -171,6 +173,9 @@ a Todd class and nothing else.
 | `Coh/Extensions.lean` | local lifting on two finite refinements and the finite horseshoe presentation proving closure under extensions, with no noetherian hypothesis |
 | `Coh/Abelian.lean` | zero and finite-product closure, the abelian instance on `Coh X`, and the exact inclusion into `X.Modules` |
 | `AlgebraicGeometry/Modules/ToSheafExact.lean` | `SheafOfModules.toSheaf` preserves finite colimits, hence epis and short exact sequences. Needed because `Sheaf.H` is `Ext` from the constant sheaf, so the cohomology long exact sequence runs on the *image* of a sequence in `Sheaf J AddCommGrpCat` — and nothing upstream said it survives the trip |
+| `AlgebraicGeometry/Modules/ModulesEquiv.lean` | crosses the `Scheme.Modules` wrapper and exports `Scheme.Modules.toSheaf` with its exactness instances |
+| `Cohomology/CechComparison.lean`, `Cohomology/CechInitialPage.lean` | the Čech/derived bicomplex comparison and identification of the degree-zero row and horizontal differential with the Čech complex |
+| `Cohomology/EulerCharacteristic.lean` | a functorial finite-dimensional `k`-linear lift of actual coherent cohomology, finite support, the geometric alternating sum, and isomorphism invariance |
 | `Cohomology/Strategy.lean` | **Proves nothing.** A compile-only API map of the upstream declarations B3 can build on: 0 theorems, 6 `example`s, deliberately built to break the day one of them moves. Records the #26 reconnaissance so it is not repeated |
 
 The presentation-transport modules fill a real Mathlib gap: Mathlib has
@@ -178,7 +183,8 @@ The presentation-transport modules fill a real Mathlib gap: Mathlib has
 that transporting a presentation preserves `Presentation.IsFinite`. CohLean maintains these
 declarations regardless of whether an upstream contribution is ever made.
 
-**Still not proved:** geometric `χ`; all of B4 and B5. General cohomology finiteness
+**Still not proved:** unconditional Serre finiteness and the linear long-exact-sequence proof
+of additivity; higher geometric Chern classes; all of B4 and B5. General cohomology finiteness
 remains deliberately deferred; the affine global-sections finiteness needed by B1 is proved.
 
 ---
@@ -234,7 +240,8 @@ shared too, and they are where every merge conflict this project has had actuall
 | B4 | 5 | Snapper polynomials → intersection numbers |
 | B5 | 7 | Serre duality → RR for surfaces → discharge `hirzebruch_riemannRoch` |
 
-**Next natural independent issue:** **#33**. Issue #27 is already in progress.
+**Next natural work:** finish the linear cohomology/additivity layer (#32), begin the higher
+geometric Chern-class constructors, or independently start **#33**.
 Regenerate this list with `gh issue list --label ready` before choosing,
 because tracker labels move faster than this file.
 
@@ -287,13 +294,16 @@ decision before planning anything here:
 * **#31 and #32 therefore carry finite-dimensionality as a hypothesis** rather than deriving
   it, and become unconditional unchanged the day #29 lands.
 
-`Cohomology/Strategy.lean` records all of this and proves nothing; `scripts/Audit.lean` says
-so in as many words. #13 (affine Čech vanishing) is done and #27 (Čech vs derived sheaf
-cohomology) has an implementation in progress.
+`Cohomology/Strategy.lean` records all of this and proves nothing. #13 (affine Čech vanishing)
+is done, and the Čech/derived bicomplex plus initial-page identifications now live in
+`CechComparison.lean` and `CechInitialPage.lean`. Conditional geometric `χ` now lives in
+`EulerCharacteristic.lean`; #32 still needs the linear long exact sequence and its
+alternating-dimension proof.
 
 PR #58 ("The forgetful functor to abelian sheaves is exact", closed #56) landed as
 `c349741` while an earlier revision was being written — a fair illustration of how fast `main`
-moves here. Query the live PR list before choosing work; #27 is already marked in progress.
+moves here. Query the live PR and issue lists before choosing work; tracker state changes faster
+than this document.
 ## 8. Gotchas — the expensive part of this repo's history
 
 Each of these cost real time. None is recoverable from reading the code.

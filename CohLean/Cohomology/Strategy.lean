@@ -77,12 +77,13 @@ vanishing only. The projective-to-proper question (#26 question 3, Chow's lemma 
 dévissage) does not arise: this library does not reach the projective case either.
 
 **Consequence for #31 and #32.** The Euler characteristic cannot be *defined* by a theorem
-this stage will prove, so it must take finiteness as an input rather than derive it. #31
-states `χ` relative to a finite-dimensionality hypothesis on each `H^i`, and #32 proves
-additivity from the `Ext` long exact sequence (`Ext.covariantSequence_exact`) plus the
-eventual vanishing of #30, with that hypothesis carried. Both then become unconditional the
-day #29 lands, without restating them. This keeps the trust boundary where `CONTRIBUTING.md`
-puts it: a hypothesis in a statement, never an axiom and never a `sorry`.
+this stage will prove, so it must take finiteness as an input rather than derive it. #31 is now
+implemented by `CohLean.Cohomology.EulerCharacteristic`: `χ` is relative to a functorial
+finite-dimensional `k`-linear lift of each `H^i` and an eventual-vanishing bound. #32 proves
+additivity from the `Ext` long exact sequence (`Ext.covariantSequence_exact`) plus that bound,
+with the hypotheses carried. Both become unconditional the day #29 lands, without restating
+them. This keeps the trust boundary where `CONTRIBUTING.md` puts it: a hypothesis in a
+statement, never an axiom and never a `sorry`.
 
 ## Two shape facts that fix every B3 statement
 
