@@ -30,6 +30,7 @@ import CohLean.ForMathlib.SpectralObjectFirstPage
 import CohLean.ForMathlib.FilteredComplexSpectralObject
 import CohLean.ForMathlib.FilteredTotalComplex
 import CohLean.ForMathlib.FilteredTotalComplexAdjacent
+import CohLean.ForMathlib.FilteredTotalComplexFirstPageDifferential
 import CohLean.AlgebraicGeometry.Modules.RestrictOver
 import CohLean.AlgebraicGeometry.Modules.ModulesEquiv
 import CohLean.Coh.Defs
@@ -39,6 +40,7 @@ import CohLean.Coh.Affine
 import CohLean.Cohomology.AffineCech
 import CohLean.Cohomology.CechBicomplex
 import CohLean.Cohomology.CechComparison
+import CohLean.Cohomology.CechInitialPage
 import CohLean.Cohomology.Strategy
 
 /-!

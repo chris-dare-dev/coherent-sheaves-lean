@@ -218,6 +218,10 @@ namespace HomologicalComplex₂
 
 variable {C : Type*} [Category* C] [Preadditive C] [HasZeroObject C]
 
+/-- Filtration index at which column `p` is added in the increasing reindexing of the decreasing
+column filtration. -/
+def columnFiltrationIndex (p : ℤ) : ℤ := -p
+
 /-- The increasing `ℤ`-filtration of a cohomological bicomplex obtained by retaining the
 columns in first degrees at least `-p` at filtration index `p`. -/
 noncomputable def columnFiltrationBicomplex

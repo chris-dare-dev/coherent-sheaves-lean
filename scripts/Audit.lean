@@ -279,6 +279,11 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms HomologicalComplex₂.columnFilteredAdjacentLayerConeToShift
 #print axioms HomologicalComplex₂.columnFilteredAdjacentLayerConeToShift_quasiIso
 #print axioms HomologicalComplex₂.columnFilteredAdjacentLayerHomologyIso
+#print axioms HomologicalComplex₂.columnFilteredStageIso
+#print axioms HomologicalComplex₂.columnFilteredAdjacentLayerIso
+#print axioms HomologicalComplex₂.columnFilteredInitialPageColumnHomologyIso
+#print axioms HomologicalComplex₂.columnFilteredFirstPage_d_eq
+#print axioms HomologicalComplex₂.columnFilteredInitialPage_d_eq_horizontalHomologyMap
 
 -- Layer B stage 3: an explicit injective resolution now produces the augmented Cech
 -- bicomplex, its total complex, the column-filtered spectral sequence, and the formal
@@ -300,6 +305,15 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms CategoryTheory.Sheaf.cechInjectiveAdjacentLayerComplex
 #print axioms CategoryTheory.Sheaf.cechInjectiveAdjacentLayerHomologyIso
 #print axioms CategoryTheory.Sheaf.cechInjectiveInitialPageColumnHomologyIso
+
+-- Layer B stage 3: the initial page's degree-zero row, including its horizontal
+-- differential, is the ordinary Cech complex. Consequently the following page is
+-- ordinary Cech cohomology along that row.
+#print axioms CategoryTheory.Sheaf.cechInjectiveColumnAugmentationHomologyIso
+#print axioms CategoryTheory.Sheaf.cechInjectiveInitialPageZeroRowXIso
+#print axioms CategoryTheory.Sheaf.cechInjectiveInitialPageZeroRow_d
+#print axioms CategoryTheory.Sheaf.cechInjectiveInitialPageZeroRowIso
+#print axioms CategoryTheory.Sheaf.cechInjectiveFollowingPageCechCohomologyIso
 
 -- Layer B stage 3: positive-degree exactness of the explicit Cech complex for a module
 -- sheaf on a finite distinguished-open cover of an affine scheme. This is the affine Cech

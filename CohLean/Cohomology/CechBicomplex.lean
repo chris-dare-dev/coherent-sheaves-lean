@@ -221,10 +221,18 @@ noncomputable def cechInjectiveInitialPageXIso
     (p q : ℤ) :
     ((cechInjectiveSpectralSequence U I).page 2).X (p, q) ≅
       ((cechInjectiveSpectralObject U I).H (p + q)).obj
-        (ComposableArrows.mk₁ (homOfLE (show -p - 1 ≤ -p by omega))) :=
+        (ComposableArrows.mk₁ (homOfLE (show
+          HomologicalComplex₂.columnFiltrationIndex (p + 1) ≤
+            HomologicalComplex₂.columnFiltrationIndex p by
+              simp [HomologicalComplex₂.columnFiltrationIndex]))) :=
   (cechInjectiveSpectralObject U I).spectralSequenceFirstPageXIso
     Abelian.SpectralObject.coreE₂ColumnFilteredCohomologicalInt (p, q)
-      (-p - 1) (-p) rfl rfl (p + q) rfl
+      (HomologicalComplex₂.columnFiltrationIndex (p + 1))
+      (HomologicalComplex₂.columnFiltrationIndex p) (by
+        dsimp [Abelian.SpectralObject.coreE₂ColumnFilteredCohomologicalInt,
+          HomologicalComplex₂.columnFiltrationIndex]
+        omega)
+      (by simp [HomologicalComplex₂.columnFiltrationIndex]) (p + q) rfl
 
 /-- The adjacent filtered-total mapping cone contributing Cech column `p` to the initial page. -/
 noncomputable def cechInjectiveAdjacentLayerComplex
@@ -239,7 +247,10 @@ noncomputable def cechInjectiveAdjacentLayerHomologyIso
     {F : Sheaf J AddCommGrpCat.{a}} (U : index → C) (I : InjectiveResolution F)
     (p q : ℤ) :
     ((cechInjectiveSpectralObject U I).H (p + q)).obj
-        (ComposableArrows.mk₁ (homOfLE (show -p - 1 ≤ -p by omega))) ≅
+        (ComposableArrows.mk₁ (homOfLE (show
+          HomologicalComplex₂.columnFiltrationIndex (p + 1) ≤
+            HomologicalComplex₂.columnFiltrationIndex p by
+              simp [HomologicalComplex₂.columnFiltrationIndex]))) ≅
       (cechInjectiveAdjacentLayerComplex U I p).homology (p + q) := by
   dsimp [cechInjectiveSpectralObject,
     HomologicalComplex₂.columnFilteredTotalSpectralObject,
