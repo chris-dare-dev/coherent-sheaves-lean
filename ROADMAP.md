@@ -12,7 +12,8 @@ Cartier-divisor foundation. [#23](https://github.com/chris-dare-dev/coherent-she
 and #79 supply the symmetric-monoidal Picard-group foundation, and
 [#24](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/24) supplies `O_X(D)` and
 the class-group map to `Pic X`, and #25 supplies effective Cartier divisors and their
-fundamental exact sequences. The remaining B2 entry is #36;
+fundamental exact sequences. Issue #36 supplies determinant lines and first Chern classes,
+completing B2;
 [#33](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/33) remains independent.
 Issue #27 also has an implementation in progress.
 
@@ -109,7 +110,7 @@ depend on it. The cheapest instance would be `Examples/RankOneSurface`: `H ↦ �
 | # | Stage | Estimate | Gate |
 |---|---|---|---|
 | B1 | Coherent category, locality, affine comparison, closure, abelian/exact inclusion | 2–3 months | **done** ([milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/4)) |
-| B2 | Invertible sheaves, `Pic X`, Cartier divisors, `O_X(D)`, determinant, effective-divisor sequence | 2–3 months | [milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/7); #21–#25 and #79 done; #36 remains |
+| B2 | Invertible sheaves, `Pic X`, Cartier divisors, `O_X(D)`, determinant, effective-divisor sequence | 2–3 months | **done** ([milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/7)) |
 | B3 | Affine vanishing, cohomology boundedness, geometric `χ`, additivity | 4–6 months | [milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/5); explicit affine Čech vanishing done; #27 in progress, #28 blocked on #27; finiteness deferred, see below |
 | B4 | Numerical polynomials, Snapper, intersections, numerical Chern data | ~3 months | [milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/9); #33 ready |
 | B5 | Canonical sheaf, Serre duality, surface RR, dévissage, Layer A discharge | ~6 months | [milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/8); blocked on B2–B4 |
@@ -197,6 +198,15 @@ subscheme, and an identification of `O_X(-D)` with that ideal. The resulting
 explicit coherence hypotheses. Tensoring by an invertible sheaf is proved exact as a reusable
 intermediate result, giving the normalized short exact sequence
 `O_X(E-D) → O_X(E) → O_X(E) ⊗ i_* O_D` and its coherent lift.
+
+Issue #36 records the actual algebraic top exterior power of a free rank-`n` module and packages
+fixed-rank locally free atlases with chosen descended determinant lines. Mathlib has no
+exterior-power construction for sheaves of modules, so the global descent and the determinant
+comparisons for direct sums and short exact sequences are explicit data rather than hidden
+existence assumptions. They produce isomorphism-invariant first Chern classes in `Pic X` and
+additivity in its additive notation. Coherent objects are covered only when their underlying
+sheaves carry finite locally free determinant data or an explicit two-term finite locally free
+resolution; no global resolution theorem for arbitrary coherent sheaves is asserted.
 
 **B3.** The hardest step and the one everything else waits on. Mathlib's sheaf cohomology
 is `Ext` from the constant sheaf, which is the right general definition but not obviously

@@ -40,9 +40,11 @@ monoidal coherence, and the resulting scheme-level `Pic X` group. Cartier diviso
 their associated invertible sheaves `O_X(D)` are constructed from local equations, with
 `O_X(D + E) ≅ O_X(D) ⊗ O_X(E)`, `O_X(-D)` as tensor inverse, and the induced class-group
 homomorphism to `Pic X`. Effective Cartier divisors and their twisted fundamental exact
-sequences are present. Ampleness, higher direct images,
-finiteness of cohomology, `χ(F)`, Serre duality, Chern classes, intersection numbers, and
-Riemann–Roch are not yet present.
+sequences are present. Fixed-rank locally free determinant packages and first Chern classes in
+`Pic X` are present, including direct-sum/short-exact additivity from explicit determinant
+comparison data and a two-term perfect coherent-sheaf interface. Ampleness, higher direct
+images, finiteness of cohomology, `χ(F)`, Serre duality, higher Chern classes, intersection
+numbers, and geometric Riemann–Roch are not yet present.
 
 ## Architecture
 
@@ -108,7 +110,11 @@ become trivial, and Cartier divisor classes map to `Pic X`. Effective Cartier di
 their closed subschemes and the short exact fundamental sequence
 `O_X(-D) → O_X → i_* O_D`, together with every Cartier twist
 `O_X(E-D) → O_X(E) → O_X(E) ⊗ i_* O_D`; both are also packaged in `Coh X`
-under explicit coherence hypotheses.
+under explicit coherence hypotheses. Fixed-rank locally free atlases, chosen top-exterior
+determinant lines, and their classes in `Pic X` complete B2. Isomorphism invariance and
+direct-sum/short-exact additivity are exported from explicit comparison isomorphisms; coherent
+objects extend only through visible finite-locally-free or two-term perfect determinant data,
+not an unproved global resolution claim.
 Every later Layer B stage has a milestone and issue-level dependency graph; see
 [ROADMAP.md](ROADMAP.md).
 
