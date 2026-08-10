@@ -491,6 +491,33 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Scheme.Modules.Pic.coe_mkOfTensorInverse
 #print axioms AlgebraicGeometry.Scheme.Modules.Pic.coe_one
 
+-- Layer B stage 2: the fractional presheaf and associated invertible sheaf of a Cartier
+-- divisor. Local equations give the trivializations; multiplication of rational functions
+-- is a locally bijective map and therefore an isomorphism after module sheafification.
+#print axioms AlgebraicGeometry.Scheme.CartierDivisor.IsEquationOn
+#print axioms AlgebraicGeometry.Scheme.CartierDivisor.IsEquationOn.mono
+#print axioms AlgebraicGeometry.Scheme.CartierDivisor.fractionalPresheaf
+#print axioms AlgebraicGeometry.Scheme.CartierDivisor.associatedSheaf
+#print axioms AlgebraicGeometry.Scheme.CartierDivisor.equationIso
+#print axioms AlgebraicGeometry.Scheme.CartierDivisor.equationTransitionIso
+#print axioms AlgebraicGeometry.Scheme.CartierDivisor.equationTransitionIso_trans
+#print axioms AlgebraicGeometry.Scheme.CartierDivisor.associatedSheaf_isInvertible
+#print axioms AlgebraicGeometry.Scheme.CartierDivisor.multiplicationHom
+#print axioms AlgebraicGeometry.Scheme.CartierDivisor.fractionalTensorAddIso
+#print axioms AlgebraicGeometry.Scheme.CartierDivisor.associatedTensorAddIso
+#print axioms AlgebraicGeometry.Scheme.CartierDivisor.globalEquationIso
+#print axioms AlgebraicGeometry.Scheme.CartierDivisor.associatedSheafZeroIso
+#print axioms AlgebraicGeometry.Scheme.CartierDivisor.associatedSheafPrincipalIso
+#print axioms AlgebraicGeometry.Scheme.CartierDivisor.associatedTensorInverseIso
+#print axioms AlgebraicGeometry.Scheme.CartierDivisor.toPic
+#print axioms AlgebraicGeometry.Scheme.CartierDivisor.coe_toPic
+#print axioms AlgebraicGeometry.Scheme.CartierDivisor.divisorToPicAdd
+#print axioms AlgebraicGeometry.Scheme.CartierDivisor.divisorToPicAdd_apply
+#print axioms AlgebraicGeometry.Scheme.CartierDivisor.divisorToPicAdd_principal
+#print axioms AlgebraicGeometry.Scheme.CartierDivisor.classToPicAdd
+#print axioms AlgebraicGeometry.Scheme.CartierDivisor.classToPic
+#print axioms AlgebraicGeometry.Scheme.CartierDivisor.classToPic_toClass
+
 -- Layer B stage 3: `CohLean/Cohomology/Strategy.lean` contributes nothing here on
 -- purpose. It is the compile-only API map for the B3 route decision and declares only
 -- `example`s, which are anonymous and cannot be audited. Its guarantee is that it builds:

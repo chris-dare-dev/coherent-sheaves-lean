@@ -37,9 +37,11 @@ presheaf-of-modules sheafification, and ideal-sheaf subschemes.
 CohLean now supplies coherence and the abelian category `Coh X`. The B2 construction also
 supplies a rank-one/invertible-sheaf predicate, the sheafified tensor product with symmetric
 monoidal coherence, and the resulting scheme-level `Pic X` group. Cartier divisors are present;
-effective Cartier divisors, `O_X(D)`, ampleness, higher direct images,
+their associated invertible sheaves `O_X(D)` are constructed from local equations, with
+`O_X(D + E) ≅ O_X(D) ⊗ O_X(E)`, `O_X(-D)` as tensor inverse, and the induced class-group
+homomorphism to `Pic X`. Effective Cartier divisors, ampleness, higher direct images,
 finiteness of cohomology, `χ(F)`, Serre duality, Chern classes, intersection numbers, and
-Riemann–Roch.
+Riemann–Roch are not yet present.
 
 ## Architecture: two layers
 
@@ -88,8 +90,10 @@ Layer B stage B2 now has its Cartier-divisor foundation: on an integral scheme,
 `Scheme.CartierDivisor X` is the abelian group of locally representable sections of
 `K(X)ˣ / 𝒪_{X,x}ˣ`, with principal divisors, divisor classes, order-of-vanishing coefficients,
 and pullback from explicit compatible function-field data. It also has invertible sheaves,
-their symmetric monoidal tensor product, and the scheme-level Picard group `Pic X`; the next
-step is constructing `O_X(D)`.
+their symmetric monoidal tensor product, the scheme-level Picard group `Pic X`, and the
+associated sheaf `O_X(D)`. Local equations give canonical trivializations and transition
+cocycles; multiplication of rational sections proves tensor additivity, principal divisors
+become trivial, and Cartier divisor classes map to `Pic X`.
 Every later Layer B stage has a milestone and issue-level dependency graph; see
 [ROADMAP.md](ROADMAP.md).
 

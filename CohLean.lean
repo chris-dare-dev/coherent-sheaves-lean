@@ -36,6 +36,7 @@ import CohLean.Divisors.Tensor
 import CohLean.Divisors.Monoidal
 import CohLean.Divisors.Symmetric
 import CohLean.Divisors.PicardGroup
+import CohLean.Divisors.AssociatedSheaf
 import CohLean.AlgebraicGeometry.Modules.RestrictOver
 import CohLean.AlgebraicGeometry.Modules.ModulesEquiv
 import CohLean.Coh.Defs
