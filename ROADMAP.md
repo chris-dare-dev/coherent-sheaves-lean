@@ -103,7 +103,7 @@ depend on it. The cheapest instance would be `Examples/RankOneSurface`: `H ↦ �
 | # | Stage | Estimate | Gate |
 |---|---|---|---|
 | B1 | Coherent category, locality, affine comparison, closure, abelian/exact inclusion | 2–3 months | **done** ([milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/4)) |
-| B2 | Invertible sheaves, `Pic X`, Cartier divisors, `O_X(D)`, determinant, effective-divisor sequence | 2–3 months | [milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/7); #21 and #22 done, #23 foundation active in PR #80, #79 blocks its group law |
+| B2 | Invertible sheaves, `Pic X`, Cartier divisors, `O_X(D)`, determinant, effective-divisor sequence | 2–3 months | [milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/7); #21, #22, #23, and #79 done; #24 (`O_X(D)`) is next |
 | B3 | Affine vanishing, cohomology boundedness, geometric `χ`, additivity | 4–6 months | [milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/5); explicit affine Čech vanishing done; #27 in progress, #28 blocked on #27; finiteness deferred, see below |
 | B4 | Numerical polynomials, Snapper, intersections, numerical Chern data | ~3 months | [milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/9); #33 ready |
 | B5 | Canonical sheaf, Serre duality, surface RR, dévissage, Layer A discharge | ~6 months | [milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/8); blocked on B2–B4 |
@@ -170,12 +170,12 @@ carries local units to local units, since upstream constructs no such map for an
 scheme morphism. Local finiteness of coefficient support is not upstream, so the coefficient
 function is deliberately not repackaged as an `AlgebraicCycle`.
 
-The #23 foundation now defines invertibility as local rank-one freeness, transports it across
-isomorphisms, constructs the sheafification of the presheaf tensor, and packages its isomorphism
-classes as `PicardClass X`. The missing group law has been isolated as #79: sheafification
-equivalences are not stable under tensoring with arbitrary modules, so the needed coherence must
-use the locally free rank-one hypothesis. No monoidal structure is postulated before that proof.
-#22 and the completed #23 jointly unlock #24.
+The completed #23/#79 construction defines invertibility as local rank-one freeness, transports
+it across isomorphisms, constructs the sheafification of the presheaf tensor, and proves the
+rank-one tensor/sheafification comparisons needed for closure. It installs the symmetric
+monoidal coherence on invertible sheaves and packages the units of their isomorphism-class
+commutative monoid as the scheme-level group `Pic X`. An explicit tensor-inverse constructor is
+exported for the forthcoming `O_X(D)`/`O_X(-D)` pair. Together with #22, this unlocks #24.
 
 **B3.** The hardest step and the one everything else waits on. Mathlib's sheaf cohomology
 is `Ext` from the constant sheaf, which is the right general definition but not obviously
