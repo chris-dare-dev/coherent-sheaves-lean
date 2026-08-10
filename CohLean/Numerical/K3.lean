@@ -2,7 +2,7 @@
 Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 -/
-import CohLean.Numerical.Surface
+import CohLean.Numerical.Discriminant
 
 /-!
 # K3 surfaces, numerically
@@ -41,7 +41,7 @@ namespace AlgebraicGeometry.Numerical
 
 namespace K3
 
-open NumericalRing NumericalVariety
+open NumericalRing NumericalVariety Finset
 
 variable {A : Type u} {N : Type v}
 variable [CommRing A] [Algebra ℚ A] [AddCommGroup N] [NumericalVariety 2 A N]
@@ -62,7 +62,13 @@ The `c₁`-term of the surface formula drops out because `td₁ = 0`; this is th
 triviality of the canonical class buys. -/
 theorem chi_eq (E : N) :
     (chi (A := A) E : ℚ) = 2 * (rank (A := A) E : ℚ) + degree (n := 2) (chComp (A := A) E 2) := by
-  rw [Surface.chi_eq E, IsK3.toddComp_one, IsK3.degree_toddComp_two, mul_zero, map_zero]
+  have h := chi_eq_sum (A := A) E
+  rw [Finset.sum_range_succ, Finset.sum_range_succ, Finset.sum_range_succ,
+    Finset.sum_range_zero, zero_add] at h
+  simp only [show (2 : ℕ) - 0 = 2 from rfl, show (2 : ℕ) - 1 = 1 from rfl,
+    show (2 : ℕ) - 2 = 0 from rfl] at h
+  rw [h, chComp_zero, degree_algebraMap_mul, toddComp_zero, mul_one,
+    IsK3.toddComp_one, IsK3.degree_toddComp_two, mul_zero, map_zero]
   ring
 
 /-- The third component of the Mukai vector `v(E) = (r, c₁, s)`, integrated:
@@ -95,8 +101,8 @@ So `v² ≥ −2` and `∫Δ ≥ 0` are statements about the same quantity, shif
 holds on *any* surface. Only the reading of `(r, c₁, s)` as a Mukai vector is K3-specific. -/
 theorem mukaiSelfPairing_eq (E : N) :
     mukaiSelfPairing (A := A) E
-      = degree (n := 2) (Surface.discriminant (A := A) E) - 2 * (rank (A := A) E : ℚ) ^ 2 := by
-  rw [mukaiSelfPairing, mukaiS, Surface.degree_discriminant]
+      = degree (n := 2) (discriminant (A := A) E) - 2 * (rank (A := A) E : ℚ) ^ 2 := by
+  rw [mukaiSelfPairing, mukaiS, degree_discriminant]
   ring
 
 omit [IsK3 A N] in

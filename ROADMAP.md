@@ -28,8 +28,10 @@ Estimates assume heavy agent assistance. A solo human should multiply by roughly
 |---|---|---|
 | A1 | `NumericalRing n A`, `NumericalVariety n A N` | **done** |
 | A2 | `degree_ch_mul_todd` — the general RR expansion, any `n` | **done** |
-| A3 | `Surface.chi_eq` — the `n = 2` specialisation | **done** |
-| A4 | `Surface.discriminant` — Bogomolov–Gieseker `Δ = c₁² − 2r·ch₂` | **done** |
+| A2a | universal `ChernClassData` conversions to `ch₀…ch₄` and `td₀…td₄` | **done** |
+| A2b | `Variety.NumericalData`: certified coherent-sheaf/Chern-class descent to `NumericalVariety` | **done** |
+| A3 | optional low-dimensional RR displays in `Numerical/Specializations` | **done** |
+| A4 | dimension-general `NumericalVariety.discriminant` — `Δ = c₁² − 2r·ch₂` | **done** |
 | A5 | `Examples.Point` — consistency witness, `n = 0` | **done** |
 | A6a | `K3.IsK3` (`td₁ = 0`, `∫td₂ = 2`), `K3.chi_eq`, Mukai self-pairing, `⟨v,v⟩ = ∫Δ − 2r²` | **done** |
 | A6b | A K3 *model*: `A = ℚ[t]/(t³)` with `∫t² = 2d`, satisfying `IsK3` | **done** |
@@ -56,10 +58,10 @@ the grading, the Chern character and `surfaceDegree_ch_mul_todd` — the reducti
 `td₁ = (3/2)H` is nonzero: the K3 model multiplies that term by zero and so cannot detect a
 sign error in it. `p2Chi_lineBundle` pins it down by recovering `χ(O(nH)) = (n+1)(n+2)/2`.
 
-A7 cashes the dimension-general claim. `Threefold.chi_eq` and `Fourfold.chi_eq` are the same
-proof as `Surface.chi_eq` with `Finset.sum_range_succ` fired one and two more times; no lemma
-in `Numerical/RiemannRoch.lean` had to change, which is the evidence that `degree_ch_mul_todd`
-is general rather than a surface theorem stated with a variable in it.
+A7 cashes the dimension-general claim. The optional `Threefold.chi_eq` and `Fourfold.chi_eq`
+displays are the same proof as `Surface.chi_eq` with `Finset.sum_range_succ` fired one and two
+more times; no lemma in `Numerical/RiemannRoch.lean` had to change. They live under
+`Numerical/Specializations` and are not part of the root import.
 
 `CalabiYauThreefold.IsCalabiYau` mirrors `K3.IsK3`: two conditions on the Todd class
 (`td₁ = 0`, `∫td₃ = 0`) and nothing else. Both the rank term and the `ch₂` term of
@@ -136,8 +138,8 @@ presentation whenever `M` is, because `AlgebraicGeometry.presentationTilde` alre
 the global presentation and its index types are the two generating sets that
 `Module.FinitePresentation` hands over. Conversely,
 Mathlib v4.32 proves `IsIso M.fromTildeΓ` for quasi-coherent `M`, with
-`ForMathlib/AffineComparisonGluing.lean` retaining CohLean's compatibility exports,
-and `ForMathlib/AffineComparisonFiniteness.lean` transports finite generators and
+`AlgebraicGeometry/Modules/AffineComparisonGluing.lean` retaining CohLean's compatibility
+exports, and `AlgebraicGeometry/Modules/AffineComparisonFiniteness.lean` transports finite generators and
 presentations to a basic-open cover and patches their localized global sections. Thus coherent
 sheaves on `Spec R` have finitely presented global sections when `R` is noetherian.
 `Coh.affineGlobalSections` and `FGModuleCat.affineTilde` restrict Mathlib's `tilde ⊣ Γ`
@@ -146,7 +148,7 @@ adjunction to the two full subcategories, and `Coh.affineEquivalence` packages t
 hypothesis; noetherianity first appears in the tilde direction.
 
 One smaller Mathlib gap surfaced on the way and is discharged in
-`CohLean/ForMathlib/OpensLimits.lean`: `Presentation.quasicoherentData` assumes
+`CohLean/Topology/Opens/Limits.lean`: `Presentation.quasicoherentData` assumes
 `[HasBinaryProducts C]` for the site, and that instance does not fire on `X.Opens`, because
 `Opens` reaches its order twice over and instance search will not unfold the
 `CompleteLattice.copy` that reconciles them. Without it a global presentation cannot be
@@ -155,7 +157,7 @@ turned into finite presentation on a scheme at all.
 **B2.** Issue #21 moved CohLean to Lean/Mathlib v4.32.1; v4.32.0 was the first stable release
 containing both `AlgebraicGeometry/AlgebraicCycle/Basic.lean` and
 `AlgebraicGeometry/OrderOfVanishing.lean`. The compile-only inventory is
-`CohLean/ForMathlib/DivisorAPIAudit.lean`.
+`CohLean/Development/DivisorAPIAudit.lean`.
 
 The usable upstream layer is precise: `AlgebraicCycle` and `AlgebraicCycle.map` supply locally
 finite cycles and quasicompact pushforward; `Scheme.ordHom` and `Scheme.ord` supply order of
@@ -220,10 +222,12 @@ extra cost. Reuse Hilbert-polynomial machinery from `jjaassoonn/DimensionTheory`
 **B5.** Serre duality is the second hard theorem. Mathlib's derived-category infrastructure
 (Riou) is unusually strong and is the reason this is attemptable at all.
 
-## Upstreaming
+## Ownership and Mathlib interaction
 
-B1–B3 are Mathlib-shaped and should be PR'd as they land. Layer A is *not* Mathlib
-material — it is an axiomatic interface, and Mathlib does not take those. It stays here.
+CohLean owns every module in this roadmap. Mathlib-style namespaces record mathematical API
+ownership, not a promise to upstream. Contributions to Mathlib are optional; when Mathlib gains
+an equivalent API independently, adopting it and deleting the local compatibility code is also
+optional maintenance work, never a gate for the next CohLean milestone.
 
 ## Non-goals
 

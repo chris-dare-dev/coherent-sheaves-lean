@@ -9,7 +9,7 @@ import CohLean.Numerical.Examples.RankOneSurface
 # A K3 surface of Picard rank one
 
 The first model of `NumericalVariety` in dimension two. Before it, every statement in
-`CohLean/Numerical/Surface.lean` and `CohLean/Numerical/K3.lean` was conditional on a
+`CohLean/Numerical/Specializations/Surface.lean` and `CohLean/Numerical/K3.lean` was conditional on a
 `NumericalVariety 2 A N` existing at all — only the dimension-zero point had been exhibited.
 
 The surface is a K3 `X` with `Pic X = ℤ·H` and `H² = 2d`. The ring, grading and degree map

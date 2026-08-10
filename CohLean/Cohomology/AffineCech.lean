@@ -2,8 +2,8 @@
 Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 -/
-import CohLean.ForMathlib.ExtraCodegeneracy
-import CohLean.ForMathlib.OpensLimits
+import CohLean.Cohomology.Simplicial.ExtraCodegeneracy
+import CohLean.Topology.Opens.Limits
 import Mathlib.Algebra.Category.ModuleCat.Products
 import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 import Mathlib.AlgebraicGeometry.Modules.Tilde

@@ -11,9 +11,8 @@ import CohLean.Numerical.Defs
 sums over all codimensions. Every dimension-specific Riemann–Roch formula is obtained by
 expanding that product and discarding the terms whose total codimension is not `n`.
 
-`degree_ch_mul_todd` does that once, in arbitrary dimension. The surface, threefold and
-fourfold formulas are then finite specialisations of a single identity rather than three
-separate computations — which is the point of stating Layer A for general `n`.
+`degree_ch_mul_todd` does that once, in arbitrary dimension. Any finite-dimensional display
+formula is an optional evaluation of this identity, not part of the foundational interface.
 -/
 
 universe u v
@@ -26,6 +25,12 @@ open NumericalRing Finset
 
 variable {n : ℕ} {A : Type u} {N : Type v}
 variable [CommRing A] [Algebra ℚ A] [AddCommGroup N] [NumericalVariety n A N]
+
+/-- The Euler characteristic of the structure sheaf, represented numerically by the degree
+of the top Todd component. This definition is dimension-general; surface, threefold, and
+fourfold names are only compatibility aliases in the specialization modules. -/
+noncomputable def structureSheafEulerCharacteristic : ℚ :=
+  degree (n := n) (toddComp (A := A) (N := N) n)
 
 /-- **The Riemann–Roch expansion.** Integrating `ch(E) · td(X)` leaves exactly the
 `n + 1` terms of total codimension `n`:

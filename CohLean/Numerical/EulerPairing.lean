@@ -206,7 +206,12 @@ that it is the *right* one. -/
 theorem chi₂_eq_chi_of_isStructureSheafLike (E F : N) (hr : rank (A := A) E = 1)
     (h₁ : chComp (A := A) E 1 = 0) (h₂ : chComp (A := A) E 2 = 0) :
     chi₂ (A := A) E F = (chi (A := A) F : ℚ) := by
-  rw [chi₂_eq, Surface.chi_eq F, hr, h₁, h₂]
+  have hchi := chi_eq_sum (A := A) F
+  rw [Finset.sum_range_succ, Finset.sum_range_succ, Finset.sum_range_succ,
+    Finset.sum_range_zero, zero_add] at hchi
+  simp only [show (2 : ℕ) - 0 = 2 from rfl, show (2 : ℕ) - 1 = 1 from rfl,
+    show (2 : ℕ) - 2 = 0 from rfl] at hchi
+  rw [chi₂_eq, hchi, chComp_zero, degree_algebraMap_mul, toddComp_zero, mul_one, hr, h₁, h₂]
   simp only [Int.cast_one, one_mul, zero_mul, map_zero, mul_zero]
   ring
 
@@ -286,7 +291,7 @@ theorem chi₂_comm (E F : N) : chi₂ (A := A) E F = chi₂ (A := A) F E := by
 Bogomolov–Gieseker discriminant through `K3.mukaiSelfPairing_eq`. -/
 theorem chi₂_self (E : N) :
     chi₂ (A := A) E E
-      = 2 * (rank (A := A) E : ℚ) ^ 2 - degree (n := 2) (Surface.discriminant (A := A) E) := by
+      = 2 * (rank (A := A) E : ℚ) ^ 2 - degree (n := 2) (discriminant (A := A) E) := by
   rw [chi₂_eq_neg_mukaiPairing, mukaiPairing_self, mukaiSelfPairing_eq]
   ring
 

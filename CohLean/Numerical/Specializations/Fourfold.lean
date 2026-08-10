@@ -5,7 +5,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 import CohLean.Numerical.RiemannRoch
 
 /-!
-# Riemann–Roch for fourfolds
+# Display formulas for numerical fourfolds
 
 The `n = 4` specialisation of `AlgebraicGeometry.Numerical.NumericalVariety.chi_eq_sum`,
 closing out the dimensions this repo targets.
@@ -46,9 +46,9 @@ variable [CommRing A] [Algebra ℚ A] [AddCommGroup N] [NumericalVariety 4 A N]
 
 /-- `χ(O_X)` for a fourfold, read off the top Todd component: taking `E` of rank one with
 vanishing higher Chern components in `chi_eq` leaves exactly `∫_X td₄(X)`. -/
-noncomputable def chiStructureSheaf (A : Type u) (N : Type v) [CommRing A] [Algebra ℚ A]
+noncomputable abbrev chiStructureSheaf (A : Type u) (N : Type v) [CommRing A] [Algebra ℚ A]
     [AddCommGroup N] [NumericalVariety 4 A N] : ℚ :=
-  degree (n := 4) (toddComp (A := A) (N := N) 4)
+  NumericalVariety.structureSheafEulerCharacteristic (n := 4) (A := A) (N := N)
 
 /-- **Riemann–Roch for fourfolds.**
 

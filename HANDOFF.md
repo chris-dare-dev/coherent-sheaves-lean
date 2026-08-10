@@ -21,6 +21,10 @@ cd coherent-sheaves-lean
 lake exe cache get      # ~5 min, downloads Mathlib oleans. A cache MISS is a real failure --
                         # building Mathlib from source takes hours.
 lake build              # ~1 min warm
+lake build CohLean.Development.DivisorAPIAudit \
+  CohLean.Numerical.Specializations.Surface \
+  CohLean.Numerical.Specializations.Threefold \
+  CohLean.Numerical.Specializations.Fourfold
 lake env lean scripts/Audit.lean
 ```
 
@@ -88,19 +92,21 @@ If you find yourself about to build a Chow ring, stop and re-read this.
 | File | Content |
 |---|---|
 | `Numerical/Defs.lean` | `NumericalRing n A`, `NumericalVariety n A N` |
-| `Numerical/RiemannRoch.lean` | `degree_ch_mul_todd` — the RR expansion, proved once **for all `n`** |
-| `Numerical/Surface.lean` | `chi_eq` at `n = 2`, *derived* from the above; `discriminant`; `degree_discriminant` |
-| `Numerical/Threefold.lean` | `chi_eq` at `n = 3`; `CalabiYauThreefold.IsCalabiYau` (`td₁ = 0`, `∫td₃ = 0`) and its two-term `chi_eq` |
-| `Numerical/Fourfold.lean` | `chi_eq` at `n = 4` |
+| `Numerical/CharacteristicClasses.lean` | dimension-independent `ch₀` through `ch₄` and `td₀` through `td₄` from `ChernClassData` |
+| `AlgebraicGeometry/Variety/Numerical.lean` | `Variety.NumericalData`, mapping coherent sheaves through exact sequences to numerical classes and deriving `NumericalVariety` components from Chern classes |
+| `Numerical/RiemannRoch.lean` | `degree_ch_mul_todd`, `structureSheafEulerCharacteristic` — proved once **for all `n`** |
+| `Numerical/Discriminant.lean` | dimension-general `discriminant`, its grading, and `degree_discriminant` |
+| `Numerical/Specializations/Surface.lean` | optional display of `chi_eq` at `n = 2` plus compatibility aliases |
+| `Numerical/Specializations/Threefold.lean` | optional `chi_eq` display at `n = 3`; `CalabiYauThreefold.IsCalabiYau` and its two-term formula |
+| `Numerical/Specializations/Fourfold.lean` | optional `chi_eq` display at `n = 4` |
 | `Numerical/K3.lean` | `IsK3` (asserts only `td₁ = 0` and `∫td₂ = 2`), `chi_eq`, Mukai self-pairing, `⟨v,v⟩ = ∫Δ − 2r²` |
 | `Numerical/Dual.lean` | `NumericalRingWithDual` — the `(-1)ⁱ` involution, as a **mixin** over `NumericalRing`; `chDual`, `ch_add` |
 | `Numerical/EulerPairing.lean` | `chi₂ E F = ∫ch(E)^∨·ch(F)·td(X)`, its general expansion, the `n = 2` case, and `K3.chi₂ = −⟨v,v⟩` |
 | `Numerical/OfGradedBasis.lean` | `NumericalRing.ofGradedBasis` — builds the graded ring from a basis, discharging the internality obligation once |
 
-`Surface.lean`, `Threefold.lean` and `Fourfold.lean` are the same proof with
+The three files under `Numerical/Specializations` are the same proof with
 `Finset.sum_range_succ` fired one and two more times. Nothing in `RiemannRoch.lean` changed to
-admit them — that is the evidence `degree_ch_mul_todd` is dimension-general rather than a
-surface theorem with a variable in it.
+admit them. They are compiled and audited but deliberately absent from the root import.
 
 Two things about the Euler pairing that are easy to get wrong:
 
@@ -130,27 +136,28 @@ a Todd class and nothing else.
 
 ### Layer B — coherent sheaves form an abelian category
 
-> Everything in this subsection except `Coh/Defs.lean` and the two original `ForMathlib` files
-> was written by **other sessions**. This table was checked against each file's module
+> Most of the implementation in this subsection was written by **other sessions**. This table
+> was checked against each file's module
 > docstring, `scripts/Audit.lean`, and the commits that introduced them; the proofs themselves
 > were not re-derived. Each of those docstrings has a "Not proved here" section and they are
 > unusually precise — read the one for any file you build on.
 
 | File | Content |
 |---|---|
+| `AlgebraicGeometry/Variety.lean` | geometric `Variety k` and `SmoothProperVariety k` bundles, kept distinct from `NumericalVariety` |
 | `Coh/Defs.lean` | `IsCoherent` (= finite presentation; correct on locally noetherian schemes, documented as strictly stronger elsewhere), the `coherent` `ObjectProperty`, `Coh X`, the inclusion `ι` |
 | `Coh/ClosedUnderIso.lean` | `Coh X` closed under isomorphism |
 | `Coh/Local.lean` | the affine-local criterion: `isCoherent_iff_of_affineOpenCover`, and the `Over`-free `isCoherent_iff_restrict_affineOpenCover` |
 | `Coh/Affine.lean` | finite presentation of `M^~`, finite global sections of finite-type quasi-coherent sheaves, finite presentation of global sections of coherent sheaves over a noetherian ring, and `Coh (Spec R) ≌ FGModuleCat R` |
 | `AlgebraicGeometry/Modules/RestrictOver.lean` | the slice-vs-scheme restriction equivalence; finite presentation invariant in **both** directions |
-| `ForMathlib/PresentationIsFinite.lean` | `Presentation.isFinite_of_isIso`, `Presentation.isFinite_map` |
-| `ForMathlib/FinitePresentationOfPresentation.lean` | `Presentation.isFinitePresentation_quasicoherentData`, `IsFinitePresentation.of_presentation` |
-| `ForMathlib/OpensLimits.lean` | `HasBinaryProducts` and `HasFiniteLimits` on `Opens X`. Mathlib's general lattice instances do not fire because `OrderTop (Opens X)` is unreachable at reducible transparency. **This file replaced two independent workarounds for the same gap** — do not write a third |
-| `ForMathlib/AffineComparison.lean` | reduces `IsIso fromTildeΓ` to a statement about localisation of modules, and makes it an `iff` |
-| `ForMathlib/QuasicoherentBasicOpen.lean` | refines quasi-coherent presentation data to a basic-open cover |
-| `ForMathlib/AffineComparisonGluing.lean` | compatibility exports around Mathlib v4.32's upstream Hartshorne II.5.1 theorem, including `isIso_fromTildeΓ_of_isQuasicoherent` |
-| `ForMathlib/AffineComparisonFiniteness.lean` | transports finite generators/presentations to basic opens and patches the localized finite modules |
-| `ForMathlib/DivisorAPIAudit.lean` | compile-only B2 inventory: cycles/order of vanishing, local freeness, ring-level Picard data, sheafification, and ideal-sheaf subschemes; records the genuinely missing divisor layer |
+| `AlgebraicGeometry/Modules/PresentationIsFinite.lean` | `Presentation.isFinite_of_isIso`, `Presentation.isFinite_map` |
+| `AlgebraicGeometry/Modules/FinitePresentationOfPresentation.lean` | `Presentation.isFinitePresentation_quasicoherentData`, `IsFinitePresentation.of_presentation` |
+| `Topology/Opens/Limits.lean` | `HasBinaryProducts` and `HasFiniteLimits` on `Opens X`. Mathlib's general lattice instances do not fire because `OrderTop (Opens X)` is unreachable at reducible transparency. **This file replaced two independent workarounds for the same gap** — do not write a third |
+| `AlgebraicGeometry/Modules/AffineComparison.lean` | reduces `IsIso fromTildeΓ` to a statement about localisation of modules, and makes it an `iff` |
+| `AlgebraicGeometry/Modules/QuasicoherentBasicOpen.lean` | refines quasi-coherent presentation data to a basic-open cover |
+| `AlgebraicGeometry/Modules/AffineComparisonGluing.lean` | compatibility exports around Mathlib v4.32's upstream Hartshorne II.5.1 theorem, including `isIso_fromTildeΓ_of_isQuasicoherent` |
+| `AlgebraicGeometry/Modules/AffineComparisonFiniteness.lean` | transports finite generators/presentations to basic opens and patches the localized finite modules |
+| `Development/DivisorAPIAudit.lean` | compile-only B2 inventory: cycles/order of vanishing, local freeness, ring-level Picard data, sheafification, and ideal-sheaf subschemes; records the genuinely missing divisor layer |
 | `Divisors/Cartier.lean` | Cartier divisors on an integral scheme as locally representable sections of `K(X)ˣ / 𝒪_{X,x}ˣ`; principal classes, order coefficients, and explicitly-hypothesized pullback |
 | `Divisors/Picard.lean` | rank-one local generator data, the isomorphism-invariant invertible-sheaf property, the raw sheafified presheaf tensor, and `PicardClass X` |
 | `Divisors/Tensor.lean` | tensor/sheafification descent under a locally rank-one factor, restriction compatibility, tensor closure, and the sheafified associator |
@@ -161,13 +168,13 @@ a Todd class and nothing else.
 | `Coh/Kernels.lean` | finite-limit preservation for restriction, localization through kernels, affine/global kernel and cokernel closure, and the two object-property closure instances |
 | `Coh/Extensions.lean` | local lifting on two finite refinements and the finite horseshoe presentation proving closure under extensions, with no noetherian hypothesis |
 | `Coh/Abelian.lean` | zero and finite-product closure, the abelian instance on `Coh X`, and the exact inclusion into `X.Modules` |
-| `ForMathlib/ToSheafExact.lean` | `SheafOfModules.toSheaf` preserves finite colimits, hence epis and short exact sequences. Needed because `Sheaf.H` is `Ext` from the constant sheaf, so the cohomology long exact sequence runs on the *image* of a sequence in `Sheaf J AddCommGrpCat` — and nothing upstream said it survives the trip |
+| `AlgebraicGeometry/Modules/ToSheafExact.lean` | `SheafOfModules.toSheaf` preserves finite colimits, hence epis and short exact sequences. Needed because `Sheaf.H` is `Ext` from the constant sheaf, so the cohomology long exact sequence runs on the *image* of a sequence in `Sheaf J AddCommGrpCat` — and nothing upstream said it survives the trip |
 | `Cohomology/Strategy.lean` | **Proves nothing.** A compile-only API map of the upstream declarations B3 can build on: 0 theorems, 6 `example`s, deliberately built to break the day one of them moves. Records the #26 reconnaissance so it is not repeated |
 
-The two original `ForMathlib` files fill a real Mathlib gap: Mathlib has
+The presentation-transport modules fill a real Mathlib gap: Mathlib has
 `IsQuasicoherent.of_coversTop` but **no finite-presentation analogue**, because nothing said
-that transporting a presentation preserves `Presentation.IsFinite`. Both files are in Mathlib
-namespaces so upstreaming is a file move.
+that transporting a presentation preserves `Presentation.IsFinite`. CohLean maintains these
+declarations regardless of whether an upstream contribution is ever made.
 
 **Still not proved:** the effective-divisor sequence and determinant part of B2; geometric `χ`; all of B4 and
 B5. General cohomology finiteness
@@ -182,8 +189,8 @@ remains deliberately deferred; the affine global-sections finiteness needed by B
 2. **Every new public theorem goes into `scripts/Audit.lean`.** CI fails on `sorryAx` and on any
    `declaration uses 'sorry'` warning. A green `lake build` proves nothing on its own — it
    succeeds on sorry-backed declarations.
-3. **Mathlib-style namespaces** (`AlgebraicGeometry.*`, `SheafOfModules.*`), never `CohLean.*`,
-   so upstreaming a stage is a file move rather than a rename.
+3. **Mathematical namespaces** (`AlgebraicGeometry.*`, `SheafOfModules.*`) describe API
+   ownership. Files are organized by CohLean domain; namespace choice is not an upstream promise.
 4. **Toolchain pinned to `leanprover/lean4:v4.32.1`.** This is the B2 bump: v4.32.0 is the first
    stable release with both `AlgebraicCycle.Basic` and `OrderOfVanishing`. A downstream project
    cannot mix this with a v4.29 Mathlib graph. `bridgeland-stab-lean` still follows an upstream
@@ -334,7 +341,7 @@ supply `haveI : PreservesColimitsOfSize.{u, u} … := preservesColimitsOfSize_sh
 `choose_spec` types against `_.choose` rather than `D i` — an error with nothing to do with your
 actual problem.
 
-### The `Opens` transparency gap — why `ForMathlib/OpensLimits.lean` exists
+### The `Opens` transparency gap — why `Topology/Opens/Limits.lean` exists
 
 `TopologicalSpace.Opens X` reaches its order twice: through the bespoke `SetLike`-derived
 `PartialOrder`, and through the `CompleteLattice.copy` built to be *definitionally* equal to it.
@@ -348,7 +355,7 @@ become finite presentation on *any* scheme. Mathlib never instantiates
 `Presentation.quasicoherentData` at a scheme site, which is why this has not surfaced upstream.
 
 Two sessions hit it and worked around it differently — five workarounds for one gap — before
-`ForMathlib/OpensLimits.lean` consolidated them (#51). **Do not add a global `OrderTop`
+`Topology/Opens/Limits.lean` consolidated them (#51). **Do not add a global `OrderTop`
 instance:** `OrderTop` extends `Top`, `Opens` already has one, and that is a data-carrying
 diamond that could change which `Top` existing `simp` lemmas are stated against. The bridges in
 that file are `private` for exactly that reason, and there is a regression check worth keeping —
@@ -385,7 +392,7 @@ hypothesis in a helper lemma and `subst` it there, once. That is the whole techn
 
 ### Mathlib specifics at v4.32.1
 
-* The exact B2 inventory is executable in `ForMathlib/DivisorAPIAudit.lean`. Upstream has
+* The exact B2 inventory is executable in `Development/DivisorAPIAudit.lean`. Upstream has
   `AlgebraicCycle`, `AlgebraicCycle.map`, `Scheme.ordHom`, `Scheme.ord`, arbitrary-rank
   `SheafOfModules.IsLocallyFree`, ring-level `Module.Invertible` and `CommRing.Pic`, generic
   `PresheafOfModules.sheafification`, and `Scheme.IdealSheafData.subscheme`. It does **not**

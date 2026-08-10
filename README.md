@@ -3,9 +3,9 @@
 Coherent sheaves, Chern classes and Riemann–Roch for **smooth projective varieties over a
 field**, in Lean 4 / Mathlib.
 
-Dimension-general by construction. Surfaces (K3 first) are the near-term target, but every
-definition is stated for a variety of dimension `n` so that threefolds and fourfolds are
-specialisations rather than rewrites.
+Dimension-general by construction. The core API is stated for a variety of dimension `n`;
+surface, threefold, and fourfold formulas are optional displays of general identities rather
+than separate foundational notions.
 
 ## Why this repo exists
 
@@ -43,7 +43,10 @@ homomorphism to `Pic X`. Effective Cartier divisors, ampleness, higher direct im
 finiteness of cohomology, `χ(F)`, Serre duality, Chern classes, intersection numbers, and
 Riemann–Roch are not yet present.
 
-## Architecture: two layers
+## Architecture
+
+See [ARCHITECTURE.md](ARCHITECTURE.md) for the package map, ownership policy, and the intended
+descent from geometric varieties and coherent sheaves to numerical data.
 
 ### Layer A — `CohLean.Numerical` (the interface)
 
@@ -57,14 +60,21 @@ states exactly that much, as a typeclass, with no schemes anywhere:
   character (by graded components), the Todd class, and `χ`, subject to
   Hirzebruch–Riemann–Roch.
 
+`AlgebraicGeometry.Variety.NumericalData` connects this interface back to geometry: coherent
+sheaves map additively through short exact sequences to numerical classes, while `chComp` and
+`toddComp` are computed from geometric Chern-class data by universal formulas through
+codimension four.
+
 This unblocks downstream stability work immediately, and is falsifiable: the axioms are
 visible in the type, and three models exist — a point, a K3 surface of degree `H² = 2d`, and
 `ℙ²` — so nothing here is vacuously true. `ℙ²` is there specifically because its
 `td₁ = (3/2)H` is nonzero, which the K3 model cannot test.
 
-### Layer B — `CohLean.Coh` (the construction)
+### Geometric construction — `CohLean.AlgebraicGeometry`, `CohLean.Coh`, and `CohLean.Divisors`
 
-The real thing, built from Mathlib's scheme theory, in stages that each go upstream.
+The geometric side is built from Mathlib's scheme theory and permanently maintained in
+CohLean. A declaration may be contributed upstream, or replaced when Mathlib independently
+acquires an equivalent API, but neither is a roadmap gate or an obligation.
 
 **The design decision that makes this tractable: no Chow rings.** Intersection numbers come
 from Snapper's theorem — for proper `X` over a field,
@@ -80,8 +90,8 @@ Layer A's fields are the trust boundary. Layer B's job is to discharge them.
 **Picking this up cold? Read [HANDOFF.md](HANDOFF.md).** It carries the current state, the live
 piece of work, and the Lean/Mathlib traps this repo has already paid for.
 
-Layer A is complete and audited for the general expansion, the surface, threefold and
-fourfold specialisations, the K3 and Calabi–Yau-threefold cases, the Euler pairing
+The numerical core is complete and audited for the general expansion and discriminant. Optional
+surface, threefold, and fourfold display modules, the K3 and Calabi–Yau-threefold cases, the Euler pairing
 `χ(E,F)` that Bridgeland stability is defined against, and the point, K3, and
 projective-plane models. Layer B stage B1 is complete: `Coh X` is abelian on a locally
 noetherian scheme, and its inclusion into `X.Modules` is exact. The proof includes locality,
@@ -98,7 +108,12 @@ Every later Layer B stage has a milestone and issue-level dependency graph; see
 [ROADMAP.md](ROADMAP.md).
 
 ```bash
-lake build && lake env lean scripts/Audit.lean
+lake build
+lake build CohLean.Development.DivisorAPIAudit \
+  CohLean.Numerical.Specializations.Surface \
+  CohLean.Numerical.Specializations.Threefold \
+  CohLean.Numerical.Specializations.Fourfold
+lake env lean scripts/Audit.lean
 ```
 
 The audit must show only `[propext, Classical.choice, Quot.sound]` and no `sorryAx`.
@@ -106,8 +121,11 @@ There is no `sorry` in this library.
 
 ## Conventions
 
-* Declarations live in Mathlib-style namespaces (`AlgebraicGeometry.*`), never in a
-  `CohLean.*` namespace, so that upstreaming a stage is a file move rather than a rename.
+* Files are organized by mathematical domain under `CohLean/`; there is no `ForMathlib`
+  package. Declarations use mathematical namespaces such as `AlgebraicGeometry.*` when that is
+  their natural owner. This does not signal an upstreaming commitment.
+* CohLean owns and maintains its infrastructure. Equivalent Mathlib APIs may replace local
+  declarations when convenient; upstream contributions are optional.
 * Toolchain pinned to `leanprover/lean4:v4.32.1`, the patch release selected by the B2 API
   audit. A downstream package that `require`s CohLean must move its complete Mathlib dependency
   graph to v4.32.1 as well; the existing Bridgeland anchor still pins v4.29.0.

@@ -2,21 +2,22 @@
 Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 -/
-import CohLean.Numerical.RiemannRoch
+import CohLean.Numerical.Discriminant
 
 /-!
-# Riemann–Roch for surfaces
+# Display formulas for numerical surfaces
 
 The `n = 2` specialisation of `AlgebraicGeometry.Numerical.NumericalVariety.chi_eq_sum`.
 
-Nothing here is surface-specific *mathematics*: it is the general expansion evaluated at
-`n = 2`. The threefold and fourfold cases will be written the same way, against the same
-`chi_eq_sum`.
+This is an optional display specialization of the dimension-general API. It contains no
+foundational surface object: `NumericalVariety 2 A N` is the general variety interface at
+dimension two, and the discriminant itself now lives in `Numerical/Discriminant.lean` for
+arbitrary dimension.
 
 ## Main results
 
 * `chi_eq` — `χ(E) = r·∫td₂(X) + ∫c₁(E)·td₁(X) + ∫ch₂(E)`.
-* `discriminant` — the Bogomolov–Gieseker discriminant `Δ(E) = c₁(E)² − 2·r·ch₂(E)`.
+* compatibility aliases for the dimension-general numerical discriminant.
 
 Writing `td₁(X) = −K_X/2` and `ch₂(E) = (c₁² − 2c₂)/2` turns `chi_eq` into the classical
 `χ(E) = r·χ(O_X) + ½c₁(c₁ − K_X) − c₂`. Those substitutions need `K_X` and `c₂`, which are
@@ -36,9 +37,9 @@ variable [CommRing A] [Algebra ℚ A] [AddCommGroup N] [NumericalVariety 2 A N]
 
 /-- `χ(O_X)` for a surface, read off the top Todd component: taking `E` of rank one with
 vanishing higher Chern components in `chi_eq` leaves exactly `∫_X td₂(X)`. -/
-noncomputable def chiStructureSheaf (A : Type u) (N : Type v) [CommRing A] [Algebra ℚ A]
+noncomputable abbrev chiStructureSheaf (A : Type u) (N : Type v) [CommRing A] [Algebra ℚ A]
     [AddCommGroup N] [NumericalVariety 2 A N] : ℚ :=
-  degree (n := 2) (toddComp (A := A) (N := N) 2)
+  NumericalVariety.structureSheafEulerCharacteristic (n := 2) (A := A) (N := N)
 
 /-- **Riemann–Roch for surfaces.**
 
@@ -63,16 +64,13 @@ used here because `c₂` is a Layer B object. Bogomolov's inequality — `∫_X 
 `E` slope-semistable with respect to a polarisation — is *not* stated at this layer: there
 is no stability notion in `NumericalVariety`, and asserting it here would hide a real
 theorem behind a class field. -/
-noncomputable def discriminant (E : N) : A :=
-  chComp (A := A) E 1 * chComp (A := A) E 1
-    - algebraMap ℚ A (2 * (rank (A := A) E : ℚ)) * chComp (A := A) E 2
+noncomputable abbrev discriminant (E : N) : A :=
+  NumericalVariety.discriminant (A := A) E
 
 /-- The discriminant lives in codimension two. -/
 theorem discriminant_mem_piece_two (E : N) :
     discriminant (A := A) E ∈ piece (n := 2) 2 := by
-  refine Submodule.sub_mem _ ?_ ?_
-  · exact mul_mem_piece (chComp_mem E 1) (chComp_mem E 1)
-  · exact mul_mem_piece (algebraMap_mem_piece_zero _) (chComp_mem E 2)
+  exact NumericalVariety.discriminant_mem_piece_two (A := A) E
 
 /-- `∫_X Δ(E) = ∫_X c₁(E)² − 2·rank(E)·∫_X ch₂(E)`: the scalar the
 Bogomolov–Gieseker inequality is about. -/
@@ -80,7 +78,7 @@ theorem degree_discriminant (E : N) :
     degree (n := 2) (discriminant (A := A) E)
       = degree (n := 2) (chComp (A := A) E 1 * chComp (A := A) E 1)
         - 2 * (rank (A := A) E : ℚ) * degree (n := 2) (chComp (A := A) E 2) := by
-  simp only [discriminant, map_sub, degree_algebraMap_mul]
+  exact NumericalVariety.degree_discriminant (A := A) E
 
 end Surface
 

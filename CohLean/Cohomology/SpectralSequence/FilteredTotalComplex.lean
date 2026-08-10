@@ -2,7 +2,7 @@
 Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 -/
-import CohLean.ForMathlib.FilteredComplexSpectralObject
+import CohLean.Cohomology.SpectralSequence.FilteredComplexSpectralObject
 import Mathlib.Algebra.Homology.Embedding.CochainComplex
 import Mathlib.Algebra.Homology.Embedding.StupidTrunc
 import Mathlib.Algebra.Homology.SpectralObject.FirstPage

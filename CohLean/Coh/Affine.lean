@@ -3,9 +3,9 @@ Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 -/
 import CohLean.Coh.Defs
-import CohLean.ForMathlib.AffineComparisonFiniteness
-import CohLean.ForMathlib.FinitePresentationOfPresentation
-import CohLean.ForMathlib.OpensLimits
+import CohLean.AlgebraicGeometry.Modules.AffineComparisonFiniteness
+import CohLean.AlgebraicGeometry.Modules.FinitePresentationOfPresentation
+import CohLean.Topology.Opens.Limits
 import Mathlib.Algebra.Category.FGModuleCat.Basic
 import Mathlib.AlgebraicGeometry.Modules.Tilde
 import Mathlib.Algebra.Module.FinitePresentation
@@ -65,7 +65,7 @@ gives `s : Finset M` while `presentationTilde` wants `s : Set M` and `t : Set (â
 does not in fact bite: the coercion is accepted as written.
 
 The converse finiteness results use the affine comparison and localisation patching developed
-in `CohLean.ForMathlib.AffineComparisonFiniteness`.
+in `CohLean.AlgebraicGeometry.Modules.AffineComparisonFiniteness`.
 
 ## Affine equivalence
 

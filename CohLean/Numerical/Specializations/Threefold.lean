@@ -5,10 +5,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 import CohLean.Numerical.RiemannRoch
 
 /-!
-# Riemann–Roch for threefolds
+# Display formulas for numerical threefolds
 
 The `n = 3` specialisation of `AlgebraicGeometry.Numerical.NumericalVariety.chi_eq_sum`,
-written exactly the way `CohLean/Numerical/Surface.lean` writes the `n = 2` case: expand
+written exactly the way `CohLean/Numerical/Specializations/Surface.lean` writes the `n = 2` case: expand
 `Finset.range 4` and simplify `3 - i`. There is no threefold-specific *mathematics* here.
 That the two files differ only in how many times `Finset.sum_range_succ` fires is the
 content of the claim that Layer A is dimension-general.
@@ -44,9 +44,9 @@ variable [CommRing A] [Algebra ℚ A] [AddCommGroup N] [NumericalVariety 3 A N]
 
 /-- `χ(O_X)` for a threefold, read off the top Todd component: taking `E` of rank one with
 vanishing higher Chern components in `chi_eq` leaves exactly `∫_X td₃(X)`. -/
-noncomputable def chiStructureSheaf (A : Type u) (N : Type v) [CommRing A] [Algebra ℚ A]
+noncomputable abbrev chiStructureSheaf (A : Type u) (N : Type v) [CommRing A] [Algebra ℚ A]
     [AddCommGroup N] [NumericalVariety 3 A N] : ℚ :=
-  degree (n := 3) (toddComp (A := A) (N := N) 3)
+  NumericalVariety.structureSheafEulerCharacteristic (n := 3) (A := A) (N := N)
 
 /-- **Riemann–Roch for threefolds.**
 

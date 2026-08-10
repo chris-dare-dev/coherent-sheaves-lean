@@ -3,7 +3,7 @@ Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 -/
 import CohLean.Cohomology.CechComparison
-import CohLean.ForMathlib.FilteredTotalComplexFirstPageDifferential
+import CohLean.Cohomology.SpectralSequence.FilteredTotalComplexFirstPageDifferential
 import Mathlib.Algebra.Homology.Embedding.ExtendHomology
 import Mathlib.Algebra.Homology.Embedding.RestrictionHomology
 import Mathlib.Algebra.Homology.SingleHomology

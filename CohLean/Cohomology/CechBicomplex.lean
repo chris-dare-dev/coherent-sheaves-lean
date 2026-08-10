@@ -2,7 +2,7 @@
 Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 -/
-import CohLean.ForMathlib.FilteredTotalComplexAdjacent
+import CohLean.Cohomology.SpectralSequence.FilteredTotalComplexAdjacent
 import Mathlib.Algebra.Category.Grp.Limits
 import Mathlib.CategoryTheory.Abelian.Injective.Extend
 import Mathlib.CategoryTheory.Abelian.Injective.Ext
@@ -19,7 +19,7 @@ file constructs the classical cohomological bicomplex
 
 The Cech direction is the first direction and the resolution direction is the second.  We also
 retain the augmentation induced by `F ⟶ I⁰`, and instantiate the column-filtered total-complex
-spectral sequence constructed in `CohLean.ForMathlib.FilteredTotalComplex`.
+spectral sequence constructed in `CohLean.Cohomology.SpectralSequence.FilteredTotalComplex`.
 
 At the Mathlib revision pinned by this project, the sheaf category is not equipped with an
 `EnoughInjectives` instance.  Accordingly, the construction takes an explicit
