@@ -2,7 +2,7 @@
 Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 -/
-import CohLean.ForMathlib.SpectralObjectSpectralSequence
+import Mathlib.Algebra.Homology.SpectralObject.SpectralSequence
 import Mathlib.Algebra.Homology.HomotopyCategory.HomologicalFunctor
 import Mathlib.Algebra.Homology.HomotopyCategory.ShiftSequence
 import Mathlib.Algebra.Homology.HomotopyCategory.SpectralObject
@@ -12,14 +12,13 @@ import Mathlib.Algebra.Homology.HomotopyCategory.SpectralObject
 
 Mathlib constructs a triangulated spectral object from mapping cones and observes that
 precomposing it with a functor into cochain complexes produces the spectral object associated to
-a filtered complex.  The pinned revision does not yet provide the remaining bridge from a
-triangulated spectral object to the corresponding spectral object in an abelian category.
+a filtered complex. The remaining bridge applies a homological functor to obtain a spectral
+object in an abelian category.
 
 This file supplies that bridge for an arbitrary homological functor and then specializes it to
 homology on the homotopy category.  Thus a filtration
 `K : ι ⥤ CochainComplex C ℤ` canonically produces an
-`Abelian.SpectralObject C ι`; combined with
-`CohLean.ForMathlib.SpectralObjectSpectralSequence`, it can be assembled into a spectral sequence.
+`Abelian.SpectralObject C ι`, which Mathlib assembles into a spectral sequence.
 -/
 
 namespace CategoryTheory

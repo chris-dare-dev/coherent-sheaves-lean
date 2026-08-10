@@ -61,14 +61,16 @@ instance QuasicoherentData.isFinitePresentation_over {M : SheafOfModules.{u} R}
     let Y := (Over.star U).obj (q.X i)
     apply @Presentation.IsFinite.mk (Over Y) _ ((J.over U).over Y) ((R.over U).over Y)
       (hasWeakSheafifyOverOver U Y) (wEqualsLocallyBijectiveOverOver U Y)
-      (hasSheafComposeOverOver U Y)
     · apply @GeneratingSections.IsFiniteType.mk (Over Y) _ ((J.over U).over Y)
         ((R.over U).over Y) (hasWeakSheafifyOverOver U Y)
-        (wEqualsLocallyBijectiveOverOver U Y) (hasSheafComposeOverOver U Y)
+        (wEqualsLocallyBijectiveOverOver U Y)
       change Finite (q.presentationOver U i).generators.I
       rw [QuasicoherentData.presentationOver_generators_I]
       infer_instance
-    · change Finite (q.presentationOver U i).relations.I
+    · apply @GeneratingSections.IsFiniteType.mk (Over Y) _ ((J.over U).over Y)
+        ((R.over U).over Y) (hasWeakSheafifyOverOver U Y)
+        (wEqualsLocallyBijectiveOverOver U Y)
+      change Finite (q.presentationOver U i).relations.I
       rw [QuasicoherentData.presentationOver_relations_I]
       infer_instance
 
@@ -105,13 +107,16 @@ theorem IsFinitePresentation.of_coversTop (M : SheafOfModules.{u} R) {I : Type v
   dsimp only [q, QuasicoherentData.bind]
   apply @Presentation.IsFinite.mk (Over ((D i).X j).left) _
     (J.over ((D i).X j).left) (R.over ((D i).X j).left)
-    (hasWeakSheafifyOver _) (wEqualsLocallyBijectiveOver _) (hasSheafComposeOver _)
+    (hasWeakSheafifyOver _) (wEqualsLocallyBijectiveOver _)
   · apply @GeneratingSections.IsFiniteType.mk (Over ((D i).X j).left) _
       (J.over ((D i).X j).left) (R.over ((D i).X j).left)
-      (hasWeakSheafifyOver _) (wEqualsLocallyBijectiveOver _) (hasSheafComposeOver _)
+      (hasWeakSheafifyOver _) (wEqualsLocallyBijectiveOver _)
     change Finite ((D i).presentation j).generators.I
     infer_instance
-  · change Finite ((D i).presentation j).relations.I
+  · apply @GeneratingSections.IsFiniteType.mk (Over ((D i).X j).left) _
+      (J.over ((D i).X j).left) (R.over ((D i).X j).left)
+      (hasWeakSheafifyOver _) (wEqualsLocallyBijectiveOver _)
+    change Finite ((D i).presentation j).relations.I
     infer_instance
 
 end SheafOfModules

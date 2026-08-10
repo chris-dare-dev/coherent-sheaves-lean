@@ -3,6 +3,7 @@ Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 -/
 import Mathlib.AlgebraicGeometry.Modules.Tilde
+import Mathlib.Algebra.Category.ModuleCat.FilteredColimits
 
 /-!
 # The localisation criterion for the affine comparison theorem
@@ -100,7 +101,7 @@ lemma stalkFunctor_map_surjective_of_isBasis (hB : Opens.IsBasis B)
     (hα : ∀ U ∈ B, Function.Surjective (ConcreteCategory.hom (α.app (op U)))) (x : X) :
     Function.Surjective (ConcreteCategory.hom ((stalkFunctor C x).map α)) := by
   intro t
-  obtain ⟨U, hxU, hU, s, rfl⟩ := germ_exist_of_isBasis hB G x t
+  obtain ⟨U, hxU, hU, s, rfl⟩ := exists_mem_germ_eq_of_isBasis hB G x t
   obtain ⟨s', rfl⟩ := hα U hU s
   exact ⟨ConcreteCategory.hom (F.germ U x hxU) s', stalkFunctor_map_germ_apply U x hxU α s'⟩
 
@@ -187,6 +188,10 @@ instance isLocalizedModule_basicOpenRestriction_tilde (N : ModuleCat.{u} R) (f :
     -- `tilde.toOpen_res` is `rfl`, so this is a definitional match.
     convert (inferInstance : IsLocalizedModule (Submonoid.powers f)
       (tilde.toOpen N (PrimeSpectrum.basicOpen f)).hom) using 1
+    change (tilde.toOpen N ⊤ ≫ basicOpenRestriction (tilde N) f).hom =
+      (tilde.toOpen N (PrimeSpectrum.basicOpen f)).hom
+    exact congrArg ModuleCat.Hom.hom
+      (tilde.toOpen_res N ⊤ (PrimeSpectrum.basicOpen f) _)
   have := IsLocalizedModule.of_linearEquiv_right (Submonoid.powers f)
     ((basicOpenRestriction (tilde N) f).hom ∘ₗ (e : N →ₗ[R] _)) e.symm
   simpa [LinearMap.comp_assoc] using this
@@ -202,7 +207,7 @@ theorem isIso_fromTildeΓ_app_basicOpen (M : (Spec R).Modules) (f : R)
     [IsLocalizedModule (Submonoid.powers f) (M.basicOpenRestriction f).hom] :
     IsIso ((modulesSpecToSheaf.map M.fromTildeΓ).hom.app (op (basicOpen f))) := by
   set N := (modulesSpecToSheaf.obj M).presheaf.obj (op ⊤) with hN
-  have hunit := tilde.isUnit_algebraMap_end_basicOpen M f
+  have hunit := Scheme.Modules.isUnit_algebraMap_end_of_le_basicOpen (M := M) f le_rfl
   have key := Scheme.Modules.toOpen_comp_fromTildeΓ_app M f
   have heq : ((modulesSpecToSheaf.map M.fromTildeΓ).hom.app (op (basicOpen f))).hom
       = (IsLocalizedModule.linearEquiv (Submonoid.powers f)

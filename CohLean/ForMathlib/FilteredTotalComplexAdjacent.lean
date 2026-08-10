@@ -60,7 +60,7 @@ noncomputable def adjacentColumnInclusion (p : ℤ) :
   HomologicalComplex.stupidTruncGEMap K p (p + 1) (by omega)
 
 noncomputable def adjacentColumnProjection (p : ℤ) :
-    K.stupidTrunc (ComplexShape.embeddingUpIntGE p) ⟶ singleColumnBicomplex K p where
+    truncatedBicomplex K p ⟶ singleColumnBicomplex K p where
   f i := if hi : i = p then
       (K.stupidTruncXIso (ComplexShape.embeddingUpIntGE p)
         (i := 0) (by subst i; simp [ComplexShape.embeddingUpIntGE])).hom ≫
@@ -70,7 +70,8 @@ noncomputable def adjacentColumnProjection (p : ℤ) :
   comm' i j hij := by
     by_cases hj : j = p
     · have hip : i < p := by
-        dsimp [ComplexShape.up] at hij
+        have hij' : i + 1 = j := by
+          simpa only [ComplexShape.up_Rel] using hij
         omega
       subst j
       apply IsZero.eq_of_src
@@ -118,15 +119,27 @@ noncomputable instance totalFunctor_additive :
 
 noncomputable def adjacentColumnTotalShortComplex (p : ℤ) :
     ShortComplex (CochainComplex AddCommGrpCat.{w} ℤ) :=
-  (adjacentColumnBicomplexShortComplex K p).map
-    (totalFunctor AddCommGrpCat.{w} (ComplexShape.up ℤ)
-      (ComplexShape.up ℤ) (ComplexShape.up ℤ))
+  ShortComplex.mk
+    (total.map (adjacentColumnInclusion K p) (ComplexShape.up ℤ))
+    (total.map (adjacentColumnProjection K p) (ComplexShape.up ℤ)) (by
+      rw [← total.map_comp]
+      change total.map
+        ((adjacentColumnBicomplexShortComplex K p).f ≫
+          (adjacentColumnBicomplexShortComplex K p).g)
+        (ComplexShape.up ℤ) = 0
+      rw [(adjacentColumnBicomplexShortComplex K p).zero]
+      apply HomologicalComplex.Hom.ext
+      funext n
+      apply total.hom_ext
+      intro i j hij
+      rw [ιTotal_map]
+      simp)
 
 noncomputable def stupidTruncGEXIso (p i : ℤ) (hi : p ≤ i) :
     (K.stupidTrunc (ComplexShape.embeddingUpIntGE p)).X i ≅ K.X i :=
   K.stupidTruncXIso (ComplexShape.embeddingUpIntGE p)
     (i := (i - p).toNat) (by
-      dsimp [ComplexShape.embeddingUpIntGE]
+      change p + ((i - p).toNat : ℤ) = i
       rw [Int.toNat_of_nonneg (by omega)]
       omega)
 
@@ -135,10 +148,10 @@ lemma stupidTruncXIso_eq_stupidTruncGEXIso (p i : ℤ) (k : ℕ)
     (h : (ComplexShape.embeddingUpIntGE p).f k = i) :
     K.stupidTruncXIso (ComplexShape.embeddingUpIntGE p) h =
       stupidTruncGEXIso K p i (by
-        dsimp [ComplexShape.embeddingUpIntGE] at h
+        change p + (k : ℤ) = i at h
         omega) := by
   have hk : k = (i - p).toNat := by
-    dsimp [ComplexShape.embeddingUpIntGE] at h
+    change p + (k : ℤ) = i at h
     rw [show i - p = (k : ℤ) by omega]
     simp
   subst k
@@ -211,6 +224,12 @@ noncomputable def adjacentColumnTotalDegreewiseSplitting (p n : ℤ) :
       adjacentColumnBicomplexShortComplex, totalFunctor]
     apply HomologicalComplex₂.total.hom_ext
     intro i j hij
+    change (truncatedBicomplex K (p + 1)).ιTotal (ComplexShape.up ℤ)
+        i j n hij ≫
+          (total.map (adjacentColumnInclusion K p) (ComplexShape.up ℤ)).f n ≫
+            adjacentColumnTotalRetraction K p n =
+      (truncatedBicomplex K (p + 1)).ιTotal (ComplexShape.up ℤ)
+        i j n hij ≫ 𝟙 _
     by_cases hi : p + 1 ≤ i
     · rw [← Category.assoc, HomologicalComplex₂.ιTotal_map]
       dsimp [adjacentColumnTotalRetraction, truncatedBicomplex]
@@ -230,6 +249,11 @@ noncomputable def adjacentColumnTotalDegreewiseSplitting (p n : ℤ) :
       adjacentColumnBicomplexShortComplex, totalFunctor]
     apply HomologicalComplex₂.total.hom_ext
     intro i j hij
+    change (singleColumnBicomplex K p).ιTotal (ComplexShape.up ℤ)
+        i j n hij ≫ adjacentColumnTotalSection K p n ≫
+          (total.map (adjacentColumnProjection K p) (ComplexShape.up ℤ)).f n =
+      (singleColumnBicomplex K p).ιTotal (ComplexShape.up ℤ)
+        i j n hij ≫ 𝟙 _
     by_cases hi : i = p
     · rw [← Category.assoc]
       dsimp [adjacentColumnTotalSection, truncatedBicomplex]
@@ -241,6 +265,21 @@ noncomputable def adjacentColumnTotalDegreewiseSplitting (p n : ℤ) :
       simp [adjacentColumnProjection,
         singleColumnBicomplex,
         Category.assoc]
+      let e₀ := stupidTruncGEXIso K p p le_rfl
+      let e₁ := singleColumnXIso K p p rfl
+      change e₁.hom.f j ≫ e₀.inv.f j ≫
+        ((e₀.hom.f j ≫ e₁.inv.f j) ≫
+          (singleColumnBicomplex K p).ιTotal
+            (ComplexShape.up ℤ) p j n hij) = _
+      rw [show (e₀.hom.f j ≫ e₁.inv.f j) ≫
+          (singleColumnBicomplex K p).ιTotal
+            (ComplexShape.up ℤ) p j n hij =
+        e₀.hom.f j ≫ e₁.inv.f j ≫
+          (singleColumnBicomplex K p).ιTotal
+            (ComplexShape.up ℤ) p j n hij by apply Category.assoc,
+        stupidTruncGEXIso_inv_hom_f_assoc,
+        singleColumnXIso_hom_inv_f_assoc]
+      rfl
     · apply IsZero.eq_of_src
       apply (HomologicalComplex.eval AddCommGrpCat.{w} (ComplexShape.up ℤ) j).map_isZero
       apply HomologicalComplex.isZero_single_obj_X
@@ -251,7 +290,11 @@ noncomputable def adjacentColumnTotalDegreewiseSplitting (p n : ℤ) :
     apply HomologicalComplex₂.total.hom_ext
     intro i j hij
     change (truncatedBicomplex K p).ιTotal (ComplexShape.up ℤ)
-        i j n hij ≫ (_ + _) =
+        i j n hij ≫
+          (adjacentColumnTotalRetraction K p n ≫
+              (total.map (adjacentColumnInclusion K p) (ComplexShape.up ℤ)).f n +
+            (total.map (adjacentColumnProjection K p) (ComplexShape.up ℤ)).f n ≫
+              adjacentColumnTotalSection K p n) =
       (truncatedBicomplex K p).ιTotal (ComplexShape.up ℤ)
         i j n hij ≫ 𝟙 _
     by_cases hpi : p < i
@@ -306,21 +349,10 @@ noncomputable def adjacentColumnTotalDegreewiseSplitting (p n : ℤ) :
         rw [Category.assoc, HomologicalComplex₂.ι_totalDesc]
         simp [singleColumnBicomplex, Category.assoc]
         let e₀ := stupidTruncGEXIso K p p le_rfl
-        let e₁ := singleColumnXIso K p p rfl
-        change (e₀.hom.f j ≫ e₁.inv.f j) ≫
-          e₁.hom.f j ≫ e₀.inv.f j ≫
+        change e₀.hom.f j ≫ e₀.inv.f j ≫
             (truncatedBicomplex K p).ιTotal
               (ComplexShape.up ℤ) p j n hij = _
-        rw [show (e₀.hom.f j ≫ e₁.inv.f j) ≫
-            (e₁.hom.f j ≫ e₀.inv.f j ≫
-              (truncatedBicomplex K p).ιTotal
-                (ComplexShape.up ℤ) p j n hij) =
-          e₀.hom.f j ≫ e₁.inv.f j ≫
-            e₁.hom.f j ≫ e₀.inv.f j ≫
-              (truncatedBicomplex K p).ιTotal
-                (ComplexShape.up ℤ) p j n hij by apply Category.assoc,
-          singleColumnXIso_inv_hom_f_assoc,
-          stupidTruncGEXIso_hom_inv_f_assoc]
+        rw [stupidTruncGEXIso_hom_inv_f_assoc]
       · apply IsZero.eq_of_src
         apply (HomologicalComplex.eval AddCommGrpCat.{w} (ComplexShape.up ℤ) j).map_isZero
         apply HomologicalComplex.isZero_stupidTrunc_X
@@ -566,8 +598,14 @@ lemma columnFilteredStageIso_comm
         (homOfLE (show columnFiltrationIndex (p + 1) ≤
           columnFiltrationIndex p by simp [columnFiltrationIndex])) ≫
       (columnFilteredStageIso K p).hom =
-    (columnFilteredStageIso K (p + 1)).hom ≫
+      (columnFilteredStageIso K (p + 1)).hom ≫
       (adjacentColumnTotalShortComplex K p).f := by
+  change (columnFilteredTotalComplex K).map
+        (homOfLE (show columnFiltrationIndex (p + 1) ≤
+          columnFiltrationIndex p by simp [columnFiltrationIndex])) ≫
+      (columnFilteredStageIso K p).hom =
+    (columnFilteredStageIso K (p + 1)).hom ≫
+      total.map (adjacentColumnInclusion K p) (ComplexShape.up ℤ)
   simpa [columnFilteredStageIso, columnFilteredTotalComplex,
     columnFiltrationBicomplex, adjacentColumnTotalShortComplex,
     adjacentColumnBicomplexShortComplex, adjacentColumnInclusion,
@@ -712,6 +750,8 @@ noncomputable instance columnFilteredAdjacentLayerConeToShift_quasiIso
   dsimp [columnFilteredAdjacentLayerConeToShift]
   infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- Under the canonical adjacent-layer comparison, the inclusion of the middle filtration stage
 becomes the quotient map in the adjacent-column short exact sequence. -/
 lemma columnFilteredInr_comp_adjacentLayerConeToShift
@@ -735,15 +775,25 @@ lemma columnFilteredInr_comp_adjacentLayerConeToShift
       (columnFilteredStageIso K (p + 1)).hom
       (columnFilteredStageIso K p).hom
       (columnFilteredStageIso_comm K p)).comm₂_assoc
-        (CochainComplex.mappingCone.descShortComplex
+      (CochainComplex.mappingCone.descShortComplex
           (adjacentColumnTotalShortComplex K p) ≫
             (singleColumnTotalIso K p).hom)
-  dsimp only [CochainComplex.mappingCone.triangleMap_hom₂,
+  simp only [CochainComplex.mappingCone.triangleMap_hom₂,
     CochainComplex.mappingCone.triangleMap_hom₃,
     CochainComplex.mappingCone.triangle_mor₂] at h
-  exact h.trans (by simp)
+  exact h.trans (by
+    rw [← Category.assoc
+      (CochainComplex.mappingCone.inr (adjacentColumnTotalShortComplex K p).f)
+      (CochainComplex.mappingCone.descShortComplex
+        (adjacentColumnTotalShortComplex K p))
+      (singleColumnTotalIso K p).hom,
+      CochainComplex.mappingCone.inr_descShortComplex])
 
 attribute [local simp] ComposableArrows.Precomp.map ComposableArrows.Precomp.obj
+  CategoryTheory.Triangulated.SpectralObject.δ
+
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 
 /-- The triangle constructed after precomposing a spectral object by a filtered complex is
 canonically isomorphic to the triangle obtained from the two mapped filtration morphisms. -/
@@ -762,7 +812,9 @@ noncomputable def filteredComplexPrecompTriangleIso
     ComposableArrows.isoMk₁ (Iso.refl _) (Iso.refl _)
   let efg : (F.mapComposableArrows 1).obj (ComposableArrows.mk₁ (f ≫ g)) ≅
       ComposableArrows.mk₁ (F.map f ≫ F.map g) :=
-    ComposableArrows.isoMk₁ (Iso.refl _) (Iso.refl _)
+    ComposableArrows.isoMk₁ (Iso.refl _) (Iso.refl _) (by
+      change F.map (f ≫ g) ≫ 𝟙 _ = 𝟙 _ ≫ F.map f ≫ F.map g
+      simpa only [Category.comp_id, Category.id_comp] using F.map_comp f g)
   refine Pretriangulated.Triangle.isoMk _ _
     (X.ω₁.mapIso ef) (X.ω₁.mapIso efg) (X.ω₁.mapIso eg) ?_ ?_ ?_
   · dsimp [CategoryTheory.Triangulated.SpectralObject.precomp,
@@ -803,6 +855,8 @@ noncomputable def filteredComplexPrecompTriangleIso
         apply ComposableArrows.hom_ext₁ <;> rfl
       rw [hc, hid, X.ω₁.map_id]
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- The connecting morphism of the column-filtered spectral object, transported from the
 precomposed spectral-object triangle to the ordinary mapping-cone triangle. -/
 lemma columnFilteredConnecting_comp_homologyFactor
@@ -843,9 +897,7 @@ lemma columnFilteredConnecting_comp_homologyFactor
         dsimp [columnFiltrationIndex]
         omega)
   let g : columnFiltrationIndex (p + 1) ⟶
-      columnFiltrationIndex p := homOfLE (by
-        dsimp [columnFiltrationIndex]
-        omega)
+      columnFiltrationIndex p := homOfLE (by simp [columnFiltrationIndex])
   let e := filteredComplexPrecompTriangleIso X F f g
   have h := H.homologySequenceδ_naturality
     ((X.precomp F).triangle f g)
@@ -865,8 +917,18 @@ lemma columnFilteredConnecting_comp_homologyFactor
     change ((HomotopyCategory.quotient AddCommGrpCat.{w} (ComplexShape.up ℤ) ⋙
       HomotopyCategory.homologyFunctor AddCommGrpCat.{w}
         (ComplexShape.up ℤ) (p + q)).map _) ≫ _ = _
+    change ((HomotopyCategory.quotient AddCommGrpCat.{w} (ComplexShape.up ℤ) ⋙
+      HomotopyCategory.homologyFunctor AddCommGrpCat.{w}
+        (ComplexShape.up ℤ) (p + q)).map
+          (CochainComplex.mappingCone.map (F.map g) (F.map g)
+            (𝟙 _) (𝟙 _) _)) ≫ _ = _
     rw [CochainComplex.mappingCone.map_id]
-    simp
+    calc
+      _ = 𝟙 _ ≫ _ := congrArg (· ≫ _)
+        ((HomotopyCategory.quotient AddCommGrpCat.{w} (ComplexShape.up ℤ) ⋙
+          HomotopyCategory.homologyFunctor AddCommGrpCat.{w}
+            (ComplexShape.up ℤ) (p + q)).map_id _)
+      _ = _ := Category.id_comp _
   have he1 : (H.shift (p + 1 + q)).map e.hom.hom₁ ≫
         (HomotopyCategory.homologyFunctorFactors AddCommGrpCat.{w}
           (ComplexShape.up ℤ) (p + 1 + q)).hom.app
@@ -881,11 +943,18 @@ lemma columnFilteredConnecting_comp_homologyFactor
     change ((HomotopyCategory.quotient AddCommGrpCat.{w} (ComplexShape.up ℤ) ⋙
       HomotopyCategory.homologyFunctor AddCommGrpCat.{w}
         (ComplexShape.up ℤ) (p + 1 + q)).map _) ≫ _ = _
+    change ((HomotopyCategory.quotient AddCommGrpCat.{w} (ComplexShape.up ℤ) ⋙
+      HomotopyCategory.homologyFunctor AddCommGrpCat.{w}
+        (ComplexShape.up ℤ) (p + 1 + q)).map
+          (CochainComplex.mappingCone.map (F.map f) (F.map f)
+            (𝟙 _) (𝟙 _) _)) ≫ _ = _
     rw [CochainComplex.mappingCone.map_id]
-    simp
-  have hraw := CochainComplex.homologySequenceδ_quotient_mapTriangle_obj
-    (CochainComplex.mappingConeCompTriangle (F.map f) (F.map g))
-      (p + q) (p + 1 + q) (by omega)
+    calc
+      _ = 𝟙 _ ≫ _ := congrArg (· ≫ _)
+        ((HomotopyCategory.quotient AddCommGrpCat.{w} (ComplexShape.up ℤ) ⋙
+          HomotopyCategory.homologyFunctor AddCommGrpCat.{w}
+            (ComplexShape.up ℤ) (p + 1 + q)).map_id _)
+      _ = _ := Category.id_comp _
   have hraw' : H.homologySequenceδ (X.triangle (F.map f) (F.map g))
         (p + q) (p + 1 + q) (by omega) ≫
       (HomotopyCategory.homologyFunctorFactors AddCommGrpCat.{w}
@@ -898,38 +967,22 @@ lemma columnFilteredConnecting_comp_homologyFactor
         (ComplexShape.up ℤ) 0).shiftMap
           (CochainComplex.mappingConeCompTriangle (F.map f) (F.map g)).mor₃
           (p + q) (p + 1 + q) (by omega) := by
-    dsimp [H, X, CategoryTheory.Triangulated.SpectralObject.triangle,
-      CategoryTheory.Triangulated.SpectralObject.δ,
-      HomotopyCategory.spectralObjectMappingCone] at hraw ⊢
-    let E := HomotopyCategory.homologyFunctorFactors AddCommGrpCat.{w}
-      (ComplexShape.up ℤ) (p + 1 + q)
-    let δ := (HomotopyCategory.homologyFunctor AddCommGrpCat.{w}
-      (ComplexShape.up ℤ) 0).homologySequenceδ
-        ((HomotopyCategory.quotient AddCommGrpCat.{w}
-          (ComplexShape.up ℤ)).mapTriangle.obj
-            (CochainComplex.mappingConeCompTriangle (F.map f) (F.map g)))
-        (p + q) (p + 1 + q) (by omega)
-    let z := (HomotopyCategory.homologyFunctorFactors AddCommGrpCat.{w}
-        (ComplexShape.up ℤ) (p + q)).hom.app
-          (CochainComplex.mappingCone (F.map g)) ≫
-      (HomologicalComplex.homologyFunctor AddCommGrpCat.{w}
-        (ComplexShape.up ℤ) 0).shiftMap
-          (CochainComplex.mappingConeCompTriangle (F.map f) (F.map g)).mor₃
-          (p + q) (p + 1 + q) (by omega)
-    change δ ≫ E.hom.app (CochainComplex.mappingCone (F.map f)) = z
-    rw [← cancel_mono (E.inv.app (CochainComplex.mappingCone (F.map f)))]
-    have hc : (δ ≫ E.hom.app (CochainComplex.mappingCone (F.map f))) ≫
-        E.inv.app (CochainComplex.mappingCone (F.map f)) = δ := by
-      calc
-        _ = δ ≫ (E.hom.app (CochainComplex.mappingCone (F.map f)) ≫
-          E.inv.app (CochainComplex.mappingCone (F.map f))) :=
-          Category.assoc _ _ _
-        _ = δ ≫ 𝟙 _ := congrArg (δ ≫ ·)
-          (E.hom_inv_id_app (CochainComplex.mappingCone (F.map f)))
-        _ = δ := Category.comp_id _
-    have hz : δ = z ≫ E.inv.app (CochainComplex.mappingCone (F.map f)) := by
-      simpa only [δ, z, E] using hraw
-    exact hc.trans hz
+    change (HomotopyCategory.homologyFunctor AddCommGrpCat.{w}
+        (ComplexShape.up ℤ) 0).homologySequenceδ
+          ((HomotopyCategory.quotient AddCommGrpCat.{w}
+            (ComplexShape.up ℤ)).mapTriangle.obj
+              (CochainComplex.mappingConeCompTriangle (F.map f) (F.map g)))
+          (p + q) (p + 1 + q) _ ≫
+        (HomotopyCategory.homologyFunctorFactors AddCommGrpCat.{w}
+          (ComplexShape.up ℤ) (p + 1 + q)).hom.app
+            (CochainComplex.mappingCone (F.map f)) = _
+    erw [CochainComplex.homologySequenceδ_quotient_mapTriangle_obj_assoc
+      (CochainComplex.mappingConeCompTriangle (F.map f) (F.map g))
+      (p + q) (p + 1 + q) (by omega)]
+    simp only [CochainComplex.mappingConeCompTriangle_obj₁,
+      CochainComplex.mappingConeCompTriangle_obj₃,
+      Category.assoc, Iso.inv_hom_id_app, Category.comp_id]
+    congr 1
   have hδ : H.homologySequenceδ ((X.precomp F).triangle f g)
         (p + q) (p + 1 + q) (by omega) ≫
       (HomotopyCategory.homologyFunctorFactors AddCommGrpCat.{w}
@@ -950,7 +1003,6 @@ lemma columnFilteredConnecting_comp_homologyFactor
             (ComplexShape.up ℤ) (p + 1 + q)).hom.app
               (CochainComplex.mappingCone (F.map f)) := by
         rw [← he1]
-        rfl
       _ = (H.shift (p + q)).map e.hom.hom₃ ≫
           H.homologySequenceδ (X.triangle (F.map f) (F.map g))
             (p + q) (p + 1 + q) (by omega) ≫
@@ -967,16 +1019,43 @@ lemma columnFilteredConnecting_comp_homologyFactor
               (CochainComplex.mappingConeCompTriangle (F.map f) (F.map g)).mor₃
               (p + q) (p + 1 + q) (by omega) := by
         rw [hraw']
-        rfl
       _ = _ := by
         rw [← Category.assoc, he3]
-        rfl
-  simpa only [F, X, H, f, g, columnFilteredTotalSpectralObject,
-    HomotopyCategory.filteredComplexSpectralObject,
-    CategoryTheory.Triangulated.SpectralObject.mapHomologicalFunctor,
-    CategoryTheory.Abelian.SpectralObject.δ,
-    CategoryTheory.Triangulated.SpectralObject.precomp,
-    CategoryTheory.Triangulated.SpectralObject.ω₂] using hδ
+  have htriangle : (X.precomp F).triangle f g =
+      (X.precomp F).ω₂.obj (ComposableArrows.mk₂ f g) := by
+    dsimp [CategoryTheory.Triangulated.SpectralObject.triangle,
+      CategoryTheory.Triangulated.SpectralObject.ω₂,
+      CategoryTheory.Pretriangulated.Triangle.functorMk]
+    congr 1
+  have hδ' : H.homologySequenceδ
+        ((X.precomp F).ω₂.obj (ComposableArrows.mk₂ f g))
+        (p + q) (p + 1 + q) (by omega) ≫
+      (HomotopyCategory.homologyFunctorFactors AddCommGrpCat.{w}
+        (ComplexShape.up ℤ) (p + 1 + q)).hom.app
+          (columnFilteredAdjacentLayerComplex K (p + 1)) =
+    (HomotopyCategory.homologyFunctorFactors AddCommGrpCat.{w}
+        (ComplexShape.up ℤ) (p + q)).hom.app
+          (columnFilteredAdjacentLayerComplex K p) ≫
+      (HomologicalComplex.homologyFunctor AddCommGrpCat.{w}
+        (ComplexShape.up ℤ) 0).shiftMap
+          (CochainComplex.mappingConeCompTriangle (F.map f) (F.map g)).mor₃
+          (p + q) (p + 1 + q) (by omega) := by
+    cases htriangle
+    exact hδ
+  change H.homologySequenceδ
+        ((X.precomp F).ω₂.obj (ComposableArrows.mk₂ f g))
+        (p + q) (p + 1 + q) (by omega) ≫
+      (HomotopyCategory.homologyFunctorFactors AddCommGrpCat.{w}
+        (ComplexShape.up ℤ) (p + 1 + q)).hom.app
+          (columnFilteredAdjacentLayerComplex K (p + 1)) =
+    (HomotopyCategory.homologyFunctorFactors AddCommGrpCat.{w}
+        (ComplexShape.up ℤ) (p + q)).hom.app
+          (columnFilteredAdjacentLayerComplex K p) ≫
+      (HomologicalComplex.homologyFunctor AddCommGrpCat.{w}
+        (ComplexShape.up ℤ) 0).shiftMap
+          (CochainComplex.mappingConeCompTriangle (F.map f) (F.map g)).mor₃
+          (p + q) (p + 1 + q) (by omega)
+  exact hδ'
 
 /-- Homology of an adjacent filtration layer, identified with homology of the shifted new
 column. -/

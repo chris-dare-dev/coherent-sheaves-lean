@@ -20,6 +20,8 @@ open CategoryTheory Category Limits
 namespace HomologicalComplex₂
 
 set_option maxHeartbeats 4000000
+set_option backward.defeqAttrib.useBackward true
+set_option backward.isDefEq.respectTransparency false
 
 variable (K : HomologicalComplex₂ AddCommGrpCat.{w}
   (ComplexShape.up ℤ) (ComplexShape.up ℤ))
@@ -149,7 +151,6 @@ private lemma iota_retraction_projection (p i j n : ℤ) (h : i + j = n) :
   split
   · rfl
   · simp only [zero_comp]
-    rfl
 
 private lemma iota_retraction_projection_precomp₂ {A B : AddCommGrpCat.{w}}
     (p i j n : ℤ) (a : A ⟶ B) (d : B ⟶ ((truncatedBicomplex K p).X i).X j)
@@ -166,7 +167,6 @@ private lemma iota_retraction_projection_precomp₂ {A B : AddCommGrpCat.{w}}
           (adjacentColumnTotalShortComplex K (p + 1)).g.f n
       else 0 := by
   simp only [Category.assoc, iota_retraction_projection]
-  rfl
 
 private lemma iota_retraction_projection_smul_precomp {A B : AddCommGrpCat.{w}}
     (p i j n : ℤ) (a : A ⟶ B) (d : B ⟶ ((truncatedBicomplex K p).X i).X j)
@@ -210,19 +210,6 @@ private lemma adjacentProjectionIota (p q n : ℤ) (h : p + q = n) :
     adjacentColumnBicomplexShortComplex, totalFunctor]
   slice_lhs 2 3 => erw [HomologicalComplex₂.ιTotal_map]
   simp [adjacentColumnProjection, singleColumnBicomplex]
-  let e₀ := stupidTruncGEXIso K p p (show p ≤ p by omega)
-  let e₁ := singleColumnXIso K p p rfl
-  let ι := (singleColumnBicomplex K p).ιTotal
-    (ComplexShape.up ℤ) p q n h
-  change e₀.inv.f q ≫ ((e₀.hom.f q ≫ e₁.inv.f q) ≫ ι) =
-    e₁.inv.f q ≫ ι
-  calc
-    _ = e₀.inv.f q ≫ (e₀.hom.f q ≫ (e₁.inv.f q ≫ ι)) :=
-      congrArg (fun z ↦ e₀.inv.f q ≫ z)
-        (Category.assoc (e₀.hom.f q) (e₁.inv.f q) ι)
-    _ = (e₀.inv.f q ≫ e₀.hom.f q) ≫ (e₁.inv.f q ≫ ι) :=
-      (Category.assoc (e₀.inv.f q) (e₀.hom.f q) (e₁.inv.f q ≫ ι)).symm
-    _ = _ := by rw [complexIso_inv_hom_f, Category.id_comp]
 
 /-- One horizontal step in the adjacent-column connecting construction is the horizontal
 differential of the original bicomplex.  The vertical part of the total differential vanishes
@@ -297,7 +284,6 @@ lemma singleColumnTotalι_section_d_retraction_projection (p q : ℤ) :
       erw [stupidTruncBoundary_assoc K p q]
       slice_lhs 2 4 =>
         erw [adjacentProjectionIota K (p + 1) q (p + 1 + q)]
-      rfl
 
 /-- A vertical cocycle gives a cocycle in the total complex of its single-column bicomplex. -/
 lemma singleColumnTotalι_cycle {A : AddCommGrpCat.{w}}
@@ -335,35 +321,7 @@ lemma singleColumnTotalι_cycle {A : AddCommGrpCat.{w}}
       rw [show (ComplexShape.up ℤ).ε₂ (ComplexShape.up ℤ)
         (ComplexShape.up ℤ) (p, q) = p.negOnePow by rfl]
       simp [singleColumnBicomplex]
-      let e := singleColumnXIso K p p rfl
-      let d := ((singleColumnBicomplex K p).X p).d q (q + 1)
-      let T := (singleColumnBicomplex K p).toGradedObject.mapObj
-        ((ComplexShape.up ℤ).π (ComplexShape.up ℤ)
-          (ComplexShape.up ℤ)) (p + 1 + q)
-      let ι : ((singleColumnBicomplex K p).X p).X (q + 1) ⟶ T :=
-        (singleColumnBicomplex K p).ιTotal
-          (ComplexShape.up ℤ) p (q + 1) (p + 1 + q) (by dsimp; omega)
-      let z₀ : ((singleColumnBicomplex K p).X p).X q ⟶ T := 0
-      change (a ≫ e.inv.f q ≫ z₀) +
-        (a ≫ e.inv.f q ≫ (p.negOnePow • (d ≫ ι))) = 0
-      have hz : a ≫ e.inv.f q ≫ z₀ = 0 := by
-        dsimp [z₀]
-        rw [← Category.assoc]
-        exact comp_zero
-      rw [hz, zero_add]
-      change a ≫ e.inv.f q ≫ (p.negOnePow • (d ≫ ι)) = 0
-      calc
-        _ = p.negOnePow • (a ≫ e.inv.f q ≫ d ≫ ι) := by
-          rw [Linear.comp_units_smul, Linear.comp_units_smul]
-        _ = 0 := by
-          rw [e.inv.comm_assoc]
-          have hz' : a ≫ (K.X p).d q (q + 1) ≫ e.inv.f (q + 1) ≫ ι = 0 := by
-            calc
-              _ = (a ≫ (K.X p).d q (q + 1)) ≫ (e.inv.f (q + 1) ≫ ι) :=
-                (Category.assoc a ((K.X p).d q (q + 1))
-                  (e.inv.f (q + 1) ≫ ι)).symm
-              _ = 0 := by rw [ha, zero_comp]
-          rw [hz', smul_zero]
+      rw [← Category.assoc, ha, zero_comp, smul_zero]
 
 /-- The connecting morphism for two adjacent columns sends a vertical cocycle to its horizontal
 differential, viewed as a cocycle in the next single-column total complex. -/
@@ -376,7 +334,8 @@ lemma adjacentColumnConnecting_representative {A : AddCommGrpCat.{w}}
     let n' := p + 1 + q
     S.X₃.liftCycles (a ≫ singleColumnTotalι K p q n rfl) n'
         ((ComplexShape.up ℤ).next_eq' (by dsimp [n, n']; omega))
-        (by simpa only [S, n, n'] using singleColumnTotalι_cycle K p q a ha) ≫
+        (by simpa only [S, n, n', adjacentColumnTotalShortComplex,
+          Category.assoc] using singleColumnTotalι_cycle K p q a ha) ≫
       S.X₃.homologyπ n ≫ hS.δ n n' (by dsimp [n, n']; omega) ≫
       HomologicalComplex.homologyMap
         (adjacentColumnTotalShortComplex K (p + 1)).g n' =
@@ -400,7 +359,8 @@ lemma adjacentColumnConnecting_representative {A : AddCommGrpCat.{w}}
   let x₂ := x₃ ≫ adjacentColumnTotalSection K p n
   let x₁ := x₂ ≫ S.X₂.d n n' ≫ adjacentColumnTotalRetraction K p n'
   have hx₃ : x₃ ≫ S.X₃.d n n' = 0 := by
-    simpa only [x₃, S, n, n'] using singleColumnTotalι_cycle K p q a ha
+    simpa only [x₃, S, n, n', adjacentColumnTotalShortComplex,
+      Category.assoc] using singleColumnTotalι_cycle K p q a ha
   have hx₂ : x₂ ≫ S.g.f n = x₃ := by
     have hs := (adjacentColumnTotalDegreewiseSplitting K p n).s_g
     exact (congrArg (fun z ↦ x₃ ≫ z) hs).trans (Category.comp_id x₃)
@@ -454,14 +414,14 @@ lemma adjacentColumnConnecting_representative {A : AddCommGrpCat.{w}}
       a ≫ (K.d p (p + 1)).f q ≫
         singleColumnTotalι K (p + 1) q n' (by dsimp [n']) := by
     dsimp only [x₁, x₂, x₃, n, n', S]
-    simpa only [Category.assoc] using
+    simpa only [Category.assoc, adjacentColumnTotalShortComplex] using
       congrArg (fun z ↦ a ≫ z)
         (singleColumnTotalι_section_d_retraction_projection K p q)
   let T := (singleColumnBicomplex K (p + 1)).total (ComplexShape.up ℤ)
   let b := a ≫ (K.d p (p + 1)).f q ≫
     singleColumnTotalι K (p + 1) q n' (by dsimp [n'])
   have hb : b ≫ T.d n' (p + 1 + 1 + q) = 0 := by
-    simpa only [b, T, n'] using singleColumnTotalι_cycle K (p + 1) q
+    simpa only [b, T, n', Category.assoc] using singleColumnTotalι_cycle K (p + 1) q
       (a ≫ (K.d p (p + 1)).f q) (by
         rw [Category.assoc, K.d_comm, reassoc_of% ha]
         simp)
@@ -485,7 +445,7 @@ lemma adjacentColumnConnecting_representative {A : AddCommGrpCat.{w}}
     rw [← cancel_mono (T.iCycles n')]
     simp only [HomologicalComplex.liftCycles_i]
     exact hx₁g
-  simpa only [T, b] using
+  simpa only [T, b, S, adjacentColumnTotalShortComplex] using
     congrArg (fun z ↦ z ≫ T.homologyπ n') hlift
 
 private lemma eqToHom_comp₃ {D : Type*} [Category D]
@@ -508,7 +468,7 @@ private lemma singleColumnShift_component (p q : ℤ) :
     CochainComplex.singleFunctors]
   simp [HomologicalComplex.singleObjXSelf,
     HomologicalComplex.singleObjXIsoOfEq]
-  apply eqToHom_comp₃
+  rfl
 
 private lemma singleZeroTotal_shift_component
     (A : CochainComplex AddCommGrpCat.{w} ℤ) (p q : ℤ) :
@@ -547,8 +507,13 @@ lemma singleColumnTotalι_comp_singleColumnTotalIso_hom (p q : ℤ) :
   slice_lhs 1 3 =>
     exact singleColumnShift_component K p q
   dsimp [CochainComplex.shiftFunctorObjXIso]
-  simpa only [singleZeroTotalIso] using
-    singleZeroTotal_shift_component (K.X p) p q
+  change (singleZeroTotalXIso (K.X p) q).inv ≫
+      (((singleZeroBicomplex (K.X p)).total
+        (ComplexShape.up ℤ)).XIsoOfEq
+          (show p + q + -p = q by omega)).inv ≫
+      (singleZeroTotalXIso (K.X p) (p + q + -p)).hom =
+    ((K.X p).XIsoOfEq (show p + q + -p = q by omega)).inv
+  exact singleZeroTotal_shift_component (K.X p) p q
 
 /-- A cocycle representative is unchanged after passing from a single-column total complex to
 the shifted column and then to column homology. -/
@@ -579,7 +544,7 @@ lemma singleColumnTotal_liftCycles_homologyIso {A : AddCommGrpCat.{w}}
     let b := a ≫ singleColumnTotalι K p q (p + q) rfl
     let e := (singleColumnTotalIso K p).hom
     have hb : b ≫ T.d (p + q) (p + 1 + q) = 0 := by
-      simpa only [b, T] using singleColumnTotalι_cycle K p q a ha
+      simpa only [b, T, Category.assoc] using singleColumnTotalι_cycle K p q a ha
     change (b ≫ e.f (p + q)) ≫ S.d (p + q) (p + 1 + q) = 0
     calc
       _ = b ≫ (e.f (p + q) ≫ S.d (p + q) (p + 1 + q)) :=
@@ -609,7 +574,7 @@ lemma singleColumnTotal_liftCycles_homologyIso {A : AddCommGrpCat.{w}}
     _ = S.liftCycles f (p + 1 + q)
           ((ComplexShape.up ℤ).next_eq' (by dsimp; omega)) hf ≫
         S.homologyπ (p + q) ≫ (columnShiftHomologyIso K p q).hom := by
-      simpa only [S] using congrArg
+      simpa only [S, Category.assoc] using congrArg
         (fun z ↦ z ≫ S.homologyπ (p + q) ≫
           (columnShiftHomologyIso K p q).hom) hlift
     _ = _ := by
@@ -685,7 +650,7 @@ private lemma adjacentColumnConnecting_eq_horizontalHomologyMap (p q : ℤ) :
       (columnShiftHomologyIso K p q).hom = C₀.homologyπ q := by
     have h := singleColumnTotal_liftCycles_homologyIso K p q a ha
     rw [halift, Category.id_comp] at h
-    simpa only [r₀, T₀, C₀] using h
+    simpa only [r₀, T₀, C₀, Category.assoc] using h
   have hsource : C₀.homologyπ q ≫
       (columnShiftHomologyIso K p q).inv ≫
       HomologicalComplex.homologyMap (singleColumnTotalIso K p).inv (p + q) = r₀ := by
@@ -709,14 +674,15 @@ private lemma adjacentColumnConnecting_eq_horizontalHomologyMap (p q : ℤ) :
         (p + q) (p + 1 + q) (by dsimp; omega) ≫
       HomologicalComplex.homologyMap
         (adjacentColumnTotalShortComplex K (p + 1)).g (p + 1 + q) = r₁ := by
-    simpa only [r₀, r₁, T₀, T₁, a, C₀, C₁] using
+    simpa only [r₀, r₁, T₀, T₁, a, C₀, C₁,
+      adjacentColumnTotalShortComplex, Category.assoc] using
       adjacentColumnConnecting_representative K p q a ha
   have hrep₁ : r₁ ≫ HomologicalComplex.homologyMap
         (singleColumnTotalIso K (p + 1)).hom (p + 1 + q) ≫
       (columnShiftHomologyIso K (p + 1) q).hom =
       C₁.liftCycles (a ≫ (K.d p (p + 1)).f q) (q + 1)
         ((ComplexShape.up ℤ).next_eq' rfl) ha₁ ≫ C₁.homologyπ q := by
-    simpa only [r₁, T₁, C₁] using
+    simpa only [r₁, T₁, C₁, Category.assoc] using
       singleColumnTotal_liftCycles_homologyIso K (p + 1) q
         (a ≫ (K.d p (p + 1)).f q) ha₁
   have hmap : C₁.liftCycles (a ≫ (K.d p (p + 1)).f q) (q + 1)

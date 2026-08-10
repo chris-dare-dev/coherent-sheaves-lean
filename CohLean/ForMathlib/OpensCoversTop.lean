@@ -2,7 +2,7 @@
 Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 -/
-import Mathlib.CategoryTheory.Sites.CoversTop
+import Mathlib.CategoryTheory.Sites.CoversTop.Basic
 import Mathlib.CategoryTheory.Sites.Spaces
 import Mathlib.AlgebraicGeometry.Scheme
 import Mathlib.RingTheory.Spectrum.Prime.Topology

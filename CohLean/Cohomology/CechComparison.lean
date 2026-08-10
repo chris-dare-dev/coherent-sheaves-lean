@@ -196,8 +196,8 @@ noncomputable def injectiveResolutionSectionsComplexUnlifted
 noncomputable def injectiveResolutionSectionsComplex
     {F : Sheaf J AddCommGrpCat.{a}} (X : C) (I : InjectiveResolution F) :
     CochainComplex AddCommGrpCat.{max a u} ℤ :=
-  ((sectionsAtFunctor X).mapHomologicalComplex (ComplexShape.up ℤ)).obj
-    I.cochainComplex
+  ((AddCommGrpCat.uliftFunctor.{u, a}).mapHomologicalComplex
+    (ComplexShape.up ℤ)).obj (injectiveResolutionSectionsComplexUnlifted X I)
 
 /-- In each degree, cochains from the free abelian representable sheaf are sections. -/
 noncomputable def freeAbelianYonedaHomComplexXIso
@@ -389,6 +389,8 @@ noncomputable def cechColumnSectionsComplex
     rw [I.cochainComplex.d_comp_d]
     simp
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- A fixed column of the Cech-injective bicomplex is the product of the corresponding
 intersection-wise section complexes, including its resolution differential. -/
 noncomputable def cechInjectiveBicomplexColumnIsoSectionsComplex
@@ -398,14 +400,26 @@ noncomputable def cechInjectiveBicomplexColumnIsoSectionsComplex
   HomologicalComplex.Hom.isoOfComponents
     (cechInjectiveBicomplexColumnXIso U I p) (by
       intro q r hqr
-      dsimp [cechInjectiveBicomplexColumnXIso, cechColumnSectionsComplex,
-        cechInjectiveBicomplex, cechResolutionBicomplexUnflipped,
-        cechCochainFunctorInt, cechComplexFunctor,
-        Limits.FormalCoproduct.cochainComplexFunctor,
-        Limits.FormalCoproduct.cosimplicialObjectFunctor]
+      let Kq := AlgebraicTopology.AlternatingCofaceMapComplex.obj
+        (Functor.rightOp (Limits.FormalCoproduct.mk ι U).cech ⋙
+          (Limits.FormalCoproduct.evalOp C AddCommGrpCat.{a}).obj
+            (I.cochainComplex.X q).obj)
+      let Kr := AlgebraicTopology.AlternatingCofaceMapComplex.obj
+        (Functor.rightOp (Limits.FormalCoproduct.mk ι U).cech ⋙
+          (Limits.FormalCoproduct.evalOp C AddCommGrpCat.{a}).obj
+            (I.cochainComplex.X r).obj)
+      let φ : Kq ⟶ Kr := (cechComplexFunctor (A := AddCommGrpCat.{a}) U).map
+        ((sheafToPresheaf J AddCommGrpCat.{a}).map (I.cochainComplex.d q r))
+      let hp : ComplexShape.embeddingUpNat.f p = (p : ℤ) := rfl
+      change (Kq.extendXIso ComplexShape.embeddingUpNat hp).hom ≫
+          (cechColumnSectionsComplex U I p).d q r =
+        (HomologicalComplex.extendMap φ ComplexShape.embeddingUpNat).f (p : ℤ) ≫
+          (Kr.extendXIso ComplexShape.embeddingUpNat hp).hom
       rw [HomologicalComplex.extendMap_f _ ComplexShape.embeddingUpNat
-        (i := p) (i' := (p : ℤ)) rfl]
-      simp only [Category.assoc, Iso.inv_hom_id_assoc]
+        (i := p) (i' := (p : ℤ)) hp]
+      rw [Category.assoc, Category.assoc]
+      rw [(Kr.extendXIso ComplexShape.embeddingUpNat hp).inv_hom_id]
+      simp only [Category.comp_id]
       rfl)
 
 omit [HasExt.{h} (Sheaf J AddCommGrpCat.{a})] in

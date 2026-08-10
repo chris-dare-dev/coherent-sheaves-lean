@@ -1,6 +1,7 @@
 # Handoff
 
-Updated 2026-08-09 for the #46 branch, based on `41d50bf`. For a session picking this repo up cold.
+Updated 2026-08-09 for the #22 branch, based on `a719258` (#77). For a session picking this
+repo up cold.
 
 Read §1 and §7. Everything else is reference.
 
@@ -26,19 +27,20 @@ lake env lean scripts/Audit.lean
 The audit must print `[propext, Classical.choice, Quot.sound]` on every line and never
 `sorryAx`. There is no `sorry` in this library and there never has been.
 
-**State after #46:** 49 commits, 33 Lean files, ~6421 lines, 156 audited declarations. The
-branch passes the full build and axiom audit. Docs live at
+**State after #22:** `lake build` completes 3271 jobs and 204 declarations are audited.
+Every audit line uses only `[propext, Classical.choice, Quot.sound]`; there is no `sorryAx`.
+Docs live at
 <https://chris-dare-dev.github.io/coherent-sheaves-lean/>.
 
 **Layer A is done through A8a** — the general RR expansion, the `n = 2/3/4` specialisations,
 the K3 and Calabi–Yau-threefold cases, and the Euler pairing `χ(E,F)`. Only A8b (the numerical
 lattice, #17) remains.
 
-**Layer B is well past its definitions.** B1 has the affine-local criterion, closure under
-isomorphism, the slice-equivalence transport, the full affine comparison, and its noetherian
-finiteness corollaries. B3 has explicit affine Čech exactness, but not yet the comparison with
-derived-functor sheaf cohomology. `Coh X` is still **not** abelian and geometric `χ` does not
-exist, so B3 remains the gate.
+**Layer B stage B1 is complete.** It includes the affine-local criterion, closure under
+isomorphism, the slice-equivalence transport, the affine comparison and equivalence, closure
+under kernels, cokernels, and extensions, and finally the abelian structure on `Coh X` with
+exact inclusion into `X.Modules`. B3 has explicit affine Čech exactness, but not yet the
+comparison with derived-functor sheaf cohomology; geometric `χ` does not yet exist.
 
 The live work is §7.
 
@@ -126,7 +128,7 @@ Three models, so nothing is vacuous:
 surface has the same ring `ℚ[t]/(t³)` up to the single number `∫H²`. A new rank-one model costs
 a Todd class and nothing else.
 
-### Layer B — locality, the slice equivalence, and the affine comparison
+### Layer B — coherent sheaves form an abelian category
 
 > Everything in this subsection except `Coh/Defs.lean` and the two original `ForMathlib` files
 > was written by **other sessions**. This table was checked against each file's module
@@ -139,15 +141,20 @@ a Todd class and nothing else.
 | `Coh/Defs.lean` | `IsCoherent` (= finite presentation; correct on locally noetherian schemes, documented as strictly stronger elsewhere), the `coherent` `ObjectProperty`, `Coh X`, the inclusion `ι` |
 | `Coh/ClosedUnderIso.lean` | `Coh X` closed under isomorphism |
 | `Coh/Local.lean` | the affine-local criterion: `isCoherent_iff_of_affineOpenCover`, and the `Over`-free `isCoherent_iff_restrict_affineOpenCover` |
-| `Coh/Affine.lean` | finite presentation of `M^~`, finite global sections of finite-type quasi-coherent sheaves, and finite presentation of global sections of coherent sheaves over a noetherian ring |
+| `Coh/Affine.lean` | finite presentation of `M^~`, finite global sections of finite-type quasi-coherent sheaves, finite presentation of global sections of coherent sheaves over a noetherian ring, and `Coh (Spec R) ≌ FGModuleCat R` |
 | `AlgebraicGeometry/Modules/RestrictOver.lean` | the slice-vs-scheme restriction equivalence; finite presentation invariant in **both** directions |
 | `ForMathlib/PresentationIsFinite.lean` | `Presentation.isFinite_of_isIso`, `Presentation.isFinite_map` |
 | `ForMathlib/FinitePresentationOfPresentation.lean` | `Presentation.isFinitePresentation_quasicoherentData`, `IsFinitePresentation.of_presentation` |
 | `ForMathlib/OpensLimits.lean` | `HasBinaryProducts` and `HasFiniteLimits` on `Opens X`. Mathlib's general lattice instances do not fire because `OrderTop (Opens X)` is unreachable at reducible transparency. **This file replaced two independent workarounds for the same gap** — do not write a third |
 | `ForMathlib/AffineComparison.lean` | reduces `IsIso fromTildeΓ` to a statement about localisation of modules, and makes it an `iff` |
 | `ForMathlib/QuasicoherentBasicOpen.lean` | refines quasi-coherent presentation data to a basic-open cover |
-| `ForMathlib/AffineComparisonGluing.lean` | Hartshorne II.5.1 gluing and `isIso_fromTildeΓ_of_isQuasicoherent` |
+| `ForMathlib/AffineComparisonGluing.lean` | compatibility exports around Mathlib v4.32's upstream Hartshorne II.5.1 theorem, including `isIso_fromTildeΓ_of_isQuasicoherent` |
 | `ForMathlib/AffineComparisonFiniteness.lean` | transports finite generators/presentations to basic opens and patches the localized finite modules |
+| `ForMathlib/DivisorAPIAudit.lean` | compile-only B2 inventory: cycles/order of vanishing, local freeness, ring-level Picard data, sheafification, and ideal-sheaf subschemes; records the genuinely missing divisor layer |
+| `Divisors/Cartier.lean` | Cartier divisors on an integral scheme as locally representable sections of `K(X)ˣ / 𝒪_{X,x}ˣ`; principal classes, order coefficients, and explicitly-hypothesized pullback |
+| `Coh/Kernels.lean` | finite-limit preservation for restriction, localization through kernels, affine/global kernel and cokernel closure, and the two object-property closure instances |
+| `Coh/Extensions.lean` | local lifting on two finite refinements and the finite horseshoe presentation proving closure under extensions, with no noetherian hypothesis |
+| `Coh/Abelian.lean` | zero and finite-product closure, the abelian instance on `Coh X`, and the exact inclusion into `X.Modules` |
 | `ForMathlib/ToSheafExact.lean` | `SheafOfModules.toSheaf` preserves finite colimits, hence epis and short exact sequences. Needed because `Sheaf.H` is `Ext` from the constant sheaf, so the cohomology long exact sequence runs on the *image* of a sequence in `Sheaf J AddCommGrpCat` — and nothing upstream said it survives the trip |
 | `Cohomology/Strategy.lean` | **Proves nothing.** A compile-only API map of the upstream declarations B3 can build on: 0 theorems, 6 `example`s, deliberately built to break the day one of them moves. Records the #26 reconnaissance so it is not repeated |
 
@@ -156,11 +163,8 @@ The two original `ForMathlib` files fill a real Mathlib gap: Mathlib has
 that transporting a presentation preserves `Presentation.IsFinite`. Both files are in Mathlib
 namespaces so upstreaming is a file move.
 
-**Still not proved:** the categorical packaging
-`Coh (Spec R) ≌` finitely generated modules; `Coh X` closed under
-kernels/cokernels/extensions; `Coh X` abelian; geometric `χ`; all of B2, B4, B5. General
-cohomology finiteness remains deliberately deferred; the affine global-sections finiteness
-needed by B1 is now proved.
+**Still not proved:** geometric `χ`; the invertible-sheaf/`Pic X` and later parts of B2, all of B4, B5. General cohomology finiteness
+remains deliberately deferred; the affine global-sections finiteness needed by B1 is proved.
 
 ---
 
@@ -173,10 +177,11 @@ needed by B1 is now proved.
    succeeds on sorry-backed declarations.
 3. **Mathlib-style namespaces** (`AlgebraicGeometry.*`, `SheafOfModules.*`), never `CohLean.*`,
    so upstreaming a stage is a file move rather than a rename.
-4. **Toolchain pinned to `leanprover/lean4:v4.29.0`** to match `bridgeland-stab-lean` and
-   `bstab`, which are meant to `require` this package. A bump forces bumps there, so it needs a
-   reason — the first real one is the divisor work (#21), which wants upstream
-   `AlgebraicGeometry/AlgebraicCycle/`.
+4. **Toolchain pinned to `leanprover/lean4:v4.32.1`.** This is the B2 bump: v4.32.0 is the first
+   stable release with both `AlgebraicCycle.Basic` and `OrderOfVanishing`. A downstream project
+   cannot mix this with a v4.29 Mathlib graph. `bridgeland-stab-lean` still follows an upstream
+   BridgelandStability commit pinned to v4.29.0, and no accessible `bstab` repository could be
+   located during #21, so neither downstream pin was mutated here.
 
 ---
 
@@ -199,7 +204,7 @@ what its failed retry ruled out. That is why the next attempt was cheap.
 
 ## 6. Where the work is
 
-7 milestones, 34 open issues. Every issue names the exact file it creates, so `ready` issues can
+7 milestones, 27 open issues after this branch. Every issue names the exact file it creates, so `ready` issues can
 be worked simultaneously without merge conflicts. `lakefile.toml` is the one genuinely shared
 file — in practice `CohLean.lean`, `scripts/Audit.lean`, `ROADMAP.md` and `README.md` are
 shared too, and they are where every merge conflict this project has had actually happened.
@@ -208,19 +213,16 @@ shared too, and they are where every merge conflict this project has had actuall
 |---|---|---|
 | A7 | 0 | **done** — threefold and fourfold RR |
 | A8 | 1 | Euler pairing **done**; the numerical lattice (#17) remains |
-| B1 | 6 | `Coh X` abelian; the remaining half of the affine comparison |
-| B2 | 6 | Divisors, `Pic X`, `O_X(D)` |
-| B3 | 9 | Cohomology and `χ` — **still the real gate** |
+| B1 | 0 | **done** — `Coh X` abelian with exact inclusion into `X.Modules` |
+| B2 | 4 | Cartier divisors are done; `Pic X`, `O_X(D)`, determinant, and the effective-divisor sequence remain |
+| B3 | 7 | Cohomology and `χ` — **still the real gate** |
 | B4 | 5 | Snapper polynomials → intersection numbers |
 | B5 | 7 | Serre duality → RR for surfaces → discharge `hirzebruch_riemannRoch` |
 
-**Startable today** — the `ready` label, checked 2026-08-08 against the tracker: **#9, #21,
-#27, #33, #62**. (#56 and #59 are closed; #11, #13 and #17 are now labelled `blocked`.)
-
-Two sources describe this and they do not quite agree. `ROADMAP.md`'s "current independent
-entry points" line lists #11 where the label set has #9 — and #11 is labelled `blocked` on
-#46. **Trust the label**, and expect this list to be stale again within a day; regenerate it
-with `gh issue list --label ready`.
+**In progress:** **#23**. **Startable after this branch merges:** **#33**. Issue #27 is already
+in progress.
+Regenerate this list with `gh issue list --label ready` before choosing,
+because tracker labels move faster than this file.
 
 There is no longer an easy pure-Layer-A warm-up: A7 and A8a took them. A fresh session should
 expect to land in Layer B, where the cost is Mathlib plumbing rather than mathematics — read
@@ -230,11 +232,13 @@ expect to land in Layer B, where the cost is Mathlib plumbing rather than mathem
 
 ## 7. In flight
 
-**The affine comparison (#46) is complete after this branch.** The critical-path B1 task is
-now #11: package the already-proved object-level statements into
-`Coh (Spec R) ≌` finitely generated `R`-modules. That unlocks #8 (kernels/cokernels). #9
-(extensions) remains independent and should use local lifts plus
-`IsFinitePresentation.of_coversTop`, not affine `H¹` vanishing.
+**B1 is complete. #22 supplies the first B2 construction.** `Divisors/Cartier.lean` defines
+Cartier divisors on an integral scheme from the stalkwise quotients `K(X)ˣ / 𝒪_{X,x}ˣ`, proves
+their abelian-group operations, packages principal equivalence, and descends `Scheme.ord` to
+coefficients. It does not claim coefficient support is locally finite: upstream has no theorem
+supporting that `AlgebraicCycle` packaging. Pullback is available precisely from explicit
+function-field data preserving local units. #23 (invertible sheaves/`Pic X`) is in progress and
+is the remaining input to #24 (`O_X(D)`).
 
 Universe defaulting and iterated-slice elaboration are still the dominant implementation
 hazards; the fixes are preserved in §8. The `Finset`/`Set` warning remains retracted.
@@ -254,12 +258,12 @@ decision before planning anything here:
   it, and become unconditional unchanged the day #29 lands.
 
 `Cohomology/Strategy.lean` records all of this and proves nothing; `scripts/Audit.lean` says
-so in as many words. #13 (affine Čech vanishing) and #27 (Čech vs derived sheaf cohomology)
-are the two `ready` issues that start the supported route.
+so in as many words. #13 (affine Čech vanishing) is done and #27 (Čech vs derived sheaf
+cohomology) has an implementation in progress.
 
 PR #58 ("The forgetful functor to abelian sheaves is exact", closed #56) landed as
-`c349741` while this revision was being written — a fair illustration of how fast `main` moves
-here. There are no open PRs as of `411a599`.
+`c349741` while an earlier revision was being written — a fair illustration of how fast `main`
+moves here. Query the live PR list before choosing work; #27 is already marked in progress.
 ## 8. Gotchas — the expensive part of this repo's history
 
 Each of these cost real time. None is recoverable from reading the code.
@@ -364,7 +368,17 @@ not rewrite at the use site — the ambient category depends on `U`. Take the eq
 hypothesis in a helper lemma and `subst` it there, once. That is the whole technique behind
 `Scheme.Hom.presentationOverOfEq`.
 
-### Mathlib specifics at v4.29.0
+### Mathlib specifics at v4.32.1
+
+* The exact B2 inventory is executable in `ForMathlib/DivisorAPIAudit.lean`. Upstream has
+  `AlgebraicCycle`, `AlgebraicCycle.map`, `Scheme.ordHom`, `Scheme.ord`, arbitrary-rank
+  `SheafOfModules.IsLocallyFree`, ring-level `Module.Invertible` and `CommRing.Pic`, generic
+  `PresheafOfModules.sheafification`, and `Scheme.IdealSheafData.subscheme`. It does **not**
+  have scheme-level invertible sheaves/`Pic X`, sheaf tensor products, Cartier divisors,
+  effective Cartier divisors, or `O_X(D)`.
+* Mathlib v4.32 upstreamed `Scheme.Modules.isIso_fromTildeΓ_of_isQuasicoherent`. The old
+  800-line local Hartshorne II.5.1 proof was replaced by a small compatibility module. Prefer
+  the upstream theorem; do not resurrect the old gluing machinery.
 
 * Mathlib has **no** "f.p. + f.p. ⟹ f.p. in a short exact sequence". The usable statement is
   `Module.finitePresentation_of_ker`.
@@ -462,24 +476,14 @@ present, the error is about *when* Lean looked, not *what* it found.
 
 ## 10. Suggested order
 
-> The previous revision recommended starting with #13, then #59, then #17. **All three are
-> wrong now**: #59 is closed, and #13 and #17 are labelled `blocked`. If you are working from
-> a cached copy of this file, re-check before you plan.
+> This order is a snapshot. Re-check tracker labels before starting.
 
-1. **#62** — the highest-leverage item in the repo right now. It is the Mathlib gap that #13's
-   own reconnaissance turned up: `ExtraDegeneracy` is stated for **simplicial** objects against
-   `alternatingFaceMapComplex`, while Čech cohomology is **cosimplicial** and built from
-   `alternatingCofaceMapComplex`, with no homotopy-equivalence result and no op-duality lemma
-   between them. Every Čech vanishing argument lands on the cosimplicial side, so #13 — and
-   with it the whole supported B3 route — has nowhere to go until this exists.
-2. **#27** (compare Čech with derived sheaf cohomology) is the other `ready` B3 research issue
-   and is independent of #62.
-3. **#9** (`Coh X` closed under extensions) is the remaining `ready` B1 closure result, and
-   closure is what `Coh X` being abelian is waiting on.
-4. **#21** (toolchain bump and divisor API audit) before any B2 work. Upstream Mathlib gained
-   `AlgebraicGeometry/AlgebraicCycle/` and `OrderOfVanishing.lean` after v4.29.0 — build on
-   those rather than duplicating them. The bump also forces bumps in `bridgeland-stab-lean`
-   and `bstab`.
+1. **#23** — invertible sheaves and `Pic X`, building the missing scheme layer over
+   `SheafOfModules.IsLocallyFree` and the ring-level Picard API. It is independent of #22.
+2. **#33** — multivariable numerical polynomials and finite differences, the independent B4
+   entry point.
+
+Issue #27 (Čech versus derived sheaf cohomology) already has an implementation in progress.
 
 A **rank-one model for a Calabi–Yau threefold** is not an issue yet — which today makes it
 the only unblocked Layer A task, since #17 is labelled `blocked`. It is also cheap: `ℚ[t]/(t⁴)` with `∫t³ = d` via `NumericalRing.ofGradedBasis`, exactly
@@ -491,9 +495,12 @@ out of the same file — which is the one thing keeping `chi₂_eq_degree_dual_c
 
 Same machine, `Source Code/`:
 
-* `bridgeland-stab-lean` — the consumer. `Stab(D)` group actions, metric, HN polygons. Intended
-  to `require` this package, hence the toolchain pin.
-* `bstab` — Bridgeland's deformation theorem; separate Lean project.
+* `bridgeland-stab-lean` — the consumer. `Stab(D)` group actions, metric, HN polygons. Its
+  current BridgelandStability anchor pins Lean/Mathlib v4.29.0; the anchor and consumer must
+  both migrate to v4.32.1 before it can `require` this CohLean revision.
+* `bstab` — named in older handoffs as the Bridgeland deformation-theorem project, but it was
+  not present locally or discoverable among repositories accessible to the authenticated
+  GitHub account during #21. If restored, its required pin is Lean/Mathlib v4.32.1.
 * `stability-mflds` — Python, exact arithmetic: DLP curve, Bogomolov–Gieseker, Bridgeland walls,
   **K3 Mukai lattice**. Useful as an oracle: `mukai.py` computes the same pairing that
   `Numerical/K3.lean` states, so numeric cross-checks are cheap and worth adding to new models.

@@ -128,23 +128,26 @@ check it still holds in every model there, and audit any new instance you build.
 
 ## Toolchain
 
-Pinned to **`leanprover/lean4:v4.29.0`**, matching `bridgeland-stab-lean` and `bstab`, both
-of which are intended to `require` this package. That is the whole reason for the pin: a
-bump here forces a bump in two downstream repos, so it needs a reason.
+Pinned to **`leanprover/lean4:v4.32.1`**. Issue #21 supplied the first real reason for the
+bump: v4.32.0 is the first stable release containing both
+`Mathlib/AlgebraicGeometry/AlgebraicCycle/Basic.lean` and `OrderOfVanishing.lean`; v4.32.1 is
+the selected patch release.
 
-The first real reason is Layer B stage 2, the divisor work, which wants upstream
-`Mathlib/AlgebraicGeometry/AlgebraicCycle/` and `OrderOfVanishing.lean` — both landed after
-v4.29.0. Do not bump before then.
+The pin is an exact downstream compatibility constraint. `bridgeland-stab-lean` currently
+follows a BridgelandStability commit whose complete dependency graph is still on v4.29.0, so
+the anchor and consumer must migrate together before requiring this CohLean revision. The
+older handoff's `bstab` repository was not available locally or through the authenticated
+GitHub account during #21; if it is restored, it must use v4.32.1 too.
 
-When the bump does happen, five things move together:
+For any future bump, these things move together:
 
 1. `lean-toolchain`
-2. the `mathlib` `rev` in `lakefile.toml`
+2. the `mathlib` `rev` in `lakefile.toml` and the resulting `lake-manifest.json`
 3. `docbuild/lean-toolchain`, and the `doc-gen4` `rev` in `docbuild/lakefile.toml` —
    doc-gen4 tags one release per toolchain, and a mismatch is a hard build failure
 4. `docbuild/lake-manifest.json`, via `MATHLIB_NO_CACHE_ON_UPDATE=1 lake update doc-gen4`
    run from `docbuild/`
-5. the toolchain pin in `bridgeland-stab-lean` and `bstab`
+5. every downstream package and any transitive package that contributes Mathlib to its graph
 
 Step 4 has a trap. `lake update doc-gen4` also re-pins doc-gen4's transitive dependencies,
 and `plausible` is shared with Mathlib. If the two manifests disagree on it, every

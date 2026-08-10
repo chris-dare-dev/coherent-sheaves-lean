@@ -271,8 +271,18 @@ variable {C : Type*} [Category C] {D : Type*} [Category D]
 private def mapFunctor (F : C ⥤ D) : FormalCoproduct C ⥤ FormalCoproduct D where
   obj X := ⟨X.I, fun i ↦ F.obj (X.obj i)⟩
   map f := ⟨f.f, fun i ↦ F.map (f.φ i)⟩
-  map_id X := by ext <;> simp
-  map_comp f g := by ext <;> simp
+  map_id X := by
+    rw [hom_ext_iff]
+    refine ⟨rfl, fun i ↦ ?_⟩
+    dsimp
+    rw [Category.comp_id]
+    exact F.map_id (X.obj i)
+  map_comp f g := by
+    rw [hom_ext_iff]
+    refine ⟨rfl, fun i ↦ ?_⟩
+    dsimp
+    rw [Category.comp_id]
+    exact F.map_comp (f.φ i) (g.φ (f.f i))
 
 end CategoryTheory.Limits.FormalCoproduct
 
@@ -502,7 +512,18 @@ theorem tilde_cechComplex_exactAt_succ
     exact (data r).isLocalized (n + 2)
   apply exact_of_isLocalized_span s hf Mloc localizeM Nloc localizeN Lloc localizeL
   intro r
-  simpa only [← hindex r] using (data r).localizedExact n
+  dsimp only [Mloc, Nloc, Lloc, localizeM, localizeN, localizeL, K]
+  rw [LinearMap.exact_iff]
+  change
+    (IsLocalizedModule.map (.powers r.1) ((data r).comparison.f (n + 1)).hom
+      ((data r).comparison.f (n + 2)).hom
+      ((tildeCechComplex f M).d (n + 1) (n + 2)).hom).ker =
+    (IsLocalizedModule.map (.powers r.1) ((data r).comparison.f n).hom
+      ((data r).comparison.f (n + 1)).hom
+      ((tildeCechComplex f M).d n (n + 1)).hom).range
+  have h := (data r).localizedExact n
+  rw [LinearMap.exact_iff] at h
+  simpa only [← hindex r] using h
 
 /-- Positive-degree form of `tilde_cechComplex_exactAt_succ`. -/
 theorem tilde_cechComplex_exactAt_of_pos

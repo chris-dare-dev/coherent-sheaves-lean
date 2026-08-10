@@ -57,8 +57,10 @@ theorem surfacePB_basis_apply (i : Fin surfacePB.dim) : surfacePB.basis i = H ^ 
 
 /-- `H³ = 0`: the relation, in the ring. -/
 theorem H_pow_three : H ^ 3 = 0 := by
-  have h := AdjoinRoot.eval₂_root surfaceRel
-  simpa [surfaceRel, H] using h
+  change AdjoinRoot.root surfaceRel ^ 3 = 0
+  rw [← AdjoinRoot.eval₂_root surfaceRel]
+  simp [surfaceRel]
+  rfl
 
 theorem H_pow_four : H ^ 4 = 0 := by
   rw [show (4 : ℕ) = 3 + 1 from rfl, pow_add, H_pow_three, zero_mul]

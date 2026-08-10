@@ -161,14 +161,8 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms Scheme.Hom.opensRangeModulesEquivalenceInverseUnitIso
 #print axioms Scheme.Hom.restrictPresentation
 
--- Layer B stage 1: Hartshorne II.5.1. Presentations on a basic-open cover supply uniform
--- exponents for both localisation clauses; the sheaf axiom glues the normalized lifts.
-#print axioms IsLocalizedModule.restrictScalars_algebraMapSubmonoid
-#print axioms Scheme.Modules.basicOpenRestrictionOver
-#print axioms Scheme.Modules.isLocalizedModule_basicOpenRestrictionOver_of_presentation
-#print axioms Scheme.Modules.exists_power_smul_eq_of_basicOpenRestriction_eq_of_cover
-#print axioms Scheme.Modules.exists_power_smul_eq_basicOpenRestriction_of_cover
-#print axioms Scheme.Modules.isLocalizedModule_basicOpenRestriction_of_cover
+-- Layer B stage 1: Mathlib v4.32 provides Hartshorne II.5.1 upstream; retain the
+-- compatibility exports consumed by the affine comparison layer.
 #print axioms Scheme.Modules.isLocalizedModule_basicOpenRestriction_of_isQuasicoherent
 #print axioms Scheme.Modules.isIso_fromTildeΓ_of_isQuasicoherent
 
@@ -176,7 +170,6 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 -- generators and presentations are transported to affine basic opens, where the comparison
 -- turns them into finite modules; localisation patching then returns to `Spec R`.
 #print axioms SheafOfModules.GeneratingSections.map
-#print axioms SheafOfModules.GeneratingSections.isFiniteType_map
 #print axioms SheafOfModules.GeneratingSections.over
 #print axioms SheafOfModules.GeneratingSections.isFiniteType_over
 #print axioms Scheme.Modules.basicOpenSpecMap
@@ -195,6 +188,80 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms Scheme.Modules.moduleFinite_globalSections
 #print axioms moduleFinite_globalSections_of_isFiniteType
 #print axioms moduleFinitePresentation_globalSections_of_isCoherent
+
+-- Layer B stage 1: the affine equivalence. The two objectwise finiteness directions
+-- restrict Mathlib's tilde-global-sections adjunction to the corresponding full
+-- subcategories; its unit and counit are then pointwise isomorphisms.
+#print axioms Coh.affineGlobalSections
+#print axioms FGModuleCat.affineTilde
+#print axioms Coh.affineAdjunction
+#print axioms Coh.affineEquivalence
+#print axioms Coh.affineEquivalence_functor
+#print axioms Coh.affineEquivalence_inverse
+
+-- Layer B stage 1: kernels and cokernels. Restriction along open immersions is left exact,
+-- localization commutes with kernels, and the affine comparison transports both ambient
+-- (co)kernels to finite modules. The final instances create (co)kernels in `Coh X`.
+#print axioms AlgebraicGeometry.modulesSpecToSheaf_preservesFiniteLimits
+#print axioms Scheme.Modules.restrictFunctor_preservesFiniteLimits
+#print axioms LinearMap.kerMap
+#print axioms IsLocalizedModule.kerMap
+#print axioms IsLocalizedModule.kernelMap
+#print axioms IsLocalizedModule.kernelNatTrans
+#print axioms Scheme.Modules.isLocalizedModule_basicOpenRestriction_kernel
+#print axioms Scheme.Modules.isCoherent_kernel_affine
+#print axioms Scheme.Modules.isCoherent_cokernel_affine
+#print axioms Scheme.Modules.restrictKernelIso
+#print axioms Scheme.Modules.restrictCokernelIso
+#print axioms Scheme.Modules.isCoherent_kernel
+#print axioms Scheme.Modules.isCoherent_cokernel
+#print axioms Scheme.coherent_isClosedUnderKernels
+#print axioms Scheme.coherent_isClosedUnderCokernels
+
+-- Layer B stage 1: extensions. Local lifts of finite generators and relations produce a
+-- finite horseshoe presentation of the middle term, without a noetherian hypothesis.
+#print axioms SheafOfModules.IsFinitePresentation.middle_of_shortExact
+#print axioms SheafOfModules.isFinitePresentation_isClosedUnderExtensions
+#print axioms Scheme.coherent_isClosedUnderExtensions
+
+-- Layer B stage 1: abelianity and the exact inclusion. The full subcategory contains zero
+-- and finite products; kernel/cokernel closure then supplies the abelian structure and makes
+-- the inclusion preserve all finite limits and colimits.
+#print axioms SheafOfModules.isFinitePresentation_containsZero
+#print axioms Scheme.coherent_containsZero
+#print axioms Scheme.coherent_isClosedUnderBinaryProducts
+#print axioms Scheme.coherent_isClosedUnderFiniteProducts
+#print axioms Coh.preadditive
+#print axioms Coh.abelian
+#print axioms Coh.ι_preservesZeroMorphisms
+#print axioms Coh.ι_additive
+#print axioms Coh.ι_preservesFiniteLimits
+#print axioms Coh.ι_preservesFiniteColimits
+#print axioms Coh.exactInclusion
+#print axioms Coh.shortExact_map_ι
+
+-- Layer B stage 2: Cartier divisors as locally representable sections of
+-- `K(X)ˣ / 𝒪_{X,x}ˣ`, principal equivalence, codimension-one coefficients,
+-- and pullback from explicit compatible function-field data.
+#print axioms Scheme.localCartierClass_eq_iff
+#print axioms Scheme.isCartier_zero
+#print axioms Scheme.IsCartier.add
+#print axioms Scheme.IsCartier.neg
+#print axioms Scheme.CartierDivisor.ext
+#print axioms Scheme.CartierDivisor.zero_apply
+#print axioms Scheme.CartierDivisor.add_apply
+#print axioms Scheme.CartierDivisor.neg_apply
+#print axioms Scheme.CartierDivisor.exists_localEquation
+#print axioms Scheme.CartierDivisor.toClass_eq_iff
+#print axioms Scheme.CartierDivisor.toClass_eq_iff_exists
+#print axioms Scheme.CartierDivisor.toClass_principal
+#print axioms Scheme.CartierDivisor.ordUnitHom_eq_zero_of_mem_localUnits
+#print axioms Scheme.CartierDivisor.localOrder_localCartierClass
+#print axioms Scheme.CartierDivisor.coefficient_add
+#print axioms Scheme.CartierDivisor.coefficient_principal
+#print axioms Scheme.CartierDivisor.coefficient_eq_zero_of_coheight_ne_one
+#print axioms Scheme.CartierPullbackData.localMap_localCartierClass
+#print axioms Scheme.CartierPullbackData.pullback_principal
 
 -- Layer B stage 3: exactness of the bridge from sheaves of modules to abelian sheaves.
 -- This is what lets a short exact sequence in `X.Modules` reach `Ext`, and hence the
@@ -216,9 +283,8 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicTopology.exactAt_succ_of_extraDegeneracy
 #print axioms AlgebraicTopology.exactAt_succ_of_extraDegeneracy_map
 
--- Layer B stage 3: backport of the completed Mathlib construction assembling a
--- spectral object into a spectral sequence. The pinned Mathlib source stops after
--- the kernel half; these declarations add the cokernel half and page-homology isomorphism.
+-- Layer B stage 3: Mathlib's construction assembling a spectral object into a spectral
+-- sequence, including its page-homology and first-page comparison isomorphisms.
 #print axioms CategoryTheory.Abelian.SpectralObject.SpectralSequence.HomologyData.isColimitCc
 #print axioms CategoryTheory.Abelian.SpectralObject.SpectralSequence.homologyData
 #print axioms CategoryTheory.Abelian.SpectralObject.spectralSequence

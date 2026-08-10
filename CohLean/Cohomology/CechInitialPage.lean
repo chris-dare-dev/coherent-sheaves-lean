@@ -30,6 +30,8 @@ open CategoryTheory Category Limits
 namespace CategoryTheory.Sheaf
 
 set_option maxHeartbeats 4000000
+set_option backward.defeqAttrib.useBackward true
+set_option backward.isDefEq.respectTransparency false
 
 variable {C : Type u} [Category.{a} C] {J : GrothendieckTopology C}
   [HasFiniteProducts C] [HasSheafify J AddCommGrpCat.{a}] {index : Type a}
@@ -272,6 +274,7 @@ noncomputable def cechColumnAugmentationShortComplexIso
         cechInjectiveColumnAugmentation, cechInjectiveBicomplexAugmentation,
         cechInjectiveBicomplexAugmentationSource, cechInjectiveBicomplex,
         cechResolutionBicomplexUnflipped,
+        cechInjectiveBicomplexColumnXIso, cechCochainFunctorIntXIso,
         sectionsIntAugmentedShortComplex,
         sectionsAtFunctorUnlifted] using
           (cechCochainFunctorIntXIso_naturality U (I.ι'.f 0) p).symm)
@@ -279,7 +282,8 @@ noncomputable def cechColumnAugmentationShortComplexIso
       simpa [cechColumnAugmentationShortComplex,
         cechAugmentedColumnProductShortComplex,
         sectionsIntAugmentedShortComplex,
-        sectionsAtFunctorUnlifted, cechColumnSectionsComplex] using
+        sectionsAtFunctorUnlifted, cechColumnSectionsComplex,
+        cechInjectiveBicomplexColumnIsoSectionsComplex] using
         (cechInjectiveBicomplexColumnIsoSectionsComplex U I p).hom.comm 0 1)
 
 lemma cechColumnAugmentationShortComplex_exact

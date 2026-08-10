@@ -3,9 +3,9 @@ Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 -/
 import CohLean.ForMathlib.FilteredComplexSpectralObject
-import CohLean.ForMathlib.SpectralObjectFirstPage
 import Mathlib.Algebra.Homology.Embedding.CochainComplex
 import Mathlib.Algebra.Homology.Embedding.StupidTrunc
+import Mathlib.Algebra.Homology.SpectralObject.FirstPage
 import Mathlib.Algebra.Homology.TotalComplex
 
 /-!
@@ -107,7 +107,7 @@ private noncomputable def geIndex (p i : ℤ) : ℕ := (i - p).toNat
 
 private lemma geIndex_spec (p i : ℤ) (h : p ≤ i) :
     (ComplexShape.embeddingUpIntGE p).f (geIndex p i) = i := by
-  dsimp [ComplexShape.embeddingUpIntGE, geIndex]
+  change p + ((i - p).toNat : ℤ) = i
   rw [Int.toNat_of_nonneg (by omega)]
   omega
 
@@ -136,7 +136,8 @@ noncomputable def stupidTruncGEι (K : HomologicalComplex C (ComplexShape.up ℤ
   comm' i j hij := by
     by_cases hi : p ≤ i
     · have hj : p ≤ j := by
-        dsimp [ComplexShape.up] at hij
+        have hij' : i + 1 = j := by
+          simpa only [ComplexShape.up_Rel] using hij
         omega
       rw [dif_pos hi, dif_pos hj, stupidTrunc_d_eq K p hi hj]
       simp
@@ -175,7 +176,8 @@ noncomputable def stupidTruncGEMap (K : HomologicalComplex C (ComplexShape.up �
   comm' i j hij := by
     by_cases hi : q ≤ i
     · have hj : q ≤ j := by
-        dsimp [ComplexShape.up] at hij
+        have hij' : i + 1 = j := by
+          simpa only [ComplexShape.up_Rel] using hij
         omega
       rw [dif_pos hi, dif_pos hj, stupidTrunc_d_eq K q hi hj,
         stupidTrunc_d_eq K p (hpq.trans hi) (hpq.trans hj)]
@@ -284,7 +286,9 @@ noncomputable def columnFilteredTotalιNat
   app p := columnFilteredTotalι K p
   naturality := by
     intro p q f
-    simpa using columnFilteredTotal_map_comp_ι K f
+    change _ = columnFilteredTotalι K p ≫ 𝟙 _
+    rw [Category.comp_id]
+    exact columnFilteredTotal_map_comp_ι K f
 
 end HomologicalComplex₂
 
