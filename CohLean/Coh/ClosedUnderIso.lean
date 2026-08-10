@@ -31,34 +31,19 @@ variable {C : Type u} [Category.{u} C] [Limits.HasBinaryProducts C]
   [wEqualsLocallyBijective : ∀ X,
     (J.over X).WEqualsLocallyBijective AddCommGrpCat.{u}]
 
-/-- Transport local presentation data across an isomorphism of sheaves of modules. -/
+/-- Transport local presentation data across an isomorphism of sheaves of modules.
+
+This is the project-facing, iso-valued wrapper around Mathlib's `QuasicoherentData.ofIsIso`.
+-/
 noncomputable def QuasicoherentData.ofIso {M N : SheafOfModules.{u} R}
-    (q : M.QuasicoherentData) (e : M ≅ N) : N.QuasicoherentData where
-  I := q.I
-  X := q.X
-  coversTop := q.coversTop
-  presentation i := by
-    let ei : M.over (q.X i) ≅ N.over (q.X i) := by
-      change (pushforward.{u} (𝟙 (R.over (q.X i)))).obj M ≅
-        (pushforward.{u} (𝟙 (R.over (q.X i)))).obj N
-      exact (pushforward.{u} (𝟙 (R.over (q.X i)))).mapIso e
-    exact Presentation.of_isIso ei.hom (q.presentation i)
+    (q : M.QuasicoherentData) (e : M ≅ N) : N.QuasicoherentData :=
+  q.ofIsIso e.hom
 
 instance QuasicoherentData.isFinitePresentation_ofIso
     {M N : SheafOfModules.{u} R} (q : M.QuasicoherentData) (e : M ≅ N)
-    [q.IsFinitePresentation] : (q.ofIso e).IsFinitePresentation where
-  isFinite_presentation i := by
-    dsimp only [QuasicoherentData.ofIso] at i ⊢
-    apply @Presentation.IsFinite.mk (Over (q.X i)) _ (J.over (q.X i))
-      (R.over (q.X i)) (hasWeakSheafify (q.X i))
-      (wEqualsLocallyBijective (q.X i)) (hasSheafCompose (q.X i))
-    · apply @GeneratingSections.IsFiniteType.mk (Over (q.X i)) _ (J.over (q.X i))
-        (R.over (q.X i)) (hasWeakSheafify (q.X i))
-        (wEqualsLocallyBijective (q.X i)) (hasSheafCompose (q.X i))
-      change Finite (q.presentation i).generators.I
-      infer_instance
-    · change Finite (q.presentation i).relations.I
-      infer_instance
+    [q.IsFinitePresentation] : (q.ofIso e).IsFinitePresentation := by
+  dsimp only [QuasicoherentData.ofIso]
+  infer_instance
 
 omit [Limits.HasBinaryProducts C] in
 /-- Finite presentation is preserved by an isomorphism of sheaves of modules. -/

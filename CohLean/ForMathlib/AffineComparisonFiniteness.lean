@@ -34,34 +34,8 @@ variable {C C' : Type u} [Category.{u} C] [Category.{u} C']
   {J : GrothendieckTopology C} {J' : GrothendieckTopology C'}
   {R : Sheaf J RingCat.{u}} {S : Sheaf J' RingCat.{u}}
   [HasSheafify J AddCommGrpCat] [J.WEqualsLocallyBijective AddCommGrpCat]
-  [J.HasSheafCompose (forget₂ RingCat AddCommGrpCat)]
   [HasSheafify J' AddCommGrpCat] [J'.WEqualsLocallyBijective AddCommGrpCat]
   [J'.HasSheafCompose (forget₂ RingCat AddCommGrpCat)]
-
-/-- A colimit-preserving functor which carries the unit to the unit carries generating
-sections to generating sections. -/
-noncomputable def GeneratingSections.map {M : SheafOfModules.{u} R}
-    (σ : M.GeneratingSections)
-    (F : SheafOfModules.{u} R ⥤ SheafOfModules.{u} S)
-    [PreservesColimitsOfSize.{u, u} F] (η : F.obj (unit R) ≅ unit S) :
-    (F.obj M).GeneratingSections := by
-  let p : free σ.I ⟶ F.obj M := (mapFree F η σ.I).inv ≫ F.map σ.π
-  refine
-    { I := σ.I
-      s := (F.obj M).freeHomEquiv p
-      epi := ?_ }
-  rw [show (F.obj M).freeHomEquiv.symm ((F.obj M).freeHomEquiv p) = p from
-    (F.obj M).freeHomEquiv.symm_apply_apply p]
-  dsimp only [p]
-  infer_instance
-
-/-- Mapping generating sections does not change their index type. -/
-instance GeneratingSections.isFiniteType_map {M : SheafOfModules.{u} R}
-    (σ : M.GeneratingSections) [σ.IsFiniteType]
-    (F : SheafOfModules.{u} R ⥤ SheafOfModules.{u} S)
-    [PreservesColimitsOfSize.{u, u} F] (η : F.obj (unit R) ≅ unit S) :
-    (σ.map F η).IsFiniteType where
-  finite := inferInstanceAs (Finite σ.I)
 
 variable
   [hasSheafComposeOver : ∀ X,
@@ -127,7 +101,7 @@ noncomputable def GeneratingSections.restrictBasicOpen (M : (Spec R).Modules) (g
   let h := basicOpenSpecMap_opensRange (R := R) g
   let σ' : (M.over (basicOpenSpecMap g).opensRange).GeneratingSections := h.symm ▸ σ
   σ'.map (basicOpenSpecMap g).opensRangeModulesEquivalence.inverse
-    (basicOpenSpecMap g).opensRangeModulesEquivalenceInverseUnitIso
+    (basicOpenSpecMap g).opensRangeModulesEquivalenceInverseUnitIso.symm
 
 set_option maxHeartbeats 1600000 in
 set_option synthInstance.maxHeartbeats 400000 in
@@ -140,7 +114,7 @@ instance GeneratingSections.isFiniteType_restrictBasicOpen (M : (Spec R).Modules
   let σ' : (M.over (basicOpenSpecMap g).opensRange).GeneratingSections := h.symm ▸ σ
   letI hσ' : σ'.IsFiniteType := generatingSections_isFiniteType_cast h.symm σ
   change (σ'.map (basicOpenSpecMap g).opensRangeModulesEquivalence.inverse
-    (basicOpenSpecMap g).opensRangeModulesEquivalenceInverseUnitIso).IsFiniteType
+    (basicOpenSpecMap g).opensRangeModulesEquivalenceInverseUnitIso.symm).IsFiniteType
   show GeneratingSections.IsFiniteType.{u, u, u} _
   constructor
   change Finite σ'.I
@@ -189,8 +163,10 @@ theorem moduleFinite_globalSections_of_generatingSections (M : (Spec R).Modules)
     letI hcomp : Epi ((tilde.functor R).map h ≫ M.fromTildeΓ) := by
       have hnat :
           (tilde.functor R).map h ≫ M.fromTildeΓ = F.fromTildeΓ ≫ p := by
-        simpa only [h, Functor.comp_map] using
-          (Scheme.Modules.fromTildeΓNatTrans (R := R)).naturality p
+        have hnat := (Scheme.Modules.fromTildeΓNatTrans (R := R)).naturality p
+        change (tilde.functor R).map (moduleSpecΓFunctor.map p) ≫ M.fromTildeΓ =
+          F.fromTildeΓ ≫ p at hnat
+        simpa only [h] using hnat
       rw [hnat]
       exact epi_comp' hF.epi_of_iso hp
     exact (@epi_comp_iff_of_isIso _ _ _ _ _ _ _ hM).mp hcomp

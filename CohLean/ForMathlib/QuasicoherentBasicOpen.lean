@@ -68,14 +68,14 @@ noncomputable def Presentation.over {M : SheafOfModules.{u} R} {U : C}
     (P : (M.over U).Presentation) (W : Over U) [HasBinaryProducts (Over U)] :
     (M.over W.left).Presentation := by
   haveI : PreservesColimitsOfSize.{u, u}
-      (pushforward.{u} (𝟙 ((R.over U).over W))) :=
+      (SheafOfModules.pushforward.{u} (𝟙 ((R.over U).over W))) :=
     preservesColimitsOfSize_shrink.{u, u, u, u} _
   let P' : ((M.over U).over W).Presentation :=
-    P.map (pushforward (𝟙 _)) (.refl _)
+    P.map (SheafOfModules.pushforward (𝟙 _)) (.refl _)
   letI eW := pushforwardPushforwardEquivalence (Over.iteratedSliceEquiv W)
     (S := (R.over U).over W) (R := R.over W.left) (𝟙 _) (𝟙 _)
     (by ext : 2; exact R.1.map_id _) (by ext : 2; exact R.1.map_id _)
-  exact (P'.map eW.inverse (.refl _)).of_isIso
+  exact (P'.map eW.inverse (.refl _)).ofIsIso
     (eW.fullyFaithfulFunctor.preimageIso
       (by exact eW.counitIso.app ((M.over U).over W))).hom
 
@@ -93,12 +93,15 @@ noncomputable def QuasicoherentData.presentationOver {M : SheafOfModules.{u} R}
     ((M.over U).over ((Over.star U).obj (q.X i))).Presentation := by
   let Y := (Over.star U).obj (q.X i)
   let W : Over (q.X i) := Over.mk (prod.snd : U ⨯ q.X i ⟶ q.X i)
+  haveI : PreservesColimitsOfSize.{u, u}
+      (SheafOfModules.pushforward.{u} (𝟙 ((R.over (q.X i)).over W))) :=
+    preservesColimitsOfSize_shrink.{u, u, u, u} _
   let P : ((M.over (q.X i)).over W).Presentation :=
-    (q.presentation i).map (pushforward (𝟙 _)) (.refl _)
+    (q.presentation i).map (SheafOfModules.pushforward (𝟙 _)) (.refl _)
   letI eW := pushforwardPushforwardEquivalence (Over.iteratedSliceEquiv W)
     (S := (R.over (q.X i)).over W) (R := R.over W.left) (𝟙 _) (𝟙 _)
     (by ext : 2; exact R.1.map_id _) (by ext : 2; exact R.1.map_id _)
-  let P' : (M.over W.left).Presentation := (P.map eW.inverse (.refl _)).of_isIso
+  let P' : (M.over W.left).Presentation := (P.map eW.inverse (.refl _)).ofIsIso
     (eW.fullyFaithfulFunctor.preimageIso
       (by exact eW.counitIso.app ((M.over (q.X i)).over W))).hom
   letI eY := pushforwardPushforwardEquivalence (Over.iteratedSliceEquiv Y)

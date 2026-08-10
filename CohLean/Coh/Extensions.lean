@@ -29,6 +29,8 @@ This avoids affine cohomology entirely, so the theorem needs no noetherian hypot
 
 universe u
 
+set_option backward.isDefEq.respectTransparency false
+
 open CategoryTheory Limits Opposite ZeroObject
 
 namespace SheafOfModules
@@ -93,7 +95,6 @@ noncomputable def sectionOfInitial {D : Type u} [Category.{u} D]
   PresheafOfModules.sectionsMk
     (fun Y ↦ M.map (hX.to Y) x)
     (fun {Y Z} f ↦ by
-      change M.map f (M.map (hX.to Y) x) = M.map (hX.to Z) x
       rw [← M.map_comp_apply]
       exact M.congr_map_apply (hX.hom_ext _ _) x)
 
@@ -136,14 +137,14 @@ lemma overSection_ext (M : SheafOfModules.{u} R) {X : C}
   exact congr_arg _ h
 
 noncomputable def overUnitIso [HasBinaryProducts C] (U : C) :
-    (overFunctor R U).obj (unit R) ≅ unit (R.over U) :=
+    unit (R.over U) ≅ (overFunctor R U).obj (unit R) :=
   Iso.refl _
 
 omit [HasSheafify J AddCommGrpCat.{u}]
   [J.WEqualsLocallyBijective AddCommGrpCat.{u}] in
 @[simp]
 lemma unitToPushforwardObjUnit_over [HasBinaryProducts C] (U : C) :
-    unitToPushforwardObjUnit (𝟙 (R.over U)) = (overUnitIso U).inv := by
+    unitToPushforwardObjUnit (𝟙 (R.over U)) = (overUnitIso U).hom := by
   ext X
   rfl
 
@@ -156,7 +157,7 @@ lemma freeHomEquiv_mapFree_over [HasBinaryProducts C]
     [(J.over U).WEqualsLocallyBijective AddCommGrpCat.{u}]
     [PreservesColimitsOfSize.{u, u} (overFunctor R U)] :
     (N.over U).freeHomEquiv
-        ((mapFree (overFunctor R U) (overUnitIso U) I).inv ≫
+        ((mapFreeIso (overFunctor R U) I (overUnitIso U)).hom ≫
           (overFunctor R U).map p) i =
       pushforwardSections (𝟙 (R.over U)) (N.freeHomEquiv p i) := by
   haveI : (overFunctor R U).IsLeftAdjoint := by
@@ -164,8 +165,14 @@ lemma freeHomEquiv_mapFree_over [HasBinaryProducts C]
     infer_instance
   apply (N.over U).unitHomEquiv.symm.injective
   rw [unitHomEquiv_symm_freeHomEquiv_apply]
-  have hp := congrArg (N.over U).unitHomEquiv.symm
-    (pushforwardSections_unitHomEquiv (𝟙 (R.over U)) (ιFree i ≫ p))
+  have hp₀ :
+      pushforwardSections (𝟙 (R.over U))
+          ((N.unitHomEquiv) (ιFree i ≫ p)) =
+        (N.over U).unitHomEquiv
+          (unitToPushforwardObjUnit (𝟙 (R.over U)) ≫
+            (overFunctor R U).map (ιFree i ≫ p)) :=
+    pushforwardSections_unitHomEquiv (𝟙 (R.over U)) (ιFree i ≫ p)
+  have hp := congrArg (N.over U).unitHomEquiv.symm hp₀
   simp only [Equiv.symm_apply_apply] at hp
   symm
   calc
@@ -173,9 +180,9 @@ lemma freeHomEquiv_mapFree_over [HasBinaryProducts C]
         (pushforwardSections (𝟙 (R.over U)) (N.freeHomEquiv p i)) =
         unitToPushforwardObjUnit (𝟙 (R.over U)) ≫
           (overFunctor R U).map (ιFree i ≫ p) := hp
-    _ = ιFree i ≫ (mapFree (overFunctor R U) (overUnitIso U) I).inv ≫
+    _ = ιFree i ≫ (mapFreeIso (overFunctor R U) I (overUnitIso U)).hom ≫
         (overFunctor R U).map p := by
-      rw [ιFree_mapFree_inv_assoc]
+      rw [ιFree_mapFreeIso_hom_assoc]
       rw [← Functor.map_comp]
       simp [unitToPushforwardObjUnit_over, overUnitIso]
 
@@ -201,7 +208,7 @@ lemma localLift_comp {M N : SheafOfModules.{u} R}
     [(J.over a.2.Y).WEqualsLocallyBijective AddCommGrpCat.{u}]
     [PreservesColimitsOfSize.{u, u} (overFunctor R a.2.Y)] :
     localLift f s a ≫ (overFunctor R a.2.Y).map f =
-      (mapFree (overFunctor R a.2.Y) (overUnitIso a.2.Y) I).inv ≫
+      (mapFreeIso (overFunctor R a.2.Y) I (overUnitIso a.2.Y)).hom ≫
         (overFunctor R a.2.Y).map (N.freeHomEquiv.symm s) := by
   haveI : (overFunctor R a.2.Y).IsLeftAdjoint := by
     change (pushforward.{u} (𝟙 (R.over a.2.Y))).IsLeftAdjoint
@@ -212,7 +219,7 @@ lemma localLift_comp {M N : SheafOfModules.{u} R}
       ((M.over a.2.Y).freeHomEquiv (localLift f s a) i) = _
   have hmap :
       (N.over a.2.Y).freeHomEquiv
-          ((mapFree (overFunctor R a.2.Y) (overUnitIso a.2.Y) I).inv ≫
+          ((mapFreeIso (overFunctor R a.2.Y) I (overUnitIso a.2.Y)).hom ≫
             (overFunctor R a.2.Y).map (N.freeHomEquiv.symm s)) i =
         pushforwardSections (𝟙 (R.over a.2.Y)) (s i) := by
     simpa using freeHomEquiv_mapFree_over
@@ -284,7 +291,8 @@ lemma relationMap_presentationOfIsCokernelFree {ι σ : Type u}
     relationMap (presentationOfIsCokernelFree f g H H') = f := by
   change (kernel (generatorsOfIsCokernelFree f g H H').π).freeHomEquiv.symm
       ((kernel (generatorsOfIsCokernelFree f g H H').π).freeHomEquiv
-        (kernel.lift (generatorsOfIsCokernelFree f g H H').π f (by simp [H]))) ≫
+        (kernel.lift (generatorsOfIsCokernelFree f g H H').π f
+          (by simpa only [generatorsOfIsCokernelFree_π] using H))) ≫
       kernel.ι (generatorsOfIsCokernelFree f g H H').π = f
   rw [Equiv.symm_apply_apply, kernel.lift_ι]
 
@@ -296,9 +304,9 @@ lemma relationMap_mapOver [HasBinaryProducts C]
     [(J.over U).WEqualsLocallyBijective AddCommGrpCat.{u}]
     [PreservesColimitsOfSize.{u, u} (overFunctor R U)] :
     relationMap (P.mapOver U) =
-      (mapFree (overFunctor R U) (overUnitIso U) P.relations.I).inv ≫
+      (mapFreeIso (overFunctor R U) P.relations.I (overUnitIso U)).hom ≫
         (overFunctor R U).map (relationMap P) ≫
-        (mapFree (overFunctor R U) (overUnitIso U) P.generators.I).hom := by
+        (mapFreeIso (overFunctor R U) P.generators.I (overUnitIso U)).inv := by
   change relationMap (P.map (overFunctor R U) (overUnitIso U)) = _
   dsimp only [Presentation.map]
   rw [relationMap_presentationOfIsCokernelFree]
@@ -322,8 +330,7 @@ noncomputable def correction
     (hh : h ≫ S.g = P₃.generators.π) :
     free P₃.relations.I ⟶ S.X₁ := by
   letI := hS.mono_f
-  exact hS.fIsKernel.lift
-    (KernelFork.ofι (relationMap P₃ ≫ h) (by simp [hh, relationMap]))
+  exact hS.exact.lift (relationMap P₃ ≫ h) (by simp [hh, relationMap])
 
 @[reassoc]
 lemma correction_comp
@@ -332,9 +339,7 @@ lemma correction_comp
     correction S hS P₃ h hh ≫ S.f = relationMap P₃ ≫ h := by
   letI := hS.mono_f
   dsimp only [correction]
-  simpa using hS.fIsKernel.fac
-    (KernelFork.ofι (relationMap P₃ ≫ h) (by simp [hh, relationMap]))
-    WalkingParallelPair.zero
+  exact hS.exact.lift_f (relationMap P₃ ≫ h) (by simp [hh, relationMap])
 
 noncomputable def extensionGeneratorsMap
     (h : free P₃.generators.I ⟶ S.X₂) :
@@ -368,10 +373,7 @@ noncomputable def extensionRelationRight :
     (by
       have hc : correction S hS P₃ h hh ≫ S.f =
           relationMap P₃ ≫ h := by
-        dsimp only [correction]
-        simpa using hS.fIsKernel.fac
-          (KernelFork.ofι (relationMap P₃ ≫ h) (by simp [hh, relationMap]))
-          WalkingParallelPair.zero
+        exact correction_comp S hS P₃ h hh
       simp only [extensionGeneratorsMap, Preadditive.add_comp, Category.assoc,
         Iso.hom_inv_id_assoc]
       simp only [coprod.inl_desc, coprod.inr_desc]
@@ -397,10 +399,11 @@ lemma epi_extensionGeneratorsMap :
     simpa [extensionGeneratorsMap, coprod.inl_desc] using
       freeMap (R := R) (Sum.inl : P₁.generators.I →
         P₁.generators.I ⊕ P₃.generators.I) ≫= hz
-  let z' := hS.gIsCokernel.desc (CokernelCofork.ofπ z hfz)
+  letI := hS.epi_g
+  let z' := hS.exact.desc z hfz
   have hgz : S.g ≫ z' = z := by
-    simpa [z'] using hS.gIsCokernel.fac (CokernelCofork.ofπ z hfz)
-      WalkingParallelPair.one
+    dsimp only [z']
+    exact hS.exact.g_desc z hfz
   have hhz : h ≫ z = 0 := by
     simpa [extensionGeneratorsMap, coprod.inr_desc] using
       freeMap (R := R) (Sum.inr : P₃.generators.I →
@@ -414,7 +417,7 @@ lemma epi_extensionGeneratorsMap :
       _ = 0 := hhz
   calc
     z = S.g ≫ z' := hgz.symm
-    _ = 0 := by simpa only [comp_zero] using S.g ≫= hz'
+    _ = 0 := by rw [hz', comp_zero]
 
 noncomputable def extensionKernelToRightRelations :
     kernel (extensionGeneratorsMap S P₁ P₃ h) ⟶ kernel P₃.generators.π :=
@@ -502,7 +505,7 @@ noncomputable def extensionKernelOfRightRelationsToLeftRelations :
           kernel.ι s ≫ kernel.ι q ≫
               (freeSumIso (R := R) P₁.generators.I P₃.generators.I).inv ≫
               coprod.desc (P₁.generators.π ≫ S.f) h = 0 := by
-        simpa [q, extensionGeneratorsMap, Category.assoc] using
+        simpa [q, extensionGeneratorsMap, Category.assoc, comp_zero] using
           kernel.ι s ≫= kernel.condition q
       have hl :
           kernel.ι s ≫ kernel.ι q ≫
@@ -521,7 +524,7 @@ noncomputable def extensionKernelOfRightRelationsToLeftRelations :
                   (freeSumIso (R := R) P₁.generators.I P₃.generators.I).inv ≫
                   p₃ ≫ h = 0 := by
           rw [← Preadditive.comp_add, ← Preadditive.comp_add]
-          simpa only [Category.assoc, hdesc] using hq
+          simpa only [Category.assoc, hdesc, Preadditive.comp_add] using hq
         simpa only [hright, add_zero] using hsum
       letI := hS.mono_f
       apply (cancel_mono S.f).1
@@ -628,6 +631,7 @@ lemma epi_extensionRelationsMap :
       _ = 0 := hleft
   have hkz : kernel.ι s ≫ z = 0 := by
     simpa only [s, l, Category.assoc,
+      comp_zero,
       ← extensionKernelOfRightRelationsToLeftRelations_comp S hS P₁ P₃ h hh] using
         extensionKernelOfRightRelationsToLeftRelations S hS P₁ P₃ h hh ≫= hlz
   let z' := Abelian.epiDesc s z hkz
@@ -665,7 +669,8 @@ noncomputable instance extension_isFinite [P₁.IsFinite] [P₃.IsFinite] :
     refine ⟨?_⟩
     change Finite (P₁.generators.I ⊕ P₃.generators.I)
     infer_instance
-  finite_relations := by
+  isFiniteType_relations := by
+    refine ⟨?_⟩
     change Finite (P₁.relations.I ⊕ P₃.relations.I)
     infer_instance
 
@@ -701,36 +706,36 @@ lemma correction_mapOver [HasBinaryProducts C]
     [(J.over U).WEqualsLocallyBijective AddCommGrpCat.{u}]
     [PreservesColimitsOfSize.{u, u} (overFunctor R U)]
     (hhU :
-      ((mapFree (overFunctor R U) (overUnitIso U) P₃.generators.I).inv ≫
+      ((mapFreeIso (overFunctor R U) P₃.generators.I (overUnitIso U)).hom ≫
           (overFunctor R U).map h) ≫
         (S.map (overFunctor R U)).g = (P₃.mapOver U).generators.π) :
-    (mapFree (overFunctor R U) (overUnitIso U) P₃.relations.I).inv ≫
+    (mapFreeIso (overFunctor R U) P₃.relations.I (overUnitIso U)).hom ≫
         (overFunctor R U).map (correction S hS P₃ h hh) =
       correction (S.map (overFunctor R U)) (ShortExact.map_over hS U) (P₃.mapOver U)
-        ((mapFree (overFunctor R U) (overUnitIso U) P₃.generators.I).inv ≫
+        ((mapFreeIso (overFunctor R U) P₃.generators.I (overUnitIso U)).hom ≫
           (overFunctor R U).map h) hhU := by
   haveI : Mono (S.map (overFunctor R U)).f :=
     (ShortExact.map_over hS U).mono_f
   apply (cancel_mono (S.map (overFunctor R U)).f).1
   have hleft :
-      ((mapFree (overFunctor R U) (overUnitIso U) P₃.relations.I).inv ≫
+      ((mapFreeIso (overFunctor R U) P₃.relations.I (overUnitIso U)).hom ≫
             (overFunctor R U).map (correction S hS P₃ h hh)) ≫
           (S.map (overFunctor R U)).f =
         relationMap (P₃.mapOver U) ≫
-          ((mapFree (overFunctor R U) (overUnitIso U) P₃.generators.I).inv ≫
+          ((mapFreeIso (overFunctor R U) P₃.generators.I (overUnitIso U)).hom ≫
             (overFunctor R U).map h) := by
-    dsimp only [ShortComplex.map_f]
+    rw [ShortComplex.map_f]
     rw [Category.assoc]
-    change (mapFree (overFunctor R U) (overUnitIso U) P₃.relations.I).inv ≫
+    change (mapFreeIso (overFunctor R U) P₃.relations.I (overUnitIso U)).hom ≫
         ((overFunctor R U).map (correction S hS P₃ h hh) ≫
           (overFunctor R U).map S.f) = _
     rw [← Functor.map_comp, correction_comp S hS P₃ h hh]
     rw [relationMap_mapOver]
-    let e := mapFree (overFunctor R U) (overUnitIso U) P₃.generators.I
-    let a := (mapFree (overFunctor R U) (overUnitIso U) P₃.relations.I).inv ≫
+    let e := mapFreeIso (overFunctor R U) P₃.generators.I (overUnitIso U)
+    let a := (mapFreeIso (overFunctor R U) P₃.relations.I (overUnitIso U)).hom ≫
       (overFunctor R U).map (relationMap P₃)
     change a ≫ (overFunctor R U).map h =
-      (a ≫ e.hom) ≫ e.inv ≫ (overFunctor R U).map h
+      (a ≫ e.inv) ≫ e.hom ≫ (overFunctor R U).map h
     simp [Category.assoc]
   exact hleft.trans <| (correction_comp (S.map (overFunctor R U))
     (ShortExact.map_over hS U) (P₃.mapOver U) _ hhU).symm
@@ -747,11 +752,11 @@ lemma mapOver_lift_comp [HasBinaryProducts C]
     [HasSheafify (J.over U) AddCommGrpCat.{u}]
     [(J.over U).WEqualsLocallyBijective AddCommGrpCat.{u}]
     [PreservesColimitsOfSize.{u, u} (overFunctor R U)] :
-    ((mapFree (overFunctor R U) (overUnitIso U) P₃.generators.I).inv ≫
+    ((mapFreeIso (overFunctor R U) P₃.generators.I (overUnitIso U)).hom ≫
         (overFunctor R U).map h) ≫ (S.map (overFunctor R U)).g =
       (P₃.mapOver U).generators.π := by
   rw [Category.assoc]
-  change (mapFree (overFunctor R U) (overUnitIso U) P₃.generators.I).inv ≫
+  change (mapFreeIso (overFunctor R U) P₃.generators.I (overUnitIso U)).hom ≫
     ((overFunctor R U).map h ≫ (overFunctor R U).map S.g) = _
   rw [← Functor.map_comp, hh]
   exact (Presentation.map_π_eq P₃ (overFunctor R U) (overUnitIso U)).symm
@@ -780,21 +785,21 @@ lemma localLift_mapOver_generators_comp [HasBinaryProducts C]
     [(J.over a.2.Y).WEqualsLocallyBijective AddCommGrpCat.{u}]
     [PreservesColimitsOfSize.{u, u} (overFunctor R a.2.Y)] :
     (localLift P.generators.π s a ≫
-        (mapFree (overFunctor R a.2.Y) (overUnitIso a.2.Y)
-          P.generators.I).hom) ≫
+        (mapFreeIso (overFunctor R a.2.Y) P.generators.I
+          (overUnitIso a.2.Y)).inv) ≫
       (P.mapOver a.2.Y).generators.π =
-        (mapFree (overFunctor R a.2.Y) (overUnitIso a.2.Y) I).inv ≫
+        (mapFreeIso (overFunctor R a.2.Y) I (overUnitIso a.2.Y)).hom ≫
           (overFunctor R a.2.Y).map (M.freeHomEquiv.symm s) := by
   have h₁ :
       (localLift P.generators.π s a ≫
-          (mapFree (overFunctor R a.2.Y) (overUnitIso a.2.Y)
-            P.generators.I).hom) ≫
+          (mapFreeIso (overFunctor R a.2.Y) P.generators.I
+            (overUnitIso a.2.Y)).inv) ≫
         (P.mapOver a.2.Y).generators.π =
       localLift P.generators.π s a ≫
         (overFunctor R a.2.Y).map P.generators.π := by
     change (localLift P.generators.π s a ≫
-        (mapFree (overFunctor R a.2.Y) (overUnitIso a.2.Y)
-          P.generators.I).hom) ≫
+        (mapFreeIso (overFunctor R a.2.Y) P.generators.I
+          (overUnitIso a.2.Y)).inv) ≫
       (P.map (overFunctor R a.2.Y) (overUnitIso a.2.Y)).generators.π = _
     rw [Presentation.map_π_eq]
     simp
@@ -847,20 +852,20 @@ theorem IsFinitePresentation.middle_of_presentations_of_generatorLift
   let P₁ᵥ := P₁.mapOver b.2.Y
   let P₃ᵥ := P₃.mapOver b.2.Y
   let hᵥ : free (R := R.over b.2.Y) P₃.generators.I ⟶ Sᵥ.X₂ :=
-    (mapFree (overFunctor R b.2.Y) (overUnitIso b.2.Y) P₃.generators.I).inv ≫
+    (mapFreeIso (overFunctor R b.2.Y) P₃.generators.I (overUnitIso b.2.Y)).hom ≫
       (overFunctor R b.2.Y).map h
   have hhᵥ : hᵥ ≫ Sᵥ.g = P₃ᵥ.generators.π := by
     exact mapOver_lift_comp P₃ h hh b.2.Y
   let k : free (R := R.over b.2.Y) P₃.relations.I ⟶
       free (R := R.over b.2.Y) P₁.generators.I :=
     localLift P₁.generators.π (S.X₁.freeHomEquiv c) b ≫
-      (mapFree (overFunctor R b.2.Y) (overUnitIso b.2.Y) P₁.generators.I).hom
+      (mapFreeIso (overFunctor R b.2.Y) P₁.generators.I (overUnitIso b.2.Y)).inv
   have hk : k ≫ P₁ᵥ.generators.π =
       Presentation.correction Sᵥ hSᵥ P₃ᵥ hᵥ hhᵥ := by
     have hk₀ := localLift_mapOver_generators_comp P₁ (S.X₁.freeHomEquiv c) b
     have hk₁ : k ≫ P₁ᵥ.generators.π =
-        (mapFree (overFunctor R b.2.Y) (overUnitIso b.2.Y)
-            P₃.relations.I).inv ≫ (overFunctor R b.2.Y).map c := by
+        (mapFreeIso (overFunctor R b.2.Y) P₃.relations.I
+            (overUnitIso b.2.Y)).hom ≫ (overFunctor R b.2.Y).map c := by
       simpa only [k, P₁ᵥ, Equiv.symm_apply_apply] using hk₀
     exact hk₁.trans <|
       Presentation.correction_mapOver hS P₃ h hh b.2.Y hhᵥ
@@ -871,7 +876,7 @@ theorem IsFinitePresentation.middle_of_presentations_of_generatorLift
     · refine ⟨?_⟩
       change Finite (P₁.generators.I ⊕ P₃.generators.I)
       infer_instance
-    ·
+    · refine ⟨?_⟩
       change Finite (P₁.relations.I ⊕ P₃.relations.I)
       infer_instance
   exact IsFinitePresentation.of_presentation P

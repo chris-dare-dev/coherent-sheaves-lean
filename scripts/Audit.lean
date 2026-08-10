@@ -161,14 +161,8 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms Scheme.Hom.opensRangeModulesEquivalenceInverseUnitIso
 #print axioms Scheme.Hom.restrictPresentation
 
--- Layer B stage 1: Hartshorne II.5.1. Presentations on a basic-open cover supply uniform
--- exponents for both localisation clauses; the sheaf axiom glues the normalized lifts.
-#print axioms IsLocalizedModule.restrictScalars_algebraMapSubmonoid
-#print axioms Scheme.Modules.basicOpenRestrictionOver
-#print axioms Scheme.Modules.isLocalizedModule_basicOpenRestrictionOver_of_presentation
-#print axioms Scheme.Modules.exists_power_smul_eq_of_basicOpenRestriction_eq_of_cover
-#print axioms Scheme.Modules.exists_power_smul_eq_basicOpenRestriction_of_cover
-#print axioms Scheme.Modules.isLocalizedModule_basicOpenRestriction_of_cover
+-- Layer B stage 1: Mathlib v4.32 provides Hartshorne II.5.1 upstream; retain the
+-- compatibility exports consumed by the affine comparison layer.
 #print axioms Scheme.Modules.isLocalizedModule_basicOpenRestriction_of_isQuasicoherent
 #print axioms Scheme.Modules.isIso_fromTildeΓ_of_isQuasicoherent
 
@@ -176,7 +170,6 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 -- generators and presentations are transported to affine basic opens, where the comparison
 -- turns them into finite modules; localisation patching then returns to `Spec R`.
 #print axioms SheafOfModules.GeneratingSections.map
-#print axioms SheafOfModules.GeneratingSections.isFiniteType_map
 #print axioms SheafOfModules.GeneratingSections.over
 #print axioms SheafOfModules.GeneratingSections.isFiniteType_over
 #print axioms Scheme.Modules.basicOpenSpecMap

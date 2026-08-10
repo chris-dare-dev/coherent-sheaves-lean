@@ -45,7 +45,9 @@ instance post_isCocontinuous :
       apply (Sieve.overEquiv_iff (Y := Over.mk (F.map U.hom)) S (F.map g)).mpr
       change S b
       change S a at hg
-      let p : B ⟶ (Over.post F).obj A := Over.homMk (𝟙 _) (by simp [A, B])
+      let p : B ⟶ (Over.post F).obj A := Over.homMk (𝟙 _) (by
+        change 𝟙 _ ≫ F.map (g ≫ U.hom) = F.map g ≫ F.map U.hom
+        simpa only [Category.id_comp] using F.map_comp g U.hom)
       have hp := S.downward_closed hg p
       rw [show p ≫ a = b by ext; exact Category.id_comp _] at hp
       exact hp
@@ -54,7 +56,9 @@ instance post_isCocontinuous :
         (Sieve.overEquiv_iff (Y := Over.mk (F.map U.hom)) S (F.map g)).mp hg
       change S b at hg
       change S a
-      let p : (Over.post F).obj A ⟶ B := Over.homMk (𝟙 _) (by simp [A, B])
+      let p : (Over.post F).obj A ⟶ B := Over.homMk (𝟙 _) (by
+        change 𝟙 _ ≫ F.map g ≫ F.map U.hom = F.map (g ≫ U.hom)
+        simpa only [Category.id_comp] using (F.map_comp g U.hom).symm)
       have hp := S.downward_closed hg p
       rw [show p ≫ b = a by ext; exact Category.id_comp _] at hp
       exact hp
@@ -65,11 +69,6 @@ namespace SheafOfModules
 
 variable {C : Type u} [Category.{u} C] {J : GrothendieckTopology C}
   (R : Sheaf J RingCat.{u}) (U : C)
-
-/-- Restriction of sheaves of modules to the slice site, as a functor. -/
-noncomputable def overFunctor :
-    SheafOfModules.{u} R ⥤ SheafOfModules.{u} (R.over U) :=
-  pushforward (𝟙 (R.over U))
 
 @[simp]
 lemma overFunctor_obj (M : SheafOfModules.{u} R) :
@@ -336,7 +335,7 @@ noncomputable def opensRangeOverModulesEquivalenceInverseUnitIso
     have h : Y.presheaf.map (f.opensFunctor.op.map g') ≫
         (f.appIso V.unop.left).hom =
         (f.appIso U.unop.left).hom ≫ X.presheaf.map g' := by
-      simp [Scheme.Hom.appIso_hom', g']
+      exact f.appIso_hom_naturality g'
     ext x
     exact congr($(h) x)
 
@@ -458,7 +457,7 @@ noncomputable def opensRangeModulesEquivalenceInverseUnitIso :
     have h : Y.presheaf.map (f.opensFunctor.op.map g) ≫
         (f.appIso V.unop).hom =
         (f.appIso U.unop).hom ≫ X.presheaf.map g := by
-      simp [Scheme.Hom.appIso_hom']
+      exact f.appIso_hom_naturality g
     ext x
     exact congr($(h) x)
 
@@ -468,7 +467,7 @@ noncomputable def restrictPresentation (M : Y.Modules)
     (P : (M.over f.opensRange).Presentation) :
     (M.restrict f).Presentation :=
   P.map f.opensRangeModulesEquivalence.inverse
-    f.opensRangeModulesEquivalenceInverseUnitIso
+    f.opensRangeModulesEquivalenceInverseUnitIso.symm
 
 /-- Restriction to the slice over the range, transported back across
 `opensRangeModulesEquivalence`, agrees with scheme-level restriction. -/
@@ -494,13 +493,15 @@ noncomputable def restrictQuasicoherentData (M : Y.Modules)
   coversTop := GrothendieckTopology.CoversTop.map_equivalence q.coversTop
     f.opensRangeEquivalence f.opensRangeEquivalence_functor_coverPreserving
   presentation i :=
-    SheafOfModules.Presentation.of_isIso.{u, u, u}
+    SheafOfModules.Presentation.ofIsIso.{u, u, u}
       (σ := (q.presentation i).map
         (f.opensRangeOverModulesEquivalence (q.X i)).inverse
-        (f.opensRangeOverModulesEquivalenceInverseUnitIso (q.X i)))
+        (f.opensRangeOverModulesEquivalenceInverseUnitIso (q.X i)).symm)
       (f.restrictOverIso M (q.X i)).hom
 
--- Instance search only; the elaborator itself stays within the default budget here.
+-- The mapped index witnesses require the same expensive iterated-slice identifications as the
+-- data itself on Mathlib v4.32.
+set_option maxHeartbeats 1600000 in
 set_option synthInstance.maxHeartbeats 400000 in
 /-- Transporting finite local presentation data from the range slice to the source preserves
 finiteness. -/
@@ -515,18 +516,18 @@ instance restrictQuasicoherentData_isFinitePresentation (M : Y.Modules)
     let hW := (inferInstance : ∀ U : X.Opens,
       ((Opens.grothendieckTopology X).over U).WEqualsLocallyBijective
         AddCommGrpCat.{u})
-    let hComp := (inferInstance : ∀ U : X.Opens,
-      ((Opens.grothendieckTopology X).over U).HasSheafCompose
-        (forget₂ RingCat.{u} AddCommGrpCat.{u}))
     apply @SheafOfModules.Presentation.IsFinite.mk (Over U) _
       ((Opens.grothendieckTopology X).over U) (X.ringCatSheaf.over U)
-      (hWeak U) (hW U) (hComp U)
+      (hWeak U) (hW U)
     · apply @SheafOfModules.GeneratingSections.IsFiniteType.mk (Over U) _
         ((Opens.grothendieckTopology X).over U) (X.ringCatSheaf.over U)
-        (hWeak U) (hW U) (hComp U)
+        (hWeak U) (hW U)
       change Finite (q.presentation i).generators.I
       infer_instance
-    · change Finite (q.presentation i).relations.I
+    · apply @SheafOfModules.GeneratingSections.IsFiniteType.mk (Over U) _
+        ((Opens.grothendieckTopology X).over U) (X.ringCatSheaf.over U)
+        (hWeak U) (hW U)
+      change Finite (q.presentation i).relations.I
       infer_instance
 
 /-- Finite presentation on the range slice implies finite presentation after scheme-level
@@ -566,20 +567,26 @@ noncomputable def presentationOverOfEq (M : Y.Modules) (W : Over f.opensRange) (
     (P : ((M.restrict f).over U).Presentation) :
     ((M.over f.opensRange).over W).Presentation := by
   subst h
-  exact SheafOfModules.Presentation.of_isIso.{u, u, u}
+  exact SheafOfModules.Presentation.ofIsIso.{u, u, u}
     (σ := P.map (f.opensRangeOverModulesEquivalence W).functor
-      (f.opensRangeOverModulesEquivalenceUnitIso W))
+      (f.opensRangeOverModulesEquivalenceUnitIso W).symm)
     (f.restrictOverIsoForward M W).hom
 
 /-- The transported presentation is finite when the original is: neither `Presentation.map` nor
-`Presentation.of_isIso` touches the generator and relation index types. -/
+`Presentation.ofIsIso` touches the generator and relation index types. -/
 instance presentationOverOfEq_isFinite (M : Y.Modules) (W : Over f.opensRange) (U : X.Opens)
     (h : f.opensRangeEquivalence.functor.obj W = U)
     (P : ((M.restrict f).over U).Presentation) [P.IsFinite] :
     (f.presentationOverOfEq M W U h P).IsFinite := by
   subst h
   dsimp only [presentationOverOfEq]
-  infer_instance
+  refine ⟨?_, ?_⟩
+  · refine ⟨?_⟩
+    change Finite P.generators.I
+    infer_instance
+  · refine ⟨?_⟩
+    change Finite P.relations.I
+    infer_instance
 
 /-- Transport local presentation data for the scheme-level restriction back to local
 presentation data on the slice over the range. -/
