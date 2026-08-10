@@ -1,0 +1,261 @@
+/-
+Copyright (c) 2026 Chris Dare. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+-/
+import Mathlib.Algebra.Category.ModuleCat.Presheaf.Monoidal
+import Mathlib.Algebra.Category.ModuleCat.Presheaf.Sheafification
+import Mathlib.Algebra.Category.ModuleCat.Sheaf.LocallyFree
+import Mathlib.AlgebraicGeometry.Modules.Sheaf
+import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
+import Mathlib.CategoryTheory.Skeletal
+
+/-!
+# Invertible sheaves and the sheafified tensor product
+
+This file begins the scheme-level Picard construction missing from Mathlib v4.32.1.
+
+It defines an invertible sheaf intrinsically as a sheaf which is locally free of rank one,
+using Mathlib's `SheafOfModules.LocalGeneratorsData`. The property is invariant under
+isomorphism, implies upstream local freeness, and contains the structure sheaf.
+
+For a scheme, `Scheme.Modules.tensorObj M N` is the associated sheaf of the objectwise tensor
+product of the underlying presheaves. The unit, symmetry, and the associator before iterated
+sheafification are exported. `Scheme.Modules.PicardClass X` is the set of isomorphism classes of
+invertible sheaves, with its distinguished structure-sheaf class.
+
+The remaining theorem required to install the commutative group structure is that tensoring the
+unit of module sheafification with a locally free rank-one sheaf is again inverted by
+sheafification. That is the precise coherence boundary between the raw construction here and
+the final `Pic X` group; no monoidal or group law is postulated in the meantime.
+-/
+
+open CategoryTheory Limits MonoidalCategory BraidedCategory
+
+namespace SheafOfModules
+
+universe u v u₁ v₁
+
+variable {C : Type u₁} [Category.{v₁} C] {J : GrothendieckTopology C}
+  {R : Sheaf J RingCat.{u}}
+  [HasWeakSheafify J AddCommGrpCat.{u}]
+  [J.WEqualsLocallyBijective AddCommGrpCat.{u}]
+
+noncomputable section
+
+/-- A free sheaf on one generator is the unit sheaf. -/
+noncomputable def freePUnitIsoUnit : free (R := R) PUnit ≅ unit R := by
+  let e : free (R := R) PUnit ⟶ unit R :=
+    (freeHomEquiv (unit R)).symm
+      (fun _ => (unit R).unitHomEquiv (𝟙 (unit R)))
+  have h : ιFree (R := R) PUnit.unit ≫ e = 𝟙 (unit R) := by
+    rw [← unitHomEquiv_symm_freeHomEquiv_apply]
+    simp only [e, Equiv.apply_symm_apply]
+    exact (unit R).unitHomEquiv.symm_apply_apply _
+  exact
+    { hom := e
+      inv := ιFree PUnit.unit
+      hom_inv_id := by
+        apply (freeHomEquiv (free (R := R) PUnit)).injective
+        funext i
+        cases i
+        apply (free (R := R) PUnit).unitHomEquiv.symm.injective
+        rw [unitHomEquiv_symm_freeHomEquiv_apply,
+          unitHomEquiv_symm_freeHomEquiv_apply]
+        have hh := reassoc_of% h
+        exact hh (ιFree (R := R) PUnit.unit)
+      inv_hom_id := h }
+
+section RankOne
+
+variable [∀ X, HasWeakSheafify (J.over X) AddCommGrpCat.{u}]
+  [∀ X, (J.over X).WEqualsLocallyBijective AddCommGrpCat.{u}]
+
+namespace LocalGeneratorsData
+
+/-- Local generator data has rank one when every local basis index is a singleton. -/
+def IsRankOne {M : SheafOfModules.{u} R} (q : M.LocalGeneratorsData) : Prop :=
+  ∀ i, Nonempty (q.generators i).I ∧ Subsingleton (q.generators i).I
+
+/-- Transport local generator data across an isomorphism. -/
+noncomputable def ofIso {M N : SheafOfModules.{u} R}
+    (q : M.LocalGeneratorsData) (e : M ≅ N) : N.LocalGeneratorsData where
+  I := q.I
+  X := q.X
+  coversTop := q.coversTop
+  generators i := (GeneratingSections.equivOfIso
+    ((overFunctor R (q.X i)).mapIso e)) (q.generators i)
+
+instance {M N : SheafOfModules.{u} R} (q : M.LocalGeneratorsData)
+    [q.IsLocallyFreeData] (e : M ≅ N) : (q.ofIso e).IsLocallyFreeData where
+  isIso i := by
+    change q.I at i
+    change IsIso ((q.generators i).ofEpi
+      ((overFunctor R (q.X i)).mapIso e).hom).π
+    rw [GeneratingSections.ofEpi_π]
+    haveI : IsIso (q.generators i).π :=
+      LocalGeneratorsData.IsLocallyFreeData.isIso i
+    haveI : IsIso (((overFunctor R (q.X i)).mapIso e).hom) := by
+      infer_instance
+    exact IsIso.comp_isIso'
+      (LocalGeneratorsData.IsLocallyFreeData.isIso i) inferInstance
+
+omit [HasWeakSheafify J AddCommGrpCat.{u}]
+  [J.WEqualsLocallyBijective AddCommGrpCat.{u}] in
+lemma isRankOne_ofIso {M N : SheafOfModules.{u} R}
+    (q : M.LocalGeneratorsData) (e : M ≅ N) (h : q.IsRankOne) :
+    (q.ofIso e).IsRankOne := by
+  intro i
+  simpa [ofIso, GeneratingSections.equivOfIso] using h i
+
+end LocalGeneratorsData
+
+/-- An invertible sheaf is locally free of rank one. -/
+class IsInvertible (M : SheafOfModules.{u} R) : Prop where
+  exists_rankOneData : ∃ q : LocalGeneratorsData.{u₁} M,
+    q.IsLocallyFreeData ∧ q.IsRankOne
+
+instance (priority := 90) (M : SheafOfModules.{u} R) [h : M.IsInvertible] :
+    M.IsLocallyFree where
+  exists_isLocallyFreeData :=
+    ⟨h.exists_rankOneData.choose, h.exists_rankOneData.choose_spec.1⟩
+
+omit [HasWeakSheafify J AddCommGrpCat.{u}]
+  [J.WEqualsLocallyBijective AddCommGrpCat.{u}] in
+lemma IsInvertible.ofIso {M N : SheafOfModules.{u} R} [M.IsInvertible]
+    (e : M ≅ N) : N.IsInvertible := by
+  obtain ⟨q, hq, hrank⟩ := IsInvertible.exists_rankOneData (M := M)
+  letI : q.IsLocallyFreeData := hq
+  exact ⟨q.ofIso e, inferInstance, q.isRankOne_ofIso e hrank⟩
+
+variable [HasSheafify J AddCommGrpCat.{u}] [HasBinaryProducts C]
+  [∀ X, HasSheafify (J.over X) AddCommGrpCat.{u}]
+
+instance : (free (R := R) PUnit).IsInvertible where
+  exists_rankOneData := by
+    let q := (free.generatingSections (R := R) PUnit).localGeneratorsData
+    refine ⟨q, inferInstance, ?_⟩
+    intro i
+    change Nonempty PUnit ∧ Subsingleton PUnit
+    exact ⟨inferInstance, inferInstance⟩
+
+instance : (unit R).IsInvertible :=
+  IsInvertible.ofIso freePUnitIsoUnit
+
+end RankOne
+
+end
+
+
+end SheafOfModules
+
+namespace AlgebraicGeometry.Scheme.Modules
+
+universe u
+
+variable {X : Scheme.{u}}
+
+noncomputable section
+
+-- Avoid the reducible-transparency instance diamond between `Scheme.Modules` and its defining
+-- `SheafOfModules` category while constructing the sheafified tensor product.
+local instance : Category X.Modules :=
+  inferInstanceAs (Category (SheafOfModules X.ringCatSheaf))
+
+-- The structure presheaf is commutative, even though `X.Modules` deliberately exposes its
+-- `RingCat` forgetful image.
+local instance : MonoidalCategory X.PresheafOfModules :=
+  PresheafOfModules.monoidalCategory (R := X.presheaf)
+
+local instance : SymmetricCategory X.PresheafOfModules :=
+  PresheafOfModules.symmetricCategory (R := X.presheaf)
+
+private abbrev associatedSheaf (X : Scheme.{u}) :=
+  PresheafOfModules.sheafification (𝟙 X.ringCatSheaf.obj)
+
+/-- The sheafification of the objectwise tensor product of two sheaves of modules. -/
+noncomputable def tensorObj (M N : X.Modules) : X.Modules :=
+  (associatedSheaf X).obj
+    ((toPresheafOfModules X).obj M ⊗ (toPresheafOfModules X).obj N)
+
+/-- Tensor two morphisms before sheafification. -/
+noncomputable def tensorHom {M M' N N' : X.Modules} (f : M ⟶ M') (g : N ⟶ N') :
+    tensorObj M N ⟶ tensorObj M' N' :=
+  (associatedSheaf X).map
+    ((toPresheafOfModules X).map f ⊗ₘ (toPresheafOfModules X).map g)
+
+/-- Sheafification identifies tensoring with the structure sheaf on the left. -/
+noncomputable def tensorUnitLeftIso (M : X.Modules) :
+    tensorObj (.unit X.ringCatSheaf) M ≅ M :=
+  (associatedSheaf X).mapIso (λ_ ((toPresheafOfModules X).obj M)) ≪≫
+    (asIso (PresheafOfModules.sheafificationAdjunction
+      (𝟙 X.ringCatSheaf.obj)).counit).app M
+
+/-- Sheafification identifies tensoring with the structure sheaf on the right. -/
+noncomputable def tensorUnitRightIso (M : X.Modules) :
+    tensorObj M (.unit X.ringCatSheaf) ≅ M :=
+  (associatedSheaf X).mapIso (ρ_ ((toPresheafOfModules X).obj M)) ≪≫
+    (asIso (PresheafOfModules.sheafificationAdjunction
+      (𝟙 X.ringCatSheaf.obj)).counit).app M
+
+/-- The symmetry of the sheafified tensor product. -/
+noncomputable def tensorCommIso (M N : X.Modules) :
+    tensorObj M N ≅ tensorObj N M :=
+  (associatedSheaf X).mapIso
+    (β_ ((toPresheafOfModules X).obj M) ((toPresheafOfModules X).obj N))
+
+/-- Associativity before iterated sheafification. -/
+noncomputable def tensorTripleAssocIso (M N P : X.Modules) :
+    (associatedSheaf X).obj
+        (((toPresheafOfModules X).obj M ⊗ (toPresheafOfModules X).obj N) ⊗
+          (toPresheafOfModules X).obj P) ≅
+      (associatedSheaf X).obj
+        ((toPresheafOfModules X).obj M ⊗
+          ((toPresheafOfModules X).obj N ⊗ (toPresheafOfModules X).obj P)) :=
+  (associatedSheaf X).mapIso
+    (α_ ((toPresheafOfModules X).obj M) ((toPresheafOfModules X).obj N)
+      ((toPresheafOfModules X).obj P))
+
+/-- The object property of being an invertible sheaf. -/
+def isInvertible (X : Scheme.{u}) : ObjectProperty X.Modules :=
+  fun M => SheafOfModules.IsInvertible.{u, u, u}
+    (show SheafOfModules X.ringCatSheaf from M)
+
+/-- The category of invertible sheaves on a scheme. -/
+abbrev InvertibleSheaf (X : Scheme.{u}) := (isInvertible X).FullSubcategory
+
+/-- Isomorphism classes of invertible sheaves, before the tensor group law is installed. -/
+def PicardClass (X : Scheme.{u}) := Skeleton (InvertibleSheaf X)
+
+namespace PicardClass
+
+/-- The isomorphism class of an invertible sheaf. -/
+noncomputable def mk (M : X.Modules)
+    [h : SheafOfModules.IsInvertible.{u, u, u}
+      (show SheafOfModules X.ringCatSheaf from M)] :
+    PicardClass X :=
+  ⟦(⟨M, h⟩ : InvertibleSheaf X)⟧
+
+theorem mk_eq_mk_iff (M N : X.Modules)
+    [SheafOfModules.IsInvertible.{u, u, u}
+      (show SheafOfModules X.ringCatSheaf from M)]
+    [SheafOfModules.IsInvertible.{u, u, u}
+      (show SheafOfModules X.ringCatSheaf from N)] :
+    mk M = mk N ↔ Nonempty (M ≅ N) := by
+  constructor
+  · intro h
+    exact ⟨(isInvertible X).ι.mapIso (Quotient.eq.mp h).some⟩
+  · rintro ⟨e⟩
+    exact Quotient.sound ⟨ObjectProperty.isoMk (isInvertible X) e⟩
+
+/-- The distinguished class of the structure sheaf. -/
+noncomputable def one (X : Scheme.{u}) : PicardClass X := by
+  letI : SheafOfModules.IsInvertible.{u, u, u}
+      (SheafOfModules.unit X.ringCatSheaf) :=
+    SheafOfModules.instIsInvertibleUnit.{u, u, u}
+  exact mk (.unit X.ringCatSheaf)
+
+end PicardClass
+
+end
+
+end AlgebraicGeometry.Scheme.Modules
