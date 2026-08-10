@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 -/
 import CohLean.AlgebraicGeometry.Variety
 import CohLean.Coh.Abelian
+import CohLean.Cohomology.EulerCharacteristic
 import CohLean.Numerical.CharacteristicClasses
 import CohLean.Numerical.Defs
 
@@ -89,11 +90,12 @@ structure NumericalData (X : Variety k) (n : ℕ) (A : Type u) (N : Type v)
     ChernClassData.toddComponent tangentChernClasses i ∈ piece (n := n) i
   /-- Euler characteristic on numerical classes. -/
   chi : N →+ ℤ
-  /-- Euler characteristic constructed geometrically for coherent sheaves. -/
-  coherentEulerCharacteristic : Coh X.toScheme → ℤ
-  /-- Geometric Euler characteristic descends through the numerical class map. -/
+  /-- Finite-dimensional derived cohomology from which the geometric Euler characteristic is
+  constructed. -/
+  finiteCohomology : Cohomology.FiniteCohomology X
+  /-- The cohomological Euler characteristic descends through the numerical class map. -/
   coherentEulerCharacteristic_classOf : ∀ F : Coh X.toScheme,
-    chi (classOf F) = coherentEulerCharacteristic F
+    chi (classOf F) = finiteCohomology.eulerCharacteristic F
   /-- Hirzebruch--Riemann--Roch for the components computed from Chern-class data. -/
   hirzebruch_riemannRoch : ∀ E : N,
     (chi E : ℚ) = degree (n := n)
@@ -106,6 +108,12 @@ namespace NumericalData
 
 variable {X : Variety k} {n : ℕ} {A : Type u} {N : Type v}
 variable [CommRing A] [Algebra ℚ A] [AddCommGroup N] [NumericalRing n A]
+
+/-- The geometric Euler characteristic used by a numerical realization, constructed from its
+finite-dimensional derived cohomology. -/
+noncomputable abbrev coherentEulerCharacteristic (D : NumericalData X n A N) :
+    Coh X.toScheme → ℤ :=
+  D.finiteCohomology.eulerCharacteristic
 
 /-- Construct the numerical variety certified by geometric `NumericalData`.
 
@@ -214,14 +222,16 @@ theorem coherentChernCharacter_shortExact (D : NumericalData X n A N)
 /-- Geometric Euler characteristic is invariant under isomorphism of coherent sheaves. -/
 theorem coherentEulerCharacteristic_iso (D : NumericalData X n A N) {F G : Coh X.toScheme}
     (e : F ≅ G) : D.coherentEulerCharacteristic F = D.coherentEulerCharacteristic G := by
-  rw [← D.coherentEulerCharacteristic_classOf, ← D.coherentEulerCharacteristic_classOf,
-    D.classOf_iso e]
+  exact D.finiteCohomology.eulerCharacteristic_iso e
 
 /-- Geometric Euler characteristic is additive in short exact sequences. -/
 theorem coherentEulerCharacteristic_shortExact (D : NumericalData X n A N)
     (S : ShortComplex (Coh X.toScheme)) (hS : S.ShortExact) :
     D.coherentEulerCharacteristic S.X₂ =
       D.coherentEulerCharacteristic S.X₁ + D.coherentEulerCharacteristic S.X₃ := by
+  change D.finiteCohomology.eulerCharacteristic S.X₂ =
+    D.finiteCohomology.eulerCharacteristic S.X₁ +
+      D.finiteCohomology.eulerCharacteristic S.X₃
   rw [← D.coherentEulerCharacteristic_classOf, ← D.coherentEulerCharacteristic_classOf,
     ← D.coherentEulerCharacteristic_classOf, D.classOf_shortExact S hS, map_add]
 

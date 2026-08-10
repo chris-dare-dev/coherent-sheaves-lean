@@ -39,9 +39,11 @@ supplies a rank-one/invertible-sheaf predicate, the sheafified tensor product wi
 monoidal coherence, and the resulting scheme-level `Pic X` group. Cartier divisors are present;
 their associated invertible sheaves `O_X(D)` are constructed from local equations, with
 `O_X(D + E) ≅ O_X(D) ⊗ O_X(E)`, `O_X(-D)` as tensor inverse, and the induced class-group
-homomorphism to `Pic X`. Effective Cartier divisors, ampleness, higher direct images,
-finiteness of cohomology, `χ(F)`, Serre duality, Chern classes, intersection numbers, and
-Riemann–Roch are not yet present.
+homomorphism to `Pic X`. Effective Cartier divisors, ampleness, higher direct images, Serre
+finiteness, Serre duality, geometric Chern classes, intersection numbers, and geometric
+Riemann–Roch are not yet present. The cohomological Euler characteristic `χ(F)` is now defined
+relative to explicit finite-dimensionality and eventual-vanishing data, so it becomes
+unconditional without an API change when Serre finiteness is proved.
 
 ## Architecture
 
@@ -63,7 +65,9 @@ states exactly that much, as a typeclass, with no schemes anywhere:
 `AlgebraicGeometry.Variety.NumericalData` connects this interface back to geometry: coherent
 sheaves map additively through short exact sequences to numerical classes, while `chComp` and
 `toddComp` are computed from geometric Chern-class data by universal formulas through
-codimension four.
+codimension four. Its Euler characteristic is no longer an arbitrary geometric function:
+`Cohomology.FiniteCohomology` lifts the actual derived sheaf-cohomology functors to
+finite-dimensional vector spaces and constructs the alternating sum.
 
 This unblocks downstream stability work immediately, and is falsifiable: the axioms are
 visible in the type, and three models exist — a point, a K3 surface of degree `H² = 2d`, and

@@ -109,7 +109,7 @@ depend on it. The cheapest instance would be `Examples/RankOneSurface`: `H ↦ �
 |---|---|---|---|
 | B1 | Coherent category, locality, affine comparison, closure, abelian/exact inclusion | 2–3 months | **done** ([milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/4)) |
 | B2 | Invertible sheaves, `Pic X`, Cartier divisors, `O_X(D)`, determinant, effective-divisor sequence | 2–3 months | [milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/7); #21–#24 and #79 done; #25 and #36 remain |
-| B3 | Affine vanishing, cohomology boundedness, geometric `χ`, additivity | 4–6 months | [milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/5); explicit affine Čech vanishing done; #27 in progress, #28 blocked on #27; finiteness deferred, see below |
+| B3 | Affine vanishing, cohomology boundedness, geometric `χ`, additivity | 4–6 months | [milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/5); explicit affine Čech vanishing and comparison infrastructure done; conditional geometric `χ` (#31) done; Serre finiteness deferred and linear additivity (#32) remains |
 | B4 | Numerical polynomials, Snapper, intersections, numerical Chern data | ~3 months | [milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/9); #33 ready |
 | B5 | Canonical sheaf, Serre duality, surface RR, dévissage, Layer A discharge | ~6 months | [milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/8); blocked on B2–B4 |
 
@@ -204,7 +204,11 @@ is not close: `Mathlib/AlgebraicGeometry/ProjectiveSpectrum/` has no modules at 
 graded-module-to-sheaf construction and no twisting sheaf, so the machinery `H^i(ℙⁿ, O(d))`
 is stated in has to be built before the classical proof can begin. #31 and #32 therefore
 carry finite-dimensionality as a hypothesis rather than deriving it, and become
-unconditional unchanged the day #29 lands.
+unconditional unchanged the day #29 lands. Issue #31 is now implemented in
+`CohLean/Cohomology/EulerCharacteristic.lean`: it uses a functorial `ModuleCat k` lift of the
+actual `Sheaf.H` groups, proves finite support from the supplied vanishing bound, and exposes
+the ordinary finite alternating sum. The remaining #32 work is the linear long exact sequence
+and its alternating-dimension argument.
 
 The bridge that carries a short exact sequence of `𝒪ₓ`-modules into `Ext` is done — #56 for
 `SheafOfModules`, #59 for the `X.Modules` wrapper; use `Scheme.Modules.toSheaf`. The explicit

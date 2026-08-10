@@ -20,7 +20,7 @@ gate.
 | `CohLean/AlgebraicGeometry/Modules` | Module and sheaf-of-modules constructions over schemes |
 | `CohLean/Coh` | Coherent sheaves and their categorical properties |
 | `CohLean/Divisors` | Cartier divisors, invertible sheaves, tensor structure, and the Picard group |
-| `CohLean/Cohomology` | Čech and spectral-sequence infrastructure used to compute sheaf cohomology |
+| `CohLean/Cohomology` | Čech and spectral-sequence infrastructure, finite-dimensional cohomology data, and geometric Euler characteristics |
 | `CohLean/Topology` | General open-set-site infrastructure used by the geometric packages |
 | `CohLean/Development` | Compile-only API audits and development probes; not part of the root import |
 
@@ -52,6 +52,12 @@ Its `toNumericalVariety` constructor computes `chComp` and `toddComp` from the u
 characteristic-class formulas. Thus the remaining trust boundary is visible in named geometric
 obligations instead of duplicated numerical component fields.
 
+`Cohomology.FiniteCohomology` constructs that Euler characteristic from the actual
+derived-functor groups. It records a functorial lift from abelian groups to `k`-vector spaces,
+a comparison isomorphism after forgetting scalars, finite-dimensionality, and eventual
+vanishing. `Variety.NumericalData` contains this package directly; it can no longer substitute
+an unrelated integer-valued function for cohomological `χ`.
+
 ## Dimension and characteristic classes
 
 Dimension is a parameter of `NumericalRing` and `NumericalVariety`, not a family of separate
@@ -66,7 +72,7 @@ surface/threefold/fourfold object definitions. In particular:
 
 `Numerical/CharacteristicClasses.lean` now records the universal conversions from Chern-class
 data to Chern-character and Todd components through codimension four. The next characteristic-
-class milestones are geometric: construct the Chern classes and Euler characteristic needed to
-populate `Variety.NumericalData`, then discharge its grading, exact-sequence, and
-Riemann--Roch obligations. The familiar surface, threefold, and fourfold normal forms remain
-corollaries.
+class milestones are geometric: construct Chern classes, construct the linear cohomology data
+that makes the new Euler characteristic unconditional, then discharge the grading,
+exact-sequence, and Riemann--Roch obligations of `Variety.NumericalData`. The familiar surface,
+threefold, and fourfold normal forms remain corollaries.
