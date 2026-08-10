@@ -561,6 +561,81 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Scheme.CartierDivisor.classToPic
 #print axioms AlgebraicGeometry.Scheme.CartierDivisor.classToPic_toClass
 
--- `CohLean/Cohomology/Strategy.lean` still contributes nothing directly: it is the compile-only
--- API map and declares only anonymous `example`s. Real B3 declarations are audited above and
--- below this line.
+-- Layer B stage 2: effective Cartier divisors and their fundamental exact sequences.
+-- Tensoring by an invertible sheaf is exact, so the normalized twist is directly reusable
+-- as `O_X(E-D) → O_X(E) → O_X(E) ⊗ i_* O_D`; both sequences lift to `Coh X`
+-- under explicit coherence hypotheses.
+#print axioms AlgebraicGeometry.Scheme.IdealSheafData.quotientMap
+#print axioms AlgebraicGeometry.Scheme.Modules.tensorLeftFunctor
+#print axioms AlgebraicGeometry.Scheme.Modules.mono_tensorHom_id_of_invertible
+#print axioms AlgebraicGeometry.Scheme.Modules.shortExact_map_tensorLeft_of_invertible
+#print axioms AlgebraicGeometry.Scheme.EffectiveCartierDivisor
+#print axioms AlgebraicGeometry.Scheme.EffectiveCartierDivisor.structureSheaf
+#print axioms AlgebraicGeometry.Scheme.EffectiveCartierDivisor.quotient
+#print axioms AlgebraicGeometry.Scheme.EffectiveCartierDivisor.idealInclusion
+#print axioms AlgebraicGeometry.Scheme.EffectiveCartierDivisor.fundamentalSequence
+#print axioms AlgebraicGeometry.Scheme.EffectiveCartierDivisor.fundamentalSequence_shortExact
+#print axioms AlgebraicGeometry.Scheme.EffectiveCartierDivisor.cokernelIsoStructureSheaf
+#print axioms AlgebraicGeometry.Scheme.EffectiveCartierDivisor.twistedStructureSheaf
+#print axioms AlgebraicGeometry.Scheme.EffectiveCartierDivisor.twistSourceIso
+#print axioms AlgebraicGeometry.Scheme.EffectiveCartierDivisor.twistMiddleIso
+#print axioms AlgebraicGeometry.Scheme.EffectiveCartierDivisor.twistedIdealInclusion
+#print axioms AlgebraicGeometry.Scheme.EffectiveCartierDivisor.twistedQuotient
+#print axioms AlgebraicGeometry.Scheme.EffectiveCartierDivisor.twistSequence
+#print axioms AlgebraicGeometry.Scheme.EffectiveCartierDivisor.twistSequence_shortExact
+#print axioms AlgebraicGeometry.Scheme.EffectiveCartierDivisor.twistCokernelIso
+#print axioms AlgebraicGeometry.Scheme.EffectiveCartierDivisor.structureSheaf_isCoherent
+#print axioms AlgebraicGeometry.Scheme.EffectiveCartierDivisor.cohFundamentalSequence
+#print axioms AlgebraicGeometry.Scheme.EffectiveCartierDivisor.cohFundamentalSequence_shortExact
+#print axioms AlgebraicGeometry.Scheme.EffectiveCartierDivisor.twistedStructureSheaf_isCoherent
+#print axioms AlgebraicGeometry.Scheme.EffectiveCartierDivisor.cohTwistSequence
+#print axioms AlgebraicGeometry.Scheme.EffectiveCartierDivisor.cohTwistSequence_shortExact
+
+-- Layer B stage 2: determinant lines and first Chern classes. Mathlib supplies the local
+-- module exterior power but not exterior powers of sheaves, so global descent and exact
+-- comparison are explicit certificates. The coherent extension requires either finite locally
+-- free determinant data or a visible two-term finite locally free resolution.
+#print axioms Module.finrank_topExteriorPower
+#print axioms AlgebraicGeometry.Scheme.Modules.FiniteLocallyFreeData
+#print axioms AlgebraicGeometry.Scheme.Modules.FiniteLocallyFreeData.isLocallyFree
+#print axioms AlgebraicGeometry.Scheme.Modules.FiniteLocallyFreeData.ofIso
+#print axioms AlgebraicGeometry.Scheme.Modules.LineBundleData
+#print axioms AlgebraicGeometry.Scheme.Modules.LineBundleData.toPic
+#print axioms AlgebraicGeometry.Scheme.Modules.LineBundleData.coe_toPic
+#print axioms AlgebraicGeometry.Scheme.Modules.LineBundleData.toPic_eq_of_iso
+#print axioms AlgebraicGeometry.Scheme.Modules.LineBundleData.dual
+#print axioms AlgebraicGeometry.Scheme.Modules.LineBundleData.tensor
+#print axioms AlgebraicGeometry.Scheme.Modules.LineBundleData.toPic_dual
+#print axioms AlgebraicGeometry.Scheme.Modules.LineBundleData.toPic_tensor
+#print axioms AlgebraicGeometry.Scheme.Modules.DeterminantData
+#print axioms AlgebraicGeometry.Scheme.Modules.DeterminantData.isLocallyFree
+#print axioms AlgebraicGeometry.Scheme.Modules.DeterminantData.ofIso
+#print axioms AlgebraicGeometry.Scheme.Modules.DeterminantData.firstChernClass
+#print axioms AlgebraicGeometry.Scheme.Modules.DeterminantData.firstChernClassAdd
+#print axioms AlgebraicGeometry.Scheme.Modules.DeterminantData.firstChernClass_ofIso
+#print axioms AlgebraicGeometry.Scheme.Modules.DeterminantData.firstChernClassAdd_ofIso
+#print axioms AlgebraicGeometry.Scheme.Modules.DeterminantData.firstChernClass_eq_of_lineIso
+#print axioms AlgebraicGeometry.Scheme.Modules.DirectSumDeterminantData
+#print axioms AlgebraicGeometry.Scheme.Modules.DirectSumDeterminantData.firstChernClass_eq_mul
+#print axioms AlgebraicGeometry.Scheme.Modules.DirectSumDeterminantData.firstChernClassAdd_eq_add
+#print axioms AlgebraicGeometry.Scheme.Modules.ShortExactDeterminantData
+#print axioms AlgebraicGeometry.Scheme.Modules.ShortExactDeterminantData.firstChernClass_eq_mul
+#print axioms AlgebraicGeometry.Scheme.Modules.ShortExactDeterminantData.firstChernClassAdd_eq_add
+#print axioms AlgebraicGeometry.Coh.ShortExactDeterminantData
+#print axioms AlgebraicGeometry.Coh.ShortExactDeterminantData.toModules
+#print axioms AlgebraicGeometry.Coh.ShortExactDeterminantData.firstChernClassAdd_eq_add
+#print axioms AlgebraicGeometry.Coh.TwoTermPerfectDeterminantData
+#print axioms AlgebraicGeometry.Coh.TwoTermPerfectDeterminantData.determinantLine
+#print axioms AlgebraicGeometry.Coh.TwoTermPerfectDeterminantData.firstChernClass
+#print axioms AlgebraicGeometry.Coh.TwoTermPerfectDeterminantData.firstChernClassAdd
+#print axioms AlgebraicGeometry.Coh.TwoTermPerfectDeterminantData.firstChernClass_eq
+#print axioms AlgebraicGeometry.Coh.TwoTermPerfectDeterminantData.ofIso
+#print axioms AlgebraicGeometry.Coh.TwoTermPerfectDeterminantData.firstChernClass_ofIso
+#print axioms AlgebraicGeometry.Coh.PerfectShortExactDeterminantData
+#print axioms AlgebraicGeometry.Coh.PerfectShortExactDeterminantData.firstChernClassAdd_eq_add
+
+-- Layer B stage 3: `CohLean/Cohomology/Strategy.lean` contributes nothing here on
+-- purpose. It is the compile-only API map for the B3 route decision and declares only
+-- `example`s, which are anonymous and cannot be audited. Its guarantee is that it builds:
+-- if an upstream declaration it names moves, `lake build` fails. The first real B3
+-- theorem goes below this line.
