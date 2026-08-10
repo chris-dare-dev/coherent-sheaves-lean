@@ -27,13 +27,13 @@ supplies both bridges.
 
 `grothendieckTopology_coversTop` previously lived in `CohLean/Coh/Local.lean`. It is a statement
 about topological spaces with no reference to coherence, sheaves of modules, or schemes, and its
-position there made it **unreachable from `ForMathlib`**: the layering in this repository runs
-`ForMathlib → Coh`, so a `ForMathlib` file cannot import `Coh.Local` without inverting it.
+position there made it unreachable from the lower-level topology and algebraic-geometry
+infrastructure: those modules cannot import `Coh.Local` without creating a cycle.
 
 That was a live constraint rather than an aesthetic one — the remaining half of the affine
 comparison theorem (issue #46) needs `basicOpen_coversTop_of_span_eq_top` in
-`ForMathlib/AffineComparison.lean`, which is exactly where the old placement blocked it. Moving
-the lemma down costs `Coh/Local.lean` nothing, since it already imports `ForMathlib`.
+`AlgebraicGeometry/Modules/AffineComparison.lean`, which is exactly where the old placement
+blocked it. Moving the lemma into the topology domain keeps the dependency direction explicit.
 
 ## Where the second one is used
 
@@ -43,9 +43,9 @@ shape a local-to-global argument actually has in hand is the algebraic condition
 `basicOpen_coversTop_of_span_eq_top` is what converts it back into something the site machinery
 (`SheafOfModules.IsFinitePresentation.of_coversTop`, `QuasicoherentData.coversTop`) accepts.
 
-Destined for `Mathlib/CategoryTheory/Sites/Spaces.lean` and
-`Mathlib/AlgebraicGeometry/Scheme.lean` respectively; both are in Mathlib namespaces, so
-upstreaming is a file move.
+These declarations are maintained by CohLean. Their Mathlib-style namespaces express the
+mathematical owner of the API and ease replacement by equivalent upstream declarations; they
+do not imply any commitment to submit or merge them into Mathlib.
 -/
 
 universe u v

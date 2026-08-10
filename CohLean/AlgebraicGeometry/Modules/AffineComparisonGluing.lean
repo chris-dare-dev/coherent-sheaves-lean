@@ -2,8 +2,8 @@
 Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 -/
-import CohLean.ForMathlib.AffineComparison
-import CohLean.ForMathlib.QuasicoherentBasicOpen
+import CohLean.AlgebraicGeometry.Modules.AffineComparison
+import CohLean.AlgebraicGeometry.Modules.QuasicoherentBasicOpen
 import CohLean.AlgebraicGeometry.Modules.RestrictOver
 
 /-!

@@ -1,5 +1,6 @@
 /-
-Axiom audit. Run with:  lake env lean scripts/Audit.lean
+Axiom audit. First build the optional specialization and development modules listed in
+`README.md`, then run: `lake env lean scripts/Audit.lean`.
 
 Every line must print either "does not depend on any axioms" or exactly
 `[propext, Classical.choice, Quot.sound]`. Any occurrence of `sorryAx` is a
@@ -7,8 +8,28 @@ failure: this library has no `sorry`, and the trust boundary is carried by the
 *fields* of `NumericalVariety`, which are visible in its type, not by holes.
 -/
 import CohLean
+import CohLean.Numerical.Specializations.Surface
+import CohLean.Numerical.Specializations.Threefold
+import CohLean.Numerical.Specializations.Fourfold
+import CohLean.Development.DivisorAPIAudit
 
 open AlgebraicGeometry AlgebraicGeometry.Numerical
+
+-- The geometric source object is a bundle of explicit data, not an axiom identifying schemes
+-- with their numerical realizations.
+#print axioms Variety
+#print axioms SmoothProperVariety
+#print axioms ChernClassData.chernCharacterFour
+#print axioms ChernClassData.toddFour
+#print axioms ChernClassData.chernCharacterComponent
+#print axioms ChernClassData.toddComponent
+#print axioms Variety.NumericalData.toNumericalVariety
+#print axioms Variety.NumericalData.toNumericalVariety_chComp_four
+#print axioms Variety.NumericalData.toNumericalVariety_toddComp_four
+#print axioms Variety.NumericalData.chernCharacter_classOf
+#print axioms Variety.NumericalData.chi_classOf
+#print axioms Variety.NumericalData.coherentChernCharacter_shortExact
+#print axioms Variety.NumericalData.coherentEulerCharacteristic_shortExact
 
 -- Layer A: the graded-basis constructor. `ofGradedBasis` is what every concrete model
 -- goes through, so a sorry here would silently contaminate every instance in the repo.
@@ -23,6 +44,8 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 -- Layer A: the general Riemann-Roch expansion and its surface specialisation.
 #print axioms NumericalVariety.degree_ch_mul_todd
 #print axioms NumericalVariety.chi_eq_sum
+#print axioms NumericalVariety.discriminant_mem_piece_two
+#print axioms NumericalVariety.degree_discriminant
 #print axioms NumericalVariety.chComp_eq_zero_of_lt
 #print axioms NumericalVariety.toddComp_eq_zero_of_lt
 #print axioms Surface.chi_eq
@@ -276,7 +299,7 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 
 -- Layer B stage 3: the link between cosimplicial (Cech) and simplicial (extra degeneracy)
 -- machinery. Not the whole of the Cech vanishing chain -- see the module docstring of
--- CohLean/ForMathlib/ExtraCodegeneracy.lean for what is still missing.
+-- CohLean/Cohomology/Simplicial/ExtraCodegeneracy.lean for what is still missing.
 #print axioms AlgebraicTopology.AlternatingCofaceMapComplex.opIso
 #print axioms AlgebraicTopology.AlternatingCofaceMapComplex.opIso_hom_f
 #print axioms AlgebraicTopology.AlternatingCofaceMapComplex.opIso_inv_f

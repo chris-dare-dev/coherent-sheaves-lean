@@ -2,8 +2,8 @@
 Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 -/
-import CohLean.ForMathlib.OpensLimits
-import CohLean.ForMathlib.OpensCoversTop
+import CohLean.Topology.Opens.Limits
+import CohLean.Topology.Opens.CoversTop
 import Mathlib.AlgebraicGeometry.Modules.Tilde
 import Mathlib.CategoryTheory.Limits.Constructions.Over.Products
 

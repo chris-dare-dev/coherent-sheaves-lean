@@ -24,8 +24,9 @@ Both are immediate from the upstream instances.
 * `Presentation.isFinite_of_isIso`
 * `Presentation.isFinite_map`
 
-Destined for `Mathlib/Algebra/Category/ModuleCat/Sheaf/Quasicoherent.lean`; kept in Mathlib
-namespaces so upstreaming is a file move.
+This is CohLean-owned compatibility infrastructure. It remains in the `SheafOfModules`
+namespace because that is the mathematical owner of the declarations, not because the project
+is committed to upstreaming it.
 -/
 
 universe v₁ v₂ u₁ u₂ u
@@ -70,7 +71,8 @@ theorem Presentation.isFinite_map {M : SheafOfModules.{u} R} (P : M.Presentation
 `map` and `of_isIso`, so these two instances are what any statement about finite presentation
 has to go through.
 
-The global case is done, in `CohLean/ForMathlib/FinitePresentationOfPresentation.lean`:
+The global case is done, in
+`CohLean/AlgebraicGeometry/Modules/FinitePresentationOfPresentation.lean`:
 `IsFinitePresentation.of_presentation`. Two things were needed on top of the instances here,
 both recorded there — a hand-supplied `preservesColimitsOfSize_shrink`, and pinning `S` when
 applying `isFinite_map`, without which `J'` stays a metavariable and instance synthesis fails

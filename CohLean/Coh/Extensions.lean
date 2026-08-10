@@ -3,7 +3,7 @@ Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 -/
 import CohLean.Coh.Kernels
-import CohLean.ForMathlib.ToSheafExact
+import CohLean.AlgebraicGeometry.Modules.ToSheafExact
 import Mathlib.CategoryTheory.ObjectProperty.Extensions
 import Mathlib.CategoryTheory.Sites.Abelian
 import Mathlib.Algebra.Category.Grp.EpiMono

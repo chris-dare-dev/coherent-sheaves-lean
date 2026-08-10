@@ -2,12 +2,13 @@
 Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 -/
+import CohLean.AlgebraicGeometry.Variety
+import CohLean.AlgebraicGeometry.Variety.Numerical
 import CohLean.Numerical.Defs
 import CohLean.Numerical.OfGradedBasis
+import CohLean.Numerical.CharacteristicClasses
 import CohLean.Numerical.RiemannRoch
-import CohLean.Numerical.Surface
-import CohLean.Numerical.Threefold
-import CohLean.Numerical.Fourfold
+import CohLean.Numerical.Discriminant
 import CohLean.Numerical.K3
 import CohLean.Numerical.Dual
 import CohLean.Numerical.EulerPairing
@@ -15,21 +16,20 @@ import CohLean.Numerical.Examples.Point
 import CohLean.Numerical.Examples.RankOneSurface
 import CohLean.Numerical.Examples.K3Model
 import CohLean.Numerical.Examples.ProjectivePlaneModel
-import CohLean.ForMathlib.PresentationIsFinite
-import CohLean.ForMathlib.FinitePresentationOfPresentation
-import CohLean.ForMathlib.OpensLimits
-import CohLean.ForMathlib.OpensCoversTop
-import CohLean.ForMathlib.AffineComparison
-import CohLean.ForMathlib.QuasicoherentBasicOpen
-import CohLean.ForMathlib.AffineComparisonGluing
-import CohLean.ForMathlib.AffineComparisonFiniteness
-import CohLean.ForMathlib.ToSheafExact
-import CohLean.ForMathlib.ExtraCodegeneracy
-import CohLean.ForMathlib.FilteredComplexSpectralObject
-import CohLean.ForMathlib.FilteredTotalComplex
-import CohLean.ForMathlib.FilteredTotalComplexAdjacent
-import CohLean.ForMathlib.FilteredTotalComplexFirstPageDifferential
-import CohLean.ForMathlib.DivisorAPIAudit
+import CohLean.AlgebraicGeometry.Modules.PresentationIsFinite
+import CohLean.AlgebraicGeometry.Modules.FinitePresentationOfPresentation
+import CohLean.Topology.Opens.Limits
+import CohLean.Topology.Opens.CoversTop
+import CohLean.AlgebraicGeometry.Modules.AffineComparison
+import CohLean.AlgebraicGeometry.Modules.QuasicoherentBasicOpen
+import CohLean.AlgebraicGeometry.Modules.AffineComparisonGluing
+import CohLean.AlgebraicGeometry.Modules.AffineComparisonFiniteness
+import CohLean.AlgebraicGeometry.Modules.ToSheafExact
+import CohLean.Cohomology.Simplicial.ExtraCodegeneracy
+import CohLean.Cohomology.SpectralSequence.FilteredComplexSpectralObject
+import CohLean.Cohomology.SpectralSequence.FilteredTotalComplex
+import CohLean.Cohomology.SpectralSequence.FilteredTotalComplexAdjacent
+import CohLean.Cohomology.SpectralSequence.FilteredTotalComplexFirstPageDifferential
 import CohLean.Divisors.Cartier
 import CohLean.Divisors.Picard
 import CohLean.Divisors.Tensor
@@ -58,8 +58,11 @@ import CohLean.Cohomology.Strategy
 Coherent sheaves, Chern classes and Riemann–Roch for smooth projective varieties over a
 field, in Lean 4.
 
-* `CohLean.Numerical.*` — **Layer A**, the numerical interface (axioms, no schemes).
-* `CohLean.Coh.*` — **Layer B**, the construction from Mathlib's scheme theory.
+* `CohLean.Numerical.*` — the dimension-general numerical interface (axioms, no schemes).
+* `CohLean.AlgebraicGeometry.*`, `CohLean.Coh.*`, and `CohLean.Divisors.*` — geometric
+  constructions built over Mathlib's scheme theory.
+* `CohLean.Topology.*` and `CohLean.Cohomology.*` — permanent project infrastructure,
+  replaced by Mathlib declarations only when equivalent APIs become available.
 
 See `README.md` for the architecture and `ROADMAP.md` for the stage plan.
 -/

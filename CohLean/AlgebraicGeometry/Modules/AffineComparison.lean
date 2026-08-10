@@ -15,7 +15,7 @@ Mathlib at `v4.29.0`.
 
 This file reduces that theorem to a statement about localisation of modules, and proves the
 reduction is *exact*: the counit is an isomorphism **if and only if** restriction to every
-basic open is a localisation. `CohLean.ForMathlib.AffineComparisonGluing` proves that
+basic open is a localisation. `CohLean.AlgebraicGeometry.Modules.AffineComparisonGluing` proves that
 quasi-coherence supplies this condition and completes the comparison theorem.
 
 ## Main results
@@ -66,7 +66,7 @@ The mathematical implication deliberately left out of this reduction is:
 
 equivalently, by `isIso_fromTildeΓ_iff_isLocalizedModule`, that a quasi-coherent sheaf on an
 affine scheme lies in the essential image of `~`. It is proved in
-`CohLean.ForMathlib.AffineComparisonGluing` as
+`CohLean.AlgebraicGeometry.Modules.AffineComparisonGluing` as
 `Scheme.Modules.isLocalizedModule_basicOpenRestriction_of_isQuasicoherent`; the resulting
 counit theorem is `Scheme.Modules.isIso_fromTildeΓ_of_isQuasicoherent`.
 

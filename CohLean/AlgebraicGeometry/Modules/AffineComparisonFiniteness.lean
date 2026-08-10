@@ -2,8 +2,8 @@
 Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 -/
-import CohLean.ForMathlib.AffineComparisonGluing
-import CohLean.ForMathlib.PresentationIsFinite
+import CohLean.AlgebraicGeometry.Modules.AffineComparisonGluing
+import CohLean.AlgebraicGeometry.Modules.PresentationIsFinite
 import Mathlib.RingTheory.Localization.Finiteness
 
 /-!

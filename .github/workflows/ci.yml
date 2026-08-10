@@ -29,6 +29,10 @@ jobs:
       - name: Axiom audit
         run: |
           set -o pipefail
+          lake build CohLean.Development.DivisorAPIAudit \
+            CohLean.Numerical.Specializations.Surface \
+            CohLean.Numerical.Specializations.Threefold \
+            CohLean.Numerical.Specializations.Fourfold
           lake env lean scripts/Audit.lean | tee audit.txt
           if grep -q 'sorryAx' audit.txt; then
             echo "::error::sorryAx reached the audit: a listed declaration is backed by a sorry"

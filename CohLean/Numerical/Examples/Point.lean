@@ -18,8 +18,7 @@ codimension zero, `N(pt) = ℤ`, `ch(E) = rank E`, `td(pt) = 1`, and Riemann–R
 to `χ(E) = rank E`.
 
 It is a *witness*, not a working example: nothing interesting is true in dimension zero.
-The K3 instance is the first model in which the surface formula of
-`CohLean.Numerical.Surface` has content.
+The K3 instance is the first positive-dimensional model in which Riemann--Roch has content.
 -/
 
 namespace AlgebraicGeometry.Numerical
