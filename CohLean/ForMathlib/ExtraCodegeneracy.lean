@@ -97,10 +97,12 @@ noncomputable def opIso (Y : CosimplicialObject A) :
     ((alternatingCofaceMapComplex A).obj Y).op ≅ (alternatingFaceMapComplex Aᵒᵖ).obj Y.op :=
   HomologicalComplex.Hom.isoOfComponents (fun _ => Iso.refl _) (by
     rintro i j (rfl : j + 1 = i)
-    simp [AlternatingFaceMapComplex.objD, AlternatingCofaceMapComplex.obj,
+    simp only [Iso.refl_hom, HomologicalComplex.op_d]
+    simp [AlternatingFaceMapComplex.objD, alternatingCofaceMapComplex,
+      AlternatingCofaceMapComplex.obj,
       AlternatingCofaceMapComplex.objD, SimplicialObject.δ, CosimplicialObject.δ,
       CochainComplex.of_d, op_sum, op_zsmul]
-    rfl)
+    exact (Category.id_comp _).trans (Category.comp_id _).symm)
 
 @[simp]
 lemma opIso_hom_f (Y : CosimplicialObject A) (n : ℕ) :

@@ -106,12 +106,13 @@ theorem isFinitePresentation_tilde (M : ModuleCat.{u} R) [Module.FinitePresentat
   obtain ⟨t, htfin, ht⟩ := hker
   haveI : Finite ((s : Set M) : Type u) := s.finite_toSet.to_subtype
   haveI : Finite t := htfin.to_subtype
-  -- `.{u, u, u}` and `constructor` are both load-bearing; see the module docstring.
+  -- The explicit universes are load-bearing; see the module docstring.
   haveI : Presentation.IsFinite.{u, u, u} (presentationTilde M (s : Set M) hs t ht) := by
-    constructor
-    · constructor
+    refine ⟨?_, ?_⟩
+    · refine ⟨?_⟩
       exact inferInstanceAs (Finite ((s : Set M) : Type u))
-    · exact inferInstanceAs (Finite t)
+    · refine ⟨?_⟩
+      exact inferInstanceAs (Finite t)
   exact IsFinitePresentation.of_presentation.{u, u, u} (presentationTilde M (s : Set M) hs t ht)
 
 /-- **`M^~` is coherent when `M` is finitely presented.**

@@ -8,16 +8,16 @@ import Mathlib.Algebra.Category.ModuleCat.Sheaf.Quasicoherent
 # Finiteness of a presentation is preserved by transport
 
 Mathlib has two ways of moving a `SheafOfModules.Presentation` around — along an isomorphism
-(`Presentation.of_isIso`) and along a colimit-preserving functor (`Presentation.map`) — and
-no lemma saying either preserves `Presentation.IsFinite`.
+(`Presentation.ofIsIso`) and along a colimit-preserving functor (`Presentation.map`). Mathlib
+v4.32 supplies anonymous instances proving that both preserve `Presentation.IsFinite`; the
+named results in this file retain the stable API used by this project.
 
 That gap is why `SheafOfModules.IsFinitePresentation` has no local-to-global criterion even
 though `IsQuasicoherent` does: `QuasicoherentData.bind` builds its presentations as
 `(P.map _ _).of_isIso _`, so without these two instances there is no way to conclude that the
 glued data is finite.
 
-Both are cheap, because `Presentation.IsFinite` is nothing more than finiteness of the two
-index types `generators.I` and `relations.I`, and neither transport touches them.
+Both are immediate from the upstream instances.
 
 ## Main results
 
@@ -40,12 +40,9 @@ variable {C : Type u₁} [Category.{v₁} C] {J : GrothendieckTopology C} {R : S
 
 /-- Transporting a presentation along an isomorphism keeps it finite: `of_isIso` composes the
 generating and relating maps with an iso and leaves both index types alone. -/
-instance Presentation.isFinite_of_isIso {M N : SheafOfModules.{u} R} (f : M ⟶ N) [IsIso f]
-    (P : M.Presentation) [P.IsFinite] : (Presentation.of_isIso f P).IsFinite where
-  isFiniteType_generators :=
-    ⟨inferInstanceAs (Finite P.generators.I)⟩
-  finite_relations :=
-    inferInstanceAs (Finite P.relations.I)
+theorem Presentation.isFinite_of_isIso {M N : SheafOfModules.{u} R} (f : M ⟶ N) [IsIso f]
+    (P : M.Presentation) [P.IsFinite] : (P.ofIsIso f).IsFinite := by
+  infer_instance
 
 variable {C' : Type u₂} [Category.{v₂} C'] {J' : GrothendieckTopology C'}
   {S : Sheaf J' RingCat.{u}}
@@ -55,16 +52,17 @@ variable {C' : Type u₂} [Category.{v₂} C'] {J' : GrothendieckTopology C'}
 /-- Transporting a presentation along a colimit-preserving functor keeps it finite:
 `Presentation.map` builds the new generators and relations out of the *same* index types
 (`map_generators_I`, `map_relations_I`). -/
-instance Presentation.isFinite_map {M : SheafOfModules.{u} R} (P : M.Presentation) [P.IsFinite]
+theorem Presentation.isFinite_map {M : SheafOfModules.{u} R} (P : M.Presentation) [P.IsFinite]
     (F : SheafOfModules.{u} R ⥤ SheafOfModules.{u} S) [PreservesColimitsOfSize.{u, u} F]
-    (η : F.obj (unit R) ≅ unit S) : (P.map F η).IsFinite where
+    (η : unit S ≅ F.obj (unit R)) : (P.map F η).IsFinite where
   isFiniteType_generators := by
-    refine ⟨?_⟩
+    constructor
     rw [Presentation.map_generators_I]
-    exact inferInstanceAs (Finite P.generators.I)
-  finite_relations := by
+    infer_instance
+  isFiniteType_relations := by
+    constructor
     rw [Presentation.map_relations_I]
-    exact inferInstanceAs (Finite P.relations.I)
+    infer_instance
 
 /-! ### What these unblock
 

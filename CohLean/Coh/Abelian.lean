@@ -45,7 +45,8 @@ noncomputable instance isFinitePresentation_containsZero [HasBinaryProducts C] :
       · refine ⟨?_⟩
         change Finite PEmpty
         infer_instance
-      · change Finite PEmpty
+      · refine ⟨?_⟩
+        change Finite PEmpty
         infer_instance
     exact ⟨0, isZero_zero _, IsFinitePresentation.of_presentation.{u, u, u} P⟩
 

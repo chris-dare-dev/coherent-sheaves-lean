@@ -7,9 +7,11 @@ before touching it. The live dependency graph is recorded in each milestone desc
 `ready` and `blocked` are mutually exclusive, while `in-progress` means an implementation or
 pull request already exists.
 
-Current independent entry points are [#21](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/21),
-[#27](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/27),
-and [#33](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/33).
+Current independent entry points after #21 merges are
+[#22](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/22),
+[#23](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/23), and
+[#33](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/33). Issue #27 already has
+an implementation in progress.
 
 
 Target: Riemann–Roch for smooth projective varieties over a field, general dimension,
@@ -102,8 +104,8 @@ depend on it. The cheapest instance would be `Examples/RankOneSurface`: `H ↦ �
 | # | Stage | Estimate | Gate |
 |---|---|---|---|
 | B1 | Coherent category, locality, affine comparison, closure, abelian/exact inclusion | 2–3 months | **done** ([milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/4)) |
-| B2 | Invertible sheaves, `Pic X`, Cartier divisors, `O_X(D)`, determinant, effective-divisor sequence | 2–3 months | [milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/7); #21 ready, remainder gated |
-| B3 | Affine vanishing, cohomology boundedness, geometric `χ`, additivity | 4–6 months | [milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/5); explicit affine Čech vanishing done; #27 ready, #28 blocked on #27; finiteness deferred, see below |
+| B2 | Invertible sheaves, `Pic X`, Cartier divisors, `O_X(D)`, determinant, effective-divisor sequence | 2–3 months | [milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/7); #21 done, #22 and #23 ready |
+| B3 | Affine vanishing, cohomology boundedness, geometric `χ`, additivity | 4–6 months | [milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/5); explicit affine Čech vanishing done; #27 in progress, #28 blocked on #27; finiteness deferred, see below |
 | B4 | Numerical polynomials, Snapper, intersections, numerical Chern data | ~3 months | [milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/9); #33 ready |
 | B5 | Canonical sheaf, Serre duality, surface RR, dévissage, Layer A discharge | ~6 months | [milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/8); blocked on B2–B4 |
 
@@ -131,7 +133,8 @@ Issue #11 is now done (`CohLean/Coh/Affine.lean`): `M^~` is of finite
 presentation whenever `M` is, because `AlgebraicGeometry.presentationTilde` already builds
 the global presentation and its index types are the two generating sets that
 `Module.FinitePresentation` hands over. Conversely,
-`ForMathlib/AffineComparisonGluing.lean` proves `IsIso M.fromTildeΓ` for quasi-coherent `M`,
+Mathlib v4.32 proves `IsIso M.fromTildeΓ` for quasi-coherent `M`, with
+`ForMathlib/AffineComparisonGluing.lean` retaining CohLean's compatibility exports,
 and `ForMathlib/AffineComparisonFiniteness.lean` transports finite generators and
 presentations to a basic-open cover and patches their localized global sections. Thus coherent
 sheaves on `Spec R` have finitely presented global sections when `R` is noetherian.
@@ -147,10 +150,20 @@ One smaller Mathlib gap surfaced on the way and is discharged in
 `CompleteLattice.copy` that reconciles them. Without it a global presentation cannot be
 turned into finite presentation on a scheme at all.
 
-**B2.** Upstream Mathlib gained `AlgebraicGeometry/AlgebraicCycle/Basic.lean` (cycles as
-locally-finite-support functions, proper pushforward) and `OrderOfVanishing.lean` after
-v4.29.0. Neither defines divisors, rational equivalence or Chow groups yet. **Do not
-duplicate that work** — bump the toolchain at B2 and build on it, or contribute there.
+**B2.** Issue #21 moved CohLean to Lean/Mathlib v4.32.1; v4.32.0 was the first stable release
+containing both `AlgebraicGeometry/AlgebraicCycle/Basic.lean` and
+`AlgebraicGeometry/OrderOfVanishing.lean`. The compile-only inventory is
+`CohLean/ForMathlib/DivisorAPIAudit.lean`.
+
+The usable upstream layer is precise: `AlgebraicCycle` and `AlgebraicCycle.map` supply locally
+finite cycles and quasicompact pushforward; `Scheme.ordHom` and `Scheme.ord` supply order of
+vanishing; `SheafOfModules.IsLocallyFree` supplies arbitrary-rank local freeness; and
+`Module.Invertible`/`CommRing.Pic` supply the affine ring-level Picard API. Generic
+`PresheafOfModules.sheafification` and `Scheme.IdealSheafData.subscheme` are construction
+machinery. Mathlib still has no scheme rank-one/invertible-sheaf predicate, tensor product on
+`SheafOfModules`, scheme Picard group, Cartier/effective Cartier divisors, or `O_X(D)`.
+Consequently #22 (Cartier divisors) and #23 (invertible sheaves and `Pic X`) are independent
+next steps; they jointly unlock #24.
 
 **B3.** The hardest step and the one everything else waits on. Mathlib's sheaf cohomology
 is `Ext` from the constant sheaf, which is the right general definition but not obviously

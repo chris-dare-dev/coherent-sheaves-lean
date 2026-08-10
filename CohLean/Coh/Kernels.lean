@@ -273,7 +273,10 @@ theorem kerMap (a : M →ₗ[A] M') [ha : IsLocalizedModule S a]
         _ = g' (s.1 • y.1) := congrArg g' hs.symm
         _ = 0 := by simp
     obtain ⟨t, ht⟩ := hb.exists_of_eq heq
-    have htx : g (t.1 • x) = 0 := by simpa using ht
+    have htx : g (t.1 • x) = 0 := by
+      rw [map_smul]
+      change t.1 • g x = t.1 • 0 at ht
+      simpa only [smul_zero] using ht
     refine ⟨⟨⟨t.1 • x, htx⟩, t * s⟩, ?_⟩
     apply Subtype.ext
     change (t * s).1 • y.1 = a (t.1 • x)
@@ -320,11 +323,9 @@ theorem kernelMap {M M' N N' : ModuleCat.{w} A}
     rw [hL, ← Category.assoc, ModuleCat.kernelIsoKer_hom_ker_subtype]
     simp
   rw [← heq]
-  change IsLocalizedModule S ((e'.inv.hom.comp L).comp e.hom.hom)
-  simpa only [CategoryTheory.Iso.toLinearMap_toLinearEquiv] using
-    (inferInstance : IsLocalizedModule S
-      ((e'.symm.toLinearEquiv.toLinearMap ∘ₗ L) ∘ₗ
-        e.toLinearEquiv.toLinearMap))
+  change IsLocalizedModule S
+    ((e'.symm.toLinearEquiv.toLinearMap ∘ₗ L) ∘ₗ e.toLinearEquiv.toLinearMap)
+  infer_instance
 
 variable {C : Type (w + 1)} [Category.{w} C] [HasZeroMorphisms C]
 
@@ -351,11 +352,9 @@ theorem kernelNatTrans (F G : C ⥤ ModuleCat.{w} A)
     apply (cancel_mono (G.map (kernel.ι g))).1
     simp [k, eF, eG]
   rw [← heq]
-  change IsLocalizedModule S ((eG.inv.hom.comp k.hom).comp eF.hom.hom)
-  simpa only [CategoryTheory.Iso.toLinearMap_toLinearEquiv] using
-    (inferInstance : IsLocalizedModule S
-      ((eG.symm.toLinearEquiv.toLinearMap ∘ₗ k.hom) ∘ₗ
-        eF.toLinearEquiv.toLinearMap))
+  change IsLocalizedModule S
+    ((eG.symm.toLinearEquiv.toLinearMap ∘ₗ k.hom) ∘ₗ eF.toLinearEquiv.toLinearMap)
+  infer_instance
 
 end IsLocalizedModule
 
