@@ -165,6 +165,7 @@ a Todd class and nothing else.
 | `Divisors/Symmetric.lean` | naturality, involutivity, and both hexagon proofs; installs the braided and symmetric structures |
 | `Divisors/PicardGroup.lean` | the commutative monoid of invertible-sheaf isomorphism classes, `Pic X` as its units, and an explicit tensor-inverse constructor for `O_X(D)` |
 | `Divisors/AssociatedSheaf.lean` | `O_X(D)` from inverse local equations, transition cocycles, tensor additivity, zero/principal trivializations, `O_X(-D)`, and the Cartier-class homomorphism to `Pic X` |
+| `Divisors/Effective.lean` | effective Cartier divisors as ideal-sheaf closed subschemes, the ambient and coherent fundamental short exact sequences, exact tensoring by invertible sheaves, and normalized Cartier twists |
 | `Coh/Kernels.lean` | finite-limit preservation for restriction, localization through kernels, affine/global kernel and cokernel closure, and the two object-property closure instances |
 | `Coh/Extensions.lean` | local lifting on two finite refinements and the finite horseshoe presentation proving closure under extensions, with no noetherian hypothesis |
 | `Coh/Abelian.lean` | zero and finite-product closure, the abelian instance on `Coh X`, and the exact inclusion into `X.Modules` |
@@ -176,7 +177,7 @@ The presentation-transport modules fill a real Mathlib gap: Mathlib has
 that transporting a presentation preserves `Presentation.IsFinite`. CohLean maintains these
 declarations regardless of whether an upstream contribution is ever made.
 
-**Still not proved:** the effective-divisor sequence and determinant part of B2; geometric `χ`; all of B4 and
+**Still not proved:** the determinant part of B2; geometric `χ`; all of B4 and
 B5. General cohomology finiteness
 remains deliberately deferred; the affine global-sections finiteness needed by B1 is proved.
 
@@ -228,12 +229,12 @@ shared too, and they are where every merge conflict this project has had actuall
 | A7 | 0 | **done** — threefold and fourfold RR |
 | A8 | 1 | Euler pairing **done**; the numerical lattice (#17) remains |
 | B1 | 0 | **done** — `Coh X` abelian with exact inclusion into `X.Modules` |
-| B2 | 2 | Cartier divisors, `Pic X`, and `O_X(D)` are done; determinant and the effective-divisor sequence remain |
+| B2 | 1 | Cartier divisors, `Pic X`, `O_X(D)`, and effective-divisor sequences are done; determinant remains |
 | B3 | 7 | Cohomology and `χ` — **still the real gate** |
 | B4 | 5 | Snapper polynomials → intersection numbers |
 | B5 | 7 | Serre duality → RR for surfaces → discharge `hirzebruch_riemannRoch` |
 
-**Next on B2:** **#25** (effective-divisor sequence) or **#36** (determinant). **Startable independently:** **#33**. Issue #27 is already
+**Next on B2:** **#36** (determinant). **Startable independently:** **#33**. Issue #27 is already
 in progress.
 Regenerate this list with `gh issue list --label ready` before choosing,
 because tracker labels move faster than this file.
@@ -260,7 +261,10 @@ transition cocycles, `O_X(D) ⊗ O_X(E) ≅ O_X(D + E)`, `O_X(0) ≅ O_X`, princ
 triviality, and `O_X(-D)` as an explicit inverse, then descends the construction to the Cartier
 class group. Pullback naturality is deliberately not claimed without compatibility between
 `CartierPullbackData`, rational sections, and module-sheaf pullback. Do not rebuild algebraic
-cycles or order of vanishing.
+cycles or order of vanishing. The completed #25 construction defines effective Cartier
+divisors using ideal-sheaf closed subschemes and identifies `O_X(-D)` with the kernel of
+`O_X → i_* O_D`. It proves the fundamental sequence and every normalized twist by `O_X(E)`
+short exact in `X.Modules`, then lifts both to `Coh X` under explicit coherence hypotheses.
 
 Universe defaulting and iterated-slice elaboration are still the dominant implementation
 hazards; the fixes are preserved in §8. The `Finset`/`Set` warning remains retracted.
@@ -500,13 +504,11 @@ present, the error is about *when* Lean looked, not *what* it found.
 
 > This order is a snapshot. Re-check tracker labels before starting.
 
-1. **#25** — effective Cartier divisors and their fundamental exact sequence, now unlocked by
-   `O_X(D)`.
-2. **#36** — determinant line bundles and first Chern classes, also unlocked by #24.
-3. **#33** — multivariable numerical polynomials and finite differences, the independent B4
+1. **#36** — determinant line bundles and first Chern classes, unlocked by #24.
+2. **#33** — multivariable numerical polynomials and finite differences, the independent B4
    entry point.
 
-#22, #23, #24, and #79 are complete. Their APIs unlock the remaining B2 issues #25 and #36.
+#22–#25 and #79 are complete. Only #36 remains in B2.
 
 Issue #27 (Čech versus derived sheaf cohomology) already has an implementation in progress.
 

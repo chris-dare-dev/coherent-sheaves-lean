@@ -11,7 +11,8 @@ Issue [#22](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/22) s
 Cartier-divisor foundation. [#23](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/23)
 and #79 supply the symmetric-monoidal Picard-group foundation, and
 [#24](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/24) supplies `O_X(D)` and
-the class-group map to `Pic X`. The next B2 entries are #25 and #36;
+the class-group map to `Pic X`, and #25 supplies effective Cartier divisors and their
+fundamental exact sequences. The remaining B2 entry is #36;
 [#33](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/33) remains independent.
 Issue #27 also has an implementation in progress.
 
@@ -108,7 +109,7 @@ depend on it. The cheapest instance would be `Examples/RankOneSurface`: `H ↦ �
 | # | Stage | Estimate | Gate |
 |---|---|---|---|
 | B1 | Coherent category, locality, affine comparison, closure, abelian/exact inclusion | 2–3 months | **done** ([milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/4)) |
-| B2 | Invertible sheaves, `Pic X`, Cartier divisors, `O_X(D)`, determinant, effective-divisor sequence | 2–3 months | [milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/7); #21–#24 and #79 done; #25 and #36 remain |
+| B2 | Invertible sheaves, `Pic X`, Cartier divisors, `O_X(D)`, determinant, effective-divisor sequence | 2–3 months | [milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/7); #21–#25 and #79 done; #36 remains |
 | B3 | Affine vanishing, cohomology boundedness, geometric `χ`, additivity | 4–6 months | [milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/5); explicit affine Čech vanishing done; #27 in progress, #28 blocked on #27; finiteness deferred, see below |
 | B4 | Numerical polynomials, Snapper, intersections, numerical Chern data | ~3 months | [milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/9); #33 ready |
 | B5 | Canonical sheaf, Serre duality, surface RR, dévissage, Layer A discharge | ~6 months | [milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/8); blocked on B2–B4 |
@@ -189,6 +190,13 @@ canonical `O_X(D) ⊗ O_X(E) ≅ O_X(D + E)`, global equations trivialize princi
 and `O_X(-D)` supplies the explicit inverse used to descend from Cartier divisor classes to
 `Pic X`. No unconditional pullback comparison is claimed: the divisor pullback data from #22
 does not yet include compatibility with rational sections and module-sheaf pullback.
+
+Issue #25 defines an effective Cartier divisor by a Cartier divisor, its ideal-sheaf closed
+subscheme, and an identification of `O_X(-D)` with that ideal. The resulting
+`O_X(-D) → O_X → i_* O_D` is short exact in `X.Modules` and lifts to `Coh X` under
+explicit coherence hypotheses. Tensoring by an invertible sheaf is proved exact as a reusable
+intermediate result, giving the normalized short exact sequence
+`O_X(E-D) → O_X(E) → O_X(E) ⊗ i_* O_D` and its coherent lift.
 
 **B3.** The hardest step and the one everything else waits on. Mathlib's sheaf cohomology
 is `Ext` from the constant sheaf, which is the right general definition but not obviously
