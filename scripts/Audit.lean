@@ -541,6 +541,36 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Scheme.CartierDivisor.classToPic
 #print axioms AlgebraicGeometry.Scheme.CartierDivisor.classToPic_toClass
 
+-- Layer B stage 2: effective Cartier divisors and their fundamental exact sequences.
+-- Tensoring by an invertible sheaf is exact, so the normalized twist is directly reusable
+-- as `O_X(E-D) → O_X(E) → O_X(E) ⊗ i_* O_D`; both sequences lift to `Coh X`
+-- under explicit coherence hypotheses.
+#print axioms AlgebraicGeometry.Scheme.IdealSheafData.quotientMap
+#print axioms AlgebraicGeometry.Scheme.Modules.tensorLeftFunctor
+#print axioms AlgebraicGeometry.Scheme.Modules.mono_tensorHom_id_of_invertible
+#print axioms AlgebraicGeometry.Scheme.Modules.shortExact_map_tensorLeft_of_invertible
+#print axioms AlgebraicGeometry.Scheme.EffectiveCartierDivisor
+#print axioms AlgebraicGeometry.Scheme.EffectiveCartierDivisor.structureSheaf
+#print axioms AlgebraicGeometry.Scheme.EffectiveCartierDivisor.quotient
+#print axioms AlgebraicGeometry.Scheme.EffectiveCartierDivisor.idealInclusion
+#print axioms AlgebraicGeometry.Scheme.EffectiveCartierDivisor.fundamentalSequence
+#print axioms AlgebraicGeometry.Scheme.EffectiveCartierDivisor.fundamentalSequence_shortExact
+#print axioms AlgebraicGeometry.Scheme.EffectiveCartierDivisor.cokernelIsoStructureSheaf
+#print axioms AlgebraicGeometry.Scheme.EffectiveCartierDivisor.twistedStructureSheaf
+#print axioms AlgebraicGeometry.Scheme.EffectiveCartierDivisor.twistSourceIso
+#print axioms AlgebraicGeometry.Scheme.EffectiveCartierDivisor.twistMiddleIso
+#print axioms AlgebraicGeometry.Scheme.EffectiveCartierDivisor.twistedIdealInclusion
+#print axioms AlgebraicGeometry.Scheme.EffectiveCartierDivisor.twistedQuotient
+#print axioms AlgebraicGeometry.Scheme.EffectiveCartierDivisor.twistSequence
+#print axioms AlgebraicGeometry.Scheme.EffectiveCartierDivisor.twistSequence_shortExact
+#print axioms AlgebraicGeometry.Scheme.EffectiveCartierDivisor.twistCokernelIso
+#print axioms AlgebraicGeometry.Scheme.EffectiveCartierDivisor.structureSheaf_isCoherent
+#print axioms AlgebraicGeometry.Scheme.EffectiveCartierDivisor.cohFundamentalSequence
+#print axioms AlgebraicGeometry.Scheme.EffectiveCartierDivisor.cohFundamentalSequence_shortExact
+#print axioms AlgebraicGeometry.Scheme.EffectiveCartierDivisor.twistedStructureSheaf_isCoherent
+#print axioms AlgebraicGeometry.Scheme.EffectiveCartierDivisor.cohTwistSequence
+#print axioms AlgebraicGeometry.Scheme.EffectiveCartierDivisor.cohTwistSequence_shortExact
+
 -- Layer B stage 3: `CohLean/Cohomology/Strategy.lean` contributes nothing here on
 -- purpose. It is the compile-only API map for the B3 route decision and declares only
 -- `example`s, which are anonymous and cannot be audited. Its guarantee is that it builds:

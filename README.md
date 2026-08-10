@@ -39,7 +39,8 @@ supplies a rank-one/invertible-sheaf predicate, the sheafified tensor product wi
 monoidal coherence, and the resulting scheme-level `Pic X` group. Cartier divisors are present;
 their associated invertible sheaves `O_X(D)` are constructed from local equations, with
 `O_X(D + E) ≅ O_X(D) ⊗ O_X(E)`, `O_X(-D)` as tensor inverse, and the induced class-group
-homomorphism to `Pic X`. Effective Cartier divisors, ampleness, higher direct images,
+homomorphism to `Pic X`. Effective Cartier divisors and their twisted fundamental exact
+sequences are present. Ampleness, higher direct images,
 finiteness of cohomology, `χ(F)`, Serre duality, Chern classes, intersection numbers, and
 Riemann–Roch are not yet present.
 
@@ -103,7 +104,11 @@ and pullback from explicit compatible function-field data. It also has invertibl
 their symmetric monoidal tensor product, the scheme-level Picard group `Pic X`, and the
 associated sheaf `O_X(D)`. Local equations give canonical trivializations and transition
 cocycles; multiplication of rational sections proves tensor additivity, principal divisors
-become trivial, and Cartier divisor classes map to `Pic X`.
+become trivial, and Cartier divisor classes map to `Pic X`. Effective Cartier divisors carry
+their closed subschemes and the short exact fundamental sequence
+`O_X(-D) → O_X → i_* O_D`, together with every Cartier twist
+`O_X(E-D) → O_X(E) → O_X(E) ⊗ i_* O_D`; both are also packaged in `Coh X`
+under explicit coherence hypotheses.
 Every later Layer B stage has a milestone and issue-level dependency graph; see
 [ROADMAP.md](ROADMAP.md).
 
