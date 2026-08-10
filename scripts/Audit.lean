@@ -430,6 +430,18 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms Scheme.Modules.preservesEpimorphisms_toSheaf
 #print axioms Scheme.Modules.shortExact_map_toSheaf
 
+-- Layer B stage 2: invertible sheaves and the raw sheafified tensor product. The final
+-- Picard group law waits on tensor/sheafification coherence; these declarations expose the
+-- complete foundation without postulating that missing theorem.
+#print axioms SheafOfModules.freePUnitIsoUnit
+#print axioms SheafOfModules.LocalGeneratorsData.isRankOne_ofIso
+#print axioms SheafOfModules.IsInvertible.ofIso
+#print axioms AlgebraicGeometry.Scheme.Modules.tensorUnitLeftIso
+#print axioms AlgebraicGeometry.Scheme.Modules.tensorUnitRightIso
+#print axioms AlgebraicGeometry.Scheme.Modules.tensorCommIso
+#print axioms AlgebraicGeometry.Scheme.Modules.tensorTripleAssocIso
+#print axioms AlgebraicGeometry.Scheme.Modules.PicardClass.mk_eq_mk_iff
+
 -- Layer B stage 3: `CohLean/Cohomology/Strategy.lean` contributes nothing here on
 -- purpose. It is the compile-only API map for the B3 route decision and declares only
 -- `example`s, which are anonymous and cannot be audited. Its guarantee is that it builds:

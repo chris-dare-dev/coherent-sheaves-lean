@@ -34,11 +34,12 @@ provides locally finite `AlgebraicCycle`s with pushforward, `Scheme.ord`/`ordHom
 `SheafOfModules.IsLocallyFree`, ring-level `Module.Invertible` and `CommRing.Pic`, generic
 presheaf-of-modules sheafification, and ideal-sheaf subschemes.
 
-CohLean now supplies coherence and the abelian category `Coh X`. Still missing, and therefore
-in scope here: a rank-one/invertible-sheaf predicate, a tensor product on sheaves of modules,
-scheme-level `Pic X`, Cartier and effective Cartier divisors, `O_X(D)`, ampleness, higher direct
-images, finiteness of cohomology, `χ(F)`, Serre duality, Chern classes, intersection numbers,
-and Riemann–Roch.
+CohLean now supplies coherence and the abelian category `Coh X`. The active B2 construction also
+supplies a rank-one/invertible-sheaf predicate and the raw sheafification of the presheaf tensor.
+Tensor/sheafification coherence and the resulting scheme-level `Pic X` group are still missing,
+as are Cartier and effective Cartier divisors, `O_X(D)`, ampleness, higher direct images,
+finiteness of cohomology, `χ(F)`, Serre duality, Chern classes, intersection numbers, and
+Riemann–Roch.
 
 ## Architecture: two layers
 

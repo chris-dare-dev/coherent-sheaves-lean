@@ -31,6 +31,7 @@ import CohLean.ForMathlib.FilteredTotalComplexAdjacent
 import CohLean.ForMathlib.FilteredTotalComplexFirstPageDifferential
 import CohLean.ForMathlib.DivisorAPIAudit
 import CohLean.Divisors.Cartier
+import CohLean.Divisors.Picard
 import CohLean.AlgebraicGeometry.Modules.RestrictOver
 import CohLean.AlgebraicGeometry.Modules.ModulesEquiv
 import CohLean.Coh.Defs
