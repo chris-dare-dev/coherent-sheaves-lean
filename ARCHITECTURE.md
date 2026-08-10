@@ -20,7 +20,7 @@ gate.
 | `CohLean/AlgebraicGeometry/Modules` | Module and sheaf-of-modules constructions over schemes |
 | `CohLean/Coh` | Coherent sheaves and their categorical properties |
 | `CohLean/Divisors` | Cartier divisors, invertible sheaves, tensor structure, and the Picard group |
-| `CohLean/Cohomology` | Čech and spectral-sequence infrastructure, finite-dimensional cohomology data, and geometric Euler characteristics |
+| `CohLean/Cohomology` | Čech and spectral-sequence infrastructure, finite-dimensional cohomology data, geometric Euler characteristics, and their `K₀` factorization |
 | `CohLean/Topology` | General open-set-site infrastructure used by the geometric packages |
 | `CohLean/Development` | Compile-only API audits and development probes; not part of the root import |
 
@@ -57,6 +57,9 @@ derived-functor groups. It records a functorial lift from abelian groups to `k`-
 a comparison isomorphism after forgetting scalars, finite-dimensionality, and eventual
 vanishing. `Variety.NumericalData` contains this package directly; it can no longer substitute
 an unrelated integer-valued function for cohomological `χ`.
+`Cohomology.EulerCharacteristicAdditivity` transports the actual `Ext` long exact sequence,
+with scalar-linearity of its connecting maps isolated explicitly, and descends `χ` to an
+additive homomorphism from the presented Grothendieck group of coherent sheaves.
 
 ## Dimension and characteristic classes
 

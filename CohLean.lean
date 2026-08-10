@@ -51,6 +51,7 @@ import CohLean.Cohomology.CechBicomplex
 import CohLean.Cohomology.CechComparison
 import CohLean.Cohomology.CechInitialPage
 import CohLean.Cohomology.EulerCharacteristic
+import CohLean.Cohomology.EulerCharacteristicAdditivity
 import CohLean.Cohomology.Strategy
 
 /-!

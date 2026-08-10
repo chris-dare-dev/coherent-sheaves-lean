@@ -81,9 +81,12 @@ this stage will prove, so it must take finiteness as an input rather than derive
 implemented by `CohLean.Cohomology.EulerCharacteristic`: `χ` is relative to a functorial
 finite-dimensional `k`-linear lift of each `H^i` and an eventual-vanishing bound. #32 proves
 additivity from the `Ext` long exact sequence (`Ext.covariantSequence_exact`) plus that bound,
-with the hypotheses carried. Both become unconditional the day #29 lands, without restating
-them. This keeps the trust boundary where `CONTRIBUTING.md` puts it: a hypothesis in a
-statement, never an axiom and never a `sorry`.
+with the hypotheses carried. It is implemented by
+`CohLean.Cohomology.EulerCharacteristicAdditivity`; the only additional input is the
+base-field-linearity of the connecting maps, since Mathlib currently exposes them only as
+additive homomorphisms. Both results become unconditional when Serre finiteness and that
+linear compatibility land, without restating them. This keeps the trust boundary where
+`CONTRIBUTING.md` puts it: a hypothesis in a statement, never an axiom and never a `sorry`.
 
 ## Two shape facts that fix every B3 statement
 
@@ -97,11 +100,10 @@ Both were established by elaboration, not by reading, and both are load-bearing:
    deciding it once here is cheaper than each file discovering it.
 2. **The bridge from `X.Modules` to abelian sheaves is
    `(SheafOfModules.toSheaf X.ringCatSheaf).obj`.** It is `Additive` and
-   `PreservesFiniteLimits`, so it carries kernels and monomorphisms. It is **not** known
-   upstream to preserve epimorphisms, and the long exact sequence needs that: a short exact
-   sequence in `X.Modules` has to remain short exact in `Sheaf J AddCommGrpCat` before
-   `Ext.covariantSequence_exact` applies. That is a small, isolable lemma and the one
-   genuine gap between here and #32.
+   `PreservesFiniteLimits`. CohLean's `Scheme.Modules.toSheaf` wrapper also preserves finite
+   colimits, so a short exact sequence in `X.Modules` remains short exact in
+   `Sheaf J AddCommGrpCat` before `Ext.covariantSequence_exact` applies. The remaining
+   interface gap is scalar-linearity of the resulting connecting homomorphisms.
 
 ## Dependency graph for #29–#32
 
