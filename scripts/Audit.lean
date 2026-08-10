@@ -240,6 +240,29 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms Coh.exactInclusion
 #print axioms Coh.shortExact_map_ι
 
+-- Layer B stage 2: Cartier divisors as locally representable sections of
+-- `K(X)ˣ / 𝒪_{X,x}ˣ`, principal equivalence, codimension-one coefficients,
+-- and pullback from explicit compatible function-field data.
+#print axioms Scheme.localCartierClass_eq_iff
+#print axioms Scheme.isCartier_zero
+#print axioms Scheme.IsCartier.add
+#print axioms Scheme.IsCartier.neg
+#print axioms Scheme.CartierDivisor.ext
+#print axioms Scheme.CartierDivisor.zero_apply
+#print axioms Scheme.CartierDivisor.add_apply
+#print axioms Scheme.CartierDivisor.neg_apply
+#print axioms Scheme.CartierDivisor.exists_localEquation
+#print axioms Scheme.CartierDivisor.toClass_eq_iff
+#print axioms Scheme.CartierDivisor.toClass_eq_iff_exists
+#print axioms Scheme.CartierDivisor.toClass_principal
+#print axioms Scheme.CartierDivisor.ordUnitHom_eq_zero_of_mem_localUnits
+#print axioms Scheme.CartierDivisor.localOrder_localCartierClass
+#print axioms Scheme.CartierDivisor.coefficient_add
+#print axioms Scheme.CartierDivisor.coefficient_principal
+#print axioms Scheme.CartierDivisor.coefficient_eq_zero_of_coheight_ne_one
+#print axioms Scheme.CartierPullbackData.localMap_localCartierClass
+#print axioms Scheme.CartierPullbackData.pullback_principal
+
 -- Layer B stage 3: exactness of the bridge from sheaves of modules to abelian sheaves.
 -- This is what lets a short exact sequence in `X.Modules` reach `Ext`, and hence the
 -- cohomology long exact sequence. The first two are general category theory and have

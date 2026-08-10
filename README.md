@@ -83,6 +83,10 @@ fourfold specialisations, the K3 and Calabi–Yau-threefold cases, the Euler pai
 projective-plane models. Layer B stage B1 is complete: `Coh X` is abelian on a locally
 noetherian scheme, and its inclusion into `X.Modules` is exact. The proof includes locality,
 the affine comparison and equivalence, and closure under kernels, cokernels, and extensions.
+Layer B stage B2 now has its Cartier-divisor foundation: on an integral scheme,
+`Scheme.CartierDivisor X` is the abelian group of locally representable sections of
+`K(X)ˣ / 𝒪_{X,x}ˣ`, with principal divisors, divisor classes, order-of-vanishing coefficients,
+and pullback from explicit compatible function-field data.
 Every later Layer B stage has a milestone and issue-level dependency graph; see
 [ROADMAP.md](ROADMAP.md).
 

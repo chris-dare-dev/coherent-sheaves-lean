@@ -1,6 +1,6 @@
 # Handoff
 
-Updated 2026-08-09 for the #21 branch, based on `9862177` (#76). For a session picking this
+Updated 2026-08-09 for the #22 branch, based on `a719258` (#77). For a session picking this
 repo up cold.
 
 Read §1 and §7. Everything else is reference.
@@ -27,7 +27,7 @@ lake env lean scripts/Audit.lean
 The audit must print `[propext, Classical.choice, Quot.sound]` on every line and never
 `sorryAx`. There is no `sorry` in this library and there never has been.
 
-**State after #21:** `lake build` completes 3270 jobs and 185 declarations are audited.
+**State after #22:** `lake build` completes 3271 jobs and 204 declarations are audited.
 Every audit line uses only `[propext, Classical.choice, Quot.sound]`; there is no `sorryAx`.
 Docs live at
 <https://chris-dare-dev.github.io/coherent-sheaves-lean/>.
@@ -151,6 +151,7 @@ a Todd class and nothing else.
 | `ForMathlib/AffineComparisonGluing.lean` | compatibility exports around Mathlib v4.32's upstream Hartshorne II.5.1 theorem, including `isIso_fromTildeΓ_of_isQuasicoherent` |
 | `ForMathlib/AffineComparisonFiniteness.lean` | transports finite generators/presentations to basic opens and patches the localized finite modules |
 | `ForMathlib/DivisorAPIAudit.lean` | compile-only B2 inventory: cycles/order of vanishing, local freeness, ring-level Picard data, sheafification, and ideal-sheaf subschemes; records the genuinely missing divisor layer |
+| `Divisors/Cartier.lean` | Cartier divisors on an integral scheme as locally representable sections of `K(X)ˣ / 𝒪_{X,x}ˣ`; principal classes, order coefficients, and explicitly-hypothesized pullback |
 | `Coh/Kernels.lean` | finite-limit preservation for restriction, localization through kernels, affine/global kernel and cokernel closure, and the two object-property closure instances |
 | `Coh/Extensions.lean` | local lifting on two finite refinements and the finite horseshoe presentation proving closure under extensions, with no noetherian hypothesis |
 | `Coh/Abelian.lean` | zero and finite-product closure, the abelian instance on `Coh X`, and the exact inclusion into `X.Modules` |
@@ -162,7 +163,7 @@ The two original `ForMathlib` files fill a real Mathlib gap: Mathlib has
 that transporting a presentation preserves `Presentation.IsFinite`. Both files are in Mathlib
 namespaces so upstreaming is a file move.
 
-**Still not proved:** geometric `χ`; all of B2, B4, B5. General cohomology finiteness
+**Still not proved:** geometric `χ`; the invertible-sheaf/`Pic X` and later parts of B2, all of B4, B5. General cohomology finiteness
 remains deliberately deferred; the affine global-sections finiteness needed by B1 is proved.
 
 ---
@@ -213,12 +214,13 @@ shared too, and they are where every merge conflict this project has had actuall
 | A7 | 0 | **done** — threefold and fourfold RR |
 | A8 | 1 | Euler pairing **done**; the numerical lattice (#17) remains |
 | B1 | 0 | **done** — `Coh X` abelian with exact inclusion into `X.Modules` |
-| B2 | 5 | Divisors, `Pic X`, `O_X(D)`; #22 and #23 are the parallel entries |
+| B2 | 4 | Cartier divisors are done; `Pic X`, `O_X(D)`, determinant, and the effective-divisor sequence remain |
 | B3 | 7 | Cohomology and `χ` — **still the real gate** |
 | B4 | 5 | Snapper polynomials → intersection numbers |
 | B5 | 7 | Serre duality → RR for surfaces → discharge `hirzebruch_riemannRoch` |
 
-**Startable after this branch merges:** **#22, #23, #33**. Issue #27 is already in progress.
+**In progress:** **#23**. **Startable after this branch merges:** **#33**. Issue #27 is already
+in progress.
 Regenerate this list with `gh issue list --label ready` before choosing,
 because tracker labels move faster than this file.
 
@@ -230,10 +232,13 @@ expect to land in Layer B, where the cost is Mathlib plumbing rather than mathem
 
 ## 7. In flight
 
-**B1 is complete. B2 is now open for construction.** Issue #21 selected v4.32.1, migrated the
-whole repository, and pinned the exact upstream API in `ForMathlib/DivisorAPIAudit.lean`.
-Start #22 (Cartier divisors) and #23 (invertible sheaves/`Pic X`) independently; both are
-needed by #24 (`O_X(D)`). Do not rebuild algebraic cycles or order of vanishing.
+**B1 is complete. #22 supplies the first B2 construction.** `Divisors/Cartier.lean` defines
+Cartier divisors on an integral scheme from the stalkwise quotients `K(X)ˣ / 𝒪_{X,x}ˣ`, proves
+their abelian-group operations, packages principal equivalence, and descends `Scheme.ord` to
+coefficients. It does not claim coefficient support is locally finite: upstream has no theorem
+supporting that `AlgebraicCycle` packaging. Pullback is available precisely from explicit
+function-field data preserving local units. #23 (invertible sheaves/`Pic X`) is in progress and
+is the remaining input to #24 (`O_X(D)`).
 
 Universe defaulting and iterated-slice elaboration are still the dominant implementation
 hazards; the fixes are preserved in §8. The `Finset`/`Set` warning remains retracted.
@@ -473,11 +478,9 @@ present, the error is about *when* Lean looked, not *what* it found.
 
 > This order is a snapshot. Re-check tracker labels before starting.
 
-1. **#22** — Cartier divisors, principal divisors, and divisor classes, building on
-   `Scheme.ord` and `AlgebraicCycle`.
-2. **#23** — invertible sheaves and `Pic X`, building the missing scheme layer over
+1. **#23** — invertible sheaves and `Pic X`, building the missing scheme layer over
    `SheafOfModules.IsLocallyFree` and the ring-level Picard API. It is independent of #22.
-3. **#33** — multivariable numerical polynomials and finite differences, the independent B4
+2. **#33** — multivariable numerical polynomials and finite differences, the independent B4
    entry point.
 
 Issue #27 (Čech versus derived sheaf cohomology) already has an implementation in progress.

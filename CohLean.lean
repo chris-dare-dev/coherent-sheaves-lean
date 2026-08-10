@@ -26,6 +26,7 @@ import CohLean.ForMathlib.AffineComparisonFiniteness
 import CohLean.ForMathlib.ToSheafExact
 import CohLean.ForMathlib.ExtraCodegeneracy
 import CohLean.ForMathlib.DivisorAPIAudit
+import CohLean.Divisors.Cartier
 import CohLean.AlgebraicGeometry.Modules.RestrictOver
 import CohLean.AlgebraicGeometry.Modules.ModulesEquiv
 import CohLean.Coh.Defs

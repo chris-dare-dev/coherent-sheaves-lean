@@ -7,11 +7,10 @@ before touching it. The live dependency graph is recorded in each milestone desc
 `ready` and `blocked` are mutually exclusive, while `in-progress` means an implementation or
 pull request already exists.
 
-Current independent entry points after #21 merges are
-[#22](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/22),
-[#23](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/23), and
-[#33](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/33). Issue #27 already has
-an implementation in progress.
+Issue [#22](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/22) supplies the
+Cartier-divisor foundation. [#23](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/23)
+is the remaining B2 entry point and is in progress; [#33](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/33)
+remains independent. Issue #27 also has an implementation in progress.
 
 
 Target: Riemann–Roch for smooth projective varieties over a field, general dimension,
@@ -104,7 +103,7 @@ depend on it. The cheapest instance would be `Examples/RankOneSurface`: `H ↦ �
 | # | Stage | Estimate | Gate |
 |---|---|---|---|
 | B1 | Coherent category, locality, affine comparison, closure, abelian/exact inclusion | 2–3 months | **done** ([milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/4)) |
-| B2 | Invertible sheaves, `Pic X`, Cartier divisors, `O_X(D)`, determinant, effective-divisor sequence | 2–3 months | [milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/7); #21 done, #22 and #23 ready |
+| B2 | Invertible sheaves, `Pic X`, Cartier divisors, `O_X(D)`, determinant, effective-divisor sequence | 2–3 months | [milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/7); #21 and #22 done, #23 in progress |
 | B3 | Affine vanishing, cohomology boundedness, geometric `χ`, additivity | 4–6 months | [milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/5); explicit affine Čech vanishing done; #27 in progress, #28 blocked on #27; finiteness deferred, see below |
 | B4 | Numerical polynomials, Snapper, intersections, numerical Chern data | ~3 months | [milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/9); #33 ready |
 | B5 | Canonical sheaf, Serre duality, surface RR, dévissage, Layer A discharge | ~6 months | [milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/8); blocked on B2–B4 |
@@ -161,9 +160,16 @@ vanishing; `SheafOfModules.IsLocallyFree` supplies arbitrary-rank local freeness
 `Module.Invertible`/`CommRing.Pic` supply the affine ring-level Picard API. Generic
 `PresheafOfModules.sheafification` and `Scheme.IdealSheafData.subscheme` are construction
 machinery. Mathlib still has no scheme rank-one/invertible-sheaf predicate, tensor product on
-`SheafOfModules`, scheme Picard group, Cartier/effective Cartier divisors, or `O_X(D)`.
-Consequently #22 (Cartier divisors) and #23 (invertible sheaves and `Pic X`) are independent
-next steps; they jointly unlock #24.
+`SheafOfModules`, scheme Picard group, effective Cartier divisors, or `O_X(D)`.
+
+Issue #22 fills the Cartier-divisor gap for integral schemes. `Scheme.CartierDivisor X` is the
+abelian group of locally representable sections of the stalkwise quotient
+`K(X)ˣ / 𝒪_{X,x}ˣ`; principal equivalence is an explicit quotient, and Mathlib's `Scheme.ord`
+descends to codimension-one coefficients. Pullback requires explicit function-field data that
+carries local units to local units, since upstream constructs no such map for an arbitrary
+scheme morphism. Local finiteness of coefficient support is not upstream, so the coefficient
+function is deliberately not repackaged as an `AlgebraicCycle`. Issue #23 supplies the other
+input needed by #24.
 
 **B3.** The hardest step and the one everything else waits on. Mathlib's sheaf cohomology
 is `Ext` from the constant sheaf, which is the right general definition but not obviously
