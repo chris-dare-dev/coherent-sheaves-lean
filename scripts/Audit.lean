@@ -8,6 +8,7 @@ failure: this library has no `sorry`, and the trust boundary is carried by the
 *fields* of `NumericalVariety`, which are visible in its type, not by holes.
 -/
 import CohLean
+import CohLean.Intersection.ChernCharacter
 import CohLean.Numerical.Specializations.Surface
 import CohLean.Numerical.Specializations.Threefold
 import CohLean.Numerical.Specializations.Fourfold
@@ -743,6 +744,48 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms CohLean.Intersection.ChernCharacterSurface.chernCharacterTwoDegree_lineBundle
 #print axioms CohLean.Intersection.ChernCharacterSurface.discriminantDegree
 #print axioms CohLean.Intersection.ChernCharacterSurface.discriminantDegree_eq_numericalVariety
+
+-- Layer B stage 4: bounded numerical-ring reconstruction. Existence of representatives and
+-- separation by divisor products are fields of the input structures, not hidden axioms.
+#print axioms CohLean.Intersection.ChernCharacter.homogeneousPicardCoefficient
+#print axioms CohLean.Intersection.ChernCharacter.picardMixedDifference_add
+#print axioms CohLean.Intersection.ChernCharacter.picardCoefficient_add
+#print axioms CohLean.Intersection.ChernCharacter.scaledPicardCoefficient_add
+#print axioms CohLean.Intersection.ChernCharacter.interpolatingPolynomial_add
+#print axioms CohLean.Intersection.ChernCharacter.homogeneousPicardCoefficient_add
+#print axioms CohLean.Intersection.ChernCharacter.scaledPicardCoefficient_eq_of_perm
+#print axioms CohLean.Intersection.ChernCharacter.homogeneousPicardCoefficient_eq_of_perm
+#print axioms CohLean.Intersection.ChernCharacter.divisorProduct_nil
+#print axioms CohLean.Intersection.ChernCharacter.PairingContext
+#print axioms CohLean.Intersection.ChernCharacter.PairingContext.ReconstructionData
+#print axioms CohLean.Intersection.ChernCharacter.PairingContext.ReconstructionData.tauComponent
+#print axioms CohLean.Intersection.ChernCharacter.PairingContext.ReconstructionData.tauComponent_mem
+#print axioms CohLean.Intersection.ChernCharacter.PairingContext.ReconstructionData.degree_tauComponent_mul_divisorProduct
+#print axioms CohLean.Intersection.ChernCharacter.PairingContext.ReconstructionData.tauComponent_eq_of_twistPairing_eq
+#print axioms CohLean.Intersection.ChernCharacter.PairingContext.ReconstructionData.tauComponent_eq_of_eulerPic_eq
+#print axioms CohLean.Intersection.ChernCharacter.PairingContext.ReconstructionData.tauComponent_add
+#print axioms CohLean.Intersection.ChernCharacter.toddComponent
+#print axioms CohLean.Intersection.ChernCharacter.chernCharacterComponent
+#print axioms CohLean.Intersection.ChernCharacter.chernCharacterComponent_zero
+#print axioms CohLean.Intersection.ChernCharacter.chernCharacterComponent_one
+#print axioms CohLean.Intersection.ChernCharacter.chernCharacterComponent_two
+#print axioms CohLean.Intersection.ChernCharacter.chernCharacterComponent_three
+#print axioms CohLean.Intersection.ChernCharacter.chernCharacterComponent_four
+#print axioms CohLean.Intersection.ChernCharacter.chernCharacterComponent_of_five_le
+#print axioms CohLean.Intersection.ChernCharacter.chernCharacterComponent_mem
+#print axioms CohLean.Intersection.ChernCharacter.chernCharacterComponent_eq_zero_of_dimension_lt
+#print axioms CohLean.Intersection.ChernCharacter.tauComponent_one_eq
+#print axioms CohLean.Intersection.ChernCharacter.tauComponent_two_eq
+#print axioms CohLean.Intersection.ChernCharacter.tauComponent_three_eq
+#print axioms CohLean.Intersection.ChernCharacter.tauComponent_four_eq
+#print axioms CohLean.Intersection.ChernCharacter.chernCharacterComponent_eq_of_eulerPic_eq
+#print axioms CohLean.Intersection.ChernCharacter.chernCharacterComponent_iso
+#print axioms CohLean.Intersection.ChernCharacter.chernCharacterComponent_add
+#print axioms CohLean.Intersection.ChernCharacter.LineBundleComparison
+#print axioms CohLean.Intersection.ChernCharacter.tauComponent_eq_lineTauCandidate
+#print axioms CohLean.Intersection.ChernCharacter.chernCharacterComponent_lineBundle
+#print axioms CohLean.Intersection.ChernCharacter.degree_chernCharacterComponent_two_eq_surface
+#print axioms CohLean.Intersection.ChernCharacter.toChernClassData
 
 -- Layer B stage 3: `CohLean/Cohomology/Strategy.lean` contributes nothing here on
 -- purpose. It is the compile-only API map for the B3 route decision and declares only

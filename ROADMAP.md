@@ -117,7 +117,7 @@ depend on it. The cheapest instance would be `Examples/RankOneSurface`: `H ↦ �
 | B1 | Coherent category, locality, affine comparison, closure, abelian/exact inclusion | 2–3 months | **done** ([milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/4)) |
 | B2 | Invertible sheaves, `Pic X`, Cartier divisors, `O_X(D)`, determinant, effective-divisor sequence | 2–3 months | **done** ([milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/7)) |
 | B3 | Affine vanishing, cohomology boundedness, geometric `χ`, additivity | 4–6 months | [milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/5); explicit affine Čech vanishing and comparison infrastructure done; conditional geometric `χ` (#31) and additivity/K₀ factorization (#32) done; Serre finiteness and scalar-linearity of connecting maps remain explicit inputs |
-| B4 | Numerical polynomials, Snapper, intersections, numerical Chern data | ~3 months | [milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/9); #33 mixed finite-difference algebra, conditional #34 Snapper comparison, and #35 intersections done; numerical Chern data next |
+| B4 | Numerical polynomials, Snapper, intersections, numerical Chern data | ~3 months | [milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/9); #33–#35 and the surface/general numerical Chern layers #37–#38 implemented with explicit geometric and pairing certificates |
 | B5 | Canonical sheaf, Serre duality, surface RR, dévissage, Layer A discharge | ~6 months | [milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/8); blocked on B2–B4 |
 
 Total 18–30 months. Layer A exists so that nothing waits on this.
@@ -275,6 +275,16 @@ invariance, short-exact additivity under a visible virtual-rank hypothesis, the 
 and line-bundle cases, and compatibility with the Layer A discriminant degree are proved. The
 output intentionally remains degree-level in codimension two: lifting it to a class in a chosen
 numerical ring requires the explicit representability/nondegeneracy input tracked by #38.
+
+Issue #38 is implemented in `CohLean/Intersection/ChernCharacter.lean`. Mixed twist
+coefficients below top degree are first decontaminated by rational interpolation in a common
+scaling variable. A `PairingContext` then separates representability from the explicit
+nondegeneracy statement that divisor products distinguish the selected graded piece.
+`ReconstructionData` represents the resulting Todd-weighted functionals, and the triangular
+identity `τ = ch·td` reconstructs `ch₀` through `ch₄`. Grading, dimension truncation,
+isomorphism comparison, exact-sequence additivity, the conditional line-bundle exponential,
+and the degree-level surface comparison are proved. The API deliberately makes no unconditional
+claim that divisor pairings recover every middle-codimension class on every variety.
 
 **B5.** Serre duality is the second hard theorem. Mathlib's derived-category infrastructure
 (Riou) is unusually strong and is the reason this is attemptable at all.
