@@ -20,7 +20,8 @@ multivariable numerical-polynomial algebra for B4, and
 powers and Euler characteristics through explicit exact-sequence induction data.
 [Issue #35](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/35) extracts symmetric
 multilinear Picard and Cartier-divisor intersection numbers from those coefficients.
-Issue #27 also has an implementation in progress.
+Issue #27 supplies the Čech-to-derived comparison; #28 is the next B3 step, deriving affine
+vanishing from that comparison and the explicit affine Čech theorem.
 
 
 Target: Riemann–Roch for smooth projective varieties over a field, general dimension,
@@ -250,8 +251,11 @@ affine Čech vanishing chain is also done: #62 connects Mathlib's simplicial
 `CohLean/Cohomology/AffineCech.lean` contracts the complex after restriction to each member
 of a finite distinguished-open cover and descends exactness along the spanning family. This
 proves exactness of the explicit Čech complex in positive degrees; it deliberately does not
-claim a comparison with derived-functor sheaf cohomology. Issue #27 supplies that comparison;
-#28 is then the short derived-affine-vanishing corollary.
+claim a comparison with derived-functor sheaf cohomology. Issue #27 now supplies that comparison
+in `CohLean/Cohomology/CechGlobalComparison.lean`: the global-sections augmentation is exact on
+injectives, its bicomplex totalization is a quasi-isomorphism, and an acyclic-cover hypothesis
+identifies Čech cohomology with `Sheaf.H`. #28 is then the short derived-affine-vanishing
+corollary.
 
 **B4.** Snapper's theorem is dimension-general, so B4 serves threefolds and fourfolds at no
 extra cost. Issue #33 audits `jjaassoonn/DimensionTheory` and Mathlib, reuses Mathlib's current

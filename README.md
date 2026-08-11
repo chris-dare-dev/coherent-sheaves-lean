@@ -52,6 +52,10 @@ now defined relative to explicit finite-dimensionality and eventual-vanishing da
 becomes unconditional without an API change when Serre finiteness is proved. It is additive
 on short exact sequences once the `Ext` connecting maps are supplied as base-field-linear
 maps, and therefore descends through an explicit presentation of `K₀(Coh X)`.
+For finite covers, CohLean also compares the explicit Čech complex with Mathlib's derived
+sheaf cohomology: the global-sections augmentation is a quasi-isomorphism on an injective
+resolution, and a cover acyclic for the sheaf yields an equivalence between Čech cohomology
+and `Sheaf.H`.
 The independent B4 algebraic entry point is also present: arbitrary-direction mixed finite
 differences on `ℤ^r`, the `(n+1)`-fold vanishing definition of numerical degree, Newton and
 polarized top-coefficient extraction, and the symmetric bilinear surface specialization.

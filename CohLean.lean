@@ -63,6 +63,7 @@ import CohLean.Cohomology.FreeAbelianYonedaStalk
 import CohLean.Cohomology.InjectiveCechAcyclic
 import CohLean.Cohomology.CechInitialPage
 import CohLean.Cohomology.CechTotalComparison
+import CohLean.Cohomology.CechGlobalComparison
 import CohLean.Cohomology.EulerCharacteristic
 import CohLean.Cohomology.EulerCharacteristicAdditivity
 import CohLean.Cohomology.Strategy

@@ -43,8 +43,8 @@ lattice, #17) remains.
 **Layer B stage B1 is complete.** It includes the affine-local criterion, closure under
 isomorphism, the slice-equivalence transport, the affine comparison and equivalence, closure
 under kernels, cokernels, and extensions, and finally the abelian structure on `Coh X` with
-exact inclusion into `X.Modules`. B3 has explicit affine Čech exactness and substantial
-Čech/derived comparison infrastructure. `Cohomology.FiniteCohomology` constructs geometric `χ`
+exact inclusion into `X.Modules`. B3 has explicit affine Čech exactness and the complete
+finite-cover Čech/derived comparison. `Cohomology.FiniteCohomology` constructs geometric `χ`
 from the actual `Sheaf.H` functors under explicit linearity, finite-dimensionality, and
 eventual-vanishing data; issue #32 proves its short-exact additivity and `K₀` factorization.
 B4 now has scheme-independent mixed finite differences, conditional geometric Snapper
@@ -182,7 +182,8 @@ a Todd class and nothing else.
 | `Coh/Abelian.lean` | zero and finite-product closure, the abelian instance on `Coh X`, and the exact inclusion into `X.Modules` |
 | `AlgebraicGeometry/Modules/ToSheafExact.lean` | `SheafOfModules.toSheaf` preserves finite colimits, hence epis and short exact sequences. Needed because `Sheaf.H` is `Ext` from the constant sheaf, so the cohomology long exact sequence runs on the *image* of a sequence in `Sheaf J AddCommGrpCat` — and nothing upstream said it survives the trip |
 | `AlgebraicGeometry/Modules/ModulesEquiv.lean` | crosses the `Scheme.Modules` wrapper and exports `Scheme.Modules.toSheaf` with its exactness instances |
-| `Cohomology/CechComparison.lean`, `Cohomology/CechInitialPage.lean` | the Čech/derived bicomplex comparison and identification of the degree-zero row and horizontal differential with the Čech complex |
+| `Cohomology/CechComparison.lean`, `Cohomology/CechInitialPage.lean` | the Čech/derived bicomplex and identification of the degree-zero row and horizontal differential with the Čech complex |
+| `Cohomology/CechGlobalComparison.lean` | the global-sections augmentation, injective-resolution bicomplex total quasi-isomorphism, and the finite acyclic-cover equivalence between Čech cohomology and `Sheaf.H` |
 | `Cohomology/EulerCharacteristic.lean` | a functorial finite-dimensional `k`-linear lift of actual coherent cohomology, finite support, the geometric alternating sum, and isomorphism invariance |
 | `Cohomology/Strategy.lean` | **Proves nothing.** A compile-only API map of the upstream declarations B3 can build on: 0 theorems, 6 `example`s, deliberately built to break the day one of them moves. Records the #26 reconnaissance so it is not repeated |
 
@@ -310,8 +311,9 @@ decision before planning anything here:
   it, and become unconditional unchanged the day #29 lands.
 
 `Cohomology/Strategy.lean` records all of this and proves nothing. #13 (affine Čech vanishing)
-is done, and the Čech/derived bicomplex plus initial-page identifications now live in
-`CechComparison.lean` and `CechInitialPage.lean`. Conditional geometric `χ` now lives in
+and #27 (finite acyclic-cover Čech/derived comparison) are done. The comparison culminates in
+`CechGlobalComparison.lean`; #28 is the next short step, transferring the affine Čech theorem
+to derived affine vanishing. Conditional geometric `χ` now lives in
 `EulerCharacteristic.lean`; #32 still needs the linear long exact sequence and its
 alternating-dimension proof.
 
@@ -538,7 +540,8 @@ present, the error is about *when* Lean looked, not *what* it found.
 
 #22–#25, #36, and #79 are complete. B2 is complete.
 
-Issue #27 (Čech versus derived sheaf cohomology) already has an implementation in progress.
+Issue #27 (Čech versus derived sheaf cohomology) is complete. Proceed with #28, the derived
+affine-vanishing corollary, then #30 for finite-cover boundedness.
 
 A **rank-one model for a Calabi–Yau threefold** is not an issue yet — which today makes it
 the only unblocked Layer A task, since #17 is labelled `blocked`. It is also cheap: `ℚ[t]/(t⁴)` with `∫t³ = d` via `NumericalRing.ofGradedBasis`, exactly
