@@ -66,6 +66,14 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms CohLean.AlgebraicGeometry.Proj.TwistingSectionRange.globalSections_finite
 #print axioms CohLean.AlgebraicGeometry.Proj.projectiveSpace_globalSections_finite
 #print axioms CohLean.AlgebraicGeometry.Proj.projectiveSpace_variableSection_bijective
+#print axioms CohLean.AlgebraicGeometry.Proj.polynomialVariableBasicOpen_cover
+#print axioms CohLean.AlgebraicGeometry.Proj.polynomialToNatGlobalSections_injective
+#print axioms CohLean.AlgebraicGeometry.Proj.polynomialToNatGlobalSections_surjective
+#print axioms CohLean.AlgebraicGeometry.Proj.polynomialNatGlobalSectionsAddEquiv
+#print axioms CohLean.AlgebraicGeometry.Proj.polynomialTwistingGlobalSectionsAddEquiv
+#print axioms CohLean.AlgebraicGeometry.Proj.polynomialTwistingGlobalSectionsModuleIso
+#print axioms CohLean.AlgebraicGeometry.Proj.polynomialVariableCechDenominator_mem
+#print axioms CohLean.AlgebraicGeometry.Proj.basicOpen_polynomialVariableCechDenominator
 
 -- The geometric source object is a bundle of explicit data, not an axiom identifying schemes
 -- with their numerical realizations.

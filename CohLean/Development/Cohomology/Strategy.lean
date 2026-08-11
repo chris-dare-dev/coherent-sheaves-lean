@@ -9,7 +9,7 @@ import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.Proper
 import Mathlib.Algebra.Homology.DerivedCategory.Ext.ExactSequences
 import Mathlib.CategoryTheory.Sites.SheafCohomology.Basic
 import Mathlib.CategoryTheory.Sites.SheafCohomology.Cech
-import CohLean.AlgebraicGeometry.Proj.Modules.Finiteness
+import CohLean.AlgebraicGeometry.Proj.Modules.ProjectiveSpace
 import CohLean.Cohomology.Derived.AffineVanishing
 import CohLean.Cohomology.Finiteness.FiniteDimensional
 
@@ -53,10 +53,12 @@ degree-zero localized modules, the locally fractional associated sheaf, integer 
 `O(d)`. The structure module is canonically identified with Mathlib's structure sheaf, and every
 nonnegative twist is explicitly trivialized on a degree-one chart, including bijectivity of the
 canonical basic-open section map. `Proj.Modules.Finiteness` derives quasi-coherence and coherence
-from visible affine comparison data and exposes a degree-bounded global-section interface. What
-remains for #29 is the global polynomial-grading comparison and the degreewise algebra controlling
-projective Čech homology; the local variable-chart comparisons are now theorems, not certificate
-fields.
+from visible affine comparison data and exposes a degree-bounded global-section interface.
+`Proj.Modules.ProjectiveSpace` now proves the concrete polynomial comparison
+`R[Xᵢ]_d ≃ Γ(Proj R[Xᵢ], O(d))` over a field (for at least two variables), proves that the
+variable charts cover, and exposes every degreewise Čech term as a homogeneous localization.
+What remains for #29 is the cohomological Serre-finiteness argument; it must not try to prove the
+affine Čech terms finite-dimensional over the field.
 
 *The affine-cover route is complete.* `IsAffineOpen.inf` and
 `IsAffineOpen.iInf` give affineness of intersections under an affine diagonal — the
@@ -75,9 +77,9 @@ line that was not visible when it was written:
   single-cover comparison, #103 constructs the compact-basis witness, and #28 transports the
   result across the affine module/sheaf equivalence. Properness and a base field do not enter
   this vanishing layer.
-* **Still not proved.** #29, finite-dimensionality of `H^i(X, F)` over a field. Its Proj object
-  and finiteness interfaces now exist; the polynomial affine/global-section comparisons and the
-  cohomological resolution argument remain. The affine terms of a projective standard-cover
+* **Still not proved.** #29, finite-dimensionality of `H^i(X, F)` over a field. Its Proj object,
+  polynomial global-section comparison, variable-cover algebra, and finiteness interfaces now
+  exist; the cohomological resolution argument remains. The affine terms of a projective standard-cover
   Čech complex are generally infinite-dimensional over the field, so finiteness must be proved
   for its homology using the grading/Serre argument rather than termwise. The exact output type is
   `FiniteDimensionalCohomology`; it deliberately contains no eventual-vanishing claim. #31 and
@@ -124,15 +126,14 @@ Both were established by elaboration, not by reading, and both are load-bearing:
                                          ├──> #31 ──> #32
   toSheaf preserves epis ──────────────┘
 
-  #57/#94–#96 ──> #97 local chart theorems
-                         └──> polynomial global/Čech algebra ──> #29
+  #57/#94–#96 ──> #97 polynomial global/Čech algebra ──> #29
 ```
 
 ## Not done here
 
-No Serre-finiteness theorem is proved here. The completed affine boundary and the Proj module
-machinery live in real implementation modules; this file records the remaining projective
-global-section/Čech boundary and pins the declarations that #29 will consume.
+No Serre-finiteness theorem is proved here. The completed affine boundary and the Proj module,
+global-section, and variable-Čech machinery live in real implementation modules; this file pins
+the declarations that #29 will consume.
 
 ## References
 
@@ -236,6 +237,14 @@ example := @CohLean.AlgebraicGeometry.Proj.projectiveSpace_globalSections_finite
 /-- On each variable chart of polynomial projective space, the canonical section map for a
 nonnegative twist is now constructed and bijective. -/
 example := @CohLean.AlgebraicGeometry.Proj.projectiveSpace_variableSection_bijective
+
+/-- Degree-`d` homogeneous polynomials are concretely the global sections of `O(d)`, including
+the transported `k`-module structure needed by the #29 finiteness statement. -/
+noncomputable example := @CohLean.AlgebraicGeometry.Proj.polynomialTwistingGlobalSectionsModuleIso
+
+/-- Variable-cover Čech terms are explicit homogeneous localizations, without an incorrect
+termwise finite-dimensionality assertion. -/
+noncomputable example := CohLean.AlgebraicGeometry.Proj.polynomialVariableCechTerm
 
 /-- The exact output boundary for #29: a functorial linear lift of derived cohomology together
 with degreewise finite-dimensionality, but no #30 vanishing bound. -/

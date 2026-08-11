@@ -164,6 +164,15 @@ theorem natShiftBasicOpenSectionAddEquiv_apply_mk {f : A} (hf : f ∈ 𝒜 1) (d
     ((c.den : A) * f ^ d) * (c.num : A)
   ac_rfl
 
+/-- As an additive map, the constructed chart equivalence is exactly the canonical map from
+homogeneous fractions to locally fractional sections. -/
+theorem natShiftBasicOpenSectionAddEquiv_toAddMonoidHom {f : A}
+    (hf : f ∈ 𝒜 1) (d : ℕ) :
+    (natShiftBasicOpenSectionAddEquiv 𝒜 hf d).toAddMonoidHom =
+      moduleAwayToSection 𝒜 (natShift 𝒜 d) f :=
+  moduleAwayToSection_unique 𝒜 (natShift 𝒜 d) f _
+    (natShiftBasicOpenSectionAddEquiv_apply_mk 𝒜 hf d)
+
 /-- For a nonnegative twist, the canonical basic-open section map is bijective on every
 degree-one chart. -/
 theorem moduleAwayToSection_natShift_degreeOne_bijective {f : A}

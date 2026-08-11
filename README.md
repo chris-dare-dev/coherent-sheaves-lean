@@ -19,8 +19,9 @@ Riemann–Roch and stability theory while keeping every hypothesis and trust bou
 - Degree-zero localization of graded modules, associated sheaves and twisting sheaves on
   projective spectra, including the canonical identification of the structure module with the
   structure sheaf, its standard-chart comparisons, and degree-one-chart trivializations of
-  nonnegative twists through the canonical basic-open section maps, with explicit higher-twist
-  finiteness interfaces.
+  nonnegative twists through the canonical basic-open section maps. For polynomial projective
+  space, degree-`d` homogeneous polynomials are identified concretely with global sections of
+  `O(d)`, and variable-cover Čech terms are explicit homogeneous localizations.
 - Cartier and effective divisors, associated invertible sheaves, Picard-group structure,
   determinants, and first Chern classes.
 - Čech, derived-functor, and spectral-sequence infrastructure for sheaf cohomology.
@@ -44,7 +45,7 @@ CohLean/
 │   │   ├── Affine/               # comparison, gluing, finiteness, exactness
 │   │   ├── Presentation/         # finite presentations and transport
 │   │   └── Restriction/          # open-immersion restriction
-│   ├── Proj/Modules/              # localization, associated sheaves, shifts, finiteness
+│   ├── Proj/Modules/              # localization, twists, projective sections, Čech terms
 │   └── Variety/                  # geometric varieties and numerical descent
 ├── Coh/
 │   ├── Basic/                    # definitions and isomorphism invariance
