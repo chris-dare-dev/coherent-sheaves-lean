@@ -499,10 +499,16 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms CategoryTheory.Sheaf.injectiveResolutionSectionsComplexUnliftedIso
 #print axioms CategoryTheory.Sheaf.isCechAcyclicCover_cechComputesDerivedCohomology
 #print axioms AlgebraicGeometry.Cohomology.AffineTildeCechDerivedComparisonAt
+#print axioms AlgebraicGeometry.Cohomology.AffineTildeCechDerivedComparison
 #print axioms AlgebraicGeometry.Cohomology.affineTildeCechDerivedComparisonAt_of_pos
 #print axioms AlgebraicGeometry.Cohomology.tilde_H_subsingleton_of_comparisonAt
+#print axioms AlgebraicGeometry.Cohomology.tilde_H_subsingleton_of_comparison
+#print axioms AlgebraicGeometry.Cohomology.H_subsingleton_of_iso_tilde_of_comparisonAt
+#print axioms AlgebraicGeometry.Cohomology.modules_H_subsingleton_of_iso_tilde_of_comparisonAt
+#print axioms AlgebraicGeometry.Cohomology.tilde_H_subsingleton
 #print axioms AlgebraicGeometry.Cohomology.H_subsingleton_of_iso_tilde
 #print axioms AlgebraicGeometry.Cohomology.modules_H_subsingleton_of_iso_tilde
+#print axioms AlgebraicGeometry.Cohomology.modules_H_subsingleton_of_isQuasicoherent
 
 -- Layer B stage 3: the non-circular compact-basis comparison (Stacks, Tag 01EW).
 -- Compact refinements and Cech correction make the acyclicity condition stable under
