@@ -17,7 +17,9 @@ Riemann–Roch and stability theory while keeping every hypothesis and trust bou
   structure.
 - Affine comparison and finiteness results for sheaves of modules.
 - Degree-zero localization of graded modules, associated sheaves and twisting sheaves on
-  projective spectra, with explicit finiteness interfaces.
+  projective spectra, including the canonical identification of the structure module with the
+  structure sheaf and its standard-chart comparisons, with explicit higher-twist finiteness
+  interfaces.
 - Cartier and effective divisors, associated invertible sheaves, Picard-group structure,
   determinants, and first Chern classes.
 - Čech, derived-functor, and spectral-sequence infrastructure for sheaf cohomology.

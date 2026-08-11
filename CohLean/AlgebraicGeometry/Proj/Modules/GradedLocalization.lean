@@ -342,4 +342,101 @@ theorem map_mk (f : GradedLinearMap (A := A) 𝓜 𝓝) (c : NumDenSameDeg 𝒜 
 
 end GradedLinearMap
 
+/-! ## The graded ring as a module
+
+When the graded module is the graded ring itself, the construction above recovers Mathlib's
+degree-zero homogeneous localization.  Keeping this comparison explicit is useful for identifying
+the associated sheaf of the graded ring with the structure sheaf on `Proj`.
+-/
+
+namespace DegreeZeroLocalization
+
+variable (𝒜 : ι → σA) [GradedRing 𝒜] (S : Submonoid A)
+
+/-- Regard a homogeneous localization element as a degree-zero element of the localization of the
+graded ring considered as a module over itself. -/
+noncomputable def homogeneousLocalizationLinearMap :
+    HomogeneousLocalization 𝒜 S →ₗ[HomogeneousLocalization 𝒜 S]
+      DegreeZeroLocalization 𝒜 𝒜 S where
+  toFun z := by
+    refine ⟨z.val, ?_⟩
+    obtain ⟨c, rfl⟩ := HomogeneousLocalization.mk_surjective z
+    exact ⟨
+      { deg := c.deg
+        num := c.num
+        den := c.den
+        den_mem := c.den_mem }, rfl⟩
+  map_add' x y := by
+    apply ext
+    exact HomogeneousLocalization.val_add x y
+  map_smul' x y := by
+    apply ext
+    simp only [coe_smul]
+    exact HomogeneousLocalization.val_mul x y
+
+@[simp]
+theorem coe_homogeneousLocalizationLinearMap (z : HomogeneousLocalization 𝒜 S) :
+    ((homogeneousLocalizationLinearMap 𝒜 S z : DegreeZeroLocalization 𝒜 𝒜 S) :
+      LocalizedModule S A) = z.val :=
+  rfl
+
+theorem homogeneousLocalizationLinearMap_injective :
+    Function.Injective (homogeneousLocalizationLinearMap 𝒜 S) := by
+  intro x y h
+  apply HomogeneousLocalization.val_injective S
+  exact congrArg Subtype.val h
+
+theorem homogeneousLocalizationLinearMap_surjective :
+    Function.Surjective (homogeneousLocalizationLinearMap 𝒜 S) := by
+  rintro ⟨z, hz⟩
+  obtain ⟨c, hc⟩ := hz
+  let c' : HomogeneousLocalization.NumDenSameDeg 𝒜 S :=
+    { deg := c.deg
+      num := c.num
+      den := c.den
+      den_mem := c.den_mem }
+  refine ⟨HomogeneousLocalization.mk c', ?_⟩
+  apply ext
+  exact hc
+
+/-- The degree-zero localization of the graded ring as a module is canonically linearly
+equivalent to Mathlib's homogeneous localization ring. -/
+noncomputable def selfLinearEquiv :
+    HomogeneousLocalization 𝒜 S ≃ₗ[HomogeneousLocalization 𝒜 S]
+      DegreeZeroLocalization 𝒜 𝒜 S :=
+  LinearEquiv.ofBijective (homogeneousLocalizationLinearMap 𝒜 S)
+    ⟨homogeneousLocalizationLinearMap_injective 𝒜 S,
+      homogeneousLocalizationLinearMap_surjective 𝒜 S⟩
+
+@[simp]
+theorem coe_selfLinearEquiv (z : HomogeneousLocalization 𝒜 S) :
+    ((selfLinearEquiv 𝒜 S z : DegreeZeroLocalization 𝒜 𝒜 S) :
+      LocalizedModule S A) = z.val :=
+  rfl
+
+@[simp]
+theorem selfLinearEquiv_apply_mk
+    (c : HomogeneousLocalization.NumDenSameDeg 𝒜 S) :
+    selfLinearEquiv 𝒜 S (HomogeneousLocalization.mk c) =
+      DegreeZeroLocalization.mk
+        { deg := c.deg
+          num := c.num
+          den := c.den
+          den_mem := c.den_mem } := by
+  apply ext
+  rfl
+
+@[simp]
+theorem selfLinearEquiv_symm_apply_mk (c : NumDenSameDeg 𝒜 𝒜 S) :
+    (selfLinearEquiv 𝒜 S).symm (DegreeZeroLocalization.mk c) =
+      HomogeneousLocalization.mk
+        { deg := c.deg
+          num := c.num
+          den := c.den
+          den_mem := c.den_mem } := by
+  apply (selfLinearEquiv 𝒜 S).injective
+  simp only [LinearEquiv.apply_symm_apply, selfLinearEquiv_apply_mk]
+
+end DegreeZeroLocalization
+
 end CohLean.AlgebraicGeometry.Proj
