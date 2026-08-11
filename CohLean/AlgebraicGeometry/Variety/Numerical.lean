@@ -2,11 +2,11 @@
 Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 -/
-import CohLean.AlgebraicGeometry.Variety
-import CohLean.Coh.Abelian
-import CohLean.Cohomology.EulerCharacteristic
-import CohLean.Numerical.CharacteristicClasses
-import CohLean.Numerical.Defs
+import CohLean.AlgebraicGeometry.Variety.Basic
+import CohLean.Coh.Abelian.Basic
+import CohLean.Cohomology.EulerCharacteristic.Basic
+import CohLean.Numerical.Core.CharacteristicClasses
+import CohLean.Numerical.Core.Definitions
 
 /-!
 # Realizing a geometric variety numerically

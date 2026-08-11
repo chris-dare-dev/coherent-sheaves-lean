@@ -2,9 +2,9 @@
 Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 -/
-import CohLean.AlgebraicGeometry.Proj.TwistingSheaf
+import CohLean.AlgebraicGeometry.Proj.Modules.TwistingSheaf
 import CohLean.Coh.Affine
-import CohLean.Coh.Local
+import CohLean.Coh.Descent.Locality
 import Mathlib.RingTheory.MvPolynomial.Homogeneous
 
 /-!
@@ -15,7 +15,7 @@ Mathlib supplies the affine charts
 
 `Spec (A_f)₀ ⟶ Proj A`,
 
-while `CohLean.AlgebraicGeometry.Proj.Modules` supplies the sheaf `M̃`, its stalks, and the
+while `CohLean.AlgebraicGeometry.Proj.Modules.AssociatedSheaf` supplies the sheaf `M̃`, its stalks, and the
 canonical map
 
 `(M_f)₀ ⟶ Γ(D₊(f), M̃)`.

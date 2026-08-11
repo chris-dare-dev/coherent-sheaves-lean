@@ -1,10 +1,9 @@
 # Documentation build. Nested on purpose.
 #
-# `doc-gen4` is not a dependency of CohLean and must not become one: `bridgeland-stab-lean`
-# and `bstab` `require` this package, and a `[[require]]` at the top level would make them
-# fetch and build a documentation generator they will never run. Keeping it here means the
-# ordinary `lake build` -- theirs and ours -- does not pay for it, and it keeps the docs
-# work off `lakefile.toml`, the one file in this repo that parallel sessions share.
+# `doc-gen4` is not a dependency of CohLean and must not become one. A top-level
+# `[[require]]` would make every downstream build fetch a documentation generator it never
+# runs. Keeping it here leaves the ordinary `lake build` small and keeps documentation work
+# off `lakefile.toml`, the one file in this repository that parallel sessions share.
 #
 # Build with `lake build CohLean:docs` from this directory; output lands in
 # `.lake/build/doc`. See CONTRIBUTING.md.
