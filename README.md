@@ -80,10 +80,9 @@ explicit inputs because the current library does not install enough injectives f
 sheaves globally.
 
 For affine quasi-coherent sheaves, the library proves the non-circular compact-basis criterion of
-Stacks Project, Tag 01EW, specializes it to the distinguished-open basis, and exports the resulting
-positive-degree Čech-to-derived comparison witness. Dedicated unconditional affine-vanishing
-statements and their transport across the affine module/sheaf equivalence remain tracked in issue
-#28.
+Stacks Project, Tag 01EW, specializes it to the distinguished-open basis, and derives unconditional
+positive-degree vanishing in Mathlib's `Sheaf.H`. The result applies to every quasi-coherent module
+sheaf on `Spec R` through the affine module/sheaf comparison, without a noetherian hypothesis.
 
 ## Building
 
