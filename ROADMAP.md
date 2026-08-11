@@ -236,12 +236,19 @@ actual `Ext` sequence, bounded alternating dimensions cancel, and `χ` descends 
 `K₀(Coh X)`. Mathlib exposes the connecting maps only additively, so their base-field
 linearity is isolated as `LinearConnectingMaps`, never assumed as an axiom.
 
-Issue #57 is now the active umbrella for filling that Proj gap. Its first slice (#94) constructs
-degree-zero homogeneous localization of a graded module over Mathlib's existing
-`HomogeneousLocalization` ring, reusing `LocalizedModule` rather than introducing another
-fraction relation. The remaining dependency order is: associated graded-module sheaves (#95),
-graded shifts and `O(d)` (#96), then quasi-coherence/coherence and sections (#97). Natural and
-integer gradings remain explicitly distinct until the shift layer supplies their comparison.
+Issue #57 is the active umbrella for filling that Proj gap. #94 constructs degree-zero
+homogeneous localization of a graded module over Mathlib's existing `HomogeneousLocalization`
+ring, reusing `LocalizedModule` rather than introducing another fraction relation. The #95 and
+#96 slices are implemented: `Proj/Modules.lean` constructs the locally homogeneous-
+fraction sheaf `M̃`, proves its stalk formula, gives functorial maps, and exposes the canonical
+basic-open comparison; `Proj/Shift.lean` and `Proj/TwistingSheaf.lean` make the natural/integer
+grading convention explicit and construct twists and `O(d)`. `Proj/Modules/Finiteness.lean`
+implements #97's finiteness boundary: affine comparisons and basic-open bijectivity stay visible
+as data, while quasi-coherence, coherence, bounded global-section comparison, and the
+finite-variable projective-space finite-generation consequence are theorems. Thus #29 no longer
+waits for an API shape; it waits for concrete affine/global-section comparison data for the
+polynomial grading and for the remaining cohomological Serre argument. No blanket `Ã ≅ 𝒪` or
+all-degree section theorem is claimed.
 
 The bridge that carries a short exact sequence of `𝒪ₓ`-modules into `Ext` is done — #56 for
 `SheafOfModules`, #59 for the `X.Modules` wrapper; use `Scheme.Modules.toSheaf`. The explicit

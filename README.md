@@ -55,10 +55,20 @@ maps, and therefore descends through an explicit presentation of `K₀(Coh X)`.
 The independent B4 algebraic entry point is also present: arbitrary-direction mixed finite
 differences on `ℤ^r`, the `(n+1)`-fold vanishing definition of numerical degree, Newton and
 polarized top-coefficient extraction, and the symmetric bilinear surface specialization.
-The first Proj-module foundation is present as well: degree-zero homogeneous localization of a
-graded module is constructed inside Mathlib's ordinary localized module, with explicit
-homogeneous representatives, equality criteria, `D₊(f)` constructors, and functoriality for
-degree-preserving linear maps. Associated sheaves and `O(d)` remain the next Proj layers.
+The Proj-module foundation now includes degree-zero homogeneous localization inside Mathlib's
+ordinary localized module and the associated sheaf `M̃` on `Proj`: sections are genuinely local
+homogeneous fractions, restrictions are the sheaf restrictions, stalks are identified with the
+corresponding degree-zero localizations, and graded maps induce sheaf morphisms.  The canonical
+basic-open map `(M_f)_0 → Γ(D₊(f), M̃)` is explicit, with its fraction formula, germ compatibility,
+and generator-level universal characterization.  Natural and zero-extended integer shifts are
+kept distinct, using the visible convention `M(d)ₙ = Mₙ₊d`; they define sheaf twists and `O(d)`,
+with zero normalization and strict composition for natural shifts.  Proving the full basic-open
+map bijective and identifying `Ã` with the structure sheaf are not silently assumed.  The
+finiteness leaf instead exposes `AffineComparisonData` and `BasicOpenSectionData` as the exact
+local inputs: from them it constructs global quasi-coherent data, proves coherence under explicit
+finite-presentation or noetherian/finite-generation hypotheses, and records degree-bounded
+`Γ(O(d))` comparisons.  For a finite-variable polynomial ring, Mathlib's finite generation of
+homogeneous polynomials then gives finite global sections in every certified degree.
 
 ## Architecture
 

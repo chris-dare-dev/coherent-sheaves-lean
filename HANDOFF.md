@@ -298,14 +298,19 @@ decision before planning anything here:
 
 * The **Čech route on a finite affine cover is supported**, on `IsNoetherian X` plus an affine
   diagonal — *not* properness and *not* a base field. It carries #13, #27, #28, #30.
-* **Serre finiteness (#29) is not supported and is not close.**
-  `Mathlib/AlgebraicGeometry/ProjectiveSpectrum/` has no modules at all — no
-  graded-module-to-sheaf construction, no `O(d)`, no twist. The machinery `H^i(ℙⁿ, O(d))` is
-  stated in has to be built first, which is a bigger job than B1. Issue #57 now tracks that
-  construction as #94 (degree-zero graded-module localization), #95 (associated sheaf), #96
-  (graded shifts and `O(d)`), and #97 (finiteness and sections). The #94 implementation lives in
-  `AlgebraicGeometry/Proj/GradedLocalization.lean` and deliberately reuses Mathlib's ordinary
-  localized module and homogeneous-localization ring.
+* **Serre finiteness (#29) is still not proved.**
+  Mathlib's `ProjectiveSpectrum` still has no module or twist API, so CohLean now supplies the
+  four issue #57 layers itself. `Proj/GradedLocalization.lean` (#94) reuses Mathlib's
+  ordinary localized module and homogeneous-localization ring. `Proj/Modules.lean` (#95) builds
+  the actual locally fractional sheaf `M̃`, its stalk identification, functorial maps, and the
+  canonical basic-open comparison. `Proj/Shift.lean` and `Proj/TwistingSheaf.lean` (#96) fix the
+  convention `M(d)ₙ = Mₙ₊d`, distinguish strict natural shifts from zero-extended integer shifts,
+  and construct sheaf twists and `O(d)`. `Proj/Modules/Finiteness.lean` (#97) makes the unresolved
+  affine comparison and basic-open bijectivity explicit data, then derives quasi-coherence,
+  coherence, bounded `Γ(O(d))` comparisons, and finite-variable polynomial finite generation.
+  The remaining #29 work is concrete: supply those comparison certificates for the polynomial
+  grading and carry out the cohomological Serre argument. `Ã ≅ 𝒪` and an all-degree section
+  theorem have not been smuggled in.
 * **#31 and #32 therefore carry finite-dimensionality as a hypothesis** rather than deriving
   it, and become unconditional unchanged the day #29 lands.
 
