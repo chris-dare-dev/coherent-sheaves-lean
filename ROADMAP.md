@@ -15,7 +15,9 @@ the class-group map to `Pic X`, and #25 supplies effective Cartier divisors and 
 fundamental exact sequences. Issue #36 supplies determinant lines and first Chern classes,
 completing B2;
 [#33](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/33) supplies the independent
-multivariable numerical-polynomial algebra for B4.
+multivariable numerical-polynomial algebra for B4, and
+[#34](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/34) connects it to Picard
+powers and Euler characteristics through explicit exact-sequence induction data.
 Issue #27 also has an implementation in progress.
 
 
@@ -113,7 +115,7 @@ depend on it. The cheapest instance would be `Examples/RankOneSurface`: `H ↦ �
 | B1 | Coherent category, locality, affine comparison, closure, abelian/exact inclusion | 2–3 months | **done** ([milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/4)) |
 | B2 | Invertible sheaves, `Pic X`, Cartier divisors, `O_X(D)`, determinant, effective-divisor sequence | 2–3 months | **done** ([milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/7)) |
 | B3 | Affine vanishing, cohomology boundedness, geometric `χ`, additivity | 4–6 months | [milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/5); explicit affine Čech vanishing and comparison infrastructure done; conditional geometric `χ` (#31) and additivity/K₀ factorization (#32) done; Serre finiteness and scalar-linearity of connecting maps remain explicit inputs |
-| B4 | Numerical polynomials, Snapper, intersections, numerical Chern data | ~3 months | [milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/9); #33 mixed finite-difference algebra done; Snapper comparison next |
+| B4 | Numerical polynomials, Snapper, intersections, numerical Chern data | ~3 months | [milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/9); #33 mixed finite-difference algebra and conditional #34 Snapper comparison done; geometric construction of the induction certificate and intersections next |
 | B5 | Canonical sheaf, Serre duality, surface RR, dévissage, Layer A discharge | ~6 months | [milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/8); blocked on B2–B4 |
 
 Total 18–30 months. Layer A exists so that nothing waits on this.
@@ -247,8 +249,14 @@ extra cost. Issue #33 audits `jjaassoonn/DimensionTheory` and Mathlib, reuses Ma
 univariate `ForwardDiff` API, and adds the missing arbitrary-rank mixed-difference layer in
 `CohLean/Intersection/NumericalPolynomial.lean`. DimensionTheory remains useful design precedent
 for integer-valued Hilbert polynomials, but is not a direct dependency: its relevant API is
-univariate and pinned to a different Mathlib commit. The next B4 step is the geometric Snapper
-comparison.
+univariate and pinned to a different Mathlib commit. Issue #34 is implemented in
+`CohLean/Intersection/Snapper.lean`: integer powers are formed in `Pic X`, simultaneous twists
+are dimension-general and multivariable, and Euler additivity turns each genuine short exact
+induction step into a forward difference. The resulting `snapper` theorem, its ordinary
+one-variable specialization, isomorphism invariance, and coefficient formulas are proved from a
+visible `GeometricInduction` certificate. The certificate isolates the geometric
+dimension/hyperplane-section theorem that Mathlib and the current scheme layer do not yet expose;
+it is data, not an axiom, and can later be constructed without changing the downstream API.
 
 **B5.** Serre duality is the second hard theorem. Mathlib's derived-category infrastructure
 (Riou) is unusually strong and is the reason this is attemptable at all.

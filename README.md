@@ -132,9 +132,11 @@ determinant lines, and their classes in `Pic X` complete B2. Isomorphism invaria
 direct-sum/short-exact additivity are exported from explicit comparison isomorphisms; coherent
 objects extend only through visible finite-locally-free or two-term perfect determinant data,
 not an unproved global resolution claim.
-Stage B4 has begun with issue #33: mixed differences and numerical-polynomial coefficients are
-complete and scheme-independent; the next step is to identify geometric Euler-characteristic
-functions with this algebra through Snapper's theorem.
+Stage B4 now includes issues #33 and #34. Mixed differences and numerical-polynomial coefficients
+are complete and scheme-independent, while `CohLean.Intersection.Snapper` constructs integer
+Picard powers and multivariable coherent twists and proves Snapper polynomiality from an explicit
+geometric exact-sequence induction certificate. The certificate keeps the presently missing
+scheme-dimension/hyperplane induction visible instead of assuming it as an axiom.
 Every later Layer B stage has a milestone and issue-level dependency graph; see
 [ROADMAP.md](ROADMAP.md).
 

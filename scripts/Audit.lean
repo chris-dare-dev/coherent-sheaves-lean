@@ -634,9 +634,9 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Coh.PerfectShortExactDeterminantData
 #print axioms AlgebraicGeometry.Coh.PerfectShortExactDeterminantData.firstChernClassAdd_eq_add
 
--- Layer B stage 4: dimension-general numerical-polynomial algebra. This layer is deliberately
--- independent of schemes and sheaves; Snapper will later prove that geometric Euler functions
--- satisfy its degree predicate.
+-- Layer B stage 4: dimension-general numerical-polynomial algebra and its geometric Snapper
+-- bridge. The geometric induction and missing closure theorem are visible structure fields,
+-- never hidden axioms.
 #print axioms CohLean.Intersection.NumericalPolynomial.difference
 #print axioms CohLean.Intersection.NumericalPolynomial.difference_comm
 #print axioms CohLean.Intersection.NumericalPolynomial.difference_add_direction
@@ -666,6 +666,22 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms CohLean.Intersection.NumericalPolynomial.coefficient_oneVariable
 #print axioms CohLean.Intersection.NumericalPolynomial.surfacePairing
 #print axioms CohLean.Intersection.NumericalPolynomial.surfacePairing_symm
+#print axioms CohLean.Intersection.Snapper.picardPower
+#print axioms CohLean.Intersection.Snapper.linePower
+#print axioms CohLean.Intersection.Snapper.linePower_picardClass
+#print axioms CohLean.Intersection.Snapper.twistModules
+#print axioms CohLean.Intersection.Snapper.CoherentTwistFamily
+#print axioms CohLean.Intersection.Snapper.eulerFunction
+#print axioms CohLean.Intersection.Snapper.GeometricInduction
+#print axioms CohLean.Intersection.Snapper.GeometricInduction.difference_descendedEuler
+#print axioms CohLean.Intersection.Snapper.GeometricInduction.mixedDifference_eulerFunction
+#print axioms CohLean.Intersection.Snapper.eulerCharacteristic_isZero
+#print axioms CohLean.Intersection.Snapper.snapper
+#print axioms CohLean.Intersection.Snapper.mixedDifference_eq_euler_descended
+#print axioms CohLean.Intersection.Snapper.coefficient_eq_euler_descended
+#print axioms CohLean.Intersection.Snapper.eulerFunction_eq_of_coherentSheafIso
+#print axioms CohLean.Intersection.Snapper.eulerFunction_eq_of_lineBundleIso
+#print axioms CohLean.Intersection.Snapper.oneVariable_fwdDiff_euler_vanishes
 
 -- Layer B stage 3: `CohLean/Cohomology/Strategy.lean` contributes nothing here on
 -- purpose. It is the compile-only API map for the B3 route decision and declares only

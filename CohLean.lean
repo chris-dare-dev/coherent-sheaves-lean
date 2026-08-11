@@ -13,6 +13,7 @@ import CohLean.Numerical.K3
 import CohLean.Numerical.Dual
 import CohLean.Numerical.EulerPairing
 import CohLean.Intersection.NumericalPolynomial
+import CohLean.Intersection.Snapper
 import CohLean.Numerical.Examples.Point
 import CohLean.Numerical.Examples.RankOneSurface
 import CohLean.Numerical.Examples.K3Model
