@@ -266,6 +266,16 @@ structure-sheaf specialization defines intersections as top Snapper coefficients
 Picard finite-difference form proves symmetry, tensor-product additivity, integer homogeneity,
 principal-divisor invariance, and the point/curve/surface normalizations without Chow groups.
 
+Issue #37 is implemented in `CohLean/Intersection/ChernCharacterSurface.lean`. For a coherent
+sheaf carrying explicit two-term perfect determinant data it extracts the virtual rank and
+Picard-valued `c₁`; the surface intersection pairing turns `c₁` into its numerical functional.
+The polarized structure-sheaf Euler polynomial constructs `td₁ · D`, while `χ(O_X)` supplies
+the degree of `td₂`, so the degree of `ch₂(F)` is recovered from `χ(F)`. Isomorphism
+invariance, short-exact additivity under a visible virtual-rank hypothesis, the structure-sheaf
+and line-bundle cases, and compatibility with the Layer A discriminant degree are proved. The
+output intentionally remains degree-level in codimension two: lifting it to a class in a chosen
+numerical ring requires the explicit representability/nondegeneracy input tracked by #38.
+
 **B5.** Serre duality is the second hard theorem. Mathlib's derived-category infrastructure
 (Riou) is unusually strong and is the reason this is attemptable at all.
 

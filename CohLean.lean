@@ -15,6 +15,7 @@ import CohLean.Numerical.EulerPairing
 import CohLean.Intersection.NumericalPolynomial
 import CohLean.Intersection.Snapper
 import CohLean.Intersection.Number
+import CohLean.Intersection.ChernCharacterSurface
 import CohLean.Numerical.Examples.Point
 import CohLean.Numerical.Examples.RankOneSurface
 import CohLean.Numerical.Examples.K3Model
