@@ -17,7 +17,7 @@ scheme-theoretic Riemann–Roch in any proof assistant. The survey behind that c
 | [dmavani25/chip-firing-with-lean](https://github.com/dmavani25/chip-firing-with-lean) | Riemann–Roch for **graphs** (Baker–Norine), ~5.4k LOC | Combinatorial, not scheme theory |
 | [a-dangelo/Lean-AG](https://github.com/a-dangelo/Lean-AG) | Görtz–Wedhorn ch. 5 dimension theory, ~800 LOC | Its README lists coherent sheaves, Chern classes, divisors, cohomology and Riemann–Roch as *long-term*, i.e. not done |
 | [ProjConstruction/Proj](https://github.com/ProjConstruction/Proj) | Multi-graded Brenner–Schröer Proj, dilatations | Proj infrastructure only |
-| [jjaassoonn/DimensionTheory](https://github.com/jjaassoonn/DimensionTheory) | Hilbert polynomials, dimension theory | **Reusable** — Hilbert polynomials drive the Snapper route below |
+| [jjaassoonn/DimensionTheory](https://github.com/jjaassoonn/DimensionTheory) | Hilbert polynomials, dimension theory | **Design precedent** — its univariate integer-valued theory was audited for B4; CohLean reuses Mathlib's current `fwdDiff` and owns the missing multivariable layer |
 | [joelriou/lean-derived-categories](https://github.com/joelriou/lean-derived-categories) | Derived categories (now largely upstream) | Prerequisite for Serre duality |
 | [YijunYuan/HarderNarasimhan](https://github.com/YijunYuan/HarderNarasimhan) | HN theory, order-theoretic | Deliberately avoids algebraic geometry |
 
@@ -49,6 +49,9 @@ now defined relative to explicit finite-dimensionality and eventual-vanishing da
 becomes unconditional without an API change when Serre finiteness is proved. It is additive
 on short exact sequences once the `Ext` connecting maps are supplied as base-field-linear
 maps, and therefore descends through an explicit presentation of `K₀(Coh X)`.
+The independent B4 algebraic entry point is also present: arbitrary-direction mixed finite
+differences on `ℤ^r`, the `(n+1)`-fold vanishing definition of numerical degree, Newton and
+polarized top-coefficient extraction, and the symmetric bilinear surface specialization.
 
 ## Architecture
 
@@ -97,6 +100,11 @@ coefficient, and `ch₂` is read off `χ`. No cycles, no rational equivalence, n
 
 Layer A's fields are the trust boundary. Layer B's job is to discharge them.
 
+`CohLean.Intersection.NumericalPolynomial` implements the dimension-general algebra needed for
+this route. It builds the multivariable API over Mathlib's `ForwardDiff`; it does not add a
+dependency on DimensionTheory, whose audited polynomial machinery is univariate and pinned to a
+different Mathlib revision.
+
 ## Status
 
 **Picking this up cold? Read [HANDOFF.md](HANDOFF.md).** It carries the current state, the live
@@ -124,6 +132,9 @@ determinant lines, and their classes in `Pic X` complete B2. Isomorphism invaria
 direct-sum/short-exact additivity are exported from explicit comparison isomorphisms; coherent
 objects extend only through visible finite-locally-free or two-term perfect determinant data,
 not an unproved global resolution claim.
+Stage B4 has begun with issue #33: mixed differences and numerical-polynomial coefficients are
+complete and scheme-independent; the next step is to identify geometric Euler-characteristic
+functions with this algebra through Snapper's theorem.
 Every later Layer B stage has a milestone and issue-level dependency graph; see
 [ROADMAP.md](ROADMAP.md).
 

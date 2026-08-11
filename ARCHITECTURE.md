@@ -21,6 +21,7 @@ gate.
 | `CohLean/Coh` | Coherent sheaves and their categorical properties |
 | `CohLean/Divisors` | Cartier and effective divisors, invertible sheaves, tensor/Picard structure, determinant lines, and first Chern classes |
 | `CohLean/Cohomology` | Čech and spectral-sequence infrastructure, finite-dimensional cohomology data, geometric Euler characteristics, and their `K₀` factorization |
+| `CohLean/Intersection` | Scheme-independent numerical-polynomial algebra, mixed finite differences, and coefficient/intersection extraction used by Snapper's theorem |
 | `CohLean/Topology` | General open-set-site infrastructure used by the geometric packages |
 | `CohLean/Development` | Compile-only API audits and development probes; not part of the root import |
 
@@ -60,6 +61,12 @@ an unrelated integer-valued function for cohomological `χ`.
 `Cohomology.EulerCharacteristicAdditivity` transports the actual `Ext` long exact sequence,
 with scalar-linearity of its connecting maps isolated explicitly, and descends `χ` to an
 additive homomorphism from the presented Grothendieck group of coherent sheaves.
+
+`Intersection.NumericalPolynomial` is the algebraic bridge for the next arrow. A tensor-power
+family is modeled by an exponent lattice `ι → ℤ`; arbitrary-direction mixed differences define
+numerical degree and extract symmetric multilinear top coefficients. The core is independent of
+schemes and sheaves, reuses Mathlib's univariate `ForwardDiff`, and specializes in degree two to
+a symmetric `ℤ`-bilinear surface pairing.
 
 ## Dimension and characteristic classes
 

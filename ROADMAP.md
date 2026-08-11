@@ -14,7 +14,8 @@ and #79 supply the symmetric-monoidal Picard-group foundation, and
 the class-group map to `Pic X`, and #25 supplies effective Cartier divisors and their
 fundamental exact sequences. Issue #36 supplies determinant lines and first Chern classes,
 completing B2;
-[#33](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/33) remains independent.
+[#33](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/33) supplies the independent
+multivariable numerical-polynomial algebra for B4.
 Issue #27 also has an implementation in progress.
 
 
@@ -112,7 +113,7 @@ depend on it. The cheapest instance would be `Examples/RankOneSurface`: `H ↦ �
 | B1 | Coherent category, locality, affine comparison, closure, abelian/exact inclusion | 2–3 months | **done** ([milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/4)) |
 | B2 | Invertible sheaves, `Pic X`, Cartier divisors, `O_X(D)`, determinant, effective-divisor sequence | 2–3 months | **done** ([milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/7)) |
 | B3 | Affine vanishing, cohomology boundedness, geometric `χ`, additivity | 4–6 months | [milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/5); explicit affine Čech vanishing and comparison infrastructure done; conditional geometric `χ` (#31) and additivity/K₀ factorization (#32) done; Serre finiteness and scalar-linearity of connecting maps remain explicit inputs |
-| B4 | Numerical polynomials, Snapper, intersections, numerical Chern data | ~3 months | [milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/9); #33 ready |
+| B4 | Numerical polynomials, Snapper, intersections, numerical Chern data | ~3 months | [milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/9); #33 mixed finite-difference algebra done; Snapper comparison next |
 | B5 | Canonical sheaf, Serre duality, surface RR, dévissage, Layer A discharge | ~6 months | [milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/8); blocked on B2–B4 |
 
 Total 18–30 months. Layer A exists so that nothing waits on this.
@@ -242,7 +243,12 @@ claim a comparison with derived-functor sheaf cohomology. Issue #27 supplies tha
 #28 is then the short derived-affine-vanishing corollary.
 
 **B4.** Snapper's theorem is dimension-general, so B4 serves threefolds and fourfolds at no
-extra cost. Reuse Hilbert-polynomial machinery from `jjaassoonn/DimensionTheory`.
+extra cost. Issue #33 audits `jjaassoonn/DimensionTheory` and Mathlib, reuses Mathlib's current
+univariate `ForwardDiff` API, and adds the missing arbitrary-rank mixed-difference layer in
+`CohLean/Intersection/NumericalPolynomial.lean`. DimensionTheory remains useful design precedent
+for integer-valued Hilbert polynomials, but is not a direct dependency: its relevant API is
+univariate and pinned to a different Mathlib commit. The next B4 step is the geometric Snapper
+comparison.
 
 **B5.** Serre duality is the second hard theorem. Mathlib's derived-category infrastructure
 (Riou) is unusually strong and is the reason this is attemptable at all.

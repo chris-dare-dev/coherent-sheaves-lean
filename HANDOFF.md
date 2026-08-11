@@ -1,7 +1,8 @@
 # Handoff
 
-Updated 2026-08-10 for the merged repository-architecture work and the in-flight conditional
-geometric Euler-characteristic milestone. For a session picking this repo up cold.
+Updated 2026-08-10 for the merged geometric Euler-characteristic/additivity work and the
+in-flight multivariable numerical-polynomial milestone (#33). For a session picking this repo
+up cold.
 
 Read §1 and §7. Everything else is reference.
 
@@ -31,7 +32,7 @@ lake env lean scripts/Audit.lean
 The audit must print `[propext, Classical.choice, Quot.sound]` on every line and never
 `sorryAx`. There is no `sorry` in this library and there never has been.
 
-**State on `main` through merge `1c579cc`:** `lake build CohLean` and the declaration audit pass.
+**State on `main` through merge `a9e2b7d`:** `lake build CohLean` and the declaration audit pass.
 Every audit line uses only `[propext, Classical.choice, Quot.sound]`; there is no `sorryAx`.
 Docs live at
 <https://chris-dare-dev.github.io/coherent-sheaves-lean/>.
@@ -44,9 +45,11 @@ lattice, #17) remains.
 isomorphism, the slice-equivalence transport, the affine comparison and equivalence, closure
 under kernels, cokernels, and extensions, and finally the abelian structure on `Coh X` with
 exact inclusion into `X.Modules`. B3 has explicit affine Čech exactness and substantial
-Čech/derived comparison infrastructure. On the in-flight branch,
-`Cohomology.FiniteCohomology` constructs geometric `χ` from the actual `Sheaf.H` functors under
-explicit linearity, finite-dimensionality, and eventual-vanishing data.
+Čech/derived comparison infrastructure. `Cohomology.FiniteCohomology` constructs geometric `χ`
+from the actual `Sheaf.H` functors under explicit linearity, finite-dimensionality, and
+eventual-vanishing data; issue #32 proves its short-exact additivity and `K₀` factorization.
+On the in-flight #33 branch, B4 begins with scheme-independent mixed finite differences and
+numerical-polynomial coefficient extraction on arbitrary integer lattices.
 
 The live work is §7.
 
@@ -105,6 +108,7 @@ If you find yourself about to build a Chow ring, stop and re-read this.
 | `Numerical/Dual.lean` | `NumericalRingWithDual` — the `(-1)ⁱ` involution, as a **mixin** over `NumericalRing`; `chDual`, `ch_add` |
 | `Numerical/EulerPairing.lean` | `chi₂ E F = ∫ch(E)^∨·ch(F)·td(X)`, its general expansion, the `n = 2` case, and `K3.chi₂ = −⟨v,v⟩` |
 | `Numerical/OfGradedBasis.lean` | `NumericalRing.ofGradedBasis` — builds the graded ring from a basis, discharging the internality obligation once |
+| `Intersection/NumericalPolynomial.lean` | arbitrary-rank integer lattices, mixed finite differences, degree by `(n+1)`-fold vanishing, Newton/top coefficient extraction, and one-variable/surface specializations |
 
 The three files under `Numerical/Specializations` are the same proof with
 `Finset.sum_range_succ` fired one and two more times. Nothing in `RiemannRoch.lean` changed to
@@ -183,9 +187,10 @@ The presentation-transport modules fill a real Mathlib gap: Mathlib has
 that transporting a presentation preserves `Presentation.IsFinite`. CohLean maintains these
 declarations regardless of whether an upstream contribution is ever made.
 
-**Still not proved:** unconditional Serre finiteness and the linear long-exact-sequence proof
-of additivity; higher geometric Chern classes; all of B4 and B5. General cohomology finiteness
-remains deliberately deferred; the affine global-sections finiteness needed by B1 is proved.
+**Still not proved:** unconditional Serre finiteness; higher geometric Chern classes; the
+geometric Snapper theorem, intersections, and the rest of B4; all of B5. General cohomology
+finiteness remains deliberately deferred; the affine global-sections finiteness needed by B1
+is proved.
 
 ---
 
@@ -240,8 +245,9 @@ shared too, and they are where every merge conflict this project has had actuall
 | B4 | 5 | Snapper polynomials → intersection numbers |
 | B5 | 7 | Serre duality → RR for surfaces → discharge `hirzebruch_riemannRoch` |
 
-**Next natural work:** finish the linear cohomology/additivity layer (#32), begin the higher
-geometric Chern-class constructors, or independently start **#33**.
+**Next natural work after the in-flight #33 branch:** connect geometric Euler-characteristic
+functions to the new degree predicate via Snapper (#34), or begin the higher geometric
+Chern-class constructors.
 Regenerate this list with `gh issue list --label ready` before choosing,
 because tracker labels move faster than this file.
 
@@ -518,8 +524,8 @@ present, the error is about *when* Lean looked, not *what* it found.
 
 > This order is a snapshot. Re-check tracker labels before starting.
 
-1. **#33** — multivariable numerical polynomials and finite differences, the independent B4
-   entry point.
+1. **#34 after #33 merges** — state and prove the geometric Snapper comparison using the
+   dimension-general finite-difference API.
 
 #22–#25, #36, and #79 are complete. B2 is complete.
 

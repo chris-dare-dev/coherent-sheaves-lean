@@ -12,6 +12,7 @@ import CohLean.Numerical.Discriminant
 import CohLean.Numerical.K3
 import CohLean.Numerical.Dual
 import CohLean.Numerical.EulerPairing
+import CohLean.Intersection.NumericalPolynomial
 import CohLean.Numerical.Examples.Point
 import CohLean.Numerical.Examples.RankOneSurface
 import CohLean.Numerical.Examples.K3Model
@@ -65,6 +66,8 @@ field, in Lean 4.
 * `CohLean.Numerical.*` — the dimension-general numerical interface (axioms, no schemes).
 * `CohLean.AlgebraicGeometry.*`, `CohLean.Coh.*`, and `CohLean.Divisors.*` — geometric
   constructions built over Mathlib's scheme theory.
+* `CohLean.Intersection.*` — numerical-polynomial and intersection machinery connecting the
+  geometric and numerical layers.
 * `CohLean.Topology.*` and `CohLean.Cohomology.*` — permanent project infrastructure,
   replaced by Mathlib declarations only when equivalent APIs become available.
 
