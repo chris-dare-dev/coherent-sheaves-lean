@@ -11,7 +11,8 @@ Riemann–Roch and stability theory while keeping every hypothesis and trust bou
 
 - A dimension-general numerical intersection ring and numerical variety interface.
 - Universal Chern-character and Todd-class formulas through codimension four.
-- Numerical Riemann–Roch, discriminants, duality formulas, and Euler pairings.
+- Numerical Riemann–Roch, discriminants, duality formulas, Euler pairings, and the
+  nondegenerate numerical Grothendieck quotient with its explicit finite-free lattice boundary.
 - Concrete numerical models in dimension zero and for several classes of surfaces.
 - Coherent sheaves on locally noetherian schemes, including locality and abelian-category
   structure.
