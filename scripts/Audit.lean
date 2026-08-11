@@ -750,3 +750,5 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 -- if an upstream declaration it names moves, `lake build` fails. The first real B3
 -- theorem goes below this line.
 #print axioms CategoryTheory.Sheaf.isFlasque_of_injective
+#print axioms CategoryTheory.Sheaf.freeAbelianYonedaSheafMap_stalk_isIso
+#print axioms CategoryTheory.Sheaf.freeAbelianYonedaSheaf_stalk_isZero_of_not_mem
