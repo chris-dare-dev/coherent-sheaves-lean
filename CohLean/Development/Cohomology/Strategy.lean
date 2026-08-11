@@ -10,6 +10,7 @@ import Mathlib.Algebra.Homology.DerivedCategory.Ext.ExactSequences
 import Mathlib.CategoryTheory.Sites.SheafCohomology.Basic
 import Mathlib.CategoryTheory.Sites.SheafCohomology.Cech
 import CohLean.AlgebraicGeometry.Proj.Modules.Finiteness
+import CohLean.Cohomology.Derived.AffineVanishing
 
 /-!
 # Layer B stage 3 — which cohomology finiteness theorem this library will prove
@@ -35,8 +36,8 @@ each downstream statement.
 `Mathlib/CategoryTheory/Sites/SheafCohomology/Basic.lean`. It occurs in exactly two Mathlib
 files — that one and `MayerVietoris.lean`. There is no vanishing theorem, no finiteness
 theorem, and no comparison with Čech cohomology; `Cech.lean` supplies
-`cechComplexFunctor` and stops there. That absence is not an oversight to route around, it
-is the content of issues #13 and #27.
+`cechComplexFunctor` and stops there. CohLean now supplies the explicit affine Čech calculation
+in #13 and the single-cover Čech-to-derived comparison in #27.
 
 *Coherent cohomology does not exist upstream at all.* There is no proper-pushforward
 finiteness theorem, no Serre finiteness, and no coherent-cohomology anything.
@@ -54,23 +55,29 @@ not an unspecified API project: it is the concrete polynomial-grading comparison
 followed by the cohomological Serre argument. The missing comparison is a structure field, never
 an axiom.
 
-*The affine-cover route is available.* `IsAffineOpen.inf` and `IsAffineOpen.iInf` give
-affineness of intersections under an affine diagonal — the separatedness hypothesis in the
-Čech argument, in the exact form Mathlib states it — and `IsNoetherian X` already packages
-locally noetherian with quasi-compactness, so a finite affine cover with affine finite
-intersections is obtainable.
+*The affine-cover route has one precise remaining theorem.* `IsAffineOpen.inf` and
+`IsAffineOpen.iInf` give affineness of intersections under an affine diagonal — the
+separatedness hypothesis in the Čech argument, in the exact form Mathlib states it — and
+`IsNoetherian X` already packages locally noetherian with quasi-compactness. However, #27 applies
+only to a cover already known to be derived-acyclic on every finite intersection. Using it to
+prove that those affine intersections are acyclic would be circular. The missing input is the
+basis/cofinal-cover criterion of Stacks Tag 01EW: exactness for the cofinal family of standard
+affine covers implies derived vanishing on every affine basis open. That theorem is isolated as
+#103; `CohLean.Cohomology.Derived.AffineVanishing` exposes its exact comparison output.
 
 ## The decision
 
 **B3 proves vanishing, not finite-dimensionality.** Concretely, stage B3 splits along a
 line that was not visible when it was written:
 
-* **Supportable now, via Čech on a finite affine cover.** #13 (affine Čech vanishing for
-  tilde modules), #27 (Čech versus derived comparison), #28 (derived affine vanishing), and
-  #30 (eventual vanishing and finite cohomological support). The hypotheses are
-  `IsNoetherian X` — or quasi-compact plus quasi-separated where that is genuinely enough —
-  together with the affine-diagonal instance that `IsAffineOpen.inf` requires. Properness
-  never appears, and neither does a base field.
+* **Reduced to one basis theorem.** #13 proves affine Čech exactness and #27 proves the
+  single-cover comparison. #28 now has a public boundary theorem that combines the explicit
+  calculation with a non-circular comparison witness and transports it across the affine
+  module/sheaf equivalence. #103 must construct that witness from the cofinal family of standard
+  covers before #28 and the finite-cover boundedness argument in #30 become unconditional. The
+  geometric hypotheses remain `IsNoetherian X` — or quasi-compact plus quasi-separated where
+  genuinely enough — together with the affine-diagonal instance required for affine
+  intersections. Properness and a base field do not enter this vanishing layer.
 * **Still not proved.** #29, finite-dimensionality of `H^i(X, F)` over a field. Its Proj object
   and finiteness interfaces now exist; the polynomial affine/global-section comparisons and the
   cohomological resolution argument remain. #31 and #32 are downstream of it.
@@ -111,20 +118,21 @@ Both were established by elaboration, not by reading, and both are load-bearing:
 ## Dependency graph for #29–#32
 
 ```text
-  #13 ──┐
-        ├──> #28 ──> #30 ──┐
-  #27 ──┘                  ├──> #31 ──> #32
-                           │
-  toSheaf preserves epis ──┘   (new prerequisite, see above)
+  #13 ─────┐
+           ├──> #103 ──> #28 ──> #30 ──┐
+  #27 ─────┘                           ├──> #31 ──> #32
+                                       │
+  toSheaf preserves epis ──────────────┘
 
   #57/#94–#97 interfaces ──> polynomial comparison ──> #29
 ```
 
 ## Not done here
 
-No cohomology group is computed and no Serre-finiteness theorem is proved here. The Proj module
-machinery is imported from its real implementation; this file records the remaining boundary and
-pins the declarations that #29 will consume.
+No unconditional affine derived-vanishing or Serre-finiteness theorem is proved here. The affine
+boundary and Proj module machinery live in real implementation modules; this file records the
+remaining basis/cofinality and projective-comparison boundaries and pins the declarations that
+#28 and #29 will consume.
 
 ## References
 
@@ -132,6 +140,8 @@ pins the declarations that #29 will consume.
   sheaves on affines vanishes
 * [Stacks, Tag 01XB](https://stacks.math.columbia.edu/tag/01XB) — Čech cohomology on a
   separated scheme computes sheaf cohomology
+* [Stacks, Tag 01EW](https://stacks.math.columbia.edu/tag/01EW) — the basis/cofinal-cover
+  criterion needed for the non-circular affine proof
 * [Stacks, Tag 01Y1](https://stacks.math.columbia.edu/tag/01Y1) — finiteness for proper
   morphisms, the theorem this stage does **not** prove
 * Hartshorne, *Algebraic Geometry*, III.4 (Čech) and III.5 (Serre finiteness)
@@ -178,11 +188,15 @@ noncomputable example {C : Type u} [Category.{u} C] {J : GrothendieckTopology C}
 sequence, once the short exact sequence is known to survive `toSheaf`. -/
 example := @Abelian.Ext.covariantSequence_exact
 
-/-! ### The Čech side, and what is missing from it -/
+/-! ### The Čech side, and the remaining basis comparison -/
 
 /-- Mathlib's Čech complex of a presheaf. There is no comparison with `Sheaf.H` upstream;
-supplying one is #27. -/
+the completed #27 comparison lives in CohLean. -/
 noncomputable example := @CategoryTheory.cechComplexFunctor
+
+/-- The stable affine boundary consumes exactly the non-circular comparison that #103 must
+construct from a cofinal family of standard covers. -/
+example := @AlgebraicGeometry.Cohomology.tilde_H_subsingleton_of_comparisonAt
 
 /-! ### The separatedness hypothesis, in the form Mathlib states it
 
