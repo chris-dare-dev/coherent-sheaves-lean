@@ -236,6 +236,13 @@ actual `Ext` sequence, bounded alternating dimensions cancel, and `χ` descends 
 `K₀(Coh X)`. Mathlib exposes the connecting maps only additively, so their base-field
 linearity is isolated as `LinearConnectingMaps`, never assumed as an axiom.
 
+Issue #57 is now the active umbrella for filling that Proj gap. Its first slice (#94) constructs
+degree-zero homogeneous localization of a graded module over Mathlib's existing
+`HomogeneousLocalization` ring, reusing `LocalizedModule` rather than introducing another
+fraction relation. The remaining dependency order is: associated graded-module sheaves (#95),
+graded shifts and `O(d)` (#96), then quasi-coherence/coherence and sections (#97). Natural and
+integer gradings remain explicitly distinct until the shift layer supplies their comparison.
+
 The bridge that carries a short exact sequence of `𝒪ₓ`-modules into `Ext` is done — #56 for
 `SheafOfModules`, #59 for the `X.Modules` wrapper; use `Scheme.Modules.toSheaf`. The explicit
 affine Čech vanishing chain is also done: #62 connects Mathlib's simplicial

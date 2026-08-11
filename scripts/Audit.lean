@@ -16,6 +16,17 @@ import CohLean.Development.DivisorAPIAudit
 
 open AlgebraicGeometry AlgebraicGeometry.Numerical
 
+-- Proj foundations: degree-zero homogeneous module localization is a submodule of Mathlib's
+-- ordinary localized module; every homogeneous and denominator certificate remains explicit.
+#print axioms CohLean.AlgebraicGeometry.Proj.NumDenSameDeg
+#print axioms CohLean.AlgebraicGeometry.Proj.degreeZeroSubmodule
+#print axioms CohLean.AlgebraicGeometry.Proj.DegreeZeroLocalization.mk_surjective
+#print axioms CohLean.AlgebraicGeometry.Proj.DegreeZeroLocalization.mk_eq_mk_iff
+#print axioms CohLean.AlgebraicGeometry.Proj.DegreeZeroLocalization.awayMk
+#print axioms CohLean.AlgebraicGeometry.Proj.GradedLinearMap
+#print axioms CohLean.AlgebraicGeometry.Proj.GradedLinearMap.map
+#print axioms CohLean.AlgebraicGeometry.Proj.GradedLinearMap.map_mk
+
 -- The geometric source object is a bundle of explicit data, not an axiom identifying schemes
 -- with their numerical realizations.
 #print axioms Variety
