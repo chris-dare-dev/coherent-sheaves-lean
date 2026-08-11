@@ -30,6 +30,7 @@ import CohLean.Cohomology.SpectralSequence.FilteredComplexSpectralObject
 import CohLean.Cohomology.SpectralSequence.FilteredTotalComplex
 import CohLean.Cohomology.SpectralSequence.FilteredTotalComplexAdjacent
 import CohLean.Cohomology.SpectralSequence.FilteredTotalComplexFirstPageDifferential
+import CohLean.Cohomology.SpectralSequence.TotalQuasiIso
 import CohLean.Divisors.Cartier
 import CohLean.Divisors.Picard
 import CohLean.Divisors.Tensor
@@ -52,6 +53,7 @@ import CohLean.Cohomology.AffineCech
 import CohLean.Cohomology.CechBicomplex
 import CohLean.Cohomology.CechComparison
 import CohLean.Cohomology.CechInitialPage
+import CohLean.Cohomology.CechTotalComparison
 import CohLean.Cohomology.EulerCharacteristic
 import CohLean.Cohomology.EulerCharacteristicAdditivity
 import CohLean.Cohomology.Strategy

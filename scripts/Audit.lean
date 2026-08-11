@@ -424,6 +424,26 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms CategoryTheory.Sheaf.cechInjectiveInitialPageZeroRowIso
 #print axioms CategoryTheory.Sheaf.cechInjectiveFollowingPageCechCohomologyIso
 
+-- Layer B stage 3: first-quadrant total comparison and the Cech augmentation into the total
+-- complex of an explicit injective resolution. The general engine uses finite column tails;
+-- local Cech acyclicity supplies the columnwise quasi-isomorphisms.
+#print axioms CochainComplex.mappingCone.quasiIso_compMap
+#print axioms CochainComplex.mappingCone.quasiIsoAt_inr_of_isZero_X
+#print axioms HomologicalComplex.HomologySequence.quasiIso_τ₂
+#print axioms HomologicalComplex₂.IsVerticallyConnective
+#print axioms HomologicalComplex₂.IsHorizontallyConnective
+#print axioms HomologicalComplex₂.totalMap_quasiIso
+#print axioms CategoryTheory.Sheaf.cechInjectiveColumnAugmentation_quasiIso
+#print axioms CategoryTheory.Sheaf.cechInjectiveBicomplexAugmentationSource_verticallyConnective
+#print axioms CategoryTheory.Sheaf.cechInjectiveBicomplexAugmentationSource_horizontallyConnective
+#print axioms CategoryTheory.Sheaf.cechInjectiveBicomplex_verticallyConnective
+#print axioms CategoryTheory.Sheaf.cechInjectiveBicomplex_horizontallyConnective
+#print axioms CategoryTheory.Sheaf.cechInjectiveBicomplexAugmentation_total_quasiIso
+#print axioms CategoryTheory.Sheaf.cechInjectiveBicomplexAugmentationSourceTotalIso
+#print axioms CategoryTheory.Sheaf.cechToInjectiveTotalMap
+#print axioms CategoryTheory.Sheaf.cechToInjectiveTotalMap_quasiIso
+#print axioms CategoryTheory.Sheaf.cechCohomologyIsoInjectiveTotalHomology
+
 -- Layer B stage 3: positive-degree exactness of the explicit Cech complex for a module
 -- sheaf on a finite distinguished-open cover of an affine scheme. This is the affine Cech
 -- vanishing theorem, not a comparison with derived-functor sheaf cohomology.
