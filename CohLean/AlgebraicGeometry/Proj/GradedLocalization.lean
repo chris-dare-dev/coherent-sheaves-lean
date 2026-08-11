@@ -211,6 +211,52 @@ theorem coe_smul (a : HomogeneousLocalization 𝒜 S)
     ((a • x : DegreeZeroLocalization 𝒜 𝓜 S) : LocalizedModule S M) = a • (x : LocalizedModule S M) :=
   rfl
 
+/-! ### Maps induced by enlarging the denominator submonoid -/
+
+/-- Enlarging the denominator submonoid sends degree-zero homogeneous module fractions to
+degree-zero homogeneous module fractions. -/
+noncomputable def mapOfLE {T : Submonoid A} (h : S ≤ T) :
+    DegreeZeroLocalization 𝒜 𝓜 S →+ DegreeZeroLocalization 𝒜 𝓜 T where
+  toFun z := by
+    refine ⟨LocalizedModule.liftOfLE S T h z, ?_⟩
+    obtain ⟨c, hc⟩ := z.property
+    refine ⟨
+      { deg := c.deg
+        num := c.num
+        den := c.den
+        den_mem := h c.den_mem }, ?_⟩
+    rw [← hc]
+    change LocalizedModule.mk (c.num : M) (⟨c.den, h c.den_mem⟩ : T) =
+      LocalizedModule.liftOfLE S T h
+        (LocalizedModule.mk (c.num : M) (⟨c.den, c.den_mem⟩ : S))
+    rw [IsLocalizedModule.mk_eq_mk', IsLocalizedModule.mk_eq_mk']
+    exact (IsLocalizedModule.liftOfLE_mk' S T h
+      (LocalizedModule.mkLinearMap S M) (LocalizedModule.mkLinearMap T M)
+        (c.num : M) (⟨c.den, c.den_mem⟩ : S)).symm
+  map_zero' := by
+    apply ext
+    exact (LocalizedModule.liftOfLE S T h).map_zero
+  map_add' x y := by
+    apply ext
+    exact (LocalizedModule.liftOfLE S T h).map_add
+      (x : LocalizedModule S M) (y : LocalizedModule S M)
+
+@[simp]
+theorem mapOfLE_mk {T : Submonoid A} (h : S ≤ T) (c : NumDenSameDeg 𝒜 𝓜 S) :
+    mapOfLE (𝒜 := 𝒜) (𝓜 := 𝓜) h (mk c) = mk
+      { deg := c.deg
+        num := c.num
+        den := c.den
+        den_mem := h c.den_mem } := by
+  apply ext
+  change LocalizedModule.liftOfLE S T h
+      (LocalizedModule.mk (c.num : M) (⟨c.den, c.den_mem⟩ : S)) =
+    LocalizedModule.mk (c.num : M) (⟨c.den, h c.den_mem⟩ : T)
+  rw [IsLocalizedModule.mk_eq_mk', IsLocalizedModule.mk_eq_mk']
+  exact IsLocalizedModule.liftOfLE_mk' S T h
+      (LocalizedModule.mkLinearMap S M) (LocalizedModule.mkLinearMap T M)
+        (c.num : M) (⟨c.den, c.den_mem⟩ : S)
+
 /-! ### Localization away from one homogeneous element -/
 
 /-- The degree-zero fraction `m / fⁿ` when `f` has degree `d` and `m` has degree `n • d`. -/

@@ -22,10 +22,36 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms CohLean.AlgebraicGeometry.Proj.degreeZeroSubmodule
 #print axioms CohLean.AlgebraicGeometry.Proj.DegreeZeroLocalization.mk_surjective
 #print axioms CohLean.AlgebraicGeometry.Proj.DegreeZeroLocalization.mk_eq_mk_iff
+#print axioms CohLean.AlgebraicGeometry.Proj.DegreeZeroLocalization.mapOfLE
 #print axioms CohLean.AlgebraicGeometry.Proj.DegreeZeroLocalization.awayMk
 #print axioms CohLean.AlgebraicGeometry.Proj.GradedLinearMap
 #print axioms CohLean.AlgebraicGeometry.Proj.GradedLinearMap.map
 #print axioms CohLean.AlgebraicGeometry.Proj.GradedLinearMap.map_mk
+#print axioms CohLean.AlgebraicGeometry.Proj.isLocallyFraction
+#print axioms CohLean.AlgebraicGeometry.Proj.associatedSheaf
+#print axioms CohLean.AlgebraicGeometry.Proj.stalkEquiv
+#print axioms CohLean.AlgebraicGeometry.Proj.moduleAwayToSection
+#print axioms CohLean.AlgebraicGeometry.Proj.moduleAwayToSection_unique
+#print axioms CohLean.AlgebraicGeometry.Proj.associatedMap
+#print axioms CohLean.AlgebraicGeometry.Proj.associatedIsoOfPiecewiseIff
+#print axioms CohLean.AlgebraicGeometry.Proj.natShift
+#print axioms CohLean.AlgebraicGeometry.Proj.intShift
+#print axioms CohLean.AlgebraicGeometry.Proj.mem_intShift_ofNat_iff
+#print axioms CohLean.AlgebraicGeometry.Proj.sheafTwist
+#print axioms CohLean.AlgebraicGeometry.Proj.sheafTwistZeroIso
+#print axioms CohLean.AlgebraicGeometry.Proj.sheafNatTwistAddIso
+#print axioms CohLean.AlgebraicGeometry.Proj.twistingSheaf
+#print axioms CohLean.AlgebraicGeometry.Proj.twistingSheafOfNatIso
+#print axioms CohLean.AlgebraicGeometry.Proj.AffineComparisonData
+#print axioms CohLean.AlgebraicGeometry.Proj.AffineComparisonData.quasicoherentData
+#print axioms CohLean.AlgebraicGeometry.Proj.AffineComparisonData.associatedSheaf_isQuasicoherent
+#print axioms CohLean.AlgebraicGeometry.Proj.associatedSheaf_isCoherent_of_finitePresentation
+#print axioms CohLean.AlgebraicGeometry.Proj.associatedSheaf_isCoherent_of_noetherian_finite
+#print axioms CohLean.AlgebraicGeometry.Proj.BasicOpenSectionData
+#print axioms CohLean.AlgebraicGeometry.Proj.basicOpenSectionEquiv
+#print axioms CohLean.AlgebraicGeometry.Proj.TwistingSectionRange
+#print axioms CohLean.AlgebraicGeometry.Proj.TwistingSectionRange.globalSections_finite
+#print axioms CohLean.AlgebraicGeometry.Proj.projectiveSpace_globalSections_finite
 
 -- The geometric source object is a bundle of explicit data, not an axiom identifying schemes
 -- with their numerical realizations.

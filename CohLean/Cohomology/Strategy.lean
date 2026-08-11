@@ -9,6 +9,7 @@ import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.Proper
 import Mathlib.Algebra.Homology.DerivedCategory.Ext.ExactSequences
 import Mathlib.CategoryTheory.Sites.SheafCohomology.Basic
 import Mathlib.CategoryTheory.Sites.SheafCohomology.Cech
+import CohLean.AlgebraicGeometry.Proj.Modules.Finiteness
 
 /-!
 # Layer B stage 3 — which cohomology finiteness theorem this library will prove
@@ -43,13 +44,15 @@ finiteness theorem, no Serre finiteness, and no coherent-cohomology anything.
 and `Proj 𝒜 ⟶ Spec 𝒜₀` is known to be proper — but properness of the morphism is the only
 part of the classical argument that is in place.
 
-*The projective route is not available, and the reason is structural.*
+*The projective route now has an explicit construction boundary.*
 `Mathlib/AlgebraicGeometry/ProjectiveSpectrum/` contains the structure sheaf, the proof
-that `Proj` is a scheme, functoriality, and properness. It contains **no modules**: there
-is no graded-module-to-sheaf construction, no `O(d)`, and no twist of any kind anywhere
-under `Mathlib/AlgebraicGeometry/`. Serre's computation of `H^i(ℙⁿ, O(d))` is therefore not
-"some work away"; the machinery it is stated in has to be built first, and that is a
-milestone larger than B1.
+that `Proj` is a scheme, functoriality, and properness, but still no modules. CohLean now supplies
+degree-zero localized modules, the locally fractional associated sheaf, integer twists and
+`O(d)`. `Proj.Modules.Finiteness` then derives quasi-coherence and coherence from visible affine
+comparison data and exposes a degree-bounded global-section interface. What remains for #29 is
+not an unspecified API project: it is the concrete polynomial-grading comparison certificate,
+followed by the cohomological Serre argument. The missing comparison is a structure field, never
+an axiom.
 
 *The affine-cover route is available.* `IsAffineOpen.inf` and `IsAffineOpen.iInf` give
 affineness of intersections under an affine diagonal — the separatedness hypothesis in the
@@ -68,9 +71,9 @@ line that was not visible when it was written:
   `IsNoetherian X` — or quasi-compact plus quasi-separated where that is genuinely enough —
   together with the affine-diagonal instance that `IsAffineOpen.inf` requires. Properness
   never appears, and neither does a base field.
-* **Not supportable now.** #29, finite-dimensionality of `H^i(X, F)` over a field, which is
-  Serre finiteness and needs the `Proj` module machinery above. #31 and #32 are downstream
-  of it.
+* **Still not proved.** #29, finite-dimensionality of `H^i(X, F)` over a field. Its Proj object
+  and finiteness interfaces now exist; the polynomial affine/global-section comparisons and the
+  cohomological resolution argument remain. #31 and #32 are downstream of it.
 
 So the milestone target moves from "proper over a field" to **separated noetherian**, for
 vanishing only. The projective-to-proper question (#26 question 3, Chow's lemma plus
@@ -114,13 +117,14 @@ Both were established by elaboration, not by reading, and both are load-bearing:
                            │
   toSheaf preserves epis ──┘   (new prerequisite, see above)
 
-  #29  ──  blocked on Proj module machinery, out of scope for B3
+  #57/#94–#97 interfaces ──> polynomial comparison ──> #29
 ```
 
 ## Not done here
 
-No cohomology group is computed, no vanishing is proved, and no `Proj` module machinery is
-built. This file records a decision and pins the declarations that decision rests on.
+No cohomology group is computed and no Serre-finiteness theorem is proved here. The Proj module
+machinery is imported from its real implementation; this file records the remaining boundary and
+pins the declarations that #29 will consume.
 
 ## References
 
@@ -196,11 +200,25 @@ example := @IsAffineOpen.iInf
 where the *finite* affine cover comes from. -/
 example (X : Scheme.{u}) [IsNoetherian X] : CompactSpace X := inferInstance
 
-/-! ### What the projective route would have needed
+/-! ### The current projective boundary
 
-`Proj 𝒜 ⟶ Spec 𝒜₀` is proper, so the geometry is upstream. The modules are not: there is
-no graded-module-to-sheaf construction and no twisting sheaf anywhere under
-`Mathlib/AlgebraicGeometry/`, which is why Serre finiteness is out of scope for B3. -/
+`Proj 𝒜 ⟶ Spec 𝒜₀` is proper upstream. CohLean supplies the missing module and twist objects;
+the following compile-only references pin the explicit comparison and finiteness interfaces
+that separate completed Proj infrastructure from the remaining #29 proof. -/
+
+/-- Quasi-coherence is a theorem once the standard affine `tilde` comparisons are supplied. -/
+example := @CohLean.AlgebraicGeometry.Proj.AffineComparisonData.associatedSheaf_isQuasicoherent
+
+/-- Coherence exposes every chart-level noetherianity and finite-generation assumption. -/
+example := @CohLean.AlgebraicGeometry.Proj.associatedSheaf_isCoherent_of_noetherian_finite
+
+/-- The global-section theorem is degree-bounded and therefore no stronger than its algebraic
+comparison data. -/
+example := @CohLean.AlgebraicGeometry.Proj.TwistingSectionRange.globalSections_finite
+
+/-- Finite-variable homogeneous polynomials supply the finite algebraic source for projective
+space in each certified degree. -/
+example := @CohLean.AlgebraicGeometry.Proj.projectiveSpace_globalSections_finite
 
 /-- Properness of `Proj` over its degree-zero part — the one piece of the classical
 projective argument that is already available. -/
