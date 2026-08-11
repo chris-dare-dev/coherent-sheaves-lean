@@ -1,95 +1,50 @@
 # Repository architecture
 
-CohLean is a library in its own right, not a staging area for Mathlib. Code is grouped by the
-mathematics it implements. Using a Mathlib-style namespace says where a declaration belongs
-mathematically; it does not create an obligation to upstream it.
-
-If Mathlib later provides an equivalent declaration, CohLean can adopt it and remove the local
-implementation. Contributing CohLean code upstream remains optional and is never a milestone
-gate.
+CohLean is organized by mathematical ownership. Module paths descend from a broad subject to
+the smallest stable subsystem and then to a theorem-bearing leaf. Namespace ownership follows
+the mathematics and is independent of the package path.
 
 ## Package map
 
-| Directory | Responsibility |
+| Subsystem | Responsibility |
 |---|---|
-| `CohLean/Numerical` | Dimension-general numerical intersection data, universal characteristic-class formulas, Riemann--Roch, and numerical pairings |
-| `CohLean/Numerical/Specializations` | Optional finite expansions at a chosen dimension; compatibility and display results, not foundational object types |
-| `CohLean/Numerical/Examples` | Concrete models witnessing that the numerical axioms are consistent |
-| `CohLean/AlgebraicGeometry/Variety.lean` | Geometric varieties over a field, kept distinct from their numerical realizations |
-| `CohLean/AlgebraicGeometry/Variety/Numerical.lean` | Certified descent from coherent sheaves and geometric Chern classes to `NumericalVariety` |
-| `CohLean/AlgebraicGeometry/Modules` | Module and sheaf-of-modules constructions over schemes |
-| `CohLean/AlgebraicGeometry/Proj` | Graded-module localization and the developing associated-sheaf/twisting-sheaf machinery on `Proj` |
-| `CohLean/Coh` | Coherent sheaves and their categorical properties |
-| `CohLean/Divisors` | Cartier and effective divisors, invertible sheaves, tensor/Picard structure, determinant lines, and first Chern classes |
-| `CohLean/Cohomology` | Čech and spectral-sequence infrastructure, finite-dimensional cohomology data, geometric Euler characteristics, and their `K₀` factorization |
-| `CohLean/Intersection` | Scheme-independent numerical-polynomial algebra, mixed finite differences, and coefficient/intersection extraction used by Snapper's theorem |
-| `CohLean/Topology` | General open-set-site infrastructure used by the geometric packages |
-| `CohLean/Development` | Compile-only API audits and development probes; not part of the root import |
+| `AlgebraicGeometry/Modules` | Affine comparison, presentations, finiteness, and restriction |
+| `AlgebraicGeometry/Divisors` | Cartier/effective divisors, invertible sheaves, Picard groups, determinants |
+| `AlgebraicGeometry/Proj` | Graded localization, associated/twisting sheaves, and finiteness on projective spectra |
+| `AlgebraicGeometry/Variety` | Geometric varieties and certified numerical realizations |
+| `Coh` | Coherent-sheaf definitions, descent, affine theory, and abelian structure |
+| `Cohomology` | Čech, derived, simplicial, spectral-sequence, and Euler-characteristic theory |
+| `Intersection` | Numerical polynomials, intersection numbers, and Chern-character reconstruction |
+| `Numerical` | Numerical interfaces, Grothendieck-group invariants, Riemann–Roch, models, and displays |
+| `Topology` | Reusable open-cover infrastructure |
+| `Development` | Compile-only API audits; not part of the stable root import |
 
-`CohLean.lean` is the public umbrella import. Development probes and optional numerical display
-specializations are explicitly built immediately before `scripts/Audit.lean`, but are
-deliberately not pulled into that umbrella.
+Every non-leaf subsystem has a same-named `.lean` umbrella. `CohLean.lean` imports only stable
+top-level umbrellas, keeping navigation and dependency boundaries aligned.
 
-## Geometric-to-numerical direction
-
-The intended dependency direction is:
+## Dependency direction
 
 ```text
-scheme X + geometric hypotheses
-  -> Coh X, Pic X, divisors, cohomology, K-theoretic/Chern data
-  -> numerical intersection ring and numerical Grothendieck group
-  -> NumericalVariety n A N
-  -> dimension-general Riemann--Roch and stability invariants
-  -> optional dimension-specific display formulas
+schemes and geometric hypotheses
+  -> coherent sheaves, divisors, and cohomology
+  -> K-theoretic and intersection data
+  -> NumericalVariety
+  -> dimension-general Riemann–Roch invariants
+  -> optional low-dimensional displays
 ```
 
-`AlgebraicGeometry.Variety k` now bundles an integral finite-type scheme over `Spec k`, and
-`SmoothProperVariety k` records the smooth/proper hypotheses currently expressible in Mathlib.
-These are geometric source objects, not numerical records.
+The numerical layer is a visible axiomatic boundary. Geometric modules construct data that
+discharges that boundary; they do not silently turn assumptions into theorems.
 
-`Variety.NumericalData` is now the certified bridge. It requires a coherent-sheaf class map
-that respects isomorphisms and short exact sequences, geometric Chern classes and Euler
-characteristics compatible with that map, and the remaining grading and Riemann--Roch proofs.
-Its `toNumericalVariety` constructor computes `chComp` and `toddComp` from the universal
-characteristic-class formulas. Thus the remaining trust boundary is visible in named geometric
-obligations instead of duplicated numerical component fields.
+## Growth rules
 
-`Cohomology.FiniteCohomology` constructs that Euler characteristic from the actual
-derived-functor groups. It records a functorial lift from abelian groups to `k`-vector spaces,
-a comparison isomorphism after forgetting scalars, finite-dimensionality, and eventual
-vanishing. `Variety.NumericalData` contains this package directly; it can no longer substitute
-an unrelated integer-valued function for cohomological `χ`.
-`Cohomology.EulerCharacteristicAdditivity` transports the actual `Ext` long exact sequence,
-with scalar-linearity of its connecting maps isolated explicitly, and descends `χ` to an
-additive homomorphism from the presented Grothendieck group of coherent sheaves.
+1. Put a new module under the narrowest mathematical owner that can support more than one
+   leaf over the project's lifetime.
+2. Prefer a descriptive leaf such as `Duality/Serre.lean` over a long flat filename.
+3. Export a new leaf through its nearest umbrella, not directly from `CohLean.lean`.
+4. Create a new intermediate directory when a subject gains multiple independent concepts.
+5. Keep temporary API reconnaissance under `Development/`; production theorems belong to
+   their mathematical owner.
 
-`Intersection.NumericalPolynomial` is the algebraic bridge for the next arrow. A tensor-power
-family is modeled by an exponent lattice `ι → ℤ`; arbitrary-direction mixed differences define
-numerical degree and extract symmetric multilinear top coefficients. The core is independent of
-schemes and sheaves, reuses Mathlib's univariate `ForwardDiff`, and specializes in degree two to
-a symmetric `ℤ`-bilinear surface pairing.
-
-`AlgebraicGeometry.Proj` is the geometric foundation for the deferred Serre-finiteness route.
-Its first layer defines the degree-zero homogeneous localization of a graded module as a
-submodule of Mathlib's ordinary `LocalizedModule`, over Mathlib's
-`HomogeneousLocalization` ring. The natural grading used by `Proj` is not silently identified
-with the integer grading needed for twists: graded shifts and `O(d)` are a later, explicit layer.
-
-## Dimension and characteristic classes
-
-Dimension is a parameter of `NumericalRing` and `NumericalVariety`, not a family of separate
-surface/threefold/fourfold object definitions. In particular:
-
-- `NumericalVariety.chi_eq_sum` computes the Riemann--Roch expansion for arbitrary `n`;
-- `NumericalVariety.structureSheafEulerCharacteristic` selects the top Todd component for
-  arbitrary `n`;
-- `NumericalVariety.discriminant` is defined in every dimension and lives in codimension two;
-- files in `Numerical/Specializations` merely normalize the finite sum for human-readable
-  low-dimensional formulas.
-
-`Numerical/CharacteristicClasses.lean` now records the universal conversions from Chern-class
-data to Chern-character and Todd components through codimension four. The next characteristic-
-class milestones are geometric: construct Chern classes, construct the linear cohomology data
-that makes the new Euler characteristic unconditional, then discharge the grading,
-exact-sequence, and Riemann--Roch obligations of `Variety.NumericalData`. The familiar surface,
-threefold, and fourfold normal forms remain corollaries.
+Planned paths in GitHub issues follow these rules so future work extends the tree instead of
+re-flattening it.

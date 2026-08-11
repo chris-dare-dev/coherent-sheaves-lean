@@ -25,7 +25,7 @@ supplies both bridges.
 
 ## Why this is its own file
 
-`grothendieckTopology_coversTop` previously lived in `CohLean/Coh/Local.lean`. It is a statement
+`grothendieckTopology_coversTop` previously lived in `CohLean/Coh/Descent/Locality.lean`. It is a statement
 about topological spaces with no reference to coherence, sheaves of modules, or schemes, and its
 position there made it unreachable from the lower-level topology and algebraic-geometry
 infrastructure: those modules cannot import `Coh.Local` without creating a cycle.

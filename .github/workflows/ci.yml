@@ -29,7 +29,7 @@ jobs:
       - name: Axiom audit
         run: |
           set -o pipefail
-          lake build CohLean.Development.DivisorAPIAudit \
+          lake build CohLean.Development.AlgebraicGeometry.Divisors.API \
             CohLean.Numerical.Specializations.Surface \
             CohLean.Numerical.Specializations.Threefold \
             CohLean.Numerical.Specializations.Fourfold

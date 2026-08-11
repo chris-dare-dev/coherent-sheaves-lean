@@ -2,7 +2,7 @@
 Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 -/
-import CohLean.Numerical.Discriminant
+import CohLean.Numerical.GrothendieckGroup.Discriminant
 
 /-!
 # Display formulas for numerical surfaces
@@ -11,7 +11,8 @@ The `n = 2` specialisation of `AlgebraicGeometry.Numerical.NumericalVariety.chi_
 
 This is an optional display specialization of the dimension-general API. It contains no
 foundational surface object: `NumericalVariety 2 A N` is the general variety interface at
-dimension two, and the discriminant itself now lives in `Numerical/Discriminant.lean` for
+dimension two, and the discriminant itself now lives in
+`Numerical/GrothendieckGroup/Discriminant.lean` for
 arbitrary dimension.
 
 ## Main results
