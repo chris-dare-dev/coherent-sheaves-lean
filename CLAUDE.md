@@ -1,14 +1,14 @@
 # CLAUDE.md — context for agents working in BridgelandStabLean
 
-Read `README.md` first for the mathematical framing. This file is the working
-rules.
+Read `README.md` first for the mathematical framing. GitHub milestones and issues hold the
+current theorem inventory and dependencies. This file contains the working rules.
 
 ## 1. The pins are load-bearing
 
 - `lean-toolchain` is `leanprover/lean4:v4.29.0`.
 - `lakefile.toml` pins `BridgelandStability` to commit `9e48f23a382…` — an
   **exact commit, never a branch**.
-- Mathlib (`8a178386ffc0…`) arrives **transitively** through the anchor.
+- Mathlib (`8a178386ffc0…`) arrives **transitively** through the foundational library.
   Do not add a direct Mathlib `require`. A second pin is a second thing to
   drift, and the point of this repo is a citable, reproducible environment.
 
@@ -30,7 +30,7 @@ Lean environment.
 
 The exception is bounded by the property that justifies it — **the package is a
 leaf with zero transitive dependencies**, core Lean only, no Mathlib and no
-anchor. It cannot drag anything else in and cannot disagree with the anchor
+foundational library. It cannot drag anything else in and cannot disagree with the foundational library
 about a Mathlib revision. **If that ever stops being true, the exception
 lapses** and the dependency comes out; it is not grandfathered.
 
@@ -98,14 +98,14 @@ pin, and neither local form is valid upstream.
 `fidelity.sorry_count` is `0` and should stay there.
 
 When a result is not yet proved, **do not declare it with `sorry`** — leave it
-undeclared and write the intent in a `TODO` comment. `GroupAction/NormalizedShift.lean`
+undeclared and write the intent in a `TODO` comment. `StabilityCondition/Phase/NormalizedShift.lean`
 demonstrates the pattern: the `Group` instance is described precisely and not
 declared. A sorry-backed instance typechecks, gets imported, and silently
 launders an unproved claim into everything downstream.
 
 ## 3. Never conflate the lattice model with geometry
 
-`Lattice/NumericalK.lean` uses `Fin 2 → ℤ` as a stand-in for `K_num(Ku(X))`.
+`Lattice/Numerical/RankTwo.lean` uses `Fin 2 → ℤ` as a stand-in for `K_num(Ku(X))`.
 
 A lemma proved there is a theorem about **any rank-2 torsion-free lattice**.
 It is not a theorem about a Kuznetsov component, a surface, or any geometric
@@ -139,63 +139,63 @@ axiomatizing the gap.
    (`inv_mul_cancel` on `GLPos`), never via `Matrix.inv` — the nonsingular
    inverse then never has to appear.
 3. The action on stability conditions. **Read
-   [`notes/anchor-api-map.md`](notes/anchor-api-map.md) first** — it maps every
-   anchor type this step touches, straight from the pinned checkout, and
+   [`notes/dependencies/BridgelandStabilityAPI.md`](notes/dependencies/BridgelandStabilityAPI.md) first** — it maps every
+   foundational library type this step touches, straight from the pinned checkout, and
    stages it 3a / 3b / 3c.
    - **3a — action on `Slicing`. Done** (2026-08-03),
-     `GroupAction/SlicingAction.lean`.
+     `StabilityCondition/Symmetry/GLTilde/Action/Slicing.lean`.
    - **3b — action on `PreStabilityCondition.WithClassMap`. Done**
-     (2026-08-03), `GroupAction/PreStabilityAction.lean` + `actC` in
-     `ComplexBridge.lean`.
+     (2026-08-03), `StabilityCondition/Symmetry/GLTilde/Action/PreStability.lean` + `actC` in
+     `StabilityCondition/Symmetry/GLTilde/ComplexRepresentation.lean`.
    - **3c — action on `StabilityCondition.WithClassMap`. Done** (2026-08-03),
-     `GroupAction/StabilityAction.lean`. **The §8 `G̃L⁺(2, ℝ)` action is
+     `StabilityCondition/Symmetry/GLTilde/Action/Stability.lean`. **The §8 `G̃L⁺(2, ℝ)` action is
      complete.**
 
    The topological track is also complete in the 2026-08-06 working tree.
-   `GLTildeTopology.lean` supplies contractible global coordinates and simple
-   connectedness; `GLTildeCover.lean` proves the surjective covering-map
-   property; and `GLTildeTopologicalGroup.lean` proves continuous
-   multiplication and inversion. `TopologicalAction.lean` and
-   `GLTildeContinuousAction.lean` prove that fixed autoequivalence classes,
+   `StabilityCondition/Symmetry/GLTilde/Covering/SourceTopology.lean` supplies contractible global coordinates and simple
+   connectedness; `StabilityCondition/Symmetry/GLTilde/Covering/Map.lean` proves the surjective covering-map
+   property; and `StabilityCondition/Symmetry/GLTilde/Topology/Group.lean` proves continuous
+   multiplication and inversion. `StabilityCondition/Symmetry/Combined/Topology.lean` and
+   `StabilityCondition/Symmetry/GLTilde/Action/Continuous.lean` prove that fixed autoequivalence classes,
    fixed lifted matrices, and fixed pairs act by homeomorphisms on the
    Bridgeland stability space (`ContinuousConstSMul`).
-   `GLTildeJointContinuousAction.lean` proves the stronger `ContinuousSMul`
+   `StabilityCondition/Symmetry/GLTilde/Action/JointContinuous.lean` proves the stronger `ContinuousSMul`
    instances for `GLTilde`, for discretely topologized `AutPairQuot v`, and
    for their direct product. The algebraic `ℤ` fibre and exact sequence
-   remain in `GLTildeFibre.lean` and `GLTildeSurj.lean`.
+   remain in `StabilityCondition/Symmetry/GLTilde/Covering/Fibre.lean` and `StabilityCondition/Symmetry/GLTilde/Covering/Surjectivity.lean`.
 
    The three post-topology symmetry milestones are complete as well.
-   `ComponentAction.lean` transports connected components and restricts
-   symmetries to component homeomorphisms; `PeriodMapEquivariance.lean`
+   `StabilityCondition/Symmetry/Combined/Components.lean` transports connected components and restricts
+   symmetries to component homeomorphisms; `StabilityCondition/Symmetry/Combined/PeriodMap.lean`
    proves equivariance of the central charge and the canonical component
-   local-model chart; and `EffectiveAction.lean` quotients the combined
+   local-model chart; and `StabilityCondition/Symmetry/Combined/Effective.lean` quotients the combined
    symmetry group by its full action kernel. The shift convention is now
    theorem-pinned: `[2]` acts as `deck (-1)`, hence `(deck 1, [2])` is in the
    kernel. The quotient action is faithful. Do not strengthen this to a claim
    that the explicit diagonal pair generates the full kernel.
 
-   The `Aut` groundwork is in `GroupAction/AutAction.lean`
+   The `Aut` groundwork is in `StabilityCondition/Symmetry/Autoequivalence/Slicing/Transport.lean`
    (`PostnikovTower.mapF`, `HNFiltration.mapF`, `Slicing.mapEquiv`). Two
    packagings of it exist **on slicings only** — the stability-condition action
-   is `AutPairAction.lean`, below:
+   is `StabilityCondition/Symmetry/Autoequivalence/Stability/ClassMap.lean`, below:
 
-   - `GroupAction/QuotAutAction.lean` — **the general one.** `AutQuot C` is
+   - `StabilityCondition/Symmetry/Autoequivalence/Slicing/Quotient.lean` — **the general one.** `AutQuot C` is
      triangulated auto-equivalences modulo natural isomorphism, a genuine
      `Group` with `MulAction (AutQuot C) (Slicing C)`. Excludes nothing.
      Prefer this. Note `AutQuot` is a plain `def`, so use `AutQuot.mk` — a
      bare `Quotient.mk` leaves `•` unable to find its instance.
-   - `GroupAction/StrictAutAction.lean` — the cheap special case, a group
+   - `StabilityCondition/Symmetry/Autoequivalence/Slicing/Strict.lean` — the cheap special case, a group
      mapping *strictly* into `C ⥤ C`. Its `map_one`/`map_mul` are equalities
      of functors, so each `F g` is an **isomorphism of categories** and Serre
      functors and spherical twists are out of its scope.
 
-   **`GroupAction/AutStabilityAction.lean` now carries the action on stability
+   **`StabilityCondition/Symmetry/Autoequivalence/Stability/Transport.lean` now carries the action on stability
    conditions** (`actStabAut`, 2026-08-04) — `Φ` moves objects, a class-lattice
    datum `lam` carries it on `Λ`. Local finiteness survives with the **same
    `η`** (`mapEquiv_isLocallyFinite`); the endpoints do not move, so no
    `exists_radius`.
 
-   **`GroupAction/AutPairAction.lean` makes it a `MulAction`** (2026-08-04,
+   **`StabilityCondition/Symmetry/Autoequivalence/Stability/ClassMap.lean` makes it a `MulAction`** (2026-08-04,
    later). The acting object is a *pair* `(Φ, lam)`, which `AutQuot` cannot
    group because it carries only the `Φ`s; `AutPair v` bundles both and
    `AutPairQuot v` is the quotient by natural isomorphism of `Φ` **with `lam`
@@ -213,22 +213,22 @@ axiomatizing the gap.
      `K₀.mapF_congr` promotes that isomorphism to an **equality** of maps on
      `K₀`. Without that upgrade `compat` cannot cross to `Φ⁻¹`.
 
-   All three prerequisites are done: `K₀` functoriality (`K0Functor.lean`), the
+   All three prerequisites are done: `K₀` functoriality (`StabilityCondition/Symmetry/Autoequivalence/Foundations/GrothendieckGroup.lean`), the
    class-lattice datum, and strict finite length under an *equivalence* of
    interval categories (`mapEquiv_isLocallyFinite`, on the general
-   `isStrictArtinian_of_faithful_strict` in `StrictFiniteLength.lean` — the
-   anchor's `interval_thinFiniteLength_of_inclusion_strict` does **not** apply
+   `isStrictArtinian_of_faithful_strict` in `StabilityCondition/Symmetry/Autoequivalence/Foundations/FiniteLength.lean` — the
+   foundational library's `interval_thinFiniteLength_of_inclusion_strict` does **not** apply
    here, since it compares two `intervalProp`s on the same object).
-   [`notes/anchor-api-map.md`](notes/anchor-api-map.md) §7.
+   [`notes/dependencies/BridgelandStabilityAPI.md`](notes/dependencies/BridgelandStabilityAPI.md) §7.
 
    Facts worth having up front:
 
-   - A non-`module` file imports the anchor fine — no migration needed.
-   - The anchor is **not** covered by `lake exe cache get`; it is built now,
+   - A non-`module` file imports the foundational library fine — no migration needed.
+   - The foundational library is **not** covered by `lake exe cache get`; it is built now,
      keep it that way.
    - Inside a `MulAction` instance's own elaboration `•` is opaque, so `simp`
      needs a `show` to see through it.
-   - The anchor's `ext` lemmas live in `StabilityCondition/Basic.lean`, not
+   - The foundational library's `ext` lemmas live in `StabilityCondition/Basic.lean`, not
      `Defs.lean`. The auto-generated structure `ext` is useless — it demands
      equality of the `compat'` proofs.
    - On `ℂ`, `smul_smul` will not match `m • r • z` (different instance
@@ -237,31 +237,31 @@ axiomatizing the gap.
      interval-category infrastructure that `IntervalCategory/` does not — the
      whole `interval_*_of_inclusion_strict` family lives in
      `Deformation/IntervalSelection.lean`. Searching only `IntervalCategory/`
-     and `QuasiAbelian/` once produced a false "the anchor lacks this" finding.
-     **Search the whole anchor before concluding something is missing.**
+     and `QuasiAbelian/` once produced a false "the foundational library lacks this" finding.
+     **Search the whole foundational library before concluding something is missing.**
 
 Six claims to keep off the page.
 
 - **"The formalized §8 symmetries are the full symmetry group"** — both halves
-  act on stability conditions, `CombinedAction.lean` proves that they commute,
+  act on stability conditions, `StabilityCondition/Symmetry/Combined/Action.lean` proves that they commute,
   and the direct product acts jointly continuously. What is *not* formalized
   is that these factors generate all symmetries. The `AutPairQuot v` factor is
   equipped with the discrete topology for this statement; no moduli topology
   on autoequivalences is being asserted.
 - **"`Aut(D)` acts by isometries"** — still not literally the theorem proved
-  here. `GroupAction/StabilityMass.lean` defines the finite HN-factor mass sum
-  and a choice-free `stabilityMass` envelope. `HNMassUniqueness.lean` proves
+  here. `StabilityCondition/Metric/Mass/Basic.lean` defines the finite HN-factor mass sum
+  and a choice-free `stabilityMass` envelope. `StabilityCondition/Metric/Mass/Uniqueness.lean` proves
   equality of all HN mass sums by head--tail octahedral induction and
   t-structure uniqueness, so the envelope equals every finite filtration mass
-  and is never `⊤`. `StabilityDistance.lean` adds the ordinary logarithmic
+  and is never `⊤`. `StabilityCondition/Metric/Distance/Basic.lean` adds the ordinary logarithmic
   discrepancy to `φ⁺` and `φ⁻`, proving reflexivity, symmetry, the triangle
-  inequality, and `slicingDist ≤ stabilityDist`. `AutFullIsometry.lean` proves
+  inequality, and `slicingDist ≤ stabilityDist`. `StabilityCondition/Metric/Isometry/Full.lean` proves
   exact preservation by `AutPair` representatives and `AutPairQuot v`.
-  `StabilityDistanceSeparation.lean` proves that distance zero identifies the
+  `StabilityCondition/Metric/Distance/Separation.lean` proves that distance zero identifies the
   slicing and `Z.comp v`, hence the full stability condition when `v` is
   surjective; the ordinary `K₀ C` specialization is unconditional.
 
-  `StabilityDistanceTopology.lean` proves the analytic charge/mass estimates,
+  `StabilityCondition/Metric/Distance/Topology.lean` proves the analytic charge/mass estimates,
   the full-distance-to-Section-6 cofinality direction, and the reverse
   direction conditional on the explicit proposition
   `StabilityMassTriangleInequality`. Its named `PseudoEMetricSpace` and
@@ -274,7 +274,7 @@ Six claims to keep off the page.
   autoequivalence group preserves the three-coordinate HN-mass distance" and
   state the remaining group-level distinction.
 
-  `StabilityMassTriangle.lean` develops the missing categorical proof. It
+  `StabilityCondition/Metric/Mass/Subadditivity/Triangle.lean` develops the missing categorical proof. It
   defines the ordinary observable condition by composing the central charge
   with `v`, reuses the heart-equivalence HN API, proves `‖Z(E)‖ ≤ mσ(E)`,
   proves mass invariance under `[1]` and `[-1]`, and closes the
@@ -283,10 +283,10 @@ Six claims to keep off the page.
   head--tail mass split, and
   `stabilityMassTriangleInequality_of_semistable_obj₁` closes the
   arbitrary-left octahedral reduction conditional only on the semistable-left
-  milestone. `HNPolygon.lean` now defines the convex hull of all subobject
+  milestone. `StabilityCondition/Metric/Mass/Subadditivity/HNPolygon.lean` now defines the convex hull of all subobject
   charges, builds the distinguished HN path, proves edge-charge and
   length-equals-mass formulas, and supplies the endpoint chord inequality.
-  `H0ExactnessBridge.lean` proves that the heart-source `H⁰` complex is exact
+  `StabilityCondition/Metric/Mass/Subadditivity/CohomologyExactness.lean` proves that the heart-source `H⁰` complex is exact
   exactly when its canonical cokernel comparison is monic, and now proves the
   canonical `H⁰'` and `H⁰` functors homological unconditionally.
   `StabilityMassBoundaryHeartInequality` and
@@ -299,12 +299,12 @@ Six claims to keep off the page.
   `StabilityMassHeartShortExactInequality` is a named uninhabited proposition,
   pending that global corollary.
 
-  Two things this cost that are worth reusing. The anchor had carried
+  Two things this cost that are worth reusing. The foundational library had carried
   `slicingDist` since before this repo existed
   (`StabilityCondition/Defs.lean`), written for §7's deformation theory and
-  never connected to §8 — the *third* time the "search the whole anchor" rule
+  never connected to §8 — the *third* time the "search the whole foundational library" rule
   above has paid. And `Slicing.phiPlus_congr` / `phiMinus_congr`,
-  iso-invariance of the intrinsic phases, had to be stated here: the anchor
+  iso-invariance of the intrinsic phases, had to be stated here: the foundational library
   inlines that argument at four sites in `Deformation/DeformedGtLe.lean`
   without ever naming it.
 - **"`AutPairQuot v` is `Aut(D)`"** — no, and it is further from it than
@@ -337,14 +337,14 @@ Related: do not cite `StrictAut` as the `Aut` action either. Its `F g` are
 isomorphisms of categories, not equivalences, so Serre functors and spherical
 twists are outside it. `QuotAutAction` supersedes it for slicings.
 
-Step 3 is the first declaration here that touches the anchor's API. **Read
+Step 3 is the first declaration here that touches the foundational library's API. **Read
 `BridgelandStability/Slicing/` and `BridgelandStability/StabilityCondition/`
 end to end before attempting it.** Guessing at that API and iterating against
 compile errors wastes a full Mathlib rebuild per guess.
 
 ## 6. `formalization.yaml` is a claim, not decoration
 
-Its schema mirrors the anchor's key-for-key so one parser reads both. Keep it
+Its schema mirrors the foundational library's key-for-key so one parser reads both. Keep it
 that way; do not rename keys.
 
 Every field is a claim someone may cite. `human_review: none` stays `none`

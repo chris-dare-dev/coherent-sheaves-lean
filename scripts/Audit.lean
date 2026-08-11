@@ -142,7 +142,7 @@ open BridgelandStabLean
 
 /-! ## AutAction — transport along a triangulated auto-equivalence
 
-These extend the anchor's own namespace, since they are API for its types. -/
+These extend the foundational library's own namespace, since they are API for its types. -/
 
 #print axioms CategoryTheory.Triangulated.PostnikovTower.mapF
 #print axioms CategoryTheory.Triangulated.HNFiltration.mapF
@@ -482,7 +482,7 @@ These extend the anchor's own namespace, since they are API for its types. -/
 #print axioms BridgelandStabLean.GroupAction.deck_one_shiftTwo_mem_combinedActionKernel
 #print axioms BridgelandStabLean.GroupAction.deck_one_shiftTwo_eq_one_in_effective
 
-/-! ## AutIsometry — the action preserves the anchor's phase distance -/
+/-! ## AutIsometry — the action preserves the foundational library's phase distance -/
 
 #print axioms CategoryTheory.Triangulated.Slicing.phiPlus_congr
 #print axioms CategoryTheory.Triangulated.Slicing.phiMinus_congr

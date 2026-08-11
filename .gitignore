@@ -1,5 +1,7 @@
 /.lake/
 /scratch/
+HANDOFF.md
+ROADMAP.md
 
 # Emitter output. Derived from the build, and a stale copy in git would be a
 # trust record nobody regenerated -- which is worse than none, because it looks

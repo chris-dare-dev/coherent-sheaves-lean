@@ -1,19 +1,8 @@
 # Trust record for BridgelandStabLean.
 #
-# Schema FOLLOWS mattrobball/BridgelandStability's formalization.yaml: same
-# top-level blocks, same key names, same intent. It is NOT a key-for-key
-# mirror, and a single parser does NOT read both without a shim. The known
-# divergences, as of 2026-08-04:
-#
-#   - the anchor's first key, `schema_version`, is absent here;
-#   - `dependencies` is a list of mappings here, a list of strings there;
-#   - `human_review` is a scalar here, a list of mappings there;
-#   - `machine_review` and `source_mapping` are scalars here, mappings there;
-#   - `funding`, `sorry_in_definitions`, and `upstream_prs`/`reviews` differ
-#     in type or presence.
-#
-# Do not rename keys to taste. Closing these divergences is tracked as
-# .claude/roadmap/contract-v1.yaml -> contract-v1-e1 (GitHub #13).
+# This project-local schema records source scope, environment identity, and
+# the trust boundary. Do not rename keys to taste; schema evolution belongs
+# in a reviewed contract issue.
 #
 # Every field is a claim. If a field cannot be filled honestly, it says
 # "none" or "pending" -- never a flattering guess.
@@ -22,10 +11,10 @@ artifact:
   name: BridgelandStabLean
   url: https://github.com/chris-dare-dev/bridgeland-stab-lean
   description: >
-    Extensions to mattrobball/BridgelandStability along two lanes that require
-    no algebraic-geometry substrate: rank-2 torsion-free lattice arithmetic,
-    and the Bridgeland 2007 section 8 GL+(2,R)-tilde action the anchor does
-    not cover.
+    A standalone Lean development of symmetries and metric geometry for
+    Bridgeland stability conditions, including the lifted GL+(2,R) action,
+    autoequivalence actions, stability mass and distance, and numerical
+    lattice foundations.
   date: 2026-08-03
   authors:
     - Chris Dare
@@ -63,11 +52,9 @@ source:
   license: arXiv perpetual non-exclusive
   author_contacted: false
   prior_formalization: >
-    mattrobball/BridgelandStability covers sections 2-7 of the same paper.
-    Section 8 is outside its stated scope. NOTE: that scope statement reads
-    "covers Sections 2-7"; the absence of section 8 is an INFERENCE from it,
-    not a sentence any upstream source asserts. Section 8's identity as the
-    group-action section comes from Bridgeland 2007's own table of contents.
+    Core definitions for stability conditions are imported through the pinned
+    foundational library recorded under toolchain dependencies. This artifact
+    is scoped and assessed by the declarations it owns.
   size_bytes: null
 
 toolchain:
@@ -106,7 +93,7 @@ fidelity:
     standing rule stays -- a result that is not yet proved is left undeclared
     with a TODO, never declared with sorry, because a sorry-backed instance
     typechecks, gets imported, and launders an unproved claim downstream.
-    CLOSED 2026-08-05: simple connectedness of GLTilde. GLTildeTopology.lean
+    CLOSED 2026-08-05: simple connectedness of GLTilde. StabilityCondition/Symmetry/GLTilde/Covering/SourceTopology.lean
     gives global coordinates
     R x (0,infinity) x R x (0,infinity): rotate the first column back through
     the lifted phase f(0), leaving an upper-triangular matrix with two positive
@@ -116,15 +103,15 @@ fidelity:
     homeomorphism, and ContractibleSpace GLTilde and SimplyConnectedSpace
     GLTilde are declared. GLTilde.mat is also proved continuous. This proof
     does NOT need a computation of pi_1(S^1), and it does not use the polar
-    decomposition; ForMathlib/PolarDecomposition.lean remains an independent,
+    decomposition; ForMathlib/LinearAlgebra/Matrix/PolarDecomposition.lean remains an independent,
     more general matrix result.
 
     The other two group-theoretic facts were CLOSED 2026-08-04: the Z fibre in
-    GLTildeFibre.lean and surjectivity of the projection in
-    GLTildeSurj.lean. Together they give the exact sequence
+    StabilityCondition/Symmetry/GLTilde/Covering/Fibre.lean and surjectivity of the projection in
+    StabilityCondition/Symmetry/GLTilde/Covering/Surjectivity.lean. Together they give the exact sequence
     1 -> Z -> GLTilde -> GL+(2,R) -> 1.
 
-    CLOSED 2026-08-05: the covering-map property. GLTildeCover.lean gives
+    CLOSED 2026-08-05: the covering-map property. StabilityCondition/Symmetry/GLTilde/Covering/Map.lean gives
     GL+(2,R) global coordinates S^1 x (0,infinity) x R x (0,infinity) and
     proves that GLTilde.mat is conjugate, through the source and base
     coordinate homeomorphisms, to (theta |-> exp(pi theta)) x id. Mathlib's
@@ -136,7 +123,7 @@ fidelity:
     of the algebraic exact sequence.
 
     CLOSED 2026-08-06: topological-group compatibility.
-    GLTildeTopologicalGroup.lean proves joint continuity of phase evaluation
+    StabilityCondition/Symmetry/GLTilde/Topology/Group.lean proves joint continuity of phase evaluation
     (x,phi) |-> x.shift(phi). In global coordinates the possibly
     branch-sensitive arg(cA) term cancels, leaving only arg(W(phi)) -
     arg(W(0)); every W lies in the open right half-plane where arg is
@@ -146,23 +133,23 @@ fidelity:
     is IsTopologicalGroup GLTilde.
 
     CLOSED 2026-08-06: normalized quotient and combined symmetry action.
-    QuotAutAction.lean now imports right-adjoint uniqueness and proves
+    StabilityCondition/Symmetry/Autoequivalence/Slicing/Quotient.lean now imports right-adjoint uniqueness and proves
     TriEquiv.inverseIsoOfFunctorIso, so AutQuot and AutPairQuot quotient only
-    by natural isomorphism of the forward functors. CombinedAction.lean proves
+    by natural isomorphism of the forward functors. StabilityCondition/Symmetry/Combined/Action.lean proves
     the GLTilde and AutPairQuot actions commute and supplies
     MulAction (GLTilde x AutPairQuot v) (StabilityCondition.WithClassMap C v).
 
     CLOSED 2026-08-06: fixed-element topological action layer.
-    TopologicalAction.lean proves forward control of slicingDist and
+    StabilityCondition/Symmetry/Combined/Topology.lean proves forward control of slicingDist and
     stabSeminorm under a compatible autoequivalence pair, giving
     ContinuousConstSMul for AutPairQuot and a homeomorphism for each class.
-    GLTildeContinuousAction.lean combines uniform continuity of the normalized
+    StabilityCondition/Symmetry/GLTilde/Action/Continuous.lean combines uniform continuity of the normalized
     phase lift with operator-norm bounds for actC and actC-inverse, giving the
     corresponding ContinuousConstSMul and homeomorphisms for GLTilde and for
     the direct-product action.
 
     CLOSED 2026-08-06: jointly continuous symmetry actions.
-    GLTildeJointContinuousAction.lean proves that phase displacement is
+    StabilityCondition/Symmetry/GLTilde/Action/JointContinuous.lean proves that phase displacement is
     uniformly small on all of R near the identity (compactness on [0,1] plus
     integer equivariance), that the central-charge operator varies
     continuously in operator norm, and that these estimates control one
@@ -173,12 +160,12 @@ fidelity:
     ContinuousSMul instances.
 
     CLOSED 2026-08-06: component transport, equivariant period coordinates,
-    and the effective symmetry quotient. ComponentAction.lean transports
+    and the effective symmetry quotient. StabilityCondition/Symmetry/Combined/Components.lean transports
     connected-component labels, restricts symmetries to homeomorphisms between
     component subtypes, and equips each component stabilizer with an action on
-    that component. PeriodMapEquivariance.lean packages the additive action on
+    that component. StabilityCondition/Symmetry/Combined/PeriodMap.lean packages the additive action on
     the charge space and proves equivariance of the full central-charge map and
-    the canonical component local-model chart. EffectiveAction.lean constructs
+    the canonical component local-model chart. StabilityCondition/Symmetry/Combined/Effective.lean constructs
     the categorical double shift as a triangulated autoequivalence, proves it
     is trivial on K0, and fixes the convention `[2] = deck (-1)` at the level
     of actions. Thus `(deck 1, [2])` is in the combined action kernel. The
@@ -186,17 +173,17 @@ fidelity:
     overlap generates the full kernel in every category.
 
     CLOSED IN PART 2026-08-06: the full-coordinate metric and isometry track.
-    AutIsometry.lean first proved exact preservation of the anchor's
-    phase-only slicingDist. StabilityMass.lean now defines the finite charge-
+    StabilityCondition/Metric/Isometry/Phase.lean first proved exact preservation of the foundational library's
+    phase-only slicingDist. StabilityCondition/Metric/Mass/Basic.lean now defines the finite charge-
     norm sum of an HN filtration and a choice-free mass envelope as the
     supremum over all HN filtrations; it proves positivity, isomorphism
     invariance, and exact transport by a compatible autoequivalence.
-    StabilityDistance.lean adds the logarithmic mass coordinate to phi-plus
+    StabilityCondition/Metric/Distance/Basic.lean adds the logarithmic mass coordinate to phi-plus
     and phi-minus, then proves reflexivity, symmetry, the triangle inequality,
-    and slicingDist <= stabilityDist. AutFullIsometry.lean proves exact
+    and slicingDist <= stabilityDist. StabilityCondition/Metric/Isometry/Full.lean proves exact
     preservation by representatives and by AutPairQuot v.
 
-    HNMassUniqueness.lean now closes the mass-identification gap without an
+    StabilityCondition/Metric/Mass/Uniqueness.lean now closes the mass-identification gap without an
     added axiom. It constructs the highest-factor/tail triangle of an HN
     filtration by octahedral induction, uses the half-open t-structure at the
     common leading phase to identify the decompositions from two filtrations,
@@ -205,14 +192,14 @@ fidelity:
     finite sum; stabilityMass_ne_top and stabilityMass_eq_zero_iff prove
     finiteness and vanishing exactly on zero objects.
 
-    StabilityDistanceSeparation.lean closes identity of indiscernibles. From
+    StabilityCondition/Metric/Distance/Separation.lean closes identity of indiscernibles. From
     distance zero it first reconstructs the slicing, then the charge of every
     object and the observable homomorphism Z.comp v. For a surjective class
     map it reconstructs Z itself and hence the complete stability condition.
     The ordinary K0-valued specialization is unconditional because its class
     map is the identity.
 
-    StabilityDistanceTopology.lean closes the analytic and instance-design
+    StabilityCondition/Metric/Distance/Topology.lean closes the analytic and instance-design
     parts of the topology comparison. It proves strict full-distance control
     of phases, masses, and charges; both semistable sector estimates; and the
     unconditional refinement of Section 6 neighborhoods by distance balls.
@@ -225,7 +212,7 @@ fidelity:
 
     OPENED 2026-08-06, FIRST AND SECOND MILESTONES CLOSED 2026-08-07: the
     categorical mass-triangle chain.
-    StabilityMassTriangle.lean defines the ordinary observable stability
+    StabilityCondition/Metric/Mass/Subadditivity/Triangle.lean defines the ordinary observable stability
     condition with central charge Z.comp v and exposes its induced heart
     stability function and HN property. It proves the charge lower bound
     norm(Z(E)) <= m_sigma(E), mass invariance under shifts by 1 and -1,
@@ -237,7 +224,7 @@ fidelity:
     semistable-left targets are named explicitly, and
     stabilityMassTriangleInequality_of_semistable_obj₁ proves the
     arbitrary-left target from the semistable-left one by induction on HN
-    length. StabilityMassTriangle.lean now also proves the missing converse
+    length. StabilityCondition/Metric/Mass/Subadditivity/Triangle.lean now also proves the missing converse
     heart/slicing semistability implication, converts an abelian HN filtration
     into an ambient HN tower factor by factor, identifies its real mass with
     triangulated stabilityMass, and inhabits the phase-one boundary-heart
@@ -250,7 +237,7 @@ fidelity:
     unconditional global triangle corollary are not yet inhabited; no open
     premise is installed as an instance or hidden axiom.
 
-    FOUNDATION UPDATE 2026-08-06: HNPolygon.lean now defines the HN polygon as
+    FOUNDATION UPDATE 2026-08-06: StabilityCondition/Metric/Mass/Subadditivity/HNPolygon.lean now defines the HN polygon as
     the convex hull of all subobject charges and realizes an abelian HN
     filtration as its distinguished complex path. HN polygons are monotone
     under monomorphisms. Consecutive edges are proved equal to factor charges,
@@ -267,7 +254,7 @@ fidelity:
     Proposition 2.13. Path length remains identified with factor mass, and
     the endpoint chord remains bounded by path length.
 
-    ConvexPolygonPerimeter.lean now proves the independent t = 0
+    StabilityCondition/Metric/Mass/Subadditivity/PolygonPerimeter.lean now proves the independent t = 0
     polygon-perimeter comparison in Ikeda Lemma 3.7 by a finite support-fan
     argument and specializes it to HN paths. Code commit 10cb4c8 proves the
     precise boundary-cut input for Lemma 3.8: positive-angle support maxima of
@@ -275,10 +262,10 @@ fidelity:
     monomorphism A -> B gives m_HN(A) <= m_HN(B) + norm(Z(coker)). The result is
     also stated for arbitrary short exact sequences. The formerly remaining
     first-milestone integration bridge is now closed in
-    StabilityMassTriangle.lean: abelian factor mass is identified with
+    StabilityCondition/Metric/Mass/Subadditivity/Triangle.lean: abelian factor mass is identified with
     triangulated stabilityMass on the canonical heart, and the zero-object
     cases are explicit.
-    H0ExactnessBridge.lean packages the heart-source H0 short complex and
+    StabilityCondition/Metric/Mass/Subadditivity/CohomologyExactness.lean packages the heart-source H0 short complex and
     proves that its exactness is equivalent to monicity of the canonical
     cokernel comparison into H0(X3). Code commit 797c200 proves the canonical
     H0-prime functor homological on arbitrary distinguished triangles by
@@ -303,12 +290,12 @@ fidelity:
     compatible lattice data. The relevant @[cites] records stay no_claim and
     known_divergences states the boundary precisely.
 
-    The Aut action on SLICINGS is landed, and generally: AutAction.lean is the
+    The Aut action on SLICINGS is landed, and generally: StabilityCondition/Symmetry/Autoequivalence/Slicing/Transport.lean is the
     transport groundwork (PostnikovTower.mapF, HNFiltration.mapF,
-    Slicing.mapEquiv), and QuotAutAction.lean quotients triangulated
+    Slicing.mapEquiv), and StabilityCondition/Symmetry/Autoequivalence/Slicing/Quotient.lean quotients triangulated
     auto-equivalences by natural isomorphism to get an honest Group AutQuot C
     with MulAction (AutQuot C) (Slicing C), both laws proved and nothing
-    excluded. StrictAutAction.lean remains as the cheaper strict route; it is
+    excluded. StabilityCondition/Symmetry/Autoequivalence/Slicing/Strict.lean remains as the cheaper strict route; it is
     SUPERSEDED for slicings and carries a scope restriction recorded in
     source_mapping -- its F g are isomorphisms of categories, not merely
     equivalences, so Serre functors and spherical twists are outside it. Do not
@@ -317,14 +304,14 @@ fidelity:
     derived from uniqueness of right adjoints.
 
     CLOSED 2026-08-04: the Aut action on STABILITY CONDITIONS is declared --
-    AutStabilityAction.lean's actStabAut. All three prerequisites landed: K0
-    functoriality (K0Functor.lean), the class-map compatibility datum (actStabAut's
+    StabilityCondition/Symmetry/Autoequivalence/Stability/Transport.lean's actStabAut. All three prerequisites landed: K0
+    functoriality (StabilityCondition/Symmetry/Autoequivalence/Foundations/GrothendieckGroup.lean), the class-map compatibility datum (actStabAut's
     lam + hlam arguments), and invariance of strict finite length under an
     equivalence (mapEquiv_isLocallyFinite, resting on the general
-    isStrictArtinian_of_faithful_strict in StrictFiniteLength.lean).
+    isStrictArtinian_of_faithful_strict in StabilityCondition/Symmetry/Autoequivalence/Foundations/FiniteLength.lean).
 
     CLOSED 2026-08-04 (later): the Aut action IS a MulAction --
-    AutPairAction.lean. AutPair v bundles the pair (Phi, lam) with its
+    StabilityCondition/Symmetry/Autoequivalence/Stability/ClassMap.lean. AutPair v bundles the pair (Phi, lam) with its
     compatibility; AutPairQuot v is the quotient by natural isomorphism of Phi
     with lam fixed on the nose, and it is a Group with
     MulAction (AutPairQuot v) (StabilityCondition.WithClassMap C v). Both laws
@@ -347,11 +334,11 @@ fidelity:
 
     AutPairQuot v is NOT Aut(D), and is further from it than AutQuot: its
     elements are pairs, and toAutQuot is neither injective nor surjective in
-    general. See notes/anchor-api-map.md section 7.
+    general. See notes/dependencies/BridgelandStabilityAPI.md section 7.
 
     CORRECTION (2026-08-03): an earlier revision of this field recorded step 3c
     as BLOCKED on a strict-finite-length restriction lemma said to be absent
-    from the anchor. That was wrong. The lemma is
+    from the foundational library. That was wrong. The lemma is
     interval_thinFiniteLength_of_inclusion_strict, at
     Deformation/IntervalSelection.lean:354, stated for two different slicings.
     The search behind the earlier claim covered IntervalCategory/ and
@@ -389,12 +376,12 @@ fidelity:
     both factors and their direct product.
 
     COUNT UPDATE, 2026-08-06. The 94 new audit records comprise 51 for
-    GLTildeTopology.lean's rotations, upper-triangular coordinates, coordinate
+    StabilityCondition/Symmetry/GLTilde/Covering/SourceTopology.lean's rotations, upper-triangular coordinates, coordinate
     equivalence/homeomorphism, topology, continuous projection,
     contractibility, and simple-connectedness instances; 38 for
-    GLTildeCover.lean's base coordinates, coordinate homeomorphism, standard
+    StabilityCondition/Symmetry/GLTilde/Covering/Map.lean's base coordinates, coordinate homeomorphism, standard
     product cover, conjugacy calculation, covering-map theorem, and packaged
-    universal-cover data; and 5 for GLTildeTopologicalGroup.lean's normalized
+    universal-cover data; and 5 for StabilityCondition/Symmetry/GLTilde/Topology/Group.lean's normalized
     phase formula, joint phase evaluation, and topological-group instance.
     This observation is working-tree-pinned rather than commit-pinned because
     the new files are not yet committed.
@@ -402,7 +389,7 @@ fidelity:
     COUNT UPDATE (AutIsometry), 2026-08-06. The 9 additional records cover
     iso-invariance of intrinsic phases, preservation and reflection of zero
     objects by an equivalence, phase transport, and preservation of the
-    anchor's slicingDist through the bare and quotient autoequivalence actions.
+    foundational library's slicingDist through the bare and quotient autoequivalence actions.
 
     COUNT UPDATE (full metric chain), 2026-08-06. The 41 additional records
     comprise 12 for HN filtration mass, the choice-free mass envelope, and
@@ -661,7 +648,7 @@ fidelity:
     charges. The full build completed at 3793 jobs; the ten new audit records
     pass the strict allowlist with no sorryAx; and the emitter reports 1257
     constants (693 in scope) with no sorryAx dependency. The t=0 polygon-
-    perimeter comparison was then proved in ConvexPolygonPerimeter.lean.
+    perimeter comparison was then proved in StabilityCondition/Metric/Mass/Subadditivity/PolygonPerimeter.lean.
 
     Code commit 10cb4c8 completes the abelian boundary-cut comparison without
     asserting the false full-ambient-to-vertex-hull containment. It proves
@@ -675,7 +662,7 @@ fidelity:
 
     Code commit b1a0910 closes that gap. Abelian HN mass is first proved
     independent of filtration from the identity-monomorphism
-    boundary comparison. StabilityMassTriangle.lean proves the converse
+    boundary comparison. StabilityCondition/Metric/Mass/Subadditivity/Triangle.lean proves the converse
     heart-semistability-to-slice implication by bounding the ambient extreme
     phases through the first-factor image and last-factor quotient. It then
     realizes every abelian HN chain as an ambient Postnikov/HN tower and proves
@@ -716,7 +703,7 @@ fidelity:
     a BUILD TARGET, not a separate manual step: scripts/Audit.lean is covered
     by `[[lean_lib]] name = "Audit"` (srcDir = "scripts") and is in
     defaultTargets, so `lake build` elaborates it and its 111 audit records are
-    build output. The anchor itself was also built from source for the first
+    build output. The foundational library itself was also built from source for the first
     time (74 files, exit 0) -- it is not covered by Mathlib's cache and nothing
     had imported it until the step-3 API read.
 
@@ -753,16 +740,16 @@ fidelity:
   source_mapping: >
     Lattice/ maps to no single paper section: it is the rank-2 torsion-free
     arithmetic underlying the Enriques-Kuznetsov article's section 8.4-8.6
-    numerical steps. GroupAction/ targets Bridgeland 2007 section 8 (Lemma 8.2
+    numerical steps. StabilityCondition/Symmetry/ targets Bridgeland 2007 section 8 (Lemma 8.2
     and the autoequivalence action). It now contains: NormalizedShift, the
     group of +1-equivariant order isomorphisms of R (step 1); and GLTilde,
     Bridgeland's concrete presentation of GL+(2,R)-tilde as pairs (T, f) of a
     positive-determinant matrix and a normalized shift agreeing on the circle
     of phases, proved to be a group under componentwise multiplication with
     both projections group homs (step 2); ComplexBridge, reconciling the
-    anchor's C-valued central charge with GLTilde's action on Fin 2 -> R
+    foundational library's C-valued central charge with GLTilde's action on Fin 2 -> R
     (step 3 groundwork); and SlicingAction, the MulAction of NormalizedShift
-    (and hence of GLTilde, via toShiftHom) on the anchor's Slicing C by phase
+    (and hence of GLTilde, via toShiftHom) on the foundational library's Slicing C by phase
     relabelling, with one_smul and mul_smul proved (step 3a); and
     PreStabilityAction, where BOTH factors act at once -- the shift relabels
     the slicing and the matrix transforms the central charge -- giving
@@ -775,7 +762,7 @@ fidelity:
     map_add_one via integer translation and a modulus on a compact window),
     with exists_radius as the consumable form, and SlicingAction adds
     relabel_intervalProp: interval subcategories are reindexed exactly, as an
-    equality of ObjectProperty. Those two, plus the anchor's own
+    equality of ObjectProperty. Those two, plus the foundational library's own
     interval_thinFiniteLength_of_inclusion_strict, give relabel_isLocallyFinite
     and hence StabilityAction: MulAction GLTilde
     (StabilityCondition.WithClassMap C v), both laws proved (step 3c).
@@ -817,7 +804,7 @@ fidelity:
     a tower / filtration through a triangulated functor, and Slicing.mapEquiv
     transports a slicing along a triangulated auto-equivalence --
     (Phi . s).P phi X = s.P phi (Phi-inverse X), dual to relabel, which moves
-    phases and fixes objects. The anchor has NO functor transport of its own,
+    phases and fixes objects. The foundational library has NO functor transport of its own,
     only HNFiltration.ofIso along an object isomorphism, so these are built
     from scratch.
 
@@ -852,7 +839,7 @@ fidelity:
     natural isomorphism is derived from the forward one by uniqueness of right
     adjoints (`TriEquiv.inverseIsoOfFunctorIso`).
 
-    K0Functor.lean supplies K0 functoriality -- K0.mapF for a triangulated
+    StabilityCondition/Symmetry/Autoequivalence/Foundations/GrothendieckGroup.lean supplies K0 functoriality -- K0.mapF for a triangulated
     functor, with mapF_id, mapF_comp, and mapF_congr (naturally isomorphic
     functors induce the SAME map, the K0-level analogue of TriEquiv.act_congr
     and what lets the class-map half descend to the quotient). It was nearly
@@ -863,14 +850,14 @@ fidelity:
     The class-map compatibility datum is a design choice, not a difficulty:
     pair the autoequivalence with an automorphism of Lambda commuting with v,
     structurally as Compatible does for GLTilde. Landed 2026-08-04 as
-    AutPairAction.lean's AutPair/AutPairQuot; note the datum must be an
+    StabilityCondition/Symmetry/Autoequivalence/Stability/ClassMap.lean's AutPair/AutPairQuot; note the datum must be an
     AddEquiv there rather than the AddMonoidHom actStabAut takes, because a
     group needs its inverse and v supplies none.
 
-    StrictFiniteLength.lean extracts the general
+    StabilityCondition/Symmetry/Autoequivalence/Foundations/FiniteLength.lean extracts the general
     strict-hypothesis transfer lemma (isStrictArtinian_of_faithful_strict and
     its Noetherian twin) for an ARBITRARY full faithful strict-mono-preserving
-    functor -- the anchor's own two interval lemmas are instances of it -- plus
+    functor -- the foundational library's own two interval lemmas are instances of it -- plus
     mapEquiv_intervalProp_iff, recording that under Aut the interval endpoints
     do NOT move. AutStabilityAction assembles the induced interval functor,
     strict-mono preservation, local finiteness with the same eta, and the
@@ -884,7 +871,7 @@ fidelity:
     GLTildeJointContinuousAction proves the GLTilde action jointly continuous,
     gives AutPairQuot its standard discrete symmetry-group topology, and
     supplies ContinuousSMul for both factors and their product. API details
-    are mapped in notes/anchor-api-map.md.
+    are mapped in notes/dependencies/BridgelandStabilityAPI.md.
 
     ComponentAction adds the induced action on connected-component labels,
     component-to-component homeomorphisms, and component-stabilizer actions.
@@ -894,16 +881,16 @@ fidelity:
     proves `(deck 1, [2])` ineffective, and defines the faithful quotient by
     the complete action kernel.
 
-    AutIsometry.lean (2026-08-05) targets the ISOMETRY clause of Lemma 8.2,
+    StabilityCondition/Metric/Isometry/Phase.lean (2026-08-05) targets the ISOMETRY clause of Lemma 8.2,
     partially. mapEquiv_slicingDist proves the Aut action preserves the
-    anchor's slicingDist -- the sup over nonzero objects of the phi-plus and
+    foundational library's slicingDist -- the sup over nonzero objects of the phi-plus and
     phi-minus discrepancies, StabilityCondition/Defs.lean -- exactly, with no
     finiteness hypothesis and with both sides allowed to be infinite.
     actStabAut_slicingDist and AutPairQuot_smul_slicingDist carry it from bare
     slicings to stability conditions and to the MulAction of AutPairQuot v.
     Two supporting lemmas were missing and are stated here for the first time:
     Slicing.phiPlus_congr / phiMinus_congr, the iso-invariance of the intrinsic
-    phases, which the anchor inlines at four separate sites in
+    phases, which the foundational library inlines at four separate sites in
     Deformation/DeformedGtLe.lean without ever naming; and isZero_functor_iff /
     isZero_inverse_iff, which Functor.map_isZero gives in one direction only.
 
@@ -913,8 +900,8 @@ fidelity:
     to rewrite along. Each side dominates the other pointwise instead, which is
     what forced phiPlus_congr into existence.
 
-    StabilityMass.lean, HNMassUniqueness.lean, StabilityDistance.lean, and
-    AutFullIsometry.lean form the subsequent full-metric chain.
+    StabilityCondition/Metric/Mass/Basic.lean, StabilityCondition/Metric/Mass/Uniqueness.lean, StabilityCondition/Metric/Distance/Basic.lean, and
+    StabilityCondition/Metric/Isometry/Full.lean form the subsequent full-metric chain.
     HNFiltration.mass is the finite sum of charge norms for one filtration.
     stabilityMass initially takes the supremum of those sums over every HN
     filtration, avoiding a non-functorial Classical.choice.
@@ -930,13 +917,13 @@ fidelity:
 
     What this is NOT is in known_divergences and must be read before citing it.
   known_divergences: >
-    Lattice/NumericalK.lean models K_num(Ku(X)) as the concrete lattice
+    Lattice/Numerical/RankTwo.lean models K_num(Ku(X)) as the concrete lattice
     Fin 2 -> Z. Every lemma there is a theorem about a rank-2 torsion-free
     lattice, NOT about a Kuznetsov component. The identification is geometry,
     is not expressible in Mathlib today, and is tracked as an unrealized
     assumption -- never discharged in this repo.
 
-    GroupAction/GLTilde.lean defines GLTilde as Bridgeland's pair presentation
+    StabilityCondition/Symmetry/GLTilde/Basic.lean defines GLTilde as Bridgeland's pair presentation
     of GL+(2,R)-tilde. The group, surjective projection, Z fibre, explicit
     section, global topology, continuity of the projection, contractibility,
     simple connectedness, covering-map property, and topological-group
@@ -948,10 +935,10 @@ fidelity:
     universal-cover predicate at this pin, so these exact declarations are the
     public trust surface rather than an inferred larger API.
 
-    GroupAction/AutIsometry.lean proves preservation of the anchor's phase-only
-    slicingDist. StabilityMass.lean, HNMassUniqueness.lean, and
-    StabilityDistance.lean now supply a literal finite HN-mass coordinate and
-    AutFullIsometry.lean proves that AutPairQuot v preserves the resulting
+    StabilityCondition/Metric/Isometry/Phase.lean proves preservation of the foundational library's phase-only
+    slicingDist. StabilityCondition/Metric/Mass/Basic.lean, StabilityCondition/Metric/Mass/Uniqueness.lean, and
+    StabilityCondition/Metric/Distance/Basic.lean now supply a literal finite HN-mass coordinate and
+    StabilityCondition/Metric/Isometry/Full.lean proves that AutPairQuot v preserves the resulting
     stabilityDist exactly.
 
     The mass coordinate is now Bridgeland's ordinary HN mass:
@@ -962,11 +949,11 @@ fidelity:
     conditions always use its ordinary finite absolute-logarithmic branch.
 
     Proposition 8.1 also asserts separation and equality of the induced
-    topology with Section 6. StabilityDistanceSeparation.lean proves
+    topology with Section 6. StabilityCondition/Metric/Distance/Separation.lean proves
     separation for the ordinary K0-valued space and, more generally, for a
     surjective class map. Without surjectivity it proves precisely the
     observable conclusion: equality of the slicing and Z.comp v.
-    StabilityDistanceTopology.lean proves the analytic estimates and forward
+    StabilityCondition/Metric/Distance/Topology.lean proves the analytic estimates and forward
     cofinality direction, and proves reverse cofinality plus the compatible
     EMetricSpace construction conditional on StabilityMassTriangleInequality.
     Its ofEDistOfTopology route retains the Section 6 topology definitionally,
@@ -978,7 +965,7 @@ fidelity:
     remains no_claim because the acting group has not been identified with
     bare Aut(D).
 
-    StabilityMassTriangle.lean closes the norm-theoretic and semistable-middle
+    StabilityCondition/Metric/Mass/Subadditivity/Triangle.lean closes the norm-theoretic and semistable-middle
     base cases and the arbitrary-left filtration assembly. In particular,
     defining StabilityMassBoundaryHeartInequality,
     StabilityMassSemistableLeftTriangleInequality, and
@@ -994,12 +981,12 @@ fidelity:
     proposition. Its final application, and hence the unrestricted heart
     target, remains to be exposed.
 
-    HNPolygon.lean and ConvexPolygonPerimeter.lean supply the next
+    StabilityCondition/Metric/Mass/Subadditivity/HNPolygon.lean and StabilityCondition/Metric/Mass/Subadditivity/PolygonPerimeter.lean supply the next
     algebraic/geometric layer: the convex hull of subobject charges, the HN
     filtration path inside it, exact edge-charge and length/mass identities,
     positive-angle ambient support completeness, and the boundary-cut short-
     exact mass comparison.
-    H0ExactnessBridge.lean supplies the exact cohomological interface:
+    StabilityCondition/Metric/Mass/Subadditivity/CohomologyExactness.lean supplies the exact cohomological interface:
     heart-source exactness iff the canonical cokernel comparison is monic. It
     now proves H0-prime and H0 homological unconditionally and uses those
     theorems locally; no global instance or hidden premise is introduced.
@@ -1010,7 +997,7 @@ fidelity:
     literal paper theorem; call it full-distance invariance for the compatible
     autoequivalence group and state the remaining group-level boundary.
 
-    GroupAction/QuotAutAction.lean defines AutQuot C as the quotient of
+    StabilityCondition/Symmetry/Autoequivalence/Slicing/Quotient.lean defines AutQuot C as the quotient of
     triangulated auto-equivalences by natural isomorphism of the forward
     functors. Inverse natural isomorphisms are derived from uniqueness of right
     adjoints. No separate external object named Aut(D) is identified with this
@@ -1037,14 +1024,13 @@ self_assessment:
   formalization_quality: draft
 
 community:
-  related_projects:
-    - mattrobball/BridgelandStability
+  related_projects: []
   upstream_prs: none
   reviews: none
 
 acknowledgements: >
-  Structure, conventions, and this trust-record schema follow
-  mattrobball/BridgelandStability.
+  Built on Lean, Mathlib, and the formalized foundations listed in the pinned
+  dependency manifest.
 
 notes: >
   v0 skeleton. No mathematical claim in this repo has had human faithfulness

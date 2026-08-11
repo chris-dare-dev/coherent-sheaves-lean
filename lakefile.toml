@@ -7,10 +7,10 @@ keywords = ["math"]
 autoImplicit = false
 relaxedAutoImplicit = false
 
-# The anchor library. Pinned to an exact commit, never a branch: the whole
-# point of this repo is that its environment is reproducible and citable.
-# 9e48f23 (2026-04-21) is the commit audited in formalization.yaml; it in turn
-# pins Mathlib 8a178386ffc0f5fef0b77738bb5449d50efeea95 (= tag v4.29.0), which
+# The foundational stability-condition library. Pinned to an exact commit,
+# never a branch, so this environment remains reproducible and citable.
+# 9e48f23 (2026-04-21) is the commit audited in formalization.yaml; it pins
+# Mathlib 8a178386ffc0f5fef0b77738bb5449d50efeea95 (= tag v4.29.0), which
 # is where our Mathlib comes from transitively. Do not add a direct Mathlib
 # require -- a second pin is a second thing to drift.
 [[require]]
@@ -25,7 +25,7 @@ rev = "9e48f23a382ba117b63076a33e0e775389fef1ba"
 # `[[require]]` BLOCKS. NOT ONE. EVER.", enforced by a `no-dependencies` CI job
 # on that side, and it pins the same toolchain we do (v4.29.0). It therefore
 # cannot drag anything into this environment and cannot disagree with the
-# anchor about a Mathlib revision.
+# foundational dependency about a Mathlib revision.
 #
 # Vendoring was not the safer option; it was not an option. `@[cites]` is a
 # `SimplePersistentEnvExtension` and duplicate attribute registration is an
