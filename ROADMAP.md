@@ -18,6 +18,8 @@ completing B2;
 multivariable numerical-polynomial algebra for B4, and
 [#34](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/34) connects it to Picard
 powers and Euler characteristics through explicit exact-sequence induction data.
+[Issue #35](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues/35) extracts symmetric
+multilinear Picard and Cartier-divisor intersection numbers from those coefficients.
 Issue #27 also has an implementation in progress.
 
 
@@ -115,7 +117,7 @@ depend on it. The cheapest instance would be `Examples/RankOneSurface`: `H ↦ �
 | B1 | Coherent category, locality, affine comparison, closure, abelian/exact inclusion | 2–3 months | **done** ([milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/4)) |
 | B2 | Invertible sheaves, `Pic X`, Cartier divisors, `O_X(D)`, determinant, effective-divisor sequence | 2–3 months | **done** ([milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/7)) |
 | B3 | Affine vanishing, cohomology boundedness, geometric `χ`, additivity | 4–6 months | [milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/5); explicit affine Čech vanishing and comparison infrastructure done; conditional geometric `χ` (#31) and additivity/K₀ factorization (#32) done; Serre finiteness and scalar-linearity of connecting maps remain explicit inputs |
-| B4 | Numerical polynomials, Snapper, intersections, numerical Chern data | ~3 months | [milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/9); #33 mixed finite-difference algebra and conditional #34 Snapper comparison done; geometric construction of the induction certificate and intersections next |
+| B4 | Numerical polynomials, Snapper, intersections, numerical Chern data | ~3 months | [milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/9); #33 mixed finite-difference algebra, conditional #34 Snapper comparison, and #35 intersections done; numerical Chern data next |
 | B5 | Canonical sheaf, Serre duality, surface RR, dévissage, Layer A discharge | ~6 months | [milestone](https://github.com/chris-dare-dev/coherent-sheaves-lean/milestone/8); blocked on B2–B4 |
 
 Total 18–30 months. Layer A exists so that nothing waits on this.
@@ -257,6 +259,12 @@ one-variable specialization, isomorphism invariance, and coefficient formulas ar
 visible `GeometricInduction` certificate. The certificate isolates the geometric
 dimension/hyperplane-section theorem that Mathlib and the current scheme layer do not yet expose;
 it is data, not an axiom, and can later be constructed without changing the downstream API.
+
+Issue #35 is implemented in `CohLean/Intersection/Number.lean`. A uniform `TwistContext` keeps
+coherence and geometric-induction certificates explicit for every finite Picard family, and its
+structure-sheaf specialization defines intersections as top Snapper coefficients. The intrinsic
+Picard finite-difference form proves symmetry, tensor-product additivity, integer homogeneity,
+principal-divisor invariance, and the point/curve/surface normalizations without Chow groups.
 
 **B5.** Serre duality is the second hard theorem. Mathlib's derived-category infrastructure
 (Riou) is unusually strong and is the reason this is attemptable at all.
