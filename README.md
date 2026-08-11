@@ -131,14 +131,18 @@ geometric Todd components, and a coherent-sheaf HRR theorem into a concrete
 `NumericalVariety 2 A K₀(Coh X)`. The HRR statement for virtual classes is proved by additive
 descent rather than postulated. Its numerical class map then uses the Euler-radical quotient
 from the numerical lattice API, and geometric K3 Todd identities produce the existing Layer A
-`K3.IsK3` specialization.
+`K3.IsK3` specialization. `RiemannRoch/Surface/Assembly` supplies the required coherent-sheaf
+HRR theorem directly from twist-polynomial reconstruction and installs the resulting geometric
+numerical surface.
 
 `RiemannRoch/Surface` now reconstructs `td₀`, `td₁=-K_X/2`, and the top Todd representative
 from the structure-sheaf twist polynomial, proving `∫td₂=χ(O_X)` and the K3 normalization.
 The same package proves the classical rank/`c₁`/`c₂` formula for determinant-equipped finite
 locally free sheaves and extends it to coherent sheaves only through a visible two-term perfect
 resolution. Its exact-sequence, Grothendieck-group, and Layer A comparisons are term-by-term;
-no global resolution property is assumed.
+no global resolution property is assumed. The final assembly proves HRR for every coherent sheaf
+without that resolution hypothesis, then uses explicit perfect data only to recover the classical
+rank/`c₁`/`c₂` interpretation.
 
 ## Building
 
