@@ -749,3 +749,4 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 -- `example`s, which are anonymous and cannot be audited. Its guarantee is that it builds:
 -- if an upstream declaration it names moves, `lake build` fails. The first real B3
 -- theorem goes below this line.
+#print axioms CategoryTheory.Sheaf.isFlasque_of_injective
