@@ -91,6 +91,15 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms Variety.NumericalData.coherentChernCharacter_shortExact
 #print axioms Variety.NumericalData.coherentEulerCharacteristic_shortExact
 #print axioms Cohomology.coherentH
+#print axioms Cohomology.globalSectionSmul
+#print axioms Cohomology.globalSectionSmul_naturality
+#print axioms Cohomology.varietyScalarAction
+#print axioms Cohomology.coherentScalarAction
+#print axioms Cohomology.coherentHScalarAction
+#print axioms Cohomology.coherentH_map_smul
+#print axioms Cohomology.linearCoherentH
+#print axioms Cohomology.linearCoherentHComparison
+#print axioms Cohomology.canonicalLinearCohomology
 #print axioms Cohomology.LinearCohomology
 #print axioms Cohomology.FiniteDimensionalCohomology
 #print axioms Cohomology.FiniteDimensionalCohomology.dimension_iso

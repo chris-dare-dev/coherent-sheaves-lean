@@ -94,6 +94,12 @@ uses local affine `H'`-vanishing on all finite intersections and Mayer--Vietoris
 boundedness is packaged separately from degreewise finite-dimensionality, with a constructor that
 combines both inputs into `FiniteCohomology`.
 
+For varieties over a field, the base field now acts canonically and centrally on every coherent
+sheaf through the structure morphism. Applying derived cohomology constructs a functorial
+`ModuleCat k` lift whose underlying additive groups are definitionally the existing `Sheaf.H`
+groups. The remaining projective-finiteness work is therefore geometric Serre finiteness, not a
+choice of scalar structures.
+
 ## Building
 
 The repository pins its Lean and Mathlib revisions.
