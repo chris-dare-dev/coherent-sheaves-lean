@@ -79,10 +79,11 @@ cover computes `Sheaf.H` in all degrees. The resolution and Mathlib's `HasExt` w
 explicit inputs because the current library does not install enough injectives for abelian
 sheaves globally.
 
-For affine quasi-coherent sheaves, the library also exposes the exact boundary between the
-distinguished-open Čech calculation and derived vanishing, including transport across the affine
-module/sheaf equivalence. The unconditional comparison remains tracked in issue #103 because a
-single already-acyclic-cover theorem cannot non-circularly prove affine acyclicity.
+For affine quasi-coherent sheaves, the library proves the non-circular compact-basis criterion of
+Stacks Project, Tag 01EW, specializes it to the distinguished-open basis, and exports the resulting
+positive-degree Čech-to-derived comparison witness. Dedicated unconditional affine-vanishing
+statements and their transport across the affine module/sheaf equivalence remain tracked in issue
+#28.
 
 ## Building
 

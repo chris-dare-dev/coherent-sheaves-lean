@@ -1,4 +1,6 @@
 import CohLean.Cohomology.Cech.Affine
+import CohLean.Cohomology.Cech.AffineBasisComparison
+import CohLean.Cohomology.Cech.BasisComparison
 import CohLean.Cohomology.Cech.Bicomplex
 import CohLean.Cohomology.Cech.Comparison
 import CohLean.Cohomology.Cech.GlobalComparison

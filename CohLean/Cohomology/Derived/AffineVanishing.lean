@@ -3,22 +3,20 @@ Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 -/
 import CohLean.AlgebraicGeometry.Modules.Affine.Equivalence
-import CohLean.Cohomology.Cech.Affine
+import CohLean.Cohomology.Cech.AffineBasisComparison
 import CohLean.Cohomology.Cech.GlobalComparison
 
 /-!
-# The affine derived-vanishing boundary
+# The affine derived-vanishing comparison
 
 The explicit affine calculation proves that the module-valued Čech complex of `M~` on a finite
 standard distinguished-open cover is exact in every positive degree. This file transfers that
 calculation to Mathlib's derived cohomology `Sheaf.H` once a comparison with that explicit complex
 is supplied. It also transports the result across the affine module-sheaf equivalence.
 
-There is deliberately no unconditional affine derived-vanishing theorem here yet. The comparison
-theorem for a single Čech-acyclic cover cannot supply it without circularity: its hypothesis already
-asserts derived vanishing on all finite intersections. The missing input is the basis/cofinal-cover
-criterion used by Stacks Project, Lemma 20.11.9 (Tag 01EW). Keeping the comparison below as a visible
-proposition records that boundary without adding an axiom or overstating the current library.
+The comparison is obtained non-circularly from the compact distinguished-open basis and the
+basis/cofinal-cover criterion of Stacks Project, Lemma 20.11.9 (Tag 01EW). In particular, the
+positive comparison witness below does not assume that the same cover is already Leray-acyclic.
 -/
 
 universe u
@@ -39,11 +37,8 @@ noncomputable abbrev affineTildeCechComplex
   (cechComplexFunctor fun i ↦ _root_.PrimeSpectrum.basicOpen (f i)).obj
     (modulesSpecToSheaf.obj (tilde M)).presheaf
 
-/-- The exact comparison input still needed to turn the explicit module-valued affine Čech
-calculation into derived cohomology in degree `k`.
-
-The intended construction is the basis/cofinal-cover argument of Stacks Tag 01EW. It is stronger
-than merely assuming that one particular cover is already Leray-acyclic. -/
+/-- A degreewise comparison between the explicit module-valued affine Cech complex and derived
+cohomology. -/
 def AffineTildeCechDerivedComparisonAt
     {R : CommRingCat.{u}} {ι : Type u} [Fintype ι]
     (f : ι → R) (M : ModuleCat.{u} R) (k : ℕ)
@@ -59,6 +54,38 @@ def AffineTildeCechDerivedComparison
     [HasExt.{u + 1}
       (Sheaf (Opens.grothendieckTopology (Spec R)) AddCommGrpCat.{u})] : Prop :=
   ∀ k, AffineTildeCechDerivedComparisonAt f M k
+
+set_option maxHeartbeats 200000 in
+set_option synthInstance.maxHeartbeats 200000 in
+/-- The compact distinguished-open basis supplies the positive-degree affine comparison witness
+without assuming derived acyclicity of the chosen cover. -/
+theorem affineTildeCechDerivedComparisonAt_of_pos
+    {R : CommRingCat.{u}} {ι : Type u} [Fintype ι]
+    (f : ι → R) (hf : Ideal.span (Set.range f) = ⊤)
+    (M : ModuleCat.{u} R) (k : ℕ) (hk : 0 < k)
+    [hExt : HasExt.{u + 1}
+      (Sheaf (Opens.grothendieckTopology (Spec R)) AddCommGrpCat.{u})] :
+    AffineTildeCechDerivedComparisonAt f M k := by
+  have hexact : (affineTildeCechComplex f M).ExactAt k :=
+    tilde_cechComplex_exactAt_of_pos f hf M k hk
+  have hzero : IsZero ((affineTildeCechComplex f M).homology k) :=
+    hexact.isZero_homology
+  letI : Subsingleton
+      ((affineTildeCechComplex f M).homology k : ModuleCat.{u} R) :=
+    ModuleCat.subsingleton_of_isZero hzero
+  letI : Subsingleton ((underlyingTildeSheaf M).H k) :=
+    @CategoryTheory.Sheaf.H_subsingleton_of_isCechAcyclicOnCompactBasis
+      (Spec R)
+      (affineBasicOpenBasis R) (underlyingTildeSheaf M)
+      (underlyingTilde_isCechAcyclicOnCompactBasis M) hExt k hk
+  letI : Inhabited
+      ((affineTildeCechComplex f M).homology k : ModuleCat.{u} R) := ⟨0⟩
+  letI : Inhabited ((underlyingTildeSheaf M).H k) := ⟨0⟩
+  letI : Unique
+      ((affineTildeCechComplex f M).homology k : ModuleCat.{u} R) :=
+    Unique.mk' _
+  letI : Unique ((underlyingTildeSheaf M).H k) := Unique.mk' _
+  exact ⟨AddEquiv.ofUnique⟩
 
 /-- Positive exactness of the standard affine Čech complex kills `Sheaf.H` once the comparison
 with that explicit complex is available. -/

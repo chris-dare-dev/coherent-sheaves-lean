@@ -499,16 +499,41 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms CategoryTheory.Sheaf.injectiveResolutionSectionsComplexUnliftedIso
 #print axioms CategoryTheory.Sheaf.isCechAcyclicCover_cechComputesDerivedCohomology
 #print axioms AlgebraicGeometry.Cohomology.AffineTildeCechDerivedComparisonAt
+#print axioms AlgebraicGeometry.Cohomology.affineTildeCechDerivedComparisonAt_of_pos
 #print axioms AlgebraicGeometry.Cohomology.tilde_H_subsingleton_of_comparisonAt
 #print axioms AlgebraicGeometry.Cohomology.H_subsingleton_of_iso_tilde
 #print axioms AlgebraicGeometry.Cohomology.modules_H_subsingleton_of_iso_tilde
 
+-- Layer B stage 3: the non-circular compact-basis comparison (Stacks, Tag 01EW).
+-- Compact refinements and Cech correction make the acyclicity condition stable under
+-- injective quotients, so dimension shifting kills positive derived cohomology.
+#print axioms CategoryTheory.Sheaf.CompactOpenBasis
+#print axioms CategoryTheory.Sheaf.CompactOpenBasis.exists_finite_refinement
+#print axioms CategoryTheory.Sheaf.IsCechAcyclicOnCompactBasis
+#print axioms CategoryTheory.Sheaf.isCechAcyclicOnCompactBasis_of_injective
+#print axioms CategoryTheory.Sheaf.epi_app_of_isCechAcyclicOnCompactBasis
+#print axioms CategoryTheory.Sheaf.isCechAcyclicOnCompactBasis_quotient
+#print axioms CategoryTheory.Sheaf.H_subsingleton_of_isCechAcyclicOnCompactBasis
+
 -- Layer B stage 3: positive-degree exactness of the explicit Cech complex for a module
 -- sheaf on a finite distinguished-open cover of an affine scheme. This is the affine Cech
 -- vanishing theorem, not a comparison with derived-functor sheaf cohomology.
+#print axioms CategoryTheory.Sheaf.cechComplex_exactAt_succ_of_injective'
 #print axioms CategoryTheory.cechComplex_exactAt_succ_of_isTerminal
+#print axioms PrimeSpectrum.basicOpen_prod_eq_pi
 #print axioms AlgebraicGeometry.tilde_cechComplex_exactAt_succ
+#print axioms AlgebraicGeometry.tilde_cechComplex_exactAt_succ_of_eq_iSup
 #print axioms AlgebraicGeometry.tilde_cechComplex_exactAt_of_pos
+
+-- Layer B stage 3: bridge the relative distinguished-open calculation through the
+-- underlying additive-group functor and specialize the compact-basis criterion to affine
+-- schemes.
+#print axioms CategoryTheory.evalOpForget₂AddCommGrpIso
+#print axioms CategoryTheory.map_alternatingCofaceMapComplex
+#print axioms CategoryTheory.cechComplexForget₂AddCommGrpIso
+#print axioms CategoryTheory.cechComplex_exactAt_forget₂AddCommGrp_of_exactAt
+#print axioms AlgebraicGeometry.Cohomology.affineBasicOpenBasis
+#print axioms AlgebraicGeometry.Cohomology.underlyingTilde_isCechAcyclicOnCompactBasis
 
 -- Layer B stage 3: the first Cech-to-derived comparison layer. The terminal-object
 -- natural isomorphism closes the explicit TODO in Mathlib's sheaf-cohomology API; the
