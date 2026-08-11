@@ -43,8 +43,11 @@ homomorphism to `Pic X`. Effective Cartier divisors and their twisted fundamenta
 sequences are present. Fixed-rank locally free determinant packages and first Chern classes in
 `Pic X` are present, including direct-sum/short-exact additivity from explicit determinant
 comparison data and a two-term perfect coherent-sheaf interface. Ampleness, higher direct
-images, Serre finiteness, Serre duality, higher-dimensional Chern components, and geometric
-Riemann–Roch are not yet present. The cohomological Euler characteristic `χ(F)` is
+images, Serre finiteness, Serre duality, and geometric Riemann–Roch are not yet present. A
+bounded reconstruction layer now produces numerical Chern-character components through
+codimension four from twist polynomials when representability and divisor-pairing separation
+are supplied explicitly; it does not claim those hypotheses for every variety. The
+cohomological Euler characteristic `χ(F)` is
 now defined relative to explicit finite-dimensionality and eventual-vanishing data, so it
 becomes unconditional without an API change when Serre finiteness is proved. It is additive
 on short exact sequences once the `Ext` connecting maps are supplied as base-field-linear
@@ -132,8 +135,9 @@ determinant lines, and their classes in `Pic X` complete B2. Isomorphism invaria
 direct-sum/short-exact additivity are exported from explicit comparison isomorphisms; coherent
 objects extend only through visible finite-locally-free or two-term perfect determinant data,
 not an unproved global resolution claim.
-Stage B4 now includes issues #33--#35 and #37. Mixed differences and numerical-polynomial coefficients
-are complete and scheme-independent, while `CohLean.Intersection.Snapper` constructs integer
+Stage B4 now includes issues #33--#35, #37, and #38. Mixed differences and
+numerical-polynomial coefficients are complete and scheme-independent, while
+`CohLean.Intersection.Snapper` constructs integer
 Picard powers and multivariable coherent twists and proves Snapper polynomiality from an explicit
 geometric exact-sequence induction certificate. `CohLean.Intersection.Number` extracts
 dimension-general Picard and Cartier-divisor intersection numbers, proves symmetry and
@@ -142,8 +146,13 @@ then extracts virtual rank, determinant `c₁`, the Todd pairings, and the numer
 `ch₂` for explicitly two-term-perfect coherent sheaves. Its surface Riemann--Roch identity,
 isomorphism invariance, exact-sequence additivity, line-bundle formula, and discriminant
 compatibility are degree-level and make no unsupported claim that a scalar degree canonically
-determines a class in an arbitrary Layer A ring. The certificate keeps the presently missing
-scheme-dimension/hyperplane induction visible instead of assuming it as an axiom.
+determines a class in an arbitrary Layer A ring. `CohLean.Intersection.ChernCharacter` then
+extracts ordinary rational homogeneous coefficients by interpolation and reconstructs
+Todd-weighted and Chern-character components through codimension four in a chosen numerical
+ring. Its representability and divisor-pairing nondegeneracy inputs are visible fields, and its
+line-bundle and surface bridges expose their comparison hypotheses. The certificate keeps the
+presently missing scheme-dimension/hyperplane induction visible instead of assuming it as an
+axiom.
 Every later Layer B stage has a milestone and issue-level dependency graph; see
 [ROADMAP.md](ROADMAP.md).
 

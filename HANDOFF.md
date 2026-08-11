@@ -1,8 +1,7 @@
 # Handoff
 
-Updated 2026-08-10 for the merged geometric Euler-characteristic/additivity work and the
-in-flight multivariable numerical-polynomial milestone (#33). For a session picking this repo
-up cold.
+Updated 2026-08-10 for the numerical intersection and Chern-character reconstruction work
+through issue #38. For a session picking this repo up cold.
 
 Read §1 and §7. Everything else is reference.
 
@@ -48,8 +47,10 @@ exact inclusion into `X.Modules`. B3 has explicit affine Čech exactness and sub
 Čech/derived comparison infrastructure. `Cohomology.FiniteCohomology` constructs geometric `χ`
 from the actual `Sheaf.H` functors under explicit linearity, finite-dimensionality, and
 eventual-vanishing data; issue #32 proves its short-exact additivity and `K₀` factorization.
-On the in-flight #33 branch, B4 begins with scheme-independent mixed finite differences and
-numerical-polynomial coefficient extraction on arbitrary integer lattices.
+B4 now has scheme-independent mixed finite differences, conditional geometric Snapper
+polynomiality, dimension-general intersection numbers, the surface degree-level Chern layer,
+and a bounded reconstruction of numerical Chern-character components through codimension four
+under explicit representability and divisor-pairing separation hypotheses.
 
 The live work is §7.
 
@@ -111,6 +112,7 @@ If you find yourself about to build a Chow ring, stop and re-read this.
 | `Intersection/NumericalPolynomial.lean` | arbitrary-rank integer lattices, mixed finite differences, degree by `(n+1)`-fold vanishing, Newton/top coefficient extraction, and one-variable/surface specializations |
 | `Intersection/Number.lean` | Picard-level Snapper functions, dimension-general Picard/Cartier intersection numbers, and the symmetric surface pairing |
 | `Intersection/ChernCharacterSurface.lean` | virtual rank and determinant `c₁`, Todd pairings from the structure-sheaf polynomial, degree-level `ch₂`, and surface discriminant compatibility |
+| `Intersection/ChernCharacter.lean` | interpolated homogeneous twist coefficients and conditional numerical-ring reconstruction of `τᵢ` and `chᵢ` through codimension four |
 
 The three files under `Numerical/Specializations` are the same proof with
 `Finset.sum_range_succ` fired one and two more times. Nothing in `RiemannRoch.lean` changed to
@@ -189,10 +191,11 @@ The presentation-transport modules fill a real Mathlib gap: Mathlib has
 that transporting a presentation preserves `Presentation.IsFinite`. CohLean maintains these
 declarations regardless of whether an upstream contribution is ever made.
 
-**Still not proved:** unconditional Serre finiteness; higher geometric Chern classes; the
-geometric Snapper theorem, intersections, and the rest of B4; all of B5. General cohomology
-finiteness remains deliberately deferred; the affine global-sections finiteness needed by B1
-is proved.
+**Still not proved:** unconditional Serre finiteness; unconditional representability of higher
+geometric Chern classes in a selected numerical ring; the geometric dimension/hyperplane input
+behind Snapper; all of B5. General cohomology finiteness remains deliberately deferred; the
+affine global-sections finiteness needed by B1 is proved. The issue #38 reconstruction layer is
+conditional precisely at those two missing geometric inputs rather than hiding them as axioms.
 
 ---
 
@@ -247,9 +250,9 @@ shared too, and they are where every merge conflict this project has had actuall
 | B4 | 5 | Snapper polynomials → intersection numbers |
 | B5 | 7 | Serre duality → RR for surfaces → discharge `hirzebruch_riemannRoch` |
 
-**Next natural work after the in-flight #33 branch:** connect geometric Euler-characteristic
-functions to the new degree predicate via Snapper (#34), or begin the higher geometric
-Chern-class constructors.
+**Next natural work after #38:** discharge more of the explicit B4 certificates geometrically
+(scheme dimension/hyperplane induction and representability), or advance B5 toward Serre
+duality and geometric Riemann–Roch.
 Regenerate this list with `gh issue list --label ready` before choosing,
 because tracker labels move faster than this file.
 
