@@ -634,6 +634,55 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Coh.PerfectShortExactDeterminantData
 #print axioms AlgebraicGeometry.Coh.PerfectShortExactDeterminantData.firstChernClassAdd_eq_add
 
+-- Layer B stage 4: dimension-general numerical-polynomial algebra and its geometric Snapper
+-- bridge. The geometric induction and missing closure theorem are visible structure fields,
+-- never hidden axioms.
+#print axioms CohLean.Intersection.NumericalPolynomial.difference
+#print axioms CohLean.Intersection.NumericalPolynomial.difference_comm
+#print axioms CohLean.Intersection.NumericalPolynomial.difference_add_direction
+#print axioms CohLean.Intersection.NumericalPolynomial.coordinateDifference
+#print axioms CohLean.Intersection.NumericalPolynomial.mixedDifference
+#print axioms CohLean.Intersection.NumericalPolynomial.mixedDifference_difference
+#print axioms CohLean.Intersection.NumericalPolynomial.mixedDifference_eq_of_perm
+#print axioms CohLean.Intersection.NumericalPolynomial.DegreeLE
+#print axioms CohLean.Intersection.NumericalPolynomial.degreeLE_iff_fin
+#print axioms CohLean.Intersection.NumericalPolynomial.DegreeLE.add
+#print axioms CohLean.Intersection.NumericalPolynomial.DegreeLE.succ
+#print axioms CohLean.Intersection.NumericalPolynomial.DegreeLE.mono
+#print axioms CohLean.Intersection.NumericalPolynomial.DegreeLE.difference
+#print axioms CohLean.Intersection.NumericalPolynomial.coefficient
+#print axioms CohLean.Intersection.NumericalPolynomial.coefficient_eq_of_perm
+#print axioms CohLean.Intersection.NumericalPolynomial.topCoefficient
+#print axioms CohLean.Intersection.NumericalPolynomial.topCoefficient_comp_perm
+#print axioms CohLean.Intersection.NumericalPolynomial.coordinateDirections
+#print axioms CohLean.Intersection.NumericalPolynomial.newtonCoefficient
+#print axioms CohLean.Intersection.NumericalPolynomial.mixedDifference_eq_coefficient_of_degreeLE
+#print axioms CohLean.Intersection.NumericalPolynomial.coefficient_cons_add
+#print axioms CohLean.Intersection.NumericalPolynomial.coefficient_middle_add
+#print axioms CohLean.Intersection.NumericalPolynomial.coefficientAddHom
+#print axioms CohLean.Intersection.NumericalPolynomial.coefficient_middle_zsmul
+#print axioms CohLean.Intersection.NumericalPolynomial.mixedDifference_oneVariable
+#print axioms CohLean.Intersection.NumericalPolynomial.oneVariable_fwdDiff_vanishes
+#print axioms CohLean.Intersection.NumericalPolynomial.coefficient_oneVariable
+#print axioms CohLean.Intersection.NumericalPolynomial.surfacePairing
+#print axioms CohLean.Intersection.NumericalPolynomial.surfacePairing_symm
+#print axioms CohLean.Intersection.Snapper.picardPower
+#print axioms CohLean.Intersection.Snapper.linePower
+#print axioms CohLean.Intersection.Snapper.linePower_picardClass
+#print axioms CohLean.Intersection.Snapper.twistModules
+#print axioms CohLean.Intersection.Snapper.CoherentTwistFamily
+#print axioms CohLean.Intersection.Snapper.eulerFunction
+#print axioms CohLean.Intersection.Snapper.GeometricInduction
+#print axioms CohLean.Intersection.Snapper.GeometricInduction.difference_descendedEuler
+#print axioms CohLean.Intersection.Snapper.GeometricInduction.mixedDifference_eulerFunction
+#print axioms CohLean.Intersection.Snapper.eulerCharacteristic_isZero
+#print axioms CohLean.Intersection.Snapper.snapper
+#print axioms CohLean.Intersection.Snapper.mixedDifference_eq_euler_descended
+#print axioms CohLean.Intersection.Snapper.coefficient_eq_euler_descended
+#print axioms CohLean.Intersection.Snapper.eulerFunction_eq_of_coherentSheafIso
+#print axioms CohLean.Intersection.Snapper.eulerFunction_eq_of_lineBundleIso
+#print axioms CohLean.Intersection.Snapper.oneVariable_fwdDiff_euler_vanishes
+
 -- Layer B stage 3: `CohLean/Cohomology/Strategy.lean` contributes nothing here on
 -- purpose. It is the compile-only API map for the B3 route decision and declares only
 -- `example`s, which are anonymous and cannot be audited. Its guarantee is that it builds:
