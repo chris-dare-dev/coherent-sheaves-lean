@@ -60,6 +60,7 @@ import CohLean.Cohomology.CechBicomplex
 import CohLean.Cohomology.CechComparison
 import CohLean.Cohomology.InjectiveFlasque
 import CohLean.Cohomology.FreeAbelianYonedaStalk
+import CohLean.Cohomology.InjectiveCechAcyclic
 import CohLean.Cohomology.CechInitialPage
 import CohLean.Cohomology.CechTotalComparison
 import CohLean.Cohomology.EulerCharacteristic
