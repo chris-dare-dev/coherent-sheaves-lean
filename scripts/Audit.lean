@@ -495,6 +495,10 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms CategoryTheory.Sheaf.cechCochainFunctorIntHomologyIso
 #print axioms CategoryTheory.Sheaf.injectiveResolutionSectionsComplexUnliftedIso
 #print axioms CategoryTheory.Sheaf.isCechAcyclicCover_cechComputesDerivedCohomology
+#print axioms AlgebraicGeometry.Cohomology.AffineTildeCechDerivedComparisonAt
+#print axioms AlgebraicGeometry.Cohomology.tilde_H_subsingleton_of_comparisonAt
+#print axioms AlgebraicGeometry.Cohomology.H_subsingleton_of_iso_tilde
+#print axioms AlgebraicGeometry.Cohomology.modules_H_subsingleton_of_iso_tilde
 
 -- Layer B stage 3: positive-degree exactness of the explicit Cech complex for a module
 -- sheaf on a finite distinguished-open cover of an affine scheme. This is the affine Cech
