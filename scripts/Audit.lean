@@ -752,3 +752,4 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms CategoryTheory.Sheaf.isFlasque_of_injective
 #print axioms CategoryTheory.Sheaf.freeAbelianYonedaSheafMap_stalk_isIso
 #print axioms CategoryTheory.Sheaf.freeAbelianYonedaSheaf_stalk_isZero_of_not_mem
+#print axioms CategoryTheory.Sheaf.cechComplex_exactAt_succ_of_injective
