@@ -5,6 +5,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 import CohLean.AlgebraicGeometry
 import CohLean.Coh
 import CohLean.Cohomology
+import CohLean.Duality
 import CohLean.Intersection
 import CohLean.Numerical
 import CohLean.Topology
