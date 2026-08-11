@@ -59,6 +59,8 @@ CohLean/
 │   ├── Finiteness/               # finite-dimensionality boundary and cohomological bounds
 │   ├── Simplicial/
 │   └── SpectralSequence/
+├── Duality/
+│   └── Canonical/                # canonical sheaf, class, and dualizing boundary
 ├── Intersection/
 │   ├── ChernCharacter/
 │   ├── NumericalPolynomial/
@@ -99,6 +101,12 @@ sheaf through the structure morphism. Applying derived cohomology constructs a f
 `ModuleCat k` lift whose underlying additive groups are definitionally the existing `Sheaf.H`
 groups. The remaining projective-finiteness work is therefore geometric Serre finiteness, not a
 choice of scalar structures.
+
+For smooth proper varieties of a fixed relative dimension, `Duality/Canonical` packages the
+canonical sheaf as the determinant of explicit cotangent data, exposes its Picard class and
+Cartier representatives, and records comparison data for a future dualizing object. The data is
+kept visible because the pinned Mathlib has Kähler differentials for rings and same-site
+presheaves, but not yet a scheme-level relative cotangent sheaf or dualizing-complex API.
 
 ## Building
 

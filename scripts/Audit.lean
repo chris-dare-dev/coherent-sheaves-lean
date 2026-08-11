@@ -103,6 +103,18 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms Cohomology.LinearCohomology
 #print axioms Cohomology.FiniteDimensionalCohomology
 #print axioms Cohomology.FiniteDimensionalCohomology.dimension_iso
+
+-- Canonical-sheaf data is built from explicit cotangent/determinant certificates. The
+-- dualizing comparison does not assert existence of a dualizing object.
+#print axioms SmoothProperVariety.CanonicalSheafData
+#print axioms SmoothProperVariety.CanonicalSheafData.canonicalClass
+#print axioms SmoothProperVariety.CanonicalSheafData.antiCanonicalClass
+#print axioms SmoothProperVariety.CanonicalSheafData.canonicalClass_eq_of_iso
+#print axioms SmoothProperVariety.CanonicalSheafData.CanonicalDivisorData
+#print axioms SmoothProperVariety.CanonicalSheafData.CanonicalDivisorData.toPic_eq_canonicalClass
+#print axioms SmoothProperVariety.CanonicalSheafData.CanonicalDivisorData.classToPic_eq_canonicalClass
+#print axioms SmoothProperVariety.CanonicalSheafData.DualizingSheafComparison
+#print axioms SmoothProperVariety.CanonicalSheafData.DualizingSheafComparison.candidateClass_eq
 #print axioms Cohomology.FiniteCohomology
 #print axioms Cohomology.FiniteCohomology.eulerCharacteristic
 #print axioms Cohomology.FiniteCohomology.finrankSupport_subset_range
