@@ -28,6 +28,8 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms CohLean.AlgebraicGeometry.Proj.GradedLinearMap.map
 #print axioms CohLean.AlgebraicGeometry.Proj.GradedLinearMap.map_mk
 #print axioms CohLean.AlgebraicGeometry.Proj.DegreeZeroLocalization.selfLinearEquiv
+#print axioms CohLean.AlgebraicGeometry.Proj.DegreeZeroLocalization.natShiftSelfLinearEquiv
+#print axioms CohLean.AlgebraicGeometry.Proj.DegreeZeroLocalization.natShiftAwayLinearEquiv
 #print axioms CohLean.AlgebraicGeometry.Proj.isLocallyFraction
 #print axioms CohLean.AlgebraicGeometry.Proj.associatedSheaf
 #print axioms CohLean.AlgebraicGeometry.Proj.stalkEquiv
@@ -46,6 +48,7 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms CohLean.AlgebraicGeometry.Proj.twistingSheaf
 #print axioms CohLean.AlgebraicGeometry.Proj.twistingSheafOfNatIso
 #print axioms CohLean.AlgebraicGeometry.Proj.AffineComparisonData
+#print axioms CohLean.AlgebraicGeometry.Proj.localizedNatShiftDegreeOneIso
 #print axioms CohLean.AlgebraicGeometry.Proj.affineComparisonDataSelf
 #print axioms CohLean.AlgebraicGeometry.Proj.associatedSheaf_self_isQuasicoherent
 #print axioms CohLean.AlgebraicGeometry.Proj.AffineComparisonData.quasicoherentData

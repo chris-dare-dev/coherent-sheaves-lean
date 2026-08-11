@@ -3,6 +3,7 @@ Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 -/
 import CohLean.AlgebraicGeometry.Proj.Modules.StructureModule
+import CohLean.AlgebraicGeometry.Proj.Modules.TwistLocalization
 import CohLean.AlgebraicGeometry.Proj.Modules.TwistingSheaf
 import CohLean.Coh.Affine
 import CohLean.Coh.Descent.Locality
@@ -38,6 +39,8 @@ of homogeneous multivariate polynomials and therefore has no hidden noetherianit
 
 * `AffineComparisonData`: affine `tilde` comparison on every standard Proj chart;
 * `affineComparisonDataSelf`: the constructed comparison for the structure module;
+* `localizedNatShiftDegreeOneIso`: the explicit rank-one trivialization of `A(d)` on a
+  degree-one chart;
 * `associatedSheaf_isQuasicoherent`: quasi-coherence from those comparisons;
 * `associatedSheaf_isCoherent_of_finitePresentation`: coherence from explicit finite
   presentation of every localized module;
@@ -116,6 +119,19 @@ noncomputable def localizedModuleSelfIso (i : StandardChartIndex 𝒜) :
         (HomogeneousLocalization.Away 𝒜 (i.2 : A)) :=
   LinearEquiv.toModuleIso
     (DegreeZeroLocalization.selfLinearEquiv 𝒜 (.powers (i.2 : A))).symm
+
+/-- A degree-one homogeneous element, bundled as a standard positive-degree chart index. -/
+def degreeOneStandardChart (f : 𝒜 1) : StandardChartIndex 𝒜 :=
+  ⟨⟨1, Nat.zero_lt_one⟩, f⟩
+
+/-- On a degree-one chart, the localized module underlying the nonnegative twist `A(d)` is
+canonically free of rank one. -/
+noncomputable def localizedNatShiftDegreeOneIso (f : 𝒜 1) (d : ℕ) :
+    localizedModule 𝒜 (natShift 𝒜 d) (degreeOneStandardChart 𝒜 f) ≅
+      ModuleCat.of (HomogeneousLocalization.Away 𝒜 (f : A))
+        (HomogeneousLocalization.Away 𝒜 (f : A)) :=
+  LinearEquiv.toModuleIso
+    (DegreeZeroLocalization.natShiftAwayLinearEquiv 𝒜 f.2 d)
 
 /-- The canonical affine-chart comparison for the graded ring considered as a module over
 itself.  This is constructed from the global structure-module isomorphism, restriction of the
