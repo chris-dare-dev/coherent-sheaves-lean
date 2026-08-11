@@ -153,6 +153,15 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms Cohomology.FiniteCohomology.grothendieckEulerHom
 #print axioms Cohomology.FiniteCohomology.grothendieckEulerHom_class
 
+-- Layer B stage 5: dimension-independent descent of additive coherent-sheaf invariants through
+-- K₀. Surface compatibility aliases are audited immediately afterward.
+#print axioms CohLean.RiemannRoch.CoherentAdditiveInvariant
+#print axioms CohLean.RiemannRoch.CoherentAdditiveInvariant.freeHom
+#print axioms CohLean.RiemannRoch.CoherentAdditiveInvariant.coherentGrothendieckRelations_le_ker
+#print axioms CohLean.RiemannRoch.CoherentAdditiveInvariant.grothendieckHom
+#print axioms CohLean.RiemannRoch.CoherentAdditiveInvariant.grothendieckHom_class
+#print axioms CohLean.RiemannRoch.coherentGrothendieckGroup_hom_ext
+
 -- Layer B stage 5: the scheme-derived surface numerical-variety assembly. The geometric HRR
 -- input is stated on coherent sheaves; the audited theorem below descends it to every K₀ class.
 #print axioms CohLean.RiemannRoch.Surface.CoherentAdditiveInvariant
@@ -1038,6 +1047,28 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms CohLean.RiemannRoch.Surface.Assembly.perfect_chi_eq_classical
 #print axioms CohLean.RiemannRoch.Surface.Assembly.toIsK3
 #print axioms CohLean.RiemannRoch.Surface.Assembly.k3_eulerCharacteristic_eq
+
+-- Layer B stage 5: numerical HRR in positive dimensions through four. Representability and
+-- divisor-pairing separation remain visible in `PairingContext`; no cycle-valued GRR theorem is
+-- assumed. The dimension-three and dimension-four constructors discharge the Layer A HRR field.
+#print axioms CohLean.RiemannRoch.HigherDimension.reconstruction_eulerPic_one
+#print axioms CohLean.RiemannRoch.HigherDimension.degree_tauComponent_top_eq_eulerCharacteristic
+#print axioms CohLean.RiemannRoch.HigherDimension.ReconstructionSystem
+#print axioms CohLean.RiemannRoch.HigherDimension.ReconstructionSystem.rankInvariant
+#print axioms CohLean.RiemannRoch.HigherDimension.ReconstructionSystem.chernCharacterInvariant
+#print axioms CohLean.RiemannRoch.HigherDimension.ReconstructionSystem.rankHom
+#print axioms CohLean.RiemannRoch.HigherDimension.ReconstructionSystem.chernCharacterHom
+#print axioms CohLean.RiemannRoch.HigherDimension.ReconstructionSystem.chernCharacterHom_zero
+#print axioms CohLean.RiemannRoch.HigherDimension.reconstructedToddComponent
+#print axioms CohLean.RiemannRoch.HigherDimension.reconstructedToddComponent_mem
+#print axioms CohLean.RiemannRoch.HigherDimension.sheaf_hirzebruch_riemannRoch
+#print axioms CohLean.RiemannRoch.HigherDimension.hirzebruch_riemannRoch
+#print axioms CohLean.RiemannRoch.HigherDimension.toNumericalVariety
+#print axioms CohLean.RiemannRoch.HigherDimension.numericalClass
+#print axioms CohLean.RiemannRoch.HigherDimension.toThreefoldNumericalVariety
+#print axioms CohLean.RiemannRoch.HigherDimension.toFourfoldNumericalVariety
+#print axioms CohLean.RiemannRoch.HigherDimension.threefold_eulerCharacteristic_eq
+#print axioms CohLean.RiemannRoch.HigherDimension.fourfold_eulerCharacteristic_eq
 
 -- Layer B stage 4: degree-level surface Chern data. The construction uses determinants,
 -- Picard intersections, and Euler characteristics; it does not postulate a Chow-valued class

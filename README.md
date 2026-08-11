@@ -37,6 +37,8 @@ Riemann–Roch and stability theory while keeping every hypothesis and trust bou
 - The surface assembly boundary: additive geometric invariants descend through `K₀(Coh X)`,
   geometric HRR discharges the Layer A `NumericalVariety` field, and the Euler-radical quotient
   and K3 specialization reuse the audited Layer A conventions.
+- Scheme-derived numerical HRR in every positive dimension through four, including explicit
+  threefold and fourfold `NumericalVariety` bridges reconstructed from Picard Euler polynomials.
 
 Incomplete theorems are described in module documentation and tracked as GitHub issues; the
 library contains no `sorry` declarations.
@@ -82,6 +84,8 @@ CohLean/
 │   ├── Specializations/
 │   └── Examples/
 ├── RiemannRoch/
+│   ├── Grothendieck.lean         # dimension-independent additive-invariant descent through K₀
+│   ├── HigherDimension/          # reconstructed HRR and dimension-three/four bridges
 │   └── Surface/                  # divisors, Todd data, dévissage, and geometric-to-numerical assembly
 ├── Topology/Opens/
 └── Development/                  # compile-only API audits and probes
@@ -143,6 +147,16 @@ resolution. Its exact-sequence, Grothendieck-group, and Layer A comparisons are 
 no global resolution property is assumed. The final assembly proves HRR for every coherent sheaf
 without that resolution hypothesis, then uses explicit perfect data only to recover the classical
 rank/`c₁`/`c₂` interpretation.
+
+`RiemannRoch/HigherDimension/Hirzebruch` extends the reconstruction argument to every positive
+dimension at most four. For each coherent sheaf, the top represented coefficient has degree its
+Euler characteristic; the triangular identities identify it with the top component of
+`ch(F)·td(X)`, and additivity descends the theorem through `K₀(Coh X)`. This constructs genuine
+threefold and fourfold `NumericalVariety` bridges and activates the existing Layer A display
+formulas. The scope is deliberately numerical: representability and separation by divisor
+products remain explicit, and no claim is made that the reconstructed Todd representatives are
+cycle-valued tangent-bundle Chern polynomials. Extending beyond dimension four requires extending
+the universal Chern-character recursion currently implemented only through codimension four.
 
 ## Building
 
