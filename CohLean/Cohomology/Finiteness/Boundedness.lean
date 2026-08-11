@@ -175,39 +175,49 @@ private lemma image_pi_of_isOpenImmersion {Y Z : Scheme.{u}} (f : Y ⟶ Z)
     rw [← f.preimage_image_eq (V i)]
     exact f.preimage_mono (leOfHom (Pi.π (fun i ↦ f ''ᵁ V i) i))
 
-private noncomputable def restrictAppAddCommGrpIso {Y Z : Scheme.{u}} (f : Y ⟶ Z)
-    [IsOpenImmersion f] (M : Z.Modules) (V : Y.Opens) (W : Z.Opens)
-    (hW : f ''ᵁ V = W) :
-    ((Scheme.Modules.toSheaf Y).obj (M.restrict f)).obj.obj (op V) ≅
-      ((Scheme.Modules.toSheaf Z).obj M).obj.obj (op W) := by
-  subst W
-  exact Iso.refl _
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
+set_option maxHeartbeats 1000000 in
+private noncomputable def cechCosimplicialOpenImmersionIso
+    {Y Z : Scheme.{u}} (f : Y ⟶ Z) [IsOpenImmersion f]
+    {I : Type u} (W : I → Y.Opens)
+    (P : (Opens Z)ᵒᵖ ⥤ AddCommGrpCat.{u}) :
+    (Limits.FormalCoproduct.cosimplicialObjectFunctor
+      (Limits.FormalCoproduct.mk I W).cech).obj (f.opensFunctor.op ⋙ P) ≅
+    (Limits.FormalCoproduct.cosimplicialObjectFunctor
+      (Limits.FormalCoproduct.mk I (fun i ↦ f ''ᵁ W i)).cech).obj P := by
+  refine NatIso.ofComponents (fun n ↦ ?_) ?_
+  · change (∏ᶜ fun q : Fin (n.len + 1) → I ↦
+        P.obj (op (f ''ᵁ (∏ᶜ fun k : Fin (n.len + 1) ↦ W (q k))))) ≅
+      (∏ᶜ fun q : Fin (n.len + 1) → I ↦
+        P.obj (op (∏ᶜ fun k : Fin (n.len + 1) ↦ f ''ᵁ W (q k))))
+    exact Limits.Pi.mapIso (fun q ↦
+      (P.mapIso (eqToIso (image_pi_of_isOpenImmersion f
+        (fun k : Fin (n.len + 1) ↦ W (q k)))).op).symm)
+  · intro n m g
+    dsimp [Limits.FormalCoproduct.cosimplicialObjectFunctor,
+      Limits.FormalCoproduct.evalOp, Limits.FormalCoproduct.cech,
+      Limits.FormalCoproduct.power, Limits.FormalCoproduct.mapPower]
+    apply Limits.Pi.hom_ext
+    intro q
+    slice_lhs 2 3 => erw [Limits.Pi.mapIso_hom_π]
+    slice_lhs 1 2 => erw [Limits.Pi.lift_π]
+    slice_rhs 2 3 => erw [Limits.Pi.lift_π]
+    slice_rhs 1 2 => erw [Limits.Pi.mapIso_hom_π]
+    simp only [Category.assoc]
+    congr 1
+    change P.map _ ≫ P.map _ = P.map _ ≫ P.map _
+    rw [← P.map_comp, ← P.map_comp]
+    congr 1
 
-set_option maxHeartbeats 1600000 in
-private noncomputable def restrictCechComplexIso {Y Z : Scheme.{u}} (f : Y ⟶ Z)
-    [IsOpenImmersion f] (M : Z.Modules) {I : Type u} (V : I → Y.Opens) :
-    (cechComplexFunctor V).obj ((Scheme.Modules.toSheaf Y).obj (M.restrict f)).obj ≅
-      (cechComplexFunctor (fun i ↦ f ''ᵁ V i)).obj
-        ((Scheme.Modules.toSheaf Z).obj M).obj := by
-  let e :
-      (Limits.FormalCoproduct.cosimplicialObjectFunctor
-          (Limits.FormalCoproduct.mk I V).cech).obj
-          ((Scheme.Modules.toSheaf Y).obj (M.restrict f)).obj ≅
-        (Limits.FormalCoproduct.cosimplicialObjectFunctor
-          (Limits.FormalCoproduct.mk I (fun i ↦ f ''ᵁ V i)).cech).obj
-          ((Scheme.Modules.toSheaf Z).obj M).obj := by
-    apply NatIso.ofComponents
-    · intro n
-      dsimp [Limits.FormalCoproduct.cosimplicialObjectFunctor]
-      exact Pi.mapIso fun q ↦ restrictAppAddCommGrpIso f M
-        (∏ᶜ fun k ↦ V (q k)) (∏ᶜ fun k ↦ f ''ᵁ V (q k))
-        (image_pi_of_isOpenImmersion f _)
-    · intro n m g
-      apply Limits.Pi.hom_ext
-      intro q
-      dsimp [Limits.FormalCoproduct.cosimplicialObjectFunctor,
-        restrictAppAddCommGrpIso]
-  exact (AlgebraicTopology.alternatingCofaceMapComplex AddCommGrpCat).mapIso e
+private noncomputable def cechComplexOpenImmersionIso
+    {Y Z : Scheme.{u}} (f : Y ⟶ Z) [IsOpenImmersion f]
+    {I : Type u} (W : I → Y.Opens)
+    (P : (Opens Z)ᵒᵖ ⥤ AddCommGrpCat.{u}) :
+    (cechComplexFunctor W).obj (f.opensFunctor.op ⋙ P) ≅
+      (cechComplexFunctor (fun i ↦ f ''ᵁ W i)).obj P :=
+  (AlgebraicTopology.alternatingCofaceMapComplex AddCommGrpCat.{u}).mapIso
+    (cechCosimplicialOpenImmersionIso f W P)
 
 /-- The compact distinguished-open basis lying below one fixed affine open of a scheme. -/
 noncomputable def affineBasicOpenBasisAt (U : X.Opens) (hU : IsAffineOpen U) :
@@ -305,10 +315,10 @@ theorem modules_isCechAcyclicOn_affineBasicOpenBasisAt
     ⟨d, rfl⟩ (fun i ↦ _root_.PrimeSpectrum.basicOpen (f i))
     (fun i ↦ ⟨f i, rfl⟩) hcover' n hn
   change ((cechComplexFunctor (fun i ↦ _root_.PrimeSpectrum.basicOpen (f i))).obj
-    ((Scheme.Modules.toSheaf (Spec Γ(X, U))).obj
-      (G.restrict hU.fromSpec)).obj).ExactAt n at h
-  have h' := h.of_iso (restrictCechComplexIso hU.fromSpec G
-    (fun i ↦ _root_.PrimeSpectrum.basicOpen (f i)))
+    (hU.fromSpec.opensFunctor.op ⋙ ((Scheme.Modules.toSheaf X).obj G).obj)).ExactAt n at h
+  have h' := h.of_iso (cechComplexOpenImmersionIso hU.fromSpec
+    (fun i ↦ _root_.PrimeSpectrum.basicOpen (f i))
+    ((Scheme.Modules.toSheaf X).obj G).obj)
   simpa only [hU.fromSpec_image_basicOpen] using h'
 
 /-- Positive local cohomology of a quasi-coherent module vanishes on an affine open.  The
