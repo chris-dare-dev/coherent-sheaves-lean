@@ -41,12 +41,13 @@ every K3 and every Calabi–Yau. The general statement `χ(E,F) = (-1)ⁿ χ(F,E
 duality — a Layer B theorem about `Ext`, not an identity between these integrals — so it is
 not asserted here.
 
-## Not proved here
+## Continued in the lattice module
 
-`chi₂` is additive in each argument (`chi₂_add_left`, `chi₂_add_right`), but it is *not*
-packaged as a `LinearMap` or a `BilinForm`, and the radical is not constructed. Issue #7's
-numerical lattice is where that belongs; doing it here would fix a choice of `ℤ`- versus
-`ℚ`-structure on `N` before the lattice issue has decided one.
+This file proves that `chi₂` is additive in each argument (`chi₂_add_left`,
+`chi₂_add_right`). `CohLean.Numerical.GrothendieckGroup.Lattice` packages that biadditivity,
+constructs the radical quotient and descends the pairing.  Keeping the construction there
+separates the `ℚ`-valued Euler form from the explicit finite-generation and torsion-freeness
+hypotheses needed for its underlying `ℤ`-lattice.
 -/
 
 universe u v

@@ -181,6 +181,38 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms K3.chi₂_eq_neg_mukaiPairing
 #print axioms K3.chi₂_self
 
+-- Layer A: the numerical Grothendieck quotient and lattice. The pairing is descended only
+-- under explicit symmetry, and the finite/free conclusion must retain its finiteness and
+-- torsion-freeness hypotheses.
+#print axioms ZLattice
+#print axioms ZLattice.ofFiniteTorsionFree
+#print axioms NumericalVariety.eulerPairingRow
+#print axioms NumericalVariety.eulerPairing
+#print axioms NumericalVariety.eulerPairingFlip
+#print axioms NumericalVariety.eulerPairing_apply
+#print axioms NumericalVariety.eulerPairingFlip_apply
+#print axioms NumericalVariety.leftRadical
+#print axioms NumericalVariety.rightRadical
+#print axioms NumericalVariety.mem_leftRadical_iff
+#print axioms NumericalVariety.mem_rightRadical_iff
+#print axioms NumericalVariety.IsEulerPairingSymmetric
+#print axioms NumericalVariety.leftRadical_eq_rightRadical
+#print axioms NumericalVariety.NumericalQuotient
+#print axioms NumericalVariety.eulerPairingDescendRight
+#print axioms NumericalVariety.eulerPairingDescendRight_mk
+#print axioms NumericalVariety.eulerPairingToQuotient
+#print axioms NumericalVariety.eulerPairingToQuotient_mk
+#print axioms NumericalVariety.numericalPairing
+#print axioms NumericalVariety.numericalPairing_mk
+#print axioms NumericalVariety.numericalPairing_symm
+#print axioms NumericalVariety.numericalPairing_left_nondegenerate
+#print axioms NumericalVariety.numericalPairing_right_nondegenerate
+#print axioms NumericalVariety.numericalPairing_ker_eq_bot
+#print axioms NumericalVariety.numericalZLattice
+#print axioms K3.isEulerPairingSymmetric
+#print axioms K3.leftRadical_eq_rightRadical
+#print axioms K3.numericalPairing_mk_eq_neg_mukaiPairing
+
 -- Layer A: the K3 specialisation.
 #print axioms K3.chi_eq
 #print axioms K3.chi_eq_rank_add_mukaiS
