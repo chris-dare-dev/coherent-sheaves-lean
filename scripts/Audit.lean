@@ -988,6 +988,39 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms CohLean.RiemannRoch.Surface.k3_eulerPic_eq
 #print axioms CohLean.RiemannRoch.Surface.k3_eulerPic_eq_two
 
+-- Layer B stage 5: surface Todd reconstruction. The top representative comes from the
+-- structure-sheaf twist polynomial, and the first component is the explicit class -K/2.
+#print axioms CohLean.RiemannRoch.Surface.ToddData.Data
+#print axioms CohLean.RiemannRoch.Surface.ToddData.numericalCanonicalClass
+#print axioms CohLean.RiemannRoch.Surface.ToddData.homogeneousPicardCoefficient_nil
+#print axioms CohLean.RiemannRoch.Surface.ToddData.homogeneousPicardCoefficient_singleton
+#print axioms CohLean.RiemannRoch.Surface.ToddData.toddComponent
+#print axioms CohLean.RiemannRoch.Surface.ToddData.toddComponent_mem
+#print axioms CohLean.RiemannRoch.Surface.ToddData.degree_toddTwo_eq_eulerPic_one
+#print axioms CohLean.RiemannRoch.Surface.ToddData.degree_toddTwo_eq_structureSheafEulerCharacteristic
+#print axioms CohLean.RiemannRoch.Surface.ToddData.degree_toddOne_mul_divisorClass
+#print axioms CohLean.RiemannRoch.Surface.ToddData.structureToddOne_eq_toddOne
+#print axioms CohLean.RiemannRoch.Surface.ToddData.toddOne_eq_zero
+#print axioms CohLean.RiemannRoch.Surface.ToddData.degree_toddTwo_eq_two
+#print axioms CohLean.RiemannRoch.Surface.ToddData.NumericalVarietyComparison.toIsK3
+
+-- Layer B stage 5: finite locally free and explicitly perfect surface dévissage. Arbitrary
+-- coherent sheaves receive no hidden resolution instance.
+#print axioms CohLean.RiemannRoch.Surface.Devissage.locallyFreeCh2Degree
+#print axioms CohLean.RiemannRoch.Surface.Devissage.locallyFreeC2Degree
+#print axioms CohLean.RiemannRoch.Surface.Devissage.locallyFree_eulerCharacteristic_eq
+#print axioms CohLean.RiemannRoch.Surface.Devissage.locallyFreeCh2Degree_shortExact
+#print axioms CohLean.RiemannRoch.Surface.Devissage.locallyFreeC2Degree_shortExact
+#print axioms CohLean.RiemannRoch.Surface.Devissage.eulerCharacteristic_eq_middle_sub_left
+#print axioms CohLean.RiemannRoch.Surface.Devissage.chernCharacterTwoDegree_eq_middle_sub_left
+#print axioms CohLean.RiemannRoch.Surface.Devissage.perfectC2Degree
+#print axioms CohLean.RiemannRoch.Surface.Devissage.perfect_eulerCharacteristic_eq
+#print axioms CohLean.RiemannRoch.Surface.Devissage.discriminantDegree_eq_c2
+#print axioms CohLean.RiemannRoch.Surface.Devissage.coherentGrothendieckClass_shortExact
+#print axioms CohLean.RiemannRoch.Surface.Devissage.grothendieckEulerHom_class_eq_perfect_formula
+#print axioms CohLean.RiemannRoch.Surface.Devissage.NumericalVarietyComparison.chi_eq_geometric_terms
+#print axioms CohLean.RiemannRoch.Surface.Devissage.NumericalVarietyComparison.chi_eq_classical
+
 -- Layer B stage 4: degree-level surface Chern data. The construction uses determinants,
 -- Picard intersections, and Euler characteristics; it does not postulate a Chow-valued class
 -- or a perfect numerical pairing.

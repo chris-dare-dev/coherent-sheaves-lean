@@ -31,8 +31,9 @@ Riemann–Roch and stability theory while keeping every hypothesis and trust bou
   Chern-character reconstruction.
 - Explicit derived/cohomological Serre-duality interfaces, perfect coherent pairings, and the
   proved Euler symmetry for locally free sheaves.
-- Geometric Riemann--Roch for line bundles on smooth proper surfaces from Serre symmetry and
-  Snapper intersections, including the effective-divisor exact-sequence bridge.
+- Geometric Riemann--Roch on smooth proper surfaces from Serre symmetry and Snapper
+  intersections: line bundles and effective divisors, reconstructed Todd data, finite locally
+  free dévissage, and coherent sheaves carrying explicit two-term perfect resolutions.
 - The surface assembly boundary: additive geometric invariants descend through `K₀(Coh X)`,
   geometric HRR discharges the Layer A `NumericalVariety` field, and the Euler-radical quotient
   and K3 specialization reuse the audited Layer A conventions.
@@ -81,7 +82,7 @@ CohLean/
 │   ├── Specializations/
 │   └── Examples/
 ├── RiemannRoch/
-│   └── Surface/                  # divisors, effective sequences, and geometric-to-numerical assembly
+│   └── Surface/                  # divisors, Todd data, dévissage, and geometric-to-numerical assembly
 ├── Topology/Opens/
 └── Development/                  # compile-only API audits and probes
 ```
@@ -131,6 +132,13 @@ geometric Todd components, and a coherent-sheaf HRR theorem into a concrete
 descent rather than postulated. Its numerical class map then uses the Euler-radical quotient
 from the numerical lattice API, and geometric K3 Todd identities produce the existing Layer A
 `K3.IsK3` specialization.
+
+`RiemannRoch/Surface` now reconstructs `td₀`, `td₁=-K_X/2`, and the top Todd representative
+from the structure-sheaf twist polynomial, proving `∫td₂=χ(O_X)` and the K3 normalization.
+The same package proves the classical rank/`c₁`/`c₂` formula for determinant-equipped finite
+locally free sheaves and extends it to coherent sheaves only through a visible two-term perfect
+resolution. Its exact-sequence, Grothendieck-group, and Layer A comparisons are term-by-term;
+no global resolution property is assumed.
 
 ## Building
 
