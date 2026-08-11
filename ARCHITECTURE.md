@@ -40,6 +40,10 @@ schemes and geometric hypotheses
 The numerical layer is a visible axiomatic boundary. Geometric modules construct data that
 discharges that boundary; they do not silently turn assumptions into theorems.
 
+On surfaces, `RiemannRoch/Surface/Assembly` discharges HRR for all coherent sheaves from
+twist-polynomial reconstruction. Finite locally free resolutions enter only the separate
+term-by-term comparison with the classical rank/`c₁`/`c₂` formula.
+
 ## Growth rules
 
 1. Put a new module under the narrowest mathematical owner that can support more than one

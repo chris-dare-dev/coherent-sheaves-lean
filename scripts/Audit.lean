@@ -1021,6 +1021,24 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms CohLean.RiemannRoch.Surface.Devissage.NumericalVarietyComparison.chi_eq_geometric_terms
 #print axioms CohLean.RiemannRoch.Surface.Devissage.NumericalVarietyComparison.chi_eq_classical
 
+-- Layer B stage 5: final geometric assembly. Reconstruction proves HRR for every coherent
+-- sheaf; the classical rank/c₁/c₂ interpretation remains conditional on an explicitly
+-- supplied two-term finite locally free resolution.
+#print axioms CohLean.RiemannRoch.Surface.Assembly.reconstruction_eulerPic_one
+#print axioms CohLean.RiemannRoch.Surface.Assembly.degree_tauComponent_two_eq_eulerCharacteristic
+#print axioms CohLean.RiemannRoch.Surface.Assembly.sheaf_hirzebruch_riemannRoch
+#print axioms CohLean.RiemannRoch.Surface.Assembly.toGeometricData
+#print axioms CohLean.RiemannRoch.Surface.Assembly.toNumericalVariety
+#print axioms CohLean.RiemannRoch.Surface.Assembly.PerfectReconstructionComparison
+#print axioms CohLean.RiemannRoch.Surface.Assembly.perfect_rank_eq
+#print axioms CohLean.RiemannRoch.Surface.Assembly.perfect_toddTwo_degree
+#print axioms CohLean.RiemannRoch.Surface.Assembly.perfect_toddOne_degree
+#print axioms CohLean.RiemannRoch.Surface.Assembly.perfect_chTwo_degree
+#print axioms CohLean.RiemannRoch.Surface.Assembly.perfect_surface_expansion
+#print axioms CohLean.RiemannRoch.Surface.Assembly.perfect_chi_eq_classical
+#print axioms CohLean.RiemannRoch.Surface.Assembly.toIsK3
+#print axioms CohLean.RiemannRoch.Surface.Assembly.k3_eulerCharacteristic_eq
+
 -- Layer B stage 4: degree-level surface Chern data. The construction uses determinants,
 -- Picard intersections, and Euler characteristics; it does not postulate a Chow-valued class
 -- or a perfect numerical pairing.
