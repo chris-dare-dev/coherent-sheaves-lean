@@ -702,6 +702,25 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms CohLean.Intersection.Snapper.eulerFunction_eq_of_coherentSheafIso
 #print axioms CohLean.Intersection.Snapper.eulerFunction_eq_of_lineBundleIso
 #print axioms CohLean.Intersection.Snapper.oneVariable_fwdDiff_euler_vanishes
+#print axioms CohLean.Intersection.Number.picardDifference
+#print axioms CohLean.Intersection.Number.picardMixedDifference
+#print axioms CohLean.Intersection.Number.picardCoefficient
+#print axioms CohLean.Intersection.Number.PicardDegreeLE
+#print axioms CohLean.Intersection.Number.picardCoefficient_middle_mul
+#print axioms CohLean.Intersection.Number.picardCoefficientAddHom
+#print axioms CohLean.Intersection.Number.picardMonomial
+#print axioms CohLean.Intersection.Number.mixedDifference_picardPolynomial
+#print axioms CohLean.Intersection.Number.TwistContext
+#print axioms CohLean.Intersection.Number.TwistContext.picardDegreeLE
+#print axioms CohLean.Intersection.Number.IntersectionContext
+#print axioms CohLean.Intersection.Number.IntersectionContext.picardIntersectionNumber
+#print axioms CohLean.Intersection.Number.IntersectionContext.picardIntersectionNumber_eq_coefficient
+#print axioms CohLean.Intersection.Number.IntersectionContext.picardIntersectionNumber_comp_perm
+#print axioms CohLean.Intersection.Number.IntersectionContext.picardIntersectionList_middle_mul
+#print axioms CohLean.Intersection.Number.IntersectionContext.cartierClassIntersectionNumber
+#print axioms CohLean.Intersection.Number.IntersectionContext.cartierDivisorIntersectionNumber_eq_picard
+#print axioms CohLean.Intersection.Number.IntersectionContext.surfaceIntersectionPairing
+#print axioms CohLean.Intersection.Number.IntersectionContext.surfaceIntersectionPairing_symm
 
 -- Layer B stage 3: `CohLean/Cohomology/Strategy.lean` contributes nothing here on
 -- purpose. It is the compile-only API map for the B3 route decision and declares only
