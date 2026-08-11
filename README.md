@@ -71,6 +71,13 @@ CohLean/
 This layout reserves natural growth points for duality, higher-dimensional Riemann–Roch, and
 further projective-geometry work represented in the issue tracker.
 
+The Čech-to-derived comparison is complete for open covers of topological spaces. An explicit
+injective resolution maps from its global-sections complex to the injective Čech total; the map
+is a quasi-isomorphism because injective Čech rows are exact. Consequently every Čech-acyclic
+cover computes `Sheaf.H` in all degrees. The resolution and Mathlib's `HasExt` witness remain
+explicit inputs because the current library does not install enough injectives for abelian
+sheaves globally.
+
 ## Building
 
 The repository pins its Lean and Mathlib revisions.

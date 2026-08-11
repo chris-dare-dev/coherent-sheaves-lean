@@ -482,6 +482,20 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms CategoryTheory.Sheaf.cechToInjectiveTotalMap_quasiIso
 #print axioms CategoryTheory.Sheaf.cechCohomologyIsoInjectiveTotalHomology
 
+-- Layer B stage 3: the global-sections edge of the Cech bicomplex. Sheaf gluing proves
+-- exactness at degree zero, injectivity proves positive row exactness, and the resulting
+-- rowwise quasi-isomorphism passes to first-quadrant totals. Together with local Cech
+-- acyclicity this gives the full Cech-to-derived comparison for open covers.
+#print axioms CategoryTheory.Sheaf.globalSectionsToCechZero_exact
+#print axioms CategoryTheory.Sheaf.globalSectionsToCechZero_mono
+#print axioms CategoryTheory.Sheaf.globalSectionsToCechRowMap_quasiIso
+#print axioms CategoryTheory.Sheaf.globalSectionsToCechBicomplexMap
+#print axioms CategoryTheory.Sheaf.injectiveResolutionSectionsToCechTotalMap
+#print axioms CategoryTheory.Sheaf.injectiveResolutionSectionsToCechTotalMap_quasiIso
+#print axioms CategoryTheory.Sheaf.cechCochainFunctorIntHomologyIso
+#print axioms CategoryTheory.Sheaf.injectiveResolutionSectionsComplexUnliftedIso
+#print axioms CategoryTheory.Sheaf.isCechAcyclicCover_cechComputesDerivedCohomology
+
 -- Layer B stage 3: positive-degree exactness of the explicit Cech complex for a module
 -- sheaf on a finite distinguished-open cover of an affine scheme. This is the affine Cech
 -- vanishing theorem, not a comparison with derived-functor sheaf cohomology.
