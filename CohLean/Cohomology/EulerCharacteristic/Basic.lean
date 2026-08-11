@@ -2,12 +2,8 @@
 Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 -/
-import CohLean.AlgebraicGeometry.Modules.Affine.Equivalence
-import CohLean.AlgebraicGeometry.Variety.Basic
-import CohLean.Coh.Abelian.Basic
+import CohLean.Cohomology.Finiteness.FiniteDimensional
 import Mathlib.Algebra.Homology.EulerCharacteristic
-import Mathlib.CategoryTheory.Sites.SheafCohomology.Basic
-import Mathlib.LinearAlgebra.FiniteDimensional.Basic
 
 /-!
 # Geometric Euler characteristics of coherent sheaves
@@ -22,11 +18,11 @@ by Mathlib:
 * the natural `k`-vector-space structure on coherent sheaf cohomology, functorial in `F`;
 * finite-dimensionality and eventual vanishing.
 
-The first input is packaged as a lift of the existing abelian-group-valued cohomology functors
-to `ModuleCat k`. A natural isomorphism after forgetting scalars certifies that these are the
-actual derived-functor groups `Sheaf.H`, not unrelated vector spaces of the desired dimensions.
-The finiteness and vanishing fields are hypotheses, never axioms. Serre finiteness can later
-construct them without changing the definition of `χ`.
+The first input and degreewise finite-dimensionality are packaged independently in
+`FiniteDimensionalCohomology`, the output interface for issue #29. `FiniteCohomology` extends
+that interface only with the eventual-vanishing data tracked separately in issue #30. All
+fields are hypotheses, never axioms. The projective finiteness and boundedness theorems can
+later construct them without changing the definition of `χ`.
 
 The alternating sum reuses `GradedObject.eulerChar` from Mathlib. The support theorem below
 removes its possible infinite-support junk value, and `eulerCharacteristic_eq_sum` exposes the
@@ -47,32 +43,12 @@ namespace Cohomology
 
 variable {k : Type u} [Field k]
 
-/-- The existing abelian-group-valued degree-`i` cohomology functor on coherent sheaves.
+/-- Finite-dimensional coherent cohomology together with eventual vanishing.
 
-The explicit `HasExt` instance is required by the current `Sheaf.H` API. -/
-noncomputable def coherentH (X : Scheme.{u}) (i : ℕ) :
-    Coh X ⥤ AddCommGrpCat.{u + 1} := by
-  letI : HasExt.{u + 1}
-      (Sheaf (Opens.grothendieckTopology X) AddCommGrpCat.{u}) :=
-    HasExt.standard _
-  exact Coh.ι X ⋙ Scheme.Modules.toSheaf X ⋙
-    Sheaf.functorH (Opens.grothendieckTopology X) i
-
-/-- Explicit data making coherent cohomology finite-dimensional over the base field.
-
-`moduleH` is a functorial `k`-linear lift in every degree. `comparison` identifies its
-underlying additive groups with Mathlib's derived-functor sheaf cohomology. The remaining
-fields state Serre finiteness and eventual vanishing in exactly the form needed by the Euler
-sum. -/
-structure FiniteCohomology (X : Variety k) where
-  /-- The base-field vector spaces `Hⁱ(X, F)`, functorial in the coherent sheaf `F`. -/
-  moduleH : ℕ → Coh X.toScheme ⥤ ModuleCat.{u + 1} k
-  /-- Forgetting the vector-space structure recovers derived-functor sheaf cohomology. -/
-  comparison : ∀ i,
-    moduleH i ⋙ forget₂ (ModuleCat.{u + 1} k) AddCommGrpCat.{u + 1} ≅
-      coherentH X.toScheme i
-  /-- Every coherent cohomology vector space is finite-dimensional. -/
-  finite : ∀ (i : ℕ) (F : Coh X.toScheme), Module.Finite k ((moduleH i).obj F)
+The inherited data is exactly the linear comparison and degreewise finiteness output of #29.
+The two fields added here are the separate #30 boundedness input needed to make the Euler sum
+finite. -/
+structure FiniteCohomology (X : Variety k) extends FiniteDimensionalCohomology X where
   /-- A sheaf-dependent bound above which its cohomology vanishes. -/
   bound : Coh X.toScheme → ℕ
   /-- Cohomology vanishes strictly above `bound F`. -/
@@ -90,7 +66,7 @@ abbrev gradedModule (D : FiniteCohomology X) (F : Coh X.toScheme) :
 
 /-- The dimension of degree-`i` coherent cohomology. -/
 noncomputable abbrev dimension (D : FiniteCohomology X) (F : Coh X.toScheme) (i : ℕ) : ℕ :=
-  Module.finrank k ((D.moduleH i).obj F)
+  D.toFiniteDimensionalCohomology.dimension F i
 
 /-- The sign supplied by the cochain-complex shape is the usual `(-1)ⁱ`. -/
 theorem upNat_sign (i : ℕ) : ((ComplexShape.up ℕ).χ i : ℤ) = (-1 : ℤ) ^ i := by
@@ -143,7 +119,7 @@ theorem eulerCharacteristic_eq_sum_of_bound (D : FiniteCohomology X)
 /-- Isomorphic coherent sheaves have equal cohomology dimensions in every degree. -/
 theorem dimension_iso (D : FiniteCohomology X) {F G : Coh X.toScheme} (e : F ≅ G) (i : ℕ) :
     D.dimension F i = D.dimension G i :=
-  ((D.moduleH i).mapIso e).toLinearEquiv.finrank_eq
+  D.toFiniteDimensionalCohomology.dimension_iso e i
 
 /-- The geometric Euler characteristic is invariant under isomorphism of coherent sheaves. -/
 theorem eulerCharacteristic_iso (D : FiniteCohomology X) {F G : Coh X.toScheme} (e : F ≅ G) :
