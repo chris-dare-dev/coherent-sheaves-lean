@@ -52,6 +52,7 @@ CohLean/
 │   ├── Cech/
 │   ├── Derived/
 │   ├── EulerCharacteristic/
+│   ├── Finiteness/               # linear realization and degreewise finiteness boundary
 │   ├── Simplicial/
 │   └── SpectralSequence/
 ├── Intersection/

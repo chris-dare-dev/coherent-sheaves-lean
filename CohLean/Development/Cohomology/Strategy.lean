@@ -11,6 +11,7 @@ import Mathlib.CategoryTheory.Sites.SheafCohomology.Basic
 import Mathlib.CategoryTheory.Sites.SheafCohomology.Cech
 import CohLean.AlgebraicGeometry.Proj.Modules.Finiteness
 import CohLean.Cohomology.Derived.AffineVanishing
+import CohLean.Cohomology.Finiteness.FiniteDimensional
 
 /-!
 # Layer B stage 3 — which cohomology finiteness theorem this library will prove
@@ -80,7 +81,11 @@ line that was not visible when it was written:
   intersections. Properness and a base field do not enter this vanishing layer.
 * **Still not proved.** #29, finite-dimensionality of `H^i(X, F)` over a field. Its Proj object
   and finiteness interfaces now exist; the polynomial affine/global-section comparisons and the
-  cohomological resolution argument remain. #31 and #32 are downstream of it.
+  cohomological resolution argument remain. The affine terms of a projective standard-cover
+  Čech complex are generally infinite-dimensional over the field, so finiteness must be proved
+  for its homology using the grading/Serre argument rather than termwise. The exact output type is
+  `FiniteDimensionalCohomology`; it deliberately contains no eventual-vanishing claim. #31 and
+  #32 are downstream of it.
 
 So the milestone target moves from "proper over a field" to **separated noetherian**, for
 vanishing only. The projective-to-proper question (#26 question 3, Chow's lemma plus
@@ -88,8 +93,9 @@ dévissage) does not arise: this library does not reach the projective case eith
 
 **Consequence for #31 and #32.** The Euler characteristic cannot be *defined* by a theorem
 this stage will prove, so it must take finiteness as an input rather than derive it. #31 is now
-implemented by `CohLean.Cohomology.EulerCharacteristic.Basic`: `χ` is relative to a functorial
-finite-dimensional `k`-linear lift of each `H^i` and an eventual-vanishing bound. #32 proves
+implemented by `CohLean.Cohomology.EulerCharacteristic.Basic`: `χ` is relative to a
+`FiniteCohomology` package extending the #29 `FiniteDimensionalCohomology` interface with the
+separate #30 eventual-vanishing bound. #32 proves
 additivity from the `Ext` long exact sequence (`Ext.covariantSequence_exact`) plus that bound,
 with the hypotheses carried. It is implemented by
 `CohLean.Cohomology.EulerCharacteristic.Additivity`; the only additional input is the
@@ -233,6 +239,10 @@ example := @CohLean.AlgebraicGeometry.Proj.TwistingSectionRange.globalSections_f
 /-- Finite-variable homogeneous polynomials supply the finite algebraic source for projective
 space in each certified degree. -/
 example := @CohLean.AlgebraicGeometry.Proj.projectiveSpace_globalSections_finite
+
+/-- The exact output boundary for #29: a functorial linear lift of derived cohomology together
+with degreewise finite-dimensionality, but no #30 vanishing bound. -/
+example {k : Type u} [Field k] (X : Variety k) := FiniteDimensionalCohomology X
 
 /-- Properness of `Proj` over its degree-zero part — the one piece of the classical
 projective argument that is already available. -/

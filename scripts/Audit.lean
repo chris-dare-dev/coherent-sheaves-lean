@@ -69,6 +69,9 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms Variety.NumericalData.coherentChernCharacter_shortExact
 #print axioms Variety.NumericalData.coherentEulerCharacteristic_shortExact
 #print axioms Cohomology.coherentH
+#print axioms Cohomology.LinearCohomology
+#print axioms Cohomology.FiniteDimensionalCohomology
+#print axioms Cohomology.FiniteDimensionalCohomology.dimension_iso
 #print axioms Cohomology.FiniteCohomology
 #print axioms Cohomology.FiniteCohomology.eulerCharacteristic
 #print axioms Cohomology.FiniteCohomology.finrankSupport_subset_range
