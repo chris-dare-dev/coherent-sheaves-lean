@@ -301,7 +301,11 @@ decision before planning anything here:
 * **Serre finiteness (#29) is not supported and is not close.**
   `Mathlib/AlgebraicGeometry/ProjectiveSpectrum/` has no modules at all — no
   graded-module-to-sheaf construction, no `O(d)`, no twist. The machinery `H^i(ℙⁿ, O(d))` is
-  stated in has to be built first, which is a bigger job than B1.
+  stated in has to be built first, which is a bigger job than B1. Issue #57 now tracks that
+  construction as #94 (degree-zero graded-module localization), #95 (associated sheaf), #96
+  (graded shifts and `O(d)`), and #97 (finiteness and sections). The #94 implementation lives in
+  `AlgebraicGeometry/Proj/GradedLocalization.lean` and deliberately reuses Mathlib's ordinary
+  localized module and homogeneous-localization ring.
 * **#31 and #32 therefore carry finite-dimensionality as a hypothesis** rather than deriving
   it, and become unconditional unchanged the day #29 lands.
 

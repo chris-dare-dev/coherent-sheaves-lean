@@ -55,6 +55,10 @@ maps, and therefore descends through an explicit presentation of `K₀(Coh X)`.
 The independent B4 algebraic entry point is also present: arbitrary-direction mixed finite
 differences on `ℤ^r`, the `(n+1)`-fold vanishing definition of numerical degree, Newton and
 polarized top-coefficient extraction, and the symmetric bilinear surface specialization.
+The first Proj-module foundation is present as well: degree-zero homogeneous localization of a
+graded module is constructed inside Mathlib's ordinary localized module, with explicit
+homogeneous representatives, equality criteria, `D₊(f)` constructors, and functoriality for
+degree-preserving linear maps. Associated sheaves and `O(d)` remain the next Proj layers.
 
 ## Architecture
 

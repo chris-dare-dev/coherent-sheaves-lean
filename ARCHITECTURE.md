@@ -18,6 +18,7 @@ gate.
 | `CohLean/AlgebraicGeometry/Variety.lean` | Geometric varieties over a field, kept distinct from their numerical realizations |
 | `CohLean/AlgebraicGeometry/Variety/Numerical.lean` | Certified descent from coherent sheaves and geometric Chern classes to `NumericalVariety` |
 | `CohLean/AlgebraicGeometry/Modules` | Module and sheaf-of-modules constructions over schemes |
+| `CohLean/AlgebraicGeometry/Proj` | Graded-module localization and the developing associated-sheaf/twisting-sheaf machinery on `Proj` |
 | `CohLean/Coh` | Coherent sheaves and their categorical properties |
 | `CohLean/Divisors` | Cartier and effective divisors, invertible sheaves, tensor/Picard structure, determinant lines, and first Chern classes |
 | `CohLean/Cohomology` | Čech and spectral-sequence infrastructure, finite-dimensional cohomology data, geometric Euler characteristics, and their `K₀` factorization |
@@ -67,6 +68,12 @@ family is modeled by an exponent lattice `ι → ℤ`; arbitrary-direction mixed
 numerical degree and extract symmetric multilinear top coefficients. The core is independent of
 schemes and sheaves, reuses Mathlib's univariate `ForwardDiff`, and specializes in degree two to
 a symmetric `ℤ`-bilinear surface pairing.
+
+`AlgebraicGeometry.Proj` is the geometric foundation for the deferred Serre-finiteness route.
+Its first layer defines the degree-zero homogeneous localization of a graded module as a
+submodule of Mathlib's ordinary `LocalizedModule`, over Mathlib's
+`HomogeneousLocalization` ring. The natural grading used by `Proj` is not silently identified
+with the integer grading needed for twists: graded shifts and `O(d)` are a later, explicit layer.
 
 ## Dimension and characteristic classes
 

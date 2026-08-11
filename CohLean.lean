@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 -/
 import CohLean.AlgebraicGeometry.Variety
 import CohLean.AlgebraicGeometry.Variety.Numerical
+import CohLean.AlgebraicGeometry.Proj.GradedLocalization
 import CohLean.Numerical.Defs
 import CohLean.Numerical.OfGradedBasis
 import CohLean.Numerical.CharacteristicClasses
