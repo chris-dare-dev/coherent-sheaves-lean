@@ -115,6 +115,24 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms SmoothProperVariety.CanonicalSheafData.CanonicalDivisorData.classToPic_eq_canonicalClass
 #print axioms SmoothProperVariety.CanonicalSheafData.DualizingSheafComparison
 #print axioms SmoothProperVariety.CanonicalSheafData.DualizingSheafComparison.candidateClass_eq
+
+-- Layer B stage 5: Serre duality remains an explicit geometric realization. The derived
+-- statement uses Mathlib's derived category, while the cohomological comparison targets its
+-- actual Ext groups. Euler symmetry is proved from perfect pairings and dimension vanishing.
+#print axioms CohLean.Duality.Serre.DerivedStatement
+#print axioms CohLean.Duality.Serre.Data
+#print axioms CohLean.Duality.Serre.Data.pairing
+#print axioms CohLean.Duality.Serre.Data.dimension_eq_ext
+#print axioms CohLean.Duality.Serre.Data.LocallyFreeSpecialization
+#print axioms CohLean.Duality.Serre.Data.LocallyFreeSpecialization.dimension_symmetry
+#print axioms CohLean.Duality.Serre.Data.LocallyFreeSpecialization.eulerCharacteristic_eq_sum_dimension
+#print axioms CohLean.Duality.Serre.Data.LocallyFreeSpecialization.eulerCharacteristic_symmetry
+#print axioms CohLean.Duality.Serre.Data.LocallyFreeSpecialization.surface_eulerCharacteristic_symmetry
+#print axioms CohLean.Duality.Serre.Data.SurfaceLineBundleFamily
+#print axioms CohLean.Duality.Serre.Data.SurfaceLineBundleFamily.toSurfacePicardSymmetry
+#print axioms CohLean.Duality.Serre.Data.SurfacePicardSymmetry
+#print axioms CohLean.Duality.Serre.Data.SurfacePicardSymmetry.canonical
+#print axioms CohLean.Duality.Serre.Data.SurfacePicardSymmetry.k3
 #print axioms Cohomology.FiniteCohomology
 #print axioms Cohomology.FiniteCohomology.eulerCharacteristic
 #print axioms Cohomology.FiniteCohomology.finrankSupport_subset_range
@@ -909,6 +927,28 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms CohLean.Intersection.Number.IntersectionContext.cartierDivisorIntersectionNumber_eq_picard
 #print axioms CohLean.Intersection.Number.IntersectionContext.surfaceIntersectionPairing
 #print axioms CohLean.Intersection.Number.IntersectionContext.surfaceIntersectionPairing_symm
+
+-- Layer B stage 5: geometric surface divisor Riemann--Roch. These declarations use Serre
+-- symmetry, Snapper intersections, and #25's effective sequence, never Layer A's HRR field.
+#print axioms CohLean.RiemannRoch.Surface.correctionNumerator
+#print axioms CohLean.RiemannRoch.Surface.twice_eulerPic_sub
+#print axioms CohLean.RiemannRoch.Surface.correctionNumerator_even
+#print axioms CohLean.RiemannRoch.Surface.eulerPic_eq
+#print axioms CohLean.RiemannRoch.Surface.cartierEulerCharacteristic
+#print axioms CohLean.RiemannRoch.Surface.cartierCorrectionNumerator
+#print axioms CohLean.RiemannRoch.Surface.cartier_eulerCharacteristic_eq
+#print axioms CohLean.RiemannRoch.Surface.cartierCorrectionNumerator_even
+#print axioms CohLean.RiemannRoch.Surface.cartierEulerCharacteristic_eq_of_principalEquivalent
+#print axioms CohLean.RiemannRoch.Surface.cartier_formula_eq_of_principalEquivalent
+#print axioms CohLean.RiemannRoch.Surface.EffectiveSequenceRealization
+#print axioms CohLean.RiemannRoch.Surface.EffectiveSequenceRealization.euler_additivity
+#print axioms CohLean.RiemannRoch.Surface.EffectiveSequenceRealization.effective_euler_additivity
+#print axioms CohLean.RiemannRoch.Surface.EffectiveSequenceRealization.effective_divisor_formula
+#print axioms CohLean.RiemannRoch.Surface.EffectiveSequenceRealization.quotient_eulerCharacteristic_eq_half_correction
+#print axioms CohLean.RiemannRoch.Surface.eulerPic_one
+#print axioms CohLean.RiemannRoch.Surface.eulerPic_canonical
+#print axioms CohLean.RiemannRoch.Surface.k3_eulerPic_eq
+#print axioms CohLean.RiemannRoch.Surface.k3_eulerPic_eq_two
 
 -- Layer B stage 4: degree-level surface Chern data. The construction uses determinants,
 -- Picard intersections, and Euler characteristics; it does not postulate a Chow-valued class

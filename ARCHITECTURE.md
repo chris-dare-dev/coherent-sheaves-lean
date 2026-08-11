@@ -14,8 +14,10 @@ the mathematics and is independent of the package path.
 | `AlgebraicGeometry/Variety` | Geometric varieties and certified numerical realizations |
 | `Coh` | Coherent-sheaf definitions, descent, affine theory, and abelian structure |
 | `Cohomology` | Čech, derived, simplicial, spectral-sequence, and Euler-characteristic theory |
+| `Duality` | Canonical sheaves, derived Serre-duality interfaces, and perfect pairings |
 | `Intersection` | Numerical polynomials, intersection numbers, and Chern-character reconstruction |
 | `Numerical` | Numerical interfaces, Grothendieck-group invariants, Riemann–Roch, models, and displays |
+| `RiemannRoch` | Geometric Riemann--Roch theorems proved from sheaves, duality, and intersections |
 | `Topology` | Reusable open-cover infrastructure |
 | `Development` | Compile-only API audits; not part of the stable root import |
 
@@ -27,7 +29,9 @@ top-level umbrellas, keeping navigation and dependency boundaries aligned.
 ```text
 schemes and geometric hypotheses
   -> coherent sheaves, divisors, and cohomology
+  -> canonical sheaves and explicit Serre-duality realizations
   -> K-theoretic and intersection data
+  -> geometric Riemann--Roch
   -> NumericalVariety
   -> dimension-general Riemann–Roch invariants
   -> optional low-dimensional displays

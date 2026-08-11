@@ -8,6 +8,7 @@ import CohLean.Cohomology
 import CohLean.Duality
 import CohLean.Intersection
 import CohLean.Numerical
+import CohLean.RiemannRoch
 import CohLean.Topology
 
 /-!
