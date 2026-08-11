@@ -30,6 +30,7 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms CohLean.AlgebraicGeometry.Proj.DegreeZeroLocalization.selfLinearEquiv
 #print axioms CohLean.AlgebraicGeometry.Proj.DegreeZeroLocalization.natShiftSelfLinearEquiv
 #print axioms CohLean.AlgebraicGeometry.Proj.DegreeZeroLocalization.natShiftAwayLinearEquiv
+#print axioms CohLean.AlgebraicGeometry.Proj.DegreeZeroLocalization.natShiftLinearEquivOfMem
 #print axioms CohLean.AlgebraicGeometry.Proj.isLocallyFraction
 #print axioms CohLean.AlgebraicGeometry.Proj.associatedSheaf
 #print axioms CohLean.AlgebraicGeometry.Proj.stalkEquiv
@@ -49,6 +50,8 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms CohLean.AlgebraicGeometry.Proj.twistingSheafOfNatIso
 #print axioms CohLean.AlgebraicGeometry.Proj.AffineComparisonData
 #print axioms CohLean.AlgebraicGeometry.Proj.localizedNatShiftDegreeOneIso
+#print axioms CohLean.AlgebraicGeometry.Proj.natShiftSectionLinearEquiv
+#print axioms CohLean.AlgebraicGeometry.Proj.moduleAwayToSection_natShift_degreeOne_bijective
 #print axioms CohLean.AlgebraicGeometry.Proj.affineComparisonDataSelf
 #print axioms CohLean.AlgebraicGeometry.Proj.associatedSheaf_self_isQuasicoherent
 #print axioms CohLean.AlgebraicGeometry.Proj.AffineComparisonData.quasicoherentData
@@ -62,6 +65,7 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms CohLean.AlgebraicGeometry.Proj.TwistingSectionRange
 #print axioms CohLean.AlgebraicGeometry.Proj.TwistingSectionRange.globalSections_finite
 #print axioms CohLean.AlgebraicGeometry.Proj.projectiveSpace_globalSections_finite
+#print axioms CohLean.AlgebraicGeometry.Proj.projectiveSpace_variableSection_bijective
 
 -- The geometric source object is a bundle of explicit data, not an axiom identifying schemes
 -- with their numerical realizations.

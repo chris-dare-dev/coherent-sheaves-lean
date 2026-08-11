@@ -19,7 +19,8 @@ Riemann–Roch and stability theory while keeping every hypothesis and trust bou
 - Degree-zero localization of graded modules, associated sheaves and twisting sheaves on
   projective spectra, including the canonical identification of the structure module with the
   structure sheaf, its standard-chart comparisons, and degree-one-chart trivializations of
-  nonnegative twists, with explicit higher-twist finiteness interfaces.
+  nonnegative twists through the canonical basic-open section maps, with explicit higher-twist
+  finiteness interfaces.
 - Cartier and effective divisors, associated invertible sheaves, Picard-group structure,
   determinants, and first Chern classes.
 - Čech, derived-functor, and spectral-sequence infrastructure for sheaf cohomology.

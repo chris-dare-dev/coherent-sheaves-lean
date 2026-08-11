@@ -3,7 +3,7 @@ Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 -/
 import CohLean.AlgebraicGeometry.Proj.Modules.StructureModule
-import CohLean.AlgebraicGeometry.Proj.Modules.TwistLocalization
+import CohLean.AlgebraicGeometry.Proj.Modules.TwistChart
 import CohLean.AlgebraicGeometry.Proj.Modules.TwistingSheaf
 import CohLean.Coh.Affine
 import CohLean.Coh.Descent.Locality
@@ -41,6 +41,8 @@ of homogeneous multivariate polynomials and therefore has no hidden noetherianit
 * `affineComparisonDataSelf`: the constructed comparison for the structure module;
 * `localizedNatShiftDegreeOneIso`: the explicit rank-one trivialization of `A(d)` on a
   degree-one chart;
+* `moduleAwayToSection_natShift_degreeOne_bijective`: the corresponding constructed
+  basic-open section comparison for every nonnegative twist;
 * `associatedSheaf_isQuasicoherent`: quasi-coherence from those comparisons;
 * `associatedSheaf_isCoherent_of_finitePresentation`: coherence from explicit finite
   presentation of every localized module;
@@ -331,6 +333,16 @@ abbrev polynomialGrading (ι R : Type u) [CommRing R] :
   MvPolynomial.homogeneousSubmodule ι R
 
 attribute [local instance] MvPolynomial.gradedAlgebra
+
+/-- Every standard variable chart of polynomial projective space has the constructed
+basic-open section comparison for each nonnegative twist. -/
+theorem projectiveSpace_variableSection_bijective
+    (ι R : Type u) [CommRing R] (i : ι) (d : ℕ) :
+    Function.Bijective
+      (moduleAwayToSection (polynomialGrading ι R)
+        (natShift (polynomialGrading ι R) d) (MvPolynomial.X i)) :=
+  moduleAwayToSection_natShift_degreeOne_bijective
+    (polynomialGrading ι R) (MvPolynomial.isHomogeneous_X R i) d
 
 /-- A section comparison for projective space in degree `d`.  The source is the concrete module
 of homogeneous polynomials of degree `d`; the target is `Γ(Proj R[X_i], O(d))`, restricted to the
