@@ -15,9 +15,10 @@ import Mathlib.Topology.Sheaves.Flasque
 # Cohomology from Cech exactness on a compact basis
 
 This file formalizes the non-circular basis argument of Stacks Project, Tag 01EW.  A compact
-open basis is required to contain the whole space and to be stable under nonempty finite
-intersections.  If a sheaf has exact positive Cech complexes on every finite basis cover, then
-its positive derived cohomology vanishes.
+collection is required to admit finite subordinate refinements and to be stable under nonempty
+finite intersections. If a sheaf has exact positive Cech complexes on every finite cover inside
+the collection, then its positive local cohomology vanishes on every member. The whole-space
+case recovers positive derived global-cohomology vanishing.
 
 The proof is by dimension shifting.  After embedding the sheaf into an injective sheaf, local
 surjectivity and compactness produce a finite basis cover on which a section of the quotient
@@ -39,66 +40,104 @@ set_option maxRecDepth 10000
 set_option backward.defeqAttrib.useBackward true
 set_option backward.isDefEq.respectTransparency false
 
-/-- A topological basis suited to the Cech-to-derived comparison.  Compactness makes basis
-refinements finite, and stability under nonempty finite intersections keeps every term of a
-Cech nerve inside the basis. -/
+/-- A compact collection of opens suited to the Cech-to-derived comparison.  The
+`finite_refinement` field says directly that every cover of a member admits a finite subordinate
+refinement by members.  This formulation includes both a global compact-open basis and the
+distinguished-open basis lying below one fixed affine open.  Stability under nonempty finite
+intersections keeps every term of a Cech nerve inside the collection. -/
 structure CompactOpenBasis (X : TopCat.{u}) where
   carrier : Set (Opens X)
-  isBasis : Opens.IsBasis carrier
-  top_mem : (⊤ : Opens X) ∈ carrier
   isCompact : ∀ U, U ∈ carrier → IsCompact (U : Set X)
-  pi_mem : ∀ {I : Type} [Fintype I] [Nonempty I] (U : I → Opens X),
-    (∀ i, U i ∈ carrier) → (∏ᶜ U) ∈ carrier
+  finite_refinement : ∀ {V : Opens X}, V ∈ carrier →
+    ∀ {I : Type u} (U : I → Opens X), V ≤ ⨆ i, U i →
+      ∃ (J : Type u) (_ : Fintype J) (W : J → Opens X) (a : J → I),
+        (∀ j, W j ∈ carrier) ∧ (∀ j, W j ≤ U (a j)) ∧ V = ⨆ j, W j
+  inf_mem : ∀ U V, U ∈ carrier → V ∈ carrier → U ⊓ V ∈ carrier
 
 namespace CompactOpenBasis
 
 variable {X : TopCat.{u}} (B : CompactOpenBasis X)
+
+/-- Construct a `CompactOpenBasis` from an ordinary topological basis of compact opens which is
+stable under nonempty finite intersections. -/
+noncomputable def ofIsBasis (carrier : Set (Opens X)) (isBasis : Opens.IsBasis carrier)
+    (isCompact : ∀ U, U ∈ carrier → IsCompact (U : Set X))
+    (inf_mem : ∀ U V, U ∈ carrier → V ∈ carrier → U ⊓ V ∈ carrier) :
+    CompactOpenBasis X where
+  carrier := carrier
+  isCompact := isCompact
+  finite_refinement := by
+    intro V hV I U hVU
+    let A : Set (Opens X) :=
+      { W | W ∈ carrier ∧ W ≤ V ∧ ∃ i, W ≤ U i }
+    have hcover : V ≤ sSup A := by
+      intro x hxV
+      have hxU : x ∈ ⨆ i, U i := hVU hxV
+      rw [Opens.mem_iSup] at hxU
+      obtain ⟨i, hxi⟩ := hxU
+      have hxiV : x ∈ U i ⊓ V := ⟨hxi, hxV⟩
+      obtain ⟨Us, hUsB, hEq⟩ := Opens.isBasis_iff_cover.mp isBasis (U i ⊓ V)
+      have hxs : x ∈ sSup Us := hEq ▸ hxiV
+      rw [Opens.mem_sSup] at hxs
+      obtain ⟨W, hWUs, hxW⟩ := hxs
+      have hWU : W ≤ U i ⊓ V := (le_sSup hWUs).trans hEq.symm.le
+      have hWA : W ∈ A := ⟨hUsB hWUs, hWU.trans inf_le_right, i,
+        hWU.trans inf_le_left⟩
+      exact (le_sSup hWA) hxW
+    obtain ⟨s, hs⟩ := (isCompact V hV).elim_finite_subcover
+      (fun W : A ↦ (W.1 : Set X)) (fun W ↦ W.1.2) (by
+        intro x hxV
+        have hx : x ∈ sSup A := hcover hxV
+        rw [Opens.mem_sSup] at hx
+        obtain ⟨W, hWA, hxW⟩ := hx
+        exact Set.mem_iUnion.2 ⟨⟨W, hWA⟩, hxW⟩)
+    let J := s
+    let W : J → Opens X := fun j ↦ j.1.1
+    let a : J → I := fun j ↦ Classical.choose j.1.2.2.2
+    refine ⟨J, inferInstance, W, a, fun j ↦ j.1.2.1,
+      fun j ↦ Classical.choose_spec j.1.2.2.2, ?_⟩
+    apply le_antisymm
+    · intro x hxV
+      have hx : x ∈ ⋃ j ∈ s, (j.1 : Set X) := hs hxV
+      simp only [Set.mem_iUnion] at hx
+      obtain ⟨j, hj, hxj⟩ := hx
+      rw [Opens.mem_iSup]
+      exact ⟨⟨j, hj⟩, hxj⟩
+    · rw [iSup_le_iff]
+      intro j
+      exact j.1.2.2.1
+  inf_mem := inf_mem
 
 /-- Every compact basis open has a finite cover by basis opens subordinate to a given open
 cover. -/
 lemma exists_finite_refinement {V : Opens X} (hV : V ∈ B.carrier)
     {I : Type u} (U : I → Opens X) (hVU : V ≤ ⨆ i, U i) :
     ∃ (J : Type u) (_ : Fintype J) (W : J → Opens X) (a : J → I),
-      (∀ j, W j ∈ B.carrier) ∧ (∀ j, W j ≤ U (a j)) ∧ V = ⨆ j, W j := by
-  let A : Set (Opens X) :=
-    { W | W ∈ B.carrier ∧ W ≤ V ∧ ∃ i, W ≤ U i }
-  have hcover : V ≤ sSup A := by
-    intro x hxV
-    have hxU : x ∈ ⨆ i, U i := hVU hxV
-    rw [Opens.mem_iSup] at hxU
-    obtain ⟨i, hxi⟩ := hxU
-    have hxiV : x ∈ U i ⊓ V := ⟨hxi, hxV⟩
-    obtain ⟨Us, hUsB, hEq⟩ :=
-      Opens.isBasis_iff_cover.mp B.isBasis (U i ⊓ V)
-    have hxs : x ∈ sSup Us := hEq ▸ hxiV
-    rw [Opens.mem_sSup] at hxs
-    obtain ⟨W, hWUs, hxW⟩ := hxs
-    have hWU : W ≤ U i ⊓ V := (le_sSup hWUs).trans hEq.symm.le
-    have hWA : W ∈ A := ⟨hUsB hWUs, hWU.trans inf_le_right, i,
-      hWU.trans inf_le_left⟩
-    exact (le_sSup hWA) hxW
-  obtain ⟨s, hs⟩ := (B.isCompact V hV).elim_finite_subcover
-    (fun W : A ↦ (W.1 : Set X)) (fun W ↦ W.1.2) (by
-      intro x hxV
-      have hx : x ∈ sSup A := hcover hxV
-      rw [Opens.mem_sSup] at hx
-      obtain ⟨W, hWA, hxW⟩ := hx
-      exact Set.mem_iUnion.2 ⟨⟨W, hWA⟩, hxW⟩)
-  let J := s
-  let W : J → Opens X := fun j ↦ j.1.1
-  let a : J → I := fun j ↦ Classical.choose j.1.2.2.2
-  refine ⟨J, inferInstance, W, a, fun j ↦ j.1.2.1,
-    fun j ↦ Classical.choose_spec j.1.2.2.2, ?_⟩
-  apply le_antisymm
-  · intro x hxV
-    have hx : x ∈ ⋃ j ∈ s, (j.1 : Set X) := hs hxV
-    simp only [Set.mem_iUnion] at hx
-    obtain ⟨j, hj, hxj⟩ := hx
-    rw [Opens.mem_iSup]
-    exact ⟨⟨j, hj⟩, hxj⟩
-  · rw [iSup_le_iff]
-    intro j
-    exact j.1.2.2.1
+      (∀ j, W j ∈ B.carrier) ∧ (∀ j, W j ≤ U (a j)) ∧ V = ⨆ j, W j :=
+  B.finite_refinement hV U hVU
+
+/-- A nonempty finite product of members of a compact basis is again a member. -/
+lemma fin_pi_mem {n : ℕ} (U : Fin (n + 1) → Opens X)
+    (hU : ∀ i, U i ∈ B.carrier) : (∏ᶜ U) ∈ B.carrier := by
+  classical
+  have hpi : (∏ᶜ U) = Finset.univ.inf U := by
+    apply le_antisymm
+    · exact Finset.le_inf fun i _ ↦ leOfHom (Pi.π U i)
+    · apply leOfHom
+      apply Pi.lift
+      intro i
+      exact homOfLE (Finset.inf_le (Finset.mem_univ i))
+  have hfin : ∀ (s : Finset (Fin (n + 1))), s.Nonempty → s.inf U ∈ B.carrier := by
+    intro s hs
+    induction s using Finset.induction_on with
+    | empty => exact (Finset.not_nonempty_empty hs).elim
+    | @insert a s ha ih =>
+        by_cases hs' : s.Nonempty
+        · rw [Finset.inf_insert]
+          exact B.inf_mem _ _ (hU a) (ih hs')
+        · rw [Finset.not_nonempty_iff_eq_empty.mp hs']
+          simpa using hU a
+  exact hpi.symm ▸ hfin Finset.univ Finset.univ_nonempty
 
 end CompactOpenBasis
 
@@ -689,10 +728,9 @@ private lemma cechShortComplex_shortExact
       Limits.FormalCoproduct.cochainComplexFunctor,
       Limits.FormalCoproduct.cosimplicialObjectFunctor]
     infer_instance
-  · let Q := Fin (n + 1) → I
-    letI (q : Q) : Epi (S.g.hom.app (op (∏ᶜ (U ∘ q)))) :=
+  · letI (q : Fin (n + 1) → I) : Epi (S.g.hom.app (op (∏ᶜ (U ∘ q)))) :=
       epi_app_of_isCechAcyclicOnCompactBasis B hS hF
-        (B.pi_mem (U ∘ q) (fun k ↦ hUB (q k)))
+        (B.fin_pi_mem (U ∘ q) (fun k ↦ hUB (q k)))
     dsimp [cechTermShortComplex, cechComplexFunctor,
       Limits.FormalCoproduct.cochainComplexFunctor,
       Limits.FormalCoproduct.cosimplicialObjectFunctor]
@@ -788,7 +826,8 @@ private lemma H_one_subsingleton_of_sections_epi
     simp only [Abelian.Ext.comp_zero.{u + 1}] at hbzero
     have hassoc := @Abelian.Ext.comp_assoc_of_second_deg_zero.{u + 1}
       (TopCat.Sheaf AddCommGrpCat.{u} X) _ _ hExt _ _ _ _ 0 1 1
-        b (Abelian.Ext.mk₀ ip.shortComplex.g) hS.extClass rfl
+        b (@Abelian.Ext.mk₀ (TopCat.Sheaf AddCommGrpCat.{u} X) _ _ hExt _ _
+          ip.shortComplex.g) hS.extClass rfl
     exact hq.symm.trans (hassoc.trans hbzero)
   exact ⟨fun x y ↦ (hall x).trans (hall y).symm⟩
 
@@ -807,20 +846,149 @@ private lemma H_succ_subsingleton_of_shortExact
     exact hq.symm
   exact ⟨fun x y ↦ (hall x).trans (hall y).symm⟩
 
-set_option maxHeartbeats 100000 in
-/-- Cech exactness on finite covers in a compact intersection-stable basis implies vanishing of
-positive derived global-section cohomology (Stacks Project, Tag 01EW). -/
-theorem H_subsingleton_of_isCechAcyclicOnCompactBasis
+private noncomputable abbrev derivedHPrime
+    {X : TopCat.{u}} (hExt : HasExt.{u + 1} (TopCat.Sheaf AddCommGrpCat.{u} X))
+    (F : TopCat.Sheaf AddCommGrpCat.{u} X) (V : Opens X) (n : ℕ) : Type (u + 1) :=
+  @Sheaf.H' (Opens X) _ (Opens.grothendieckTopology X) _ hExt F n V
+
+private noncomputable abbrev derivedHPrime₀Equiv
+    {X : TopCat.{u}} [hExt : HasExt.{u + 1} (TopCat.Sheaf AddCommGrpCat.{u} X)]
+    (F : TopCat.Sheaf AddCommGrpCat.{u} X) (V : Opens X) :
+    derivedHPrime hExt F V 0 ≃+ F.obj.obj (op V) := by
+  exact (@Abelian.Ext.addEquiv₀ _ _ _ hExt
+    (freeAbelianYonedaSheaf (Opens.grothendieckTopology X) V) F).trans
+      (freeAbelianYonedaSheafHomAddEquiv V F)
+
+private noncomputable abbrev derivedHPrimeMap
+    {X : TopCat.{u}} [hExt : HasExt.{u + 1} (TopCat.Sheaf AddCommGrpCat.{u} X)]
+    {F G : TopCat.Sheaf AddCommGrpCat.{u} X} (f : F ⟶ G) (V : Opens X) (n : ℕ) :
+    derivedHPrime hExt F V n →+ derivedHPrime hExt G V n := by
+  exact @Abelian.Ext.postcomp _ _ _ hExt F G 0
+    (@Abelian.Ext.mk₀ _ _ _ hExt F G f)
+    (freeAbelianYonedaSheaf (Opens.grothendieckTopology X) V) n n (add_zero n)
+
+private lemma derivedHPrime_addEquiv₀_map
+    {X : TopCat.{u}} [hExt : HasExt.{u + 1} (TopCat.Sheaf AddCommGrpCat.{u} X)]
+    {F G : TopCat.Sheaf AddCommGrpCat.{u} X} (f : F ⟶ G) (V : Opens X)
+    (x : derivedHPrime hExt F V 0) :
+    (@Abelian.Ext.addEquiv₀ (TopCat.Sheaf AddCommGrpCat.{u} X) _ _ hExt
+      (freeAbelianYonedaSheaf (Opens.grothendieckTopology X) V) G)
+        (derivedHPrimeMap f V 0 x) =
+      (@Abelian.Ext.addEquiv₀ (TopCat.Sheaf AddCommGrpCat.{u} X) _ _ hExt
+        (freeAbelianYonedaSheaf (Opens.grothendieckTopology X) V) F) x ≫ f := by
+  apply (@Abelian.Ext.mk₀_bijective _ _ _ hExt
+    (freeAbelianYonedaSheaf (Opens.grothendieckTopology X) V :
+      TopCat.Sheaf AddCommGrpCat.{u} X) G).injective
+  rw [@Abelian.Ext.mk₀_addEquiv₀_apply _ _ _ hExt
+    (freeAbelianYonedaSheaf (Opens.grothendieckTopology X) V :
+      TopCat.Sheaf AddCommGrpCat.{u} X) G
+    (derivedHPrimeMap f V 0 x)]
+  rw [← @Abelian.Ext.mk₀_comp_mk₀ _ _ _ hExt
+    (freeAbelianYonedaSheaf (Opens.grothendieckTopology X) V :
+      TopCat.Sheaf AddCommGrpCat.{u} X) F G
+    (Abelian.Ext.addEquiv₀ x) f]
+  rw [@Abelian.Ext.mk₀_addEquiv₀_apply _ _ _ hExt
+    (freeAbelianYonedaSheaf (Opens.grothendieckTopology X) V :
+      TopCat.Sheaf AddCommGrpCat.{u} X) F x]
+  rfl
+
+private lemma derivedHPrime₀Equiv_naturality
+    {X : TopCat.{u}} [hExt : HasExt.{u + 1} (TopCat.Sheaf AddCommGrpCat.{u} X)]
+    {F G : TopCat.Sheaf AddCommGrpCat.{u} X} (f : F ⟶ G) (V : Opens X)
+    (x : derivedHPrime hExt F V 0) :
+    f.hom.app (op V) (derivedHPrime₀Equiv F V x) =
+      derivedHPrime₀Equiv G V (derivedHPrimeMap f V 0 x) := by
+  change f.hom.app (op V)
+      (freeAbelianYonedaSheafHomAddEquiv V F
+        ((@Abelian.Ext.addEquiv₀ (TopCat.Sheaf AddCommGrpCat.{u} X) _ _ hExt
+          (freeAbelianYonedaSheaf (Opens.grothendieckTopology X) V) F) x)) =
+    freeAbelianYonedaSheafHomAddEquiv V G
+      ((@Abelian.Ext.addEquiv₀ (TopCat.Sheaf AddCommGrpCat.{u} X) _ _ hExt
+        (freeAbelianYonedaSheaf (Opens.grothendieckTopology X) V) G)
+          (derivedHPrimeMap f V 0 x))
+  calc
+    _ = freeAbelianYonedaSheafHomAddEquiv V G
+        ((@Abelian.Ext.addEquiv₀ (TopCat.Sheaf AddCommGrpCat.{u} X) _ _ hExt
+          (freeAbelianYonedaSheaf (Opens.grothendieckTopology X) V) F) x ≫ f) :=
+      (@freeAbelianYonedaSheafHomAddEquiv_comp (Opens X) _
+        (Opens.grothendieckTopology X) _ V F G
+        ((@Abelian.Ext.addEquiv₀ (TopCat.Sheaf AddCommGrpCat.{u} X) _ _ hExt
+          (freeAbelianYonedaSheaf (Opens.grothendieckTopology X) V) F) x) f).symm
+    _ = _ := congrArg (freeAbelianYonedaSheafHomAddEquiv V G)
+      (derivedHPrime_addEquiv₀_map f V x).symm
+
+private lemma derivedHPrimeMap_apply
+    {X : TopCat.{u}} [hExt : HasExt.{u + 1} (TopCat.Sheaf AddCommGrpCat.{u} X)]
+    {F G : TopCat.Sheaf AddCommGrpCat.{u} X} (f : F ⟶ G) (V : Opens X) (n : ℕ)
+    (x : derivedHPrime hExt F V n) :
+    derivedHPrimeMap f V n x =
+      @Abelian.Ext.comp.{u + 1} (TopCat.Sheaf AddCommGrpCat.{u} X) _ _ hExt
+        _ _ _ n 0 x
+          (@Abelian.Ext.mk₀ (TopCat.Sheaf AddCommGrpCat.{u} X) _ _ hExt _ _ f)
+          n (add_zero n) := rfl
+
+set_option maxHeartbeats 200000 in
+private lemma HPrime_one_subsingleton_of_sections_epi
+    {X : TopCat.{u}} {F : TopCat.Sheaf AddCommGrpCat.{u} X}
+    (ip : InjectivePresentation F)
+    [hExt : HasExt.{u + 1} (TopCat.Sheaf AddCommGrpCat.{u} X)]
+    (V : Opens X) (hepi : Epi (ip.shortComplex.g.hom.app (op V))) :
+    Subsingleton (derivedHPrime hExt F V 1) := by
+  have hS : ip.shortComplex.ShortExact := ip.shortExact_shortComplex
+  have hall (x : derivedHPrime hExt F V 1) : x = 0 := by
+    obtain ⟨q, hq⟩ := Abelian.Ext.covariant_sequence_exact₁ _ hS x
+      (Abelian.Ext.eq_zero_of_injective _) rfl
+    obtain ⟨a, ha⟩ := (AddCommGrpCat.epi_iff_surjective _).mp hepi
+      (derivedHPrime₀Equiv ip.shortComplex.X₃ V q)
+    let b : derivedHPrime hExt ip.shortComplex.X₂ V 0 :=
+      (derivedHPrime₀Equiv ip.shortComplex.X₂ V).symm a
+    have hb : derivedHPrimeMap ip.shortComplex.g V 0 b = q := by
+      apply (derivedHPrime₀Equiv ip.shortComplex.X₃ V).injective
+      rw [← derivedHPrime₀Equiv_naturality]
+      simpa only [b, AddEquiv.apply_symm_apply] using ha
+    rw [← hb] at hq
+    rw [derivedHPrimeMap_apply] at hq
+    have hcomp := @ShortComplex.ShortExact.comp_extClass.{u + 1}
+      _ _ _ hExt _ hS
+    have hbzero := congrArg (fun e ↦
+      @Abelian.Ext.comp.{u + 1} (TopCat.Sheaf AddCommGrpCat.{u} X) _ _ hExt
+        _ _ _ 0 1 b e 1 (zero_add 1)) hcomp
+    simp only [Abelian.Ext.comp_zero.{u + 1}] at hbzero
+    have hassoc := @Abelian.Ext.comp_assoc_of_second_deg_zero.{u + 1}
+      (TopCat.Sheaf AddCommGrpCat.{u} X) _ _ hExt _ _ _ _ 0 1 1
+        b (@Abelian.Ext.mk₀ (TopCat.Sheaf AddCommGrpCat.{u} X) _ _ hExt _ _
+          ip.shortComplex.g) hS.extClass rfl
+    exact hq.symm.trans (hassoc.trans hbzero)
+  exact ⟨fun x y ↦ (hall x).trans (hall y).symm⟩
+
+set_option maxHeartbeats 400000 in
+private lemma HPrime_succ_subsingleton_of_shortExact
+    {X : TopCat.{u}}
+    {S : ShortComplex (TopCat.Sheaf AddCommGrpCat.{u} X)} (hS : S.ShortExact)
+    [Injective S.X₂] [hExt : HasExt.{u + 1} (TopCat.Sheaf AddCommGrpCat.{u} X)]
+    (V : Opens X) (n : ℕ) [hsub : Subsingleton (derivedHPrime hExt S.X₃ V n)] :
+    Subsingleton (derivedHPrime hExt S.X₁ V (n + 1)) := by
+  have hall (x : derivedHPrime hExt S.X₁ V (n + 1)) : x = 0 := by
+    obtain ⟨q, hq⟩ := Abelian.Ext.covariant_sequence_exact₁ _ hS x
+      (Abelian.Ext.eq_zero_of_injective _) rfl
+    have hq₀ : q = 0 := hsub.elim _ _
+    rw [hq₀, Abelian.Ext.zero_comp] at hq
+    exact hq.symm
+  exact ⟨fun x y ↦ (hall x).trans (hall y).symm⟩
+
+set_option maxHeartbeats 400000 in
+/-- Cech exactness on finite covers in a compact intersection-stable collection implies
+vanishing of positive local cohomology on every member of the collection. -/
+theorem HPrime_subsingleton_of_isCechAcyclicOnCompactBasis
     {X : TopCat.{u}} (B : CompactOpenBasis X)
     (F : TopCat.Sheaf AddCommGrpCat.{u} X)
     (hF : IsCechAcyclicOnCompactBasis B F)
     [hExt : HasExt.{u + 1} (TopCat.Sheaf AddCommGrpCat.{u} X)]
-    (n : ℕ) (hn : 0 < n) :
-    Subsingleton (@Sheaf.H (Opens X) _ (Opens.grothendieckTopology X) F
-      inferInstance hExt n) := by
+    (V : Opens X) (hV : V ∈ B.carrier) (n : ℕ) (hn : 0 < n) :
+    Subsingleton (derivedHPrime hExt F V n) := by
   obtain ⟨m, rfl⟩ := Nat.exists_eq_add_one_of_ne_zero (by omega : n ≠ 0)
   let P : ℕ → Prop := fun k ↦ ∀ (G : TopCat.Sheaf AddCommGrpCat.{u} X),
-    IsCechAcyclicOnCompactBasis B G → Subsingleton (derivedH hExt G (k + 1))
+    IsCechAcyclicOnCompactBasis B G → Subsingleton (derivedHPrime hExt G V (k + 1))
   have hP : ∀ k, P k := by
     intro k
     induction k with
@@ -829,8 +997,8 @@ theorem H_subsingleton_of_isCechAcyclicOnCompactBasis
       let ip : InjectivePresentation F :=
         Classical.choice (EnoughInjectives.presentation F)
       have hS : ip.shortComplex.ShortExact := ip.shortExact_shortComplex
-      exact H_one_subsingleton_of_sections_epi ip
-        (epi_app_of_isCechAcyclicOnCompactBasis B hS hF B.top_mem)
+      exact HPrime_one_subsingleton_of_sections_epi ip V
+        (epi_app_of_isCechAcyclicOnCompactBasis B hS hF hV)
     | succ k ih =>
       intro F hF
       let ip : InjectivePresentation F :=
@@ -839,8 +1007,24 @@ theorem H_subsingleton_of_isCechAcyclicOnCompactBasis
       have hS : S.ShortExact := ip.shortExact_shortComplex
       have hQ : IsCechAcyclicOnCompactBasis B S.X₃ :=
         isCechAcyclicOnCompactBasis_quotient B hS hF
-      haveI : Subsingleton (derivedH hExt S.X₃ (k + 1)) := ih S.X₃ hQ
-      exact H_succ_subsingleton_of_shortExact hS (k + 1)
+      haveI : Subsingleton (derivedHPrime hExt S.X₃ V (k + 1)) := ih S.X₃ hQ
+      exact HPrime_succ_subsingleton_of_shortExact hS V (k + 1)
   exact hP m F hF
+
+set_option maxHeartbeats 100000 in
+/-- Cech exactness on finite covers in a compact intersection-stable basis implies vanishing of
+positive derived global-section cohomology (Stacks Project, Tag 01EW). -/
+theorem H_subsingleton_of_isCechAcyclicOnCompactBasis
+    {X : TopCat.{u}} (B : CompactOpenBasis X)
+    (F : TopCat.Sheaf AddCommGrpCat.{u} X)
+    (hF : IsCechAcyclicOnCompactBasis B F)
+    [hExt : HasExt.{u + 1} (TopCat.Sheaf AddCommGrpCat.{u} X)]
+    (hTop : (⊤ : Opens X) ∈ B.carrier)
+    (n : ℕ) (hn : 0 < n) :
+    Subsingleton (@Sheaf.H (Opens X) _ (Opens.grothendieckTopology X) F
+      inferInstance hExt n) := by
+  exact (@subsingleton_HPrime_iff_H (Opens X) _ (Opens.grothendieckTopology X)
+    _ hExt ⊤ Limits.isTerminalTop F n).mp
+      (HPrime_subsingleton_of_isCechAcyclicOnCompactBasis B F hF ⊤ hTop n hn)
 
 end CategoryTheory.Sheaf

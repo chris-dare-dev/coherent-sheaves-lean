@@ -77,7 +77,8 @@ theorem affineTildeCechDerivedComparisonAt_of_pos
     @CategoryTheory.Sheaf.H_subsingleton_of_isCechAcyclicOnCompactBasis
       (Spec R)
       (affineBasicOpenBasis R) (underlyingTildeSheaf M)
-      (underlyingTilde_isCechAcyclicOnCompactBasis M) hExt k hk
+      (underlyingTilde_isCechAcyclicOnCompactBasis M) hExt
+      (top_mem_affineBasicOpenBasis R) k hk
   letI : Inhabited
       ((affineTildeCechComplex f M).homology k : ModuleCat.{u} R) := ⟨0⟩
   letI : Inhabited ((underlyingTildeSheaf M).H k) := ⟨0⟩
@@ -164,7 +165,8 @@ theorem tilde_H_subsingleton
   @CategoryTheory.Sheaf.H_subsingleton_of_isCechAcyclicOnCompactBasis
     (Spec R)
     (affineBasicOpenBasis R) (underlyingTildeSheaf M)
-    (underlyingTilde_isCechAcyclicOnCompactBasis M) hExt k hk
+    (underlyingTilde_isCechAcyclicOnCompactBasis M) hExt
+    (top_mem_affineBasicOpenBasis R) k hk
 
 /-- Affine derived vanishing transports across an isomorphism of underlying abelian sheaves. -/
 theorem H_subsingleton_of_iso_tilde

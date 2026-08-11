@@ -536,11 +536,13 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 -- Compact refinements and Cech correction make the acyclicity condition stable under
 -- injective quotients, so dimension shifting kills positive derived cohomology.
 #print axioms CategoryTheory.Sheaf.CompactOpenBasis
+#print axioms CategoryTheory.Sheaf.CompactOpenBasis.ofIsBasis
 #print axioms CategoryTheory.Sheaf.CompactOpenBasis.exists_finite_refinement
 #print axioms CategoryTheory.Sheaf.IsCechAcyclicOnCompactBasis
 #print axioms CategoryTheory.Sheaf.isCechAcyclicOnCompactBasis_of_injective
 #print axioms CategoryTheory.Sheaf.epi_app_of_isCechAcyclicOnCompactBasis
 #print axioms CategoryTheory.Sheaf.isCechAcyclicOnCompactBasis_quotient
+#print axioms CategoryTheory.Sheaf.HPrime_subsingleton_of_isCechAcyclicOnCompactBasis
 #print axioms CategoryTheory.Sheaf.H_subsingleton_of_isCechAcyclicOnCompactBasis
 
 -- Layer B stage 3: positive-degree exactness of the explicit Cech complex for a module
@@ -561,7 +563,28 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms CategoryTheory.cechComplexForget₂AddCommGrpIso
 #print axioms CategoryTheory.cechComplex_exactAt_forget₂AddCommGrp_of_exactAt
 #print axioms AlgebraicGeometry.Cohomology.affineBasicOpenBasis
+#print axioms AlgebraicGeometry.Cohomology.top_mem_affineBasicOpenBasis
 #print axioms AlgebraicGeometry.Cohomology.underlyingTilde_isCechAcyclicOnCompactBasis
+
+-- Layer B stage 3: finite-cover cohomological boundedness. Local compact-basis dimension
+-- shifting proves ambient `H'`-vanishing on affine opens; affine diagonal makes every finite
+-- intersection affine; Mayer--Vietoris then gives a numerical bound for actual `Sheaf.H`.
+#print axioms CategoryTheory.Sheaf.opensUnion
+#print axioms CategoryTheory.Sheaf.IntersectionAcyclic
+#print axioms CategoryTheory.Sheaf.HPrime_subsingleton_opensUnion_of_intersectionAcyclic
+#print axioms AlgebraicGeometry.Cohomology.affineBasicOpenBasisAt
+#print axioms AlgebraicGeometry.Cohomology.mem_affineBasicOpenBasisAt
+#print axioms AlgebraicGeometry.Cohomology.modulesSpec_isCechAcyclicOnCompactBasis
+#print axioms AlgebraicGeometry.Cohomology.modules_isCechAcyclicOn_affineBasicOpenBasisAt
+#print axioms AlgebraicGeometry.Cohomology.modules_HPrime_subsingleton_of_isAffineOpen
+#print axioms AlgebraicGeometry.Cohomology.modules_intersectionAcyclic_of_forall_isAffineOpen
+#print axioms AlgebraicGeometry.Cohomology.finiteAffineCoverOpens
+#print axioms AlgebraicGeometry.Cohomology.opensUnion_finiteAffineCoverOpens
+#print axioms AlgebraicGeometry.Cohomology.isAffineOpen_of_mem_finiteAffineCoverOpens
+#print axioms AlgebraicGeometry.Cohomology.cohomologicalBound
+#print axioms AlgebraicGeometry.Cohomology.modules_H_subsingleton_of_cohomologicalBound
+#print axioms AlgebraicGeometry.Cohomology.coherent_H_subsingleton_of_cohomologicalBound
+#print axioms AlgebraicGeometry.Cohomology.FiniteDimensionalCohomology.toFiniteCohomology
 
 -- Layer B stage 3: the first Cech-to-derived comparison layer. The terminal-object
 -- natural isomorphism closes the explicit TODO in Mathlib's sheaf-cohomology API; the
