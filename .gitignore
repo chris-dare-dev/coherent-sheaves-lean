@@ -17,3 +17,7 @@
 # module docstring, or -- if it is a dead end -- written up as prose in the file it came
 # from, the way PresentationIsFinite.lean records what its retry ruled out.
 /scratch/
+
+# Planning and session handoffs live in the issue tracker or external notes.
+HANDOFF.md
+ROADMAP.md

@@ -1,245 +1,53 @@
----
-project: coherent-sheaves-lean
-type: contributing
-status: active
-authorship: agent-generated
-tags:
-- project/coherent-sheaves-lean
-- type/contributing
-- authorship/agent-generated
----
-
 # Contributing to CohLean
 
-This file is what a fresh session — human or agent — needs in order to work this repo
-correctly. You should not have to read the commit history to get a change right.
-
-Read [README.md](README.md) for what the library is and [ROADMAP.md](ROADMAP.md) for what
-is left to do. Work is tracked as
-[milestones and issues](https://github.com/chris-dare-dev/coherent-sheaves-lean/issues);
-issues labelled `ready` have no unmet dependency and can be started immediately.
+Read [README.md](README.md) for the library overview and [ARCHITECTURE.md](ARCHITECTURE.md)
+for module ownership. GitHub milestones and issues are the source of truth for planned work.
 
 ## Tracker discipline
 
-The issue tracker is the durable handoff between sessions. A recommendation or deferred
-follow-up is not considered recorded until it has an issue.
+- Every implementation issue belongs to a milestone and names its intended leaf path.
+- Dependencies and acceptance criteria belong in the issue body.
+- `ready` and `blocked` are mutually exclusive; `blocked` names the exact prerequisite.
+- When a prerequisite merges, close completed issues and update newly unblocked work.
+- If a planned flat filename becomes a subsystem, update the issue before implementation.
 
-* Every implementation issue belongs to a milestone, names its exact file, and has explicit
-  goal, deliverables, dependencies, and acceptance criteria.
-* `ready` and `blocked` are mutually exclusive. A blocked issue names the exact prerequisite
-  issue or pull request in a `## Blocked by` section. `in-progress` means an implementation or
-  pull request already exists and must link that work from the issue body.
-* Cross-cutting lemmas and API bridges use `prerequisite`; Mathlib-shaped work uses
-  `upstream-candidate`; design/API reconnaissance uses `research`; version work uses
-  `toolchain`.
-* Each milestone description records its ready entry points, dependency arrows, and exit
-  condition. Update it when adding, closing, blocking, or unblocking a prerequisite.
-* When a pull request merges, close the issues it completes and immediately replace `blocked`
-  with `ready` on newly unblocked work. Do not leave a completed prerequisite advertised as a
-  new task.
-* Keep the stage summary and current entry points in [ROADMAP.md](ROADMAP.md) aligned with the
-  live tracker. The issue bodies and milestone descriptions remain the detailed source of truth.
+## Module placement
 
-## Namespaces
+Declarations use their natural mathematical namespaces, while files use the `CohLean.*`
+package hierarchy. Put new code below the narrowest stable owner and import it from the nearest
+same-named umbrella module. Keep `CohLean.lean` limited to top-level subsystem imports.
 
-Declarations go in **Mathlib-style namespaces** — `AlgebraicGeometry`,
-`AlgebraicGeometry.Numerical`, and so on. Never `CohLean.*`.
+One issue should normally own one leaf path. Avoid unrelated refactors in a feature change;
+open a separate issue when another subsystem needs work.
 
-`CohLean` is the *package* name and the root of the module path. It is not a namespace, and
-nothing should ever open one. The reason is upstreaming: Layer B is written to be
-contributed to Mathlib a stage at a time, and a stage that already sits in
-`AlgebraicGeometry` goes up as a file move. A stage in `CohLean.Coh` goes up as a rename
-touching every reference, which is the kind of diff that does not get reviewed.
+## Proof integrity
 
-Follow Mathlib naming for declarations too (`snake_case` for theorems named after their
-statement, `UpperCamelCase` for types and classes, `lowerCamelCase` for definitions), and
-give every file a module docstring with a `#` header, a summary, and references.
+There is no `sorry` in this library. Unfinished work is documented explicitly and tracked in
+an issue rather than represented by a placeholder theorem or new axiom.
 
-## No `sorry`
+`NumericalVariety` is an intentional axiomatic interface. Its fields may be consumed, but must
+not be described as geometrically proved until the corresponding construction exists. A new
+axiom requires an issue identifying the geometric work that will discharge it and must remain
+consistent with every model under `CohLean/Numerical/Examples/`.
 
-There is no `sorry` in this library and there should never be one.
+## Validation
 
-Work that is not done is written up as **not done in the module docstring** of the file it
-belongs to, in prose, saying what is missing and what it is waiting on. It is not stubbed
-with a `sorry`, a `native_decide`, or an axiom.
-
-This is not fastidiousness. Layer A is an *axiomatic interface* whose entire claim is that
-its trust boundary is exactly the fields of `NumericalVariety` and nothing else. One
-`sorry` anywhere downstream of that and the claim is false, silently, in a way that
-`lake build` will not tell you about — `sorry` is a warning, not an error, so a green build
-proves nothing on its own. Hence the audit.
-
-## The audit
-
-`scripts/Audit.lean` is the gate. **Every new public theorem goes in it**, in the section
-for its layer, in the order the file introduces it.
+Run:
 
 ```bash
-lake build && lake env lean scripts/Audit.lean
+lake build
+lake env lean scripts/Audit.lean
 ```
 
-Every line must print either `does not depend on any axioms` or exactly
-`[propext, Classical.choice, Quot.sound]`. Anything else is a failure to investigate before
-you push — in particular `sorryAx`, which means a listed declaration is backed by a hole.
+Add new public theorems to the appropriate section of `scripts/Audit.lean`. The audit must not
+report `sorryAx`; CI also re-elaborates tracked Lean files to catch declarations omitted from
+the audit.
 
-CI enforces two separate things, and you need both:
+The toolchain is pinned. When updating it, update the root and documentation package manifests
+and toolchain files together, then verify every shared dependency resolves to one revision.
 
-1. **Axiom audit.** Runs `scripts/Audit.lean` and fails on `sorryAx`. This catches a hole
-   under a declaration you *did* list.
-2. **No declaration uses sorry.** Re-elaborates every tracked `.lean` file outside
-   `scripts/` and fails on the `declaration uses 'sorry'` warning. This catches a hole in a
-   declaration you did *not* list, including one reached through a macro. It re-elaborates
-   rather than grepping the sources, so a docstring that discusses the word "sorry" — there
-   is one in `CohLean/Coh/Defs.lean` — does not trip it.
+## Git hygiene
 
-Check 2 exists because check 1 only sees what you remembered to add. Adding your theorem to
-the audit is still the rule: check 2 tells you a hole exists, check 1 is what pins the
-axiom set of the results anyone downstream depends on.
-
-## The trust boundary
-
-`NumericalVariety`'s fields are **axioms**, not theorems. That includes `rank`, `chComp`,
-`toddComp`, `chi` and their laws, and above all `hirzebruch_riemannRoch`:
-
-```lean
-hirzebruch_riemannRoch : ∀ E : N,
-  (chi E : ℚ) = degree ((∑ i ∈ Finset.range (n + 1), chComp E i) *
-    (∑ j ∈ Finset.range (n + 1), toddComp j))
-```
-
-They are visible in the type of the class, which is the point — the assumption is stated,
-not hidden in a hole. Layer B (`CohLean.Coh`) exists to discharge them from Mathlib's
-scheme theory; until it does, they are assumed.
-
-Two rules follow, and neither is negotiable:
-
-* **Nothing downstream of `CohLean/Numerical/Defs.lean` may treat these fields as proved.**
-  Consuming them is fine and is what the interface is for. Asserting anywhere — in a
-  docstring, a README, a commit message, a PR description — that Riemann–Roch is *proved*
-  in this repo is not.
-* **No new axiom may be added to Layer A** without a line in [ROADMAP.md](ROADMAP.md)
-  naming the Layer B stage that will discharge it. An axiom with no discharge plan is a
-  permanent hole wearing a different hat.
-
-The counterweight to an axiomatic interface is models. `CohLean/Numerical/Examples/` holds
-instances that satisfy the axioms — `Point.lean` in dimension zero, `K3Model.lean` for a K3
-surface of degree `H² = 2d` — so nothing in Layer A is vacuously true. If you add an axiom,
-check it still holds in every model there, and audit any new instance you build.
-
-## Toolchain
-
-Pinned to **`leanprover/lean4:v4.32.1`**. Issue #21 supplied the first real reason for the
-bump: v4.32.0 is the first stable release containing both
-`Mathlib/AlgebraicGeometry/AlgebraicCycle/Basic.lean` and `OrderOfVanishing.lean`; v4.32.1 is
-the selected patch release.
-
-The pin is an exact downstream compatibility constraint. `bridgeland-stab-lean` currently
-follows a BridgelandStability commit whose complete dependency graph is still on v4.29.0, so
-the anchor and consumer must migrate together before requiring this CohLean revision. The
-older handoff's `bstab` repository was not available locally or through the authenticated
-GitHub account during #21; if it is restored, it must use v4.32.1 too.
-
-For any future bump, these things move together:
-
-1. `lean-toolchain`
-2. the `mathlib` `rev` in `lakefile.toml` and the resulting `lake-manifest.json`
-3. `docbuild/lean-toolchain`, and the `doc-gen4` `rev` in `docbuild/lakefile.toml` —
-   doc-gen4 tags one release per toolchain, and a mismatch is a hard build failure
-4. `docbuild/lake-manifest.json`, via `MATHLIB_NO_CACHE_ON_UPDATE=1 lake update doc-gen4`
-   run from `docbuild/`
-5. every downstream package and any transitive package that contributes Mathlib to its graph
-
-Step 4 has a trap. `lake update doc-gen4` also re-pins doc-gen4's transitive dependencies,
-and `plausible` is shared with Mathlib. If the two manifests disagree on it, every
-alternation between `lake build` and a docs build re-checks-out that package, because
-`docbuild` shares the parent's `.lake/packages`. After updating, make every package that
-appears in both manifests agree with the top-level one.
-
-## One file per issue
-
-Issues in this repo name the exact file they create. That is what lets several `ready`
-issues run in parallel sessions without a merge conflict, and it only works if everyone
-keeps to it.
-
-* Create the file your issue names. Do not opportunistically refactor a file another issue
-  owns, even if the fix is obvious — open an issue for it instead.
-* **`lakefile.toml` is the one genuinely shared file.** Coordinate before touching it. This
-  is also why `doc-gen4` lives in the nested `docbuild/` package rather than in a
-  `[[require]]` block at the top level: it keeps the docs work off the shared file, and it
-  keeps every downstream package that requires `CohLean` from having to fetch a
-  documentation generator it will never run.
-* Add your new module to the `import` list in `CohLean.lean` and your new theorems to
-  `scripts/Audit.lean`. These two files are append-only in practice, so concurrent
-  additions merge cleanly; adding at the end of the relevant section keeps it that way.
-
-### Stage by path, never `-a` or `-A`
-
-Parallel sessions usually share one clone, so the working tree is not yours alone. `git
-add -A`, `git add .` and `git commit -a` stage whatever another session happens to have
-half-written, and it lands under your commit message.
-
-```bash
-git add CohLean/Numerical/YourFile.lean CohLean.lean scripts/Audit.lean
-git commit -m "..."
-```
-
-Run `git status` first and expect to recognise every path you stage. Anything you do not
-recognise belongs to someone else — leave it. This has already happened once: `5317c4b`
-carries `CONTRIBUTING.md` and the whole of `docbuild/` under a message about the
-affine-local criterion.
-
-The same goes for pushing. `git push` sends every commit on the branch, including another
-session's, so a push is a decision about their work as much as yours — check `git log
-origin/main..HEAD` before you make it.
-
-## Before you push
-
-1. `lake build` — clean.
-2. `lake env lean scripts/Audit.lean` — no `sorryAx`, no unexpected axioms.
-3. Your new theorems are in `scripts/Audit.lean`; your new module is imported from
-   `CohLean.lean`.
-4. Your file has a module docstring with a header, a design note, and references, and says
-   what it does *not* do.
-5. Commit message closes the issue it implements (`closes #N`).
-
-## Docs
-
-API documentation is generated by `doc-gen4` from the nested `docbuild/` package and
-published to <https://chris-dare-dev.github.io/coherent-sheaves-lean/>.
-
-The build takes around forty minutes — doc-gen4 documents everything reachable from
-`CohLean`, which is most of the Mathlib you import — so it runs **nightly**, not per push,
-and skips the run entirely on a day with no commits. The docs are therefore up to a day
-behind `main`. If you need them sooner, trigger the `Docs` workflow by hand:
-
-```bash
-gh workflow run docs.yml
-```
-
-To build them locally:
-
-```bash
-lake build && cd docbuild && lake build CohLean:docs
-```
-
-The result is `docbuild/.lake/build/doc/index.html`. Serve it over HTTP rather than opening
-the file directly — the same-origin policy breaks the search and navigation otherwise:
-
-```bash
-python3 -m http.server -d docbuild/.lake/build/doc
-```
-
-`docbuild` shares the parent's `.lake/packages`, so it reuses the Mathlib build you already
-have and does not re-download anything.
-
-**Windows.** Two of doc-gen4's dependencies (`leansqlite`, `UnicodeBasic`) compile C, and
-their lakefiles invoke the compiler under the literal name `cc`; neither `CC` nor `LEAN_CC`
-overrides that. Without a `cc` on `PATH` the build stops at
-`failed to execute 'cc': no such file or directory`, having got as far as building doc-gen4
-itself. Install a toolchain that provides `cc` (MSYS2 / mingw-w64), or build the docs under
-WSL. Copying the Lean toolchain's bundled `clang.exe` to `cc.exe` elsewhere on `PATH` does
-*not* work — clang locates its own headers relative to its executable, so it then fails on
-`stdbool.h`.
-
-CI is unaffected: `cc` is `gcc` on the runner, so `main` is the reliable place to see the
-docs build.
+Inspect `git status` before staging and include only files belonging to the change. Planning
+and session-continuity documents named `ROADMAP.md` or `HANDOFF.md` are intentionally ignored;
+durable plans belong in milestones/issues and transient handoffs belong outside the repository.

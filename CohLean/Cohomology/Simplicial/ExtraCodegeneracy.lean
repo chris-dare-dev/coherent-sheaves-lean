@@ -61,7 +61,7 @@ was expected to be needed and **is not**. The augmentation is handled on the sim
 by `homotopyEquiv`, and the coface complex only ever appears unaugmented, so adding one would
 be dead weight. Recorded because the issue asked for it.
 
-`CohLean/Cohomology/AffineCech.lean` now supplies the remaining affine argument: it identifies
+`CohLean/Cohomology/Cech/Affine.lean` now supplies the remaining affine argument: it identifies
 the restriction maps degreewise as localizations and descends exactness from a finite
 distinguished-open cover whose defining elements span the unit ideal.
 

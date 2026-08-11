@@ -1,196 +1,109 @@
 # CohLean
 
-Coherent sheaves, Chern classes and Riemann–Roch for **smooth projective varieties over a
-field**, in Lean 4 / Mathlib.
+CohLean is a Lean 4 library for coherent sheaves, their cohomology, and numerical invariants
+on algebraic varieties. The library is dimension-general: surfaces, threefolds, and fourfolds
+are specializations of shared definitions rather than separate foundations.
 
-Dimension-general by construction. The core API is stated for a variety of dimension `n`;
-surface, threefold, and fourfold formulas are optional displays of general identities rather
-than separate foundational notions.
+The project aims to connect scheme-theoretic constructions to the numerical data used in
+Riemann–Roch and stability theory while keeping every hypothesis and trust boundary explicit.
 
-## Why this repo exists
+## What is formalized
 
-As of August 2026 there is **no** formalisation of coherent sheaves, Chern classes, or
-scheme-theoretic Riemann–Roch in any proof assistant. The survey behind that claim:
+- A dimension-general numerical intersection ring and numerical variety interface.
+- Universal Chern-character and Todd-class formulas through codimension four.
+- Numerical Riemann–Roch, discriminants, duality formulas, and Euler pairings.
+- Concrete numerical models in dimension zero and for several classes of surfaces.
+- Coherent sheaves on locally noetherian schemes, including locality and abelian-category
+  structure.
+- Affine comparison and finiteness results for sheaves of modules.
+- Degree-zero localization of graded modules, associated sheaves and twisting sheaves on
+  projective spectra, with explicit finiteness interfaces.
+- Cartier and effective divisors, associated invertible sheaves, Picard-group structure,
+  determinants, and first Chern classes.
+- Čech, derived-functor, and spectral-sequence infrastructure for sheaf cohomology.
+- Euler characteristics and their additivity under explicit finiteness data.
+- Numerical polynomials, Snapper-style certificates, surface intersection numbers, and
+  Chern-character reconstruction.
 
-| Project | Covers | Relevance |
-|---|---|---|
-| [dmavani25/chip-firing-with-lean](https://github.com/dmavani25/chip-firing-with-lean) | Riemann–Roch for **graphs** (Baker–Norine), ~5.4k LOC | Combinatorial, not scheme theory |
-| [a-dangelo/Lean-AG](https://github.com/a-dangelo/Lean-AG) | Görtz–Wedhorn ch. 5 dimension theory, ~800 LOC | Its README lists coherent sheaves, Chern classes, divisors, cohomology and Riemann–Roch as *long-term*, i.e. not done |
-| [ProjConstruction/Proj](https://github.com/ProjConstruction/Proj) | Multi-graded Brenner–Schröer Proj, dilatations | Proj infrastructure only |
-| [jjaassoonn/DimensionTheory](https://github.com/jjaassoonn/DimensionTheory) | Hilbert polynomials, dimension theory | **Design precedent** — its univariate integer-valued theory was audited for B4; CohLean reuses Mathlib's current `fwdDiff` and owns the missing multivariable layer |
-| [joelriou/lean-derived-categories](https://github.com/joelriou/lean-derived-categories) | Derived categories (now largely upstream) | Prerequisite for Serre duality |
-| [YijunYuan/HarderNarasimhan](https://github.com/YijunYuan/HarderNarasimhan) | HN theory, order-theoretic | Deliberately avoids algebraic geometry |
+Incomplete theorems are described in module documentation and tracked as GitHub issues; the
+library contains no `sorry` declarations.
 
-The [Mathlib Initiative roadmap](https://mathlib-initiative.org/roadmap/) lists no
-algebraic-geometry targets at all.
+## Repository map
 
-## What Mathlib v4.32.1 already provides
+The source tree follows the mathematical dependency hierarchy. Each directory with several
+children has an umbrella module of the same name.
 
-Schemes, `Spec`, `Proj`, the proper/smooth/separated/flat morphism classes,
-`X.Modules` (the **abelian** category of sheaves of modules on a scheme),
-`SheafOfModules.IsQuasicoherent`, `SheafOfModules.IsFinitePresentation`, sheaf cohomology
-as `Ext` from the constant sheaf, and the full derived/triangulated stack. For B2 it also
-provides locally finite `AlgebraicCycle`s with pushforward, `Scheme.ord`/`ordHom`, arbitrary-rank
-`SheafOfModules.IsLocallyFree`, ring-level `Module.Invertible` and `CommRing.Pic`, generic
-presheaf-of-modules sheafification, and ideal-sheaf subschemes.
+```text
+CohLean/
+├── AlgebraicGeometry/
+│   ├── Divisors/                 # Cartier, effective, Picard, determinant
+│   ├── Modules/
+│   │   ├── Affine/               # comparison, gluing, finiteness, exactness
+│   │   ├── Presentation/         # finite presentations and transport
+│   │   └── Restriction/          # open-immersion restriction
+│   ├── Proj/Modules/              # localization, associated sheaves, shifts, finiteness
+│   └── Variety/                  # geometric varieties and numerical descent
+├── Coh/
+│   ├── Basic/                    # definitions and isomorphism invariance
+│   ├── Descent/                  # locality
+│   ├── Affine/                   # affine comparison
+│   └── Abelian/                  # kernels, extensions, abelian structure
+├── Cohomology/
+│   ├── Cech/
+│   ├── Derived/
+│   ├── EulerCharacteristic/
+│   ├── Simplicial/
+│   └── SpectralSequence/
+├── Intersection/
+│   ├── ChernCharacter/
+│   ├── NumericalPolynomial/
+│   └── Surface/
+├── Numerical/
+│   ├── Core/
+│   ├── GrothendieckGroup/
+│   ├── RiemannRoch/
+│   ├── Specializations/
+│   └── Examples/
+├── Topology/Opens/
+└── Development/                  # compile-only API audits and probes
+```
 
-CohLean now supplies coherence and the abelian category `Coh X`. The B2 construction also
-supplies a rank-one/invertible-sheaf predicate, the sheafified tensor product with symmetric
-monoidal coherence, and the resulting scheme-level `Pic X` group. Cartier divisors are present;
-their associated invertible sheaves `O_X(D)` are constructed from local equations, with
-`O_X(D + E) ≅ O_X(D) ⊗ O_X(E)`, `O_X(-D)` as tensor inverse, and the induced class-group
-homomorphism to `Pic X`. Effective Cartier divisors and their twisted fundamental exact
-sequences are present. Fixed-rank locally free determinant packages and first Chern classes in
-`Pic X` are present, including direct-sum/short-exact additivity from explicit determinant
-comparison data and a two-term perfect coherent-sheaf interface. Ampleness, higher direct
-images, Serre finiteness, Serre duality, and geometric Riemann–Roch are not yet present. A
-bounded reconstruction layer now produces numerical Chern-character components through
-codimension four from twist polynomials when representability and divisor-pairing separation
-are supplied explicitly; it does not claim those hypotheses for every variety. The
-cohomological Euler characteristic `χ(F)` is
-now defined relative to explicit finite-dimensionality and eventual-vanishing data, so it
-becomes unconditional without an API change when Serre finiteness is proved. It is additive
-on short exact sequences once the `Ext` connecting maps are supplied as base-field-linear
-maps, and therefore descends through an explicit presentation of `K₀(Coh X)`.
-The independent B4 algebraic entry point is also present: arbitrary-direction mixed finite
-differences on `ℤ^r`, the `(n+1)`-fold vanishing definition of numerical degree, Newton and
-polarized top-coefficient extraction, and the symmetric bilinear surface specialization.
-The Proj-module foundation now includes degree-zero homogeneous localization inside Mathlib's
-ordinary localized module and the associated sheaf `M̃` on `Proj`: sections are genuinely local
-homogeneous fractions, restrictions are the sheaf restrictions, stalks are identified with the
-corresponding degree-zero localizations, and graded maps induce sheaf morphisms.  The canonical
-basic-open map `(M_f)_0 → Γ(D₊(f), M̃)` is explicit, with its fraction formula, germ compatibility,
-and generator-level universal characterization.  Natural and zero-extended integer shifts are
-kept distinct, using the visible convention `M(d)ₙ = Mₙ₊d`; they define sheaf twists and `O(d)`,
-with zero normalization and strict composition for natural shifts.  Proving the full basic-open
-map bijective and identifying `Ã` with the structure sheaf are not silently assumed.  The
-finiteness leaf instead exposes `AffineComparisonData` and `BasicOpenSectionData` as the exact
-local inputs: from them it constructs global quasi-coherent data, proves coherence under explicit
-finite-presentation or noetherian/finite-generation hypotheses, and records degree-bounded
-`Γ(O(d))` comparisons.  For a finite-variable polynomial ring, Mathlib's finite generation of
-homogeneous polynomials then gives finite global sections in every certified degree.
+This layout reserves natural growth points for duality, higher-dimensional Riemann–Roch, and
+further projective-geometry work represented in the issue tracker.
 
-## Architecture
+## Building
 
-See [ARCHITECTURE.md](ARCHITECTURE.md) for the package map, ownership policy, and the intended
-descent from geometric varieties and coherent sheaves to numerical data.
-
-### Layer A — `CohLean.Numerical` (the interface)
-
-Everything Bridgeland-stability arguments consume from a variety is *numerical*. Layer A
-states exactly that much, as a typeclass, with no schemes anywhere:
-
-* `NumericalRing n A` — the numerical intersection ring `A^•(X)_ℚ`: a commutative
-  `ℚ`-algebra graded by codimension, concentrated in degrees `0 … n`, with a degree map
-  `∫_X : A → ℚ` supported in top codimension.
-* `NumericalVariety n A N` — adds the numerical Grothendieck group `N(X)`, the Chern
-  character (by graded components), the Todd class, and `χ`, subject to
-  Hirzebruch–Riemann–Roch.
-
-`AlgebraicGeometry.Variety.NumericalData` connects this interface back to geometry: coherent
-sheaves map additively through short exact sequences to numerical classes, while `chComp` and
-`toddComp` are computed from geometric Chern-class data by universal formulas through
-codimension four. Its Euler characteristic is no longer an arbitrary geometric function:
-`Cohomology.FiniteCohomology` lifts the actual derived sheaf-cohomology functors to
-finite-dimensional vector spaces and constructs the alternating sum. The companion
-`Cohomology.EulerCharacteristicAdditivity` module transports Mathlib's `Ext` exactness to
-those vector spaces, proves the bounded alternating-dimension cancellation, and constructs
-the Euler homomorphism `K₀(Coh X) → ℤ`.
-
-This unblocks downstream stability work immediately, and is falsifiable: the axioms are
-visible in the type, and three models exist — a point, a K3 surface of degree `H² = 2d`, and
-`ℙ²` — so nothing here is vacuously true. `ℙ²` is there specifically because its
-`td₁ = (3/2)H` is nonzero, which the K3 model cannot test.
-
-### Geometric construction — `CohLean.AlgebraicGeometry`, `CohLean.Coh`, and `CohLean.Divisors`
-
-The geometric side is built from Mathlib's scheme theory and permanently maintained in
-CohLean. A declaration may be contributed upstream, or replaced when Mathlib independently
-acquires an equivalent API, but neither is a roadmap gate or an obligation.
-
-**The design decision that makes this tractable: no Chow rings.** Intersection numbers come
-from Snapper's theorem — for proper `X` over a field,
-`(n₁,…,n_r) ↦ χ(F ⊗ L₁^{n₁} ⊗ ⋯ ⊗ L_r^{n_r})` is a numerical polynomial, and intersection
-numbers are its coefficients. So `c₁` is a Cartier divisor class, `D · D'` is a polynomial
-coefficient, and `ch₂` is read off `χ`. No cycles, no rational equivalence, no Chow group.
-(Kleiman's numerical-ampleness route; Bădescu, *Algebraic Surfaces*, ch. 1.)
-
-Layer A's fields are the trust boundary. Layer B's job is to discharge them.
-
-`CohLean.Intersection.NumericalPolynomial` implements the dimension-general algebra needed for
-this route. It builds the multivariable API over Mathlib's `ForwardDiff`; it does not add a
-dependency on DimensionTheory, whose audited polynomial machinery is univariate and pinned to a
-different Mathlib revision.
-
-## Status
-
-**Picking this up cold? Read [HANDOFF.md](HANDOFF.md).** It carries the current state, the live
-piece of work, and the Lean/Mathlib traps this repo has already paid for.
-
-The numerical core is complete and audited for the general expansion and discriminant. Optional
-surface, threefold, and fourfold display modules, the K3 and Calabi–Yau-threefold cases, the Euler pairing
-`χ(E,F)` that Bridgeland stability is defined against, and the point, K3, and
-projective-plane models. Layer B stage B1 is complete: `Coh X` is abelian on a locally
-noetherian scheme, and its inclusion into `X.Modules` is exact. The proof includes locality,
-the affine comparison and equivalence, and closure under kernels, cokernels, and extensions.
-Layer B stage B2 now has its Cartier-divisor foundation: on an integral scheme,
-`Scheme.CartierDivisor X` is the abelian group of locally representable sections of
-`K(X)ˣ / 𝒪_{X,x}ˣ`, with principal divisors, divisor classes, order-of-vanishing coefficients,
-and pullback from explicit compatible function-field data. It also has invertible sheaves,
-their symmetric monoidal tensor product, the scheme-level Picard group `Pic X`, and the
-associated sheaf `O_X(D)`. Local equations give canonical trivializations and transition
-cocycles; multiplication of rational sections proves tensor additivity, principal divisors
-become trivial, and Cartier divisor classes map to `Pic X`. Effective Cartier divisors carry
-their closed subschemes and the short exact fundamental sequence
-`O_X(-D) → O_X → i_* O_D`, together with every Cartier twist
-`O_X(E-D) → O_X(E) → O_X(E) ⊗ i_* O_D`; both are also packaged in `Coh X`
-under explicit coherence hypotheses. Fixed-rank locally free atlases, chosen top-exterior
-determinant lines, and their classes in `Pic X` complete B2. Isomorphism invariance and
-direct-sum/short-exact additivity are exported from explicit comparison isomorphisms; coherent
-objects extend only through visible finite-locally-free or two-term perfect determinant data,
-not an unproved global resolution claim.
-Stage B4 now includes issues #33--#35, #37, and #38. Mixed differences and
-numerical-polynomial coefficients are complete and scheme-independent, while
-`CohLean.Intersection.Snapper` constructs integer
-Picard powers and multivariable coherent twists and proves Snapper polynomiality from an explicit
-geometric exact-sequence induction certificate. `CohLean.Intersection.Number` extracts
-dimension-general Picard and Cartier-divisor intersection numbers, proves symmetry and
-multilinearity, and packages the surface pairing. `CohLean.Intersection.ChernCharacterSurface`
-then extracts virtual rank, determinant `c₁`, the Todd pairings, and the numerical degree of
-`ch₂` for explicitly two-term-perfect coherent sheaves. Its surface Riemann--Roch identity,
-isomorphism invariance, exact-sequence additivity, line-bundle formula, and discriminant
-compatibility are degree-level and make no unsupported claim that a scalar degree canonically
-determines a class in an arbitrary Layer A ring. `CohLean.Intersection.ChernCharacter` then
-extracts ordinary rational homogeneous coefficients by interpolation and reconstructs
-Todd-weighted and Chern-character components through codimension four in a chosen numerical
-ring. Its representability and divisor-pairing nondegeneracy inputs are visible fields, and its
-line-bundle and surface bridges expose their comparison hypotheses. The certificate keeps the
-presently missing scheme-dimension/hyperplane induction visible instead of assuming it as an
-axiom.
-Every later Layer B stage has a milestone and issue-level dependency graph; see
-[ROADMAP.md](ROADMAP.md).
+The repository pins its Lean and Mathlib revisions.
 
 ```bash
 lake build
-lake build CohLean.Development.DivisorAPIAudit \
-  CohLean.Numerical.Specializations.Surface \
-  CohLean.Numerical.Specializations.Threefold \
-  CohLean.Numerical.Specializations.Fourfold
 lake env lean scripts/Audit.lean
 ```
 
-The audit must show only `[propext, Classical.choice, Quot.sound]` and no `sorryAx`.
-There is no `sorry` in this library.
+The audit checks that public results use only the expected foundational axioms and do not
+depend on `sorryAx`.
 
-## Conventions
+## Using CohLean
 
-* Files are organized by mathematical domain under `CohLean/`; there is no `ForMathlib`
-  package. Declarations use mathematical namespaces such as `AlgebraicGeometry.*` when that is
-  their natural owner. This does not signal an upstreaming commitment.
-* CohLean owns and maintains its infrastructure. Equivalent Mathlib APIs may replace local
-  declarations when convenient; upstream contributions are optional.
-* Toolchain pinned to `leanprover/lean4:v4.32.1`, the patch release selected by the B2 API
-  audit. A downstream package that `require`s CohLean must move its complete Mathlib dependency
-  graph to v4.32.1 as well; the existing Bridgeland anchor still pins v4.29.0.
-* No `sorry`. Work that is not done is listed as *not done* in the relevant module
-  docstring, not stubbed.
+Import the complete stable library with:
+
+```lean
+import CohLean
+```
+
+Or depend on a narrower umbrella such as `CohLean.Cohomology.Cech` or
+`CohLean.Numerical.GrothendieckGroup`.
+
+To combine CohLean with Mathlib in another Lake package, add CohLean as a dependency and keep
+the consuming package on the Lean/Mathlib revisions recorded by this repository's
+`lean-toolchain` and `lake-manifest.json`.
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md). Milestones and issues are the source of truth for
+planned work, dependencies, and acceptance criteria. New leaves should be placed beneath the
+smallest existing mathematical subsystem and exported through its nearest umbrella module.
+
+## License
+
+Apache 2.0. See [LICENSE](LICENSE).

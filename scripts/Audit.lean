@@ -8,11 +8,11 @@ failure: this library has no `sorry`, and the trust boundary is carried by the
 *fields* of `NumericalVariety`, which are visible in its type, not by holes.
 -/
 import CohLean
-import CohLean.Intersection.ChernCharacter
+import CohLean.Intersection.ChernCharacter.Basic
 import CohLean.Numerical.Specializations.Surface
 import CohLean.Numerical.Specializations.Threefold
 import CohLean.Numerical.Specializations.Fourfold
-import CohLean.Development.DivisorAPIAudit
+import CohLean.Development.AlgebraicGeometry.Divisors.API
 
 open AlgebraicGeometry AlgebraicGeometry.Numerical
 
@@ -824,7 +824,7 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms CohLean.Intersection.ChernCharacter.degree_chernCharacterComponent_two_eq_surface
 #print axioms CohLean.Intersection.ChernCharacter.toChernClassData
 
--- Layer B stage 3: `CohLean/Cohomology/Strategy.lean` contributes nothing here on
+-- Cohomology strategy: `CohLean/Development/Cohomology/Strategy.lean` contributes nothing here on
 -- purpose. It is the compile-only API map for the B3 route decision and declares only
 -- `example`s, which are anonymous and cannot be audited. Its guarantee is that it builds:
 -- if an upstream declaration it names moves, `lake build` fails. The first real B3
