@@ -160,7 +160,7 @@ open CategoryTheory Limits TopologicalSpace
 
 variable {R : CommRingCat} {α : Type*} [Fintype α]
 
-private lemma basicOpen_prod_eq_pi (g : α → R) :
+lemma basicOpen_prod_eq_pi (g : α → R) :
     basicOpen (∏ a, g a) = ∏ᶜ (basicOpen ∘ g) := by
   apply le_antisymm
   · apply leOfHom
@@ -184,6 +184,95 @@ private lemma basicOpen_prod_eq_pi (g : α → R) :
     exact hga ha
 
 end PrimeSpectrum
+
+namespace Submodule
+
+variable {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
+
+/-- If a section belongs to a submodule after localization at every element of `s`, then a
+power of every element in the radical of `span s` sends it into the submodule. -/
+private lemma exists_pow_smul_mem_of_isLocalized_radical
+    (s : Set R) {d : R} (hd : d ∈ (Ideal.span s).radical)
+    (Mₚ : ∀ _ : s, Type*) [∀ r : s, AddCommMonoid (Mₚ r)]
+    [∀ r : s, Module R (Mₚ r)] (f : ∀ r : s, M →ₗ[R] Mₚ r)
+    [∀ r : s, IsLocalizedModule.Away r.1 (f r)]
+    {m : M} {N : Submodule R M}
+    (h : ∀ r : s, f r m ∈ N.localized₀ (.powers r.1) (f r)) :
+    ∃ n : ℕ, d ^ n • m ∈ N := by
+  let I : Ideal R := N.comap (LinearMap.toSpanSingleton R M m)
+  have hrs : Ideal.span s ≤ I.radical := by
+    apply Ideal.span_le.2
+    intro r hr
+    let r' : s := ⟨r, hr⟩
+    obtain ⟨a, ha, t, e⟩ := h r'
+    rw [← IsLocalizedModule.mk'_one (.powers r'.1),
+      IsLocalizedModule.mk'_eq_mk'_iff] at e
+    obtain ⟨u, hu⟩ := e
+    simp_rw [smul_smul] at hu
+    obtain ⟨k, hk⟩ := (u * t).2
+    refine ⟨k, ?_⟩
+    change r'.1 ^ k • m ∈ N
+    have hpow : r'.1 ^ k = (u * t : Submonoid.powers r'.1).1 := by
+      simpa only using hk
+    rw [hpow]
+    exact hu ▸ N.smul_mem (u * 1 : Submonoid.powers r'.1).1 ha
+  have hdI : d ∈ I.radical :=
+    (I.radical_isRadical.radical_le_iff.2 hrs) hd
+  obtain ⟨n, hn⟩ := hdI
+  exact ⟨n, hn⟩
+
+end Submodule
+
+/-- Exactness descends from localizations at a family whose span contains `d` up to radical,
+provided multiplication by `d` is invertible on the source and middle modules. -/
+private lemma exact_of_isLocalized_span_radical
+    {R M N L : Type*} [CommSemiring R]
+    [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
+    [AddCommMonoid L] [Module R L]
+    (s : Set R) (d : R) (hd : d ∈ (Ideal.span s).radical)
+    (hdM : IsUnit (algebraMap R (Module.End R M) d))
+    (hdN : IsUnit (algebraMap R (Module.End R N) d))
+    (Mₚ : ∀ _ : s, Type*) [∀ r : s, AddCommMonoid (Mₚ r)]
+    [∀ r : s, Module R (Mₚ r)] (f : ∀ r : s, M →ₗ[R] Mₚ r)
+    [∀ r : s, IsLocalizedModule.Away r.1 (f r)]
+    (Nₚ : ∀ _ : s, Type*) [∀ r : s, AddCommMonoid (Nₚ r)]
+    [∀ r : s, Module R (Nₚ r)] (g : ∀ r : s, N →ₗ[R] Nₚ r)
+    [∀ r : s, IsLocalizedModule.Away r.1 (g r)]
+    (Lₚ : ∀ _ : s, Type*) [∀ r : s, AddCommMonoid (Lₚ r)]
+    [∀ r : s, Module R (Lₚ r)] (h : ∀ r : s, L →ₗ[R] Lₚ r)
+    [∀ r : s, IsLocalizedModule.Away r.1 (h r)]
+    (F : M →ₗ[R] N) (G : N →ₗ[R] L) (hcomp : G ∘ₗ F = 0)
+    (H : ∀ r : s, Function.Exact
+      (IsLocalizedModule.map (.powers r.1) (f r) (g r) F)
+      (IsLocalizedModule.map (.powers r.1) (g r) (h r) G)) :
+    Function.Exact F G := by
+  rw [LinearMap.exact_iff]
+  apply le_antisymm
+  · rintro x hx
+    have hxloc (r : s) :
+        g r x ∈ (LinearMap.range F).localized₀ (.powers r.1) (g r) := by
+      rw [← LinearMap.range_localizedMap_eq_localized₀_range _ (f r) (g r) F]
+      rw [← (LinearMap.exact_iff.mp (H r))]
+      rw [LinearMap.ker_localizedMap_eq_localized₀_ker (.powers r.1) (g r) (h r) G]
+      exact ⟨x, hx, 1, by simp⟩
+    obtain ⟨k, hk⟩ := Submodule.exists_pow_smul_mem_of_isLocalized_radical
+      s hd Nₚ g hxloc
+    obtain ⟨y, hy⟩ := hk
+    let y' : M := (hdM.pow k).unit.inv y
+    refine ⟨y', ?_⟩
+    apply ((Module.End.isUnit_iff _).mp (hdN.pow k)).injective
+    rw [← map_pow, Module.algebraMap_end_apply,
+      Module.algebraMap_end_apply]
+    rw [← F.map_smul]
+    have hey : d ^ k • y' = y := by
+      simpa only [y', ← map_pow, Module.algebraMap_end_apply] using
+        Module.End.isUnit_apply_inv_apply_of_isUnit (hdM.pow k) y
+    rw [hey]
+    exact hy
+  · rintro _ ⟨x, rfl⟩
+    change G (F x) = 0
+    rw [← LinearMap.comp_apply, hcomp]
+    rfl
 
 namespace TopologicalSpace.Opens
 
@@ -302,6 +391,46 @@ private noncomputable def tildeCechComplex {R : CommRingCat.{u}} {ι : Type u}
   (CategoryTheory.cechComplexFunctor fun i ↦
     _root_.PrimeSpectrum.basicOpen (f i)).obj
       (modulesSpecToSheaf.obj (tilde M)).presheaf
+
+private lemma tildeCechComplex_isUnit_of_le_basicOpen
+    {R : CommRingCat.{u}} {ι : Type u} [Fintype ι]
+    (f : ι → R) (d : R)
+    (hfd : ∀ i, _root_.PrimeSpectrum.basicOpen (f i) ≤
+      _root_.PrimeSpectrum.basicOpen d)
+    (M : ModuleCat.{u} R) (n : ℕ) :
+    IsUnit (algebraMap R (Module.End R ((tildeCechComplex f M).X n)) d) := by
+  let Q := Fin (n + 1) → ι
+  let A : Q → ModuleCat R := fun q ↦
+    (modulesSpecToSheaf.obj (tilde M)).presheaf.obj
+      (op (∏ᶜ fun a : Fin (n + 1) ↦
+        _root_.PrimeSpectrum.basicOpen (f (q a))))
+  change IsUnit (algebraMap R (Module.End R (↑(∏ᶜ A : ModuleCat R))) d)
+  have hdA (q : Q) :
+      IsUnit (algebraMap R (Module.End R (A q)) d) := by
+    apply (tilde M).isUnit_algebraMap_end_of_le_basicOpen
+    exact (leOfHom (Limits.Pi.π (fun a : Fin (n + 1) ↦
+      _root_.PrimeSpectrum.basicOpen (f (q a))) 0)).trans (hfd (q 0))
+  have hdPi : IsUnit (algebraMap R (Module.End R (∀ q, A q)) d) := by
+    rw [Module.End.isUnit_iff]
+    constructor
+    · intro x y hxy
+      funext q
+      exact ((Module.End.isUnit_iff _).mp (hdA q)).injective (congrFun hxy q)
+    · intro y
+      choose x hx using fun q ↦ ((Module.End.isUnit_iff _).mp (hdA q)).surjective (y q)
+      exact ⟨x, funext fun q ↦ hx q⟩
+  let e := (ModuleCat.piIsoPi A).toLinearEquiv
+  rw [Module.End.isUnit_iff] at hdPi ⊢
+  constructor
+  · intro x y hxy
+    apply e.injective
+    apply hdPi.injective
+    simpa only [Module.algebraMap_end_apply, map_smul] using congrArg e hxy
+  · intro y
+    obtain ⟨z, hz⟩ := hdPi.surjective (e y)
+    refine ⟨e.symm z, ?_⟩
+    apply e.injective
+    simpa only [Module.algebraMap_end_apply, map_smul, e.apply_symm_apply] using hz
 
 private structure AffineCechLocalizationData {R : CommRingCat.{u}} {ι : Type u}
     [Fintype ι] (f : ι → R) (j : ι) (M : ModuleCat.{u} R) where
@@ -511,6 +640,83 @@ theorem tilde_cechComplex_exactAt_succ
     rw [← hindex r]
     exact (data r).isLocalized (n + 2)
   apply exact_of_isLocalized_span s hf Mloc localizeM Nloc localizeN Lloc localizeL
+  intro r
+  dsimp only [Mloc, Nloc, Lloc, localizeM, localizeN, localizeL, K]
+  rw [LinearMap.exact_iff]
+  change
+    (IsLocalizedModule.map (.powers r.1) ((data r).comparison.f (n + 1)).hom
+      ((data r).comparison.f (n + 2)).hom
+      ((tildeCechComplex f M).d (n + 1) (n + 2)).hom).ker =
+    (IsLocalizedModule.map (.powers r.1) ((data r).comparison.f n).hom
+      ((data r).comparison.f (n + 1)).hom
+      ((tildeCechComplex f M).d n (n + 1)).hom).range
+  have h := (data r).localizedExact n
+  rw [LinearMap.exact_iff] at h
+  simpa only [← hindex r] using h
+
+/-- The Cech complex of a module sheaf is exact in positive degrees on a finite
+distinguished-open cover of an arbitrary distinguished open `D(d)`. -/
+theorem tilde_cechComplex_exactAt_succ_of_eq_iSup
+    {R : CommRingCat.{u}} {ι : Type u} [Fintype ι]
+    (f : ι → R) (d : R)
+    (hcover : _root_.PrimeSpectrum.basicOpen d =
+      ⨆ i, _root_.PrimeSpectrum.basicOpen (f i))
+    (M : ModuleCat.{u} R) (n : ℕ) :
+    ((CategoryTheory.cechComplexFunctor fun i ↦
+      _root_.PrimeSpectrum.basicOpen (f i)).obj
+        (modulesSpecToSheaf.obj (tilde M)).presheaf).ExactAt (n + 1) := by
+  change (tildeCechComplex f M).ExactAt (n + 1)
+  let K := tildeCechComplex f M
+  apply (K.exactAt_iff' n (n + 1) (n + 2)
+    (CochainComplex.prev_nat_succ n) (by
+      simp [CochainComplex.next, Nat.add_assoc])).mpr
+  apply (CategoryTheory.ShortComplex.ShortExact.moduleCat_exact_iff_function_exact
+    (K.sc' n (n + 1) (n + 2))).mpr
+  let s : Set R := Set.range f
+  have hfd (i : ι) : _root_.PrimeSpectrum.basicOpen (f i) ≤
+      _root_.PrimeSpectrum.basicOpen d := by
+    rw [hcover]
+    exact le_iSup (fun j ↦ _root_.PrimeSpectrum.basicOpen (f j)) i
+  have hd : d ∈ (Ideal.span s).radical := by
+    have hz : _root_.PrimeSpectrum.zeroLocus s ⊆
+        _root_.PrimeSpectrum.zeroLocus {d} := by
+      simpa [← SetLike.coe_subset_coe, ← Set.compl_iInter,
+        ← _root_.PrimeSpectrum.zeroLocus_iUnion, s] using hcover.le
+    rw [← _root_.PrimeSpectrum.vanishingIdeal_zeroLocus_eq_radical,
+      _root_.PrimeSpectrum.zeroLocus_span,
+      _root_.PrimeSpectrum.mem_vanishingIdeal]
+    exact fun x hx ↦ by simpa using hz hx
+  let index (r : s) : ι := Classical.choose r.property
+  have hindex (r : s) : f (index r) = r.1 := Classical.choose_spec r.property
+  let data (r : s) := affineCechLocalizationData f (index r) M
+  let Mloc (r : s) : Type u := (data r).Kloc.X n
+  let Nloc (r : s) : Type u := (data r).Kloc.X (n + 1)
+  let Lloc (r : s) : Type u := (data r).Kloc.X (n + 2)
+  let localizeM (r : s) : K.X n →ₗ[R] Mloc r :=
+    ((data r).comparison.f n).hom
+  let localizeN (r : s) : K.X (n + 1) →ₗ[R] Nloc r :=
+    ((data r).comparison.f (n + 1)).hom
+  let localizeL (r : s) : K.X (n + 2) →ₗ[R] Lloc r :=
+    ((data r).comparison.f (n + 2)).hom
+  letI (r : s) : IsLocalizedModule (.powers r.1) (localizeM r) := by
+    rw [← hindex r]
+    exact (data r).isLocalized n
+  letI (r : s) : IsLocalizedModule (.powers r.1) (localizeN r) := by
+    rw [← hindex r]
+    exact (data r).isLocalized (n + 1)
+  letI (r : s) : IsLocalizedModule (.powers r.1) (localizeL r) := by
+    rw [← hindex r]
+    exact (data r).isLocalized (n + 2)
+  have hcomp :
+      (K.d (n + 1) (n + 2)).hom ∘ₗ (K.d n (n + 1)).hom = 0 := by
+    change (K.d n (n + 1) ≫ K.d (n + 1) (n + 2)).hom = 0
+    rw [K.d_comp_d]
+    rfl
+  apply exact_of_isLocalized_span_radical s d hd
+    (tildeCechComplex_isUnit_of_le_basicOpen f d hfd M n)
+    (tildeCechComplex_isUnit_of_le_basicOpen f d hfd M (n + 1))
+    Mloc localizeM Nloc localizeN Lloc localizeL
+    (K.d n (n + 1)).hom (K.d (n + 1) (n + 2)).hom hcomp
   intro r
   dsimp only [Mloc, Nloc, Lloc, localizeM, localizeN, localizeL, K]
   rw [LinearMap.exact_iff]
