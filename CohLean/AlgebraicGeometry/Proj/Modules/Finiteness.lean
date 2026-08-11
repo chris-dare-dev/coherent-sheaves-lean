@@ -2,6 +2,8 @@
 Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 -/
+import CohLean.AlgebraicGeometry.Proj.Modules.StructureModule
+import CohLean.AlgebraicGeometry.Proj.Modules.TwistChart
 import CohLean.AlgebraicGeometry.Proj.Modules.TwistingSheaf
 import CohLean.Coh.Affine
 import CohLean.Coh.Descent.Locality
@@ -20,11 +22,13 @@ canonical map
 
 `(M_f)₀ ⟶ Γ(D₊(f), M̃)`.
 
-The remaining affine comparison is deliberately represented by `AffineComparisonData`: it is an
+The general affine comparison is deliberately represented by `AffineComparisonData`: it is an
 isomorphism between the restriction of `M̃` to each standard affine chart and Mathlib's affine
-`tilde` construction.  This keeps the missing theorem visible instead of postulating it globally.
-Once that data is present, quasi-coherence follows by gluing the affine presentations, and
-coherence follows from explicit finite-presentation hypotheses on the localized modules.
+`tilde` construction.  For the graded ring considered as a module over itself, this file now
+constructs the comparison canonically from `associatedSheafSelfIso`; no certificate input is
+needed in that case.  Once comparison data is present, quasi-coherence follows by gluing the
+affine presentations, and coherence follows from explicit finite-presentation hypotheses on the
+localized modules.
 
 The global-section API is similarly conservative.  `TwistingSectionRange` records exactly the
 degrees in which a chosen algebraic module is known to compute `Γ(Proj A, O(d))`; no all-degree
@@ -34,12 +38,18 @@ of homogeneous multivariate polynomials and therefore has no hidden noetherianit
 ## Main declarations
 
 * `AffineComparisonData`: affine `tilde` comparison on every standard Proj chart;
+* `affineComparisonDataSelf`: the constructed comparison for the structure module;
+* `localizedNatShiftDegreeOneIso`: the explicit rank-one trivialization of `A(d)` on a
+  degree-one chart;
+* `moduleAwayToSection_natShift_degreeOne_bijective`: the corresponding constructed
+  basic-open section comparison for every nonnegative twist;
 * `associatedSheaf_isQuasicoherent`: quasi-coherence from those comparisons;
 * `associatedSheaf_isCoherent_of_finitePresentation`: coherence from explicit finite
   presentation of every localized module;
 * `associatedSheaf_isCoherent_of_noetherian_finite`: the common noetherian + finite-generation
   specialization;
 * `BasicOpenSectionData`: bijectivity of the canonical basic-open section map;
+* `basicOpenSectionDataSelf`: constructed basic-open certificates for the structure module;
 * `TwistingSectionRange`: a degree-bounded global-section comparison for `O(d)`;
 * `projectiveSpace_globalSections_finite`: finite generation for the polynomial-ring
   specialization in every certified degree.
@@ -103,6 +113,41 @@ structure AffineComparisonData where
         (R := .of (HomogeneousLocalization.Away 𝒜 (i.2 : A)))
         (localizedModule 𝒜 𝓜 i)
 
+/-- For the structure module, the localized module on a standard chart is the chart ring as a
+module over itself. -/
+noncomputable def localizedModuleSelfIso (i : StandardChartIndex 𝒜) :
+    localizedModule 𝒜 𝒜 i ≅
+      ModuleCat.of (HomogeneousLocalization.Away 𝒜 (i.2 : A))
+        (HomogeneousLocalization.Away 𝒜 (i.2 : A)) :=
+  LinearEquiv.toModuleIso
+    (DegreeZeroLocalization.selfLinearEquiv 𝒜 (.powers (i.2 : A))).symm
+
+/-- A degree-one homogeneous element, bundled as a standard positive-degree chart index. -/
+def degreeOneStandardChart (f : 𝒜 1) : StandardChartIndex 𝒜 :=
+  ⟨⟨1, Nat.zero_lt_one⟩, f⟩
+
+/-- On a degree-one chart, the localized module underlying the nonnegative twist `A(d)` is
+canonically free of rank one. -/
+noncomputable def localizedNatShiftDegreeOneIso (f : 𝒜 1) (d : ℕ) :
+    localizedModule 𝒜 (natShift 𝒜 d) (degreeOneStandardChart 𝒜 f) ≅
+      ModuleCat.of (HomogeneousLocalization.Away 𝒜 (f : A))
+        (HomogeneousLocalization.Away 𝒜 (f : A)) :=
+  LinearEquiv.toModuleIso
+    (DegreeZeroLocalization.natShiftAwayLinearEquiv 𝒜 f.2 d)
+
+/-- The canonical affine-chart comparison for the graded ring considered as a module over
+itself.  This is constructed from the global structure-module isomorphism, restriction of the
+unit module, and Mathlib's `tildeSelf`; it is not certificate input. -/
+noncomputable def affineComparisonDataSelf : AffineComparisonData 𝒜 𝒜 where
+  localIso i :=
+    (AlgebraicGeometry.Scheme.Modules.restrictFunctor
+      (standardAway 𝒜 i)).mapIso (associatedSheafSelfIso 𝒜) ≪≫
+      AlgebraicGeometry.Scheme.Modules.restrictUnitIso (standardAway 𝒜 i) ≪≫
+        (((AlgebraicGeometry.tilde.functor
+          (CommRingCat.of (HomogeneousLocalization.Away 𝒜 (i.2 : A)))).mapIso
+            (localizedModuleSelfIso 𝒜 i)) ≪≫
+          AlgebraicGeometry.tildeSelf).symm
+
 namespace AffineComparisonData
 
 /-- Quasi-coherent data on one range slice, transported from the affine `tilde` presentation. -/
@@ -143,6 +188,12 @@ theorem associatedSheaf_isQuasicoherent (c : AffineComparisonData 𝒜 𝓜) :
   (quasicoherentData 𝒜 𝓜 c).isQuasicoherent
 
 end AffineComparisonData
+
+/-- The associated structure module is quasi-coherent with no external chart certificate. -/
+theorem associatedSheaf_self_isQuasicoherent :
+    (associatedSheaf 𝒜 𝒜).IsQuasicoherent :=
+  AffineComparisonData.associatedSheaf_isQuasicoherent 𝒜 𝒜
+    (affineComparisonDataSelf 𝒜)
 
 /-! ## Coherence -/
 
@@ -190,6 +241,21 @@ theorem associatedSheaf_isCoherent_of_finitePresentation
   exact (standardAway 𝒜 i).isFinitePresentation_over_of_restrict
     (associatedSheaf 𝒜 𝓜) hrestrict
 
+/-- The structure module has the required finite-presentation data on every standard chart. -/
+theorem localizedFinitePresentationDataSelf :
+    LocalizedFinitePresentationData 𝒜 𝒜 where
+  finitePresentation i :=
+    Module.FinitePresentation.of_equiv
+      (localizedModuleSelfIso 𝒜 i).symm.toLinearEquiv
+
+/-- The associated structure module is coherent without an external comparison or finiteness
+certificate. -/
+theorem associatedSheaf_self_isCoherent :
+    AlgebraicGeometry.Scheme.Modules.IsCoherent
+      (AlgebraicGeometry.Proj 𝒜) (associatedSheaf 𝒜 𝒜) :=
+  associatedSheaf_isCoherent_of_finitePresentation 𝒜 𝒜
+    (affineComparisonDataSelf 𝒜) (localizedFinitePresentationDataSelf 𝒜)
+
 /-- Over noetherian standard chart rings, finite generation of the localized modules is enough
 for coherence.  Both hypotheses are fields of `hfin`, so neither is inferred globally. -/
 theorem associatedSheaf_isCoherent_of_noetherian_finite
@@ -215,6 +281,10 @@ sections and not an isomorphism of sheaves. -/
 structure BasicOpenSectionData where
   bijective (i : StandardChartIndex 𝒜) :
     Function.Bijective (moduleAwayToSection 𝒜 𝓜 (i.2 : A))
+
+/-- The canonical basic-open section certificates for the graded ring as a module over itself. -/
+theorem basicOpenSectionDataSelf : BasicOpenSectionData 𝒜 𝒜 where
+  bijective i := moduleAwayToSection_self_bijective 𝒜 i.2.2 i.1.2
 
 /-- The canonical additive equivalence on a standard basic open, obtained from its explicit
 bijectivity certificate. -/
@@ -263,6 +333,16 @@ abbrev polynomialGrading (ι R : Type u) [CommRing R] :
   MvPolynomial.homogeneousSubmodule ι R
 
 attribute [local instance] MvPolynomial.gradedAlgebra
+
+/-- Every standard variable chart of polynomial projective space has the constructed
+basic-open section comparison for each nonnegative twist. -/
+theorem projectiveSpace_variableSection_bijective
+    (ι R : Type u) [CommRing R] (i : ι) (d : ℕ) :
+    Function.Bijective
+      (moduleAwayToSection (polynomialGrading ι R)
+        (natShift (polynomialGrading ι R) d) (MvPolynomial.X i)) :=
+  moduleAwayToSection_natShift_degreeOne_bijective
+    (polynomialGrading ι R) (MvPolynomial.isHomogeneous_X R i) d
 
 /-- A section comparison for projective space in degree `d`.  The source is the concrete module
 of homogeneous polynomials of degree `d`; the target is `Γ(Proj R[X_i], O(d))`, restricted to the
