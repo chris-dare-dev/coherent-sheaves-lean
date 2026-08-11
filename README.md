@@ -33,6 +33,9 @@ Riemann–Roch and stability theory while keeping every hypothesis and trust bou
   proved Euler symmetry for locally free sheaves.
 - Geometric Riemann--Roch for line bundles on smooth proper surfaces from Serre symmetry and
   Snapper intersections, including the effective-divisor exact-sequence bridge.
+- The surface assembly boundary: additive geometric invariants descend through `K₀(Coh X)`,
+  geometric HRR discharges the Layer A `NumericalVariety` field, and the Euler-radical quotient
+  and K3 specialization reuse the audited Layer A conventions.
 
 Incomplete theorems are described in module documentation and tracked as GitHub issues; the
 library contains no `sorry` declarations.
@@ -78,7 +81,7 @@ CohLean/
 │   ├── Specializations/
 │   └── Examples/
 ├── RiemannRoch/
-│   └── Surface/                  # geometric divisor formula and effective sequence
+│   └── Surface/                  # divisors, effective sequences, and geometric-to-numerical assembly
 ├── Topology/Opens/
 └── Development/                  # compile-only API audits and probes
 ```
@@ -121,6 +124,13 @@ Mathlib's actual `Abelian.Ext` groups. From explicit perfect-pairing data it pro
 cohomology dimensions and the sign `χ(F)=(-1)^nχ(Fᵛ⊗ω_X)`. On surfaces, the resulting Picard
 symmetry and the geometric Snapper pairing prove the divisor Riemann--Roch formula. The
 dualizing construction itself remains visible input rather than an axiom.
+
+For surfaces, `RiemannRoch/Surface/NumericalVariety` turns compatible reconstructed Chern data,
+geometric Todd components, and a coherent-sheaf HRR theorem into a concrete
+`NumericalVariety 2 A K₀(Coh X)`. The HRR statement for virtual classes is proved by additive
+descent rather than postulated. Its numerical class map then uses the Euler-radical quotient
+from the numerical lattice API, and geometric K3 Todd identities produce the existing Layer A
+`K3.IsK3` specialization.
 
 ## Building
 

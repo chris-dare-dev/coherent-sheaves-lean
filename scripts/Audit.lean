@@ -153,6 +153,44 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms Cohomology.FiniteCohomology.grothendieckEulerHom
 #print axioms Cohomology.FiniteCohomology.grothendieckEulerHom_class
 
+-- Layer B stage 5: the scheme-derived surface numerical-variety assembly. The geometric HRR
+-- input is stated on coherent sheaves; the audited theorem below descends it to every K₀ class.
+#print axioms CohLean.RiemannRoch.Surface.CoherentAdditiveInvariant
+#print axioms CohLean.RiemannRoch.Surface.CoherentAdditiveInvariant.freeHom
+#print axioms CohLean.RiemannRoch.Surface.CoherentAdditiveInvariant.coherentGrothendieckRelations_le_ker
+#print axioms CohLean.RiemannRoch.Surface.CoherentAdditiveInvariant.grothendieckHom
+#print axioms CohLean.RiemannRoch.Surface.CoherentAdditiveInvariant.grothendieckHom_class
+#print axioms CohLean.RiemannRoch.Surface.coherentGrothendieckGroup_hom_ext
+#print axioms CohLean.RiemannRoch.Surface.ReconstructionSystem
+#print axioms CohLean.RiemannRoch.Surface.ReconstructionSystem.rankInvariant
+#print axioms CohLean.RiemannRoch.Surface.ReconstructionSystem.chernCharacterInvariant
+#print axioms CohLean.RiemannRoch.Surface.ReconstructionSystem.rankHom
+#print axioms CohLean.RiemannRoch.Surface.ReconstructionSystem.chernCharacterHom
+#print axioms CohLean.RiemannRoch.Surface.ReconstructionSystem.rankHom_class
+#print axioms CohLean.RiemannRoch.Surface.ReconstructionSystem.chernCharacterHom_class
+#print axioms CohLean.RiemannRoch.Surface.ReconstructionSystem.chernCharacterHom_mem
+#print axioms CohLean.RiemannRoch.Surface.ReconstructionSystem.intAlgebraMap
+#print axioms CohLean.RiemannRoch.Surface.ReconstructionSystem.chernCharacterHom_zero
+#print axioms CohLean.RiemannRoch.Surface.ReconstructionSystem.chernCharacterHom_add
+#print axioms CohLean.RiemannRoch.Surface.GeometricData
+#print axioms CohLean.RiemannRoch.Surface.GeometricData.totalChernCharacterHom
+#print axioms CohLean.RiemannRoch.Surface.GeometricData.totalTodd
+#print axioms CohLean.RiemannRoch.Surface.GeometricData.riemannRochHom
+#print axioms CohLean.RiemannRoch.Surface.GeometricData.rationalEulerHom
+#print axioms CohLean.RiemannRoch.Surface.GeometricData.totalChernCharacterHom_class
+#print axioms CohLean.RiemannRoch.Surface.GeometricData.riemannRochHom_class
+#print axioms CohLean.RiemannRoch.Surface.GeometricData.rationalEulerHom_class
+#print axioms CohLean.RiemannRoch.Surface.GeometricData.hirzebruch_riemannRoch
+#print axioms CohLean.RiemannRoch.Surface.GeometricData.toNumericalVariety
+#print axioms CohLean.RiemannRoch.Surface.GeometricData.toNumericalVariety_rank_class
+#print axioms CohLean.RiemannRoch.Surface.GeometricData.toNumericalVariety_chComp_class
+#print axioms CohLean.RiemannRoch.Surface.GeometricData.toNumericalVariety_toddComp
+#print axioms CohLean.RiemannRoch.Surface.GeometricData.toNumericalVariety_chi_class
+#print axioms CohLean.RiemannRoch.Surface.GeometricData.surface_chi_class_eq
+#print axioms CohLean.RiemannRoch.Surface.GeometricData.toIsK3
+#print axioms CohLean.RiemannRoch.Surface.GeometricData.k3_eulerCharacteristic_eq
+#print axioms CohLean.RiemannRoch.Surface.GeometricData.numericalClass
+
 -- Layer A: the graded-basis constructor. `ofGradedBasis` is what every concrete model
 -- goes through, so a sorry here would silently contaminate every instance in the repo.
 #print axioms gradedPiece
