@@ -48,7 +48,7 @@ variable {A : Type v} [CommRing A] [Algebra ℚ A] [NumericalRing 2 A]
 
 noncomputable section
 
-private theorem homogeneousPicardCoefficient_nil
+theorem homogeneousPicardCoefficient_nil
     (d : ℕ) (f : Pic X.toVariety.toScheme → ℤ) :
     homogeneousPicardCoefficient d [] f = (f 1 : ℚ) := by
   have hinj : Set.InjOn (fun j : ℕ ↦ (j : ℚ))
@@ -65,6 +65,46 @@ private theorem homogeneousPicardCoefficient_nil
   rw [← Polynomial.coeff_zero_eq_eval_zero] at h0
   simpa [homogeneousPicardCoefficient, interpolatingPolynomial,
     scaledPicardCoefficient, picardCoefficient] using h0
+
+private theorem coeff_interpolate_range_three (q : ℕ → ℚ) (hq0 : q 0 = 0) :
+    (Lagrange.interpolate (Finset.range 3) (fun j : ℕ ↦ (j : ℚ)) q).coeff 1 =
+      2 * q 1 - q 2 / 2 := by
+  have h0 : (Finset.range 3).erase 0 = {1, 2} := by decide
+  have h1 : (Finset.range 3).erase 1 = {0, 2} := by decide
+  have h2 : (Finset.range 3).erase 2 = {0, 1} := by decide
+  have hc0 : (Lagrange.basis (Finset.range 3)
+      (fun j : ℕ ↦ (j : ℚ)) 0).coeff 1 = -(3 / 2 : ℚ) := by
+    rw [Lagrange.basis, h0]
+    norm_num [Lagrange.basisDivisor, Finset.prod_insert, Polynomial.coeff_mul,
+      Finset.Nat.antidiagonal_succ, Polynomial.coeff_one]
+  have hc1 : (Lagrange.basis (Finset.range 3)
+      (fun j : ℕ ↦ (j : ℚ)) 1).coeff 1 = 2 := by
+    rw [Lagrange.basis, h1]
+    norm_num [Lagrange.basisDivisor, Finset.prod_insert, Polynomial.coeff_mul,
+      Finset.Nat.antidiagonal_succ]
+  have hc2 : (Lagrange.basis (Finset.range 3)
+      (fun j : ℕ ↦ (j : ℚ)) 2).coeff 1 = -(1 / 2 : ℚ) := by
+    rw [Lagrange.basis, h2]
+    norm_num [Lagrange.basisDivisor, Finset.prod_insert, Polynomial.coeff_mul,
+      Finset.Nat.antidiagonal_succ]
+  norm_num [Lagrange.interpolate, Finset.sum_range_succ, hc0, hc1, hc2]
+  rw [hq0]
+  ring
+
+/-- The degree-one homogeneous coefficient of a quadratic Picard Euler function in one
+direction, written using its values at the first three powers. -/
+theorem homogeneousPicardCoefficient_singleton
+    (f : Pic X.toVariety.toScheme → ℤ) (L : Pic X.toVariety.toScheme) :
+    homogeneousPicardCoefficient 2 [L] f =
+      2 * ((f L - f 1 : ℤ) : ℚ) - ((f (L ^ 2) - f 1 : ℤ) : ℚ) / 2 := by
+  unfold homogeneousPicardCoefficient interpolatingPolynomial
+  norm_num only [List.length_cons, List.length_nil]
+  rw [coeff_interpolate_range_three]
+  · simp [scaledPicardCoefficient, picardCoefficient, picardMixedDifference,
+      picardDifference]
+    rfl
+  · simp [scaledPicardCoefficient, picardCoefficient, picardMixedDifference,
+      picardDifference]
 
 /-- The explicit geometric data used to construct the surface Todd components.
 
@@ -213,6 +253,34 @@ theorem degree_toddOne_mul_divisorClass (T : Data P K)
     degree_numericalCanonicalClass_mul_divisorClass (P := P) (K := K) L,
     toddOnePairing_eq_neg_half_canonical T L]
   ring
+
+/-- The explicit class `-K_X/2` is the degree-one representative reconstructed from the
+structure-sheaf twist polynomial.  Thus the Todd family used by surface assembly is exactly the
+one used to extract reconstructed Chern characters, rather than an independently postulated
+comparison. -/
+theorem structureToddOne_eq_toddOne (T : Data P K) :
+    CohLean.Intersection.ChernCharacter.toddComponent T.structureData 1 =
+      toddOne (P := P) (K := K) := by
+  apply P.divisorPairing_ext 1 (by omega)
+    (PairingContext.ReconstructionData.tauComponent_mem T.structureData 1)
+    toddOne_mem
+  intro classes hlength
+  cases classes with
+  | nil => simp at hlength
+  | cons L classes =>
+    cases classes with
+    | nil =>
+      rw [T.structureData.degree_tauComponent_mul_divisorProduct 1 (by omega) [L] (by simp)]
+      rw [divisorProduct, List.map_singleton, List.prod_singleton,
+        degree_toddOne_mul_divisorClass T (Additive.ofMul L)]
+      rw [PairingContext.twistPairing, T.structure_twists,
+        homogeneousPicardCoefficient_singleton]
+      rw [toddOnePairing_apply, P.intersection.surfaceIntersectionPairing_apply,
+        P.intersection.surfaceIntersectionNumber_eq]
+      push_cast
+      simp only [toMul_ofMul, pow_two]
+      ring
+    | cons M classes => simp at hlength
 
 /-- Trivial canonical class forces the geometric first Todd component to vanish. -/
 theorem toddOne_eq_zero (hK : K.canonicalClass = 1) :

@@ -992,11 +992,14 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 -- structure-sheaf twist polynomial, and the first component is the explicit class -K/2.
 #print axioms CohLean.RiemannRoch.Surface.ToddData.Data
 #print axioms CohLean.RiemannRoch.Surface.ToddData.numericalCanonicalClass
+#print axioms CohLean.RiemannRoch.Surface.ToddData.homogeneousPicardCoefficient_nil
+#print axioms CohLean.RiemannRoch.Surface.ToddData.homogeneousPicardCoefficient_singleton
 #print axioms CohLean.RiemannRoch.Surface.ToddData.toddComponent
 #print axioms CohLean.RiemannRoch.Surface.ToddData.toddComponent_mem
 #print axioms CohLean.RiemannRoch.Surface.ToddData.degree_toddTwo_eq_eulerPic_one
 #print axioms CohLean.RiemannRoch.Surface.ToddData.degree_toddTwo_eq_structureSheafEulerCharacteristic
 #print axioms CohLean.RiemannRoch.Surface.ToddData.degree_toddOne_mul_divisorClass
+#print axioms CohLean.RiemannRoch.Surface.ToddData.structureToddOne_eq_toddOne
 #print axioms CohLean.RiemannRoch.Surface.ToddData.toddOne_eq_zero
 #print axioms CohLean.RiemannRoch.Surface.ToddData.degree_toddTwo_eq_two
 #print axioms CohLean.RiemannRoch.Surface.ToddData.NumericalVarietyComparison.toIsK3
