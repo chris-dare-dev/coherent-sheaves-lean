@@ -109,6 +109,8 @@ If you find yourself about to build a Chow ring, stop and re-read this.
 | `Numerical/EulerPairing.lean` | `chi₂ E F = ∫ch(E)^∨·ch(F)·td(X)`, its general expansion, the `n = 2` case, and `K3.chi₂ = −⟨v,v⟩` |
 | `Numerical/OfGradedBasis.lean` | `NumericalRing.ofGradedBasis` — builds the graded ring from a basis, discharging the internality obligation once |
 | `Intersection/NumericalPolynomial.lean` | arbitrary-rank integer lattices, mixed finite differences, degree by `(n+1)`-fold vanishing, Newton/top coefficient extraction, and one-variable/surface specializations |
+| `Intersection/Number.lean` | Picard-level Snapper functions, dimension-general Picard/Cartier intersection numbers, and the symmetric surface pairing |
+| `Intersection/ChernCharacterSurface.lean` | virtual rank and determinant `c₁`, Todd pairings from the structure-sheaf polynomial, degree-level `ch₂`, and surface discriminant compatibility |
 
 The three files under `Numerical/Specializations` are the same proof with
 `Finset.sum_range_succ` fired one and two more times. Nothing in `RiemannRoch.lean` changed to

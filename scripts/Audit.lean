@@ -722,6 +722,28 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms CohLean.Intersection.Number.IntersectionContext.surfaceIntersectionPairing
 #print axioms CohLean.Intersection.Number.IntersectionContext.surfaceIntersectionPairing_symm
 
+-- Layer B stage 4: degree-level surface Chern data. The construction uses determinants,
+-- Picard intersections, and Euler characteristics; it does not postulate a Chow-valued class
+-- or a perfect numerical pairing.
+#print axioms CohLean.Intersection.ChernCharacterSurface.virtualRank
+#print axioms CohLean.Intersection.ChernCharacterSurface.picardFirstChernClass
+#print axioms CohLean.Intersection.ChernCharacterSurface.numericalFirstChernClass
+#print axioms CohLean.Intersection.ChernCharacterSurface.toddOnePairing
+#print axioms CohLean.Intersection.ChernCharacterSurface.toddTwoDegree
+#print axioms CohLean.Intersection.ChernCharacterSurface.chernCharacterTwoDegree
+#print axioms CohLean.Intersection.ChernCharacterSurface.surfaceChernCharacter
+#print axioms CohLean.Intersection.ChernCharacterSurface.eulerCharacteristic_eq_rank_mul_toddTwo_add_toddOne_add_chernCharacterTwo
+#print axioms CohLean.Intersection.ChernCharacterSurface.chernCharacterTwoDegree_ofIso
+#print axioms CohLean.Intersection.ChernCharacterSurface.picardFirstChernClass_shortExact
+#print axioms CohLean.Intersection.ChernCharacterSurface.numericalFirstChernClass_shortExact
+#print axioms CohLean.Intersection.ChernCharacterSurface.chernCharacterTwoDegree_shortExact
+#print axioms CohLean.Intersection.ChernCharacterSurface.chernCharacterTwoDegree_structureSheaf
+#print axioms CohLean.Intersection.ChernCharacterSurface.eulerPic_one_eq_eulerCharacteristic_structureSheaf
+#print axioms CohLean.Intersection.ChernCharacterSurface.toddTwoDegree_eq_eulerPic_one
+#print axioms CohLean.Intersection.ChernCharacterSurface.chernCharacterTwoDegree_lineBundle
+#print axioms CohLean.Intersection.ChernCharacterSurface.discriminantDegree
+#print axioms CohLean.Intersection.ChernCharacterSurface.discriminantDegree_eq_numericalVariety
+
 -- Layer B stage 3: `CohLean/Cohomology/Strategy.lean` contributes nothing here on
 -- purpose. It is the compile-only API map for the B3 route decision and declares only
 -- `example`s, which are anonymous and cannot be audited. Its guarantee is that it builds:
