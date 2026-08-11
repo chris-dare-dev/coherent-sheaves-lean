@@ -17,7 +17,7 @@ the mathematics and is independent of the package path.
 | `Duality` | Canonical sheaves, derived Serre-duality interfaces, and perfect pairings |
 | `Intersection` | Numerical polynomials, intersection numbers, and Chern-character reconstruction |
 | `Numerical` | Numerical interfaces, Grothendieck-group invariants, Riemann–Roch, models, and displays |
-| `RiemannRoch` | Geometric Riemann--Roch theorems proved from sheaves, duality, and intersections |
+| `RiemannRoch` | Geometric Riemann–Roch from sheaves, duality, and intersections, plus the bridge discharging the Layer A numerical interface |
 | `Topology` | Reusable open-cover infrastructure |
 | `Development` | Compile-only API audits; not part of the stable root import |
 
