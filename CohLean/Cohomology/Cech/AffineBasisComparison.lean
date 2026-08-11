@@ -138,21 +138,19 @@ namespace AlgebraicGeometry.Cohomology
 /-- The compact, finite-intersection-stable basis of distinguished opens of an affine
 spectrum. -/
 noncomputable def affineBasicOpenBasis (R : CommRingCat.{u}) :
-    CategoryTheory.Sheaf.CompactOpenBasis (Spec R) where
-  carrier := Set.range (@_root_.PrimeSpectrum.basicOpen R _)
-  isBasis := _root_.PrimeSpectrum.isBasis_basic_opens
-  top_mem := ⟨1, _root_.PrimeSpectrum.basicOpen_one⟩
-  isCompact := by
+    CategoryTheory.Sheaf.CompactOpenBasis (Spec R) :=
+  CategoryTheory.Sheaf.CompactOpenBasis.ofIsBasis
+    (Set.range (@_root_.PrimeSpectrum.basicOpen R _))
+    _root_.PrimeSpectrum.isBasis_basic_opens (by
     rintro U ⟨f, rfl⟩
-    exact _root_.PrimeSpectrum.isCompact_basicOpen f
-  pi_mem := by
-    intro I _ _ U hU
-    choose f hf using hU
-    refine ⟨∏ i, f i, ?_⟩
-    rw [_root_.PrimeSpectrum.basicOpen_prod_eq_pi]
-    congr 1
-    funext i
-    exact hf i
+    exact _root_.PrimeSpectrum.isCompact_basicOpen f) (by
+    rintro U V ⟨f, rfl⟩ ⟨g, rfl⟩
+    exact ⟨f * g, _root_.PrimeSpectrum.basicOpen_mul f g⟩)
+
+/-- The whole affine spectrum is the distinguished open `D(1)`. -/
+lemma top_mem_affineBasicOpenBasis (R : CommRingCat.{u}) :
+    (⊤ : Opens (Spec R)) ∈ (affineBasicOpenBasis R).carrier :=
+  ⟨1, _root_.PrimeSpectrum.basicOpen_one⟩
 
 set_option maxHeartbeats 1000000 in
 /-- The underlying abelian sheaf of `M̃` is Cech-acyclic on the distinguished-open basis. -/

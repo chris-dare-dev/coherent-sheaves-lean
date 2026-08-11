@@ -56,7 +56,7 @@ CohLean/
 │   ├── Cech/
 │   ├── Derived/
 │   ├── EulerCharacteristic/
-│   ├── Finiteness/               # linear realization and degreewise finiteness boundary
+│   ├── Finiteness/               # finite-dimensionality boundary and cohomological bounds
 │   ├── Simplicial/
 │   └── SpectralSequence/
 ├── Intersection/
@@ -87,6 +87,12 @@ For affine quasi-coherent sheaves, the library proves the non-circular compact-b
 Stacks Project, Tag 01EW, specializes it to the distinguished-open basis, and derives unconditional
 positive-degree vanishing in Mathlib's `Sheaf.H`. The result applies to every quasi-coherent module
 sheaf on `Spec R` through the affine module/sheaf comparison, without a noetherian hypothesis.
+
+For quasi-compact schemes with affine diagonal, a fixed finite affine cover now gives an explicit
+bound above which the actual derived cohomology of every quasi-coherent module vanishes. The proof
+uses local affine `H'`-vanishing on all finite intersections and Mayer--Vietoris induction. This
+boundedness is packaged separately from degreewise finite-dimensionality, with a constructor that
+combines both inputs into `FiniteCohomology`.
 
 ## Building
 
