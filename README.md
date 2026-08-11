@@ -70,6 +70,13 @@ finite-presentation or noetherian/finite-generation hypotheses, and records degr
 `Γ(O(d))` comparisons.  For a finite-variable polynomial ring, Mathlib's finite generation of
 homogeneous polynomials then gives finite global sections in every certified degree.
 
+The Čech-to-derived comparison is complete for open covers of topological spaces. An explicit
+injective resolution maps from its global-sections complex to the injective Čech total; the map
+is a quasi-isomorphism because injective Čech rows are exact. Consequently every Čech-acyclic
+cover computes `Sheaf.H` in all degrees. The resolution and Mathlib's `HasExt` witness remain
+explicit inputs because the current library does not install enough injectives for abelian
+sheaves globally.
+
 ## Architecture
 
 See [ARCHITECTURE.md](ARCHITECTURE.md) for the package map, ownership policy, and the intended

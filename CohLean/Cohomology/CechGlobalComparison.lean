@@ -29,6 +29,7 @@ set_option backward.isDefEq.respectTransparency false
 variable {C : Type u} [Category.{a} C] {J : GrothendieckTopology C}
   [HasFiniteProducts C] [HasSheafify J AddCommGrpCat.{a}] {index : Type a}
 
+omit [HasFiniteProducts C] in
 private lemma evalOp_map_π
     {D : Type*} [Category D] [HasProducts D]
     (F : Cᵒᵖ ⥤ D) {V W : Limits.FormalCoproduct C} (m : V ⟶ W)
@@ -56,6 +57,7 @@ noncomputable def globalSectionsToCechZero
   exact Limits.Pi.lift fun q ↦
     G.obj.map (hT.from ((V.cech.obj (op (SimplexCategory.mk 0))).obj q)).op
 
+omit [HasSheafify J AddCommGrpCat] in
 lemma globalSectionsToCechZero_comp_d
     {T : C} (hT : IsTerminal T) (U : index → C)
     (G : Sheaf J AddCommGrpCat.{a}) :
@@ -102,11 +104,11 @@ lemma globalSectionsToCechZero_comp_d
   rw [show (-1 : ℤ) ^ ((0 : Fin 2) : ℕ) = 1 by norm_num,
     show (-1 : ℤ) ^ ((1 : Fin 2) : ℕ) = -1 by norm_num]
   simp only [one_smul, neg_smul, Preadditive.comp_add, Preadditive.comp_neg,
-    Preadditive.add_comp, Preadditive.neg_comp, zero_comp, Category.assoc]
+    Preadditive.add_comp, Preadditive.neg_comp, Category.assoc]
   erw [hZ₀, hZ₁]
   simp only [← Category.assoc]
   rw [hglobal (m₀.f q), hglobal (m₁.f q)]
-  simp only [Category.assoc, ← G.obj.map_comp]
+  simp only [← G.obj.map_comp]
   have hop :
       (hT.from ((V.cech.obj (op (SimplexCategory.mk 0))).obj (m₀.f q))).op ≫
           (m₀.φ q).op =

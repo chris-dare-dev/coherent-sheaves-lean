@@ -543,7 +543,12 @@ present, the error is about *when* Lean looked, not *what* it found.
 
 #22–#25, #36, and #79 are complete. B2 is complete.
 
-Issue #27 (Čech versus derived sheaf cohomology) already has an implementation in progress.
+Issue #27 (Čech versus derived sheaf cohomology) is complete in
+`Cohomology/CechGlobalComparison.lean`. Its public theorem
+`isCechAcyclicCover_cechComputesDerivedCohomology` keeps an injective resolution and `HasExt`
+witness explicit, proves the augmented injective rows are quasi-isomorphisms, and compares their
+total complex with global derived cohomology. The next dependency step is #28: combine this with
+`AffineCech.lean` without asserting any affine-acyclicity theorem absent from Mathlib.
 
 A **rank-one model for a Calabi–Yau threefold** is not an issue yet — which today makes it
 the only unblocked Layer A task, since #17 is labelled `blocked`. It is also cheap: `ℚ[t]/(t⁴)` with `∫t³ = d` via `NumericalRing.ofGradedBasis`, exactly
