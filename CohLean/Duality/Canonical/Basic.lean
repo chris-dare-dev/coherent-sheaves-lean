@@ -15,17 +15,18 @@ the relative cotangent sheaf. This file packages that construction using CohLean
 fixed-rank locally-free and determinant interfaces, and exposes its Picard and Cartier-divisor
 classes.
 
-The hypotheses remain explicit for a substantive upstream reason. The pinned Mathlib constructs
-Kähler differentials for ring homomorphisms and for a morphism of presheaves on the *same*
-category. Its general presheaf construction for a morphism of ringed spaces is still marked TODO;
-there is no scheme-level relative-cotangent-sheaf functor, no sheaf exterior-power functor, and no
-dualizing-complex API. Thus `CanonicalSheafData` accepts the chosen cotangent sheaf and its
-determinant certificate as visible data. It does not postulate either a dualizing object or Serre
-duality as an axiom.
+The hypotheses remain explicit for substantive upstream reasons. The companion
+`Canonical.Differentials` module constructs a relative cotangent sheaf for varieties over a field
+by sheafifying objectwise Kähler differentials. Mathlib's general presheaf construction for a
+morphism of ringed spaces is still marked TODO, however, and there is no theorem connecting
+smoothness to finite local freeness of this sheaf, no sheaf exterior-power functor, and no
+dualizing-complex API. Thus `CanonicalSheafData` accepts its determinant certificate as visible
+data. It does not postulate either a dualizing object or Serre duality as an axiom.
 
-Once scheme differentials land, their smooth fixed-rank theorem can construct this package.
-Likewise, `DualizingSheafComparison` only compares a separately constructed candidate with the
-canonical sheaf; it does not assert that an arbitrary module sheaf is dualizing.
+Once the smooth fixed-rank and determinant-descent theorems land, they can construct this package
+using `CanonicalSheafData.ofRelativeDifferentials`. Likewise, `DualizingSheafComparison` only
+compares a separately constructed candidate with the canonical sheaf; it does not assert that an
+arbitrary module sheaf is dualizing.
 -/
 
 universe u

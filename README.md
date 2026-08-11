@@ -118,11 +118,13 @@ sheaf through the structure morphism. Applying derived cohomology constructs a f
 groups. The remaining projective-finiteness work is therefore geometric Serre finiteness, not a
 choice of scalar structures.
 
-For smooth proper varieties of a fixed relative dimension, `Duality/Canonical` packages the
-canonical sheaf as the determinant of explicit cotangent data, exposes its Picard class and
-Cartier representatives, and records comparison data for a future dualizing object. The data is
-kept visible because the pinned Mathlib has Kähler differentials for rings and same-site
-presheaves, but not yet a scheme-level relative cotangent sheaf or dualizing-complex API.
+For varieties over a field, `Duality/Canonical` constructs the relative cotangent module sheaf by
+sheafifying the objectwise Kähler differential presheaf and proves its universal property for
+derivations into module sheaves. For smooth proper varieties of a fixed relative dimension, it
+packages the canonical sheaf as the determinant of that cotangent sheaf, exposes its Picard class
+and Cartier representatives, and records comparison data for a future dualizing object. The
+smooth fixed-rank theorem, determinant descent, general ringed-space construction, and
+dualizing-complex API remain visible boundaries.
 
 `Duality/Serre` now fixes the derived shift convention and packages a linear realization of
 Mathlib's actual `Abelian.Ext` groups. From explicit perfect-pairing data it proves complementary

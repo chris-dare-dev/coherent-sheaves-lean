@@ -106,7 +106,23 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 
 -- Canonical-sheaf data is built from explicit cotangent/determinant certificates. The
 -- dualizing comparison does not assert existence of a dualizing object.
+#print axioms Variety.baseFieldPresheaf
+#print axioms Variety.baseFieldToGlobalSections
+#print axioms Variety.baseFieldToStructurePresheaf
+#print axioms Variety.relativeDifferentialsPresheaf
+#print axioms Variety.relativeDifferentials
+#print axioms Variety.relativeDerivationPresheaf
+#print axioms Variety.relativeDifferentialsSheafification
+#print axioms Variety.relativeDerivation
+#print axioms Variety.relativeDifferentialsDesc
+#print axioms Variety.relativeDifferentialsDesc_fac
+#print axioms Variety.relativeDifferentialsDesc_unique
+#print axioms Variety.relativeDifferentials_hom_ext
+#print axioms Variety.relativeDifferentialsPresheaf_obj
+#print axioms Variety.relativeDerivationPresheaf_d
 #print axioms SmoothProperVariety.CanonicalSheafData
+#print axioms SmoothProperVariety.CanonicalSheafData.ofRelativeDifferentials
+#print axioms SmoothProperVariety.CanonicalSheafData.ofRelativeDifferentials_cotangent
 #print axioms SmoothProperVariety.CanonicalSheafData.canonicalClass
 #print axioms SmoothProperVariety.CanonicalSheafData.antiCanonicalClass
 #print axioms SmoothProperVariety.CanonicalSheafData.canonicalClass_eq_of_iso
