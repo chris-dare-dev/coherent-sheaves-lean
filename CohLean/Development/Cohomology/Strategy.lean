@@ -78,12 +78,12 @@ line that was not visible when it was written:
   result across the affine module/sheaf equivalence. Properness and a base field do not enter
   this vanishing layer.
 * **Still not proved.** #29, finite-dimensionality of `H^i(X, F)` over a field. Its Proj object,
-  polynomial global-section comparison, variable-cover algebra, and finiteness interfaces now
-  exist; the cohomological resolution argument remains. The affine terms of a projective standard-cover
-  Čech complex are generally infinite-dimensional over the field, so finiteness must be proved
-  for its homology using the grading/Serre argument rather than termwise. The exact output type is
-  `FiniteDimensionalCohomology`; it deliberately contains no eventual-vanishing claim. #31 and
-  #32 are downstream of it.
+  polynomial global-section comparison, variable-cover algebra, finiteness interfaces, and
+  canonical functorial `k`-linear lift of derived cohomology now exist; the cohomological Serre
+  resolution argument remains. The affine terms of a projective standard-cover Čech complex are
+  generally infinite-dimensional over the field, so finiteness must be proved for its homology
+  using grading rather than termwise. The exact output type is `FiniteDimensionalCohomology`; it
+  deliberately contains no eventual-vanishing claim. #31 and #32 are downstream of it.
 
 So the milestone target moves from "proper over a field" to **separated noetherian**, for
 vanishing only. The projective-to-proper question (#26 question 3, Chow's lemma plus
@@ -116,8 +116,9 @@ Both were established by elaboration, not by reading, and both are load-bearing:
    `(SheafOfModules.toSheaf X.ringCatSheaf).obj`.** It is `Additive` and
    `PreservesFiniteLimits`. CohLean's `Scheme.Modules.toSheaf` wrapper also preserves finite
    colimits, so a short exact sequence in `X.Modules` remains short exact in
-   `Sheaf J AddCommGrpCat` before `Ext.covariantSequence_exact` applies. The remaining
-   interface gap is scalar-linearity of the resulting connecting homomorphisms.
+   `Sheaf J AddCommGrpCat` before `Ext.covariantSequence_exact` applies. The central action of
+   global functions now supplies the canonical scalar-linear cohomology functor. Linearity of the
+   separately constructed `Ext` connecting morphisms remains an explicit #32 input.
 
 ## Dependency graph for #29–#32
 
@@ -249,6 +250,11 @@ noncomputable example := CohLean.AlgebraicGeometry.Proj.polynomialVariableCechTe
 /-- The exact output boundary for #29: a functorial linear lift of derived cohomology together
 with degreewise finite-dimensionality, but no #30 vanishing bound. -/
 example {k : Type u} [Field k] (X : Variety k) := FiniteDimensionalCohomology X
+
+/-- The functorial linear lift itself is now canonical; #29 only still owes the geometric
+degreewise finite-dimensionality proof. -/
+noncomputable example {k : Type u} [Field k] (X : Variety k) :=
+  canonicalLinearCohomology X
 
 /-- Properness of `Proj` over its degree-zero part — the one piece of the classical
 projective argument that is already available. -/
