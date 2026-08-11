@@ -29,6 +29,10 @@ Riemann–Roch and stability theory while keeping every hypothesis and trust bou
 - Euler characteristics and their additivity under explicit finiteness data.
 - Numerical polynomials, Snapper-style certificates, surface intersection numbers, and
   Chern-character reconstruction.
+- Explicit derived/cohomological Serre-duality interfaces, perfect coherent pairings, and the
+  proved Euler symmetry for locally free sheaves.
+- Geometric Riemann--Roch for line bundles on smooth proper surfaces from Serre symmetry and
+  Snapper intersections, including the effective-divisor exact-sequence bridge.
 
 Incomplete theorems are described in module documentation and tracked as GitHub issues; the
 library contains no `sorry` declarations.
@@ -61,7 +65,8 @@ CohLean/
 │   ├── Simplicial/
 │   └── SpectralSequence/
 ├── Duality/
-│   └── Canonical/                # canonical sheaf, class, and dualizing boundary
+│   ├── Canonical/                # canonical sheaf, class, and dualizing boundary
+│   └── Serre/                    # derived statement, perfect pairings, Euler symmetry
 ├── Intersection/
 │   ├── ChernCharacter/
 │   ├── NumericalPolynomial/
@@ -72,6 +77,8 @@ CohLean/
 │   ├── RiemannRoch/
 │   ├── Specializations/
 │   └── Examples/
+├── RiemannRoch/
+│   └── Surface/                  # geometric divisor formula and effective sequence
 ├── Topology/Opens/
 └── Development/                  # compile-only API audits and probes
 ```
@@ -108,6 +115,12 @@ canonical sheaf as the determinant of explicit cotangent data, exposes its Picar
 Cartier representatives, and records comparison data for a future dualizing object. The data is
 kept visible because the pinned Mathlib has Kähler differentials for rings and same-site
 presheaves, but not yet a scheme-level relative cotangent sheaf or dualizing-complex API.
+
+`Duality/Serre` now fixes the derived shift convention and packages a linear realization of
+Mathlib's actual `Abelian.Ext` groups. From explicit perfect-pairing data it proves complementary
+cohomology dimensions and the sign `χ(F)=(-1)^nχ(Fᵛ⊗ω_X)`. On surfaces, the resulting Picard
+symmetry and the geometric Snapper pairing prove the divisor Riemann--Roch formula. The
+dualizing construction itself remains visible input rather than an axiom.
 
 ## Building
 
