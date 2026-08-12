@@ -68,7 +68,8 @@ jobs:
           : > lean-source-check.txt
           while IFS= read -r f; do
             case "$f" in
-              scripts/*) continue ;;
+              # Historical review fixtures and audit scripts are not library modules.
+              .claude/*|scripts/*) continue ;;
             esac
             lake env lean "$f" 2>&1 | tee -a lean-source-check.txt
           done < <(git ls-files '*.lean')
