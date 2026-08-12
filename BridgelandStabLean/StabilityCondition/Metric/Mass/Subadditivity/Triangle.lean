@@ -1548,6 +1548,16 @@ theorem stabilityMassTriangleInequality :
   stabilityMassTriangleInequality_of_semistable_obj₁
     stabilityMassSemistableLeftTriangleInequality
 
+/-- Full-distance balls form a neighbourhood basis for the pre-existing
+Section 6 topology.  This closes the explicit mass-triangle premise of the
+topology comparison without installing a second topology or metric instance. -/
+@[cites "stmt:a520a8d4f877:bridgeland2007.prop-8.1" (relation := no_claim)
+        (note := "Unconditional topology comparison obtained by applying the existing conditional comparison to the proved HN mass-triangle theorem. The citation remains no_claim pending exact-head source-faithfulness review and owner acceptance; no topology or metric instance is installed.")]
+theorem stabilityDistanceTopologyCompatible :
+    StabilityDistanceTopologyCompatible (C := C) (v := v) :=
+  stabilityDistanceTopologyCompatible_of_mass_triangle
+    stabilityMassTriangleInequality
+
 set_option maxHeartbeats 200000
 
 /-- The global distinguished-triangle inequality restricts to the heart-level

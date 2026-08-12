@@ -1726,6 +1726,7 @@ No mass theorem or source-faithfulness claim is made here. -/
 #print axioms CategoryTheory.Triangulated.stabilityMassTriangleInequality_of_semistable_obj₁
 #print axioms CategoryTheory.Triangulated.stabilityMassSemistableLeftTriangleInequality
 #print axioms CategoryTheory.Triangulated.stabilityMassTriangleInequality
+#print axioms CategoryTheory.Triangulated.stabilityDistanceTopologyCompatible
 #print axioms CategoryTheory.Triangulated.stabilityMassBoundaryHeartInequality
 #print axioms CategoryTheory.Triangulated.stabilityMass_H0FunctorShift_negOne_zero_triangle_le_of_obj₁_phase_one
 #print axioms CategoryTheory.Triangulated.HNFiltration.mass_shift_one

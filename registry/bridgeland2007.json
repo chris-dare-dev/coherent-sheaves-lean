@@ -180,9 +180,9 @@
       "frontier": [
         {
           "id": "stability-mass-triangle",
-          "kind_class": "missing-library",
-          "kind_label": "unproved-here",
-          "statement": "Proposition 8.1 has two clauses. Clause (i) -- that d is a generalised metric -- is proved unconditionally (stabilityDist_self, stabilityDist_comm, stabilityDist_triangle, and separation). Clause (ii) -- that the induced topology is the Section 6 topology -- is NOT proved. Its reverse cofinality direction is conditional on the explicit proposition CategoryTheory.Triangulated.StabilityMassTriangleInequality, which states m(E) <= m(A) + m(C) for every distinguished triangle A -> E -> C. That proposition is DEFINED, not proved: it is a `def ... : Prop` taken as an explicit hypothesis at all eleven consumers. It is the standard statement (DHKK Prop 3.3, quoted in arXiv 1811.10592) and is true, but until a theorem inhabits it no citation of Proposition 8.1 may claim more than clause (i). NARROWED 2026-08-07: the general statement is now a THEOREM given the semistable case. stabilityMassTriangleInequality_of_semistable (StabilityMassTriangle.lean) derives StabilityMassTriangleInequality from StabilityMassSemistableTriangleInequality, which adds the hypothesis that the triangle's first vertex lies in a single P phi. The proof inducts on the HN length of the left term, peeling its top factor and assembling with the octahedral axiom. What remains open is therefore the SEMISTABLE-LEFT case only.",
+          "kind_class": "interface",
+          "kind_label": "source-review-pending",
+          "statement": "MECHANICALLY CLOSED 2026-08-11; HUMAN DISCHARGE PENDING. Proposition 8.1 has two clauses. Clause (i) -- that d is a generalised metric -- is proved unconditionally by stabilityDist_self, stabilityDist_comm, stabilityDist_triangle, and separation. Clause (ii) is now also exposed unconditionally: stabilityMassSemistableLeftTriangleInequality proves arbitrary-phase semistable-left subadditivity, stabilityMassTriangleInequality assembles it through the HN filtration, and stabilityDistanceTopologyCompatible applies that theorem to the already-proved two-way neighborhood cofinality result. No topology or metric instance is installed. The frontier item remains open only because an agent may not supply the named exact-head source-faithfulness review or owner acceptance required to discharge it; all Proposition 8.1 citations remain no_claim until that governance step.",
           "discharged_by": null
         }
       ],
@@ -292,7 +292,7 @@
     "stmt:a520a8d4f877:obl-stability-mass-triangle": {
       "kind": "obligation",
       "title": "Prove HN-mass subadditivity across a distinguished triangle",
-      "informal": "Owed work, not a paper statement. Proposition 8.1's second clause -- that the metric topology equals the Section 6 topology -- is proved here only conditionally, on the explicit proposition CategoryTheory.Triangulated.StabilityMassTriangleInequality: for every distinguished triangle A -> E -> C, m(E) <= m(A) + m(C). Defining a proposition is not proving it. Until a theorem inhabits it without sorry, without a new axiom, and without an instance that smuggles it in, Proposition 8.1 is claimed here only in its clause (i) form.",
+      "informal": "Owed work, not a paper statement. The mathematical obligation is now proved: stabilityMassTriangleInequality inhabits HN-mass subadditivity for every distinguished triangle, and stabilityDistanceTopologyCompatible closes the topology-comparison premise without installing a topology or metric instance. The obligation remains open only for the named exact-head human review and owner acceptance required by registry governance; Proposition 8.1 remains no_claim until then.",
       "source": {
         "scheme": "arxiv",
         "id": "math/0212237",
@@ -315,9 +315,9 @@
       "frontier": [
         {
           "id": "stability-mass-triangle",
-          "kind_class": "missing-library",
-          "kind_label": "unproved-here",
-          "statement": "CategoryTheory.Triangulated.StabilityMassTriangleInequality (StabilityDistanceTopology.lean:511) is a `def ... : Prop`, not a theorem and not a class. It is threaded as an explicit named hypothesis at all eleven of its consumers, so it cannot be discharged by instance search and the conditionality is honest -- but it is unproved. Neither Mathlib nor the anchor has it at the pinned revision. NARROWED 2026-08-07 to the semistable-left case: CategoryTheory.Triangulated.StabilityMassSemistableTriangleInequality. Discharging THAT now discharges this item, via stabilityMassTriangleInequality_of_semistable.",
+          "kind_class": "interface",
+          "kind_label": "source-review-pending",
+          "statement": "MECHANICALLY CLOSED 2026-08-11; HUMAN DISCHARGE PENDING. CategoryTheory.Triangulated.stabilityMassTriangleInequality now inhabits the explicit StabilityMassTriangleInequality proposition from arbitrary-phase semistable-left subadditivity and HN filtration assembly. CategoryTheory.Triangulated.stabilityDistanceTopologyCompatible consumes it to prove the existing Section 6 topology is generated by full-distance balls. Both declarations are sorry-free, axiom-gated, and introduce no global metric or topology instance. The frontier entry retains discharged_by: null because registry-1.0 requires a named human exact-head review and owner acceptance, which an agent may not supply.",
           "discharged_by": null
         }
       ],
@@ -325,7 +325,7 @@
       "minted_by": "Chris Dare",
       "supersedes": null,
       "superseded_by": null,
-      "note": "Minted 2026-08-06 during an independent machine review of 56c7531, which found that the ONLY open frontier item in the registry was a stale one about the universal cover, while the two gaps that genuinely block `exact` on Proposition 8.1 and Lemma 8.2 had no item at all. This is the Proposition 8.1 half. The statement is not open mathematics: it is DHKK Proposition 3.3, quoted in arXiv 1811.10592 as 'if A -> B -> C is an exact triangle, then m(B) <= m(A) + m(C)', and the Lean rendering matches it exactly. Ikeda's proof uses HN polygons, a short-exact inequality, reduction through an HN tower by the octahedral axiom, and heart cohomology. Recommended order: heart-level short-exact mass inequality; semistable-left distinguished-triangle reduction via cohomology in the heart; arbitrary-left reduction along its HN tower by octahedral assembly. STEP 3 OF 3 IS DONE (2026-08-07): stabilityMassTriangleInequality_of_semistable in BridgelandStabLean/GroupAction/StabilityMassTriangle.lean, sorry-free and axiom-clean. It was independent of steps 1 and 2 and is purely categorical. The two analytic steps remain, and they are now the whole obligation. Drafted by an Opus 5 machine review on 2026-08-06 and ACCEPTED by the owner on 2026-08-07, at which point minted_by was corrected from the draft marker to the owner. The entry itself is unchanged from the draft; acceptance is of the mint, not of any proof -- the frontier item stability-mass-triangle remains OPEN.",
+      "note": "Minted 2026-08-06 during an independent machine review of 56c7531, which found that the ONLY open frontier item in the registry was a stale one about the universal cover, while the two gaps that genuinely block `exact` on Proposition 8.1 and Lemma 8.2 had no item at all. This is the Proposition 8.1 half. The statement is not open mathematics: it is DHKK Proposition 3.3, quoted in arXiv 1811.10592 as 'if A -> B -> C is an exact triangle, then m(B) <= m(A) + m(C)', and the Lean rendering matches it exactly. Ikeda's proof route uses HN polygons, a short-exact inequality, reduction through an HN tower by the octahedral axiom, and heart cohomology. STATUS CORRECTION 2026-08-11: all three proof stages are present on current main. stabilityMassSemistableLeftTriangleInequality supplies the analytic semistable-left case, stabilityMassTriangleInequality performs the HN assembly, and stabilityDistanceTopologyCompatible closes the topology premise. This machine correction does not discharge the frontier item or promote Proposition 8.1: discharged_by remains null, every citation remains no_claim, and a named human exact-head source review plus owner acceptance is still required.",
       "mint_unresolved_reason": "An obligation names work that is owed; there is no printed statement in the paper for it to match."
     }
   }
