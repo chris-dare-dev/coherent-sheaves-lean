@@ -48,6 +48,35 @@ theorem finrank_topExteriorPower [Nontrivial R] (n : ℕ) :
   rw [exteriorPower.finrank_eq]
   simp
 
+namespace Basis
+
+variable {R M : Type u} [CommRing R] [AddCommGroup M] [Module R M]
+
+/-- A basis indexed by `Fin n` canonically identifies the top exterior power with the scalar
+ring. The chosen coordinate is the exterior product of the basis in its `Fin n` order. -/
+noncomputable def topExteriorPowerEquiv {n : ℕ} (b : Basis (Fin n) R M) :
+    (⋀[R]^n M) ≃ₗ[R] R := by
+  let B : Basis (Set.powersetCard (Fin n) n) R (⋀[R]^n M) := b.exteriorPower n
+  let s₀ : Set.powersetCard (Fin n) n :=
+    Set.powersetCard.ofCard (Finset.card_univ.trans (Fintype.card_fin n))
+  letI : Unique (Set.powersetCard (Fin n) n) :=
+    { default := s₀
+      uniq := fun s => by
+        apply Subtype.ext
+        exact Finset.eq_of_subset_of_card_le (Finset.subset_univ _) (by
+          simpa [s₀] using s.prop.ge) }
+  exact B.equivFun.trans (LinearEquiv.funUnique _ R R)
+
+end Basis
+
+/-- The determinant of the standard free rank-`n` module is canonically free of rank one.
+
+The chosen generator is the exterior product of the standard basis in its `Fin n` order.  This
+linear equivalence is the algebraic local model used by determinant descent. -/
+noncomputable def topExteriorPowerEquiv (n : ℕ) :
+    topExteriorPower R n ≃ₗ[R] R :=
+  (Pi.basisFun R (Fin n)).topExteriorPowerEquiv
+
 end Module
 
 namespace AlgebraicGeometry.Scheme.Modules

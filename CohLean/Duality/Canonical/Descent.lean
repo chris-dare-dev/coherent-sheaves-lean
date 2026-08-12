@@ -11,8 +11,11 @@ import CohLean.Topology.Opens.CoversTop
 This file isolates the genuinely sheaf-theoretic step in issue #119.  A family of local
 trivializations by the free sheaf on `Fin n` canonically produces the repository's
 `FiniteLocallyFreeData`.  For a smooth morphism of pure relative dimension `n`, Mathlib supplies
-a standard-smooth affine chart around every point; `SmoothCotangentTrivializations` records only
-the still-missing comparison which carries the affine Kähler calculation through sheafification.
+a standard-smooth affine chart around every point.  Over the one-point scheme `Spec k`, the
+chart is normalized to the exact base-field map used by `relativeDifferentialsPresheaf`; its
+Kähler module then has a concrete `Fin n` basis and rank-one top exterior power.
+`SmoothCotangentTrivializations` records only the still-missing comparison which carries that
+affine calculation through sheafification.
 
 Thus the global fixed-rank conclusion below is a theorem from explicit local comparisons, not a
 new existence axiom.  Constructing those comparisons from smoothness alone, and descending the
@@ -99,17 +102,43 @@ variable {k : Type u} [Field k] (X : Variety k)
 
 /-- A standard-smooth affine chart of relative dimension `n` around a point. -/
 structure SmoothChart (n : ℕ) (x : X.toScheme) where
-  target : (Spec (CommRingCat.of k)).Opens
-  targetAffine : IsAffineOpen target
   source : X.toScheme.Opens
   sourceAffine : IsAffineOpen source
   mem_source : x ∈ source
-  source_le_preimage : source ≤ X.structureMorphism ⁻¹ᵁ target
   standardSmooth :
     RingHom.IsStandardSmoothOfRelativeDimension n
-      (X.structureMorphism.appLE target source source_le_preimage).hom
+      ((baseFieldToStructurePresheaf X).app (.op source)).hom
 
 namespace SmoothChart
+
+/-- The Kähler differential module on a chosen smooth chart has a concrete `Fin n` basis. -/
+noncomputable def cotangentBasis {n : ℕ} {x : X.toScheme} (C : SmoothChart X n x) :
+    Module.Basis (Fin n) (X.toScheme.presheaf.obj (.op C.source))
+      (CommRingCat.KaehlerDifferential
+        ((baseFieldToStructurePresheaf X).app (.op C.source))) := by
+  letI : Nonempty C.source := ⟨⟨x, C.mem_source⟩⟩
+  exact relativeDifferentialsPresheaf_obj_basis X (.op C.source) n C.standardSmooth
+
+/-- The chart Kähler module is explicitly the standard free rank-`n` module. -/
+noncomputable def cotangentLinearEquiv {n : ℕ} {x : X.toScheme}
+    (C : SmoothChart X n x) :
+    (Fin n → X.toScheme.presheaf.obj (.op C.source))
+      ≃ₗ[X.toScheme.presheaf.obj (.op C.source)]
+        CommRingCat.KaehlerDifferential
+          ((baseFieldToStructurePresheaf X).app (.op C.source)) :=
+  C.cotangentBasis.equivFun.symm
+
+/-- The top exterior power of the chart's Kähler differential module is free of rank one. -/
+noncomputable def cotangentTopExteriorPowerEquiv
+    {n : ℕ} {x : X.toScheme} (C : SmoothChart X n x) :
+    (⋀[X.toScheme.presheaf.obj (.op C.source)]^n
+      (CommRingCat.KaehlerDifferential
+        ((baseFieldToStructurePresheaf X).app (.op C.source))))
+      ≃ₗ[X.toScheme.presheaf.obj (.op C.source)]
+        X.toScheme.presheaf.obj (.op C.source) := by
+  letI : Nonempty C.source := ⟨⟨x, C.mem_source⟩⟩
+  exact relativeDifferentialsPresheaf_obj_topExteriorPowerEquiv
+    X (.op C.source) n C.standardSmooth
 
 /-- Choose the standard-smooth chart supplied at a point by smooth pure relative dimension. -/
 noncomputable def ofSmooth {n : ℕ}
@@ -118,14 +147,33 @@ noncomputable def ofSmooth {n : ℕ}
   Classical.choice (show Nonempty (SmoothChart X n x) from by
     obtain ⟨U, hU, V, hV, hx, e, hstd⟩ :=
       h.exists_isStandardSmoothOfRelativeDimension x
+    have hUtop : U = ⊤ := by
+      letI : Subsingleton (Spec (CommRingCat.of k)) := inferInstance
+      ext y
+      constructor
+      · intro _
+        trivial
+      · intro _
+        rw [Subsingleton.elim y (X.structureMorphism x)]
+        exact e hx
+    subst U
+    have hbase : RingHom.IsStandardSmoothOfRelativeDimension 0
+        (Scheme.ΓSpecIso (CommRingCat.of k)).inv.hom :=
+      RingHom.IsStandardSmoothOfRelativeDimension.equiv
+        (Scheme.ΓSpecIso (CommRingCat.of k)).symm.commRingCatIsoToRingEquiv
+    have hcomp := hstd.comp hbase
+    have hrelative : RingHom.IsStandardSmoothOfRelativeDimension n
+        ((baseFieldToStructurePresheaf X).app (.op V)).hom := by
+      change RingHom.IsStandardSmoothOfRelativeDimension n
+        (((X.toScheme.presheaf.map (homOfLE (show V ≤ ⊤ from le_top)).op).hom.comp
+          X.structureMorphism.appTop.hom).comp
+            (Scheme.ΓSpecIso (CommRingCat.of k)).inv.hom)
+      simpa [Scheme.Hom.appLE, CommRingCat.hom_comp] using hcomp
     exact ⟨
-      { target := U
-        targetAffine := hU
-        source := V
+      { source := V
         sourceAffine := hV
         mem_source := hx
-        source_le_preimage := e
-        standardSmooth := hstd }⟩)
+        standardSmooth := hrelative }⟩)
 
 end SmoothChart
 

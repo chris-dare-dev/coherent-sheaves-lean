@@ -126,9 +126,11 @@ sheaf as the determinant of that cotangent sheaf, proves the canonical line is c
 its Picard class and Cartier representatives, and constructs the derived object `ω_X[n]`. The
 degree-zero convention is checked on the smooth proper point. An explicit rank-`n` sheaf
 trivialization on the canonical smooth-chart cover now globalizes to fixed-rank locally-free
-cotangent data. Constructing those sheaf trivializations directly from the objectwise chart
-calculation, descending their top exterior powers and transition determinants, and the general
-ringed-space construction remain visible upstream boundaries.
+cotangent data. The chart algebra is normalized to the actual base-field map and now supplies a
+concrete `Fin n` Kähler basis together with its rank-one top exterior equivalence. Constructing
+the sheaf trivializations directly from this localized calculation, constructing duals of finite
+locally free sheaves, and the general ringed-space construction remain visible upstream
+boundaries.
 
 `Duality/Serre` uses the constructed canonical complex and packages a linear realization of
 Mathlib's actual `Abelian.Ext` groups. From explicit perfect-pairing data it proves complementary

@@ -243,6 +243,52 @@ theorem relativeDifferentialsPresheaf_obj_rank
       (X.toScheme.presheaf.obj U)) = n
   exact Algebra.IsStandardSmoothOfRelativeDimension.rank_kaehlerDifferential n
 
+/-- On a nonempty standard-smooth affine chart of relative dimension `n`, the objectwise
+relative differential module has a chosen basis indexed by `Fin n`.
+
+This strengthens the separate freeness and rank statements to the concrete algebraic
+trivialization needed by the affine sheafification comparison. -/
+noncomputable def relativeDifferentialsPresheaf_obj_basis
+    (U : X.toScheme.Opensᵒᵖ) (n : ℕ)
+    (h : ((baseFieldToStructurePresheaf X).app U).hom.IsStandardSmoothOfRelativeDimension n)
+    [Nontrivial (X.toScheme.presheaf.obj U)] :
+    Module.Basis (Fin n) (X.toScheme.presheaf.obj U)
+      (CommRingCat.KaehlerDifferential
+        ((baseFieldToStructurePresheaf X).app U)) := by
+  letI : Algebra (X.baseFieldPresheaf.obj U) (X.toScheme.presheaf.obj U) :=
+    ((baseFieldToStructurePresheaf X).app U).hom.toAlgebra
+  letI : Algebra.IsStandardSmoothOfRelativeDimension n
+      (X.baseFieldPresheaf.obj U) (X.toScheme.presheaf.obj U) := h
+  letI : Algebra.IsStandardSmooth (X.baseFieldPresheaf.obj U)
+      (X.toScheme.presheaf.obj U) :=
+    Algebra.IsStandardSmoothOfRelativeDimension.isStandardSmooth n
+  letI : Module.Free (X.toScheme.presheaf.obj U)
+      (CommRingCat.KaehlerDifferential
+        ((baseFieldToStructurePresheaf X).app U)) :=
+    relativeDifferentialsPresheaf_obj_free X U n h
+  letI : Module.Finite (X.toScheme.presheaf.obj U)
+      (CommRingCat.KaehlerDifferential
+        ((baseFieldToStructurePresheaf X).app U)) :=
+    Module.finite_of_rank_eq_nat
+      (relativeDifferentialsPresheaf_obj_rank X U n h)
+  apply Module.finBasisOfFinrankEq
+  apply Nat.cast_injective (R := Cardinal)
+  rw [Module.finrank_eq_rank]
+  exact relativeDifferentialsPresheaf_obj_rank X U n h
+
+/-- The top exterior power of the objectwise relative differential module on a nonempty
+standard-smooth chart is canonically a free module of rank one, after choosing the `Fin n`
+basis above. -/
+noncomputable def relativeDifferentialsPresheaf_obj_topExteriorPowerEquiv
+    (U : X.toScheme.Opensᵒᵖ) (n : ℕ)
+    (h : ((baseFieldToStructurePresheaf X).app U).hom.IsStandardSmoothOfRelativeDimension n)
+    [Nontrivial (X.toScheme.presheaf.obj U)] :
+    (⋀[X.toScheme.presheaf.obj U]^n
+      (CommRingCat.KaehlerDifferential
+        ((baseFieldToStructurePresheaf X).app U))) ≃ₗ[X.toScheme.presheaf.obj U]
+      X.toScheme.presheaf.obj U :=
+  (relativeDifferentialsPresheaf_obj_basis X U n h).topExteriorPowerEquiv
+
 end Variety
 
 namespace SmoothProperVariety

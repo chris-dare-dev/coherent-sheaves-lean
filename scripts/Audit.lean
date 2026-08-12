@@ -138,12 +138,17 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms Variety.relativeDerivationPresheaf_d
 #print axioms Variety.relativeDifferentialsPresheaf_obj_free
 #print axioms Variety.relativeDifferentialsPresheaf_obj_rank
+#print axioms Variety.relativeDifferentialsPresheaf_obj_basis
+#print axioms Variety.relativeDifferentialsPresheaf_obj_topExteriorPowerEquiv
 #print axioms Scheme.Modules.FixedRankTrivializations
 #print axioms Scheme.Modules.FixedRankTrivializations.localGenerators
 #print axioms Scheme.Modules.FixedRankTrivializations.localGenerators_isLocallyFreeData
 #print axioms Scheme.Modules.FixedRankTrivializations.finiteLocallyFree
 #print axioms Scheme.Modules.FixedRankTrivializations.isLocallyFree
 #print axioms Variety.SmoothChart
+#print axioms Variety.SmoothChart.cotangentBasis
+#print axioms Variety.SmoothChart.cotangentLinearEquiv
+#print axioms Variety.SmoothChart.cotangentTopExteriorPowerEquiv
 #print axioms Variety.SmoothChart.ofSmooth
 #print axioms Variety.SmoothCotangentTrivializations
 #print axioms Variety.SmoothCotangentTrivializations.chartSources_coversTop
@@ -928,6 +933,8 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 -- explicit certificates. The coherent extension requires either finite locally free determinant
 -- data or a visible two-term finite locally free resolution.
 #print axioms Module.finrank_topExteriorPower
+#print axioms Module.Basis.topExteriorPowerEquiv
+#print axioms Module.topExteriorPowerEquiv
 #print axioms AlgebraicGeometry.Scheme.Modules.FiniteLocallyFreeData
 #print axioms AlgebraicGeometry.Scheme.Modules.FiniteLocallyFreeData.isLocallyFree
 #print axioms AlgebraicGeometry.Scheme.Modules.FiniteLocallyFreeData.ofIso
