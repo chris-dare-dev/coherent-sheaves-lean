@@ -20,7 +20,8 @@ The hypotheses remain explicit for substantive upstream reasons. The companion
 by sheafifying objectwise Kähler differentials and proves the free rank-`n` calculation on
 standard-smooth charts. Mathlib's general presheaf construction for a morphism of ringed spaces is
 still marked TODO, however, and there is no theorem carrying that calculation through
-sheafification to fixed-rank locally-free data or any sheaf exterior-power functor. Thus
+sheafification to fixed-rank locally-free data or proving the resulting top exterior power
+invertible. Thus
 `CanonicalSheafData` accepts its determinant certificate as visible data. It does not postulate
 Serre duality as an axiom.
 
