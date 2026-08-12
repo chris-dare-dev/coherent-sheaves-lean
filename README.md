@@ -125,10 +125,11 @@ charts. For smooth proper varieties of a fixed relative dimension, it packages t
 sheaf as the determinant of that cotangent sheaf, proves the canonical line is coherent, exposes
 its Picard class and Cartier representatives, and constructs the derived object `ω_X[n]`. The
 degree-zero convention is checked on the smooth proper point. An explicit rank-`n` sheaf
-trivialization on the canonical smooth-chart cover now globalizes to fixed-rank locally-free
-cotangent data. Constructing those sheaf trivializations directly from the objectwise chart
-calculation, descending their top exterior powers and transition determinants, and the general
-ringed-space construction remain visible upstream boundaries.
+trivialization is now constructed directly from each standard-smooth affine chart and globalized
+to fixed-rank locally-free cotangent data. The top exterior power is descended to an invertible
+sheaf with an explicit tensor-dual inverse, yielding canonical-sheaf data automatically from the
+smooth pure-dimension certificate. The general relative-differentials construction for arbitrary
+morphisms of ringed spaces remains a visible upstream boundary.
 
 `Duality/Serre` uses the constructed canonical complex and packages a linear realization of
 Mathlib's actual `Abelian.Ext` groups. From explicit perfect-pairing data it proves complementary

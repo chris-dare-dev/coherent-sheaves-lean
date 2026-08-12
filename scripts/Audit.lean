@@ -104,8 +104,9 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms Cohomology.FiniteDimensionalCohomology
 #print axioms Cohomology.FiniteDimensionalCohomology.dimension_iso
 
--- Canonical-sheaf data is built from explicit cotangent/determinant certificates. The
--- canonical line is coherent, and the derived object is constructed as `ω_X[n]`.
+-- Canonical-sheaf data is constructed from smooth relative differentials. Standard-smooth
+-- charts globalize through sheafification, their determinant line has an explicit dual inverse,
+-- and the derived object is constructed as `ω_X[n]`.
 #print axioms LinearMap.exteriorPower
 #print axioms LinearMap.exteriorPower_ιMulti
 #print axioms PresheafOfModules.exteriorPower
@@ -115,9 +116,22 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms Scheme.Modules.exteriorPower
 #print axioms Scheme.Modules.exteriorPowerMapIso
 #print axioms Scheme.Modules.exteriorPowerSheafification
+#print axioms Scheme.Modules.topPowerset
+#print axioms Scheme.Modules.topExteriorFreeEquiv
+#print axioms Scheme.Modules.topExteriorFreeEquiv_ιMulti
+#print axioms Scheme.Modules.topExteriorFreeIso
 #print axioms Scheme.Modules.exteriorPowerOver
+#print axioms Scheme.Modules.exteriorPowerOverMapIsoOfIso
+#print axioms Scheme.Modules.exteriorPowerOverMapIso
+#print axioms Scheme.Modules.topExteriorFreeOverIso
 #print axioms Scheme.Modules.overExteriorPowerPresheafIso
 #print axioms Scheme.Modules.exteriorPowerOverIso
+#print axioms Scheme.Modules.dualPresheaf
+#print axioms Scheme.Modules.evaluation
+#print axioms Scheme.Modules.dualLine
+#print axioms Scheme.Modules.tensorDualIso
+#print axioms Scheme.Modules.dualLine_isInvertible
+#print axioms Scheme.Modules.LineBundleData.ofIsInvertible
 #print axioms SheafOfModules.IsInvertible.isFinitePresentation
 #print axioms Scheme.Modules.LineBundleData.isCoherent
 #print axioms Scheme.Modules.LineBundleData.finiteLocallyFree
@@ -142,19 +156,32 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms Scheme.Modules.FixedRankTrivializations.localGenerators
 #print axioms Scheme.Modules.FixedRankTrivializations.localGenerators_isLocallyFreeData
 #print axioms Scheme.Modules.FixedRankTrivializations.finiteLocallyFree
+#print axioms Scheme.Modules.FixedRankTrivializations.topExteriorTrivialization
+#print axioms Scheme.Modules.FixedRankTrivializations.topExteriorPower_isInvertible
+#print axioms Scheme.Modules.FixedRankTrivializations.exteriorDeterminantData
+#print axioms Scheme.Modules.FixedRankTrivializations.determinantData
 #print axioms Scheme.Modules.FixedRankTrivializations.isLocallyFree
 #print axioms Variety.SmoothChart
 #print axioms Variety.SmoothChart.ofSmooth
+#print axioms Variety.SmoothChart.standardSmooth_baseField
 #print axioms Variety.SmoothCotangentTrivializations
+#print axioms Variety.relativeDifferentialsChartIso
+#print axioms Variety.SmoothCotangentTrivializations.ofSmooth
 #print axioms Variety.SmoothCotangentTrivializations.chartSources_coversTop
 #print axioms Variety.SmoothCotangentTrivializations.fixedRankTrivializations
 #print axioms Variety.SmoothCotangentTrivializations.finiteLocallyFree
 #print axioms Variety.SmoothCotangentTrivializations.relativeDifferentials_isLocallyFree
+#print axioms Variety.relativeDifferentialsFiniteLocallyFree
+#print axioms Variety.relativeDifferentials_isLocallyFree_of_smooth
+#print axioms Variety.relativeDifferentialsExteriorDeterminantData
+#print axioms Variety.relativeDifferentialsDeterminantData
 #print axioms SmoothProperVariety.finiteCohomology
 #print axioms SmoothProperVariety.point
 #print axioms SmoothProperVariety.CanonicalSheafData
 #print axioms SmoothProperVariety.CanonicalSheafData.ofRelativeDifferentials
 #print axioms SmoothProperVariety.CanonicalSheafData.ofRelativeDifferentials_cotangent
+#print axioms SmoothProperVariety.CanonicalSheafData.ofSmoothRelativeDifferentials
+#print axioms SmoothProperVariety.CanonicalSheafData.ofSmoothRelativeDifferentials_cotangent
 #print axioms SmoothProperVariety.CanonicalSheafData.canonicalClass
 #print axioms SmoothProperVariety.CanonicalSheafData.antiCanonicalClass
 #print axioms SmoothProperVariety.CanonicalSheafData.canonicalClass_eq_of_iso

@@ -15,21 +15,18 @@ the relative cotangent sheaf. This file packages that construction using CohLean
 fixed-rank locally-free and determinant interfaces, and exposes its Picard and Cartier-divisor
 classes.
 
-The hypotheses remain explicit for substantive upstream reasons. The companion
-`Canonical.Differentials` module constructs a relative cotangent sheaf for varieties over a field
-by sheafifying objectwise Kähler differentials and proves the free rank-`n` calculation on
-standard-smooth charts. Mathlib's general presheaf construction for a morphism of ringed spaces is
-still marked TODO, however, and there is no theorem carrying that calculation through
-sheafification to fixed-rank locally-free data or proving the resulting top exterior power
-invertible. Thus
-`CanonicalSheafData` accepts its determinant certificate as visible data. It does not postulate
-Serre duality as an axiom.
+`CanonicalSheafData` retains explicit cotangent and determinant fields so callers may package a
+chosen model. The companion `Canonical.Differentials` module constructs the relative cotangent
+sheaf for varieties over a field, while `Canonical.Descent` carries the standard-smooth chart
+calculation through sheafification, proves fixed-rank local freeness, constructs the determinant
+line and its explicit tensor inverse, and supplies
+`CanonicalSheafData.ofSmoothRelativeDifferentials`. Mathlib's general relative-differentials
+construction for arbitrary morphisms of ringed spaces remains outside this variety-specific API.
 
-Once the global fixed-rank and determinant-descent theorems land, they can construct this package
-using `CanonicalSheafData.ofRelativeDifferentials`. `Canonical.Derived` already constructs the
-derived-category object `ω_X[n]` from this package. Likewise, `DualizingSheafComparison` only
-compares a separately constructed candidate with the canonical sheaf; it does not assert that an
-arbitrary module sheaf is dualizing.
+`Canonical.Derived` constructs the derived-category object `ω_X[n]` from this package. Likewise,
+`DualizingSheafComparison` only compares a separately constructed candidate with the canonical
+sheaf; it does not assert that an arbitrary module sheaf is dualizing or postulate Serre duality as
+an axiom.
 -/
 
 universe u
