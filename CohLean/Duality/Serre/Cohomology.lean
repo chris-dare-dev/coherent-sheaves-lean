@@ -3,7 +3,7 @@ Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 -/
 import CohLean.Cohomology.EulerCharacteristic.Additivity
-import CohLean.Duality.Canonical.Basic
+import CohLean.Duality.Canonical.Derived
 import CohLean.AlgebraicGeometry.Divisors.Determinant
 import CohLean.Intersection.Surface.Number
 import Mathlib.Algebra.Homology.DerivedCategory.Basic
@@ -18,16 +18,16 @@ For a smooth proper variety of pure dimension `n`, Serre duality should identify
 
 `H^i(X, F)ᵛ ≃ Ext^(n-i)(F, ω_X)`.
 
-The pinned Mathlib has derived categories and `Ext`, but no dualizing-complex construction,
-derived global-sections functor into `D(k)`, or coherent `RHom`.  Accordingly this file does not
-postulate a duality theorem.  It packages the exact data a future geometric construction must
-produce and derives the finite-dimensional pairing and Euler-characteristic consequences.
+The pinned Mathlib has derived categories and `Ext`, but no derived global-sections functor into
+`D(k)`, coherent `RHom`, or Grothendieck-duality theorem. Accordingly this file packages the
+exact remaining realization data and derives the finite-dimensional pairing and
+Euler-characteristic consequences.
 
-`DerivedStatement` records the derived-category shape, including the convention that the
-dualizing object is `ω_X[n]`.  `Data` records the cohomology-level realization against Mathlib's
-actual `Abelian.Ext` groups.  `LocallyFreeSpecialization` identifies those Ext groups with the
-cohomology of `Fᵛ ⊗ ω_X`; from these inputs this file proves the usual dimension and Euler
-symmetries.  Every construction hypothesis is a visible structure field.
+`CanonicalSheafData.dualizingComplex` constructs the object `ω_X[n]` rather than accepting it as
+a field. `DerivedStatement` records the functors and duality isomorphism still missing upstream.
+`Data` records the cohomology-level realization against Mathlib's actual `Abelian.Ext` groups.
+`LocallyFreeSpecialization` identifies those Ext groups with the cohomology of `Fᵛ ⊗ ω_X`; from
+these inputs this file proves the usual dimension and Euler symmetries.
 -/
 
 universe u
@@ -53,27 +53,13 @@ local instance moduleHasDerivedCategory :
     HasDerivedCategory (ModuleCat.{u + 1} k) :=
   HasDerivedCategory.standard _
 
-/-- A coherent representative of the canonical sheaf. -/
-def canonicalCohObject (K : X.CanonicalSheafData n)
-    (hK : Scheme.Modules.IsCoherent X.toVariety.toScheme K.canonicalSheaf) :
-    Coh X.toVariety.toScheme :=
-  ⟨K.canonicalSheaf, hK⟩
-
 /-- The derived-category form of the missing Serre-duality construction.
 
 The functor `linearDualShift` is intended to be `RHom_k(-, k)[-n]`.  It remains a field because
 that derived dual functor is not currently available for the needed universe of `ModuleCat`.
-The `canonicalShiftIso` field fixes the geometric shift convention independently: the chosen
-dualizing object is identified with the canonical sheaf placed in cohomological degree `n`. -/
-structure DerivedStatement (K : X.CanonicalSheafData n)
-    (hK : Scheme.Modules.IsCoherent X.toVariety.toScheme K.canonicalSheaf) where
-  /-- A chosen dualizing object in the coherent derived category. -/
-  dualizingObject : DerivedCategory (Coh X.toVariety.toScheme)
-  /-- The smooth dualizing object is `ω_X[n]`; this field fixes the shift convention. -/
-  canonicalShiftIso :
-    dualizingObject ≅
-      (DerivedCategory.singleFunctor (Coh X.toVariety.toScheme) (n : ℤ)).obj
-        (canonicalCohObject K hK)
+The dualizing object itself is the constructed `K.dualizingComplex = ω_X[n]`, not a field of
+this structure. -/
+structure DerivedStatement (K : X.CanonicalSheafData n) where
   /-- Derived global sections with its base-field-linear target. -/
   rGlobalSections :
     DerivedCategory (Coh X.toVariety.toScheme) ⥤
@@ -90,6 +76,23 @@ structure DerivedStatement (K : X.CanonicalSheafData n)
   dualityIso :
     rHomDualizing ≅ rGlobalSections.op ⋙ linearDualShift
 
+namespace DerivedStatement
+
+variable {K : X.CanonicalSheafData n}
+
+/-- The dualizing object associated to a derived Serre statement is the constructed
+canonical complex `ω_X[n]`. -/
+noncomputable abbrev dualizingObject (_ : DerivedStatement K) := K.dualizingComplex
+
+/-- The canonical shift identification attached to every derived Serre statement. -/
+noncomputable def canonicalShiftIso (_ : DerivedStatement K) :
+    K.dualizingComplex ≅
+      (DerivedCategory.singleFunctor (Coh X.toVariety.toScheme) (n : ℤ)).obj
+        K.canonicalCohObject :=
+  K.dualizingComplexIso
+
+end DerivedStatement
+
 section Ext
 
 local instance : HasExt.{u + 1} (Coh X.toVariety.toScheme) :=
@@ -102,17 +105,15 @@ local instance : HasExt.{u + 1} (Coh X.toVariety.toScheme) :=
 structure from being an unrelated replacement.  Perfection is carried by the linear
 equivalence `duality`; it is not asserted as a proposition with no map.
 -/
-structure Data (K : X.CanonicalSheafData n)
-    (hK : Scheme.Modules.IsCoherent X.toVariety.toScheme K.canonicalSheaf)
-    (D : FiniteCohomology X.toVariety) where
+structure Data (K : X.CanonicalSheafData n) (D : FiniteCohomology X.toVariety) where
   /-- The derived-category statement from which this realization is intended to be extracted. -/
-  derived : DerivedStatement K hK
+  derived : DerivedStatement K
   /-- A base-field-linear realization of `Ext^j(F, ω_X)`. -/
   extSpace : Coh X.toVariety.toScheme → ℕ → ModuleCat.{u + 1} k
   /-- Forgetting scalars recovers Mathlib's actual Ext group. -/
   extComparison : ∀ (F : Coh X.toVariety.toScheme) (j : ℕ),
     (forget₂ (ModuleCat.{u + 1} k) AddCommGrpCat.{u + 1}).obj (extSpace F j) ≅
-      AddCommGrpCat.of (Abelian.Ext.{u + 1} F (canonicalCohObject K hK) j)
+      AddCommGrpCat.of (Abelian.Ext.{u + 1} F K.canonicalCohObject j)
   /-- The Ext spaces are finite-dimensional. -/
   extFinite : ∀ (F : Coh X.toVariety.toScheme) (j : ℕ),
     Module.Finite k (extSpace F j)
@@ -126,8 +127,7 @@ structure Data (K : X.CanonicalSheafData n)
 namespace Data
 
 variable {K : X.CanonicalSheafData n}
-variable {hK : Scheme.Modules.IsCoherent X.toVariety.toScheme K.canonicalSheaf}
-variable {D : FiniteCohomology X.toVariety} (S : Data K hK D)
+variable {D : FiniteCohomology X.toVariety} (S : Data K D)
 
 /-- The perfect pairing `H^i(X,F) × Ext^(n-i)(F,ω_X) → k` extracted from duality. -/
 def pairing (F : Coh X.toVariety.toScheme) (i : ℕ) (hi : i ≤ n) :
@@ -184,7 +184,7 @@ theorem dimension_symmetry (i : ℕ) (hi : i ≤ n) :
 
 /-- The Euler characteristic may be summed exactly through the geometric dimension. -/
 theorem eulerCharacteristic_eq_sum_dimension
-    (S : Data K hK D) (G : Coh X.toVariety.toScheme) :
+    (S : Data K D) (G : Coh X.toVariety.toScheme) :
     D.eulerCharacteristic G =
       ∑ i ∈ Finset.range (n + 1), (-1 : ℤ) ^ i * D.dimension G i := by
   simpa only [FiniteCohomology.eulerCharacteristic, FiniteCohomology.dimension,

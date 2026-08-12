@@ -17,14 +17,16 @@ classes.
 
 The hypotheses remain explicit for substantive upstream reasons. The companion
 `Canonical.Differentials` module constructs a relative cotangent sheaf for varieties over a field
-by sheafifying objectwise Kähler differentials. Mathlib's general presheaf construction for a
-morphism of ringed spaces is still marked TODO, however, and there is no theorem connecting
-smoothness to finite local freeness of this sheaf, no sheaf exterior-power functor, and no
-dualizing-complex API. Thus `CanonicalSheafData` accepts its determinant certificate as visible
-data. It does not postulate either a dualizing object or Serre duality as an axiom.
+by sheafifying objectwise Kähler differentials and proves the free rank-`n` calculation on
+standard-smooth charts. Mathlib's general presheaf construction for a morphism of ringed spaces is
+still marked TODO, however, and there is no theorem carrying that calculation through
+sheafification to fixed-rank locally-free data or any sheaf exterior-power functor. Thus
+`CanonicalSheafData` accepts its determinant certificate as visible data. It does not postulate
+Serre duality as an axiom.
 
-Once the smooth fixed-rank and determinant-descent theorems land, they can construct this package
-using `CanonicalSheafData.ofRelativeDifferentials`. Likewise, `DualizingSheafComparison` only
+Once the global fixed-rank and determinant-descent theorems land, they can construct this package
+using `CanonicalSheafData.ofRelativeDifferentials`. `Canonical.Derived` already constructs the
+derived-category object `ω_X[n]` from this package. Likewise, `DualizingSheafComparison` only
 compares a separately constructed candidate with the canonical sheaf; it does not assert that an
 arbitrary module sheaf is dualizing.
 -/
@@ -138,7 +140,7 @@ end CanonicalDivisorData
 /-- Comparison data between a separately constructed dualizing-sheaf candidate and `ω_X`.
 
 This structure deliberately contains no field claiming that `dualizingCandidate` is dualizing;
-that property must come from a future dualizing-complex construction. -/
+that property must come from a comparison with the constructed canonical complex. -/
 structure DualizingSheafComparison
     (dualizingCandidate : X.toVariety.toScheme.Modules) where
   /-- On a smooth pure-dimensional target, the candidate is identified with `ω_X`. -/

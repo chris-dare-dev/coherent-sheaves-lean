@@ -71,7 +71,7 @@ CohLean/
 │   ├── Simplicial/
 │   └── SpectralSequence/
 ├── Duality/
-│   ├── Canonical/                # canonical sheaf, class, and dualizing boundary
+│   ├── Canonical/                # canonical sheaf, class, and canonical complex
 │   └── Serre/                    # derived statement, perfect pairings, Euler symmetry
 ├── Intersection/
 │   ├── ChernCharacter/
@@ -120,17 +120,20 @@ choice of scalar structures.
 
 For varieties over a field, `Duality/Canonical` constructs the relative cotangent module sheaf by
 sheafifying the objectwise Kähler differential presheaf and proves its universal property for
-derivations into module sheaves. For smooth proper varieties of a fixed relative dimension, it
-packages the canonical sheaf as the determinant of that cotangent sheaf, exposes its Picard class
-and Cartier representatives, and records comparison data for a future dualizing object. The
-smooth fixed-rank theorem, determinant descent, general ringed-space construction, and
-dualizing-complex API remain visible boundaries.
+derivations into module sheaves, together with the free rank calculation on standard-smooth
+charts. For smooth proper varieties of a fixed relative dimension, it packages the canonical
+sheaf as the determinant of that cotangent sheaf, proves the canonical line is coherent, exposes
+its Picard class and Cartier representatives, and constructs the derived object `ω_X[n]`. The
+degree-zero convention is checked on the smooth proper point. Carrying the chart calculation
+through sheafification to a global fixed-rank atlas, determinant descent, and the general
+ringed-space construction remain visible upstream boundaries.
 
-`Duality/Serre` now fixes the derived shift convention and packages a linear realization of
+`Duality/Serre` uses the constructed canonical complex and packages a linear realization of
 Mathlib's actual `Abelian.Ext` groups. From explicit perfect-pairing data it proves complementary
 cohomology dimensions and the sign `χ(F)=(-1)^nχ(Fᵛ⊗ω_X)`. On surfaces, the resulting Picard
-symmetry and the geometric Snapper pairing prove the divisor Riemann--Roch formula. The
-dualizing construction itself remains visible input rather than an axiom.
+symmetry and the geometric Snapper pairing prove the divisor Riemann--Roch formula. Derived
+global sections, coherent `RHom`, and the Grothendieck-duality equivalence remain visible inputs
+rather than axioms.
 
 For surfaces, `RiemannRoch/Surface/NumericalVariety` turns compatible reconstructed Chern data,
 geometric Todd components, and a coherent-sheaf HRR theorem into a concrete

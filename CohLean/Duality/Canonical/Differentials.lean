@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 -/
 import CohLean.Duality.Canonical.Basic
 import Mathlib.Algebra.Category.ModuleCat.Presheaf.Sheafification
+import Mathlib.RingTheory.Smooth.StandardSmoothCotangent
 
 /-!
 # Relative differentials of a variety over a field
@@ -16,13 +17,14 @@ presheaf of modules; sheafifying it gives an object of `X.toScheme.Modules`.
 The resulting sheaf represents `k`-linear derivations into module sheaves: the declarations
 `relativeDifferentialsDesc_fac` and `relativeDifferentialsDesc_unique` are its factorization and
 uniqueness properties.  On every open, the presheaf before sheafification is literally the
-ordinary Kähler differential module.
+ordinary Kähler differential module. On a standard-smooth chart of relative dimension `n`,
+that module is free and has rank `n`.
 
 This construction uses that the base is `Spec k`, so its inverse-image ring can be presented on
 the site of `X` by the constant `k`-presheaf.  It does not fill Mathlib's more general TODO for
-relative differentials of an arbitrary morphism of ringed spaces.  Likewise, smoothness implying
-that this sheaf is finite locally free of the expected rank, and descent of its determinant,
-remain explicit inputs to `CanonicalSheafData.ofRelativeDifferentials`.
+relative differentials of an arbitrary morphism of ringed spaces. Passing the objectwise
+standard-smooth calculation through sheafification to a global finite-locally-free atlas, and
+descent of its determinant, remain explicit inputs to `CanonicalSheafData.ofRelativeDifferentials`.
 -/
 
 universe u
@@ -201,6 +203,45 @@ theorem relativeDerivationPresheaf_d {U : X.toScheme.Opensᵒᵖ}
     (x : X.toScheme.presheaf.obj U) :
     (relativeDerivationPresheaf X).d x =
       CommRingCat.KaehlerDifferential.d x := rfl
+
+/-- On a standard-smooth affine chart, the objectwise relative differential module is free. -/
+theorem relativeDifferentialsPresheaf_obj_free
+    (U : X.toScheme.Opensᵒᵖ) (n : ℕ)
+    (h : ((baseFieldToStructurePresheaf X).app U).hom.IsStandardSmoothOfRelativeDimension n) :
+    Module.Free (X.toScheme.presheaf.obj U)
+      (CommRingCat.KaehlerDifferential
+        ((baseFieldToStructurePresheaf X).app U)) := by
+  unfold CommRingCat.KaehlerDifferential
+  letI : Algebra (X.baseFieldPresheaf.obj U) (X.toScheme.presheaf.obj U) :=
+    ((baseFieldToStructurePresheaf X).app U).hom.toAlgebra
+  letI : Algebra.IsStandardSmoothOfRelativeDimension n
+      (X.baseFieldPresheaf.obj U) (X.toScheme.presheaf.obj U) := h
+  letI : Algebra.IsStandardSmooth (X.baseFieldPresheaf.obj U)
+      (X.toScheme.presheaf.obj U) :=
+    Algebra.IsStandardSmoothOfRelativeDimension.isStandardSmooth n
+  change Module.Free (X.toScheme.presheaf.obj U)
+    (_root_.KaehlerDifferential (X.baseFieldPresheaf.obj U)
+      (X.toScheme.presheaf.obj U))
+  exact Algebra.IsStandardSmooth.free_kaehlerDifferential
+
+/-- On a standard-smooth affine chart of relative dimension `n`, objectwise relative
+differentials have rank `n`. -/
+theorem relativeDifferentialsPresheaf_obj_rank
+    (U : X.toScheme.Opensᵒᵖ) (n : ℕ)
+    (h : ((baseFieldToStructurePresheaf X).app U).hom.IsStandardSmoothOfRelativeDimension n)
+    [Nontrivial (X.toScheme.presheaf.obj U)] :
+    Module.rank (X.toScheme.presheaf.obj U)
+      (CommRingCat.KaehlerDifferential
+        ((baseFieldToStructurePresheaf X).app U)) = n := by
+  unfold CommRingCat.KaehlerDifferential
+  letI : Algebra (X.baseFieldPresheaf.obj U) (X.toScheme.presheaf.obj U) :=
+    ((baseFieldToStructurePresheaf X).app U).hom.toAlgebra
+  letI : Algebra.IsStandardSmoothOfRelativeDimension n
+      (X.baseFieldPresheaf.obj U) (X.toScheme.presheaf.obj U) := h
+  change Module.rank (X.toScheme.presheaf.obj U)
+    (_root_.KaehlerDifferential (X.baseFieldPresheaf.obj U)
+      (X.toScheme.presheaf.obj U)) = n
+  exact Algebra.IsStandardSmoothOfRelativeDimension.rank_kaehlerDifferential n
 
 end Variety
 
