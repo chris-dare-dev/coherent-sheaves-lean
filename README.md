@@ -128,9 +128,13 @@ degree-zero convention is checked on the smooth proper point. An explicit rank-`
 trivialization on the canonical smooth-chart cover now globalizes to fixed-rank locally-free
 cotangent data. The chart algebra is normalized to the actual base-field map and now supplies a
 concrete `Fin n` Kähler basis together with its rank-one top exterior equivalence. Constructing
-the sheaf trivializations directly from this localized calculation, constructing duals of finite
-locally free sheaves, and the general ringed-space construction remain visible upstream
-boundaries.
+the sheaf trivializations is now reduced further: restriction of Kähler differentials from an
+affine chart to every principal open is proved to be module localization, and the chart basis is
+localized to a `Fin n` basis there. These bases generate a canonical free-to-cotangent sheaf map
+on every chart, so the remaining comparison certificate asserts that this specific map is an
+isomorphism rather than allowing an unrelated local trivialization. Proving that assertion from
+the principal-open calculation, constructing duals of finite locally free sheaves, and the
+general ringed-space construction remain visible upstream boundaries.
 
 `Duality/Serre` uses the constructed canonical complex and packages a linear realization of
 Mathlib's actual `Abelian.Ext` groups. From explicit perfect-pairing data it proves complementary

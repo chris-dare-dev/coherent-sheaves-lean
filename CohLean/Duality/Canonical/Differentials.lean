@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 -/
 import CohLean.Duality.Canonical.Basic
 import Mathlib.Algebra.Category.ModuleCat.Presheaf.Sheafification
+import Mathlib.AlgebraicGeometry.AffineScheme
+import Mathlib.RingTheory.Etale.Kaehler
 import Mathlib.RingTheory.Smooth.StandardSmoothCotangent
 
 /-!
@@ -242,6 +244,74 @@ theorem relativeDifferentialsPresheaf_obj_rank
     (_root_.KaehlerDifferential (X.baseFieldPresheaf.obj U)
       (X.toScheme.presheaf.obj U)) = n
   exact Algebra.IsStandardSmoothOfRelativeDimension.rank_kaehlerDifferential n
+
+/-- The underlying linear restriction map of the relative-differentials presheaf from an open
+`U` to its basic open `D(f)`. -/
+noncomputable def relativeDifferentialsBasicOpenRestriction
+    {U : X.toScheme.Opens} (f : X.toScheme.presheaf.obj (.op U)) :
+    letI : Module (X.toScheme.presheaf.obj (.op U))
+        (CommRingCat.KaehlerDifferential
+          ((baseFieldToStructurePresheaf X).app
+            (.op (X.toScheme.basicOpen f)))) :=
+      Module.compHom _
+        (X.toScheme.presheaf.map
+          (homOfLE (X.toScheme.basicOpen_le f)).op).hom
+    CommRingCat.KaehlerDifferential
+        ((baseFieldToStructurePresheaf X).app (.op U)) →ₗ[
+          X.toScheme.presheaf.obj (.op U)]
+      CommRingCat.KaehlerDifferential
+        ((baseFieldToStructurePresheaf X).app
+          (.op (X.toScheme.basicOpen f))) :=
+  ((relativeDifferentialsPresheaf X).map
+    (homOfLE (X.toScheme.basicOpen_le f)).op).hom
+
+/-- On an affine open, restriction of the relative-differentials presheaf to a basic open is
+the localization of its module of sections at the defining function. -/
+theorem relativeDifferentialsBasicOpenRestriction_isLocalizedModule
+    {U : X.toScheme.Opens} (hU : IsAffineOpen U)
+    (f : X.toScheme.presheaf.obj (.op U)) :
+    letI : Module (X.toScheme.presheaf.obj (.op U))
+        (CommRingCat.KaehlerDifferential
+          ((baseFieldToStructurePresheaf X).app
+            (.op (X.toScheme.basicOpen f)))) :=
+      Module.compHom _
+        (X.toScheme.presheaf.map
+          (homOfLE (X.toScheme.basicOpen_le f)).op).hom
+    IsLocalizedModule (Submonoid.powers f)
+      (relativeDifferentialsBasicOpenRestriction X f) := by
+  let e := (homOfLE (X.toScheme.basicOpen_le f)).op
+  letI : Algebra k (X.toScheme.presheaf.obj (.op U)) :=
+    ((baseFieldToStructurePresheaf X).app (.op U)).hom.toAlgebra
+  letI : Algebra k
+      (X.toScheme.presheaf.obj (.op (X.toScheme.basicOpen f))) :=
+    ((baseFieldToStructurePresheaf X).app
+      (.op (X.toScheme.basicOpen f))).hom.toAlgebra
+  letI : Algebra (X.toScheme.presheaf.obj (.op U))
+      (X.toScheme.presheaf.obj (.op (X.toScheme.basicOpen f))) :=
+    (X.toScheme.presheaf.map e).hom.toAlgebra
+  letI : IsScalarTower k (X.toScheme.presheaf.obj (.op U))
+      (X.toScheme.presheaf.obj (.op (X.toScheme.basicOpen f))) := by
+    apply IsScalarTower.of_algebraMap_eq
+    intro a
+    change ((baseFieldToStructurePresheaf X).app
+        (.op (X.toScheme.basicOpen f))).hom a =
+      (X.toScheme.presheaf.map e).hom
+        (((baseFieldToStructurePresheaf X).app (.op U)).hom a)
+    have h := congrArg (fun q ↦ q.hom a)
+      ((baseFieldToStructurePresheaf X).naturality e)
+    change ((baseFieldToStructurePresheaf X).app
+        (.op (X.toScheme.basicOpen f))).hom ((RingHom.id k) a) =
+      (X.toScheme.presheaf.map e).hom
+        (((baseFieldToStructurePresheaf X).app (.op U)).hom a) at h
+    simpa using h
+  letI : IsLocalization.Away f
+      (X.toScheme.presheaf.obj (.op (X.toScheme.basicOpen f))) :=
+    hU.isLocalization_basicOpen f
+  change IsLocalizedModule (Submonoid.powers f)
+    (_root_.KaehlerDifferential.map k k
+      (X.toScheme.presheaf.obj (.op U))
+      (X.toScheme.presheaf.obj (.op (X.toScheme.basicOpen f))))
+  infer_instance
 
 /-- On a nonempty standard-smooth affine chart of relative dimension `n`, the objectwise
 relative differential module has a chosen basis indexed by `Fin n`.

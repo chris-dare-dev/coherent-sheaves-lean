@@ -138,6 +138,8 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms Variety.relativeDerivationPresheaf_d
 #print axioms Variety.relativeDifferentialsPresheaf_obj_free
 #print axioms Variety.relativeDifferentialsPresheaf_obj_rank
+#print axioms Variety.relativeDifferentialsBasicOpenRestriction
+#print axioms Variety.relativeDifferentialsBasicOpenRestriction_isLocalizedModule
 #print axioms Variety.relativeDifferentialsPresheaf_obj_basis
 #print axioms Variety.relativeDifferentialsPresheaf_obj_topExteriorPowerEquiv
 #print axioms Scheme.Modules.FixedRankTrivializations
@@ -147,10 +149,15 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms Scheme.Modules.FixedRankTrivializations.isLocallyFree
 #print axioms Variety.SmoothChart
 #print axioms Variety.SmoothChart.cotangentBasis
+#print axioms Variety.SmoothChart.cotangentBasicOpenBasis
+#print axioms Variety.SmoothChart.cotangentSection
+#print axioms Variety.SmoothChart.cotangentFreeMap
+#print axioms Variety.SmoothChart.cotangentFreeMap_generator
 #print axioms Variety.SmoothChart.cotangentLinearEquiv
 #print axioms Variety.SmoothChart.cotangentTopExteriorPowerEquiv
 #print axioms Variety.SmoothChart.ofSmooth
 #print axioms Variety.SmoothCotangentTrivializations
+#print axioms Variety.SmoothCotangentTrivializations.trivialization
 #print axioms Variety.SmoothCotangentTrivializations.chartSources_coversTop
 #print axioms Variety.SmoothCotangentTrivializations.fixedRankTrivializations
 #print axioms Variety.SmoothCotangentTrivializations.finiteLocallyFree
