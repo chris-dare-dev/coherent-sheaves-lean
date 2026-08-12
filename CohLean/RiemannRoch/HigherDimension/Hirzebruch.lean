@@ -1,6 +1,6 @@
 /-
 Copyright (c) 2026 Chris Dare. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
+Released under the MIT license.
 -/
 import CohLean.Intersection.ChernCharacter.Basic
 import CohLean.Numerical.Specializations.Fourfold

@@ -1,21 +1,58 @@
-name = "CohLean"
+name = "DerivedAlgGeoLean"
 version = "0.1.0"
-defaultTargets = ["CohLean"]
-keywords = ["math", "algebraic-geometry", "coherent-sheaves", "riemann-roch"]
+defaultTargets = ["DerivedAlgGeoLean"]
+keywords = [
+  "math", "algebraic-geometry", "derived-categories",
+  "coherent-sheaves", "stability-conditions", "riemann-roch",
+]
 
 [leanOptions]
 autoImplicit = false
 relaxedAutoImplicit = false
 
-# Mathlib v4.32.0 is the first stable release containing
-# Mathlib/AlgebraicGeometry/AlgebraicCycle/Basic.lean and
-# Mathlib/AlgebraicGeometry/OrderOfVanishing.lean. We use the v4.32.1 patch
-# release. Downstream consumers bridgeland-stab-lean and bstab must use the
-# same Lean/Mathlib line before requiring this package.
+# One direct Mathlib revision for every library in this repository.
 [[require]]
 name = "mathlib"
 scope = "leanprover-community"
 rev = "v4.32.1"
 
+# Shared provenance/emission leaf. It has no Lake dependencies, so it cannot
+# introduce a competing Mathlib revision.
+[[require]]
+name = "MathFormalContract"
+git = "https://github.com/chris-dare-dev/math-formal-contract-lean"
+rev = "65d600b1e70e403e8bcb43975e6aa178ee5ba439"
+
+# Apache-2.0 third-party source vendored from mattrobball/BridgelandStability.
+# The source lives below vendor/BridgelandStability and retains its headers,
+# licence, NOTICE, and upstream provenance. It is part of this Lake package,
+# not an external Git dependency.
+[[lean_lib]]
+name = "BridgelandStability"
+srcDir = "vendor/BridgelandStability"
+
 [[lean_lib]]
 name = "CohLean"
+
+[[lean_lib]]
+name = "BridgelandStabLean"
+
+# Stable umbrella for the combined environment.
+[[lean_lib]]
+name = "DerivedAlgGeoLean"
+
+# The coherent-sheaf and stability-condition audits remain independent so
+# their historical declaration lists and truncation checks stay meaningful.
+[[lean_lib]]
+name = "Audit"
+srcDir = "scripts"
+
+[[lean_lib]]
+name = "BridgelandAudit"
+srcDir = "scripts"
+
+[[lean_exe]]
+name = "emit"
+root = "Emit"
+srcDir = "exe"
+supportInterpreter = true

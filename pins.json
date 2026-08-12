@@ -1,0 +1,33 @@
+{
+  "$comment": [
+    "Pin record for the derived-alg-geo-lean monorepo.",
+    "HARD GATE: the toolchain and dependency revisions must match the tree.",
+    "BridgelandStability is vendored source, not a Lake package dependency."
+  ],
+  "repo": "derived-alg-geo-lean",
+  "recorded_at": "2026-08-12",
+  "recorded_from": "origin/main 63f56f5",
+
+  "lean_toolchain": "leanprover/lean4:v4.32.1",
+  "mathlib_rev": "520045ab14e26149ee970e2e617ca04b09bde5d6",
+  "mathlib_input_rev": "v4.32.1",
+  "mathlib_is_direct_require": true,
+
+  "anchor_rev": null,
+  "anchor_vendored": true,
+  "anchor_upstream_repo": "https://github.com/mattrobball/BridgelandStability",
+  "anchor_upstream_rev": "9e48f23a382ba117b63076a33e0e775389fef1ba",
+  "anchor_port_rev": "5f771c77dd48c478c3a15f7b09eab37a1ac0c8e4",
+  "anchor_mathlib_rev": "520045ab14e26149ee970e2e617ca04b09bde5d6",
+  "anchor_mathlib_input_rev": "v4.32.1",
+
+  "mfc_rev": "65d600b1e70e403e8bcb43975e6aa178ee5ba439",
+  "mfc_repo": "https://github.com/chris-dare-dev/math-formal-contract-lean",
+  "mfc_has_lake_dependencies": false,
+
+  "cross_repo": {
+    "status": "MERGED",
+    "former_peer": "bridgeland-stab-lean",
+    "note": "Both owner-authored histories now share this v4.32.1 monorepo branch."
+  }
+}
