@@ -40,6 +40,11 @@ schemes and geometric hypotheses
 The numerical layer is a visible axiomatic boundary. Geometric modules construct data that
 discharges that boundary; they do not silently turn assumptions into theorems.
 
+`Duality/Canonical/Descent` similarly separates the smooth affine-chart theorem from the missing
+sheafification comparison: explicit rank-`n` trivializations on the canonical chart cover produce
+global finite locally-free cotangent data, while exterior-power and determinant descent remain
+visible geometric inputs.
+
 `RiemannRoch/Grothendieck` owns the dimension-independent descent of short-exact-sequence
 additive coherent-sheaf invariants through `K₀(Coh X)`. Dimension-specific assemblies reuse
 that layer instead of placing shared K-theory machinery under the surface namespace.
