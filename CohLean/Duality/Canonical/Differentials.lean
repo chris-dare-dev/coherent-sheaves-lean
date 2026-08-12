@@ -24,9 +24,10 @@ that module is free and has rank `n`.
 
 This construction uses that the base is `Spec k`, so its inverse-image ring can be presented on
 the site of `X` by the constant `k`-presheaf.  It does not fill Mathlib's more general TODO for
-relative differentials of an arbitrary morphism of ringed spaces. Passing the objectwise
-standard-smooth calculation through sheafification to a global finite-locally-free atlas, and
-descent of its determinant, remain explicit inputs to `CanonicalSheafData.ofRelativeDifferentials`.
+relative differentials of an arbitrary morphism of ringed spaces. `Canonical.Descent` passes the
+objectwise standard-smooth calculation through sheafification to a global finite-locally-free
+atlas, constructs the determinant and its sheaf-dual inverse, and feeds them to
+`CanonicalSheafData.ofRelativeDifferentials` automatically.
 -/
 
 universe u

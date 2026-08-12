@@ -130,9 +130,12 @@ localize on the principal-open basis; a local-isomorphism criterion then proves 
 turns the canonical free-presheaf comparison into a rank-`n` cotangent trivialization. These chart
 trivializations globalize to fixed-rank locally-free cotangent data without a separate certificate.
 Taking their determinants also constructs local trivializations of the sheafified top exterior
-power and proves it invertible. Constructing an explicit tensor-inverse representative for that
-line, and hence the completely automatic `LineBundleData` and `CanonicalSheafData`, is the
-remaining boundary.
+power and proves it invertible. The sheaf dual construction then sheafifies
+`U ↦ Hom(M|_U, 𝒪_U)`, proves the evaluation map `M ⊗ Mᵛ → 𝒪_X` is locally the usual
+rank-one multiplication isomorphism, and upgrades every intrinsic invertible sheaf to explicit
+`LineBundleData`. Thus smooth pure relative dimension alone now constructs the cotangent
+determinant and the complete `CanonicalSheafData`; no separate determinant or inverse-line
+certificate remains.
 
 `Duality/Serre` uses the constructed canonical complex and packages a linear realization of
 Mathlib's actual `Abelian.Ext` groups. From explicit perfect-pairing data it proves complementary

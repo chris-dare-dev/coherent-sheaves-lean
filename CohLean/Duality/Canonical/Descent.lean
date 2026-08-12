@@ -3,6 +3,7 @@ Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 -/
 import CohLean.Duality.Canonical.Differentials
+import CohLean.AlgebraicGeometry.Divisors.Dual
 import CohLean.Topology.Opens.CoversTop
 import Mathlib.Algebra.Category.ModuleCat.Presheaf.Free
 import Mathlib.CategoryTheory.Limits.Preserves.Finite
@@ -724,8 +725,62 @@ theorem topExteriorPower_isInvertible
   exact (SmoothChart.cotangentTopExteriorTrivialization X
     (SmoothChart.ofSmooth X h x)).symm
 
+/-- The smooth cotangent atlas and the sheaf-dual construction together produce determinant
+data with no additional descent or inverse-line certificate. -/
+noncomputable def exteriorDeterminantData
+    (h : SmoothOfRelativeDimension n X.structureMorphism) :
+    Scheme.Modules.ExteriorDeterminantData (relativeDifferentials X) := by
+  letI : SheafOfModules.IsInvertible.{u, u, u}
+      (show SheafOfModules X.toScheme.ringCatSheaf from
+        Scheme.Modules.exteriorPower (relativeDifferentials X) n) :=
+    topExteriorPower_isInvertible h
+  exact
+    { toDeterminantData :=
+        { rank := n
+          finiteLocallyFree := finiteLocallyFree (X := X) (h := h)
+          topExteriorPower := Scheme.Modules.LineBundleData.ofIsInvertible
+            (Scheme.Modules.exteriorPower (relativeDifferentials X) n) }
+      topExteriorPowerIso := Iso.refl _ }
+
+/-- Determinant data for the constructed relative cotangent sheaf, obtained automatically from
+smooth pure relative dimension. -/
+noncomputable def determinantData
+    (h : SmoothOfRelativeDimension n X.structureMorphism) :
+    Scheme.Modules.DeterminantData (relativeDifferentials X) :=
+  (exteriorDeterminantData h).toDeterminantData
+
 end SmoothCotangentDescent
 
 end Variety
+
+namespace SmoothProperVariety
+
+variable {k : Type u} [Field k] {X : SmoothProperVariety k} {n : ℕ}
+
+namespace CanonicalSheafData
+
+/-- Construct the canonical sheaf of a smooth proper variety directly from smooth pure relative
+dimension.  The cotangent atlas, determinant line, sheaf dual, and tensor inverse are all
+constructed; no separate determinant or inverse-line certificate is required. -/
+noncomputable def ofSmoothRelativeDimension
+    (h : SmoothOfRelativeDimension n X.toVariety.structureMorphism) :
+    CanonicalSheafData X n :=
+  ofRelativeDifferentials h
+    (Variety.SmoothCotangentDescent.determinantData h) rfl
+
+@[simp]
+theorem ofSmoothRelativeDimension_cotangent
+    (h : SmoothOfRelativeDimension n X.toVariety.structureMorphism) :
+    (ofSmoothRelativeDimension h).cotangent =
+      Variety.relativeDifferentials X.toVariety := rfl
+
+@[simp]
+theorem ofSmoothRelativeDimension_rank
+    (h : SmoothOfRelativeDimension n X.toVariety.structureMorphism) :
+    (ofSmoothRelativeDimension h).cotangentDeterminant.rank = n := rfl
+
+end CanonicalSheafData
+
+end SmoothProperVariety
 
 end AlgebraicGeometry

@@ -105,8 +105,9 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms Cohomology.FiniteDimensionalCohomology.dimension_iso
 
 -- Smoothness now constructs the fixed-rank cotangent atlas and proves that its sheafified top
--- exterior power is invertible. Canonical-sheaf data still awaits an explicit tensor inverse for
--- that line; once supplied, the derived object is constructed as `ω_X[n]`.
+-- exterior power is invertible. The sheaf dual and its locally rank-one evaluation map construct
+-- the explicit tensor inverse, so smooth pure relative dimension produces canonical-sheaf data
+-- without an additional determinant certificate.
 #print axioms LinearMap.exteriorPower
 #print axioms LinearMap.exteriorPower_ιMulti
 #print axioms Module.Basis.topExteriorPowerEquiv_apply_ιMulti
@@ -114,6 +115,17 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms PresheafOfModules.exteriorPower.map
 #print axioms PresheafOfModules.exteriorPower.mapIso
 #print axioms PresheafOfModules.exteriorPowerFunctor
+#print axioms Scheme.Modules.unitEndRingHom
+#print axioms Scheme.Modules.unitEndRingEquiv
+#print axioms Scheme.Modules.dualPresheaf
+#print axioms Scheme.Modules.dualEvaluation
+#print axioms Scheme.Modules.dualObj
+#print axioms Scheme.Modules.tensorDualEvaluation
+#print axioms Scheme.Modules.dualObj_isInvertible
+#print axioms Scheme.Modules.LineBundleData.ofIsInvertible
+#print axioms Variety.SmoothCotangentDescent.exteriorDeterminantData
+#print axioms Variety.SmoothCotangentDescent.determinantData
+#print axioms SmoothProperVariety.CanonicalSheafData.ofSmoothRelativeDimension
 #print axioms PresheafOfModules.freeObj_const_map_apply
 #print axioms PresheafOfModules.topExteriorFreeObjIsoApp
 #print axioms PresheafOfModules.topExteriorFreeObjIso

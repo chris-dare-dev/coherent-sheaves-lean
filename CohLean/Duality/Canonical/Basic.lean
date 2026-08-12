@@ -15,21 +15,14 @@ the relative cotangent sheaf. This file packages that construction using CohLean
 fixed-rank locally-free and determinant interfaces, and exposes its Picard and Cartier-divisor
 classes.
 
-The hypotheses remain explicit for substantive upstream reasons. The companion
-`Canonical.Differentials` module constructs a relative cotangent sheaf for varieties over a field
-by sheafifying objectwise Kähler differentials and proves the free rank-`n` calculation on
-standard-smooth charts. Mathlib's general presheaf construction for a morphism of ringed spaces is
-still marked TODO, however, and there is no theorem carrying that calculation through
-sheafification to fixed-rank locally-free data or proving the resulting top exterior power
-invertible. Thus
-`CanonicalSheafData` accepts its determinant certificate as visible data. It does not postulate
-Serre duality as an axiom.
-
-Once the global fixed-rank and determinant-descent theorems land, they can construct this package
-using `CanonicalSheafData.ofRelativeDifferentials`. `Canonical.Derived` already constructs the
-derived-category object `ω_X[n]` from this package. Likewise, `DualizingSheafComparison` only
-compares a separately constructed candidate with the canonical sheaf; it does not assert that an
-arbitrary module sheaf is dualizing.
+The companion `Canonical.Differentials` and `Canonical.Descent` modules construct the relative
+cotangent sheaf, its fixed-rank atlas, its top exterior power, and an explicit sheaf-dual tensor
+inverse. Consequently `CanonicalSheafData.ofSmoothRelativeDimension` builds this package from
+smooth pure relative dimension alone. The structure remains useful as an explicit interface for
+downstream constructions and alternative cotangent models. It does not postulate Serre duality as
+an axiom: `Canonical.Derived` constructs only the derived-category object `ω_X[n]`, while
+`DualizingSheafComparison` merely compares a separately constructed candidate with the canonical
+sheaf.
 -/
 
 universe u
@@ -44,9 +37,9 @@ variable {k : Type u} [Field k] (X : SmoothProperVariety k)
 
 /-- Explicit canonical-sheaf construction data on a smooth proper variety of pure dimension `n`.
 
-The cotangent object and determinant descent are fields because the current scheme-sheaf API does
-not yet construct them. The relative-dimension certificate is the genuine Mathlib morphism
-property, not a numerical dimension assertion. -/
+`ofSmoothRelativeDimension` constructs these fields canonically from the genuine Mathlib
+relative-dimension morphism property; retaining the fields keeps the interface open to alternative
+cotangent and determinant models. -/
 structure CanonicalSheafData (n : ℕ) where
   /-- The structure morphism is smooth of pure relative dimension `n`. -/
   smoothOfRelativeDimension :

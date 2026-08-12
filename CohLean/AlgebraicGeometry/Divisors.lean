@@ -1,6 +1,7 @@
 import CohLean.AlgebraicGeometry.Divisors.AssociatedSheaf
 import CohLean.AlgebraicGeometry.Divisors.Cartier
 import CohLean.AlgebraicGeometry.Divisors.Determinant
+import CohLean.AlgebraicGeometry.Divisors.Dual
 import CohLean.AlgebraicGeometry.Divisors.Effective
 import CohLean.AlgebraicGeometry.Divisors.ExteriorPower
 import CohLean.AlgebraicGeometry.Divisors.Monoidal
