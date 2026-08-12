@@ -132,10 +132,13 @@ ringed-space construction remain visible upstream boundaries.
 
 `Duality/Serre` uses the constructed canonical complex and packages a linear realization of
 Mathlib's actual `Abelian.Ext` groups. From explicit perfect-pairing data it proves complementary
-cohomology dimensions and the sign `χ(F)=(-1)^nχ(Fᵛ⊗ω_X)`. On surfaces, the resulting Picard
-symmetry and the geometric Snapper pairing prove the divisor Riemann--Roch formula. Derived
-global sections, coherent `RHom`, and the Grothendieck-duality equivalence remain visible inputs
-rather than axioms.
+cohomology dimensions and the sign `χ(F)=(-1)^nχ(Fᵛ⊗ω_X)`; the displayed pairing is now certified
+against Mathlib's `LinearMap.IsPerfPair`, and coherent and locally-free duality equivalences are
+exported separately. On surfaces, the resulting Picard symmetry and the geometric Snapper pairing
+prove the divisor Riemann--Roch formula. The effective case also factors through the genuine
+fundamental coherent sequence, with its remaining quotient/intersection comparison explicit.
+Derived global sections, coherent `RHom`, and the Grothendieck-duality equivalence remain visible
+inputs rather than axioms.
 
 For surfaces, `RiemannRoch/Surface/NumericalVariety` turns compatible reconstructed Chern data,
 geometric Todd components, and a coherent-sheaf HRR theorem into a concrete
