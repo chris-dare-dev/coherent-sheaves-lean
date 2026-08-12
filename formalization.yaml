@@ -772,6 +772,35 @@ fidelity:
     source-faithfulness verdict. There is no geometric family implementation
     or proof of Theorem 22.2.
 
+    COUNT UPDATE (destination issue #211, transferred from source issue #141;
+    slicing orders and abstract Bayer property),
+    2026-08-11. The phase lane adds the strict relation
+    `P1(phi) <= P2(< phi)` and weak relation `P1(phi) <= P2(<= phi)`, their
+    upper-semistable, lower-semistable, and two-endpoint characterizations,
+    strict/weak/mixed transitivity, weak reflexivity, `P1 < P1[1]`, and
+    invariance under `TriEquiv` and `AutQuot`. It also packages the abstract
+    Bayer property for a chosen quotient autoequivalence and integer phase
+    shift, with identity and conjugation-invariance results. Two source-facing
+    aliases and two comparison theorems record that Li's two relations are
+    exactly the canonical strict and weak relations. The same lane records
+    transported strict/weak phase bounds, explicit `AutPairQuot` equivariance,
+    and Definition 3.22's categorical cofiltration data (including its
+    infinity clause) without importing schemes. These are 41 new gated public
+    declarations. In this v4.32.1 monorepo migration, Audit names 1417
+    declarations and the environment census reports 1706 authored declarations,
+    114 private declarations, and 167 structure-field projections. The census's
+    eight public ungated names are five generated companions of the pre-existing
+    `HeartAbelian` instance plus three pre-existing declarations in the reverse
+    heart-equivalence and weak Harder–Narasimhan lanes; no declaration introduced
+    by source issue #141 is outside the hand audit. A new
+    version-pinned `coverage-2607.28411.json` is deliberately all `target`;
+    no `@[cites]` binding or coverage promotion is inferred from the Lean proofs.
+    The definitions and section numbering were checked directly against
+    arXiv:2601.22994v1, Definition 2.1/Lemma 2.2, and arXiv:2607.28411v1,
+    Definition 3.12/Lemma 3.13 on 2026-08-11, but that engineering check is
+    not the independent source-faithfulness review required for registry
+    promotion.
+
     COUNT UPDATE (Wall lane, the nested wall theorem), 2026-08-07. The 13
     additional records are the orthogonality identity minor_orth, the three
     cross terms crossAB/crossAC/crossBC with their three antisymmetry lemmas,
