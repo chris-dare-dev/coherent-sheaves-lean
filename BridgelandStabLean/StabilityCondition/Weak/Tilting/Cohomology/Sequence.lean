@@ -3,11 +3,9 @@ Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under the MIT license.
 -/
 import BridgelandStabLean.StabilityCondition.Weak.Tilting.Cohomology.Homological
--- `Sequence.lean` genuinely needs anchor-only heart machinery
--- (`truncGELEObjShiftIso`, `heartFullSubcategory_shortExact_triangle`).
--- It used to inherit this import transitively through `Cohomology.Basic`; that file
--- is now anchor-free, so the dependence is declared here instead of inherited.
-import BridgelandStability.HeartEquivalence.Basic
+-- `Sequence.lean` still needs the anchor's short-exact-sequence-to-triangle
+-- bridge. The degree comparison itself is now supplied anchor-free by
+-- `Cohomology.Shift`.
 import BridgelandStability.HeartEquivalence.H0Homological
 
 set_option backward.defeqAttrib.useBackward true
@@ -53,8 +51,8 @@ noncomputable instance originalHeartCohFunctor_zero_shiftSequence
     (originalHeartCohFunctor t 0).ShiftSequence ℤ :=
   Functor.ShiftSequence.tautological _ _
 
-/-- The shifted degree-zero functor agrees objectwise with the explicit
-degree-`n` original-heart cohomology functor. -/
+/-- The shifted degree-zero functor agrees with the explicit degree-`n`
+original-heart cohomology functor, evaluated at an object. -/
 noncomputable def originalHeartCohShiftIso
     (t : TStructure C) (n : ℤ) (X : C) :
     ((originalHeartCohFunctor t 0).shift n).obj X ≅ originalHeartCoh t n X := by

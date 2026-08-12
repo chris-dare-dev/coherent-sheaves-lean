@@ -2,7 +2,7 @@
 Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under the MIT license.
 -/
-import BridgelandStabLean.StabilityCondition.Weak.Tilting.Cohomology.Basic
+import BridgelandStabLean.StabilityCondition.Weak.Tilting.Cohomology.Shift
 import Mathlib.CategoryTheory.Abelian.Exact
 import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
 import Mathlib.CategoryTheory.Triangulated.Yoneda
@@ -873,19 +873,72 @@ private theorem originalHeartH0primeFunctor_isHomological
   exact (ShortComplex.exact_iff_of_epi_of_isIso_of_mono α).mp
     (by simpa [Sle] using hExactLE)
 
-/-- The proposition that degree-zero original-heart cohomology is
+/-- The proposition that degree-`n` original-heart cohomology is
 homological. -/
-abbrev OriginalHeartCohomologyIsHomological (t : TStructure C) : Prop :=
-  Functor.IsHomological (originalHeartCohFunctor t 0)
+abbrev OriginalHeartCohomologyIsHomological (t : TStructure C) (n : ℤ) : Prop :=
+  Functor.IsHomological (originalHeartCohFunctor t n)
 
 /-- Degree-zero cohomology of any t-structure sends distinguished triangles
 to exact short complexes in the heart. -/
-noncomputable instance originalHeartCohFunctor_isHomological
+@[implicit_reducible]
+private noncomputable def originalHeartCohFunctor_zero_isHomological
     (t : TStructure C) :
     Functor.IsHomological (originalHeartCohFunctor t 0) := by
   letI : Functor.IsHomological (originalHeartH0primeFunctor t) :=
     originalHeartH0primeFunctor_isHomological t
   exact Functor.IsHomological.of_iso
     (originalHeartH0FunctorIsoH0primeFunctor t).symm
+
+/-- Shifting the input before applying degree-zero heart cohomology preserves
+homologicality. The shifted distinguished triangle scales both maps in its
+short complex by the same unit `(-1)^n`, so exactness is unchanged. -/
+@[implicit_reducible]
+private noncomputable def shiftFunctorCompOriginalHeartH0IsHomological
+    (t : TStructure C) (n : ℤ) :
+    Functor.IsHomological
+      (shiftFunctor C n ⋙ originalHeartCohFunctor t 0) := by
+  letI : Functor.IsHomological (originalHeartCohFunctor t 0) :=
+    originalHeartCohFunctor_zero_isHomological t
+  apply Functor.IsHomological.mk'
+  intro T hT
+  refine ⟨T, Iso.refl _, ?_⟩
+  let Tn := (shiftFunctor (Triangle C) n).obj T
+  have hTn : Tn ∈ distTriang C := Triangle.shift_distinguished T hT n
+  let S := (shortComplexOfDistTriangle T hT).map
+    (shiftFunctor C n ⋙ originalHeartCohFunctor t 0)
+  let Sn := (shortComplexOfDistTriangle Tn hTn).map
+    (originalHeartCohFunctor t 0)
+  let e₂ : S.X₂ ≅ Sn.X₂ := n.negOnePow • Iso.refl _
+  refine ShortComplex.exact_of_iso ?_
+    (Functor.map_distinguished_exact (originalHeartCohFunctor t 0) Tn hTn)
+  exact ShortComplex.isoMk (Iso.refl _) e₂ (Iso.refl _) (by
+      change _ = _ ≫ e₂.hom
+      change _ = _ ≫ (n.negOnePow • (𝟙 _ : S.X₂ ⟶ S.X₂))
+      dsimp [Tn]
+      rw [Category.id_comp, Functor.map_units_smul,
+        Linear.comp_units_smul, Category.comp_id]
+      let f₁ := (originalHeartCohFunctor t 0).map
+        ((shiftFunctor C n).map T.mor₁)
+      change f₁ = n.negOnePow • n.negOnePow • f₁
+      calc
+        f₁ = (1 : ℤˣ) • f₁ := (one_smul _ _).symm
+        _ = (n.negOnePow * n.negOnePow) • f₁ := by
+          rw [Int.units_mul_self]
+        _ = n.negOnePow • n.negOnePow • f₁ := mul_smul ..) (by
+      change e₂.hom ≫ _ = _
+      change (n.negOnePow • (𝟙 _ : S.X₂ ⟶ S.X₂)) ≫ _ = _
+      dsimp [Tn]
+      rw [Category.comp_id, Functor.map_units_smul,
+        Linear.units_smul_comp, Category.id_comp])
+
+/-- Heart cohomology in every degree sends distinguished triangles to exact
+short complexes in the heart. -/
+noncomputable instance originalHeartCohFunctor_isHomological
+    (t : TStructure C) (n : ℤ) :
+    Functor.IsHomological (originalHeartCohFunctor t n) := by
+  letI : Functor.IsHomological
+      (shiftFunctor C n ⋙ originalHeartCohFunctor t 0) :=
+    shiftFunctorCompOriginalHeartH0IsHomological t n
+  exact Functor.IsHomological.of_iso (originalHeartCohShiftNatIso t n).symm
 
 end BridgelandStabLean.Tilting
