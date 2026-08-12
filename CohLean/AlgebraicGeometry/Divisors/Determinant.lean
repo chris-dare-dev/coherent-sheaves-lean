@@ -5,6 +5,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 import CohLean.Coh.Abelian.Basic
 import CohLean.AlgebraicGeometry.Divisors.ExteriorPower
 import CohLean.AlgebraicGeometry.Divisors.PicardGroup
+import Mathlib.Algebra.Category.ModuleCat.Presheaf.Free
 import Mathlib.LinearAlgebra.ExteriorPower.Basis
 
 /-!
@@ -67,6 +68,23 @@ noncomputable def topExteriorPowerEquiv {n : ℕ} (b : Basis (Fin n) R M) :
           simpa [s₀] using s.prop.ge) }
   exact B.equivFun.trans (LinearEquiv.funUnique _ R R)
 
+/-- The determinant coordinate of a decomposable top exterior product is the determinant of
+its coordinate matrix.  This is the base-change identity used to trivialize top exterior
+powers of finite free presheaves. -/
+theorem topExteriorPowerEquiv_apply_ιMulti {n : ℕ} (b : Basis (Fin n) R M)
+    (x : Fin n → M) :
+    b.topExteriorPowerEquiv (_root_.exteriorPower.ιMulti R n x) =
+      (Matrix.of fun i j ↦ b.coord
+        (Set.powersetCard.ofFinEmbEquiv.symm
+          (Set.powersetCard.ofCard
+            (Finset.card_univ.trans (Fintype.card_fin n))) j) (x i)).det := by
+  unfold topExteriorPowerEquiv
+  simp only [LinearEquiv.trans_apply, Basis.equivFun_apply,
+    LinearEquiv.funUnique_apply]
+  change (b.exteriorPower n).repr (_root_.exteriorPower.ιMulti R n x)
+    (Set.powersetCard.ofCard (Finset.card_univ.trans (Fintype.card_fin n))) = _
+  rw [exteriorPower.basis_repr_apply, exteriorPower.ιMultiDual_apply_ιMulti]
+
 end Basis
 
 /-- The determinant of the standard free rank-`n` module is canonically free of rank one.
@@ -78,6 +96,113 @@ noncomputable def topExteriorPowerEquiv (n : ℕ) :
   (Pi.basisFun R (Fin n)).topExteriorPowerEquiv
 
 end Module
+
+namespace PresheafOfModules
+
+universe w w'
+
+variable {C : Type w} [Category.{w'} C]
+variable (A : Cᵒᵖ ⥤ CommRingCat.{u})
+
+/-- Restriction in a constant finite-free presheaf applies the structure-ring map to every
+coefficient. -/
+theorem freeObj_const_map_apply {U V : Cᵒᵖ} (I : Type u) (f : U ⟶ V)
+    (y : I →₀ A.obj U) (p : I) :
+    (show I →₀ A.obj V from
+      (freeObj (R := A ⋙ forget₂ CommRingCat RingCat)
+        ((Functor.const Cᵒᵖ).obj I)).map f y) p =
+      (A.map f).hom (y p) := by
+  let Q := freeObj (R := A ⋙ forget₂ CommRingCat RingCat)
+    ((Functor.const Cᵒᵖ).obj I)
+  let qmap : (I →₀ A.obj U) →+ (I →₀ A.obj V) :=
+    { toFun := fun z ↦ show I →₀ A.obj V from (Q.map f).hom z
+      map_zero' := by
+        change (show I →₀ A.obj V from (Q.map f).hom 0) = 0
+        exact map_zero (Q.map f).hom
+      map_add' := fun z z' ↦ by
+        change (show I →₀ A.obj V from (Q.map f).hom (z + z')) =
+          (show I →₀ A.obj V from (Q.map f).hom z) +
+            (show I →₀ A.obj V from (Q.map f).hom z')
+        exact map_add (Q.map f).hom z z' }
+  change qmap y p = (A.map f).hom (y p)
+  induction y using Finsupp.induction with
+  | zero =>
+      rw [map_zero, Finsupp.zero_apply, Finsupp.zero_apply, map_zero]
+  | @single_add i r y hi hr ih =>
+      rw [map_add, Finsupp.add_apply, ih, Finsupp.add_apply, map_add]
+      congr 1
+      change (show I →₀ A.obj V from (Q.map f).hom
+          (show Q.obj U from Finsupp.single i r)) p = _
+      have hsingle : Finsupp.single i r =
+          r • (Finsupp.single i (1 : A.obj U)) := by
+        ext j
+        by_cases hij : i = j
+        · subst j
+          rw [Finsupp.smul_apply, Finsupp.single_eq_same, smul_eq_mul,
+            Finsupp.single_eq_same, mul_one]
+        · rw [Finsupp.single_eq_of_ne (Ne.symm hij),
+            Finsupp.smul_apply, Finsupp.single_eq_of_ne (Ne.symm hij), smul_zero]
+      have hgen : (show I →₀ A.obj V from
+          (Q.map f).hom (ModuleCat.freeMk (R := A.obj U) i)) =
+          Finsupp.single i 1 := by
+        exact ModuleCat.freeDesc_apply _ _
+      have hsmul := (Q.map f).hom.map_smul r
+        (ModuleCat.freeMk (R := A.obj U) i)
+      change (show I →₀ A.obj V from (Q.map f).hom
+          (r • ModuleCat.freeMk (R := A.obj U) i)) =
+        (A.map f).hom r • (show I →₀ A.obj V from
+          (Q.map f).hom (ModuleCat.freeMk (R := A.obj U) i)) at hsmul
+      have hsingleQ : (show Q.obj U from Finsupp.single i r) =
+          r • ModuleCat.freeMk (R := A.obj U) i := by
+        change Finsupp.single i r = r • Finsupp.single i 1
+        exact hsingle
+      rw [hsingleQ, hsmul, hgen]
+      by_cases hip : i = p
+      · subst i
+        rw [Finsupp.smul_apply, Finsupp.single_eq_same, smul_eq_mul, mul_one,
+          Finsupp.single_eq_same]
+      · rw [Finsupp.smul_apply, Finsupp.single_eq_of_ne (Ne.symm hip),
+          smul_zero, Finsupp.single_eq_of_ne (Ne.symm hip), map_zero]
+
+/-- The top exterior power of a constant finite-free presheaf is naturally the structure
+presheaf.  Naturality is the determinant base-change identity. -/
+noncomputable def topExteriorFreeObjIsoApp (n : ℕ) (U : Cᵒᵖ) :
+    (exteriorPower A
+      (freeObj (R := A ⋙ forget₂ CommRingCat RingCat)
+        ((Functor.const Cᵒᵖ).obj (ULift.{u} (Fin n)))) n).obj U ≅
+      (unit (A ⋙ forget₂ CommRingCat RingCat)).obj U :=
+  ((Finsupp.basisSingleOne.reindex
+    (Equiv.ulift.{u, 0} : ULift.{u} (Fin n) ≃ Fin n)).topExteriorPowerEquiv).toModuleIso
+
+/-- Natural top exterior trivialization of the constant finite-free presheaf. -/
+noncomputable def topExteriorFreeObjIso (n : ℕ) :
+    exteriorPower A
+      (freeObj (R := A ⋙ forget₂ CommRingCat RingCat)
+        ((Functor.const Cᵒᵖ).obj (ULift.{u} (Fin n)))) n ≅
+      unit (A ⋙ forget₂ CommRingCat RingCat) := by
+  refine PresheafOfModules.isoMk (fun U ↦ topExteriorFreeObjIsoApp A n U) ?_
+  intro U V f
+  apply ModuleCat.exteriorPower.hom_ext
+  ext x
+  change ((Finsupp.basisSingleOne.reindex
+      (Equiv.ulift.{u, 0} : ULift.{u} (Fin n) ≃ Fin n)).topExteriorPowerEquiv)
+      (LinearMap.exteriorPower n (A.map f).hom
+        ((freeObj (R := A ⋙ forget₂ CommRingCat RingCat)
+          ((Functor.const Cᵒᵖ).obj (ULift.{u} (Fin n)))).restrictₛₗ f)
+        (_root_.exteriorPower.ιMulti (A.obj U) n x)) =
+    (A.map f).hom (((Finsupp.basisSingleOne.reindex
+      (Equiv.ulift.{u, 0} : ULift.{u} (Fin n) ≃ Fin n)).topExteriorPowerEquiv)
+      (_root_.exteriorPower.ιMulti (A.obj U) n x))
+  rw [LinearMap.exteriorPower_ιMulti,
+    Module.Basis.topExteriorPowerEquiv_apply_ιMulti,
+    Module.Basis.topExteriorPowerEquiv_apply_ιMulti, RingHom.map_det]
+  congr 1
+  ext i j
+  let q := Set.powersetCard.ofFinEmbEquiv.symm
+    (Set.powersetCard.ofCard (Finset.card_univ.trans (Fintype.card_fin n))) j
+  exact freeObj_const_map_apply A (ULift.{u} (Fin n)) f (x i) (ULift.up q)
+
+end PresheafOfModules
 
 namespace AlgebraicGeometry.Scheme.Modules
 

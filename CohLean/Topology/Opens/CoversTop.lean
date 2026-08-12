@@ -3,9 +3,11 @@ Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 -/
 import Mathlib.CategoryTheory.Sites.CoversTop.Basic
+import Mathlib.CategoryTheory.Sites.LocallyBijective
 import Mathlib.CategoryTheory.Sites.Spaces
 import Mathlib.AlgebraicGeometry.Scheme
 import Mathlib.RingTheory.Spectrum.Prime.Topology
+import Mathlib.Topology.Sheaves.Over
 
 /-!
 # Covering the terminal object of an open-set site
@@ -68,6 +70,96 @@ lemma grothendieckTopology_coversTop
   exact ⟨U i ⊓ V, homOfLE inf_le_right, ⟨i, ⟨homOfLE inf_le_left⟩⟩, hxi, hxV⟩
 
 end TopCat.Opens
+
+namespace TopCat.Presheaf
+
+variable {X : TopCat.{u}} {B : Set (TopologicalSpace.Opens X)}
+  {F G : Presheaf AddCommGrpCat.{u} X}
+
+/-- A morphism of presheaves which is an isomorphism on an open basis becomes an isomorphism
+after sheafification.
+
+The basis members contained in an arbitrary open form a covering family. On those members the
+map is both injective and surjective, which proves local bijectivity and hence membership in the
+class inverted by sheafification. -/
+theorem grothendieckTopology_W_of_isIso_app_of_isBasis
+    (hB : TopologicalSpace.Opens.IsBasis B) (α : F ⟶ G)
+    (hα : ∀ U ∈ B, IsIso (α.app (.op U))) :
+    (_root_.Opens.grothendieckTopology X).W α := by
+  let K := _root_.Opens.grothendieckTopology X
+  have cover (U : TopologicalSpace.Opens X) :
+      ⨆ i : { V : TopologicalSpace.Opens X // V ∈ B ∧ V ≤ U }, i.1 = U := by
+    apply le_antisymm
+    · exact iSup_le fun i ↦ i.2.2
+    · intro x hx
+      obtain ⟨V, hVB, hxV, hVU⟩ :=
+        (TopologicalSpace.Opens.isBasis_iff_nbhd.mp hB) hx
+      exact TopologicalSpace.Opens.mem_iSup.mpr ⟨⟨V, hVB, hVU⟩, hxV⟩
+  letI : CategoryTheory.Presheaf.IsLocallyInjective K α := by
+    constructor
+    intro U x y hxy
+    let I := { V : TopologicalSpace.Opens X // V ∈ B ∧ V ≤ U.unop }
+    let C : I → TopologicalSpace.Opens X := fun i ↦ i.1
+    let R : Presieve U.unop :=
+      TopCat.Presheaf.presieveOfCoveringAux C U.unop
+    have hcover : Sieve.generate R ∈ K U.unop := by
+      change Sieve.generate
+          (TopCat.Presheaf.presieveOfCoveringAux C U.unop) ∈ K U.unop
+      rw [← cover U.unop]
+      exact TopCat.Presheaf.presieveOfCovering.mem_grothendieckTopology C
+    apply K.superset_covering _ hcover
+    rw [Sieve.generate_le_iff]
+    intro V g hg
+    obtain ⟨i, hi⟩ := hg
+    subst V
+    haveI := hα i.1 i.2.1
+    apply (ConcreteCategory.isIso_iff_bijective (α.app (.op i.1))).mp inferInstance |>.1
+    rw [NatTrans.naturality_apply, NatTrans.naturality_apply, hxy]
+  letI : CategoryTheory.Presheaf.IsLocallySurjective K α := by
+    constructor
+    intro U s
+    let I := { V : TopologicalSpace.Opens X // V ∈ B ∧ V ≤ U }
+    let C : I → TopologicalSpace.Opens X := fun i ↦ i.1
+    let R : Presieve U := TopCat.Presheaf.presieveOfCoveringAux C U
+    have hcover : Sieve.generate R ∈ K U := by
+      change Sieve.generate
+          (TopCat.Presheaf.presieveOfCoveringAux C U) ∈ K U
+      rw [← cover U]
+      exact TopCat.Presheaf.presieveOfCovering.mem_grothendieckTopology C
+    apply K.superset_covering _ hcover
+    rw [Sieve.generate_le_iff]
+    intro V g hg
+    obtain ⟨i, hi⟩ := hg
+    subst V
+    haveI := hα i.1 i.2.1
+    obtain ⟨t, ht⟩ :=
+      ((ConcreteCategory.isIso_iff_bijective (α.app (.op i.1))).mp inferInstance).2
+        (G.map g.op s)
+    exact ⟨t, ht⟩
+  exact K.W_of_isLocallyBijective α
+
+/-- A morphism on the slice site over `U` is inverted by sheafification when it is an
+isomorphism on an open basis of the subspace `U`.
+
+The statement uses `U.overEquivalence.inverse` to regard a subspace-open as an object over
+`U`. This is the form needed by sheaves restricted to an open subset. -/
+theorem grothendieckTopology_over_W_of_isIso_app_of_isBasis
+    {U : TopologicalSpace.Opens X}
+    {B : Set (TopologicalSpace.Opens U)}
+    {F G : (Over U)ᵒᵖ ⥤ AddCommGrpCat.{u}}
+    (hB : TopologicalSpace.Opens.IsBasis B) (α : F ⟶ G)
+    (hα : ∀ V ∈ B,
+      IsIso (α.app (.op (U.overEquivalence.inverse.obj V)))) :
+    ((_root_.Opens.grothendieckTopology X).over U).W α := by
+  rw [← ((_root_.Opens.grothendieckTopology X).over U).W_whiskerLeft_iff
+    (K := _root_.Opens.grothendieckTopology U)
+    (G := U.overEquivalence.inverse)]
+  apply grothendieckTopology_W_of_isIso_app_of_isBasis
+    (X := TopCat.of U) (B := B) hB
+  intro V hV
+  exact hα V hV
+
+end TopCat.Presheaf
 
 namespace AlgebraicGeometry
 

@@ -104,14 +104,19 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms Cohomology.FiniteDimensionalCohomology
 #print axioms Cohomology.FiniteDimensionalCohomology.dimension_iso
 
--- Canonical-sheaf data is built from explicit cotangent/determinant certificates. The
--- canonical line is coherent, and the derived object is constructed as `ω_X[n]`.
+-- Smoothness now constructs the fixed-rank cotangent atlas and proves that its sheafified top
+-- exterior power is invertible. Canonical-sheaf data still awaits an explicit tensor inverse for
+-- that line; once supplied, the derived object is constructed as `ω_X[n]`.
 #print axioms LinearMap.exteriorPower
 #print axioms LinearMap.exteriorPower_ιMulti
+#print axioms Module.Basis.topExteriorPowerEquiv_apply_ιMulti
 #print axioms PresheafOfModules.exteriorPower
 #print axioms PresheafOfModules.exteriorPower.map
 #print axioms PresheafOfModules.exteriorPower.mapIso
 #print axioms PresheafOfModules.exteriorPowerFunctor
+#print axioms PresheafOfModules.freeObj_const_map_apply
+#print axioms PresheafOfModules.topExteriorFreeObjIsoApp
+#print axioms PresheafOfModules.topExteriorFreeObjIso
 #print axioms Scheme.Modules.exteriorPower
 #print axioms Scheme.Modules.exteriorPowerMapIso
 #print axioms Scheme.Modules.exteriorPowerSheafification
@@ -150,18 +155,35 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms Variety.SmoothChart
 #print axioms Variety.SmoothChart.cotangentBasis
 #print axioms Variety.SmoothChart.cotangentBasicOpenBasis
+#print axioms Variety.SmoothChart.cotangentBasicOpenObject
+#print axioms Variety.SmoothChart.cotangentPresheafOver
+#print axioms Variety.SmoothChart.cotangentPresheafGeneratorSection
+#print axioms Variety.SmoothChart.cotangentPresheafGenerators
+#print axioms Variety.SmoothChart.cotangentPresheafMap
+#print axioms Variety.SmoothChart.cotangentPresheafMap_app_basicOpen_isIso
+#print axioms Variety.SmoothChart.cotangentPresheafMap_mem_W
+#print axioms Variety.SmoothChart.cotangentFreePresheafGenerators
+#print axioms Variety.SmoothChart.cotangentFreePresheafComparison
+#print axioms Variety.SmoothChart.cotangentFreePresheafComparison_app_isIso
+#print axioms Variety.SmoothChart.cotangentFreePresheafIso
+#print axioms Variety.SmoothChart.cotangentFreePresheafIso_hom
+#print axioms Variety.SmoothChart.cotangentFreeSheafificationIso
+#print axioms Variety.SmoothChart.cotangentSheafificationMap_isIso
+#print axioms Variety.SmoothChart.cotangentFreeToDifferentialsIso
+#print axioms Variety.SmoothChart.cotangentTopExteriorOverTrivialization
+#print axioms Variety.SmoothChart.cotangentTopExteriorTrivialization
 #print axioms Variety.SmoothChart.cotangentSection
 #print axioms Variety.SmoothChart.cotangentFreeMap
 #print axioms Variety.SmoothChart.cotangentFreeMap_generator
 #print axioms Variety.SmoothChart.cotangentLinearEquiv
 #print axioms Variety.SmoothChart.cotangentTopExteriorPowerEquiv
 #print axioms Variety.SmoothChart.ofSmooth
-#print axioms Variety.SmoothCotangentTrivializations
-#print axioms Variety.SmoothCotangentTrivializations.trivialization
-#print axioms Variety.SmoothCotangentTrivializations.chartSources_coversTop
-#print axioms Variety.SmoothCotangentTrivializations.fixedRankTrivializations
-#print axioms Variety.SmoothCotangentTrivializations.finiteLocallyFree
-#print axioms Variety.SmoothCotangentTrivializations.relativeDifferentials_isLocallyFree
+#print axioms Variety.SmoothCotangentDescent.trivialization
+#print axioms Variety.SmoothCotangentDescent.chartSources_coversTop
+#print axioms Variety.SmoothCotangentDescent.fixedRankTrivializations
+#print axioms Variety.SmoothCotangentDescent.finiteLocallyFree
+#print axioms Variety.SmoothCotangentDescent.relativeDifferentials_isLocallyFree
+#print axioms Variety.SmoothCotangentDescent.topExteriorPower_isInvertible
 #print axioms SmoothProperVariety.finiteCohomology
 #print axioms SmoothProperVariety.point
 #print axioms SmoothProperVariety.CanonicalSheafData

@@ -124,17 +124,15 @@ derivations into module sheaves, together with the free rank calculation on stan
 charts. For smooth proper varieties of a fixed relative dimension, it packages the canonical
 sheaf as the determinant of that cotangent sheaf, proves the canonical line is coherent, exposes
 its Picard class and Cartier representatives, and constructs the derived object `ω_X[n]`. The
-degree-zero convention is checked on the smooth proper point. An explicit rank-`n` sheaf
-trivialization on the canonical smooth-chart cover now globalizes to fixed-rank locally-free
-cotangent data. The chart algebra is normalized to the actual base-field map and now supplies a
-concrete `Fin n` Kähler basis together with its rank-one top exterior equivalence. Constructing
-the sheaf trivializations is now reduced further: restriction of Kähler differentials from an
-affine chart to every principal open is proved to be module localization, and the chart basis is
-localized to a `Fin n` basis there. These bases generate a canonical free-to-cotangent sheaf map
-on every chart, so the remaining comparison certificate asserts that this specific map is an
-isomorphism rather than allowing an unrelated local trivialization. Proving that assertion from
-the principal-open calculation, constructing duals of finite locally free sheaves, and the
-general ringed-space construction remain visible upstream boundaries.
+degree-zero convention is checked on the smooth proper point. The standard-smooth charts supplied
+by smoothness are normalized to the actual base-field map. Their concrete `Fin n` Kähler bases
+localize on the principal-open basis; a local-isomorphism criterion then proves that sheafification
+turns the canonical free-presheaf comparison into a rank-`n` cotangent trivialization. These chart
+trivializations globalize to fixed-rank locally-free cotangent data without a separate certificate.
+Taking their determinants also constructs local trivializations of the sheafified top exterior
+power and proves it invertible. Constructing an explicit tensor-inverse representative for that
+line, and hence the completely automatic `LineBundleData` and `CanonicalSheafData`, is the
+remaining boundary.
 
 `Duality/Serre` uses the constructed canonical complex and packages a linear realization of
 Mathlib's actual `Abelian.Ext` groups. From explicit perfect-pairing data it proves complementary
