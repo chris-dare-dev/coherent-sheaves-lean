@@ -124,6 +124,29 @@ lemma IsInvertible.ofIso {M N : SheafOfModules.{u} R} [M.IsInvertible]
   letI : q.IsLocallyFreeData := hq
   exact ⟨q.ofIso e, inferInstance, q.isRankOne_ofIso e hrank⟩
 
+omit [HasWeakSheafify J AddCommGrpCat.{u}]
+  [J.WEqualsLocallyBijective AddCommGrpCat.{u}] in
+/-- An invertible sheaf is finitely presented: its rank-one local bases give presentations
+with one generator and no relations. -/
+theorem IsInvertible.isFinitePresentation {M : SheafOfModules.{u} R} [M.IsInvertible]
+    [∀ X, HasSheafify (J.over X) AddCommGrpCat.{u}] :
+    M.IsFinitePresentation := by
+  obtain ⟨q, hq, hrank⟩ := IsInvertible.exists_rankOneData (M := M)
+  letI : q.IsLocallyFreeData := hq
+  refine ⟨q.quasiCoherentData, ?_⟩
+  constructor
+  intro i
+  constructor
+  · constructor
+    change Finite (q.generators i).I
+    letI : Nonempty (q.generators i).I := (hrank i).1
+    letI : Subsingleton (q.generators i).I := (hrank i).2
+    exact Finite.of_injective (fun _ => PUnit.unit)
+      (fun _ _ _ => Subsingleton.elim _ _)
+  · constructor
+    dsimp [LocalGeneratorsData.quasiCoherentData]
+    infer_instance
+
 variable [HasSheafify J AddCommGrpCat.{u}] [HasBinaryProducts C]
   [∀ X, HasSheafify (J.over X) AddCommGrpCat.{u}]
 

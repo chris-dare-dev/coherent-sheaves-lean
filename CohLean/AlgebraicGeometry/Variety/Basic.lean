@@ -81,6 +81,19 @@ instance (X : SmoothProperVariety k) : Smooth X.toVariety.structureMorphism := X
 
 instance (X : SmoothProperVariety k) : IsProper X.toVariety.structureMorphism := X.proper
 
+/-- A proper variety over a field is Noetherian: finite type gives local Noetherianity and
+properness gives quasi-compactness over the compact point `Spec k`. -/
+noncomputable instance (X : SmoothProperVariety k) : IsNoetherian X.toVariety.toScheme where
+  toIsLocallyNoetherian := inferInstance
+  toCompactSpace :=
+    QuasiCompact.compactSpace_of_compactSpace X.toVariety.structureMorphism
+
+/-- A proper variety over a field is separated as an absolute scheme. -/
+instance (X : SmoothProperVariety k) : X.toVariety.toScheme.IsSeparated where
+  isSeparated_terminal_from := by
+    rw [← CategoryTheory.Limits.terminal.comp_from X.toVariety.structureMorphism]
+    infer_instance
+
 end SmoothProperVariety
 
 end AlgebraicGeometry

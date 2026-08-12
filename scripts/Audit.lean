@@ -105,8 +105,32 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms Cohomology.FiniteDimensionalCohomology.dimension_iso
 
 -- Canonical-sheaf data is built from explicit cotangent/determinant certificates. The
--- dualizing comparison does not assert existence of a dualizing object.
+-- canonical line is coherent, and the derived object is constructed as `ω_X[n]`.
+#print axioms SheafOfModules.IsInvertible.isFinitePresentation
+#print axioms Scheme.Modules.LineBundleData.isCoherent
+#print axioms Scheme.Modules.LineBundleData.finiteLocallyFree
+#print axioms Scheme.Modules.LineBundleData.unit
+#print axioms Variety.baseFieldPresheaf
+#print axioms Variety.baseFieldToGlobalSections
+#print axioms Variety.baseFieldToStructurePresheaf
+#print axioms Variety.relativeDifferentialsPresheaf
+#print axioms Variety.relativeDifferentials
+#print axioms Variety.relativeDerivationPresheaf
+#print axioms Variety.relativeDifferentialsSheafification
+#print axioms Variety.relativeDerivation
+#print axioms Variety.relativeDifferentialsDesc
+#print axioms Variety.relativeDifferentialsDesc_fac
+#print axioms Variety.relativeDifferentialsDesc_unique
+#print axioms Variety.relativeDifferentials_hom_ext
+#print axioms Variety.relativeDifferentialsPresheaf_obj
+#print axioms Variety.relativeDerivationPresheaf_d
+#print axioms Variety.relativeDifferentialsPresheaf_obj_free
+#print axioms Variety.relativeDifferentialsPresheaf_obj_rank
+#print axioms SmoothProperVariety.finiteCohomology
+#print axioms SmoothProperVariety.point
 #print axioms SmoothProperVariety.CanonicalSheafData
+#print axioms SmoothProperVariety.CanonicalSheafData.ofRelativeDifferentials
+#print axioms SmoothProperVariety.CanonicalSheafData.ofRelativeDifferentials_cotangent
 #print axioms SmoothProperVariety.CanonicalSheafData.canonicalClass
 #print axioms SmoothProperVariety.CanonicalSheafData.antiCanonicalClass
 #print axioms SmoothProperVariety.CanonicalSheafData.canonicalClass_eq_of_iso
@@ -115,11 +139,19 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms SmoothProperVariety.CanonicalSheafData.CanonicalDivisorData.classToPic_eq_canonicalClass
 #print axioms SmoothProperVariety.CanonicalSheafData.DualizingSheafComparison
 #print axioms SmoothProperVariety.CanonicalSheafData.DualizingSheafComparison.candidateClass_eq
+#print axioms SmoothProperVariety.CanonicalSheafData.canonicalCohObject
+#print axioms SmoothProperVariety.CanonicalSheafData.dualizingComplex
+#print axioms SmoothProperVariety.CanonicalSheafData.dualizingComplexIso
+#print axioms SmoothProperVariety.CanonicalSheafData.pointCanonicalSheafData
+#print axioms SmoothProperVariety.CanonicalSheafData.pointCanonicalSheafData_canonicalSheaf
+#print axioms SmoothProperVariety.CanonicalSheafData.pointDualizingComplexIso
 
 -- Layer B stage 5: Serre duality remains an explicit geometric realization. The derived
 -- statement uses Mathlib's derived category, while the cohomological comparison targets its
 -- actual Ext groups. Euler symmetry is proved from perfect pairings and dimension vanishing.
 #print axioms CohLean.Duality.Serre.DerivedStatement
+#print axioms CohLean.Duality.Serre.DerivedStatement.dualizingObject
+#print axioms CohLean.Duality.Serre.DerivedStatement.canonicalShiftIso
 #print axioms CohLean.Duality.Serre.Data
 #print axioms CohLean.Duality.Serre.Data.pairing
 #print axioms CohLean.Duality.Serre.Data.dimension_eq_ext

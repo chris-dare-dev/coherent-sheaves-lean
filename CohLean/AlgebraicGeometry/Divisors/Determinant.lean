@@ -116,6 +116,64 @@ instance (L : LineBundleData X) :
       (show SheafOfModules X.ringCatSheaf from L.inverse) :=
   L.inverseIsInvertible
 
+/-- The underlying sheaf of a line bundle is coherent. -/
+theorem isCoherent (L : LineBundleData X) : IsCoherent X L.line := by
+  letI : SheafOfModules.IsInvertible.{u, u, u}
+      (show SheafOfModules.{u} X.ringCatSheaf from L.line) := L.lineIsInvertible
+  exact SheafOfModules.IsInvertible.isFinitePresentation
+    (M := (show SheafOfModules.{u} X.ringCatSheaf from L.line))
+
+/-- The rank-one locally free atlas carried by an invertible sheaf. -/
+noncomputable def finiteLocallyFree (L : LineBundleData X) :
+    FiniteLocallyFreeData L.line 1 := by
+  letI : SheafOfModules.IsInvertible.{u, u, u}
+      (show SheafOfModules.{u} X.ringCatSheaf from L.line) := L.lineIsInvertible
+  let q := (SheafOfModules.IsInvertible.exists_rankOneData
+    (M := (show SheafOfModules.{u} X.ringCatSheaf from L.line))).choose
+  have hq := (SheafOfModules.IsInvertible.exists_rankOneData
+    (M := (show SheafOfModules.{u} X.ringCatSheaf from L.line))).choose_spec.1
+  have hrank := (SheafOfModules.IsInvertible.exists_rankOneData
+    (M := (show SheafOfModules.{u} X.ringCatSheaf from L.line))).choose_spec.2
+  exact
+    { localGenerators := q
+      isLocallyFreeData := hq
+      rankEquiv := fun i => by
+        letI : Unique (q.generators i).I :=
+          { default := Classical.choice (hrank i).1
+            uniq := fun a => (hrank i).2.elim a _ }
+        exact ⟨Equiv.ofUnique _ _⟩ }
+
+section Unit
+
+local instance : Category X.Opens :=
+  inferInstanceAs (Category (TopologicalSpace.Opens X))
+
+private theorem unitIsInvertible (X : Scheme.{u}) :
+    SheafOfModules.IsInvertible.{u, u, u}
+      (SheafOfModules.unit X.ringCatSheaf) := by
+  let q₀ := (SheafOfModules.free.generatingSections
+    (R := X.ringCatSheaf) PUnit.{u + 1}).localGeneratorsData
+  let e : SheafOfModules.free (R := X.ringCatSheaf) PUnit.{u + 1} ≅
+      SheafOfModules.unit X.ringCatSheaf := SheafOfModules.freePUnitIsoUnit
+  letI : q₀.IsLocallyFreeData := by
+    dsimp [q₀]
+    infer_instance
+  exact
+    { exists_rankOneData := ⟨q₀.ofIso e, inferInstance, by
+        intro i
+        change Nonempty PUnit ∧ Subsingleton PUnit
+        exact ⟨inferInstance, inferInstance⟩⟩ }
+
+/-- The structure sheaf with itself as tensor inverse. -/
+noncomputable def unit (X : Scheme.{u}) : LineBundleData X where
+  line := SheafOfModules.unit X.ringCatSheaf
+  inverse := SheafOfModules.unit X.ringCatSheaf
+  lineIsInvertible := unitIsInvertible X
+  inverseIsInvertible := unitIsInvertible X
+  tensorInverseIso := tensorUnitLeftIso _
+
+end Unit
+
 /-- The Picard-group element represented by a line bundle with its recorded inverse. -/
 noncomputable def toPic (L : LineBundleData X) : Pic X :=
   Pic.mkOfTensorInverse L.line L.inverse L.tensorInverseIso
