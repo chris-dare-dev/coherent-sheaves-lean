@@ -21,7 +21,7 @@ rev = "v4.32.1"
 [[require]]
 name = "MathFormalContract"
 git = "https://github.com/chris-dare-dev/math-formal-contract-lean"
-rev = "c0105866843dd1aa13502010ac6a5bc20528e525"
+rev = "65d600b1e70e403e8bcb43975e6aa178ee5ba439"
 
 # Apache-2.0 third-party source vendored from mattrobball/BridgelandStability.
 # The source lives below vendor/BridgelandStability and retains its headers,

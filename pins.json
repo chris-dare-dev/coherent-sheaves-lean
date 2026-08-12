@@ -21,7 +21,7 @@
   "anchor_mathlib_rev": "520045ab14e26149ee970e2e617ca04b09bde5d6",
   "anchor_mathlib_input_rev": "v4.32.1",
 
-  "mfc_rev": "c0105866843dd1aa13502010ac6a5bc20528e525",
+  "mfc_rev": "65d600b1e70e403e8bcb43975e6aa178ee5ba439",
   "mfc_repo": "https://github.com/chris-dare-dev/math-formal-contract-lean",
   "mfc_has_lake_dependencies": false,
 
