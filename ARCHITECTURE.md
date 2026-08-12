@@ -17,7 +17,7 @@ the mathematics and is independent of the package path.
 | `Duality` | Canonical sheaves, derived Serre-duality interfaces, and perfect pairings |
 | `Intersection` | Numerical polynomials, intersection numbers, and Chern-character reconstruction |
 | `Numerical` | Numerical interfaces, Grothendieck-group invariants, Riemann–Roch, models, and displays |
-| `RiemannRoch` | Geometric Riemann–Roch, reconstructed Todd data, perfect-resolution dévissage, and the bridge discharging the Layer A numerical interface |
+| `RiemannRoch` | Geometric Riemann–Roch, reconstructed Todd data, perfect-resolution dévissage, and scheme-derived numerical bridges through dimension four |
 | `Topology` | Reusable open-cover infrastructure |
 | `Development` | Compile-only API audits; not part of the stable root import |
 
@@ -40,9 +40,18 @@ schemes and geometric hypotheses
 The numerical layer is a visible axiomatic boundary. Geometric modules construct data that
 discharges that boundary; they do not silently turn assumptions into theorems.
 
+`RiemannRoch/Grothendieck` owns the dimension-independent descent of short-exact-sequence
+additive coherent-sheaf invariants through `K₀(Coh X)`. Dimension-specific assemblies reuse
+that layer instead of placing shared K-theory machinery under the surface namespace.
+
 On surfaces, `RiemannRoch/Surface/Assembly` discharges HRR for all coherent sheaves from
 twist-polynomial reconstruction. Finite locally free resolutions enter only the separate
 term-by-term comparison with the classical rank/`c₁`/`c₂` formula.
+
+In positive dimensions through four, `RiemannRoch/HigherDimension/Hirzebruch` uses the same
+reconstruction mechanism to discharge HRR and descend it through `K₀(Coh X)`. Its Todd classes
+are divisor-numerical representatives; cycle-valued tangent-bundle identifications remain a
+separate geometric problem rather than a hidden field or instance.
 
 ## Growth rules
 
