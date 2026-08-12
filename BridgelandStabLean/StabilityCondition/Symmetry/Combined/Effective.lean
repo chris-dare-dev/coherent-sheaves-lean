@@ -6,6 +6,9 @@ import BridgelandStabLean.StabilityCondition.Symmetry.Combined.PeriodMap
 import BridgelandStability.HeartEquivalence.Basic
 import Mathlib.GroupTheory.QuotientGroup.Basic
 
+set_option backward.defeqAttrib.useBackward true
+set_option backward.isDefEq.respectTransparency false
+
 /-!
 # Deck overlap and the effective symmetry group
 

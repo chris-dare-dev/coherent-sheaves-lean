@@ -6,6 +6,9 @@ import BridgelandStabLean.StabilityCondition.Weak.HarderNarasimhan.Heart
 import BridgelandStabLean.StabilityCondition.Weak.Support.Basic
 import BridgelandStabLean.StabilityCondition.Weak.Tilting.Noetherian
 
+set_option backward.defeqAttrib.useBackward true
+set_option backward.isDefEq.respectTransparency false
+
 /-!
 # Harder--Narasimhan reduction after phase tilting
 
@@ -1218,7 +1221,7 @@ theorem phaseTilt_hasHNProperty_of_zeroChargeDecompositions
                   hWU hWL hlast hL0 hsep (by
                     calc
                       sigma.slicing.phiPlus C U hlast = FX.φ jLast := by
-                        simpa [U] using
+                        simpa [U, PostnikovTower.factor] using
                           (sigma.slicing.phiPlus_eq_phiMinus_of_semistable C
                             (FX.semistable jLast) hlast).1
                       _ < 1 := hUphiLt) hLcharge

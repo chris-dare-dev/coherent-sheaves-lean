@@ -6,6 +6,9 @@ import BridgelandStabLean.StabilityCondition.Symmetry.Combined.Action
 import BridgelandStability.StabilityCondition.ConnectedComponent
 import Mathlib.Topology.Algebra.ConstMulAction
 
+set_option backward.defeqAttrib.useBackward true
+set_option backward.isDefEq.respectTransparency false
+
 /-!
 # Topology of the combined symmetry action
 
@@ -70,7 +73,8 @@ theorem mapEquiv_phiMinus :
     (fun _ X h ↦ ObjectProperty.prop_of_iso _ (a.Φ.e.unitIso.app X) h)
   let F := F₀.ofIso C (a.Φ.e.counitIso.app E)
   have hlast' : ¬IsZero (F.triangle ⟨F.n - 1, by
-      simpa [F, F₀] using Nat.sub_one_lt (Nat.ne_of_gt hn)⟩).obj₃ := by
+      simpa [F, F₀, HNFiltration.ofIso, HNFiltration.mapF, PostnikovTower.mapF] using
+        Nat.sub_one_lt (Nat.ne_of_gt hn)⟩).obj₃ := by
     change ¬IsZero (a.Φ.e.functor.obj (G.triangle ⟨G.n - 1, by lia⟩).obj₃)
     intro h
     apply hlast

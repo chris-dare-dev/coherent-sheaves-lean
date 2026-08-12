@@ -6,6 +6,9 @@ import BridgelandStabLean.StabilityCondition.Weak.Tilting.Semistable
 import BridgelandStabLean.StabilityCondition.Weak.Tilting.Cohomology.Sequence
 import Mathlib.CategoryTheory.Subobject.NoetherianObject
 
+set_option backward.defeqAttrib.useBackward true
+set_option backward.isDefEq.respectTransparency false
+
 /-!
 # Noetherian zero-charge objects after phase tilting
 
@@ -168,7 +171,7 @@ theorem phaseTiltingEnvelope_gives_shiftedZeroChargeDecomposition
         beta hbeta0 hbeta1 A0).mp hA0) f
   exact ⟨F0, Ftilde⟦(1 : ℤ)⟧, hFheart, hF0new, hQorth, d, -i⟦(1 : ℤ)⟧',
     -p⟦(1 : ℤ)⟧', by
-      simpa using rot_of_distTriang (Triangle.mk i p d).rotate
+      simpa [Triangle.rotate] using rot_of_distTriang (Triangle.mk i p d).rotate
         (rot_of_distTriang (Triangle.mk i p d) hd)⟩
 
 /-- A phase-compatible envelope of an original semistable object has a
@@ -298,14 +301,16 @@ theorem phaseTilt_zeroChargeChain_terminates_of_tiltingEnvelope
     apply mono_in_originalHeart_of_mono_in_phaseTilt
       sigma beta hbeta0 hbeta1 (pbOld j)
         (sigma.zeroCharge_phaseTors beta hbeta1 (pbOld (j + 1)))
-    simpa [pbStepOld, PBOld] using pbStep_mono j
+    apply mono_of_isHeartMono P.tilt
+    exact isHeartMono_of_mono P.tilt (pbStep j)
   let toF0Old (j : ℕ) : PBOld j ⟶ F0Old :=
     ObjectProperty.homMk (toF0 j).hom
   have toF0Old_mono (j : ℕ) : Mono (toF0Old j) := by
     apply mono_in_originalHeart_of_mono_in_phaseTilt
       sigma beta hbeta0 hbeta1 (pbOld j)
         (sigma.zeroCharge_phaseTors beta hbeta1 hF0)
-    simpa [toF0Old, PBOld, F0Old] using toF0_mono j
+    apply mono_of_isHeartMono P.tilt
+    exact isHeartMono_of_mono P.tilt (toF0 j)
   let cOld : SubobjectChain t sigma.zeroCharge F0 :=
     { obj := fun j => (PB j).obj
       prop := pbOld
@@ -716,7 +721,8 @@ theorem phaseTilt_zeroChargeChain_terminates_of_rightOrthogonal
   have toNOld_mono (j : ℕ) : Mono (toNOld j) := by
     apply mono_in_originalHeart_of_mono_in_phaseTilt
       sigma beta hbeta0 hbeta1 (propOld j) hN
-    simpa [aSharp, toNOld, AH, AOld, NOld] using compSharp_mono j
+    apply mono_of_isHeartMono P.tilt
+    exact isHeartMono_of_mono P.tilt (aSharp j ≫ S.g)
   let cOld : SubobjectChain t sigma.zeroCharge S.X₃.obj :=
     { obj := c.obj
       prop := propOld

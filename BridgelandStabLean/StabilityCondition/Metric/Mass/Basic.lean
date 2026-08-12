@@ -5,6 +5,9 @@ Released under the MIT license.
 import BridgelandStabLean.StabilityCondition.Metric.Isometry.Phase
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 
+set_option backward.defeqAttrib.useBackward true
+set_option backward.isDefEq.respectTransparency false
+
 /-!
 # Harder--Narasimhan mass
 
@@ -72,7 +75,7 @@ theorem HNFiltration.mass_pos (σ : StabilityCondition.WithClassMap C v) {E : C}
   exact lt_of_lt_of_le hterm
     (Finset.single_le_sum
       (f := fun j : Fin F.n ↦ ENNReal.ofReal ‖σ.charge (F.factor j)‖)
-      (fun _ _ ↦ zero_le _) (Finset.mem_univ i))
+      (fun _ _ ↦ zero_le) (Finset.mem_univ i))
 
 @[simp]
 theorem HNFiltration.mass_ofIso (σ : StabilityCondition.WithClassMap C v) {E E' : C}

@@ -37,6 +37,7 @@ def quotientCharge (V₀ : Submodule ℝ V) (Z : V →ₗ[ℝ] W)
     (hV₀ : V₀ ≤ LinearMap.ker Z) : (V ⧸ V₀) →ₗ[ℝ] W :=
   V₀.liftQ Z hV₀
 
+omit [FiniteDimensional ℝ V] in
 theorem quotientCharge_mkQ
     (V₀ : Submodule ℝ V) (Z : V →ₗ[ℝ] W)
     (hV₀ : V₀ ≤ LinearMap.ker Z) (x : V) :

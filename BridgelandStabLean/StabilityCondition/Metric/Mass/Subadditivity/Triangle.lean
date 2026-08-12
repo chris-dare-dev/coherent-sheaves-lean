@@ -11,6 +11,9 @@ import BridgelandStability.Deformation.HNFiltrationAssembly
 import BridgelandStability.HeartEquivalence.AmplitudeFormulas
 import BridgelandStability.HeartEquivalence.Reverse
 
+set_option backward.defeqAttrib.useBackward true
+set_option backward.isDefEq.respectTransparency false
+
 /-!
 # The Harder--Narasimhan mass-triangle chain
 

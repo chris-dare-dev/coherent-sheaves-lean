@@ -6,6 +6,9 @@ import BridgelandStabLean.StabilityCondition.Weak.Tilting.Cohomology.Homological
 import BridgelandStability.HeartEquivalence.EulerLift
 import Mathlib.CategoryTheory.Abelian.Exact
 
+set_option backward.defeqAttrib.useBackward true
+set_option backward.isDefEq.respectTransparency false
+
 /-!
 # Cohomological exactness for heart-source triangles
 
@@ -89,6 +92,7 @@ noncomputable def HeartStabilityData.H0primeObjIsoTruncGEOfIsLE
 
 /-- Read a morphism from `H⁰'(X)` to a heart object as a morphism from a
 nonpositive object `X`. -/
+@[nolint defsWithUnderscore]
 noncomputable def HeartStabilityData.fromH0primeHom_of_isLE
     (h : HeartStabilityData C) {X : C} [h.t.IsLE X 0]
     (E : h.t.heart.FullSubcategory) (f : h.H0prime (C := C) X ⟶ E) :
@@ -98,6 +102,7 @@ noncomputable def HeartStabilityData.fromH0primeHom_of_isLE
 
 /-- Construct a morphism `H⁰'(X) ⟶ E` from a morphism `X ⟶ E` when
 `X` is nonpositive. -/
+@[nolint defsWithUnderscore]
 noncomputable def HeartStabilityData.toH0primeHom_of_isLE
     (h : HeartStabilityData C) {X : C} [h.t.IsLE X 0]
     (E : h.t.heart.FullSubcategory) (f : X ⟶ E.obj) :
@@ -513,8 +518,11 @@ theorem HeartStabilityData.mono_H0primeFunctor_map_mor₂_of_obj₁_isGE_one
   letI : h.t.IsGE (shortComplexOfDistTriangle T hT).X₁ 1 := by
     dsimp
     infer_instance
+  have hTriangle : Triangle.mk T.mor₁ T.mor₂ T.mor₃ = T := by
+    cases T
+    rfl
   have hExact : S.Exact := by
-    simpa [S, F] using
+    simpa [S, F, hTriangle] using
       h.H0primeFunctor_preadditiveCoyoneda_exact_of_isGE_one
         (C := C) (A := T.obj₁) (Z := T.obj₂) (X₃ := T.obj₃) hT E
   have hzeroObj : IsZero S.X₁ := by
@@ -562,8 +570,9 @@ theorem HeartStabilityData.H0primeFunctor_isHomological_unconditional
     (h.H0primeFunctor (C := C))
   haveI hIso₁ : IsIso ((h.H0primeFunctor (C := C)).map
       ((h.t.truncLTι 1).app T.obj₁)) := by
-    simpa only [TStructure.truncLE, TStructure.truncLEι] using
-      h.isIso_H0primeFunctor_map_truncLEι (C := C) T.obj₁
+    have hIso := h.isIso_H0primeFunctor_map_truncLEι (C := C) T.obj₁
+    norm_num [TStructure.truncLE, TStructure.truncLEι] at hIso
+    exact hIso
   let α : Sle ⟶ S :=
     { τ₁ := (h.H0primeFunctor (C := C)).map
         ((h.t.truncLTι 1).app T.obj₁)

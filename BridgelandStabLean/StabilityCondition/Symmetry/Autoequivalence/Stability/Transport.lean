@@ -6,6 +6,9 @@ import BridgelandStabLean.StabilityCondition.Symmetry.Autoequivalence.Foundation
 import BridgelandStability.Deformation.IntervalSelection
 import MathFormalContract
 
+set_option backward.defeqAttrib.useBackward true
+set_option backward.isDefEq.respectTransparency false
+
 /-!
 # Transporting stability conditions by autoequivalences
 

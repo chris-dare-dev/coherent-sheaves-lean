@@ -10,6 +10,9 @@ import Mathlib.Data.List.Perm.Subperm
 import Mathlib.Data.List.Sort
 import Mathlib.Logic.Equiv.Fin.Rotate
 
+set_option backward.defeqAttrib.useBackward true
+set_option backward.isDefEq.respectTransparency false
+
 /-!
 # Convex-polygon perimeter comparison
 
@@ -136,7 +139,7 @@ private theorem chainLengthFrom_mono_sublist (a : ℂ) {xs ys : List ℂ}
   | slnil => simp [chainLengthFrom]
   | cons b h ih =>
       exact (ih a).trans (chainLength_insert_front a b _)
-  | cons₂ b h ih =>
+  | cons_cons b h ih =>
       simpa only [chainLengthFrom, add_le_add_iff_left] using ih b
 
 private theorem chainLength_le_cons (a : ℂ) (xs : List ℂ) :
@@ -156,7 +159,7 @@ theorem chainLength_mono_sublist {xs ys : List ℂ} (h : List.Sublist xs ys) :
   | slnil => simp [chainLength]
   | cons a h ih =>
       exact ih.trans (chainLength_le_cons a _)
-  | cons₂ a h ih =>
+  | cons_cons a h ih =>
       exact chainLengthFrom_mono_sublist a h
 
 /-- Removing consecutive repetitions before applying a vertex map does not
@@ -250,7 +253,8 @@ theorem chainLength_ofFn_eq_length {n : ℕ} (z : Fin (n + 1) → ℂ) :
       congr 1
       have htail := ih (fun i : Fin (n + 1) ↦ z i.succ)
       unfold length at htail
-      simpa only [List.ofFn_succ, chainLength, chainLengthFrom] using htail
+      simpa only [List.ofFn_succ, chainLength, chainLengthFrom,
+        Fin.castSucc_succ] using htail
 
 /-- The cyclic edge leaving a vertex; the last vertex is joined back to the
 first by `finRotate`. -/
@@ -420,7 +424,7 @@ theorem sub_mem_upperHalfPlaneUnion_of_lt {n : ℕ}
       dsimp [d] at j ⊢
       omega⟩
     have hi := hedge i
-    simpa [p, i] using hi)
+    simpa [p, i, Nat.add_assoc] using hi)
   have hlast : p (Fin.last d) = z a := by
     apply congrArg z
     apply Fin.ext
@@ -438,8 +442,8 @@ def interiorPrevEdge {n : ℕ} (z : Fin (n + 1) → ℂ)
 /-- The outgoing open edge at a nonterminal vertex. -/
 def interiorNextEdge {n : ℕ} (z : Fin (n + 1) → ℂ)
     (k : Fin (n + 1)) (hkn : k < Fin.last n) : ℂ :=
-  z (⟨k.1, by simpa [Fin.last] using hkn⟩ : Fin n).succ -
-    z (⟨k.1, by simpa [Fin.last] using hkn⟩ : Fin n).castSucc
+  z (⟨k.1, by omega⟩ : Fin n).succ -
+    z (⟨k.1, by omega⟩ : Fin n).castSucc
 
 /-- The angular bisector of the two open edges at an interior vertex. -/
 def interiorBisector {n : ℕ} (z : Fin (n + 1) → ℂ)
@@ -462,7 +466,7 @@ theorem turningFunctional_interior_eq_cross {n : ℕ}
     turningFunctional z k x = interiorTurnScale z k hk₀ hkn *
       crossFunctional (unitRay (interiorBisector z k hk₀ hkn)) x := by
   let iPrev : Fin n := ⟨k.1 - 1, by omega⟩
-  let iNext : Fin n := ⟨k.1, by simpa [Fin.last] using hkn⟩
+  let iNext : Fin n := ⟨k.1, by omega⟩
   let ePrev : ℂ := z iPrev.succ - z iPrev.castSucc
   let eNext : ℂ := z iNext.succ - z iNext.castSucc
   have hkNext : k = iNext.castSucc := by apply Fin.ext; rfl
@@ -507,7 +511,7 @@ theorem interiorTurnScale_pos {n : ℕ} (z : Fin (n + 1) → ℂ)
     (k : Fin (n + 1)) (hk₀ : 0 < k) (hkn : k < Fin.last n) :
     0 < interiorTurnScale z k hk₀ hkn := by
   let iPrev : Fin n := ⟨k.1 - 1, by omega⟩
-  let iNext : Fin n := ⟨k.1, by simpa [Fin.last] using hkn⟩
+  let iNext : Fin n := ⟨k.1, by omega⟩
   have hipn : iPrev < iNext := by
     simp only [iPrev, iNext, Fin.mk_lt_mk]
     omega
@@ -532,7 +536,7 @@ theorem interiorBisector_mem_Ioo {n : ℕ} (z : Fin (n + 1) → ℂ)
     (k : Fin (n + 1)) (hk₀ : 0 < k) (hkn : k < Fin.last n) :
     interiorBisector z k hk₀ hkn ∈ Set.Ioo 0 Real.pi := by
   let iPrev : Fin n := ⟨k.1 - 1, by omega⟩
-  let iNext : Fin n := ⟨k.1, by simpa [Fin.last] using hkn⟩
+  let iNext : Fin n := ⟨k.1, by omega⟩
   have hp := arg_pos_of_mem_upperHalfPlaneUnion (hedge iPrev)
   have hn := arg_pos_of_mem_upperHalfPlaneUnion (hedge iNext)
   have hpp := Complex.arg_le_pi (z iPrev.succ - z iPrev.castSucc)
@@ -552,9 +556,9 @@ theorem interiorBisector_strictAnti {n : ℕ} (z : Fin (n + 1) → ℂ)
     (hl₀ : 0 < l) (hln : l < Fin.last n) (hkl : k < l) :
     interiorBisector z l hl₀ hln < interiorBisector z k hk₀ hkn := by
   let kp : Fin n := ⟨k.1 - 1, by omega⟩
-  let kn : Fin n := ⟨k.1, by simpa [Fin.last] using hkn⟩
+  let kn : Fin n := ⟨k.1, by omega⟩
   let lp : Fin n := ⟨l.1 - 1, by omega⟩
-  let ln : Fin n := ⟨l.1, by simpa [Fin.last] using hln⟩
+  let ln : Fin n := ⟨l.1, by omega⟩
   have hp : kp < lp := by simp only [kp, lp, Fin.mk_lt_mk]; omega
   have hn : kn < ln := by simp only [kn, ln, Fin.mk_lt_mk]; omega
   have hpa := harg hp

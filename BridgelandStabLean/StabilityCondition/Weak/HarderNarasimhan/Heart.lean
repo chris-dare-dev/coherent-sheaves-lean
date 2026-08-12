@@ -4,6 +4,9 @@ Released under the MIT license.
 -/
 import BridgelandStabLean.StabilityCondition.Weak.Heart.Equivalence
 
+set_option backward.defeqAttrib.useBackward true
+set_option backward.isDefEq.respectTransparency false
+
 /-!
 # Harder--Narasimhan filtrations for weak stability functions
 
@@ -41,6 +44,7 @@ section WeakAbelian
 variable {t : TStructure C}
 
 /-- The abelian structure on the full heart, used for weak-slope comparisons. -/
+@[nolint defsWithUnderscore]
 local instance : Abelian t.heart.FullSubcategory :=
   t.heartFullSubcategoryAbelian
 

@@ -7,6 +7,9 @@ import Mathlib.Analysis.SpecialFunctions.Complex.Circle
 import Mathlib.Topology.Covering.Basic
 import Mathlib.Topology.Homeomorph.Lemmas
 
+set_option backward.defeqAttrib.useBackward true
+set_option backward.isDefEq.respectTransparency false
+
 /-!
 # The lifted group as a covering of the positive general linear group
 
@@ -294,8 +297,10 @@ private theorem continuous_firstColumnComplex : Continuous firstColumnComplex :=
       (toMat T 0 0, toMat T 1 0) :=
     (continuous_apply 0 |>.comp (continuous_apply 0 |>.comp continuous_toMatGLPos)).prodMk
       (continuous_apply 0 |>.comp (continuous_apply 1 |>.comp continuous_toMatGLPos))
-  simpa [firstColumnComplex, Complex.equivRealProdCLM_symm_apply] using
-    Complex.equivRealProdCLM.symm.continuous.comp h
+  convert Complex.equivRealProdCLM.symm.continuous.comp h using 1
+  funext T
+  apply Complex.ext <;>
+    simp [firstColumnComplex, Complex.equivRealProdCLM_symm_apply]
 
 private theorem continuous_firstColumnDirection : Continuous firstColumnDirection := by
   apply Continuous.subtype_mk
@@ -402,7 +407,8 @@ noncomputable def phaseCircle (θ : ℝ) : Circle := Circle.exp (Real.pi * θ)
 theorem phaseCircle_isCoveringMap : IsCoveringMap phaseCircle := by
   have h := Circle.isCoveringMap_exp.comp_homeomorph
     (Homeomorph.mulLeft₀ Real.pi Real.pi_ne_zero)
-  simpa [phaseCircle, Function.comp_def, Homeomorph.coe_mulLeft₀] using h
+  change IsCoveringMap (fun θ : ℝ ↦ Circle.exp (Real.pi * θ))
+  simpa [Function.comp_def, Homeomorph.coe_mulLeft₀] using h
 
 /-- The standard product covering in the global coordinates. -/
 noncomputable def coordinateProjection : GLTildeCoordinates → GLPosCoordinates :=

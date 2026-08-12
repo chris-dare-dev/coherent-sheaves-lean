@@ -6,6 +6,9 @@ import Mathlib.CategoryTheory.Triangulated.TStructure.Heart
 import Mathlib.CategoryTheory.Triangulated.TStructure.TruncLEGT
 import Mathlib.Tactic
 
+set_option backward.defeqAttrib.useBackward true
+set_option backward.isDefEq.respectTransparency false
+
 /-!
 # Torsion pairs on a heart, and the tilted aisles
 

@@ -5,6 +5,9 @@ Released under the MIT license.
 import BridgelandStabLean.StabilityCondition.Metric.Mass.Basic
 import BridgelandStability.Slicing.TStructureConstruction
 
+set_option backward.defeqAttrib.useBackward true
+set_option backward.isDefEq.respectTransparency false
+
 /-!
 # Uniqueness and finiteness of Harder--Narasimhan mass
 

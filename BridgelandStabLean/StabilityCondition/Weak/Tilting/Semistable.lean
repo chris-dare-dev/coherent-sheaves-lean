@@ -6,6 +6,9 @@ import BridgelandStabLean.StabilityCondition.Weak.Tilting.Cohomology.Sequence
 import BridgelandStabLean.StabilityCondition.Weak.HarderNarasimhan.Heart
 import BridgelandStabLean.StabilityCondition.Weak.Tilting.Property
 
+set_option backward.defeqAttrib.useBackward true
+set_option backward.isDefEq.respectTransparency false
+
 /-!
 # Semistable objects after tilting a weak stability condition
 
@@ -394,7 +397,7 @@ theorem phaseTilt_slope_shift_lt_shift_of_phase_separated
   have hcross : 0 < cross (W.charge (A⟦(1 : ℤ)⟧)) (W.charge (B⟦(1 : ℤ)⟧)) := by
     rw [hWA, hWB]
     rw [cross_phaseTiltRotation]
-    simpa [cross] using hAcrossB
+    simpa [cross, W0, WeakStabilityFunction.charge] using hAcrossB
   have hAshift0 : ¬IsZero (A⟦(1 : ℤ)⟧) := fun hzero =>
     hA0 (by
       rw [IsZero.iff_id_eq_zero] at hzero ⊢
@@ -949,7 +952,7 @@ theorem hom_eq_zero_of_zeroCharge_to_phaseTiltSemistable
   let T := P.triangleOfShortExact S hS
   have hT : T ∈ distTriang C := P.triangleOfShortExact_distinguished S hS
   have hsum : W.charge E = W.charge I.obj + W.charge Q.obj := by
-    simpa [T, S, I, Q, E'] using W.charge_triangle hT
+    simpa [T, S, I, Q, E'] using W.charge_triangle' hT
   have hQcharge : W.charge Q.obj = W.charge E := by
     rw [hIzero.2, zero_add] at hsum
     exact hsum.symm
@@ -1041,7 +1044,7 @@ theorem phaseTilt_isSemistable_left_of_zeroCharge_right
   have hsumOuter : W.charge E = W.charge A + W.charge V := W.charge_triangle' hdist
   have hsumInner : W.charge A = W.charge X + W.charge Y := W.charge_triangle' hXY
   have hsumComp : W.charge E = W.charge X + W.charge Q.obj := by
-    simpa [T, S, Q, E', X'] using W.charge_triangle hT
+    simpa [T, S, Q, E', X'] using W.charge_triangle' hT
   have hQcharge : W.charge Q.obj = W.charge Y := by
     apply add_left_cancel (a := W.charge X)
     calc
@@ -1653,9 +1656,12 @@ theorem phaseTiltClassification_of_isSemistable
       rw [IsZero.iff_id_eq_zero]
       exact sigma.slicing.zero_of_gtProp_leProp_general C 1 hUshiftGt hUshiftLe (𝟙 _)
     haveI : IsIso T.mor₂ :=
-      (Triangle.isZero₁_iff_isIso₂ T hT).mp (by simpa [T, t, U, P] using hUshiftZero)
+      (Triangle.isZero₁_iff_isIso₂ T hT).mp (by
+        simpa [T, t, U, P, originalCohomologyTriangle,
+          HeartTorsionPair.originalHMinusOne] using hUshiftZero)
     let eEV : E ≅ V := by
-      simpa [T, t, V, P] using (asIso T.mor₂)
+      simpa [T, t, V, P, originalCohomologyTriangle,
+        HeartTorsionPair.originalHZero] using (asIso T.mor₂)
     have hEtors : phaseTors sigma.slicing beta E := by
       exact ⟨gtProp_of_iso sigma.slicing eEV.symm hVtors.1,
         leProp_of_iso sigma.slicing eEV.symm hVtors.2⟩
@@ -1709,15 +1715,23 @@ theorem phaseTiltClassification_of_isSemistable
     have hUshiftSemistable : W.IsSemistable (U⟦(1 : ℤ)⟧) := by
       apply sigma.phaseTilt_isSemistable_left_of_zeroCharge_right beta hbeta0.le hbeta1
         hUshiftTilt hVtilt hE hVzeroTilt
-      simpa [T, t, U, V, P] using hT
+      simpa [T, t, U, V, P, originalCohomologyTriangle,
+        HeartTorsionPair.originalHMinusOne,
+        HeartTorsionPair.originalHZero] using hT
     have hUold : W0.IsSemistable U :=
       sigma.weakStabilityFunctionOnHeart_isSemistable_of_phaseFree_shiftSemistable
         beta hbeta0.le hbeta1 hUfree hUshiftSemistable hUcharge
     refine Or.inr ⟨U, V, hUfree, hUold, hVzero, ?_, ?_, ?_, ?_, ?_⟩
-    · simpa [T, t, U, P] using T.mor₁
-    · simpa [T, t, V, P] using T.mor₂
-    · simpa [T, t, U, V, P] using T.mor₃
-    · simpa [T, t, U, V, P] using hT
+    · simpa [T, t, U, P, originalCohomologyTriangle,
+        HeartTorsionPair.originalHMinusOne] using T.mor₁
+    · simpa [T, t, V, P, originalCohomologyTriangle,
+        HeartTorsionPair.originalHZero] using T.mor₂
+    · simpa [T, t, U, V, P, originalCohomologyTriangle,
+        HeartTorsionPair.originalHMinusOne,
+        HeartTorsionPair.originalHZero] using T.mor₃
+    · simpa [T, t, U, V, P, originalCohomologyTriangle,
+        HeartTorsionPair.originalHMinusOne,
+        HeartTorsionPair.originalHZero] using hT
     · intro him V0 hV0 a
       exact sigma.hom_eq_zero_of_zeroCharge_to_phaseTiltSemistable beta hbeta0.le hbeta1
         hE hcharge hV0 (Or.inl him) a

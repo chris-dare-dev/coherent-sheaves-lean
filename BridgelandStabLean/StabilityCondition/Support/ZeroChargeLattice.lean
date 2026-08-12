@@ -8,6 +8,9 @@ import Mathlib.GroupTheory.QuotientGroup.Basic
 import Mathlib.LinearAlgebra.FreeModule.PID
 import Mathlib.RingTheory.PrincipalIdealDomain
 
+set_option backward.defeqAttrib.useBackward true
+set_option backward.isDefEq.respectTransparency false
+
 /-!
 # The saturated zero-charge subgroup
 
@@ -98,7 +101,7 @@ theorem quotient_isAddTorsionFree (S : Set Λ) :
   apply QuotientAddGroup.eq_iff_sub_mem.mpr
   apply (isSaturated_saturatedClosure S ?_).resolve_left hn
   have hab' : quotientClass S (n • x) = quotientClass S (n • y) := by
-    simpa using hab
+    simpa [quotientClass] using hab
   have hmem : (n • x) - (n • y) ∈ saturatedClosure S :=
     QuotientAddGroup.eq_iff_sub_mem.mp hab'
   simpa [nsmul_sub] using hmem

@@ -9,6 +9,9 @@ import Mathlib.CategoryTheory.Triangulated.TStructure.TruncLTGE
 import Mathlib.CategoryTheory.ObjectProperty.FiniteProducts
 import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 
+set_option backward.defeqAttrib.useBackward true
+set_option backward.isDefEq.respectTransparency false
+
 /-!
 # The heart of a t-structure is abelian
 

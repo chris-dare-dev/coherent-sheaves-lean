@@ -5,6 +5,10 @@ Released under the MIT license.
 import BridgelandStabLean.StabilityCondition.Symmetry.Combined.Topology
 import BridgelandStabLean.StabilityCondition.Symmetry.GLTilde.Topology.Group
 import Mathlib.Analysis.Normed.Module.FiniteDimension
+import Mathlib.LinearAlgebra.Complex.FiniteDimensional
+
+set_option backward.defeqAttrib.useBackward true
+set_option backward.isDefEq.respectTransparency false
 
 /-!
 # Continuity of each lifted linear action map

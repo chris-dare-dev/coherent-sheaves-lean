@@ -10,6 +10,9 @@ import BridgelandStabLean.StabilityCondition.Weak.Tilting.Cohomology.Homological
 import BridgelandStability.HeartEquivalence.Basic
 import BridgelandStability.HeartEquivalence.H0Homological
 
+set_option backward.defeqAttrib.useBackward true
+set_option backward.isDefEq.respectTransparency false
+
 /-!
 # Six-term original-heart cohomology sequences
 
@@ -44,6 +47,7 @@ attribute [local instance] TStructure.heartFullSubcategoryAbelian
 
 /-- The tautological shift sequence on degree-zero original-heart
 cohomology. -/
+@[nolint defsWithUnderscore]
 noncomputable instance originalHeartCohFunctor_zero_shiftSequence
     (t : TStructure C) :
     (originalHeartCohFunctor t 0).ShiftSequence ℤ :=
@@ -58,10 +62,14 @@ noncomputable def originalHeartCohShiftIso
       (originalHeartCohFunctor t 0).obj (X⟦(n : ℤ)⟧) ≅
         originalHeartCoh t n X := by
     refine ObjectProperty.isoMk _ ?_
-    simpa [originalHeartCohFunctor] using
-      (((shiftFunctorZero C ℤ).app
-        ((t.truncGELE 0 0).obj (X⟦(n : ℤ)⟧))) ≪≫
-          (TStructure.truncGELEObjShiftIso (C := C) t n X).symm)
+    change
+      (shiftFunctor C 0).obj
+          ((t.truncGE 0).obj ((t.truncLE 0).obj (X⟦(n : ℤ)⟧))) ≅
+        (shiftFunctor C n).obj
+          ((t.truncGE n).obj ((t.truncLE n).obj X))
+    exact ((shiftFunctorZero C ℤ).app
+      ((t.truncGELE 0 0).obj (X⟦(n : ℤ)⟧))) ≪≫
+        (TStructure.truncGELEObjShiftIso (C := C) t n X).symm
   exact ((Functor.isoShift (originalHeartCohFunctor t 0) n).app X).symm ≪≫ e₂
 
 /-- Cohomology below a known lower bound vanishes. -/
@@ -126,6 +134,7 @@ noncomputable def originalHeartCohomologySixTermSequence
 
 /-- The first term is explicit degree-minus-one cohomology of the first
 triangle vertex. -/
+@[nolint defsWithUnderscore]
 noncomputable def originalHeartCohomologySixTermSequence_obj₀Iso
     (t : TStructure C) (T : Triangle C) :
     (originalHeartCohomologySixTermSequence t T).obj' 0 ≅
@@ -134,6 +143,7 @@ noncomputable def originalHeartCohomologySixTermSequence_obj₀Iso
 
 /-- The second term is explicit degree-minus-one cohomology of the second
 triangle vertex. -/
+@[nolint defsWithUnderscore]
 noncomputable def originalHeartCohomologySixTermSequence_obj₁Iso
     (t : TStructure C) (T : Triangle C) :
     (originalHeartCohomologySixTermSequence t T).obj' 1 ≅
@@ -142,6 +152,7 @@ noncomputable def originalHeartCohomologySixTermSequence_obj₁Iso
 
 /-- The third term is explicit degree-minus-one cohomology of the third
 triangle vertex. -/
+@[nolint defsWithUnderscore]
 noncomputable def originalHeartCohomologySixTermSequence_obj₂Iso
     (t : TStructure C) (T : Triangle C) :
     (originalHeartCohomologySixTermSequence t T).obj' 2 ≅
@@ -150,6 +161,7 @@ noncomputable def originalHeartCohomologySixTermSequence_obj₂Iso
 
 /-- The fourth term is explicit degree-zero cohomology of the first triangle
 vertex. -/
+@[nolint defsWithUnderscore]
 noncomputable def originalHeartCohomologySixTermSequence_obj₃Iso
     (t : TStructure C) (T : Triangle C) :
     (originalHeartCohomologySixTermSequence t T).obj' 3 ≅
@@ -158,6 +170,7 @@ noncomputable def originalHeartCohomologySixTermSequence_obj₃Iso
 
 /-- The fifth term is explicit degree-zero cohomology of the second triangle
 vertex. -/
+@[nolint defsWithUnderscore]
 noncomputable def originalHeartCohomologySixTermSequence_obj₄Iso
     (t : TStructure C) (T : Triangle C) :
     (originalHeartCohomologySixTermSequence t T).obj' 4 ≅
@@ -166,6 +179,7 @@ noncomputable def originalHeartCohomologySixTermSequence_obj₄Iso
 
 /-- The sixth term is explicit degree-zero cohomology of the third triangle
 vertex. -/
+@[nolint defsWithUnderscore]
 noncomputable def originalHeartCohomologySixTermSequence_obj₅Iso
     (t : TStructure C) (T : Triangle C) :
     (originalHeartCohomologySixTermSequence t T).obj' 5 ≅
@@ -247,6 +261,7 @@ noncomputable def HeartTorsionPair.originalCohomologySixTermSequenceOfShortExact
   originalHeartCohomologySixTermSequence t (P.triangleOfShortExact S hS)
 
 /-- The first term is the canonical original `H⁻¹` of the subobject. -/
+@[nolint defsWithUnderscore]
 noncomputable def HeartTorsionPair.originalCohomologySixTermSequenceOfShortExact_obj₀Iso
     (S : ShortComplex (P.tilt).heart.FullSubcategory) (hS : S.ShortExact) :
     (P.originalCohomologySixTermSequenceOfShortExact S hS).obj' 0 ≅
@@ -256,6 +271,7 @@ noncomputable def HeartTorsionPair.originalCohomologySixTermSequenceOfShortExact
     P.originalHeartCohIsoHMinusOne S.X₁.property
 
 /-- The second term is the canonical original `H⁻¹` of the middle object. -/
+@[nolint defsWithUnderscore]
 noncomputable def HeartTorsionPair.originalCohomologySixTermSequenceOfShortExact_obj₁Iso
     (S : ShortComplex (P.tilt).heart.FullSubcategory) (hS : S.ShortExact) :
     (P.originalCohomologySixTermSequenceOfShortExact S hS).obj' 1 ≅
@@ -265,6 +281,7 @@ noncomputable def HeartTorsionPair.originalCohomologySixTermSequenceOfShortExact
     P.originalHeartCohIsoHMinusOne S.X₂.property
 
 /-- The third term is the canonical original `H⁻¹` of the quotient. -/
+@[nolint defsWithUnderscore]
 noncomputable def HeartTorsionPair.originalCohomologySixTermSequenceOfShortExact_obj₂Iso
     (S : ShortComplex (P.tilt).heart.FullSubcategory) (hS : S.ShortExact) :
     (P.originalCohomologySixTermSequenceOfShortExact S hS).obj' 2 ≅
@@ -274,6 +291,7 @@ noncomputable def HeartTorsionPair.originalCohomologySixTermSequenceOfShortExact
     P.originalHeartCohIsoHMinusOne S.X₃.property
 
 /-- The fourth term is the canonical original `H⁰` of the subobject. -/
+@[nolint defsWithUnderscore]
 noncomputable def HeartTorsionPair.originalCohomologySixTermSequenceOfShortExact_obj₃Iso
     (S : ShortComplex (P.tilt).heart.FullSubcategory) (hS : S.ShortExact) :
     (P.originalCohomologySixTermSequenceOfShortExact S hS).obj' 3 ≅
@@ -283,6 +301,7 @@ noncomputable def HeartTorsionPair.originalCohomologySixTermSequenceOfShortExact
     P.originalHeartCohIsoHZero S.X₁.property
 
 /-- The fifth term is the canonical original `H⁰` of the middle object. -/
+@[nolint defsWithUnderscore]
 noncomputable def HeartTorsionPair.originalCohomologySixTermSequenceOfShortExact_obj₄Iso
     (S : ShortComplex (P.tilt).heart.FullSubcategory) (hS : S.ShortExact) :
     (P.originalCohomologySixTermSequenceOfShortExact S hS).obj' 4 ≅
@@ -292,6 +311,7 @@ noncomputable def HeartTorsionPair.originalCohomologySixTermSequenceOfShortExact
     P.originalHeartCohIsoHZero S.X₂.property
 
 /-- The sixth term is the canonical original `H⁰` of the quotient. -/
+@[nolint defsWithUnderscore]
 noncomputable def HeartTorsionPair.originalCohomologySixTermSequenceOfShortExact_obj₅Iso
     (S : ShortComplex (P.tilt).heart.FullSubcategory) (hS : S.ShortExact) :
     (P.originalCohomologySixTermSequenceOfShortExact S hS).obj' 5 ≅

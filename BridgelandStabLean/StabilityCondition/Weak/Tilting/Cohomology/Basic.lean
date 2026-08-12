@@ -8,6 +8,9 @@ import BridgelandStabLean.ForMathlib.CategoryTheory.Triangulated.TStructure.Hear
 import Mathlib.Algebra.Homology.ShortComplex.Exact
 import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 
+set_option backward.defeqAttrib.useBackward true
+set_option backward.isDefEq.respectTransparency false
+
 /-!
 # Original-heart cohomology of objects in an HRS-tilted heart
 
@@ -82,7 +85,7 @@ noncomputable def originalHeartCohIsoOfHeart [IsTriangulated C]
     @asIso _ _ _ _ ((t.truncGEπ 0).app E.obj)
       ((t.isGE_iff_isIso_truncGEπ_app 0 E.obj).mp hGE)
   refine ObjectProperty.isoMk _ ?_
-  simpa [originalHeartCohFunctor, TStructure.truncGELE] using
+  simpa [originalHeartCoh, originalHeartCohFunctor, TStructure.truncGELE] using
     ((shiftFunctor C 0).mapIso ((t.truncGE 0).mapIso eLE ≪≫ eGE.symm) ≪≫
       (shiftFunctorZero C ℤ).app E.obj)
 
@@ -205,7 +208,7 @@ noncomputable def HeartTorsionPair.originalHeartCohIsoHMinusOne [IsTriangulated 
     @asIso _ _ _ _ ((t.truncGEπ (-1)).app ((t.truncLT 0).obj X))
       ((t.isGE_iff_isIso_truncGEπ_app (-1) _).mp (by infer_instance))
   refine ObjectProperty.isoMk _ ?_
-  simpa [originalHeartCohFunctor, HeartTorsionPair.originalHMinusOne,
+  simpa [originalHeartCoh, originalHeartCohFunctor, HeartTorsionPair.originalHMinusOne,
     TStructure.truncGELE] using
       ((shiftFunctor C (-1)).mapIso ((t.truncGE (-1)).mapIso eLE ≪≫ eGE.symm))
 
@@ -219,7 +222,7 @@ noncomputable def HeartTorsionPair.originalHeartCohIsoHZero [IsTriangulated C]
     @asIso _ _ _ _ ((t.truncLEι 0).app X)
       ((t.isLE_iff_isIso_truncLEι_app 0 X).mp hLE)
   refine ObjectProperty.isoMk _ ?_
-  simpa [originalHeartCohFunctor, HeartTorsionPair.originalHZero,
+  simpa [originalHeartCoh, originalHeartCohFunctor, HeartTorsionPair.originalHZero,
     TStructure.truncGELE] using
       ((shiftFunctor C 0).mapIso ((t.truncGE 0).mapIso eLE) ≪≫
         (shiftFunctorZero C ℤ).app ((t.truncGE 0).obj X))

@@ -5,6 +5,9 @@ Released under the MIT license.
 import BridgelandStabLean.StabilityCondition.Weak.Basic.Definitions
 import BridgelandStability.HeartEquivalence.Forward
 
+set_option backward.defeqAttrib.useBackward true
+set_option backward.isDefEq.respectTransparency false
+
 /-!
 # Weak stability on the heart of a slicing
 
@@ -229,7 +232,10 @@ theorem charge_mem_upperHalfPlane_and_arg_le_phiPlus
   let s : Finset (Fin F.n) := Finset.univ.filter (fun i => ¬IsZero (P.factor i))
   have hs : s.Nonempty := by
     obtain ⟨i, hi⟩ := F.exists_nonzero_factor C hE
-    exact ⟨i, by simpa [s, P] using hi⟩
+    have hi' : ¬IsZero (P.factor i) := by
+      change ¬IsZero (F.triangle i).obj₃
+      exact hi
+    exact ⟨i, Finset.mem_filter.mpr ⟨Finset.mem_univ i, hi'⟩⟩
   have hminus : 0 < σ.slicing.phiMinus C E hE :=
     σ.slicing.phiMinus_gt_of_gtProp C hE hEheart.1
   have hphase_mem : ∀ i ∈ s, F.φ i ∈ Set.Ioo (0 : ℝ) 1 := by

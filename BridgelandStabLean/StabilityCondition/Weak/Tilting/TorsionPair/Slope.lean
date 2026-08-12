@@ -5,6 +5,9 @@ Released under the MIT license.
 import BridgelandStabLean.StabilityCondition.Weak.Tilting.TorsionPair.Heart
 import BridgelandStability.Slicing.TStructureConstruction
 
+set_option backward.defeqAttrib.useBackward true
+set_option backward.isDefEq.respectTransparency false
+
 /-!
 # The torsion pair at a phase cutoff (display (14.1))
 
@@ -62,7 +65,8 @@ theorem leProp_of_iso {t : ℝ} {E E' : C} (e : E ≅ E') (h : s.leProp C t E) :
     s.leProp C t E' := by
   rcases h with hZ | ⟨F, hn, hle⟩
   · exact Or.inl (hZ.of_iso e.symm)
-  · exact Or.inr ⟨F.ofIso C e, hn, by simpa using hle⟩
+  · exact Or.inr ⟨F.ofIso C e, hn, by
+      simpa [HNFiltration.phiPlus, HNFiltration.ofIso] using hle⟩
 
 omit [IsTriangulated C] in
 /-- `gtProp` is closed under isomorphisms. -/
@@ -70,7 +74,8 @@ theorem gtProp_of_iso {t : ℝ} {E E' : C} (e : E ≅ E') (h : s.gtProp C t E) :
     s.gtProp C t E' := by
   rcases h with hZ | ⟨F, hn, hgt⟩
   · exact Or.inl (hZ.of_iso e.symm)
-  · exact Or.inr ⟨F.ofIso C e, hn, by simpa using hgt⟩
+  · exact Or.inr ⟨F.ofIso C e, hn, by
+      simpa [HNFiltration.phiMinus, HNFiltration.ofIso] using hgt⟩
 
 /-- Heart membership from the two interval bounds, through the foundational library's heart
 identification. -/

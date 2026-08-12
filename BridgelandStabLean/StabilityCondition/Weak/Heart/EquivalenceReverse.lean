@@ -359,6 +359,7 @@ variable {t : TStructure C}
 
 /-- The abelian structure on the full heart used to form successive
 cokernels in a weak HN chain. -/
+@[nolint defsWithUnderscore]
 local instance : Abelian t.heart.FullSubcategory :=
   t.heartFullSubcategoryAbelian
 

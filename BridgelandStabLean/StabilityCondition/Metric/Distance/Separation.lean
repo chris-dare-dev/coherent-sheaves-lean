@@ -4,6 +4,9 @@ Released under the MIT license.
 -/
 import BridgelandStabLean.StabilityCondition.Metric.Distance.Basic
 
+set_option backward.defeqAttrib.useBackward true
+set_option backward.isDefEq.respectTransparency false
+
 /-!
 # Separation for the full stability distance
 
@@ -41,12 +44,12 @@ theorem stabilityDistTerm_eq_zero_of_eq_zero
     {σ τ : StabilityCondition.WithClassMap C v}
     (hd : stabilityDist σ τ = 0) (E : C) (hE : ¬IsZero E) :
     stabilityDistTerm σ τ E hE = 0 := by
-  apply bot_unique
   have hle : stabilityDistTerm σ τ E hE ≤ stabilityDist σ τ := by
     unfold stabilityDist
     exact le_iSup₂ (f := fun (X : C) (hX : ¬IsZero X) ↦
       stabilityDistTerm σ τ X hX) E hE
-  simpa only [hd] using hle
+  rw [hd] at hle
+  exact le_antisymm hle zero_le
 
 /-- Distance zero identifies the intrinsic highest phase of every nonzero
 object. -/
@@ -95,8 +98,8 @@ theorem stabilityMass_toReal_eq_norm_charge
     (σ : StabilityCondition.WithClassMap C v) {E : C} {φ : ℝ}
     (hP : σ.slicing.P φ E) :
     (stabilityMass σ E).toReal = ‖σ.charge E‖ := by
-  let F := HNFiltration.single C E φ hP
-  simpa [F, HNFiltration.single] using stabilityMass_toReal_eq_sum σ F
+  rw [stabilityMass_eq_ofReal_norm_charge σ hP]
+  exact ENNReal.toReal_ofReal (norm_nonneg _)
 
 /-- Distance zero identifies the two slicings. -/
 theorem slicing_eq_of_stabilityDist_eq_zero

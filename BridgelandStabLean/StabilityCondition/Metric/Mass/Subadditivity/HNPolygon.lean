@@ -8,6 +8,9 @@ import Mathlib.Analysis.Convex.Jensen
 import Mathlib.Data.Fin.SuccPredOrder
 import Mathlib.Order.Interval.Set.Monotone
 
+set_option backward.defeqAttrib.useBackward true
+set_option backward.isDefEq.respectTransparency false
+
 /-!
 # Harder--Narasimhan polygon paths for mass subadditivity
 
@@ -145,7 +148,7 @@ theorem exists_strict_support_at_interior {n : ℕ} (z : Fin (n + 1) → ℂ)
     (k : Fin (n + 1)) (hk₀ : 0 < k) (hkn : k < Fin.last n) :
     ∃ l : ℂ →L[ℝ] ℝ, ∀ j, j ≠ k → l (z j) < l (z k) := by
   let iPrev : Fin n := ⟨k.1 - 1, by omega⟩
-  let iNext : Fin n := ⟨k.1, by simpa [Fin.last] using hkn⟩
+  let iNext : Fin n := ⟨k.1, by omega⟩
   have hiPrev_lt_iNext : iPrev < iNext := by
     simp only [iPrev, iNext, Fin.mk_lt_mk]
     omega
@@ -802,7 +805,7 @@ theorem phase_last_prefix_le_of_ne_zero_to_semistable {Q : A}
         have hfr : Subobject.ofLE M N hMN ≫ r = 0 := by
           dsimp [r, M, N, K]
           rw [← Category.assoc, Subobject.ofLE_comp_ofLE]
-          simpa using ih hmk
+          simpa [j] using ih hmk
         let d : cokernel (Subobject.ofLE M N hMN) ⟶ Q :=
           cokernel.desc (Subobject.ofLE M N hMN) r hfr
         have hd : d = 0 := by
@@ -996,7 +999,7 @@ theorem subobjectCharge_le_of_polygonVertex_isMax
     linear_combination hZₛ - hZₖ
   have hleft : l (Z.Zobj Qₛ) ≤ 0 := by
     by_cases hkn : k < Fin.last F.n
-    · let iNext : Fin F.n := ⟨k.1, by simpa [Fin.last] using hkn⟩
+    · let iNext : Fin F.n := ⟨k.1, by omega⟩
       have hkNext : iNext.castSucc = k := by apply Fin.ext; rfl
       have hpath : l (F.polygonVertex iNext.succ) ≤
           l (F.polygonVertex iNext.castSucc) := by
@@ -1025,8 +1028,7 @@ theorem subobjectCharge_le_of_polygonVertex_isMax
       · have hQₛ : ¬IsZero Qₛ := cokernel_ofLE_not_isZero inf_le_left hIS
         have hphase : Z.phase Qₛ ≤ F.φ iNext := by
           simpa [Qₛ, I, K, iNext] using
-            F.quotient_inf_phase_le hHN (k := k.1) (by
-              simpa [Fin.last] using hkn) S hQₛ
+            F.quotient_inf_phase_le hHN (k := k.1) (by omega) S hQₛ
         have hargQ : Complex.arg (Z.Zobj Qₛ) ≤ θ := by
           apply le_trans _ hargNext
           rw [F.polygonEdge_arg iNext]
@@ -1211,7 +1213,7 @@ theorem subobjectCharge_exists_strict_support (hHN : Z.HasHNProperty)
     ∃ l : ℂ →L[ℝ] ℝ, ∀ S : Subobject E, S ≠ F.chain k →
       l (Z.Zobj (S : A)) < l (F.polygonVertex k) := by
   let iPrev : Fin F.n := ⟨k.1 - 1, by omega⟩
-  let iNext : Fin F.n := ⟨k.1, by simpa [Fin.last] using hkn⟩
+  let iNext : Fin F.n := ⟨k.1, by omega⟩
   have hiPrevNext : iPrev < iNext := by
     simp only [iPrev, iNext, Fin.mk_lt_mk]
     omega
@@ -1263,8 +1265,7 @@ theorem subobjectCharge_exists_strict_support (hHN : Z.HasHNProperty)
     · have hQₛ : ¬IsZero Qₛ := cokernel_ofLE_not_isZero inf_le_left hIS
       have hphase : Z.phase Qₛ ≤ F.φ iNext := by
         simpa [Qₛ, I, K, iNext] using
-          F.quotient_inf_phase_le hHN (k := k.1) (by
-            simpa [Fin.last] using hkn) S hQₛ
+          F.quotient_inf_phase_le hHN (k := k.1) (by omega) S hQₛ
       have hargQ : Complex.arg (Z.Zobj Qₛ) ≤
           Complex.arg (F.polygonEdge iNext) := by
         rw [F.polygonEdge_arg iNext]
@@ -1332,8 +1333,7 @@ theorem subobjectCharge_exists_strict_support (hHN : Z.HasHNProperty)
       have hleft' : l (Z.Zobj Qₛ) < 0 := by
         have hphase : Z.phase Qₛ ≤ F.φ iNext := by
           simpa [Qₛ, I, K, iNext] using
-            F.quotient_inf_phase_le hHN (k := k.1) (by
-              simpa [Fin.last] using hkn) S hQₛ
+            F.quotient_inf_phase_le hHN (k := k.1) (by omega) S hQₛ
         apply ComplexPolygonalPath.crossFunctional_neg_of_arg_lt hr
           (Z.upper Qₛ hQₛ)
         rw [hrarg]

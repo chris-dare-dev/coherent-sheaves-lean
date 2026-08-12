@@ -5,6 +5,9 @@ Released under the MIT license.
 import BridgelandStabLean.StabilityCondition.Symmetry.GLTilde.Covering.Map
 import Mathlib.Topology.Algebra.Group.Basic
 
+set_option backward.defeqAttrib.useBackward true
+set_option backward.isDefEq.respectTransparency false
+
 /-!
 # Topological-group structure on the lifted general linear group
 
@@ -63,8 +66,10 @@ private theorem continuous_cA : Continuous (cA : Matrix.GLPos (Fin 2) ℝ → �
       (continuous_toMatGLPos.matrix_elem 1 1) |>.div_const 2).prodMk
         ((continuous_toMatGLPos.matrix_elem 1 0).sub
           (continuous_toMatGLPos.matrix_elem 0 1) |>.div_const 2)
-  simpa [cA, Complex.equivRealProdCLM_symm_apply] using
-    Complex.equivRealProdCLM.symm.continuous.comp h
+  convert Complex.equivRealProdCLM.symm.continuous.comp h using 1
+  funext T
+  apply Complex.ext <;>
+    simp [cA, Complex.equivRealProdCLM_symm_apply]
 
 private theorem continuous_cB : Continuous (cB : Matrix.GLPos (Fin 2) ℝ → ℂ) := by
   have h : Continuous fun T : Matrix.GLPos (Fin 2) ℝ =>
@@ -74,8 +79,10 @@ private theorem continuous_cB : Continuous (cB : Matrix.GLPos (Fin 2) ℝ → �
       (continuous_toMatGLPos.matrix_elem 1 1) |>.div_const 2).prodMk
         ((continuous_toMatGLPos.matrix_elem 1 0).add
           (continuous_toMatGLPos.matrix_elem 0 1) |>.div_const 2)
-  simpa [cB, Complex.equivRealProdCLM_symm_apply] using
-    Complex.equivRealProdCLM.symm.continuous.comp h
+  convert Complex.equivRealProdCLM.symm.continuous.comp h using 1
+  funext T
+  apply Complex.ext <;>
+    simp [cB, Complex.equivRealProdCLM_symm_apply]
 
 private theorem continuous_ratio : Continuous (ratio : Matrix.GLPos (Fin 2) ℝ → ℂ) := by
   exact continuous_cB.div continuous_cA cA_ne_zero
@@ -112,7 +119,11 @@ private theorem continuous_coordinateWmap :
   have he : Continuous fun p : GLTildeCoordinates × ℝ =>
       cexpI (-(2 * Real.pi * p.2)) :=
     continuous_cexpI.comp (by fun_prop)
-  simpa only [Wmap] using continuous_const.add (hr.mul he)
+  have hOne : Continuous fun _ : GLTildeCoordinates × ℝ => (1 : ℂ) :=
+    continuous_const
+  convert hOne.add (hr.mul he) using 1
+  funext p
+  rfl
 
 private theorem continuous_coordinateWmap_zero :
     Continuous fun c : GLTildeCoordinates =>
@@ -120,7 +131,13 @@ private theorem continuous_coordinateWmap_zero :
   have hr : Continuous fun c : GLTildeCoordinates =>
       ratio (upperGLPos c.2.1 c.2.2.1 c.2.2.2) :=
     continuous_ratio.comp continuous_upperGLPos
-  simpa only [Wmap] using continuous_const.add (hr.mul continuous_const)
+  have hOne : Continuous fun _ : GLTildeCoordinates => (1 : ℂ) :=
+    continuous_const
+  have hExp : Continuous fun _ : GLTildeCoordinates => cexpI (-(2 * Real.pi * 0)) :=
+    continuous_const
+  convert hOne.add (hr.mul hExp) using 1
+  funext c
+  rfl
 
 private theorem continuous_coordinateShift_uncurry :
     Continuous fun p : GLTildeCoordinates × ℝ => coordinateShift p.1 p.2 := by
@@ -184,16 +201,19 @@ private theorem continuous_mul_glTilde : Continuous fun p : GLTilde × GLTilde =
   rw [← glTildeCoordinateHomeomorph.comp_continuous_iff]
   change Continuous fun p : GLTilde × GLTilde => glTildeCoordinates (p.1 * p.2)
   apply continuous_glTildeCoordinates_of_continuous
-  · simpa only [GLTilde.mul_mat] using
-      (continuous_mul.comp
-        (GLTilde.continuous_toMat.comp continuous_fst |>.prodMk
-          (GLTilde.continuous_toMat.comp continuous_snd)))
+  · convert continuous_mul.comp
+      (GLTilde.continuous_toMat.comp continuous_fst |>.prodMk
+        (GLTilde.continuous_toMat.comp continuous_snd)) using 1
+    funext p
+    simp only [Function.comp_apply, GLTilde.mul_mat]
   · have hy0 : Continuous fun p : GLTilde × GLTilde => p.2.shift.toOrderIso 0 :=
       GLTilde.continuous_shift_apply.comp
         (continuous_snd.prodMk (continuous_const : Continuous fun _ : GLTilde × GLTilde =>
           (0 : ℝ)))
     have h := GLTilde.continuous_shift_apply.comp (continuous_fst.prodMk hy0)
-    simpa only [GLTilde.mul_shift, NormalizedShift.mul_apply] using h
+    convert h using 1
+    funext p
+    simp only [GLTilde.mul_shift, NormalizedShift.mul_apply, Function.comp_apply]
 
 /-! ## Inversion in the upper-triangular coordinates -/
 
@@ -280,7 +300,9 @@ private theorem continuous_inv_glTilde : Continuous fun x : GLTilde => x⁻¹ :=
   rw [← glTildeCoordinateHomeomorph.comp_continuous_iff]
   change Continuous fun x : GLTilde => glTildeCoordinates x⁻¹
   apply continuous_glTildeCoordinates_of_continuous
-  · simpa only [GLTilde.inv_mat] using continuous_inv.comp GLTilde.continuous_toMat
+  · convert continuous_inv.comp GLTilde.continuous_toMat using 1
+    funext x
+    simp only [Function.comp_apply, GLTilde.inv_mat]
   · exact continuous_inv_shift_zero
 
 /-- The transported global-coordinate topology is compatible with the group

@@ -6,6 +6,9 @@ import BridgelandStabLean.StabilityCondition.Symmetry.GLTilde.Basic
 import Mathlib.LinearAlgebra.Complex.Module
 import Mathlib.Analysis.Complex.Trigonometric
 
+set_option backward.defeqAttrib.useBackward true
+set_option backward.isDefEq.respectTransparency false
+
 /-!
 # The complex representation of real two-dimensional linear maps
 
@@ -68,11 +71,10 @@ transported across `cplxCoord`.
 noncomputable def actC (T : Matrix.GLPos (Fin 2) ℝ) : ℂ →ₗ[ℝ] ℂ where
   toFun z := cplxCoord.symm (toMat T *ᵥ cplxCoord z)
   map_add' z w := by simp [Matrix.mulVec_add]
-  -- simp reduces this to `↑c * w = c • w` and then declines to go further:
-  -- it normalises `•` into `*` on `ℂ`, which is the direction we already have.
   map_smul' c z := by
-    simp [Matrix.mulVec_smul]
-    exact Complex.real_smul.symm
+    change cplxCoord.symm (toMat T *ᵥ cplxCoord (c • z)) =
+      c • cplxCoord.symm (toMat T *ᵥ cplxCoord z)
+    simp only [map_smul, Matrix.mulVec_smul]
 
 @[simp]
 theorem actC_apply (T : Matrix.GLPos (Fin 2) ℝ) (z : ℂ) :

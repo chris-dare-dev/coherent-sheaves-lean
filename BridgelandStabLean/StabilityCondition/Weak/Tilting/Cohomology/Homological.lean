@@ -7,6 +7,9 @@ import Mathlib.CategoryTheory.Abelian.Exact
 import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
 import Mathlib.CategoryTheory.Triangulated.Yoneda
 
+set_option backward.defeqAttrib.useBackward true
+set_option backward.isDefEq.respectTransparency false
+
 /-!
 # Homologicality of original-heart cohomology
 
@@ -505,7 +508,7 @@ private theorem toOriginalHeartH0primeHom_comp_map
         (t.truncGE 0).map g
   let rhs := f ≫ (t.truncGEπ 0).app X ≫ (t.truncGE 0).map g
   have h₁ : lhs = mid := by
-    simpa only [lhs, mid, Category.assoc] using
+    simpa only [lhs, mid, Category.assoc, Functor.id_map] using
       congrArg (fun k => (toOriginalHeartH0primeHom t E f).hom ≫ k)
         ((t.truncLEι 0).naturality ((t.truncGE 0).map g))
   have h₂ : mid = rhs := by
@@ -545,7 +548,6 @@ private theorem toOriginalHeartH0primeHom_add
   rw [Preadditive.add_comp]
   rw [toOriginalHeartH0primeHom_hom t E f,
     toOriginalHeartH0primeHom_hom t E g]
-  rfl
 
 /-- If the lower obstruction vanishes, a morphism into alternative `H⁰`
 lifts to an ambient morphism. -/
@@ -717,7 +719,8 @@ private theorem originalHeartH0primeFunctor_preadditiveCoyoneda_exact_of_isIso_t
     have hu₂ :
         u' ≫ (t.truncLT 0).map m₃ ≫ (t.truncLTι 0).app X₃ =
           u ≫ (t.truncLTι 0).app X₃ := by
-      simp [u', Category.assoc]
+      dsimp [u']
+      simp only [Category.assoc, IsIso.inv_hom_id_assoc]
     have hu₃ : u ≫ (t.truncLTι 0).app X₃ = f ≫ m₃ := by
       simpa using hu.symm
     exact hu₁.trans (hu₂.trans hu₃)
@@ -793,8 +796,11 @@ private theorem mono_originalHeartH0primeFunctor_map_mor₂_of_obj₁_isGE_one
   letI : t.IsGE (shortComplexOfDistTriangle T hT).X₁ 1 := by
     dsimp
     infer_instance
+  have hTriangle : Triangle.mk T.mor₁ T.mor₂ T.mor₃ = T := by
+    cases T
+    rfl
   have hExact : S.Exact := by
-    simpa [S, F] using
+    simpa [S, F, hTriangle] using
       originalHeartH0primeFunctor_preadditiveCoyoneda_exact_of_isGE_one
         t (A := T.obj₁) (Z := T.obj₂) (X₃ := T.obj₃) hT E
   have hzeroObj : IsZero S.X₁ := by
@@ -839,8 +845,9 @@ private theorem originalHeartH0primeFunctor_isHomological
     (originalHeartH0primeFunctor t)
   haveI hIso₁ : IsIso ((originalHeartH0primeFunctor t).map
       ((t.truncLTι 1).app T.obj₁)) := by
-    simpa only [TStructure.truncLE, TStructure.truncLEι] using
-      isIso_originalHeartH0primeFunctor_map_truncLEι t T.obj₁
+    have h := isIso_originalHeartH0primeFunctor_map_truncLEι t T.obj₁
+    norm_num [TStructure.truncLE, TStructure.truncLEι] at h
+    exact h
   let α : Sle ⟶ S :=
     { τ₁ := (originalHeartH0primeFunctor t).map
         ((t.truncLTι 1).app T.obj₁)

@@ -6,6 +6,9 @@ import BridgelandStability.StabilityCondition.Defs
 import Mathlib.CategoryTheory.Triangulated.TStructure.Heart
 import Mathlib.Tactic
 
+set_option backward.defeqAttrib.useBackward true
+set_option backward.isDefEq.respectTransparency false
+
 /-!
 # Weak stability: the definitions of §14
 

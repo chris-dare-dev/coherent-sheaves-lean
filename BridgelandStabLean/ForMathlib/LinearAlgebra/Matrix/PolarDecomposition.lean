@@ -9,6 +9,9 @@ import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Basic
 import Mathlib.LinearAlgebra.Matrix.PosDef
 import Mathlib.Tactic
 
+set_option backward.defeqAttrib.useBackward true
+set_option backward.isDefEq.respectTransparency false
+
 /-!
 # Polar decomposition for invertible matrices
 
@@ -140,7 +143,7 @@ theorem eq_polarFactor_of_mul {Q P : Matrix n n 𝕜} (hQ : Q ∈ Matrix.unitary
   refine (CFC.sqrt_unique ?_ hP.posSemidef.nonneg).symm
   have hQ' : Qᴴ * Q = 1 := by
     have := (mem_unitaryGroup_iff' (A := Q)).mp hQ
-    simpa using this
+    simpa only [Matrix.star_eq_conjTranspose] using this
   calc P * P = Pᴴ * (Qᴴ * Q) * P := by rw [hQ', hP.isHermitian]; simp
     _ = (Q * P)ᴴ * (Q * P) := by simp only [conjTranspose_mul, Matrix.mul_assoc]
     _ = Aᴴ * A := by rw [← hQP]
