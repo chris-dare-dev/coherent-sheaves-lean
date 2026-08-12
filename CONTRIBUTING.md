@@ -1,4 +1,4 @@
-# Contributing to CohLean
+# Contributing to DerivedAlgGeoLean
 
 Read [README.md](README.md) for the library overview and [ARCHITECTURE.md](ARCHITECTURE.md)
 for module ownership. GitHub milestones and issues are the source of truth for planned work.
@@ -13,9 +13,11 @@ for module ownership. GitHub milestones and issues are the source of truth for p
 
 ## Module placement
 
-Declarations use their natural mathematical namespaces, while files use the `CohLean.*`
-package hierarchy. Put new code below the narrowest stable owner and import it from the nearest
-same-named umbrella module. Keep `CohLean.lean` limited to top-level subsystem imports.
+Declarations use their natural mathematical namespaces. Put coherent-sheaf and
+numerical algebraic-geometry code below `CohLean`, and stability-condition code
+below `BridgelandStabLean`. Put future derived-category and Fourier–Mukai
+libraries below their dedicated roots once their first theorem lands. Never add
+owner-authored code below `vendor/`.
 
 One issue should normally own one leaf path. Avoid unrelated refactors in a feature change;
 open a separate issue when another subsystem needs work.
@@ -37,11 +39,25 @@ Run:
 ```bash
 lake build
 lake env lean scripts/Audit.lean
+lake env lean scripts/BridgelandAudit.lean > /tmp/bridgeland-audit.txt 2>&1
+python3 scripts/check_audit.py /tmp/bridgeland-audit.txt
+lake exe runLinter BridgelandStability
+lake exe runLinter BridgelandStabLean
+lake exe lint-style
+python3 scripts/check_pin.py
+python3 scripts/check_anchor_free.py
+python3 scripts/check_coverage_map.py
+lake build emit
+lake exe emit --out /tmp/derived-alg-geo-emission.json
 ```
 
-Add new public theorems to the appropriate section of `scripts/Audit.lean`. The audit must not
-report `sorryAx`; CI also re-elaborates tracked Lean files to catch declarations omitted from
-the audit.
+Add new public theorems to the appropriate subsystem audit: `scripts/Audit.lean`
+for `CohLean` and `scripts/BridgelandAudit.lean` for `BridgelandStabLean`. Neither
+audit may report `sorryAx`; CI also re-elaborates tracked Lean files and emits the
+combined environment to catch declarations omitted from the hand-maintained audits.
+The environment linter is currently a gate for the vendored foundation and
+`BridgelandStabLean`. `CohLean` has a pre-existing documentation/naming linter
+backlog; do not blanket-suppress it as part of an unrelated contribution.
 
 The toolchain is pinned. When updating it, update the root and documentation package manifests
 and toolchain files together, then verify every shared dependency resolves to one revision.

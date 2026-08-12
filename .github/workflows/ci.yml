@@ -6,8 +6,6 @@ on:
   pull_request:
   workflow_dispatch:
 
-# A push that lands while an older run is still going should cancel it: the only
-# result anyone acts on is the one for the tip of the branch.
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -15,43 +13,92 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 90
     steps:
       - uses: actions/checkout@v4
 
-      # Installs the toolchain named in lean-toolchain, fetches the Mathlib
-      # olean cache, and runs `lake build`. Building Mathlib from source would
-      # take hours, so a cache miss here is a real failure, not a slow success.
-      - name: Build
-        uses: leanprover/lean-action@v1
+      - uses: leanprover/lean-action@v1
+        with:
+          build: true
+          use-mathlib-cache: true
+          nanoda: false
 
-      # The gate. `lake build` succeeds on a sorry-backed declaration -- it only
-      # warns -- so a green build is not by itself evidence of anything.
-      - name: Axiom audit
+      - name: Pin and coverage records
         run: |
-          set -o pipefail
+          set -euo pipefail
+          python3 scripts/check_pin.py
+          python3 scripts/check_coverage_map.py
+
+      - name: Coherent-sheaf axiom audit
+        run: |
+          set -euo pipefail
           lake build CohLean.Development.AlgebraicGeometry.Divisors.API \
             CohLean.Numerical.Specializations.Surface \
             CohLean.Numerical.Specializations.Threefold \
             CohLean.Numerical.Specializations.Fourfold
-          lake env lean scripts/Audit.lean | tee audit.txt
-          if grep -q 'sorryAx' audit.txt; then
-            echo "::error::sorryAx reached the audit: a listed declaration is backed by a sorry"
+          lake env lean scripts/Audit.lean > coh-audit.txt 2>&1
+          if grep -q 'sorryAx' coh-audit.txt; then
+            echo "::error::sorryAx reached the coherent-sheaf audit"
             exit 1
           fi
 
-      # Catches a sorry in a declaration that Audit.lean does not list. Re-elaborates
-      # each source file rather than grepping the sources, so the docstring in
-      # Coh/Defs.lean that discusses the word "sorry" does not trip it, and so a
-      # `sorry` reached through a macro is still caught. A plain `lake build` here
-      # would be a no-op (everything is already built) and would emit nothing.
+      - name: Stability-condition axiom audit
+        run: |
+          set -euo pipefail
+          lake env lean scripts/BridgelandAudit.lean > bridgeland-audit.txt 2>&1 || {
+            echo "::error::scripts/BridgelandAudit.lean failed to elaborate"
+            cat bridgeland-audit.txt
+            exit 1
+          }
+          python3 scripts/check_audit.py bridgeland-audit.txt
+
+      - name: Environment linters
+        run: |
+          set -euo pipefail
+          lake exe runLinter BridgelandStability
+          lake exe runLinter BridgelandStabLean
+          lake exe lint-style
+
+      - name: Anchor-free import boundary
+        run: python3 scripts/check_anchor_free.py
+
       - name: No declaration uses sorry
         run: |
-          : > lint.txt
-          for f in $(git ls-files '*.lean' | grep -v '^scripts/'); do
-            echo "-- $f"
-            lake env lean "$f" 2>&1 | tee -a lint.txt
-          done
-          if grep -q "declaration uses 'sorry'" lint.txt; then
+          set -euo pipefail
+          : > lean-source-check.txt
+          while IFS= read -r f; do
+            case "$f" in
+              scripts/*) continue ;;
+            esac
+            lake env lean "$f" 2>&1 | tee -a lean-source-check.txt
+          done < <(git ls-files '*.lean')
+          if grep -q "declaration uses 'sorry'" lean-source-check.txt; then
             echo "::error::a declaration uses sorry"
             exit 1
           fi
+
+      - name: Emit combined environment
+        run: |
+          set -euo pipefail
+          lake build emit
+          lake exe emit --out attest/lean-emission.json
+          python3 - <<'PY'
+          import json
+          d = json.load(open("attest/lean-emission.json", encoding="utf-8"))
+          n = len(d["constants"])
+          if n == 0:
+              raise SystemExit("::error::empty emission -- the vacuous pass")
+          print(f"ok: {n} constants, {d['counts']['in_scope']} in scope, "
+                f"{sum(1 for c in d['constants'] if c['cites'])} cited")
+          PY
+
+      - name: Upload trust artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: trust-artifacts
+          path: |
+            attest/lean-emission.json
+            coh-audit.txt
+            bridgeland-audit.txt
+          if-no-files-found: warn

@@ -5,19 +5,13 @@
 *.trace
 /build/
 
-# Throwaway probes and one-off `example`s used while chasing an elaboration or instance
-# problem. Ignored rather than merely untracked because parallel sessions share this clone:
-# a stray `git add -A` in one session sweeps up another's half-written scratch file and
-# lands it under the wrong commit message. That has happened once already -- 5317c4b carries
-# CONTRIBUTING.md and all of docbuild/ under a message about the affine-local criterion.
-# CONTRIBUTING.md asks you to stage by path, which prevents this; ignoring the directory
-# means forgetting cannot.
-#
-# Nothing here is ever meant to ship. A probe worth keeping belongs in CohLean/ with a
-# module docstring, or -- if it is a dead end -- written up as prose in the file it came
-# from, the way PresentationIsFinite.lean records what its retry ruled out.
+# Throwaway probes and one-off examples.
 /scratch/
 
 # Planning and session handoffs live in the issue tracker or external notes.
 HANDOFF.md
 ROADMAP.md
+
+# Environment-emission artifacts are attached to releases or CI runs, not
+# committed as potentially stale trust records.
+/attest/

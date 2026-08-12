@@ -1,0 +1,328 @@
+{
+  "_readme": [
+    "Coverage map for arXiv:1902.08184v4 -- 'Stability conditions in families',",
+    "Bayer, Lahoz, Macri, Nuer, Perry, Stellari. Created for issue #87 under",
+    "epic #79 (stability-families).",
+    "",
+    "THIS IS NOT A TRUST RECORD AND NOT A MINT SURFACE. It is a zero-claim map",
+    "of the paper's structure onto statuses. formalization.yaml's `source`",
+    "remains the Bridgeland 2007 record, and registry/bridgeland2007.json",
+    "remains the only mint surface; nothing in this file changes either, and",
+    "nothing in this file may be cited as theorem coverage. The only status",
+    "that ever counts as coverage is 'formalized', and every entry below is",
+    "'target'.",
+    "",
+    "Validation: python scripts/check_coverage_map.py",
+    "Run it before and after every edit to this file. It fails on any status",
+    "outside the vocabulary, any non-target status without complete evidence,",
+    "and any corpus-derived identifier key.",
+    "",
+    "Update ownership: the owner (Chris Dare) promotes statuses; agents may",
+    "propose a promotion only by PR carrying the evidence fields the validator",
+    "demands, and 'formalized' additionally requires explicit owner acceptance",
+    "recorded in the entry. Adding sections, fixing titles against the pinned",
+    "PDF, and adding tracking links are ordinary edits; status promotion is",
+    "not.",
+    "",
+    "Quotes: none are minted here. When a quote is later needed it must be",
+    "checked directly against the v4 artifact identified in `source` -- never",
+    "against the arXMCP corpus, whose rows carry no arXiv version (see",
+    "`corpus_note`)."
+  ],
+  "schema": "coverage-map/1",
+  "created": "2026-08-08",
+  "issue": "https://github.com/chris-dare-dev/bridgeland-stab-lean/issues/87",
+  "related_infrastructure": {
+    "registry": "https://github.com/chris-dare-dev/bridgeland-stab-lean/issues/6",
+    "corpus_version_backfill": "https://github.com/chris-dare-dev/bridgeland-stab-lean/issues/44"
+  },
+  "source": {
+    "title": "Stability conditions in families",
+    "authors": [
+      "Arend Bayer",
+      "Marti Lahoz",
+      "Emanuele Macri",
+      "Howard Nuer",
+      "Alexander Perry",
+      "Paolo Stellari"
+    ],
+    "arxiv_id": "1902.08184",
+    "arxiv_version": "v4",
+    "version_submitted_utc": "2022-01-25T12:16:53Z",
+    "version_history": [
+      {
+        "version": "v1",
+        "submitted_utc": "2019-02-21T18:53:42Z",
+        "source_size": "145 KB"
+      },
+      {
+        "version": "v2",
+        "submitted_utc": "2020-12-16T09:59:40Z",
+        "source_size": "150 KB"
+      },
+      {
+        "version": "v3",
+        "submitted_utc": "2021-03-19T10:47:46Z",
+        "source_size": "156 KB"
+      },
+      {
+        "version": "v4",
+        "submitted_utc": "2022-01-25T12:16:53Z",
+        "source_size": "156 KB"
+      }
+    ],
+    "latest_version_at_pin_time": "v4",
+    "journal_ref": "Publ. Math. IHES 133, 157-325 (2021)",
+    "doi": "10.1007/s10240-021-00124-6",
+    "msc_2010": "14A22, 14D20, 14F05, 14J28, 14M20, 14N35, 18E30",
+    "primary_category": "math.AG",
+    "pinned_from": "https://arxiv.org/abs/1902.08184 (version history, journal ref, DOI) and https://arxiv.org/pdf/1902.08184v4 (table of contents, read from the PDF whose margin banner reads 'arXiv:1902.08184v4 [math.AG] 25 Jan 2022'), both fetched 2026-08-08.",
+    "pdf_sha256": "6bf21d3f2db0852f910cd88790349a2e605adefe3d93185460272afa30af46c0",
+    "pdf_bytes": 1693653,
+    "pdf_pin_caveat": "The hash pins the artifact as served on 2026-08-08. arXiv PDFs are rendered from source and a re-render can change bytes without changing content; the DURABLE identity is (arxiv_id, v4, version_submitted_utc, doi). If a future fetch hashes differently, verify the margin banner and version_submitted_utc, then update the hash with a dated note rather than treating the mismatch as corruption."
+  },
+  "corpus_note": {
+    "notebook": "the local arXMCP bridgeland-stability corpus",
+    "chunk_count": 548,
+    "chunk_count_verified": "2026-08-08 against the live server (corpus_version 5636, metadata_status hydrated); the stored abstract matches the arXiv abstract",
+    "arxiv_version_in_corpus": "empty -- the corpus records arxiv_version = '' for every row in every notebook (issue #44), so no corpus row is evidence about v4 specifically",
+    "mint_rule": "No durable key in this repository may be derived from a chunk ID or a notebook slug. This file contains neither, and the validator fails if either kind of key is added. Rationale: chunk IDs are sha256(NFC(body_text))[:16] over corpus bytes of an UNVERSIONED fetch, so they are neither stable across corpus rebuilds nor attributable to v4."
+  },
+  "status_vocabulary": {
+    "target": "Named for future work. NO claim of any kind -- not mapped, not related, not partially done. This is the default and the only status any entry carries today.",
+    "mapped": "Specific Lean declarations have been identified as candidate counterparts of a specific v4 statement, with notes. Still no coverage claim; a mapping is a hypothesis. Requires evidence fields.",
+    "reviewed": "A binding to a v4 statement has been reviewed against the pinned artifact, quote checked directly against v4. Requires evidence fields naming the review document, reviewer, and date.",
+    "formalized": "Reviewed AND accepted by the owner, recorded in the entry. The only status that counts as coverage anywhere downstream."
+  },
+  "parts": [
+    {
+      "part": "front",
+      "title": "Front matter",
+      "status": "target",
+      "sections": [
+        {
+          "n": 1,
+          "title": "Introduction"
+        },
+        {
+          "n": 2,
+          "title": "Setup, notation, and some terminology"
+        }
+      ]
+    },
+    {
+      "part": "I",
+      "title": "Semiorthogonal decompositions and t-structures in families",
+      "status": "target",
+      "sections": [
+        {
+          "n": 3,
+          "title": "Semiorthogonal decompositions and base change"
+        },
+        {
+          "n": 4,
+          "title": "Local t-structures"
+        },
+        {
+          "n": 5,
+          "title": "Base change of local t-structures"
+        },
+        {
+          "n": 6,
+          "title": "Flat, torsion, and torsion free objects"
+        },
+        {
+          "n": 7,
+          "title": "Inducing local t-structures on semiorthogonal components"
+        }
+      ]
+    },
+    {
+      "part": "II",
+      "title": "Moduli spaces",
+      "status": "target",
+      "sections": [
+        {
+          "n": 8,
+          "title": "Moduli of complexes"
+        },
+        {
+          "n": 9,
+          "title": "Moduli of objects in a subcategory"
+        },
+        {
+          "n": 10,
+          "title": "Fiberwise t-structures"
+        },
+        {
+          "n": 11,
+          "title": "Quot spaces"
+        }
+      ]
+    },
+    {
+      "part": "III",
+      "title": "Harder-Narasimhan structures over a curve",
+      "status": "target",
+      "sections": [
+        {
+          "n": 12,
+          "title": "Stability conditions and base change"
+        },
+        {
+          "n": 13,
+          "title": "Harder-Narasimhan structures over a curve"
+        },
+        {
+          "n": 14,
+          "title": "Weak stability conditions, tilting, and base change"
+        },
+        {
+          "n": 15,
+          "title": "Weak Harder-Narasimhan structures over a curve"
+        },
+        {
+          "n": 16,
+          "title": "Semistable reduction"
+        },
+        {
+          "n": 17,
+          "title": "Torsion theories and Harder-Narasimhan structures"
+        },
+        {
+          "n": 18,
+          "title": "Harder-Narasimhan structures via stability conditions on fibers"
+        },
+        {
+          "n": 19,
+          "title": "Tilting weak Harder-Narasimhan structures over a curve"
+        }
+      ]
+    },
+    {
+      "part": "IV",
+      "title": "Stability conditions over a higher-dimensional base",
+      "status": "target",
+      "sections": [
+        {
+          "n": 20,
+          "title": "Flat families of fiberwise (weak) stability conditions"
+        },
+        {
+          "n": 21,
+          "title": "Stability conditions over S"
+        },
+        {
+          "n": 22,
+          "title": "Deforming stability conditions over S"
+        },
+        {
+          "n": 23,
+          "title": "Inducing stability conditions over S"
+        }
+      ]
+    },
+    {
+      "part": "V",
+      "title": "Construction",
+      "status": "target",
+      "sections": [
+        {
+          "n": 24,
+          "title": "Main construction statements"
+        },
+        {
+          "n": 25,
+          "title": "Tilting slope-stability in families"
+        },
+        {
+          "n": 26,
+          "title": "Tilting tilt-stability in families of threefolds"
+        },
+        {
+          "n": 27,
+          "title": "Stability conditions from degeneration"
+        },
+        {
+          "n": 28,
+          "title": "Donaldson-Thomas invariants"
+        }
+      ]
+    },
+    {
+      "part": "VI",
+      "title": "Moduli spaces for Kuznetsov components of cubic fourfolds",
+      "status": "target",
+      "sections": [
+        {
+          "n": 29,
+          "title": "Main applications to cubic fourfolds"
+        },
+        {
+          "n": 30,
+          "title": "Stability conditions on families of Kuznetsov components"
+        },
+        {
+          "n": 31,
+          "title": "Generalized Mukai's theorem"
+        },
+        {
+          "n": 32,
+          "title": "Specializing Kuznetsov components to twisted K3 surfaces"
+        },
+        {
+          "n": 33,
+          "title": "Proofs of the main results"
+        }
+      ]
+    }
+  ],
+  "near_term_coordinates": [
+    {
+      "id": "sec-14-weak-stability-tilting",
+      "sections": [
+        14
+      ],
+      "part": "III",
+      "status": "mapped",
+      "tracking": "https://github.com/chris-dare-dev/bridgeland-stab-lean/issues/81",
+      "note": "Weak stability conditions and HRS tilting. The repository holds abstract HRS-tilt machinery (Tilting/HeartTorsionPair.lean, reviewed under #86 with agreement theorems from #94), but that machinery binds to NO statement of this paper and its review explicitly disclaimed any such connection. Promotion past 'target' starts from a specific v4 statement, not from the existence of related machinery. PROMOTED target -> mapped 2026-08-08 with the #109 landing: slicingTorsionPair and its heart identification are the named candidates for display (14.1), with the slope-phase translation recorded as the open gap in the evidence. Definitions 14.1-14.3 candidates (#107), the Def 14.6 chain layer (#108), and the phase-language TiltingProperty candidate for Definition 14.12 (#110) are named in their COUNT UPDATE entries; they remain part of this same mapped hypothesis, not separate claims. UPDATE 2026-08-09: TiltSemistable.lean proves both directions of the phase-language semistable classification corresponding to Lemma 14.17 and its positive-imaginary/stable Hom-vanishing refinement, using the canonical original-cohomology sequence and tilted-heart images. TiltNoetherian.lean constructs the zero-charge torsion pair and noetherian data from the relative tilted-chain condition and also assembles it from phase-compatible envelopes. HarderNarasimhan.lean supplies the generic rank-decreasing quotient recursion; Support.lean proves support-property transport. UPDATE 2026-08-10: HeartCohomologySequence.lean identifies quotients of pure shifted objects by original torsion subobjects; TiltNoetherian.lean uses this bridge to saturate boundary-phase factors without a last-factor right-orthogonality premise; TiltHarderNarasimhan.lean iterates the reduction through both original H-minus-one and H-zero HN filtrations; and TiltAssembly.lean packages HN, noetherian, and support obligations from phase-compatible envelopes without an external rank or quotient-induction premise. A later 2026-08-10 landing derives the required shifted phase-compatible decompositions directly from the raw Definition 14.12 envelope clause: Ext-vanishing factors tilted zero-charge subobjects through the raw zero-charge quotient, the original noetherian condition terminates the resulting pullback chain, and maximal subobjects feed the HN/noetherian assembly. TiltAssembly.lean now packages all three heart-level obligations directly from TiltingProperty. A final 2026-08-10 landing proves the normalized weak slope--phase charge-ray identity in ChargeRay.lean, transports it through arbitrary integer shifts, and packages the phase-language weak upper tilt as a new WeakPreStabilityCondition in TiltPreStability.lean without an external compatibility premise. UPDATE 2026-08-11: SourceSlope.lean formalizes the finite slope cutoff, muPlus/muMinus endpoint comparison, the exact display (14.1) torsion pair, and the tilted-heart description. Tilting/Source proves the analytic identity between division by i-beta and positive rescaling of the phase rotation, constructs the exact charge Z/(i-beta), states a sign-separated Lemma 14.17 candidate and stable refinement, and packages Proposition 14.16's weak-prestability, support, and noetherian zero-charge conclusions as sourceTiltConclusion. The type-two candidate still stores phaseFree and the positive-imaginary Hom implication; the dated adversarial review must decide whether these are automatic from the printed v4 hypotheses. The coordinate stays mapped and requires owner signoff before any reviewed/formalized promotion.",
+      "evidence": {
+        "review_doc": "PR closing issue #109 (branch agent/issue-109-slope-torsion-pair), which supplied the target-to-mapped evidence; the #110 candidate named in the note does not promote the status",
+        "reviewer": "claude-fable-5 (Claude Code), the #81 epic implementation session",
+        "reviewed_at": "2026-08-08",
+        "v4_check": "Display (14.1) and its surrounding text read from the pinned v4 PDF (sha256 in source.pdf_sha256), page 73: T^beta and F^beta are defined by slope bounds mu^- > beta / mu^+ <= beta on the heart of a weak stability condition, and A^sharp-beta = <F^beta[1], T^beta> is the tilted heart. SourceSlope.lean now formalizes the finite weak-slope to normalized-phase map, identifies muPlus/muMinus with the slicing endpoints, proves the two source inequalities equivalent to the phase bounds, and exposes slopeTorsionPair with slopeTilt_heart_iff. Tilting/Source further constructs Z/(i-beta), Proposition 14.16's conclusion package, and the exact sign-separated Lemma 14.17 statement. The mapped status records candidate bindings only; it is not a reviewed coverage claim."
+      }
+    },
+    {
+      "id": "sec-18-21-uniform-support",
+      "sections": [
+        18,
+        21
+      ],
+      "part": "III/IV",
+      "status": "mapped",
+      "tracking": "https://github.com/chris-dare-dev/bridgeland-stab-lean/issues/82",
+      "note": "Uniform quadratic support across a family. PROMOTED target -> mapped 2026-08-11: Support/Quadratic.lean supplies a genuine bundled QuadraticForm and its implication to the norm support predicate; Support/Uniform.lean forces one form across an indexed family and supplies constant-family, reindexing, union-locus, and linear-equivalence transport; Support/ZeroChargeLattice.lean constructs the saturated subgroup generated by zero classes and proves its finite quotient free abelian; Support/Quotient.lean puts the descended charge and one uniform form on the real quotient; Weak/Support/Quadratic.lean binds these predicates to actual nonzero weak-semistable heart classes and stores charge compatibility. This is a numerical candidate mapping only. The indexed weak adapter currently uses one abstract category and heart, not varying geometric fibers; it does not define HN structures, boundedness/moduli functors, or the scalar-extension comparison from the integral quotient lattice to the real quotient space. Those are explicit boundaries, so the coordinate is not reviewed or formalized.",
+      "evidence": {
+        "review_doc": ".claude/reviews/2026-08-11-issue82-uniform-quadratic-support-adversarial-handoff.md",
+        "reviewer": "pending adversarial review",
+        "reviewed_at": "2026-08-11",
+        "v4_check": "Read directly from the pinned v4 PDF on 2026-08-11. Page 87: Definition 18.5 fixes a Mukai homomorphism and says a (weak) HN structure satisfies support with respect to a quadratic form Q when its torsion-heart stability data does; Lemma 18.6 identifies this with the same Q on every fiber. Page 101: Definition 21.9 forms the saturated zero-class subgroup Lambda_0 and the free quotient Lambda/Lambda_0. Page 102: Definition 21.15(4) places Q on the real quotient, requires negativity on the descended kernel and nonnegativity on every fiber semistable class; clause (5) is boundedness and remains outside this mapping."
+      }
+    },
+    {
+      "id": "sec-20-23-families-interfaces",
+      "sections": [
+        20,
+        21,
+        22,
+        23
+      ],
+      "part": "IV",
+      "status": "target",
+      "tracking": "https://github.com/chris-dare-dev/bridgeland-stab-lean/issues/83",
+      "note": "TARGET UPDATED 2026-08-11: Families/Basic.lean isolates candidate interfaces for universally locally constant charge, universal openness, weak generic openness, ordinary and weak HN integration after caller-designated Dedekind base changes, and boundedness. Families/Ordinary.lean combines Definition 20.5(1)-(3) with Definition 21.15(4)-(5), using the genuine quotient-uniform support predicate, and supplies a fully inhabited PUnit constant-family witness. Families/Weak.lean binds clause (0), charges, semistability loci, and quotient support to actual indexed weak stability functions on one fixed category and heart, again with an inhabited PUnit witness. Families/Theorem22.lean records the four source clauses used by Theorem 22.2 and every currently missing geometric dependency. Candidate declaration/source-coordinate links now exist, but governance keeps this coordinate at target pending adversarial review and owner acceptance; a later mapped status would still be only a candidate mapping, not a source-faithfulness verdict. The repository still has no schemes, varying fiber categories, base-change functors, relative hearts, moduli spaces, bounded-family constructions, complex-manifold structures, proof of Theorem 22.2, or implementation of the later Section 23 results."
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+BridgelandStability vendored component
+
+This directory contains source derived from:
+
+  https://github.com/mattrobball/BridgelandStability
+  upstream revision 9e48f23a382ba117b63076a33e0e775389fef1ba
+
+The source files are Copyright (c) 2026 Mathlib Contributors and are licensed
+under the Apache License, Version 2.0. The complete licence text is retained in
+this directory as LICENSE and at ../../LICENSES/Apache-2.0.txt.
+
+Local port revision: 5f771c77dd48c478c3a15f7b09eab37a1ac0c8e4
+
+Modifications made for this vendored port:
+
+- ported the reachable source surface to Lean and Mathlib v4.32.1;
+- removed the unlicensed `informal` package dependency and its annotations;
+- omitted seven modules unreachable from the consuming library, including the
+  only module containing a real `sorry` declaration;
+- omitted upstream development-agent instructions, build caches, scripts, and
+  unrelated repository artifacts from the vendored distribution; and
+- component-qualified the otherwise duplicate `SpectralObject.mapHomologicalFunctor`
+  declaration so it can coexist with CohLean's independent implementation; and
+- added narrow linter annotations where public API names must remain stable.
+
+No Apache-2.0 copyright or licence header was removed from retained source.

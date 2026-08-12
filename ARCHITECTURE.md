@@ -1,6 +1,7 @@
 # Repository architecture
 
-CohLean is organized by mathematical ownership. Module paths descend from a broad subject to
+DerivedAlgGeoLean contains multiple Lean libraries organized by mathematical ownership.
+`CohLean` module paths descend from a broad subject to
 the smallest stable subsystem and then to a theorem-bearing leaf. Namespace ownership follows
 the mathematics and is independent of the package path.
 
@@ -20,9 +21,13 @@ the mathematics and is independent of the package path.
 | `RiemannRoch` | Geometric Riemann–Roch, reconstructed Todd data, perfect-resolution dévissage, and scheme-derived numerical bridges through dimension four |
 | `Topology` | Reusable open-cover infrastructure |
 | `Development` | Compile-only API audits; not part of the stable root import |
+| `BridgelandStabLean/Lattice` | Abstract numerical and Mukai lattice infrastructure |
+| `BridgelandStabLean/StabilityCondition` | Stability metrics, support, symmetry, walls, and weak stability |
+| `vendor/BridgelandStability` | Apache-2.0 foundational slicing and deformation implementation |
 
 Every non-leaf subsystem has a same-named `.lean` umbrella. `CohLean.lean` imports only stable
 top-level umbrellas, keeping navigation and dependency boundaries aligned.
+`DerivedAlgGeoLean.lean` imports the stable roots of both owner-authored libraries.
 
 ## Dependency direction
 

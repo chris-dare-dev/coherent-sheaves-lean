@@ -1,0 +1,140 @@
+# The statement registry
+
+`bridgeland2007.json` is the only contract artifact in this repo, and the only
+place a citation key is minted. Everything else is measured. (One other
+hand-authored file lives in this directory — the `1902.08184v4` coverage map
+below — and it mints nothing.)
+
+Validate it with the contract package:
+
+```sh
+mfc registry validate registry/bridgeland2007.json \
+  --frontier-kind-labels mathlib-gap,unproved-here,definitional-divergence
+```
+
+## The 1902.08184v4 coverage map — not a mint surface
+
+`coverage-1902.08184v4.json` (issue #87) pins arXiv:1902.08184**v4**
+("Stability conditions in families", Bayer–Lahoz–Macrì–Nuer–Perry–Stellari,
+v4 of 2022-01-25, DOI 10.1007/s10240-021-00124-6) and maps its Parts I–VI and
+the near-term section coordinates (§14, §§18/21, §§20–23) onto statuses.
+At the 2026-08-11 issue-#82 mapping there are two `mapped` candidate
+coordinates (§14 and §§18/21) and eight `target` coordinates. `mapped` names
+candidate declarations and source coordinates; it is not a source-faithfulness
+verdict. The only status that ever counts as coverage is `formalized`, which
+requires review evidence plus explicit owner acceptance, and nothing has it. The map does not touch
+`formalization.yaml`'s `source` (still the Bridgeland 2007 record), mints no
+key, and contains no corpus-derived identifier — the local arXMCP notebook
+holds 548 chunks of this paper but records no arXiv version (#44), so quotes,
+when they are eventually added, are checked directly against the pinned v4
+artifact, never against the corpus. Validate with:
+
+```sh
+python scripts/check_coverage_map.py
+```
+
+It fails on any status outside the vocabulary, any promotion without complete
+evidence, and any `chunk_id`/notebook-slug key. Status promotion is owned by
+the owner; agents propose it only by PR carrying the evidence fields.
+
+`kind_label` is a free per-topic string and `mfc lint` checks it against exactly
+the list you pass here, so **a new label must be added to this command in the
+same commit that introduces it**. Three are in use:
+
+| label | means |
+|---|---|
+| `mathlib-gap` | the pinned Mathlib has no API to instantiate, so the claim is recorded as a conjunction of named theorems |
+| `unproved-here` | the statement exists in the literature but no theorem inhabits it in this environment |
+| `definitional-divergence` | what is formalized is a different object from the paper's, and the difference is not a presentation choice |
+
+## Rules that are easy to break by typing
+
+- **The registry id is minted once and never changes.** `a520a8d4f877`, from
+  `mfc registry init`. It is the middle segment of every key and it is not
+  derived from the notebook slug — slugs live in a machine-local sqlite database
+  with no global registry, so two adopters both choosing the same one would
+  collide silently.
+- **A key contains zero corpus-derived bytes.** No `chunk_id`, no
+  `corpus_version`, no notebook slug. `chunk_id` rotates on any re-parse, there
+  is no alias table, and `merge_insert` has no delete arm — so an id we minted
+  from corpus bytes is an id we break. `R-06` refuses a key shaped like one.
+- **Edit a `quote` and you must recompute its `quote_sha256`.** `R-02` is the
+  only rule that compares a digest to the text it summarizes rather than to
+  another digest, and it will catch this.
+- **`relation_claimed: exact` is not available while an entry has an open
+  frontier item.** That is `E-05`. **Two** are open today:
+  `autpairquot-not-aut-d` on `lem-8.2`, and `stability-mass-triangle` on
+  `prop-8.1` and its obligation. Both `lem-8.2` and `prop-8.1` therefore remain
+  non-`exact`.
+
+  `gltilde-universal-cover` was discharged on 2026-08-07 by Chris Dare, on
+  `GLTilde.universalCoverData` together with `exact_deckHom_toMatHom`. Note what
+  that did **not** do: `lem-8.2` carried two items, so closing one moved it no
+  closer to `exact`. A discharge is progress toward citability only when it was
+  the last item on the entry.
+- **A frontier item is a live gate, so a stale one silently opens the gate.**
+  This is not hypothetical. `gltilde-universal-cover` asserted from 2026-08-05
+  to 2026-08-06 that the covering-map, surjectivity and simple-connectedness
+  facts were *"absent from Mathlib at the pinned revision and unproved here"* —
+  of a tree that proved all three. It was minted before `GLTildeCover.lean`
+  landed and never revisited. Had it been discharged as written, `E-05` would
+  have permitted `exact` on Lemma 8.2 while the two gaps that actually block it
+  had no item at all. **When you discharge an item, check that the reason it was
+  open is still the reason you are closing it**, and check what *else* should be
+  open before you do.
+- **Discharging needs a named human.** `discharged_by` requires
+  `discharged_by_reviewer`, and per
+  [`ADR-0005`](../.claude/decisions/ADR-0005-trust-axes.md) an agent may not
+  fill it. A machine review may correct a false `statement`; it may not close
+  the item. This is why `gltilde-universal-cover` sat corrected-but-open from
+  2026-08-06 to 2026-08-07: the review that found it false was not entitled to
+  close it.
+- **Discharging a frontier item is not a source-faithfulness review.** They are
+  different axes and neither implies the other. `fidelity.human_review` is
+  `none` and stays `none` until a human performs and records the four-axis
+  review; the 2026-08-07 discharge did not touch it.
+
+## Why JSON and not YAML
+
+GitHub #34 specifies `bridgeland2007.yaml`. It is JSON, deliberately:
+
+- The quotes are verbatim LaTeX — `$\operatorname{\mathcal{D}}$`, `\phi^{-}`,
+  `{\tilde{\operatorname{GL^{+}}}}`. YAML has several ways to quote a string
+  containing backslashes and they do not all round-trip to the same bytes. A
+  re-serialization that changed one byte would break `quote_sha256` and the
+  failure would look like corpus drift rather than like a formatting change.
+- `mfc validate` reads YAML only when PyYAML is installed, and reports its
+  absence as a missing capability. JSON has no such edge.
+
+`load_artifact` accepts both, so this is reversible if the ergonomics ever
+matter more than the byte-stability.
+
+## Provenance of the current entries
+
+Seven statements lifted verbatim from the `bridgeland-stability` arXMCP corpus
+and two obligations that have no printed statement. Each quote was verified three
+ways at mint time: the registry text is byte-identical to the corpus body, the
+declared `quote_sha256` recomputes from it, and the corpus `chunk_id` itself
+still recomputes as `sha256(NFC(body_text))[:16]` (every chunk of this paper has
+`preamble_ref = NULL`, so the id reduces to that).
+
+The second obligation, `obl-stability-mass-triangle`, was drafted by a machine
+review on 2026-08-06 and **accepted by the owner on 2026-08-07**, at which point
+`minted_by` was corrected from the draft marker to the owner. Two distinct
+things must not be conflated here: the acceptance is of the **mint** — that the
+obligation is well-posed and belongs in the registry — and is **not** a
+discharge of the proof. The frontier item `stability-mass-triangle` remains
+open (`discharged_by: null`); it was narrowed on 2026-08-07 to the
+semistable-left case via `stabilityMassTriangleInequality_of_semistable`, and
+Proposition 8.1 stays non-`exact` under E-05 until it is discharged. No `quote`
+was minted for the obligation, so the three-way verification above does not
+apply and nothing corpus-derived entered the key. The `informal` field of `lem-3.4` was corrected in the same pass:
+it had described Bridgeland's Lemma 4.3 (`P(I)` quasi-abelian) rather than the
+extreme-phase monotonicity its own stored quote states.
+
+**`mint_resolution` is `null` on every entry, with a reason.** No resolver has
+been run — `tools/statement_resolve.py` (#43) does not exist. And the corpus
+records `arxiv_version = ''` for every row (#44), so even a hash match would be
+a match against a probable-but-unconfirmed v3. The version the formalization
+targeted is confirmed v3 by the owner; the version that was *ingested* is not
+confirmed by anything. Those are two facts and only one is known.

@@ -1,8 +1,10 @@
-# CohLean
+# DerivedAlgGeoLean
 
-CohLean is a Lean 4 library for coherent sheaves, their cohomology, and numerical invariants
-on algebraic varieties. The library is dimension-general: surfaces, threefolds, and fourfolds
-are specializations of shared definitions rather than separate foundations.
+DerivedAlgGeoLean is a Lean 4 monorepo for coherent sheaves, derived-category
+infrastructure, numerical algebraic geometry, Bridgeland stability conditions,
+and future Fourier–Mukai transforms. Its coherent-sheaf library is
+dimension-general: surfaces, threefolds, and fourfolds are specializations of
+shared definitions rather than separate foundations.
 
 The project aims to connect scheme-theoretic constructions to the numerical data used in
 Riemann–Roch and stability theory while keeping every hypothesis and trust boundary explicit.
@@ -39,16 +41,22 @@ Riemann–Roch and stability theory while keeping every hypothesis and trust bou
   and K3 specialization reuse the audited Layer A conventions.
 - Scheme-derived numerical HRR in every positive dimension through four, including explicit
   threefold and fourfold `NumericalVariety` bridges reconstructed from Picard Euler polynomials.
+- Abstract numerical and Mukai lattices, support properties, weak stability conditions,
+  HRS tilting, stability metrics, and symmetry actions on stability conditions.
+- A ported foundational implementation of Bridgeland slicings, Harder–Narasimhan
+  filtrations, deformation theory, and heart equivalences, retained as a clearly
+  marked Apache-2.0 vendored component.
 
 Incomplete theorems are described in module documentation and tracked as GitHub issues; the
 library contains no `sorry` declarations.
 
 ## Repository map
 
-The source tree follows the mathematical dependency hierarchy. Each directory with several
-children has an umbrella module of the same name.
+The owner-authored source trees retain their established module names and histories.
+The third-party foundation is isolated under `vendor/`.
 
 ```text
+DerivedAlgGeoLean.lean               # combined stable umbrella
 CohLean/
 ├── AlgebraicGeometry/
 │   ├── Divisors/                 # Cartier, effective, Picard, determinant
@@ -89,6 +97,10 @@ CohLean/
 │   └── Surface/                  # divisors, Todd data, dévissage, and geometric-to-numerical assembly
 ├── Topology/Opens/
 └── Development/                  # compile-only API audits and probes
+BridgelandStabLean/
+├── Lattice/                      # arithmetic, numerical, and Mukai lattices
+└── StabilityCondition/           # metric, support, symmetry, walls, weak stability
+vendor/BridgelandStability/       # Apache-2.0 foundational implementation
 ```
 
 This layout reserves natural growth points for duality, higher-dimensional Riemann–Roch, and
@@ -176,32 +188,42 @@ The repository pins its Lean and Mathlib revisions.
 ```bash
 lake build
 lake env lean scripts/Audit.lean
+lake env lean scripts/BridgelandAudit.lean > /tmp/bridgeland-audit.txt 2>&1
+python3 scripts/check_audit.py /tmp/bridgeland-audit.txt
+lake exe runLinter BridgelandStability
+lake exe runLinter BridgelandStabLean
 ```
 
-The audit checks that public results use only the expected foundational axioms and do not
-depend on `sorryAx`.
+The two audits retain their subsystem-specific declaration lists. The emitter
+(`lake exe emit --out attest/lean-emission.json`) sweeps the combined environment
+and fails if any declaration depends on `sorryAx`. `CohLean` retains its
+pre-merge build, audit, and source-elaboration gates; making its historical
+documentation and naming linter backlog clean is separate maintenance work.
 
-## Using CohLean
+## Using the libraries
 
-Import the complete stable library with:
+Import the complete stable environment with:
 
 ```lean
-import CohLean
+import DerivedAlgGeoLean
 ```
 
-Or depend on a narrower umbrella such as `CohLean.Cohomology.Cech` or
-`CohLean.Numerical.GrothendieckGroup`.
+Or use a narrower umbrella such as `CohLean`,
+`CohLean.Cohomology.Cech`, or `BridgelandStabLean.StabilityCondition`.
 
-To combine CohLean with Mathlib in another Lake package, add CohLean as a dependency and keep
+To combine this package with Mathlib in another Lake package, add it as a dependency and keep
 the consuming package on the Lean/Mathlib revisions recorded by this repository's
 `lean-toolchain` and `lake-manifest.json`.
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md). Milestones and issues are the source of truth for
+See [CONTRIBUTING.md](CONTRIBUTING.md). GitHub milestones and issues are the source of truth for
 planned work, dependencies, and acceptance criteria. New leaves should be placed beneath the
 smallest existing mathematical subsystem and exported through its nearest umbrella module.
 
 ## License
 
-Apache 2.0. See [LICENSE](LICENSE).
+The owner-authored trunk is MIT; see [LICENSE](LICENSE). The vendored
+`BridgelandStability` component and the compatibility files identified in
+[LICENSES/README.md](LICENSES/README.md) remain Apache-2.0 with their original
+headers and notices intact.
