@@ -22,9 +22,10 @@ that module is free and has rank `n`.
 
 This construction uses that the base is `Spec k`, so its inverse-image ring can be presented on
 the site of `X` by the constant `k`-presheaf.  It does not fill Mathlib's more general TODO for
-relative differentials of an arbitrary morphism of ringed spaces. Passing the objectwise
-standard-smooth calculation through sheafification to a global finite-locally-free atlas, and
-descent of its determinant, remain explicit inputs to `CanonicalSheafData.ofRelativeDifferentials`.
+relative differentials of an arbitrary morphism of ringed spaces. The companion
+`Canonical.Descent` module passes the objectwise standard-smooth calculation through
+sheafification, constructs the global finite-locally-free atlas and determinant line, and exposes
+the automatic constructor `CanonicalSheafData.ofSmoothRelativeDifferentials`.
 -/
 
 universe u
@@ -253,8 +254,9 @@ namespace CanonicalSheafData
 
 /-- Build canonical-sheaf data using the constructed relative cotangent sheaf.
 
-The smooth pure-dimension certificate and determinant descent remain arguments until the
-corresponding geometric theorems are available. -/
+This low-level constructor retains explicit determinant data for callers with a chosen
+trivialization. The companion `Canonical.Descent` module provides the automatic constructor
+`ofSmoothRelativeDifferentials` from the smooth pure-dimension certificate alone. -/
 noncomputable def ofRelativeDifferentials
     (hSmooth : SmoothOfRelativeDimension n X.toVariety.structureMorphism)
     (D : Scheme.Modules.DeterminantData
