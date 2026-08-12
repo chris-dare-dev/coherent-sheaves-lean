@@ -123,12 +123,12 @@ items:
 
   - id: stability-families-e3
     gh_issue: 192
-    gh_sub_issues: []
+    gh_sub_issues: [204, 205, 206, 207, 208, 209]
     kind: epic
     parent: stability-families-m1
     title: "Formalize weak stability and HRS tilting from §14"
     status: in_progress
-    summary: "The §14 program is decomposed into destination issues #204–#209. All six child issues are closed; destination epic #192 remains open and native GitHub sub-issue linkage is still pending."
+    summary: "The §14 program is decomposed into destination issues #204–#209. All six children are closed and linked natively to destination epic #192."
     priority: must
     size: XL
     tags: [stability, tilting, paper-spine]
