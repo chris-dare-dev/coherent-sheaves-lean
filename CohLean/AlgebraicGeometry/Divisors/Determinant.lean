@@ -3,15 +3,16 @@ Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 -/
 import CohLean.Coh.Abelian.Basic
+import CohLean.AlgebraicGeometry.Divisors.ExteriorPower
 import CohLean.AlgebraicGeometry.Divisors.PicardGroup
 import Mathlib.LinearAlgebra.ExteriorPower.Basis
 
 /-!
 # Determinant lines and first Chern classes
 
-Mathlib v4.32.1 has exterior powers of modules, but it has no exterior-power construction for
-sheaves of modules.  This file therefore separates the algebraic local model from the global
-descent datum:
+CohLean constructs exterior powers of module sheaves by sheafifying the objectwise exterior
+power presheaf. This file separates that construction from the remaining geometric assertion
+that the top exterior power of a fixed-rank locally free sheaf is invertible:
 
 * `Module.topExteriorPower R n` is the actual top exterior power of the free rank-`n`
   `R`-module, and has rank one;
@@ -243,12 +244,29 @@ end LineBundleData
 /-- Determinant data for a finite locally free sheaf.
 
 The `topExteriorPower` field is a chosen global descent of the algebraic local top exterior
-powers supplied by `finiteLocallyFree`.  It is explicit because the current Mathlib sheaf API
-does not construct exterior powers or their descent automatically. -/
+powers supplied by `finiteLocallyFree`. `ExteriorDeterminantData` strengthens this legacy
+interface by recording an isomorphism with the constructed sheaf exterior power. -/
 structure DeterminantData (E : X.Modules) where
   rank : ℕ
   finiteLocallyFree : FiniteLocallyFreeData E rank
   topExteriorPower : LineBundleData X
+
+/-- Determinant data whose line is identified with the constructed top exterior power.
+
+This is the target interface for determinant descent. `DeterminantData` remains available for
+existing numerical APIs which only need a chosen determinant line. -/
+structure ExteriorDeterminantData (E : X.Modules) extends DeterminantData E where
+  topExteriorPowerIso :
+    toDeterminantData.topExteriorPower.line ≅ exteriorPower E toDeterminantData.rank
+
+namespace ExteriorDeterminantData
+
+/-- Forget the comparison with the constructed top exterior power. -/
+abbrev determinantData {E : X.Modules} (D : ExteriorDeterminantData E) :
+    DeterminantData E :=
+  D.toDeterminantData
+
+end ExteriorDeterminantData
 
 namespace DeterminantData
 
@@ -305,8 +323,8 @@ end DeterminantData
 
 /-- Determinant compatibility data for a direct sum.
 
-The comparison is explicit: constructing it geometrically is precisely the top-exterior-power
-descent statement, and is not inferred from unsupported sheaf exterior-power machinery. -/
+The comparison is explicit: constructing it geometrically is precisely compatibility of
+top exterior powers with direct sums. -/
 structure DirectSumDeterminantData (E F : X.Modules) where
   left : DeterminantData E
   right : DeterminantData F

@@ -106,6 +106,18 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 
 -- Canonical-sheaf data is built from explicit cotangent/determinant certificates. The
 -- canonical line is coherent, and the derived object is constructed as `ω_X[n]`.
+#print axioms LinearMap.exteriorPower
+#print axioms LinearMap.exteriorPower_ιMulti
+#print axioms PresheafOfModules.exteriorPower
+#print axioms PresheafOfModules.exteriorPower.map
+#print axioms PresheafOfModules.exteriorPower.mapIso
+#print axioms PresheafOfModules.exteriorPowerFunctor
+#print axioms Scheme.Modules.exteriorPower
+#print axioms Scheme.Modules.exteriorPowerMapIso
+#print axioms Scheme.Modules.exteriorPowerSheafification
+#print axioms Scheme.Modules.exteriorPowerOver
+#print axioms Scheme.Modules.overExteriorPowerPresheafIso
+#print axioms Scheme.Modules.exteriorPowerOverIso
 #print axioms SheafOfModules.IsInvertible.isFinitePresentation
 #print axioms Scheme.Modules.LineBundleData.isCoherent
 #print axioms Scheme.Modules.LineBundleData.finiteLocallyFree
@@ -911,10 +923,10 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Scheme.EffectiveCartierDivisor.cohTwistSequence
 #print axioms AlgebraicGeometry.Scheme.EffectiveCartierDivisor.cohTwistSequence_shortExact
 
--- Layer B stage 2: determinant lines and first Chern classes. Mathlib supplies the local
--- module exterior power but not exterior powers of sheaves, so global descent and exact
--- comparison are explicit certificates. The coherent extension requires either finite locally
--- free determinant data or a visible two-term finite locally free resolution.
+-- Layer B stage 2: determinant lines and first Chern classes. CohLean now constructs sheaf
+-- exterior powers; invertibility of a top exterior power and exact-sequence comparison remain
+-- explicit certificates. The coherent extension requires either finite locally free determinant
+-- data or a visible two-term finite locally free resolution.
 #print axioms Module.finrank_topExteriorPower
 #print axioms AlgebraicGeometry.Scheme.Modules.FiniteLocallyFreeData
 #print axioms AlgebraicGeometry.Scheme.Modules.FiniteLocallyFreeData.isLocallyFree
@@ -928,6 +940,8 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Scheme.Modules.LineBundleData.toPic_dual
 #print axioms AlgebraicGeometry.Scheme.Modules.LineBundleData.toPic_tensor
 #print axioms AlgebraicGeometry.Scheme.Modules.DeterminantData
+#print axioms AlgebraicGeometry.Scheme.Modules.ExteriorDeterminantData
+#print axioms AlgebraicGeometry.Scheme.Modules.ExteriorDeterminantData.determinantData
 #print axioms AlgebraicGeometry.Scheme.Modules.DeterminantData.isLocallyFree
 #print axioms AlgebraicGeometry.Scheme.Modules.DeterminantData.ofIso
 #print axioms AlgebraicGeometry.Scheme.Modules.DeterminantData.firstChernClass
