@@ -1,0 +1,51 @@
+{
+  "$comment": [
+    "Pin record for the ag-lean program. Written 2026-08-11.",
+    "HARD GATE: lean_toolchain and mathlib_rev must equal what this working tree",
+    "actually resolves (lean-toolchain + lake-manifest.json). Verified by",
+    "scripts/check_pin.py, which exits non-zero on mismatch.",
+    "ADVISORY: cross_repo records the peer repo's pins. Divergence is not a build",
+    "failure here, but it blocks the single-pin trunk premise. See",
+    "cross_repo.divergence_until.",
+    "This file is a record, not a source of truth for the build. Changing a pin",
+    "means editing lakefile.toml and lake-manifest.json; this file follows.",
+    "Per CLAUDE.md, a pin change must also update formalization.yaml in the same commit."
+  ],
+  "repo": "bridgeland-stab-lean",
+  "recorded_at": "2026-08-11",
+  "recorded_from": "origin/main 8727944",
+
+  "lean_toolchain": "leanprover/lean4:v4.29.0",
+  "mathlib_rev": "8a178386ffc0f5fef0b77738bb5449d50efeea95",
+  "mathlib_input_rev": "v4.29.0",
+  "mathlib_is_direct_require": false,
+  "$mathlib_note": "mathlib is transitive via BridgelandStability. CLAUDE.md forbids a second direct Mathlib dependency.",
+
+  "anchor_rev": "9e48f23a382ba117b63076a33e0e775389fef1ba",
+  "anchor_repo": "https://github.com/mattrobball/BridgelandStability",
+  "anchor_mathlib_rev": "8a178386ffc0f5fef0b77738bb5449d50efeea95",
+  "anchor_mathlib_input_rev": "v4.29.0",
+
+  "mfc_rev": "0ff0437dd0b73a85dd7906587717bd3bef9cb813",
+  "mfc_repo": "https://github.com/chris-dare-dev/math-formal-contract-lean",
+  "mfc_has_lake_dependencies": false,
+
+  "cross_repo": {
+    "status": "DIVERGED",
+    "peer": "coherent-sheaves-lean",
+    "peer_toolchain": "leanprover/lean4:v4.32.1",
+    "peer_mathlib_rev": "520045ab14e26149ee970e2e617ca04b09bde5d6",
+    "peer_mathlib_input_rev": "v4.32.1",
+    "peer_recorded_from": "origin/main 32d74c9",
+    "divergence_until": "2026-10-01",
+    "$divergence_note": [
+      "The two lanes are three minor releases apart on main (v4.29.0 vs v4.32.1).",
+      "This repo cannot move to v4.32.1 while anchored at BridgelandStability",
+      "9e48f23a, whose own manifest records v4.29.0. Closing the gap requires the",
+      "anchor to bump, or a fork, or dropping the anchor.",
+      "The single-pin trunk premise in LEAN_AG_REPO_TOPOLOGY_PLAN.md section 2.1",
+      "('the merge is mathematically free: zero .lean changes') is FALSE while this",
+      "reads DIVERGED. Do not create the trunk until it reads ALIGNED."
+    ]
+  }
+}
