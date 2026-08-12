@@ -4,6 +4,7 @@ Released under the MIT license.
 -/
 import CohLean.Cohomology.EulerCharacteristic.Additivity
 import CohLean.Duality.Canonical.Derived
+import CohLean.Duality.Serre.LinearDual
 import CohLean.AlgebraicGeometry.Divisors.Determinant
 import CohLean.Intersection.Surface.Number
 import Mathlib.Algebra.Homology.DerivedCategory.Basic
@@ -56,10 +57,11 @@ local instance moduleHasDerivedCategory :
 
 /-- The derived-category form of the missing Serre-duality construction.
 
-The functor `linearDualShift` is intended to be `RHom_k(-, k)[-n]`.  It remains a field because
-that derived dual functor is not currently available for the needed universe of `ModuleCat`.
-The dualizing object itself is the constructed `K.dualizingComplex = ω_X[n]`, not a field of
-this structure. -/
+The functor `linearDualShift` is the exact derived lift of algebraic linear duality followed by
+the shift `[-n]`.  It is now constructed rather than supplied as an arbitrary field.  The only
+remaining categorical input on this side is the explicit comparison
+`(DerivedCategory C)ᵒᵖ ≃ DerivedCategory (Cᵒᵖ)`, which the pinned Mathlib does not yet bundle.
+The dualizing object itself is the constructed `K.dualizingComplex = ω_X[n]`. -/
 structure DerivedStatement (K : X.CanonicalSheafData n) where
   /-- Derived global sections with its base-field-linear target. -/
   rGlobalSections :
@@ -69,17 +71,25 @@ structure DerivedStatement (K : X.CanonicalSheafData n) where
   rHomDualizing :
     (DerivedCategory (Coh X.toVariety.toScheme))ᵒᵖ ⥤
       DerivedCategory (ModuleCat.{u + 1} k)
-  /-- Derived linear dual followed by the dimension shift. -/
-  linearDualShift :
-    (DerivedCategory (ModuleCat.{u + 1} k))ᵒᵖ ⥤
-      DerivedCategory (ModuleCat.{u + 1} k)
+  /-- Comparison between the opposite derived category and the derived category of the opposite
+  module category. -/
+  oppositeDerived : ModuleCat.DerivedOppositeComparison k
   /-- The derived Serre-duality isomorphism. -/
   dualityIso :
-    rHomDualizing ≅ rGlobalSections.op ⋙ linearDualShift
+    rHomDualizing ≅ rGlobalSections.op ⋙
+      ModuleCat.DerivedOppositeComparison.derivedLinearDualShift
+        k oppositeDerived (-(n : ℤ))
 
 namespace DerivedStatement
 
 variable {K : X.CanonicalSheafData n}
+
+/-- The constructed derived linear-dual functor followed by the dimension shift. -/
+noncomputable def linearDualShift (S : DerivedStatement K) :
+    (DerivedCategory (ModuleCat.{u + 1} k))ᵒᵖ ⥤
+      DerivedCategory (ModuleCat.{u + 1} k) :=
+  ModuleCat.DerivedOppositeComparison.derivedLinearDualShift
+    k S.oppositeDerived (-(n : ℤ))
 
 /-- The dualizing object associated to a derived Serre statement is the constructed
 canonical complex `ω_X[n]`. -/

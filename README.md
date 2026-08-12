@@ -31,8 +31,9 @@ Riemann–Roch and stability theory while keeping every hypothesis and trust bou
 - Euler characteristics and their additivity under explicit finiteness data.
 - Numerical polynomials, Snapper-style certificates, surface intersection numbers, and
   Chern-character reconstruction.
-- Explicit derived/cohomological Serre-duality interfaces, perfect coherent pairings, and the
-  proved Euler symmetry for locally free sheaves.
+- Exact contravariant linear duality on module categories, its derived-category lift, explicit
+  derived/cohomological Serre-duality interfaces, perfect coherent pairings, and the proved Euler
+  symmetry for locally free sheaves.
 - Geometric Riemann--Roch on smooth proper surfaces from Serre symmetry and Snapper
   intersections: line bundles and effective divisors, reconstructed Todd data, finite locally
   free dévissage, and coherent sheaves carrying explicit two-term perfect resolutions.
@@ -82,7 +83,7 @@ CohLean/
 │   └── SpectralSequence/
 ├── Duality/
 │   ├── Canonical/                # canonical sheaf, class, and canonical complex
-│   └── Serre/                    # derived statement, perfect pairings, Euler symmetry
+│   └── Serre/                    # derived linear dual, perfect pairings, Euler symmetry
 ├── Intersection/
 │   ├── ChernCharacter/
 │   ├── NumericalPolynomial/
@@ -149,11 +150,14 @@ morphisms of ringed spaces remains a visible upstream boundary.
 Mathlib's actual `Abelian.Ext` groups. From explicit perfect-pairing data it proves complementary
 cohomology dimensions and the sign `χ(F)=(-1)^nχ(Fᵛ⊗ω_X)`; the displayed pairing is now certified
 against Mathlib's `LinearMap.IsPerfPair`, and coherent and locally-free duality equivalences are
-exported separately. On surfaces, the resulting Picard symmetry and the geometric Snapper pairing
-prove the divisor Riemann--Roch formula. The effective case also factors through the genuine
-fundamental coherent sequence, with its remaining quotient/intersection comparison explicit.
-Derived global sections, coherent `RHom`, and the Grothendieck-duality equivalence remain visible
-inputs rather than axioms.
+exported separately. Algebraic linear duality is now an exact contravariant functor on
+`ModuleCat k`, with its induced functor on derived categories; the comparison
+`(DerivedCategory C)ᵒᵖ ≃ DerivedCategory (Cᵒᵖ)` is the explicit remaining bridge needed to use it
+from the opposite derived category. On surfaces, the resulting Picard symmetry and the geometric
+Snapper pairing prove the divisor Riemann--Roch formula. The effective case also factors through
+the genuine fundamental coherent sequence, with its remaining quotient/intersection comparison
+explicit. Derived global sections, coherent `RHom`, the opposite-derived comparison, and the
+Grothendieck-duality equivalence remain visible inputs rather than axioms.
 
 For surfaces, `RiemannRoch/Surface/NumericalVariety` turns compatible reconstructed Chern data,
 geometric Todd components, and a coherent-sheaf HRR theorem into a concrete
