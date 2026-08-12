@@ -28,8 +28,8 @@ the substantial part:
   `hn_exists` pushes a filtration of `Φ⁻¹ E` forward and lands it on `E` via
   the counit.
 
-These are stated for `C ⥤ C` and `C ≌ C` because that is what the action
-needs; nothing about them is special to endofunctors.
+The tower and HN operations are stated for `C ⥤ D`; `Slicing.mapEquiv` then
+specializes them to the endofunctors needed by the action.
 
 ## Why there is no `MulAction` here
 
@@ -87,10 +87,12 @@ open CategoryTheory CategoryTheory.Limits CategoryTheory.Pretriangulated
 
 namespace CategoryTheory.Triangulated
 
-universe w u
+universe w u w' u'
 
 variable {C : Type u} [Category.{w} C] [HasZeroObject C] [HasShift C ℤ]
   [Preadditive C] [∀ n : ℤ, (shiftFunctor C n).Additive] [Pretriangulated C]
+variable {D : Type u'} [Category.{w'} D] [HasZeroObject D] [HasShift D ℤ]
+  [Preadditive D] [∀ n : ℤ, (shiftFunctor D n).Additive] [Pretriangulated D]
 
 /-- Push a Postnikov tower through a triangulated functor.
 
@@ -102,8 +104,8 @@ triangle is `F.mapTriangle.obj`, and distinguishedness is
 docstring, which records what deleting it actually does. -/
 @[nolint unusedArguments]
 noncomputable def PostnikovTower.mapF {E : C} (P : PostnikovTower C E)
-    (F : C ⥤ C) [F.Additive] [F.CommShift ℤ] [F.IsTriangulated] :
-    PostnikovTower C (F.obj E) where
+    (F : C ⥤ D) [F.Additive] [F.CommShift ℤ] [F.IsTriangulated] :
+    PostnikovTower D (F.obj E) where
   n := P.n
   chain := P.chain ⋙ F
   triangle := fun i => F.mapTriangle.obj (P.triangle i)
@@ -116,13 +118,14 @@ noncomputable def PostnikovTower.mapF {E : C} (P : PostnikovTower C E)
 
 /-- Push an HN filtration through a triangulated functor.
 
-The phases are untouched — an autoequivalence moves objects, not phases — so
-only `semistable` carries a hypothesis. -/
-noncomputable def HNFiltration.mapF {P P' : ℝ → ObjectProperty C} {E : C}
-    (Fil : HNFiltration C P E) (F : C ⥤ C)
+The phases are untouched — the functor moves objects, not phases — so only
+`semistable` carries a hypothesis. -/
+noncomputable def HNFiltration.mapF {P : ℝ → ObjectProperty C}
+    {P' : ℝ → ObjectProperty D} {E : C}
+    (Fil : HNFiltration C P E) (F : C ⥤ D)
     [F.Additive] [F.CommShift ℤ] [F.IsTriangulated]
     (hP : ∀ φ X, P φ X → P' φ (F.obj X)) :
-    HNFiltration C P' (F.obj E) where
+    HNFiltration D P' (F.obj E) where
   toPostnikovTower := Fil.toPostnikovTower.mapF F
   φ := Fil.φ
   hφ := Fil.hφ
