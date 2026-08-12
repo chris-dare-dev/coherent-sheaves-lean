@@ -32,7 +32,9 @@ jobs:
       - name: Coherent-sheaf axiom audit
         run: |
           set -euo pipefail
-          lake build CohLean.Development.AlgebraicGeometry.Divisors.API \
+          # The optional Development umbrella is outside CohLean's stable root;
+          # build it explicitly before the later per-file re-elaboration sweep.
+          lake build CohLean.Development \
             CohLean.Numerical.Specializations.Surface \
             CohLean.Numerical.Specializations.Threefold \
             CohLean.Numerical.Specializations.Fourfold
