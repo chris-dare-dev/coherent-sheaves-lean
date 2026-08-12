@@ -233,6 +233,31 @@ theorem effective_euler_additivity
   rw [hzero] at h
   exact h
 
+/-- The geometric curve/intersection comparison needed to compute the quotient term in the
+effective-divisor sequence.  Keeping this comparison explicit isolates the remaining adjunction
+input from the already-constructed coherent short exact sequence. -/
+structure QuotientIntersectionComparison
+    (K : Pic X.toVariety.toScheme) where
+  quotientEuler :
+    (D.eulerCharacteristic R.quotient : ℚ) =
+      (cartierCorrectionNumerator I K A.divisor : ℚ) / 2
+
+/-- Surface Riemann--Roch for an effective divisor, obtained directly from #25's coherent
+fundamental sequence and the geometric intersection computation on its quotient. -/
+theorem effective_divisor_formula_from_sequence
+    (hself : E = A.divisor)
+    {K : Pic X.toVariety.toScheme}
+    (Q : R.QuotientIntersectionComparison K) :
+    (cartierEulerCharacteristic I A.divisor : ℚ) = (I.eulerPic 1 : ℚ) +
+      (cartierCorrectionNumerator I K A.divisor : ℚ) / 2 := by
+  have hadd := R.effective_euler_additivity hself
+  have haddq :
+      (I.eulerPic (CartierDivisor.toPic A.divisor) : ℚ) =
+        (I.eulerPic 1 : ℚ) + (D.eulerCharacteristic R.quotient : ℚ) := by
+    exact_mod_cast hadd
+  unfold cartierEulerCharacteristic
+  rw [haddq, Q.quotientEuler]
+
 /-- The effective-divisor specialization of surface Riemann--Roch. -/
 theorem effective_divisor_formula
     (_R : EffectiveSequenceRealization I A E)

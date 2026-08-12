@@ -165,9 +165,12 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms CohLean.Duality.Serre.DerivedStatement.dualizingObject
 #print axioms CohLean.Duality.Serre.DerivedStatement.canonicalShiftIso
 #print axioms CohLean.Duality.Serre.Data
+#print axioms CohLean.Duality.Serre.Data.coherentDualityEquiv
 #print axioms CohLean.Duality.Serre.Data.pairing
+#print axioms CohLean.Duality.Serre.Data.pairing_isPerfPair
 #print axioms CohLean.Duality.Serre.Data.dimension_eq_ext
 #print axioms CohLean.Duality.Serre.Data.LocallyFreeSpecialization
+#print axioms CohLean.Duality.Serre.Data.LocallyFreeSpecialization.cohomologyDualityEquiv
 #print axioms CohLean.Duality.Serre.Data.LocallyFreeSpecialization.dimension_symmetry
 #print axioms CohLean.Duality.Serre.Data.LocallyFreeSpecialization.eulerCharacteristic_eq_sum_dimension
 #print axioms CohLean.Duality.Serre.Data.LocallyFreeSpecialization.eulerCharacteristic_symmetry
@@ -1034,6 +1037,8 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms CohLean.RiemannRoch.Surface.EffectiveSequenceRealization
 #print axioms CohLean.RiemannRoch.Surface.EffectiveSequenceRealization.euler_additivity
 #print axioms CohLean.RiemannRoch.Surface.EffectiveSequenceRealization.effective_euler_additivity
+#print axioms CohLean.RiemannRoch.Surface.EffectiveSequenceRealization.QuotientIntersectionComparison
+#print axioms CohLean.RiemannRoch.Surface.EffectiveSequenceRealization.effective_divisor_formula_from_sequence
 #print axioms CohLean.RiemannRoch.Surface.EffectiveSequenceRealization.effective_divisor_formula
 #print axioms CohLean.RiemannRoch.Surface.EffectiveSequenceRealization.quotient_eulerCharacteristic_eq_half_correction
 #print axioms CohLean.RiemannRoch.Surface.eulerPic_one

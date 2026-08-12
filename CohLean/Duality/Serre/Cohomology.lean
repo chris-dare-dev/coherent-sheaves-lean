@@ -10,6 +10,7 @@ import Mathlib.Algebra.Homology.DerivedCategory.Basic
 import Mathlib.Algebra.Homology.DerivedCategory.Ext.Basic
 import Mathlib.Data.Fin.Rev
 import Mathlib.LinearAlgebra.Dual.Lemmas
+import Mathlib.LinearAlgebra.PerfectPairing.Basic
 
 /-!
 # Serre duality: explicit derived and cohomological interfaces
@@ -129,6 +130,12 @@ namespace Data
 variable {K : X.CanonicalSheafData n}
 variable {D : FiniteCohomology X.toVariety} (S : Data K D)
 
+/-- The coherent cohomology-level Serre-duality equivalence in the geometric range. -/
+noncomputable def coherentDualityEquiv (F : Coh X.toVariety.toScheme)
+    (i : ℕ) (hi : i ≤ n) :
+    Module.Dual k ((D.moduleH i).obj F) ≃ₗ[k] S.extSpace F (n - i) :=
+  S.duality F i hi
+
 /-- The perfect pairing `H^i(X,F) × Ext^(n-i)(F,ω_X) → k` extracted from duality. -/
 def pairing (F : Coh X.toVariety.toScheme) (i : ℕ) (hi : i ≤ n) :
     (D.moduleH i).obj F →ₗ[k] S.extSpace F (n - i) →ₗ[k] k where
@@ -150,6 +157,19 @@ theorem pairing_apply (F : Coh X.toVariety.toScheme) (i : ℕ) (hi : i ≤ n)
     (x : (D.moduleH i).obj F) (y : S.extSpace F (n - i)) :
     S.pairing F i hi x y = (S.duality F i hi).symm y x :=
   rfl
+
+/-- The displayed coherent Serre pairing is perfect in Mathlib's standard sense: both induced
+maps to the opposite dual space are bijective. -/
+noncomputable instance pairing_isPerfPair (F : Coh X.toVariety.toScheme)
+    (i : ℕ) (hi : i ≤ n) :
+    (S.pairing F i hi).IsPerfPair := by
+  letI := D.finite i F
+  letI : Module.Free k ((D.moduleH i).obj F) :=
+    Module.Free.of_divisionRing k _
+  let e := (S.duality F i hi).symm
+  have he : e.toLinearMap.IsPerfPair := by infer_instance
+  change e.toLinearMap.flip.IsPerfPair
+  exact he.flip
 
 /-- Perfection gives equality of the cohomology and complementary Ext dimensions. -/
 theorem dimension_eq_ext (F : Coh X.toVariety.toScheme) (i : ℕ) (hi : i ≤ n) :
@@ -175,6 +195,13 @@ namespace LocallyFreeSpecialization
 
 variable {S} {F : Coh X.toVariety.toScheme}
 variable (L : S.LocallyFreeSpecialization F)
+
+/-- For a finite locally-free sheaf, coherent Serre duality becomes
+`H^i(X,F)ᵛ ≃ H^(n-i)(X,Fᵛ ⊗ ω_X)`. -/
+noncomputable def cohomologyDualityEquiv (i : ℕ) (hi : i ≤ n) :
+    Module.Dual k ((D.moduleH i).obj F) ≃ₗ[k]
+      (D.moduleH (n - i)).obj L.dualCanonicalTwist :=
+  (S.coherentDualityEquiv F i hi).trans (L.extToCohomology (n - i))
 
 /-- The cohomology dimensions of a locally free sheaf are reflected across the dimension. -/
 theorem dimension_symmetry (i : ℕ) (hi : i ≤ n) :
