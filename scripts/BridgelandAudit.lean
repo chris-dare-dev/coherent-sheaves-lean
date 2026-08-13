@@ -344,6 +344,15 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Foundation.Slicing.phiPlus_eq_of_semistable
 #print axioms BridgelandStabLean.Foundation.Slicing.phiMinus_eq_of_semistable
 #print axioms BridgelandStabLean.Foundation.Slicing.exists_hn_intrinsic_width
+#print axioms BridgelandStabLean.Foundation.Slicing.intervalProp_mono
+#print axioms BridgelandStabLean.Foundation.Slicing.intervalProp_widen
+#print axioms BridgelandStabLean.Foundation.Slicing.phiPlus_lt_of_intervalProp
+#print axioms BridgelandStabLean.Foundation.Slicing.phiMinus_gt_of_intervalProp
+#print axioms BridgelandStabLean.Foundation.Slicing.phiPlus_gt_of_intervalProp
+#print axioms BridgelandStabLean.Foundation.Slicing.phiMinus_lt_of_intervalProp
+#print axioms BridgelandStabLean.Foundation.Slicing.intervalProp_of_intrinsic_phases
+#print axioms BridgelandStabLean.Foundation.Slicing.intervalProp_iff_intrinsic_phases
+#print axioms BridgelandStabLean.Foundation.Slicing.intrinsic_phases_mem_interval
 #print axioms BridgelandStabLean.Foundation.Slicing.leProp_shift
 #print axioms BridgelandStabLean.Foundation.Slicing.gtProp_shift
 #print axioms BridgelandStabLean.Foundation.Slicing.ltProp_shift
