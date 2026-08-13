@@ -383,6 +383,11 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Foundation.Deformation.SkewedStabilityFunction.IsSemistable
 #print axioms BridgelandStabLean.Foundation.Deformation.SkewedStabilityFunction.IsSemistable.phase_mem_Ioc
 #print axioms BridgelandStabLean.Foundation.Deformation.SkewedStabilityFunction.IsSemistable.charge_polar
+#print axioms BridgelandStabLean.Foundation.Deformation.SemistableChargeBound
+#print axioms BridgelandStabLean.Foundation.Deformation.relativePhase_charge_eq
+#print axioms BridgelandStabLean.Foundation.Deformation.perturbedCharge_ne_zero
+#print axioms BridgelandStabLean.Foundation.Deformation.skewedStabilityFunctionOfBound
+#print axioms BridgelandStabLean.Foundation.Deformation.relativePhase_perturbation_of_charge
 #print axioms BridgelandStabLean.Compatibility.BridgelandStability.Deformation.relativePhase_eq_wPhaseOf
 
 #print axioms BridgelandStabLean.Foundation.semiClosedUpperHalfPlane

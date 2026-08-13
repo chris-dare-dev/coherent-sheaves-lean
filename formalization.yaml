@@ -902,14 +902,18 @@ fidelity:
     skewed-stability structure now packages a perturbed central charge on a
     thin interval, its branch centre and nonvanishing hypothesis; object
     charges, phases, triangle additivity, phase see-saw, and perturbed
-    semistability all sit on that owned interface. The compatibility
+    semistability all sit on that owned interface. A uniform pointwise bound
+    on old semistable charges now supplies nonvanishing below relative norm
+    one, constructs the skewed-stability interface, and converts a strict
+    `sin (π ε)` charge bound into the selected-phase perturbation estimate.
+    The compatibility
     boundary records definitional agreement with the retained wPhaseOf
     representation while every mathematical proof lives in the owner
-    namespace. The census reports 2223 authored declarations,
+    namespace. The census reports 2228 authored declarations,
     126 private declarations, and 233 structure-field projections. Audit
-    issues 1869 commands, of which 1311 records are theorems, 62 are
-    structures, and 491 are other non-theorems; no authored public declaration
-    remains outside the hand audit. All 21 owner foundation modules are
+    issues 1874 commands, of which 1314 records are theorems, 62 are
+    structures, and 493 are other non-theorems; no authored public declaration
+    remains outside the hand audit. All 22 owner foundation modules are
     import-level anchor-free. The direct vendor-import inventory remains
     frozen at 28.
 

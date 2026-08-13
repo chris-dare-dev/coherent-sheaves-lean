@@ -39,6 +39,7 @@ ANCHOR_FREE = [
     "BridgelandStabLean.Foundation.Deformation.LocalFiniteness",
     "BridgelandStabLean.Foundation.Deformation.PhaseArithmetic",
     "BridgelandStabLean.Foundation.Deformation.SkewedStability",
+    "BridgelandStabLean.Foundation.Deformation.ChargePerturbation",
     "BridgelandStabLean.Foundation.Slicing.PhaseBounds",
     "BridgelandStabLean.Foundation.Slicing.FiltrationOperations",
     "BridgelandStabLean.Foundation.Slicing.PhaseTruncation",
