@@ -898,14 +898,18 @@ fidelity:
     is also rescaled into the thin and wide finite-length sector witnesses
     used by the deformation construction. Rotated imaginary parts are
     expressed through relative phase, yielding positive/negative sign tests
-    and the strict and non-strict phase see-saw lemmas for sums. The compatibility
+    and the strict and non-strict phase see-saw lemmas for sums. An owner
+    skewed-stability structure now packages a perturbed central charge on a
+    thin interval, its branch centre and nonvanishing hypothesis; object
+    charges, phases, triangle additivity, phase see-saw, and perturbed
+    semistability all sit on that owned interface. The compatibility
     boundary records definitional agreement with the retained wPhaseOf
     representation while every mathematical proof lives in the owner
-    namespace. The census reports 2202 authored declarations,
-    126 private declarations, and 224 structure-field projections. Audit
-    issues 1857 commands, of which 1304 records are theorems, 60 are
-    structures, and 488 are other non-theorems; no authored public declaration
-    remains outside the hand audit. All 20 owner foundation modules are
+    namespace. The census reports 2223 authored declarations,
+    126 private declarations, and 233 structure-field projections. Audit
+    issues 1869 commands, of which 1311 records are theorems, 62 are
+    structures, and 491 are other non-theorems; no authored public declaration
+    remains outside the hand audit. All 21 owner foundation modules are
     import-level anchor-free. The direct vendor-import inventory remains
     frozen at 28.
 

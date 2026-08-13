@@ -371,6 +371,18 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Foundation.Deformation.relativePhase_seesaw
 #print axioms BridgelandStabLean.Foundation.Deformation.relativePhase_seesaw_strict
 #print axioms BridgelandStabLean.Foundation.Deformation.relativePhase_seesaw_dual
+#print axioms BridgelandStabLean.Foundation.Deformation.SkewedStabilityFunction
+#print axioms BridgelandStabLean.Foundation.Deformation.SkewedStabilityFunction.charge
+#print axioms BridgelandStabLean.Foundation.Deformation.SkewedStabilityFunction.phase
+#print axioms BridgelandStabLean.Foundation.Deformation.SkewedStabilityFunction.ChargeNe
+#print axioms BridgelandStabLean.Foundation.Deformation.SkewedStabilityFunction.phase_congr
+#print axioms BridgelandStabLean.Foundation.Deformation.SkewedStabilityFunction.phase_iso
+#print axioms BridgelandStabLean.Foundation.Deformation.SkewedStabilityFunction.charge_triangle
+#print axioms BridgelandStabLean.Foundation.Deformation.SkewedStabilityFunction.phase_seesaw
+#print axioms BridgelandStabLean.Foundation.Deformation.SkewedStabilityFunction.phase_seesaw_strict
+#print axioms BridgelandStabLean.Foundation.Deformation.SkewedStabilityFunction.IsSemistable
+#print axioms BridgelandStabLean.Foundation.Deformation.SkewedStabilityFunction.IsSemistable.phase_mem_Ioc
+#print axioms BridgelandStabLean.Foundation.Deformation.SkewedStabilityFunction.IsSemistable.charge_polar
 #print axioms BridgelandStabLean.Compatibility.BridgelandStability.Deformation.relativePhase_eq_wPhaseOf
 
 #print axioms BridgelandStabLean.Foundation.semiClosedUpperHalfPlane
