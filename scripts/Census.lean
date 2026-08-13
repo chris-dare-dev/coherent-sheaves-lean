@@ -51,8 +51,9 @@ def isGenerated (env : Environment) (n : Name) (ci : ConstantInfo) : Bool :=
                -- emitted, not written:
                --   ctorIdx     one per structure
                --   congr_simp  congruence lemma for a def
+               --   ext_iff     from `@[ext] theorem ext` (the ext IS written)
                --   ext'_iff    from `@[ext] theorem ext'` (the ext' IS written)
-               "ctorIdx", "congr_simp", "ext'_iff"]
+               "ctorIdx", "congr_simp", "ext_iff", "ext'_iff"]
           || "match_".isPrefixOf s || "proof_".isPrefixOf s
           -- Heterogeneous congruence companions generated for dependent defs.
           -- `rg 'hcongr_' BridgelandStabLean vendor/BridgelandStability` is empty.

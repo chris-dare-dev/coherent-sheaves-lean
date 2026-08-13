@@ -39,11 +39,11 @@ lake build && lake env lean scripts/Census.lean
 **REVISED AGAIN 2026-08-07 (later), and the correction is the useful part.**
 The revision below reported a real gap of **59**. The true figure was **29**.
 The other 30 were compiler-generated names the sweep did not recognise --
-`<Struct>.ctorIdx`, `<Struct>.mk.inj`, `<def>.congr_simp`, and `ext'_iff` from
-`@[ext] theorem ext'`. Each family was then grepped for in
+`<Struct>.ctorIdx`, `<Struct>.mk.inj`, `<def>.congr_simp`, and generated
+`ext_iff`/`ext'_iff` companions of `@[ext]` theorems. Each family was then grepped for in
 `BridgelandStabLean/` and occurs there **zero** times, so none is a declaration
 anyone wrote or could list. A later census correction added the likewise
-source-absent `hcongr_*` family; `scripts/Census.lean` now filters all five.
+source-absent `hcongr_*` family; `scripts/Census.lean` now filters all six.
 
 The lesson is not that a number moved. It is that **a filter is itself a claim
 about what Lean emits, and it needs the same check as any other claim here.**
@@ -59,8 +59,8 @@ to **488**. Both were right against the filter of the day, and both are
 superseded here -- the 821 in particular counted the 30 generated names
 described above. **Re-run the command; do not adjust the numbers.**
 
-**THE GAP IS NOW ZERO, re-measured while adding the issue #231 owner slicing
-t-structure foundation on 2026-08-13.** Every
+**THE GAP IS NOW ZERO, re-measured while adding the issue #233 owner stability
+function and HN uniqueness foundation on 2026-08-13.** Every
 public declaration in this library that is not a structure field projection is
 named below. Be precise about what that does and does not mean -- three of the
 four qualifications in this comment are unaffected by it:
@@ -73,10 +73,10 @@ four qualifications in this comment are unaffected by it:
   green without an entry here. Zero is a measurement taken at a commit, not a
   property the build maintains.
 
-* It issues **1701** audit commands. The environment holds **2034** authored
-  declarations under `BridgelandStabLean.*`, so **333 are outside this gate**,
+* It issues **1830** audit commands. The environment holds **2175** authored
+  declarations under `BridgelandStabLean.*`, so **345 are outside this gate**,
   all of them private or projections. ("Authored" excludes constructors,
-  recursors, `casesOn`, matchers, equation lemmas, internal names, and the five
+  recursors, `casesOn`, matchers, equation lemmas, internal names, and the six
   generated families named above -- none of which anybody writes or could
   list.)
 * **126 are `private`** -- 110 of them theorems -- and are *structurally*
@@ -84,7 +84,7 @@ four qualifications in this comment are unaffected by it:
   which cannot be written as a short name from an importing module. The
   instruction below cannot be followed for them, and no amount of diligence
   changes that.
-* **209 are structure field projections** emitted by the `structure` command.
+* **224 are structure field projections** emitted by the `structure` command.
   These are not a coverage gap in any useful sense; listing them would be noise.
   They are called out because a census that does not separate them reports a
   shortfall five times the real one.
@@ -106,12 +106,12 @@ four qualifications in this comment are unaffected by it:
   when a name it *should* list appears. `scripts/Census.lean` is the thing that
   reports it, but it is a script you run, not a CI gate; a name added without a
   matching entry here still lands green.
-* **507 of the distinct gated declarations are not theorems** (57 `structure`, 450 other
+* **544 of the distinct gated declarations are not theorems** (60 `structure`, 484 other
   constructions).
   For a `def`, `#print axioms` reports the axiom closure of a CONSTRUCTION and
   asserts nothing about any proposition. In particular
   `CategoryTheory.Triangulated.StabilityMassTriangleInequality` appears below
-  formatted identically to the **1113** real theorems, but it is a `def ... :
+formatted identically to the **1281** real theorems, but it is a `def ... :
   Prop` -- its clean line means the definition is axiom-clean, NOT that the
   proposition holds.
 
@@ -342,6 +342,135 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Foundation.Slicing.toTStructure
 #print axioms BridgelandStabLean.Foundation.Slicing.toTStructure_heart_iff
 #print axioms BridgelandStabLean.Foundation.Slicing.toTStructure_bounded
+#print axioms BridgelandStabLean.Foundation.semiClosedUpperHalfPlane
+#print axioms BridgelandStabLean.Foundation.semiClosedUpperHalfPlane_ne_zero
+#print axioms BridgelandStabLean.Foundation.arg_pos_of_mem_semiClosedUpperHalfPlane
+#print axioms BridgelandStabLean.Foundation.StabilityFunction
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.ext
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.phase
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.phase_pos
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.phase_le_one
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.phase_mem_Ioc
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.IsSemistable
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.IsStable
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.exists_destabilizing_of_not_semistable
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.charge_eq_of_iso
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.phase_eq_of_iso
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.isSemistable_of_iso
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.isSemistable_iff_of_iso
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.StabilityFunction.semiClosedUpperHalfPlane_eq
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.StabilityFunction.toVendor
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.StabilityFunction.ofVendor
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.StabilityFunction.toVendor_charge
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.StabilityFunction.ofVendor_charge
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.StabilityFunction.ofVendor_toVendor
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.StabilityFunction.toVendor_ofVendor
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.StabilityFunction.equiv
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.StabilityFunction.toVendor_phase
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.StabilityFunction.toVendor_isSemistable_iff
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.StabilityFunction.toVendor_isStable_iff
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.phiPlus
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.phiMinus
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.phase_mem_range
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.phiMinus_le_phiPlus
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.HasHNProperty
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.AbelianHNFiltration.toVendor
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.AbelianHNFiltration.ofVendor
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.AbelianHNFiltration.toVendor_n
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.AbelianHNFiltration.ofVendor_n
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.AbelianHNFiltration.toVendor_phase
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.AbelianHNFiltration.ofVendor_phase
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.AbelianHNFiltration.toVendor_phiPlus
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.AbelianHNFiltration.toVendor_phiMinus
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.AbelianHNFiltration.ofVendor_phiPlus
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.AbelianHNFiltration.ofVendor_phiMinus
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.AbelianHNFiltration.toVendor_n_eq_iff
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.AbelianHNFiltration.toVendor_n_eq_of_owner
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.AbelianHNFiltration.ofVendor_n_eq_of_owner
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.StabilityFunction.toVendor_hasHNProperty
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.StabilityFunction.ofVendor_hasHNProperty
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.StabilityFunction.toVendor_hasHNProperty_iff
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.StabilityFunction.ofVendor_hasHNProperty_iff
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.subobject_isZero_iff_eq_bot
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.subobject_ne_bot_of_not_isZero
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.subobject_not_isZero_of_ne_bot
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.subobject_top_ne_bot_of_not_isZero
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.subobject_ofLE_bot
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.subobjectCokernelBotIso
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.cokernel_not_isZero_of_ne_top
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.imageSubobject_epi_comp
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.imageSubobject_eq_top_of_epi
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.pullback_obj_injective_of_epi
+#print axioms BridgelandStabLean.Foundation.im_nonneg_of_mem_semiClosedUpperHalfPlane
+#print axioms BridgelandStabLean.Foundation.add_mem_semiClosedUpperHalfPlane
+#print axioms BridgelandStabLean.Foundation.phaseCross
+#print axioms BridgelandStabLean.Foundation.phaseCross_eq_norm_mul_sin
+#print axioms BridgelandStabLean.Foundation.phaseCross_nonneg_of_arg_le
+#print axioms BridgelandStabLean.Foundation.arg_le_of_phaseCross_nonneg
+#print axioms BridgelandStabLean.Foundation.phaseCross_pos_of_arg_lt
+#print axioms BridgelandStabLean.Foundation.arg_lt_of_phaseCross_pos
+#print axioms BridgelandStabLean.Foundation.arg_add_le_max
+#print axioms BridgelandStabLean.Foundation.arg_add_lt_max
+#print axioms BridgelandStabLean.Foundation.min_arg_le_arg_add
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.phase_le_max_of_shortExact
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.min_phase_le_of_shortExact
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.phase_le_of_epi
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.hom_eq_zero_of_semistable_phase_gt
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.phase_cokernel_ofLE_congr
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.isSemistable_cokernel_ofLE_congr
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.n_eq_one_of_semistable
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.isSemistable_of_n_eq_one
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.n_eq_one_iff_isSemistable
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.two_le_n_of_not_isSemistable
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.le_of_arrow_comp_cokernel_zero
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.pullback_cokernel_bot_eq
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.card_subobject_cokernel_lt
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.le_pullback_cokernel
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.ofLE_pullbackπ_cokernel_eq_zero
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.shortExact_ofLE_pullbackπ_cokernel
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.charge_pullback_eq_add
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.pullback_imageSubobject_eq
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.charge_cokernel_pullback_eq
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.phase_cokernel_pullback_eq
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.cokernelPullbackIso
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.tail
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.tail_n
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.transport_n
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.n_eq
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.le_of_ofLE_comp_cokernel_zero
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.hom_eq_zero_to_factor
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.le_chain_of_semistable_phase_gt
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.eq_bot_of_semistable_phase_gt_phiPlus
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.chain_one_ne_bot
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.phase_chain_one
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.chain_one_isSemistable
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.phiPlus_eq
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.chain_one_eq
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.semistable_phase_le_phiPlus
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.le_chain_one_of_semistable_phase_eq_phiPlus
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.chain_one_maximal_semistable_phase
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.hom_eq_zero_to_semistable_of_phase_lt_phiMinus
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.phiMinus_eq
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.phiPlus
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.phiMinus
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.maxDestabilizingSubobject
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.maxDestabilizingSubobject_eq_filtration
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.maxDestabilizingSubobject_ne_bot
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.maxDestabilizingSubobject_isSemistable
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.maxDestabilizingSubobject_eq_top_iff_isSemistable
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.destabilizingQuotient
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.isZero_destabilizingQuotient_iff_isSemistable
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.destabilizingQuotient_not_isZero_of_not_isSemistable
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.destabilizingShortComplex
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.destabilizingShortComplex_shortExact
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.charge_eq_maxDestabilizingSubobject_add_destabilizingQuotient
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.phiPlus_eq_filtration
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.phase_maxDestabilizingSubobject
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.le_maxDestabilizingSubobject_of_semistable_phase_eq_phiPlus
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.phiMinus_eq_filtration
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.phiMinus_le_phiPlus
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.isSemistable_iff_phiPlus_eq_phiMinus
 
 /-! ## Cohomology exactness (#146) -/
 

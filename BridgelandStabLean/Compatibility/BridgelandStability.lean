@@ -6,6 +6,7 @@ import BridgelandStabLean.Foundation
 import BridgelandStability.GrothendieckGroup.Basic
 import BridgelandStability.Slicing.TStructureConstruction
 import BridgelandStability.StabilityCondition.Defs
+import BridgelandStability.StabilityFunction.HarderNarasimhan
 
 /-!
 # Compatibility with the vendored BridgelandStability API
@@ -26,6 +27,245 @@ namespace BridgelandStabLean.Compatibility.BridgelandStability
 
 variable (C : Type u) [Category.{v} C] [HasZeroObject C] [HasShift C ℤ]
   [Preadditive C] [∀ n : ℤ, (shiftFunctor C n).Additive] [Pretriangulated C]
+
+namespace StabilityFunction
+
+variable (A : Type u) [Category.{v} A] [Abelian A]
+
+/-- The owner and retained semi-closed upper half-planes are definitionally
+the same subset of `ℂ`. -/
+theorem semiClosedUpperHalfPlane_eq :
+    Foundation.semiClosedUpperHalfPlane = CategoryTheory.upperHalfPlaneUnion :=
+  rfl
+
+/-- Convert an owner stability function to the retained representation. -/
+def toVendor (Z : Foundation.StabilityFunction A) :
+    CategoryTheory.StabilityFunction A where
+  Zobj := Z.charge
+  map_zero' := Z.map_zero
+  additive := Z.additive
+  upper E hE := by
+    simpa [semiClosedUpperHalfPlane_eq] using Z.nonzero_mem E hE
+
+/-- Convert a retained stability function to the owner representation. -/
+def ofVendor (Z : CategoryTheory.StabilityFunction A) :
+    Foundation.StabilityFunction A where
+  charge := Z.Zobj
+  map_zero := Z.map_zero'
+  map_iso := Z.Zobj_eq_of_iso
+  additive := Z.additive
+  nonzero_mem E hE := by
+    simpa [semiClosedUpperHalfPlane_eq] using Z.upper E hE
+
+@[simp]
+theorem toVendor_charge (Z : Foundation.StabilityFunction A) (E : A) :
+    (toVendor A Z).Zobj E = Z.charge E :=
+  rfl
+
+@[simp]
+theorem ofVendor_charge (Z : CategoryTheory.StabilityFunction A) (E : A) :
+    (ofVendor A Z).charge E = Z.Zobj E :=
+  rfl
+
+@[simp]
+theorem ofVendor_toVendor (Z : Foundation.StabilityFunction A) :
+    ofVendor A (toVendor A Z) = Z := by
+  ext E
+  rfl
+
+@[simp]
+theorem toVendor_ofVendor (Z : CategoryTheory.StabilityFunction A) :
+    toVendor A (ofVendor A Z) = Z := by
+  rcases Z with ⟨Z, hzero, hadd, hupper⟩
+  rfl
+
+/-- Owner and retained stability functions are equivalent. -/
+def equiv : Foundation.StabilityFunction A ≃ CategoryTheory.StabilityFunction A where
+  toFun := toVendor A
+  invFun := ofVendor A
+  left_inv := ofVendor_toVendor A
+  right_inv := toVendor_ofVendor A
+
+@[simp]
+theorem toVendor_phase (Z : Foundation.StabilityFunction A) (E : A) :
+    (toVendor A Z).phase E = Z.phase E := by
+  simp only [CategoryTheory.StabilityFunction.phase, Foundation.StabilityFunction.phase]
+  rw [toVendor_charge]
+  rw [div_eq_mul_inv, div_eq_mul_inv]
+  simpa only [one_mul] using
+    mul_comm (Real.pi⁻¹) (Complex.arg (Z.charge E))
+
+@[simp]
+theorem toVendor_isSemistable_iff (Z : Foundation.StabilityFunction A) (E : A) :
+    (toVendor A Z).IsSemistable E ↔ Z.IsSemistable E := by
+  simp only [CategoryTheory.StabilityFunction.IsSemistable,
+    Foundation.StabilityFunction.IsSemistable, toVendor_phase]
+
+@[simp]
+theorem toVendor_isStable_iff (Z : Foundation.StabilityFunction A) (E : A) :
+    (toVendor A Z).IsStable E ↔ Z.IsStable E := by
+  simp only [CategoryTheory.StabilityFunction.IsStable,
+    Foundation.StabilityFunction.IsStable, toVendor_phase]
+
+end StabilityFunction
+
+namespace AbelianHNFiltration
+
+variable (A : Type u) [Category.{v} A] [Abelian A]
+
+/-- Convert an owner abelian HN filtration to the retained representation. -/
+def toVendor {Z : Foundation.StabilityFunction A} {E : A}
+    (F : Foundation.AbelianHNFiltration Z E) :
+    CategoryTheory.AbelianHNFiltration (StabilityFunction.toVendor A Z) E where
+  n := F.n
+  hn := F.nonempty
+  chain := F.chain
+  chain_strictMono := F.chain_strictMono
+  chain_bot := F.chain_bot
+  chain_top := F.chain_top
+  φ := F.phase
+  φ_anti := F.phase_strictAnti
+  factor_phase j := by
+    rw [StabilityFunction.toVendor_phase]
+    exact F.factor_phase j
+  factor_semistable j :=
+    (StabilityFunction.toVendor_isSemistable_iff A Z _).2 (F.factor_semistable j)
+
+/-- Convert a retained abelian HN filtration to the owner representation. -/
+def ofVendor {Z : CategoryTheory.StabilityFunction A} {E : A}
+    (F : CategoryTheory.AbelianHNFiltration Z E) :
+    Foundation.AbelianHNFiltration (StabilityFunction.ofVendor A Z) E where
+  n := F.n
+  nonempty := F.hn
+  chain := F.chain
+  chain_strictMono := F.chain_strictMono
+  chain_bot := F.chain_bot
+  chain_top := F.chain_top
+  phase := F.φ
+  phase_strictAnti := F.φ_anti
+  factor_phase j := by
+    simpa only [Foundation.StabilityFunction.phase,
+      CategoryTheory.StabilityFunction.phase, StabilityFunction.ofVendor_charge,
+      div_eq_mul_inv, one_mul, mul_one, mul_comm] using F.factor_phase j
+  factor_semistable j := by
+    simpa only [Foundation.StabilityFunction.IsSemistable,
+      CategoryTheory.StabilityFunction.IsSemistable,
+      Foundation.StabilityFunction.phase,
+      CategoryTheory.StabilityFunction.phase, StabilityFunction.ofVendor_charge,
+      div_eq_mul_inv, one_mul, mul_one, mul_comm] using F.factor_semistable j
+
+@[simp]
+theorem toVendor_n {Z : Foundation.StabilityFunction A} {E : A}
+    (F : Foundation.AbelianHNFiltration Z E) : (toVendor A F).n = F.n :=
+  rfl
+
+@[simp]
+theorem ofVendor_n {Z : CategoryTheory.StabilityFunction A} {E : A}
+    (F : CategoryTheory.AbelianHNFiltration Z E) : (ofVendor A F).n = F.n :=
+  rfl
+
+@[simp]
+theorem toVendor_phase {Z : Foundation.StabilityFunction A} {E : A}
+    (F : Foundation.AbelianHNFiltration Z E) (i : Fin F.n) :
+    (toVendor A F).φ i = F.phase i :=
+  rfl
+
+@[simp]
+theorem ofVendor_phase {Z : CategoryTheory.StabilityFunction A} {E : A}
+    (F : CategoryTheory.AbelianHNFiltration Z E) (i : Fin F.n) :
+    (ofVendor A F).phase i = F.φ i :=
+  rfl
+
+/-- Conversion preserves the highest phase of an owner HN filtration. -/
+theorem toVendor_phiPlus {Z : Foundation.StabilityFunction A} {E : A}
+    (F : Foundation.AbelianHNFiltration Z E) :
+    (toVendor A F).φ ⟨0, (toVendor A F).hn⟩ = F.phiPlus :=
+  rfl
+
+/-- Conversion preserves the lowest phase of an owner HN filtration. -/
+theorem toVendor_phiMinus {Z : Foundation.StabilityFunction A} {E : A}
+    (F : Foundation.AbelianHNFiltration Z E) :
+    (toVendor A F).φ ⟨(toVendor A F).n - 1,
+      Nat.sub_lt (toVendor A F).hn (by decide)⟩ = F.phiMinus :=
+  rfl
+
+/-- Conversion preserves the highest phase of a retained HN filtration. -/
+@[simp]
+theorem ofVendor_phiPlus {Z : CategoryTheory.StabilityFunction A} {E : A}
+    (F : CategoryTheory.AbelianHNFiltration Z E) :
+    (ofVendor A F).phiPlus = F.φ ⟨0, F.hn⟩ :=
+  rfl
+
+/-- Conversion preserves the lowest phase of a retained HN filtration. -/
+@[simp]
+theorem ofVendor_phiMinus {Z : CategoryTheory.StabilityFunction A} {E : A}
+    (F : CategoryTheory.AbelianHNFiltration Z E) :
+    (ofVendor A F).phiMinus =
+      F.φ ⟨F.n - 1, Nat.sub_lt F.hn (by decide)⟩ :=
+  rfl
+
+/-- The owner and retained HN length-uniqueness theorems agree after
+conversion: both compare the same natural-number filtration lengths. -/
+theorem toVendor_n_eq_iff {Z : Foundation.StabilityFunction A} {E : A}
+    (F G : Foundation.AbelianHNFiltration Z E) :
+    (toVendor A F).n = (toVendor A G).n ↔ F.n = G.n :=
+  Iff.rfl
+
+/-- Owner-native HN uniqueness transports to the retained representation
+without invoking the retained uniqueness proof. -/
+theorem toVendor_n_eq_of_owner {Z : Foundation.StabilityFunction A} {E : A}
+    (hE : ¬IsZero E) (hFinite : ∀ X : A, Finite (Subobject X))
+    (F G : Foundation.AbelianHNFiltration Z E) :
+    (toVendor A F).n = (toVendor A G).n :=
+  F.n_eq hE hFinite G
+
+/-- Retained HN filtrations have the same length whenever their owner
+conversions do, making the agreement symmetric at the compatibility boundary. -/
+theorem ofVendor_n_eq_of_owner {Z : CategoryTheory.StabilityFunction A} {E : A}
+    (hE : ¬IsZero E) (hFinite : ∀ X : A, Finite (Subobject X))
+    (F G : CategoryTheory.AbelianHNFiltration Z E) :
+    (ofVendor A F).n = (ofVendor A G).n :=
+  (ofVendor A F).n_eq hE hFinite (ofVendor A G)
+
+end AbelianHNFiltration
+
+namespace StabilityFunction
+
+variable (A : Type u) [Category.{v} A] [Abelian A]
+
+/-- The HN property passes from an owner stability function to its retained
+representation. -/
+theorem toVendor_hasHNProperty {Z : Foundation.StabilityFunction A}
+    (hZ : Z.HasHNProperty) : (toVendor A Z).HasHNProperty :=
+  fun E hE => (hZ E hE).map (AbelianHNFiltration.toVendor A)
+
+/-- The HN property passes from a retained stability function to its owner
+representation. -/
+theorem ofVendor_hasHNProperty {Z : CategoryTheory.StabilityFunction A}
+    (hZ : Z.HasHNProperty) : (ofVendor A Z).HasHNProperty :=
+  fun E hE => (hZ E hE).map (AbelianHNFiltration.ofVendor A)
+
+/-- Passing to the retained representation preserves and reflects the HN
+property. -/
+@[simp]
+theorem toVendor_hasHNProperty_iff (Z : Foundation.StabilityFunction A) :
+    (toVendor A Z).HasHNProperty ↔ Z.HasHNProperty := by
+  constructor
+  · intro hZ
+    simpa only [ofVendor_toVendor] using ofVendor_hasHNProperty A hZ
+  · exact toVendor_hasHNProperty A
+
+/-- Passing to the owner representation preserves and reflects the HN
+property. -/
+@[simp]
+theorem ofVendor_hasHNProperty_iff (Z : CategoryTheory.StabilityFunction A) :
+    (ofVendor A Z).HasHNProperty ↔ Z.HasHNProperty := by
+  constructor
+  · intro hZ
+    simpa only [toVendor_ofVendor] using toVendor_hasHNProperty A hZ
+  · exact ofVendor_hasHNProperty A
+
+end StabilityFunction
 
 namespace GrothendieckGroup
 
