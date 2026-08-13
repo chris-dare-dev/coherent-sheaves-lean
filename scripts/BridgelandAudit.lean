@@ -358,6 +358,10 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Foundation.Deformation.sin_abs_eq_abs_sin
 #print axioms BridgelandStabLean.Foundation.Deformation.abs_arg_one_add_lt
 #print axioms BridgelandStabLean.Foundation.Deformation.relativePhase_perturbation
+#print axioms BridgelandStabLean.Foundation.Deformation.SectorFiniteLength
+#print axioms BridgelandStabLean.Foundation.Deformation.WideSectorFiniteLength
+#print axioms BridgelandStabLean.Foundation.Deformation.exists_wideSectorRadius
+#print axioms BridgelandStabLean.Foundation.Deformation.exists_sectorRadius
 #print axioms BridgelandStabLean.Compatibility.BridgelandStability.Deformation.relativePhase_eq_wPhaseOf
 
 #print axioms BridgelandStabLean.Foundation.semiClosedUpperHalfPlane

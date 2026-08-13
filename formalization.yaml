@@ -889,22 +889,23 @@ fidelity:
     without a namespace alias or a hidden vendor dependency.
 
     COUNT UPDATE (destination issue #236; owner deformation foundation),
-    2026-08-13. The first unit of the sixth Mathlib-only foundation slice
+    2026-08-13. The opening units of the sixth Mathlib-only foundation slice
     introduces an owner relative-phase lift for complex charges, proves its
     branch interval, polar reconstruction, positive-ray recognition,
     negation and two-period shifts, and independence across compatible branch
     centres. It also proves the near-identity argument estimate and the
-    resulting quantitative phase-perturbation bound. The compatibility
+    resulting quantitative phase-perturbation bound. Owner local finiteness
+    is also rescaled into the thin and wide finite-length sector witnesses
+    used by the deformation construction. The compatibility
     boundary records definitional agreement with the retained wPhaseOf
     representation while every mathematical proof lives in the owner
-    namespace. The census reports 2189 authored declarations,
+    namespace. The census reports 2193 authored declarations,
     126 private declarations, and 224 structure-field projections. Audit
-    issues 1844 commands, of which 1294 records are theorems, 60 are
-    structures, and 485 are other non-theorems; no authored public declaration
-    remains outside the hand audit. All 18 owner foundation modules are
+    issues 1848 commands, of which 1296 records are theorems, 60 are
+    structures, and 487 are other non-theorems; no authored public declaration
+    remains outside the hand audit. All 19 owner foundation modules are
     import-level anchor-free. The direct vendor-import inventory remains
-    frozen at 28. All 19 owner foundation modules are import-level
-    anchor-free.
+    frozen at 28.
 
     COUNT UPDATE (Wall lane, the nested wall theorem), 2026-08-07. The 13
     additional records are the orthogonality identity minor_orth, the three
