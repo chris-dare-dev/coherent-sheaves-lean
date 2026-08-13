@@ -73,7 +73,7 @@ four qualifications in this comment are unaffected by it:
   green without an entry here. Zero is a measurement taken at a commit, not a
   property the build maintains.
 
-* It issues **1815** audit commands. The environment holds **2160** authored
+* It issues **1820** audit commands. The environment holds **2165** authored
   declarations under `BridgelandStabLean.*`, so **345 are outside this gate**,
   all of them private or projections. ("Authored" excludes constructors,
   recursors, `casesOn`, matchers, equation lemmas, internal names, and the six
@@ -111,7 +111,7 @@ four qualifications in this comment are unaffected by it:
   For a `def`, `#print axioms` reports the axiom closure of a CONSTRUCTION and
   asserts nothing about any proposition. In particular
   `CategoryTheory.Triangulated.StabilityMassTriangleInequality` appears below
-formatted identically to the **1268** real theorems, but it is a `def ... :
+formatted identically to the **1273** real theorems, but it is a `def ... :
   Prop` -- its clean line means the definition is axiom-clean, NOT that the
   proposition holds.
 
@@ -423,6 +423,11 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.le_of_arrow_comp_cokernel_zero
 #print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.pullback_cokernel_bot_eq
 #print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.card_subobject_cokernel_lt
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.le_pullback_cokernel
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.ofLE_pullbackπ_cokernel_eq_zero
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.shortExact_ofLE_pullbackπ_cokernel
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.charge_pullback_eq_add
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.pullback_imageSubobject_eq
 #print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.le_of_ofLE_comp_cokernel_zero
 #print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.hom_eq_zero_to_factor
 #print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.le_chain_of_semistable_phase_gt

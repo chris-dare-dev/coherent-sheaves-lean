@@ -227,6 +227,163 @@ theorem card_subobject_cokernel_lt {E : A} {M : Subobject E}
           Functor.monotone _ bot_le
         _ = ⊥ := hB)
 
+/-- Every subobject of a quotient pulls back to a subobject containing the
+kernel of the quotient map. -/
+theorem le_pullback_cokernel {E : A} (M : Subobject E)
+    (B : Subobject (cokernel M.arrow)) :
+    M ≤ (Subobject.pullback (cokernel.π M.arrow)).obj B :=
+  (pullback_cokernel_bot_eq M).symm.le.trans
+    (Functor.monotone _ bot_le)
+
+/-- The kernel inclusion followed by the restricted quotient map is zero. -/
+theorem ofLE_pullbackπ_cokernel_eq_zero {E : A} (M : Subobject E)
+    (B : Subobject (cokernel M.arrow)) :
+    Subobject.ofLE M _ (le_pullback_cokernel M B) ≫
+      Subobject.pullbackπ (cokernel.π M.arrow) B = 0 := by
+  apply (cancel_mono B.arrow).mp
+  simp only [zero_comp, Category.assoc]
+  have hw := (Subobject.isPullback (cokernel.π M.arrow) B).w
+  calc
+    Subobject.ofLE M _ (le_pullback_cokernel M B) ≫
+        (Subobject.pullbackπ (cokernel.π M.arrow) B ≫ B.arrow) =
+        Subobject.ofLE M _ (le_pullback_cokernel M B) ≫
+          (((Subobject.pullback (cokernel.π M.arrow)).obj B).arrow ≫
+            cokernel.π M.arrow) := by rw [hw]
+    _ = (Subobject.ofLE M _ (le_pullback_cokernel M B) ≫
+          ((Subobject.pullback (cokernel.π M.arrow)).obj B).arrow) ≫
+            cokernel.π M.arrow := by rw [Category.assoc]
+    _ = M.arrow ≫ cokernel.π M.arrow := by rw [Subobject.ofLE_arrow]
+    _ = 0 := cokernel.condition M.arrow
+
+/-- Pulling a subobject of a quotient back gives a canonical short exact
+sequence with the quotient kernel. -/
+theorem shortExact_ofLE_pullbackπ_cokernel {E : A} (M : Subobject E)
+    (B : Subobject (cokernel M.arrow)) :
+    (ShortComplex.mk
+      (Subobject.ofLE M _ (le_pullback_cokernel M B))
+      (Subobject.pullbackπ (cokernel.π M.arrow) B)
+      (ofLE_pullbackπ_cokernel_eq_zero M B)).ShortExact := by
+  let p := cokernel.π M.arrow
+  let pbB := (Subobject.pullback p).obj B
+  let hle := le_pullback_cokernel M B
+  let hcomp := ofLE_pullbackπ_cokernel_eq_zero M B
+  have hquotient :
+      (ShortComplex.mk M.arrow p (cokernel.condition M.arrow)).ShortExact :=
+    ShortComplex.ShortExact.mk' (ShortComplex.exact_cokernel M.arrow)
+      inferInstance inferInstance
+  have hkernel := hquotient.fIsKernel
+  haveI : Epi (Subobject.pullbackπ p B) := by
+    rw [← (Subobject.isPullback p B).isoPullback_hom_fst]
+    infer_instance
+  apply ShortComplex.ShortExact.mk' _ inferInstance inferInstance
+  apply ShortComplex.exact_of_f_is_kernel
+  have hw := (Subobject.isPullback p B).w
+  have key : ∀ {W : A} (g : W ⟶ (pbB : A)),
+      g ≫ Subobject.pullbackπ p B = 0 → (g ≫ pbB.arrow) ≫ p = 0 := by
+    intro W g hg
+    calc
+      (g ≫ pbB.arrow) ≫ p = g ≫ (pbB.arrow ≫ p) := by rw [Category.assoc]
+      _ = g ≫ (Subobject.pullbackπ p B ≫ B.arrow) := by rw [hw]
+      _ = (g ≫ Subobject.pullbackπ p B) ≫ B.arrow := by rw [← Category.assoc]
+      _ = 0 := by rw [hg, zero_comp]
+  exact KernelFork.IsLimit.ofι' (Subobject.ofLE M pbB hle) hcomp
+    (fun g hg => ⟨hkernel.lift (KernelFork.ofι (g ≫ pbB.arrow) (key g hg)), by
+      apply (cancel_mono pbB.arrow).mp
+      rw [Category.assoc, Subobject.ofLE_arrow]
+      exact hkernel.fac (KernelFork.ofι (g ≫ pbB.arrow) (key g hg))
+        WalkingParallelPair.zero⟩)
+
+/-- The charge of a pulled-back quotient subobject is the sum of the kernel
+charge and the subobject charge. -/
+theorem charge_pullback_eq_add (Z : StabilityFunction A) {E : A}
+    (M : Subobject E) (B : Subobject (cokernel M.arrow)) :
+    Z.charge (((Subobject.pullback (cokernel.π M.arrow)).obj B) : A) =
+      Z.charge (M : A) + Z.charge (B : A) :=
+  Z.additive _ (shortExact_ofLE_pullbackπ_cokernel M B)
+
+/-- Pulling the image of a subobject containing the quotient kernel back along
+the quotient projection recovers the original subobject. -/
+theorem pullback_imageSubobject_eq (Z : StabilityFunction A) {E : A}
+    {M S : Subobject E} (hMS : M ≤ S) :
+    (Subobject.pullback (cokernel.π M.arrow)).obj
+      (imageSubobject (S.arrow ≫ cokernel.π M.arrow)) = S := by
+  let p := cokernel.π M.arrow
+  let I := imageSubobject (S.arrow ≫ p)
+  let pbI := (Subobject.pullback p).obj I
+  change pbI = S
+  have hle : S ≤ pbI := Subobject.le_of_comm
+    ((Subobject.isPullback p I).isLimit.lift
+      (PullbackCone.mk (factorThruImageSubobject (S.arrow ≫ p)) S.arrow
+        (imageSubobject_arrow_comp (f := S.arrow ≫ p))))
+    ((Subobject.isPullback p I).isLimit.fac _ WalkingCospan.right)
+  have hpb := charge_pullback_eq_add Z M I
+  have hS := Z.additive _
+    (ShortComplex.ShortExact.mk'
+      (ShortComplex.exact_cokernel (Subobject.ofLE M S hMS))
+      inferInstance inferInstance)
+  have hI : Z.charge (I : A) =
+      Z.charge (cokernel (Subobject.ofLE M S hMS)) := by
+    have hses := Z.additive _
+      (ShortComplex.ShortExact.mk'
+        (ShortComplex.exact_cokernel (kernel.ι (S.arrow ≫ p)))
+        inferInstance inferInstance)
+    have hcondition : Subobject.ofLE M S hMS ≫ (S.arrow ≫ p) = 0 := by
+      rw [← Category.assoc, Subobject.ofLE_arrow]
+      exact cokernel.condition M.arrow
+    have hkernelCondition :
+        (kernel.ι (S.arrow ≫ p) ≫ S.arrow) ≫ cokernel.π M.arrow = 0 := by
+      rw [Category.assoc]
+      exact kernel.condition (S.arrow ≫ p)
+    let k := kernel.lift (S.arrow ≫ p) (Subobject.ofLE M S hMS) hcondition
+    let l := Abelian.monoLift M.arrow
+      (kernel.ι (S.arrow ≫ p) ≫ S.arrow) hkernelCondition
+    have hk : k ≫ kernel.ι (S.arrow ≫ p) = Subobject.ofLE M S hMS :=
+      kernel.lift_ι _ _ _
+    have hl : l ≫ M.arrow = kernel.ι (S.arrow ≫ p) ≫ S.arrow :=
+      Abelian.monoLift_comp _ _ _
+    have hkl : k ≫ l = 𝟙 _ := by
+      apply (cancel_mono M.arrow).mp
+      rw [Category.assoc, hl, ← Category.assoc, hk, Subobject.ofLE_arrow,
+        Category.id_comp]
+    have hlk : l ≫ k = 𝟙 _ := by
+      apply (cancel_mono (kernel.ι (S.arrow ≫ p))).mp
+      rw [Category.assoc, hk, Category.id_comp]
+      apply (cancel_mono S.arrow).mp
+      rw [Category.assoc, Subobject.ofLE_arrow, hl]
+    have hchargeKernel : Z.charge (M : A) = Z.charge (kernel (S.arrow ≫ p)) :=
+      Z.charge_eq_of_iso ⟨k, l, hkl, hlk⟩
+    have hchargeCoimage := Z.charge_eq_of_iso (Abelian.coimageIsoImage' (S.arrow ≫ p))
+    have hchargeImage := Z.charge_eq_of_iso (imageSubobjectIso (S.arrow ≫ p))
+    rw [← hchargeKernel] at hses
+    exact (hchargeImage.trans hchargeCoimage.symm).trans
+      (add_left_cancel (hses.symm.trans hS))
+  have hcharge : Z.charge (pbI : A) = Z.charge (S : A) := by
+    rw [hpb, hI]
+    exact hS.symm
+  rcases hle.eq_or_lt with heq | hlt
+  · exact heq.symm
+  · exfalso
+    have hshort := ShortComplex.ShortExact.mk'
+      (ShortComplex.exact_cokernel (Subobject.ofLE S pbI hle))
+      inferInstance inferInstance
+    have hadd := Z.additive _ hshort
+    have hcokernel :
+        Z.charge (cokernel (Subobject.ofLE S pbI hle)) = 0 := by
+      have h : Z.charge (S : A) + 0 = Z.charge (S : A) +
+          Z.charge (cokernel (Subobject.ofLE S pbI hle)) := by
+        rw [add_zero]
+        exact hcharge.symm.trans hadd
+      exact (add_left_cancel h).symm
+    have hnonzero : ¬IsZero (cokernel (Subobject.ofLE S pbI hle)) := by
+      intro hzero
+      haveI : Epi (Subobject.ofLE S pbI hle) :=
+        Preadditive.epi_of_isZero_cokernel _ hzero
+      haveI : IsIso (Subobject.ofLE S pbI hle) := isIso_of_mono_of_epi _
+      exact (ne_of_lt hlt) (Subobject.eq_of_comm (asIso (Subobject.ofLE S pbI hle))
+        (Subobject.ofLE_arrow hle))
+    exact semiClosedUpperHalfPlane_ne_zero
+      (Z.nonzero_mem _ hnonzero) hcokernel
+
 /-- A semistable object of phase above an HN factor has no morphisms to that
 factor. -/
 theorem hom_eq_zero_to_factor {Z : StabilityFunction A} {E B : A}
