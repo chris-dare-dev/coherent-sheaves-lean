@@ -25,10 +25,13 @@ ANCHOR = "BridgelandStability"
 # Modules that must never reach the anchor. Add to this list, never remove from it
 # without a stated reason -- each entry is a boundary someone paid to establish.
 ANCHOR_FREE = [
+    "BridgelandStabLean.TStructure",
+    "BridgelandStabLean.TStructure.Exactness",
     "BridgelandStabLean.ForMathlib.CategoryTheory.ObjectProperty.FullSubcategory",
     "BridgelandStabLean.ForMathlib.CategoryTheory.Triangulated.TStructure.HeartAbelian",
     "BridgelandStabLean.StabilityCondition.Weak.Tilting.Cohomology.Basic",
     "BridgelandStabLean.StabilityCondition.Weak.Tilting.Cohomology.Homological",
+    "BridgelandStabLean.StabilityCondition.Weak.Tilting.Cohomology.Exactness",
     "BridgelandStabLean.StabilityCondition.Weak.Tilting.TorsionPair.Basic",
     "BridgelandStabLean.StabilityCondition.Weak.Tilting.TorsionPair.Heart",
 ]
