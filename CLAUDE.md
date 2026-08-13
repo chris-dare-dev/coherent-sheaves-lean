@@ -107,6 +107,13 @@ restate the signature instead of explaining it.
 
 ## Unattended runs
 
-The `formalize-issue` skill is one hands-off iteration: claim a ready issue,
-formalize on an `agent/` branch, run the gates, open a PR, halt. It never
-merges and never writes a `sorry`. Pair it with `/loop` for repeats.
+Two skills, one iteration each, both halting before anything a human should
+decide. Pair either with `/loop` for repeats.
+
+- `land-pr` works the open PR queue, which is where the work is actually stuck.
+  `scripts/pr_queue.py` ranks it. The queue is a cumulative stack — every branch
+  is based on `main` but each slice contains its predecessors, so land the
+  smallest diff first and never the tip. It never merges.
+- `formalize-issue` claims an unclaimed issue and takes it to a PR. Check
+  `scripts/pr_queue.py` first: an issue with an open PR is not unclaimed, and
+  most of them have one.

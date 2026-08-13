@@ -1,0 +1,116 @@
+---
+name: land-pr
+description: Run one unattended landing iteration — take the base of the open PR stack, rebase it, gate it locally, review it, push fixes, mark it ready, then stop. Never merges. Pair with /loop.
+---
+
+# One landing iteration
+
+The open PR queue, not the issue tracker, is where this repository's work is
+stuck. This is **one** iteration against that queue and it **halts** before the
+merge. Merging is a human action, always.
+
+## What the queue actually is
+
+Every open PR is based on `main`, but they are a **cumulative stack**: each
+slice contains all of its predecessors, so diffs run +65, +134, +168, … +2925
+along one chain. Two consequences drive everything below:
+
+- **Land the base, not the tip.** Merging the tip would land 26 issues in one
+  unreviewable commit. Merging the base makes the next PR's diff collapse to its
+  own slice.
+- **The queue is CI-bound, not review-bound.** One 90-minute build job serialises
+  28 PRs. Local gates answer the same question in minutes, so never wait on
+  GitHub CI — gate locally and let CI confirm afterwards.
+
+## 0. Refuse to start if the tree is dirty
+
+```bash
+git status --porcelain
+```
+
+Non-empty? **Stop and report.** Do not stash. The previous iteration did not
+finish, and a human decides what happens to its work.
+
+## 1. Pick the target
+
+```bash
+git fetch origin
+python3 scripts/pr_queue.py
+```
+
+Take the **first row**. The ranking already encodes the landing order: `READY`
+before `GATE` before `FIX` before `CONFLICT`, then smallest diff first.
+
+Never take a row out of order to find easier work — the stack means a later PR's
+diff is a lie until its predecessors land.
+
+If the first row is `CONFLICT`, that is the iteration: rebase it, resolve, gate,
+push, and halt. If every row is `SKIP`, stop and say the queue is drained.
+
+## 2. Check out and rebase
+
+```bash
+gh pr checkout <N> -R chris-dare-dev/derived-alg-geo-lean
+git rebase origin/main
+```
+
+A conflict here is normal for a stacked queue and is your work to resolve. Resolve
+it in favour of `origin/main` for anything outside this slice's own leaf path —
+a stacked branch carrying a stale copy of an earlier slice is the usual cause.
+
+If the rebase cannot be resolved without guessing at mathematical intent, abort
+it (`git rebase --abort`), comment on the PR with the exact conflicting hunks,
+and halt. Do not guess.
+
+## 3. Gate locally
+
+```bash
+scripts/gates.sh fast   # build, style, both axiom audits — minutes
+scripts/gates.sh        # everything CI runs, once fast is green
+```
+
+A failing gate is the iteration's work, not a reason to weaken the gate. The
+usual failures on this queue, in order of frequency:
+
+- a new public theorem missing from `scripts/BridgelandAudit.lean` or
+  `scripts/Audit.lean` — CI fails on the hand-maintained audit, not the proof;
+- `check_anchor_free.py` rejecting a vendor import that belongs in
+  `Compatibility/`;
+- convention errors the edit hook would have caught had the branch been written
+  with it installed. Fix them; they are one-line fixes.
+
+Never introduce a `sorry` to get a gate green. If the branch already contains
+one, that is a `NEEDS REWORK` verdict, not something to work around.
+
+## 4. Review
+
+Run the `mathlib-reviewer` agent over `git diff origin/main...HEAD`. Apply its
+`blocker` and `should-fix` findings yourself when they are mechanical — a name
+that does not transcribe its statement, a docstring that restates the signature.
+Leave anything requiring mathematical judgement for the PR comment.
+
+## 5. Push and report
+
+```bash
+git push --force-with-lease
+gh pr comment <N> -R chris-dare-dev/derived-alg-geo-lean --body "<verdict>"
+```
+
+The verdict comment states, in this order: which gates passed locally and at
+what commit, what you fixed, what you left for a human and why, and the
+reviewer's verdict with finding counts by severity.
+
+If the PR is a draft and every gate passed and the reviewer said `MERGE`:
+
+```bash
+gh pr ready <N> -R chris-dare-dev/derived-alg-geo-lean
+```
+
+## 6. Halt
+
+Return to a detached-free clean state on `origin/main`. Report three lines: the
+PR touched, its new state, and the one thing a human must decide.
+
+**Do not merge. Do not start the next PR.** The next iteration re-reads the
+queue, which is the point: once a human merges the base, the rest of the stack
+shrinks and the ranking changes underneath you.
