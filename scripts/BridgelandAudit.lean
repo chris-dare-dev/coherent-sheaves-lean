@@ -432,6 +432,8 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Foundation.rotatedIm_charge_eq_sum
 #print axioms BridgelandStabLean.Foundation.rotatedIm_charge_neg_of_hn
 #print axioms BridgelandStabLean.Foundation.rotatedIm_charge_pos_of_hn
+#print axioms BridgelandStabLean.Foundation.Slicing.rotatedIm_charge_neg_of_interval
+#print axioms BridgelandStabLean.Foundation.Slicing.rotatedIm_charge_pos_of_interval
 #print axioms BridgelandStabLean.Foundation.Deformation.SkewedStabilityFunction
 #print axioms BridgelandStabLean.Foundation.Deformation.SkewedStabilityFunction.charge
 #print axioms BridgelandStabLean.Foundation.Deformation.SkewedStabilityFunction.phase

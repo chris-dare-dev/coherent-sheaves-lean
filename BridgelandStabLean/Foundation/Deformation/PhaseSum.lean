@@ -3,7 +3,7 @@ Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under the MIT license.
 -/
 import BridgelandStabLean.Foundation.Deformation.PhaseArithmetic
-import BridgelandStabLean.Foundation.Slicing.PhaseBounds
+import BridgelandStabLean.Foundation.Slicing.IntrinsicPhaseBounds
 import BridgelandStabLean.Foundation.TriangulatedGrothendieck
 
 /-!
@@ -78,5 +78,47 @@ theorem rotatedIm_charge_pos_of_hn (W : Λ →+ ℂ)
     · simp [classOf_isZero C κ hi, rotatedIm]
     · exact (hpos i hi).le
   · exact Finset.mem_univ _
+
+/-- A nonzero interval object has negative rotated charge when each nonzero
+semistable factor in the interval does. -/
+theorem Slicing.rotatedIm_charge_neg_of_interval (s : Slicing C)
+    (W : Λ →+ ℂ) {E : C} {a b ψ : ℝ}
+    (hI : s.intervalProp C a b E) (hE : ¬IsZero E)
+    (hneg : ∀ (F : C) (φ : ℝ), s.P φ F → ¬IsZero F →
+      a < φ → φ < b → rotatedIm (W (classOf C κ F)) ψ < 0) :
+    rotatedIm (W (classOf C κ E)) ψ < 0 := by
+  obtain ⟨G, hn, hfirst, hlast⟩ := s.exists_hn_nonzero_boundaries C hE
+  apply rotatedIm_charge_neg_of_hn C W G hn hfirst ψ
+  intro i hi
+  apply hneg _ _ (G.semistable i) hi
+  · calc
+      a < s.phiMinus C E hE := s.phiMinus_gt_of_intervalProp C hE hI
+      _ = G.phiMinus C hn := s.phiMinus_eq C E hE G hn hlast
+      _ ≤ G.φ i := (G.phase_mem_range C hn i).1
+  · calc
+      G.φ i ≤ G.phiPlus C hn := (G.phase_mem_range C hn i).2
+      _ = s.phiPlus C E hE := (s.phiPlus_eq C E hE G hn hfirst).symm
+      _ < b := s.phiPlus_lt_of_intervalProp C hE hI
+
+/-- A nonzero interval object has positive rotated charge when each nonzero
+semistable factor in the interval does. -/
+theorem Slicing.rotatedIm_charge_pos_of_interval (s : Slicing C)
+    (W : Λ →+ ℂ) {E : C} {a b ψ : ℝ}
+    (hI : s.intervalProp C a b E) (hE : ¬IsZero E)
+    (hpos : ∀ (F : C) (φ : ℝ), s.P φ F → ¬IsZero F →
+      a < φ → φ < b → 0 < rotatedIm (W (classOf C κ F)) ψ) :
+    0 < rotatedIm (W (classOf C κ E)) ψ := by
+  obtain ⟨G, hn, hfirst, hlast⟩ := s.exists_hn_nonzero_boundaries C hE
+  apply rotatedIm_charge_pos_of_hn C W G hn hfirst ψ
+  intro i hi
+  apply hpos _ _ (G.semistable i) hi
+  · calc
+      a < s.phiMinus C E hE := s.phiMinus_gt_of_intervalProp C hE hI
+      _ = G.phiMinus C hn := s.phiMinus_eq C E hE G hn hlast
+      _ ≤ G.φ i := (G.phase_mem_range C hn i).1
+  · calc
+      G.φ i ≤ G.phiPlus C hn := (G.phase_mem_range C hn i).2
+      _ = s.phiPlus C E hE := (s.phiPlus_eq C E hE G hn hfirst).symm
+      _ < b := s.phiPlus_lt_of_intervalProp C hE hI
 
 end BridgelandStabLean.Foundation
