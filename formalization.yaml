@@ -933,11 +933,14 @@ fidelity:
     The compatibility boundary now proves exact preservation of owner
     intrinsic highest and lowest phases, generalized slicing distance, and
     stability seminorm under the retained representations. The census reports
-    2277 authored declarations, 126 private declarations, and 233
-    structure-field projections. Audit issues 1923 commands, of which 1355
-    records are theorems, 62 are structures, and 501
+    The owner stability-space basis now combines the owned seminorm and slicing
+    distance, supplies positive-radius self-membership, and generates the owner
+    topology from radii below one eighth. The census reports 2282 authored
+    declarations, 126 private declarations, and 233 structure-field
+    projections. Audit issues 1928 commands, of which 1358 records are
+    theorems, 62 are structures, and 503
     are other non-theorems; no authored public declaration remains outside the
-    hand audit. All 26
+    hand audit. All 27
     owner foundation modules are
     import-level anchor-free. The direct vendor-import inventory remains
     frozen at 28.

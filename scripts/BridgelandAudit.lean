@@ -436,6 +436,11 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Foundation.abs_phiMinus_sub_lt_of_slicingDist
 #print axioms BridgelandStabLean.Foundation.intervalProp_of_semistable_slicingDist
 #print axioms BridgelandStabLean.Foundation.slicingDist_le_of_phase_bounds
+#print axioms BridgelandStabLean.Foundation.Deformation.basisNhd
+#print axioms BridgelandStabLean.Foundation.Deformation.mem_basisNhd_iff
+#print axioms BridgelandStabLean.Foundation.Deformation.self_mem_basisNhd
+#print axioms BridgelandStabLean.Foundation.Deformation.StabilityCondition.WithClassMap.topologicalSpace
+#print axioms BridgelandStabLean.Foundation.Deformation.basisNhd_isOpen_generator
 #print axioms BridgelandStabLean.Compatibility.BridgelandStability.Deformation.relativePhase_eq_wPhaseOf
 #print axioms BridgelandStabLean.Compatibility.BridgelandStability.StabilityCondition.toVendor_stabilitySeminorm
 
