@@ -879,6 +879,22 @@ theorem Slicing.IntervalCat.strictShortExact_inclusion
     simpa [Slicing.IntervalCat.inclusion] using hT
   exact Slicing.IntervalCat.strictShortExact_of_distinguished C s hT'
 
+/-- Append a semistable strict quotient to an owner HN filtration of the
+kernel object in a thin interval. -/
+noncomputable def HNFiltration.appendStrictFactor
+    {P : ℝ → ObjectProperty C} {s : Slicing C}
+    {S : ShortComplex (s.IntervalCat C a b)}
+    (G : HNFiltration C P S.X₁.obj) (hS : StrictShortExact S)
+    (ψ : ℝ) (hψ : P ψ S.X₃.obj)
+    (hψ_lt : ∀ j : Fin G.n, ψ < G.φ j) :
+    HNFiltration C P S.X₂.obj := by
+  let hδ := Slicing.IntervalCat.exists_distinguished_of_strictShortExact C s hS
+  let δ := Classical.choose hδ
+  have hT : Triangle.mk S.f.hom S.g.hom δ ∈ distTriang C :=
+    Classical.choose_spec hδ
+  exact G.appendFactor C (Triangle.mk S.f.hom S.g.hom δ) hT
+    (Iso.refl _) (Iso.refl _) ψ hψ hψ_lt
+
 /-- Open slicing intervals are closed under binary products. -/
 instance Slicing.intervalProp_isClosedUnderBinaryProducts (s : Slicing C) :
     (s.intervalProp C a b).IsClosedUnderBinaryProducts where
