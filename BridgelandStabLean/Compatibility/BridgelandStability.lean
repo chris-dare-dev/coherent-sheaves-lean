@@ -7,6 +7,7 @@ import BridgelandStability.GrothendieckGroup.Basic
 import BridgelandStability.Slicing.TStructureConstruction
 import BridgelandStability.StabilityCondition.Defs
 import BridgelandStability.StabilityFunction.HarderNarasimhan
+import BridgelandStability.Deformation.WPhase
 
 /-!
 # Compatibility with the vendored BridgelandStability API
@@ -27,6 +28,18 @@ namespace BridgelandStabLean.Compatibility.BridgelandStability
 
 variable (C : Type u) [Category.{v} C] [HasZeroObject C] [HasShift C ℤ]
   [Preadditive C] [∀ n : ℤ, (shiftFunctor C n).Additive] [Pretriangulated C]
+
+namespace Deformation
+
+/-- The owner relative phase agrees definitionally with the retained
+`wPhaseOf` representation. The independent owner proofs may therefore be
+used on retained consumers without appealing to retained phase geometry. -/
+theorem relativePhase_eq_wPhaseOf (w : ℂ) (α : ℝ) :
+    Foundation.Deformation.relativePhase w α =
+      CategoryTheory.Triangulated.wPhaseOf w α :=
+  rfl
+
+end Deformation
 
 namespace StabilityFunction
 
@@ -430,6 +443,37 @@ theorem ofVendor_toVendor (s : Foundation.Slicing C) : ofVendor C (toVendor C s)
 @[simp]
 theorem toVendor_ofVendor (s : CategoryTheory.Triangulated.Slicing C) : toVendor C (ofVendor C s) = s :=
   CategoryTheory.Triangulated.Slicing.ext C rfl
+
+/-- Conversion preserves the intrinsic highest phase of every nonzero object. -/
+@[simp]
+theorem toVendor_phiPlus (s : Foundation.Slicing C) (E : C) (hE : ¬IsZero E) :
+    (toVendor C s).phiPlus C E hE = s.phiPlus C E hE := by
+  obtain ⟨F, hn, hfirst, hlast⟩ := s.exists_hn_nonzero_boundaries C hE
+  calc
+    (toVendor C s).phiPlus C E hE = (HNFiltration.toVendor C F).phiPlus C hn :=
+      (toVendor C s).phiPlus_eq C E hE (HNFiltration.toVendor C F) hn hfirst
+    _ = F.phiPlus C hn := rfl
+    _ = s.phiPlus C E hE := (s.phiPlus_eq C E hE F hn hfirst).symm
+
+/-- Conversion preserves the intrinsic lowest phase of every nonzero object. -/
+@[simp]
+theorem toVendor_phiMinus (s : Foundation.Slicing C) (E : C) (hE : ¬IsZero E) :
+    (toVendor C s).phiMinus C E hE = s.phiMinus C E hE := by
+  obtain ⟨F, hn, hfirst, hlast⟩ := s.exists_hn_nonzero_boundaries C hE
+  calc
+    (toVendor C s).phiMinus C E hE = (HNFiltration.toVendor C F).phiMinus C hn :=
+      (toVendor C s).phiMinus_eq C E hE (HNFiltration.toVendor C F) hn hlast
+    _ = F.phiMinus C hn := rfl
+    _ = s.phiMinus C E hE := (s.phiMinus_eq C E hE F hn hlast).symm
+
+/-- The owner and retained generalized slicing distances agree exactly under
+conversion. -/
+@[simp]
+theorem toVendor_slicingDist (s t : Foundation.Slicing C) :
+    CategoryTheory.Triangulated.slicingDist C (toVendor C s) (toVendor C t) =
+      Foundation.slicingDist C s t := by
+  simp only [CategoryTheory.Triangulated.slicingDist, Foundation.slicingDist,
+    toVendor_phiPlus, toVendor_phiMinus]
 
 /-- Owner and retained thin-interval predicates agree under slicing
 conversion. -/
@@ -873,6 +917,34 @@ theorem toVendor_ofVendor {v : Foundation.K₀ C →+ Λ}
       (v.comp (GrothendieckGroup.ofVendor C))) :
     toVendor C (ofVendor C σ) = σ :=
   vendor_ext (C := C) (CategoryTheory.Triangulated.Slicing.ext C rfl) rfl
+
+/-- Conversion preserves the extended stability seminorm exactly. -/
+@[simp]
+theorem toVendor_stabilitySeminorm {v : Foundation.K₀ C →+ Λ}
+    (σ : Foundation.StabilityCondition.WithClassMap C v) (U : Λ →+ ℂ) :
+    CategoryTheory.Triangulated.stabSeminorm C (toVendor C σ) U =
+      Foundation.Deformation.stabilitySeminorm C σ U := by
+  unfold CategoryTheory.Triangulated.stabSeminorm
+    Foundation.Deformation.stabilitySeminorm
+  congr with E φ hP hE
+
+/-- Conversion preserves membership in every basic stability-space
+neighborhood. -/
+@[simp]
+theorem toVendor_mem_basisNhd_iff {v : Foundation.K₀ C →+ Λ}
+    (σ τ : Foundation.StabilityCondition.WithClassMap C v) (ε : ℝ) :
+    toVendor C τ ∈ CategoryTheory.Triangulated.basisNhd C (toVendor C σ) ε ↔
+      τ ∈ Foundation.Deformation.basisNhd C σ ε := by
+  change
+    CategoryTheory.Triangulated.stabSeminorm C (toVendor C σ) (τ.Z - σ.Z) <
+        ENNReal.ofReal (Real.sin (Real.pi * ε)) ∧
+      CategoryTheory.Triangulated.slicingDist C
+          (Slicing.toVendor C σ.slicing) (Slicing.toVendor C τ.slicing) <
+        ENNReal.ofReal ε ↔
+    Foundation.Deformation.stabilitySeminorm C σ (τ.Z - σ.Z) <
+        ENNReal.ofReal (Real.sin (Real.pi * ε)) ∧
+      Foundation.slicingDist C σ.slicing τ.slicing < ENNReal.ofReal ε
+  rw [toVendor_stabilitySeminorm, Slicing.toVendor_slicingDist]
 
 /-- Owner and retained stability conditions are equivalent after transporting
 the Grothendieck class map. -/

@@ -888,6 +888,64 @@ fidelity:
     remains frozen at 28 until a downstream retained-type consumer can move
     without a namespace alias or a hidden vendor dependency.
 
+    COUNT UPDATE (destination issue #236; owner deformation foundation),
+    2026-08-13. The opening units of the sixth Mathlib-only foundation slice
+    introduces an owner relative-phase lift for complex charges, proves its
+    branch interval, polar reconstruction, positive-ray recognition,
+    negation and two-period shifts, and independence across compatible branch
+    centres. It also proves the near-identity argument estimate and the
+    resulting quantitative phase-perturbation bound. Owner local finiteness
+    is also rescaled into the thin and wide finite-length sector witnesses
+    used by the deformation construction. Rotated imaginary parts are
+    expressed through relative phase, yielding positive/negative sign tests
+    and the strict and non-strict phase see-saw lemmas for sums. An owner
+    skewed-stability structure now packages a perturbed central charge on a
+    thin interval, its branch centre and nonvanishing hypothesis; object
+    charges, phases, triangle additivity, phase see-saw, and perturbed
+    semistability all sit on that owned interface. A uniform pointwise bound
+    on old semistable charges now supplies nonvanishing below relative norm
+    one, constructs the skewed-stability interface, and converts a strict
+    `sin (π ε)` charge bound into the selected-phase perturbation estimate.
+    The corresponding owner `ℝ≥0∞` stability seminorm is now defined as the
+    supremum of semistable charge ratios; its universal bound recovers the
+    pointwise hypothesis, constructs skewed stability below one, and gives
+    phase control directly from a strict seminorm bound. The seminorm is zero
+    at zero, invariant under negation, subadditive, and a finite value supplies
+    its real pointwise bound.
+    The compatibility
+    boundary records definitional agreement with the retained wPhaseOf
+    representation while every mathematical proof lives in the owner
+    namespace. Boundary-factor reduction now removes zero first or last
+    factors from an owner HN filtration and proves that every nonzero object
+    admits filtrations with nonzero extremal factors. These constructors are
+    the prerequisite for filtration-independent highest and lowest phases.
+    Hom-vanishing now proves that nonzero first and last factors have phases
+    independent of the selected HN filtration, and therefore defines intrinsic
+    owner `phiPlus` and `phiMinus` with their comparison theorems. The census
+    The intrinsic phase discrepancies now define the owner generalized slicing
+    distance and its pseudo-extended-metric instance; diagonal, symmetry,
+    triangle, coordinate-control, and uniform-bound theorems are all proved on
+    the owner API. A single filtration can now be chosen with both boundary
+    factors nonzero and hence realizing both intrinsic extrema; intrinsic
+    phases of a nonzero semistable object reduce to its declared phase. The
+    distance control now also places every nonzero semistable object for the
+    nearby slicing inside the expected owner interval category. The census
+    The compatibility boundary now proves exact preservation of owner
+    intrinsic highest and lowest phases, generalized slicing distance, and
+    stability seminorm under the retained representations. The census reports
+    The owner stability-space basis now combines the owned seminorm and slicing
+    distance, supplies positive-radius self-membership, and generates the owner
+    topology from radii below one eighth. The census reports 2282 authored
+    declarations, 126 private declarations, and 233 structure-field
+    projections. Basic-neighborhood membership now agrees exactly across the
+    retained stability-condition conversion as well. Audit issues 1929
+    commands, of which 1359 records are theorems, 62 are structures, and 503
+    are other non-theorems; no authored public declaration remains outside the
+    hand audit. All 27
+    owner foundation modules are
+    import-level anchor-free. The direct vendor-import inventory remains
+    frozen at 28.
+
     COUNT UPDATE (Wall lane, the nested wall theorem), 2026-08-07. The 13
     additional records are the orthogonality identity minor_orth, the three
     cross terms crossAB/crossAC/crossBC with their three antisymmetry lemmas,

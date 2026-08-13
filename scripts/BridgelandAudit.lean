@@ -59,8 +59,8 @@ to **488**. Both were right against the filter of the day, and both are
 superseded here -- the 821 in particular counted the 30 generated names
 described above. **Re-run the command; do not adjust the numbers.**
 
-**THE GAP IS NOW ZERO, re-measured while adding the issue #233 owner stability
-function and HN uniqueness foundation on 2026-08-13.** Every
+**THE GAP IS NOW ZERO, re-measured while adding the issue #236 owner relative
+phase foundation on 2026-08-13.** Every
 public declaration in this library that is not a structure field projection is
 named below. Be precise about what that does and does not mean -- three of the
 four qualifications in this comment are unaffected by it:
@@ -73,7 +73,7 @@ four qualifications in this comment are unaffected by it:
   green without an entry here. Zero is a measurement taken at a commit, not a
   property the build maintains.
 
-* It issues **1830** audit commands. The environment holds **2175** authored
+* It issues **1844** audit commands. The environment holds **2189** authored
   declarations under `BridgelandStabLean.*`, so **345 are outside this gate**,
   all of them private or projections. ("Authored" excludes constructors,
   recursors, `casesOn`, matchers, equation lemmas, internal names, and the six
@@ -319,6 +319,31 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Foundation.HNFiltration.shift
 #print axioms BridgelandStabLean.Foundation.HNFiltration.shift_phiPlus
 #print axioms BridgelandStabLean.Foundation.HNFiltration.shift_phiMinus
+#print axioms BridgelandStabLean.Foundation.HNFiltration.n_pos
+#print axioms BridgelandStabLean.Foundation.HNFiltration.exists_nonzero_factor
+#print axioms BridgelandStabLean.Foundation.HNFiltration.dropFirst
+#print axioms BridgelandStabLean.Foundation.Slicing.exists_hn_nonzero_first
+#print axioms BridgelandStabLean.Foundation.HNFiltration.dropLast
+#print axioms BridgelandStabLean.Foundation.Slicing.exists_hn_nonzero_last
+#print axioms BridgelandStabLean.Foundation.Slicing.exists_hn_nonzero_boundaries
+#print axioms BridgelandStabLean.Foundation.HNFiltration.firstFactor_hom_chain_eq_zero
+#print axioms BridgelandStabLean.Foundation.HNFiltration.firstFactor_isZero_of_hom_eq_zero
+#print axioms BridgelandStabLean.Foundation.HNFiltration.phiPlus_le_of_firstFactor_nonzero
+#print axioms BridgelandStabLean.Foundation.HNFiltration.phiPlus_eq_of_firstFactors_nonzero
+#print axioms BridgelandStabLean.Foundation.HNFiltration.lastFactor_isZero_of_hom_eq_zero
+#print axioms BridgelandStabLean.Foundation.HNFiltration.phiMinus_le_of_lastFactor_nonzero
+#print axioms BridgelandStabLean.Foundation.HNFiltration.phiMinus_eq_of_lastFactors_nonzero
+#print axioms BridgelandStabLean.Foundation.Slicing.phiPlus
+#print axioms BridgelandStabLean.Foundation.Slicing.phiMinus
+#print axioms BridgelandStabLean.Foundation.Slicing.phiPlus_eq
+#print axioms BridgelandStabLean.Foundation.Slicing.phiMinus_eq
+#print axioms BridgelandStabLean.Foundation.Slicing.phiMinus_le_phiPlus
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.Slicing.toVendor_phiPlus
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.Slicing.toVendor_phiMinus
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.Slicing.toVendor_slicingDist
+#print axioms BridgelandStabLean.Foundation.Slicing.phiPlus_eq_of_semistable
+#print axioms BridgelandStabLean.Foundation.Slicing.phiMinus_eq_of_semistable
+#print axioms BridgelandStabLean.Foundation.Slicing.exists_hn_intrinsic_width
 #print axioms BridgelandStabLean.Foundation.Slicing.leProp_shift
 #print axioms BridgelandStabLean.Foundation.Slicing.gtProp_shift
 #print axioms BridgelandStabLean.Foundation.Slicing.ltProp_shift
@@ -342,6 +367,84 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Foundation.Slicing.toTStructure
 #print axioms BridgelandStabLean.Foundation.Slicing.toTStructure_heart_iff
 #print axioms BridgelandStabLean.Foundation.Slicing.toTStructure_bounded
+
+/-! ## Owner relative phase geometry (#236) -/
+
+#print axioms BridgelandStabLean.Foundation.Deformation.relativePhase
+#print axioms BridgelandStabLean.Foundation.Deformation.relativePhase_mem_Ioc
+#print axioms BridgelandStabLean.Foundation.Deformation.relativePhase_polar
+#print axioms BridgelandStabLean.Foundation.Deformation.relativePhase_of_ray
+#print axioms BridgelandStabLean.Foundation.Deformation.relativePhase_zero
+#print axioms BridgelandStabLean.Foundation.Deformation.relativePhase_neg
+#print axioms BridgelandStabLean.Foundation.Deformation.relativePhase_add_two
+#print axioms BridgelandStabLean.Foundation.Deformation.relativePhase_eq_of_mem
+#print axioms BridgelandStabLean.Foundation.Deformation.im_sq_le_norm_sub_one_sq_mul
+#print axioms BridgelandStabLean.Foundation.Deformation.abs_sin_arg_le_norm_sub_one
+#print axioms BridgelandStabLean.Foundation.Deformation.sin_abs_eq_abs_sin
+#print axioms BridgelandStabLean.Foundation.Deformation.abs_arg_one_add_lt
+#print axioms BridgelandStabLean.Foundation.Deformation.relativePhase_perturbation
+#print axioms BridgelandStabLean.Foundation.Deformation.SectorFiniteLength
+#print axioms BridgelandStabLean.Foundation.Deformation.WideSectorFiniteLength
+#print axioms BridgelandStabLean.Foundation.Deformation.exists_wideSectorRadius
+#print axioms BridgelandStabLean.Foundation.Deformation.exists_sectorRadius
+#print axioms BridgelandStabLean.Foundation.Deformation.rotatedIm
+#print axioms BridgelandStabLean.Foundation.Deformation.rotatedIm_polar
+#print axioms BridgelandStabLean.Foundation.Deformation.rotatedIm_eq_norm_mul_sin
+#print axioms BridgelandStabLean.Foundation.Deformation.rotatedIm_eq_zero_of_relativePhase_eq
+#print axioms BridgelandStabLean.Foundation.Deformation.relativePhase_gt_of_rotatedIm_pos
+#print axioms BridgelandStabLean.Foundation.Deformation.relativePhase_lt_of_rotatedIm_neg
+#print axioms BridgelandStabLean.Foundation.Deformation.relativePhase_seesaw
+#print axioms BridgelandStabLean.Foundation.Deformation.relativePhase_seesaw_strict
+#print axioms BridgelandStabLean.Foundation.Deformation.relativePhase_seesaw_dual
+#print axioms BridgelandStabLean.Foundation.Deformation.SkewedStabilityFunction
+#print axioms BridgelandStabLean.Foundation.Deformation.SkewedStabilityFunction.charge
+#print axioms BridgelandStabLean.Foundation.Deformation.SkewedStabilityFunction.phase
+#print axioms BridgelandStabLean.Foundation.Deformation.SkewedStabilityFunction.ChargeNe
+#print axioms BridgelandStabLean.Foundation.Deformation.SkewedStabilityFunction.phase_congr
+#print axioms BridgelandStabLean.Foundation.Deformation.SkewedStabilityFunction.phase_iso
+#print axioms BridgelandStabLean.Foundation.Deformation.SkewedStabilityFunction.charge_triangle
+#print axioms BridgelandStabLean.Foundation.Deformation.SkewedStabilityFunction.phase_seesaw
+#print axioms BridgelandStabLean.Foundation.Deformation.SkewedStabilityFunction.phase_seesaw_strict
+#print axioms BridgelandStabLean.Foundation.Deformation.SkewedStabilityFunction.IsSemistable
+#print axioms BridgelandStabLean.Foundation.Deformation.SkewedStabilityFunction.IsSemistable.phase_mem_Ioc
+#print axioms BridgelandStabLean.Foundation.Deformation.SkewedStabilityFunction.IsSemistable.charge_polar
+#print axioms BridgelandStabLean.Foundation.Deformation.SemistableChargeBound
+#print axioms BridgelandStabLean.Foundation.Deformation.relativePhase_charge_eq
+#print axioms BridgelandStabLean.Foundation.Deformation.perturbedCharge_ne_zero
+#print axioms BridgelandStabLean.Foundation.Deformation.skewedStabilityFunctionOfBound
+#print axioms BridgelandStabLean.Foundation.Deformation.relativePhase_perturbation_of_charge
+#print axioms BridgelandStabLean.Foundation.Deformation.stabilitySeminorm
+#print axioms BridgelandStabLean.Foundation.Deformation.charge_norm_pos
+#print axioms BridgelandStabLean.Foundation.Deformation.ratio_le_stabilitySeminorm
+#print axioms BridgelandStabLean.Foundation.Deformation.stabilitySeminorm_nonneg
+#print axioms BridgelandStabLean.Foundation.Deformation.stabilitySeminorm_zero
+#print axioms BridgelandStabLean.Foundation.Deformation.stabilitySeminorm_neg
+#print axioms BridgelandStabLean.Foundation.Deformation.stabilitySeminorm_add_le
+#print axioms BridgelandStabLean.Foundation.Deformation.semistableChargeBound_of_stabilitySeminorm_le
+#print axioms BridgelandStabLean.Foundation.Deformation.semistableChargeBound_toReal
+#print axioms BridgelandStabLean.Foundation.Deformation.skewedStabilityFunctionOfSeminormLtOne
+#print axioms BridgelandStabLean.Foundation.Deformation.relativePhase_perturbation_of_stabilitySeminorm
+#print axioms BridgelandStabLean.Foundation.slicingDist
+#print axioms BridgelandStabLean.Foundation.slicingDistTerm_le
+#print axioms BridgelandStabLean.Foundation.phiPlusDist_le
+#print axioms BridgelandStabLean.Foundation.phiMinusDist_le
+#print axioms BridgelandStabLean.Foundation.slicingDist_self
+#print axioms BridgelandStabLean.Foundation.slicingDist_symm
+#print axioms BridgelandStabLean.Foundation.slicingDist_triangle
+#print axioms BridgelandStabLean.Foundation.instPseudoEMetricSpaceSlicing
+#print axioms BridgelandStabLean.Foundation.abs_phiPlus_sub_lt_of_slicingDist
+#print axioms BridgelandStabLean.Foundation.abs_phiMinus_sub_lt_of_slicingDist
+#print axioms BridgelandStabLean.Foundation.intervalProp_of_semistable_slicingDist
+#print axioms BridgelandStabLean.Foundation.slicingDist_le_of_phase_bounds
+#print axioms BridgelandStabLean.Foundation.Deformation.basisNhd
+#print axioms BridgelandStabLean.Foundation.Deformation.mem_basisNhd_iff
+#print axioms BridgelandStabLean.Foundation.Deformation.self_mem_basisNhd
+#print axioms BridgelandStabLean.Foundation.Deformation.StabilityCondition.WithClassMap.topologicalSpace
+#print axioms BridgelandStabLean.Foundation.Deformation.basisNhd_isOpen_generator
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.Deformation.relativePhase_eq_wPhaseOf
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.StabilityCondition.toVendor_stabilitySeminorm
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.StabilityCondition.toVendor_mem_basisNhd_iff
+
 #print axioms BridgelandStabLean.Foundation.semiClosedUpperHalfPlane
 #print axioms BridgelandStabLean.Foundation.semiClosedUpperHalfPlane_ne_zero
 #print axioms BridgelandStabLean.Foundation.arg_pos_of_mem_semiClosedUpperHalfPlane
