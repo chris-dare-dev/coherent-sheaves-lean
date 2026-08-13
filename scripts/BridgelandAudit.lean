@@ -321,6 +321,7 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Foundation.Slicing.ltProp_of_triangle
 #print axioms BridgelandStabLean.Foundation.Slicing.gtProp_of_triangle
 #print axioms BridgelandStabLean.Foundation.Slicing.geProp_of_triangle
+#print axioms BridgelandStabLean.Foundation.Slicing.exists_cutoff_truncation
 #print axioms BridgelandStabLean.Foundation.Slicing.zero_of_gtProp_leProp
 #print axioms BridgelandStabLean.Foundation.Slicing.zero_of_geProp_ltProp
 #print axioms BridgelandStabLean.Foundation.HNFiltration.zero

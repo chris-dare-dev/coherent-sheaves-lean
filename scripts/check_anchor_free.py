@@ -61,6 +61,7 @@ ANCHOR_FREE = [
     "BridgelandStabLean.Foundation.Slicing.PhaseCutClosure",
     "BridgelandStabLean.Foundation.Slicing.PhaseShift",
     "BridgelandStabLean.Foundation.Slicing.PhaseTruncation",
+    "BridgelandStabLean.Foundation.Slicing.CutoffTruncation",
     "BridgelandStabLean.Foundation.StabilityFunction.Basic",
     "BridgelandStabLean.Foundation.StabilityFunction.HarderNarasimhan",
     "BridgelandStabLean.Foundation.StabilityFunction.Subobject",
