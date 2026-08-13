@@ -5,6 +5,8 @@ Released under the MIT license.
 import Mathlib.CategoryTheory.Abelian.Basic
 import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
+import Mathlib.CategoryTheory.Subobject.ArtinianObject
+import Mathlib.CategoryTheory.Subobject.NoetherianObject
 
 /-!
 # Strict morphisms for owner quasi-abelian foundations
@@ -357,7 +359,7 @@ end
 
 section
 
-variable [Preadditive C] [HasKernels C] [HasCokernels C]
+variable [HasKernels C] [HasCokernels C]
 
 /-- A strict short exact sequence is a short exact complex whose two maps are
 strict. -/
@@ -365,6 +367,95 @@ structure StrictShortExact (S : ShortComplex C) : Prop where
   shortExact : S.ShortExact
   strict_f : IsStrict S.f
   strict_g : IsStrict S.g
+
+end
+
+section
+
+variable {D : Type u} [Category.{v} D] [Abelian D]
+
+/-- Every morphism in an abelian category is strict. -/
+theorem isStrict_of_abelian {X Y : D} (f : X ⟶ Y) : IsStrict f :=
+  show IsIso _ from inferInstance
+
+/-- Every monomorphism in an abelian category is strict. -/
+theorem isStrictMono_of_mono {X Y : D} (f : X ⟶ Y) [Mono f] :
+    IsStrictMono f :=
+  ⟨inferInstance, isStrict_of_abelian f⟩
+
+/-- Every epimorphism in an abelian category is strict. -/
+theorem isStrictEpi_of_epi {X Y : D} (f : X ⟶ Y) [Epi f] :
+    IsStrictEpi f :=
+  ⟨inferInstance, isStrict_of_abelian f⟩
+
+/-- Every short exact sequence in an abelian category is strictly short
+exact. -/
+theorem strictShortExact_of_shortExact {S : ShortComplex D}
+    (h : S.ShortExact) : StrictShortExact S :=
+  ⟨h, isStrict_of_abelian S.f, isStrict_of_abelian S.g⟩
+
+end
+
+
+section
+
+variable [HasKernels C] [HasCokernels C]
+
+variable {X : C}
+
+/-- A strict subobject is one whose canonical inclusion is an owner strict
+monomorphism. -/
+def IsStrictSubobject (P : Subobject X) : Prop :=
+  IsStrictMono P.arrow
+
+@[simp]
+theorem isStrictSubobject_iff (P : Subobject X) :
+    IsStrictSubobject P ↔ IsStrictMono P.arrow :=
+  Iff.rfl
+
+/-- The ordered type of strict subobjects of an object. -/
+abbrev StrictSubobject (X : C) :=
+  {P : Subobject X // IsStrictSubobject P}
+
+/-- Objects satisfying the descending chain condition on strict subobjects. -/
+def isStrictArtinianObject : ObjectProperty C :=
+  fun X ↦ WellFoundedLT (StrictSubobject X)
+
+/-- Proposition-level strict-Artinian predicate. -/
+abbrev IsStrictArtinianObject (X : C) : Prop :=
+  isStrictArtinianObject.Is X
+
+instance {X : C} [IsStrictArtinianObject X] :
+    WellFoundedLT (StrictSubobject X) :=
+  isStrictArtinianObject.prop_of_is X
+
+/-- Objects satisfying the ascending chain condition on strict subobjects. -/
+def isStrictNoetherianObject : ObjectProperty C :=
+  fun X ↦ WellFoundedGT (StrictSubobject X)
+
+/-- Proposition-level strict-Noetherian predicate. -/
+abbrev IsStrictNoetherianObject (X : C) : Prop :=
+  isStrictNoetherianObject.Is X
+
+instance {X : C} [IsStrictNoetherianObject X] :
+    WellFoundedGT (StrictSubobject X) :=
+  isStrictNoetherianObject.prop_of_is X
+
+/-- An Artinian object is strict-Artinian. -/
+theorem isStrictArtinianObject_of_isArtinianObject {X : C}
+    [IsArtinianObject X] : IsStrictArtinianObject X := by
+  let f : StrictSubobject X → Subobject X := Subtype.val
+  exact ObjectProperty.is_of_prop _
+    ⟨InvImage.wf f
+      (wellFounded_lt : WellFounded ((· < ·) : Subobject X → Subobject X → Prop))⟩
+
+/-- A Noetherian object is strict-Noetherian. -/
+theorem isStrictNoetherianObject_of_isNoetherianObject {X : C}
+    [IsNoetherianObject X] : IsStrictNoetherianObject X := by
+  let f : StrictSubobject X → Subobject X := Subtype.val
+  exact ObjectProperty.is_of_prop _
+    ⟨InvImage.wf f
+      (wellFounded_gt : WellFounded ((· > ·) : Subobject X → Subobject X → Prop))⟩
 
 end
 
