@@ -39,6 +39,7 @@ ANCHOR_FREE = [
     "BridgelandStabLean.Foundation.Slicing.PhaseTruncation",
     "BridgelandStabLean.Foundation.StabilityFunction.Basic",
     "BridgelandStabLean.Foundation.StabilityFunction.HarderNarasimhan",
+    "BridgelandStabLean.Foundation.StabilityFunction.Subobject",
     "BridgelandStabLean.TStructure",
     "BridgelandStabLean.TStructure.Exactness",
     "BridgelandStabLean.TStructure.Shift",

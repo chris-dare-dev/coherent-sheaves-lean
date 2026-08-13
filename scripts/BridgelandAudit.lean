@@ -73,7 +73,7 @@ four qualifications in this comment are unaffected by it:
   green without an entry here. Zero is a measurement taken at a commit, not a
   property the build maintains.
 
-* It issues **1740** audit commands. The environment holds **2085** authored
+* It issues **1745** audit commands. The environment holds **2090** authored
   declarations under `BridgelandStabLean.*`, so **345 are outside this gate**,
   all of them private or projections. ("Authored" excludes constructors,
   recursors, `casesOn`, matchers, equation lemmas, internal names, and the six
@@ -381,6 +381,11 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Compatibility.BridgelandStability.AbelianHNFiltration.ofVendor_n
 #print axioms BridgelandStabLean.Compatibility.BridgelandStability.AbelianHNFiltration.toVendor_phase
 #print axioms BridgelandStabLean.Compatibility.BridgelandStability.AbelianHNFiltration.ofVendor_phase
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.subobject_isZero_iff_eq_bot
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.subobject_ne_bot_of_not_isZero
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.subobject_not_isZero_of_ne_bot
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.subobject_top_ne_bot_of_not_isZero
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.cokernel_not_isZero_of_ne_top
 
 /-! ## Cohomology exactness (#146) -/
 
