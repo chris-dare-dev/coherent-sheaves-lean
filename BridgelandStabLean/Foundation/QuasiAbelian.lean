@@ -377,6 +377,7 @@ variable {D : Type u} [Category.{v} D] [Preadditive D]
 
 /-- The canonical kernel sequence of a strict epimorphism is strict short
 exact. -/
+@[nolint unusedArguments]
 theorem IsStrictEpi.strictShortExact_kernel {X Y : D} (q : X ⟶ Y)
     [HasZeroObject D] (hq : IsStrictEpi q) :
     StrictShortExact
@@ -572,6 +573,7 @@ variable {A : Type u} [Category.{v} A]
 
 /-- The map on subobjects induced by a full faithful functor preserving
 monomorphisms. -/
+@[nolint unusedArguments]
 noncomputable def subobjectImageOfFullFaithful (F : A ⥤ D)
     [F.Full] [F.Faithful] [F.PreservesMonomorphisms] {E : A} :
     Subobject E → Subobject (F.obj E) :=
@@ -673,6 +675,7 @@ variable {A : Type u} [Category.{v} A] [HasZeroMorphisms A]
 
 /-- A full faithful functor that maps strict monomorphisms induces a map from
 owner strict subobjects to ambient subobjects. -/
+@[nolint unusedArguments]
 noncomputable def strictSubobjectImageOfFullFaithful (F : A ⥤ D)
     [F.Full] [F.Faithful]
     (hF : ∀ {X Y : A} (f : X ⟶ Y),
