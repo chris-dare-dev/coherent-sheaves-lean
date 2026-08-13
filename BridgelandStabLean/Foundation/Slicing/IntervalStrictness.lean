@@ -831,6 +831,28 @@ theorem Slicing.IntervalCat.exists_distinguished_of_strictShortExact
   exact Slicing.IntervalCat.exists_distinguished_of_shortExact_toLeftHeart
     C s hL
 
+/-- Owner strict short exact sequences in a thin interval are exactly the
+short complexes whose ambient maps extend to a distinguished triangle. -/
+theorem Slicing.IntervalCat.strictShortExact_iff_exists_distinguished
+    (s : Slicing C) {S : ShortComplex (s.IntervalCat C a b)} :
+    StrictShortExact S ↔
+      ∃ (δ : S.X₃.obj ⟶ S.X₁.obj⟦(1 : ℤ)⟧),
+        Triangle.mk S.f.hom S.g.hom δ ∈ distTriang C := by
+  constructor
+  · exact Slicing.IntervalCat.exists_distinguished_of_strictShortExact C s
+  · rintro ⟨δ, hT⟩
+    exact Slicing.IntervalCat.strictShortExact_of_distinguished C s hT
+
+/-- A strict short exact sequence in a thin interval supplies the expected
+ambient owner Grothendieck-group relation. -/
+theorem Slicing.IntervalCat.K₀_of_strictShortExact
+    (s : Slicing C) {S : ShortComplex (s.IntervalCat C a b)}
+    (hS : StrictShortExact S) :
+    K₀.of C S.X₂.obj = K₀.of C S.X₁.obj + K₀.of C S.X₃.obj := by
+  obtain ⟨δ, hT⟩ :=
+    Slicing.IntervalCat.exists_distinguished_of_strictShortExact C s hS
+  simpa using K₀.of_triangle C (Triangle.mk S.f.hom S.g.hom δ) hT
+
 /-- Open slicing intervals are closed under binary products. -/
 instance Slicing.intervalProp_isClosedUnderBinaryProducts (s : Slicing C) :
     (s.intervalProp C a b).IsClosedUnderBinaryProducts where
