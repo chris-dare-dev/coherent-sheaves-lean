@@ -128,6 +128,32 @@ theorem precomposeIso (hq : IsStrictMDQ C σ F q)
         simpa [q''] using congrArg (fun f : X ⟶ B' => e.hom ≫ f) ht
       _ = (e.hom ≫ q) ≫ t := by rw [Category.assoc]
 
+/-- If a strict MDQ factors through a strict epimorphism, then the induced
+quotient of the intermediate object is again a strict MDQ. -/
+theorem of_strictEpi_factor (hq : IsStrictMDQ C σ F q)
+    {Q : σ.slicing.IntervalCat C a b} {p : X ⟶ Q} (hp : IsStrictEpi p)
+    {π : Q ⟶ B} (hfac : p ≫ π = q) : IsStrictMDQ C σ F π where
+  strictEpi := by
+    apply Slicing.IntervalCat.strictEpi_of_comp_strictEpi
+      (C := C) (s := σ.slicing) (a := a) (b := b) p π
+    simpa [hfac] using hq.strictEpi
+  nonzero := hq.nonzero
+  semistable := hq.semistable
+  minimal := by
+    intro B' q' hq' hB' hss
+    have hpq' : IsStrictEpi (p ≫ q') := Slicing.IntervalCat.comp_strictEpi
+      (C := C) (s := σ.slicing) (a := a) (b := b) p q' hp hq'
+    refine ⟨(hq.minimal (p ≫ q') hpq' hB' hss).1, ?_⟩
+    intro hphase
+    obtain ⟨t, ht⟩ := (hq.minimal (p ≫ q') hpq' hB' hss).2 hphase
+    refine ⟨t, ?_⟩
+    haveI : Epi p := hp.epi
+    apply (cancel_epi p).1
+    calc
+      p ≫ q' = q ≫ t := ht
+      _ = (p ≫ π) ≫ t := by rw [hfac]
+      _ = p ≫ (π ≫ t) := by rw [Category.assoc]
+
 /-- A strict MDQ of a non-semistable source has a genuinely nonzero kernel
 subobject. -/
 theorem kernelSubobject_ne_bot_of_not_semistable
