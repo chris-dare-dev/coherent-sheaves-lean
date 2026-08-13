@@ -4,6 +4,7 @@ Released under the MIT license.
 -/
 import BridgelandStabLean.StabilityCondition.Phase.UniformContinuity
 import BridgelandStabLean.StabilityCondition.Phase.Order
+import BridgelandStabLean.StabilityCondition.Phase.Transfer
 
 /-!
 # Phase transformations

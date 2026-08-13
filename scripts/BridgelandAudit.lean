@@ -1467,6 +1467,40 @@ this against the file by eye. -/
 #print axioms BridgelandStabLean.GroupAction.bayerProperty_mk_iff_inverse_le_phiMinus
 #print axioms BridgelandStabLean.GroupAction.bayerProperty_mk_iff_sub_le_functor_phiMinus
 
+/-! ## Phase lane — sound slicing-transfer boundary -/
+
+#print axioms CategoryTheory.Triangulated.PostnikovTower.mapF
+#print axioms CategoryTheory.Triangulated.HNFiltration.mapF
+#print axioms CategoryTheory.Triangulated.Slicing.preimagePhase
+#print axioms CategoryTheory.Triangulated.Slicing.pullbackPhaseCollection
+#print axioms CategoryTheory.Triangulated.Slicing.pushforwardPhaseCollection
+#print axioms CategoryTheory.Triangulated.Slicing.PreimageData
+#print axioms CategoryTheory.Triangulated.Slicing.preimage
+#print axioms CategoryTheory.Triangulated.Slicing.preimage_P
+#print axioms CategoryTheory.Triangulated.Slicing.PreimageData.ofFaithful
+#print axioms CategoryTheory.Triangulated.Slicing.PreimageData.phaseShift
+#print axioms CategoryTheory.Triangulated.Slicing.pullback
+#print axioms CategoryTheory.Triangulated.Slicing.pushforward
+#print axioms CategoryTheory.Triangulated.ReflectsZeroObjects
+#print axioms CategoryTheory.Triangulated.Functor.reflectsZeroObjects_of_faithful
+#print axioms CategoryTheory.Triangulated.Functor.reflectsZeroObjects_of_conservative
+#print axioms CategoryTheory.Triangulated.HNFiltration.mapPreimage
+#print axioms CategoryTheory.Triangulated.HNFiltration.mapPreimage_n
+#print axioms CategoryTheory.Triangulated.HNFiltration.mapPreimage_phi
+#print axioms CategoryTheory.Triangulated.Slicing.preimage_phiPlus
+#print axioms CategoryTheory.Triangulated.Slicing.preimage_phiMinus
+#print axioms CategoryTheory.Triangulated.Slicing.preimage_ltProp_iff
+#print axioms CategoryTheory.Triangulated.Slicing.preimage_leProp_iff
+#print axioms CategoryTheory.Triangulated.Slicing.preimage_phaseShift
+#print axioms CategoryTheory.Triangulated.Slicing.preimage_phaseShift_self
+#print axioms CategoryTheory.Triangulated.Slicing.preimageOrderData
+#print axioms CategoryTheory.Triangulated.Slicing.Precedes.preimage
+#print axioms CategoryTheory.Triangulated.Slicing.PrecedesWeak.preimage
+#print axioms CategoryTheory.Triangulated.Slicing.preimage_mapEquiv
+#print axioms BridgelandStabLean.GroupAction.AutPair.preimage_representatives
+#print axioms CategoryTheory.Triangulated.Slicing.LeftAdjointInducingPremise
+#print axioms CategoryTheory.Triangulated.HasLeftAdjointInducingTheorem
+
 /-! ## Normalized quotient, combined action, and topological action layer -/
 
 #print axioms BridgelandStabLean.GroupAction.TriEquiv.inverseIsoOfFunctorIso

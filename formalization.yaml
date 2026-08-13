@@ -829,6 +829,19 @@ fidelity:
     Definition 3.12/Lemma 3.13 on 2026-08-11, but that engineering check is
     not the independent source-faithfulness review required for registry
     promotion.
+    COUNT UPDATE (destination issue #215, transferred from source issue #145;
+    sound slicing-transfer boundary), 2026-08-12. The transfer lane separates
+    raw phase preimages from the explicit Hom-vanishing and HN-existence data
+    needed to construct a genuine slicing, transports extreme phases and order
+    relations under zero reflection, records equivariance, and names the
+    deliberately uninhabited Appendix-A inducing-theorem boundary. The
+    v4.32.1 migration builds 130 modules; Audit names 1448 declarations and the
+    census reports 1741 authored declarations, 114 private declarations, and
+    172 structure-field projections. Of nine public ungated names, eight are
+    the pre-existing census gap described above and one is a generated
+    proposition companion in `Phase.Transfer.Phase`; every named declaration
+    migrated from source PR #155 is in the hand audit.
+
     COUNT UPDATE (Wall lane, the nested wall theorem), 2026-08-07. The 13
     additional records are the orthogonality identity minor_orth, the three
     cross terms crossAB/crossAC/crossBC with their three antisymmetry lemmas,
