@@ -364,6 +364,7 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Foundation.Slicing.phiMinus_eq_of_semistable
 #print axioms BridgelandStabLean.Foundation.Slicing.exists_hn_intrinsic_width
 #print axioms BridgelandStabLean.Foundation.Slicing.intervalProp_mono
+#print axioms BridgelandStabLean.Foundation.Slicing.intervalProp_intersection
 #print axioms BridgelandStabLean.Foundation.Slicing.intervalProp_widen
 #print axioms BridgelandStabLean.Foundation.Slicing.phiPlus_lt_of_intervalProp
 #print axioms BridgelandStabLean.Foundation.Slicing.phiMinus_gt_of_intervalProp

@@ -94,6 +94,22 @@ theorem Slicing.intervalProp_of_intrinsic_phases (s : Slicing C) {E : C}
       _ = s.phiPlus C E hE := hFplus
       _ < b := hplus
 
+/-- Membership in two owner intervals implies membership in their
+intersection. -/
+theorem Slicing.intervalProp_intersection (s : Slicing C) {E : C}
+    {a b c d : ℝ} (hab : s.intervalProp C a b E)
+    (hcd : s.intervalProp C c d E) :
+    s.intervalProp C (max a c) (min b d) E := by
+  by_cases hE : IsZero E
+  · exact Or.inl hE
+  · apply s.intervalProp_of_intrinsic_phases C hE
+    · exact max_lt
+        (s.phiMinus_gt_of_intervalProp C hE hab)
+        (s.phiMinus_gt_of_intervalProp C hE hcd)
+    · exact lt_min
+        (s.phiPlus_lt_of_intervalProp C hE hab)
+        (s.phiPlus_lt_of_intervalProp C hE hcd)
+
 /-- For a nonzero object, owner interval membership is equivalent to bounds
 on both intrinsic phase extrema. -/
 theorem Slicing.intervalProp_iff_intrinsic_phases (s : Slicing C) {E : C}
