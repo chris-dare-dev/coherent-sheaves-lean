@@ -365,6 +365,128 @@ theorem HNFiltration.exists_of_distinguished_triangle
               simp [HNFiltration.appendFactor, hj]
             exact hjLast.symm ▸ hlast_gt_t
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
+/-- Upper-bound companion to `exists_of_distinguished_triangle`: a common
+phase window for the input filtrations is retained by the assembled one. -/
+theorem HNFiltration.exists_of_distinguished_triangle_phase_bounds
+    [IsTriangulated C]
+    {P : ℝ → ObjectProperty C} {X E Y : C}
+    (hPiso : ∀ φ : ℝ, (P φ).IsClosedUnderIsomorphisms)
+    (GX : HNFiltration C P X) (GY : HNFiltration C P Y)
+    (f : X ⟶ E) (g : E ⟶ Y) (h : Y ⟶ X⟦(1 : ℤ)⟧)
+    (hT : Triangle.mk f g h ∈ distTriang C)
+    (t U : ℝ)
+    (hX_gt : ∀ j : Fin GX.n, t < GX.φ j)
+    (hY_gt : ∀ i : Fin GY.n, t < GY.φ i)
+    (hsep : ∀ i : Fin GY.n, ∀ j : Fin GX.n, GY.φ i < GX.φ j)
+    (hX_le : ∀ j : Fin GX.n, GX.φ j ≤ U)
+    (hY_le : ∀ i : Fin GY.n, GY.φ i ≤ U) :
+    ∃ G : HNFiltration C P E,
+      (∀ j : Fin G.n, t < G.φ j) ∧ (∀ j : Fin G.n, G.φ j ≤ U) := by
+  suffices hmain :
+      ∀ (m : ℕ) {Y : C} (GY : HNFiltration C P Y), GY.n ≤ m →
+        ∀ {E : C} (f : X ⟶ E) (g : E ⟶ Y) (h : Y ⟶ X⟦(1 : ℤ)⟧),
+          Triangle.mk f g h ∈ distTriang C →
+          ∀ (t : ℝ),
+          (∀ j : Fin GX.n, t < GX.φ j) →
+          (∀ i : Fin GY.n, t < GY.φ i) →
+          (∀ i : Fin GY.n, ∀ j : Fin GX.n, GY.φ i < GX.φ j) →
+          (∀ j : Fin GX.n, GX.φ j ≤ U) →
+          (∀ i : Fin GY.n, GY.φ i ≤ U) →
+          ∃ G : HNFiltration C P E,
+            (∀ j : Fin G.n, t < G.φ j) ∧ (∀ j : Fin G.n, G.φ j ≤ U) by
+    exact hmain GY.n GY le_rfl f g h hT t hX_gt hY_gt hsep hX_le hY_le
+  intro m
+  induction m with
+  | zero =>
+      intro Y GY hn E f g h hT t hX_gt _ _ hX_le _
+      have hYn : GY.n = 0 := by omega
+      let G := GX.ofTriangleThirdZero C GY hYn f g h hT
+      refine ⟨G, fun j => ?_, fun j => ?_⟩
+      · change t < GX.φ j
+        exact hX_gt j
+      · change GX.φ j ≤ U
+        exact hX_le j
+  | succ m ih =>
+      intro Y GY hn E f g h hT t hX_gt hY_gt hsep hX_le hY_le
+      by_cases hYn : GY.n = 0
+      · let G := GX.ofTriangleThirdZero C GY hYn f g h hT
+        refine ⟨G, fun j => ?_, fun j => ?_⟩
+        · change t < GX.φ j
+          exact hX_gt j
+        · change GX.φ j ≤ U
+          exact hX_le j
+      · have hYpos : 0 < GY.n := Nat.pos_of_ne_zero hYn
+        by_cases hYone : GY.n = 1
+        · let j0 : Fin GY.n := ⟨0, by omega⟩
+          let G := GX.appendLengthOne C hPiso GY hYone f g h hT
+            (fun j => hsep j0 j)
+          refine ⟨G, fun j => ?_, fun j => ?_⟩
+          · simp only [G, HNFiltration.appendLengthOne, HNFiltration.appendFactor]
+            split_ifs with hj
+            · exact hX_gt ⟨j.val, hj⟩
+            · exact hY_gt j0
+          · simp only [G, HNFiltration.appendLengthOne, HNFiltration.appendFactor]
+            split_ifs with hj
+            · exact hX_le ⟨j.val, hj⟩
+            · exact hY_le j0
+        · have hYtwo : 2 ≤ GY.n := by omega
+          let jLast : Fin GY.n := ⟨GY.n - 1, by omega⟩
+          let GY' := GY.prefix C (GY.n - 1) (by omega) (by omega)
+          let Tlast := GY.triangle jLast
+          let e₁ := Classical.choice (GY.triangle_obj₁ jLast)
+          let e₂ := Classical.choice (GY.triangle_obj₂ jLast)
+          let eY := by
+            have hchainN : GY.chain.obj' (GY.n - 1 + 1) (by omega) =
+                GY.chain.obj (Fin.last GY.n) :=
+              congrArg GY.chain.obj (Fin.ext (by simp [Fin.last]; omega))
+            exact e₂.trans ((eqToIso hchainN).trans (Classical.choice GY.top_iso))
+          let f23 : GY.chain.obj ⟨GY.n - 1, by omega⟩ ⟶ Y :=
+            e₁.inv ≫ Tlast.mor₁ ≫ eY.hom
+          let g23 : Y ⟶ Tlast.obj₃ := eY.inv ≫ Tlast.mor₂
+          let h23 : Tlast.obj₃ ⟶ GY.chain.obj ⟨GY.n - 1, by omega⟩⟦(1 : ℤ)⟧ :=
+            Tlast.mor₃ ≫ e₁.hom⟦(1 : ℤ)⟧'
+          have hT23 : Triangle.mk f23 g23 h23 ∈ distTriang C := by
+            refine isomorphic_distinguished _ (GY.triangle_dist jLast) _ ?_
+            exact Triangle.isoMk _ _ e₁.symm eY.symm (Iso.refl _)
+              (by simp [Tlast, f23, eY])
+              (by simp [Tlast, g23, eY])
+              (by simp [Tlast, h23])
+          obtain ⟨Z, f13, h13, hT13⟩ := distinguished_cocone_triangle₁ (g ≫ g23)
+          let oct := Triangulated.someOctahedron'
+            (show g ≫ g23 = g ≫ g23 by rfl) hT hT23 hT13
+          have hsep' : ∀ i : Fin GY'.n, ∀ j : Fin GX.n, GY'.φ i < GX.φ j := by
+            intro i j
+            have hi : i.val < GY.n - 1 := i.is_lt
+            exact hsep ⟨i.val, by omega⟩ j
+          have hX_gt_last : ∀ j : Fin GX.n, GY.φ jLast < GX.φ j :=
+            fun j => hsep jLast j
+          have hY'_gt_last : ∀ i : Fin GY'.n, GY.φ jLast < GY'.φ i := by
+            intro i
+            have hi : i.val < GY.n - 1 := i.is_lt
+            change GY.φ jLast < GY.φ ⟨i.val, by omega⟩
+            exact GY.hφ (Fin.mk_lt_mk.mpr (by omega))
+          obtain ⟨GZ, hGZ_lo, hGZ_le⟩ := ih GY' (by
+            change GY.n - 1 ≤ m
+            omega) oct.triangle.mor₁ oct.triangle.mor₂ oct.triangle.mor₃ oct.mem
+            (GY.φ jLast) hX_gt_last hY'_gt_last hsep' hX_le
+            (fun i => by
+              have hi : i.val < GY.n - 1 := i.is_lt
+              exact hY_le ⟨i.val, by omega⟩)
+          have hlast_gt_t : t < GY.φ jLast := hY_gt jLast
+          let G := GZ.appendFactor C (Triangle.mk f13 (g ≫ g23) h13) hT13
+            (Iso.refl _) (Iso.refl _) (GY.φ jLast) (GY.semistable jLast) hGZ_lo
+          refine ⟨G, fun j => ?_, fun j => ?_⟩
+          · simp only [G, HNFiltration.appendFactor]
+            split_ifs with hj
+            · exact hlast_gt_t.trans (hGZ_lo ⟨j.val, hj⟩)
+            · exact hlast_gt_t
+          · simp only [G, HNFiltration.appendFactor]
+            split_ifs with hj
+            · exact hGZ_le ⟨j.val, hj⟩
+            · exact hY_le jLast
+
 /-- Shift every stage and factor of an HN filtration. -/
 def HNFiltration.shift (s : Slicing C) {E : C}
     (F : HNFiltration C s.P E) (a : ℤ) : HNFiltration C s.P (E⟦a⟧) where
