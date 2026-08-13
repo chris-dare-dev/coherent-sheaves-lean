@@ -55,6 +55,53 @@ theorem deformedPred_rewitness_subinterval
     σ.skewedSemistable_of_subinterval C W hr0 hr1 hW hab hcd hε hε2
       hthinSource hsin hleft hright hmono hI hSS⟩
 
+/-- Endpoint inequalities provide the interval inclusion required by owner
+semistability transport. -/
+theorem skewedSemistable_of_nested_interval
+    (σ : StabilityCondition.WithClassMap C κ)
+    (W : Λ →+ ℂ) {r : ℝ} (hr0 : 0 ≤ r) (hr1 : r < 1)
+    (hW : stabilitySeminorm C σ (W - σ.Z) ≤ ENNReal.ofReal r)
+    {a b c d ε ψ : ℝ} (hab : a < b) (hcd : c < d)
+    (hε : 0 < ε) (hε2 : ε ≤ 1 / 2)
+    (hthin : b - a + 2 * ε < 1)
+    (hsin : stabilitySeminorm C σ (W - σ.Z) <
+      ENNReal.ofReal (Real.sin (Real.pi * ε)))
+    (hleft : (c + d) / 2 - 1 < a - ε)
+    (hright : b + ε ≤ (c + d) / 2 + 1)
+    (hac : a ≤ c) (hdb : d ≤ b)
+    {E : C} (hI : σ.slicing.intervalProp C c d E)
+    (hSS : (skewedStabilityFunctionOfSeminormLtOne C σ W hr0 hr1 hW hab).IsSemistable
+      E ψ) :
+    (skewedStabilityFunctionOfSeminormLtOne C σ W hr0 hr1 hW hcd).IsSemistable
+      E ψ := by
+  apply σ.skewedSemistable_of_subinterval C W hr0 hr1 hW hab hcd hε hε2
+    hthin hsin hleft hright _ hI hSS
+  exact σ.slicing.intervalProp_mono C hac hdb
+
+/-- A deformed-slice witness may be replaced by a nested compatible thin
+interval using only endpoint inequalities. -/
+theorem deformedPred_rewitness_nested_interval
+    (σ : StabilityCondition.WithClassMap C κ)
+    (W : Λ →+ ℂ) {r : ℝ} (hr0 : 0 ≤ r) (hr1 : r < 1)
+    (hW : stabilitySeminorm C σ (W - σ.Z) ≤ ENNReal.ofReal r)
+    {a b c d ε ψ : ℝ} (hab : a < b) (hcd : c < d)
+    (hε : 0 < ε) (hε2 : ε ≤ 1 / 2)
+    (hthinSource : b - a + 2 * ε < 1)
+    (hthinTarget : d - c + 2 * ε < 1)
+    (hsin : stabilitySeminorm C σ (W - σ.Z) <
+      ENNReal.ofReal (Real.sin (Real.pi * ε)))
+    (hleft : (c + d) / 2 - 1 < a - ε)
+    (hright : b + ε ≤ (c + d) / 2 + 1)
+    (hcψ : c + ε ≤ ψ) (hψd : ψ ≤ d - ε)
+    (hac : a ≤ c) (hdb : d ≤ b)
+    {E : C} (hI : σ.slicing.intervalProp C c d E)
+    (hSS : (skewedStabilityFunctionOfSeminormLtOne C σ W hr0 hr1 hW hab).IsSemistable
+      E ψ) :
+    σ.deformedPred C W hr0 hr1 hW ε ψ E := by
+  apply σ.deformedPred_rewitness_subinterval C W hr0 hr1 hW hab hcd hε hε2
+    hthinSource hthinTarget hsin hleft hright hcψ hψd _ hI hSS
+  exact σ.slicing.intervalProp_mono C hac hdb
+
 end StabilityCondition.WithClassMap
 
 end BridgelandStabLean.Foundation
