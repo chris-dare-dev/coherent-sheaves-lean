@@ -25,6 +25,9 @@ ANCHOR = "BridgelandStability"
 # Modules that must never reach the anchor. Add to this list, never remove from it
 # without a stated reason -- each entry is a boundary someone paid to establish.
 ANCHOR_FREE = [
+    "BridgelandStabLean.Foundation",
+    "BridgelandStabLean.Foundation.PostnikovTower",
+    "BridgelandStabLean.Foundation.Slicing",
     "BridgelandStabLean.TStructure",
     "BridgelandStabLean.TStructure.Exactness",
     "BridgelandStabLean.TStructure.Shift",
@@ -36,6 +39,41 @@ ANCHOR_FREE = [
     "BridgelandStabLean.StabilityCondition.Weak.Tilting.TorsionPair.Basic",
     "BridgelandStabLean.StabilityCondition.Weak.Tilting.TorsionPair.Heart",
 ]
+
+# The ownership migration starts with 27 historical owner modules that import
+# the vendor directly, plus the one explicit compatibility boundary introduced
+# by issue #226.  This allowlist may only shrink outside Compatibility/: a new
+# direct import would spread the third-party boundary and is therefore an error.
+DIRECT_ANCHOR_ALLOWLIST = {
+    "BridgelandStabLean.Anchor.TStructure",
+    "BridgelandStabLean.Compatibility.BridgelandStability",
+    "BridgelandStabLean.StabilityCondition.Metric.Distance.Topology",
+    "BridgelandStabLean.StabilityCondition.Metric.Isometry.Phase",
+    "BridgelandStabLean.StabilityCondition.Metric.Mass.Subadditivity.CohomologyExactness",
+    "BridgelandStabLean.StabilityCondition.Metric.Mass.Subadditivity.HNPolygon",
+    "BridgelandStabLean.StabilityCondition.Metric.Mass.Subadditivity.Triangle",
+    "BridgelandStabLean.StabilityCondition.Metric.Mass.Uniqueness",
+    "BridgelandStabLean.StabilityCondition.Phase.Order.Basic",
+    "BridgelandStabLean.StabilityCondition.Phase.Transfer.Basic",
+    "BridgelandStabLean.StabilityCondition.Symmetry.Autoequivalence.Foundations.FiniteLength",
+    "BridgelandStabLean.StabilityCondition.Symmetry.Autoequivalence.Foundations.GrothendieckGroup",
+    "BridgelandStabLean.StabilityCondition.Symmetry.Autoequivalence.Slicing.Transport",
+    "BridgelandStabLean.StabilityCondition.Symmetry.Autoequivalence.Stability.ClassMap",
+    "BridgelandStabLean.StabilityCondition.Symmetry.Autoequivalence.Stability.Transport",
+    "BridgelandStabLean.StabilityCondition.Symmetry.Combined.Components",
+    "BridgelandStabLean.StabilityCondition.Symmetry.Combined.Effective",
+    "BridgelandStabLean.StabilityCondition.Symmetry.Combined.Topology",
+    "BridgelandStabLean.StabilityCondition.Symmetry.GLTilde.Action.PreStability",
+    "BridgelandStabLean.StabilityCondition.Symmetry.GLTilde.Action.Slicing",
+    "BridgelandStabLean.StabilityCondition.Symmetry.GLTilde.Action.Stability",
+    "BridgelandStabLean.StabilityCondition.Weak.Basic.Definitions",
+    "BridgelandStabLean.StabilityCondition.Weak.Foundations.SimpleCharge",
+    "BridgelandStabLean.StabilityCondition.Weak.Heart.Equivalence",
+    "BridgelandStabLean.StabilityCondition.Weak.Heart.EquivalenceReverse",
+    "BridgelandStabLean.StabilityCondition.Weak.Heart.Noetherian",
+    "BridgelandStabLean.StabilityCondition.Weak.Tilting.Cohomology.Sequence",
+    "BridgelandStabLean.StabilityCondition.Weak.Tilting.TorsionPair.Slope",
+}
 
 IMPORT = re.compile(r"^import\s+(\S+)")
 
@@ -92,6 +130,15 @@ def main() -> int:
         return result
 
     failures = 0
+    unexpected_direct = direct_anchor - DIRECT_ANCHOR_ALLOWLIST
+    stale_direct = DIRECT_ANCHOR_ALLOWLIST - direct_anchor
+    for module in sorted(unexpected_direct):
+        print(f"FAIL {module}\n     new direct import of {ANCHOR} is not allowlisted")
+        failures += 1
+    for module in sorted(stale_direct):
+        print(f"FAIL {module}\n     stale direct-import allowlist entry; remove it after migration")
+        failures += 1
+
     for module in ANCHOR_FREE:
         if module not in mods:
             print(f"FAIL {module}\n     module does not exist -- stale entry in ANCHOR_FREE")
@@ -111,6 +158,7 @@ def main() -> int:
         print(f"\n{failures} module(s) reach {ANCHOR}. See the chain above.")
         return 1
     print(f"\nAll {len(ANCHOR_FREE)} module(s) are anchor-free at import level.")
+    print(f"Direct {ANCHOR} imports are frozen at {len(direct_anchor)} allowlisted modules.")
     return 0
 
 

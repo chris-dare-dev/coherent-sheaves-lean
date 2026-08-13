@@ -4,6 +4,8 @@ Released under the MIT license.
 -/
 import BridgelandStabLean.TStructure
 import BridgelandStabLean.Anchor
+import BridgelandStabLean.Foundation
+import BridgelandStabLean.Compatibility
 import BridgelandStabLean.ForMathlib
 import BridgelandStabLean.Lattice
 import BridgelandStabLean.StabilityCondition

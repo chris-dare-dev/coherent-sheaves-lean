@@ -54,6 +54,9 @@ def isGenerated (env : Environment) (n : Name) (ci : ConstantInfo) : Bool :=
                --   ext'_iff    from `@[ext] theorem ext'` (the ext' IS written)
                "ctorIdx", "congr_simp", "ext'_iff"]
           || "match_".isPrefixOf s || "proof_".isPrefixOf s
+          -- Heterogeneous congruence companions generated for dependent defs.
+          -- `rg 'hcongr_' BridgelandStabLean vendor/BridgelandStability` is empty.
+          || "hcongr_".isPrefixOf s
         | _ => true)
 
 /-- `A.f` is a structure field projection iff `A` is a structure with field `f`.

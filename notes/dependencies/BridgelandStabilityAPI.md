@@ -5,6 +5,19 @@ That source is now retained in `vendor/BridgelandStability/` at local port
 revision `5f771c77dd48c478c3a15f7b09eab37a1ac0c8e4`. Every signature below is
 copied from source, not recalled. Line references are to the vendored tree.
 
+Ownership migration began in destination issues
+[#225](https://github.com/chris-dare-dev/derived-alg-geo-lean/issues/225) and
+[#226](https://github.com/chris-dare-dev/derived-alg-geo-lean/issues/226).
+`BridgelandStabLean.Foundation` now owns Mathlib-only definitions of
+`PostnikovTower`, `HNFiltration`, and `Slicing`; explicit lossless conversions
+live in `BridgelandStabLean.Compatibility.BridgelandStability`. This document
+continues to describe the retained API while consumers are migrated.
+
+At the start of slice #226, 28 owner modules contain 32 direct imports from 20
+vendored module roots. `scripts/check_anchor_free.py` freezes that exact module
+set. Each later slice must shrink it, and no new direct vendor consumer may be
+introduced outside the compatibility boundary.
+
 Step 3 is "the `G̃L⁺(2, ℝ)` action on stability conditions". This file exists
 because that step is the first one that imports the foundational library, and guessing at
 its API costs a full rebuild per guess.
