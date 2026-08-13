@@ -341,6 +341,7 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Foundation.HNFiltration.ofTriangleThirdZero
 #print axioms BridgelandStabLean.Foundation.HNFiltration.exists_of_distinguished_triangle
 #print axioms BridgelandStabLean.Foundation.HNFiltration.exists_of_distinguished_triangle_phase_bounds
+#print axioms BridgelandStabLean.Foundation.HNFiltration.exists_split_at_cutoff
 #print axioms BridgelandStabLean.Foundation.HNFiltration.shift
 #print axioms BridgelandStabLean.Foundation.HNFiltration.shift_phiPlus
 #print axioms BridgelandStabLean.Foundation.HNFiltration.shift_phiMinus

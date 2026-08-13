@@ -487,6 +487,158 @@ theorem HNFiltration.exists_of_distinguished_triangle_phase_bounds
             · exact hGZ_le ⟨j.val, hj⟩
             · exact hY_le jLast
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
+/-- Split a generic owner HN filtration at a real cutoff. The upper term has
+all phases above the cutoff, while the quotient term has all phases at most
+the cutoff. The construction also records the phase bounds needed for later
+filtration assembly. -/
+theorem HNFiltration.exists_split_at_cutoff
+    [IsTriangulated C]
+    {P : ℝ → ObjectProperty C} {A : C}
+    (F : HNFiltration C P A) (t : ℝ) :
+    ∃ (X Y : C) (GX : HNFiltration C P X) (GY : HNFiltration C P Y)
+      (f : X ⟶ A) (g : A ⟶ Y) (h : Y ⟶ X⟦(1 : ℤ)⟧),
+      Triangle.mk f g h ∈ distTriang C ∧
+      (∀ j : Fin GX.n, t < GX.φ j) ∧
+      (∀ j : Fin GY.n, GY.φ j ≤ t) ∧
+      (∀ (_ : 0 < F.n) (j : Fin GY.n),
+        F.φ ⟨F.n - 1, by omega⟩ ≤ GY.φ j) ∧
+      (∀ j : Fin GX.n, ∃ i : Fin F.n, GX.φ j = F.φ i) := by
+  suffices hmain :
+      ∀ (m : ℕ) (A : C) (F : HNFiltration C P A), F.n ≤ m →
+        ∃ (X Y : C) (GX : HNFiltration C P X) (GY : HNFiltration C P Y)
+          (f : X ⟶ A) (g : A ⟶ Y) (h : Y ⟶ X⟦(1 : ℤ)⟧),
+          Triangle.mk f g h ∈ distTriang C ∧
+          (∀ j : Fin GX.n, t < GX.φ j) ∧
+          (∀ j : Fin GY.n, GY.φ j ≤ t) ∧
+          (∀ (_ : 0 < F.n) (j : Fin GY.n),
+            F.φ ⟨F.n - 1, by omega⟩ ≤ GY.φ j) ∧
+          (∀ j : Fin GX.n, ∃ i : Fin F.n, GX.φ j = F.φ i) by
+    exact hmain F.n A F le_rfl
+  intro m
+  induction m with
+  | zero =>
+      intro A F hFn
+      have hn : F.n = 0 := by omega
+      refine ⟨A, 0, F, HNFiltration.zero C (P := P) 0 (isZero_zero C),
+        𝟙 A, 0, 0, contractible_distinguished A, ?_, ?_, ?_, ?_⟩
+      · intro j
+        exact False.elim (by simpa [hn] using j.is_lt)
+      · intro j
+        exact Fin.elim0 j
+      · intro hn0 j
+        exact False.elim (by omega)
+      · intro j
+        exact False.elim (by simpa [hn] using j.isLt)
+  | succ m ih =>
+      intro A F hFn
+      by_cases hn : F.n = 0
+      · refine ⟨A, 0, F, HNFiltration.zero C (P := P) 0 (isZero_zero C),
+          𝟙 A, 0, 0, contractible_distinguished A, ?_, ?_, ?_, ?_⟩
+        · intro j
+          exact False.elim (by simpa [hn] using j.is_lt)
+        · intro j
+          exact Fin.elim0 j
+        · intro hn0 j
+          exact False.elim (by omega)
+        · intro j
+          exact False.elim (by simpa [hn] using j.isLt)
+      · have hn0 : 0 < F.n := Nat.pos_of_ne_zero hn
+        by_cases hlast_gt : t < F.φ ⟨F.n - 1, by omega⟩
+        · refine ⟨A, 0, F, HNFiltration.zero C (P := P) 0 (isZero_zero C),
+            𝟙 A, 0, 0, contractible_distinguished A, ?_, ?_, ?_, ?_⟩
+          · intro j
+            exact hlast_gt.trans_le (F.hφ.antitone (Fin.mk_le_mk.mpr (by omega)))
+          · intro j
+            exact Fin.elim0 j
+          · intro _ j
+            exact Fin.elim0 j
+          · intro j
+            exact ⟨j, rfl⟩
+        · have hlast_le : F.φ ⟨F.n - 1, by omega⟩ ≤ t := le_of_not_gt hlast_gt
+          by_cases hFone : F.n = 1
+          · refine ⟨0, A, HNFiltration.zero C (P := P) 0 (isZero_zero C), F,
+              0, 𝟙 A, 0, contractible_distinguished₁ A, ?_, ?_, ?_, ?_⟩
+            · intro j
+              exact Fin.elim0 j
+            · intro j
+              have hj : j = ⟨0, by omega⟩ := Fin.ext (by omega)
+              subst j
+              simpa [hFone] using hlast_le
+            · intro _ j
+              have hj : j = ⟨0, by omega⟩ := Fin.ext (by omega)
+              subst j
+              simp [hFone]
+            · intro j
+              exact Fin.elim0 j
+          · have hn2 : 2 ≤ F.n := by omega
+            let G := F.prefix C (F.n - 1) (by omega) (by omega)
+            obtain ⟨X, Y', GX, GY', f', g', h', hT', hGX_gt, hGY'_le,
+                hGY'_bound, hGX_contain⟩ :=
+              ih (F.chain.obj' (F.n - 1) (by omega)) G (by
+                change F.n - 1 ≤ m
+                omega)
+            let jLast : Fin F.n := ⟨F.n - 1, by omega⟩
+            let T := F.triangle jLast
+            let e₁ := Classical.choice (F.triangle_obj₁ jLast)
+            let e₂ := Classical.choice (F.triangle_obj₂ jLast)
+            let eA := Classical.choice F.top_iso
+            have hchainN : F.chain.obj' (F.n - 1 + 1) (by omega) =
+                F.chain.obj (Fin.last F.n) :=
+              congrArg F.chain.obj (Fin.ext (by simp [Fin.last]; omega))
+            let e₂A : T.obj₂ ≅ A := e₂.trans ((eqToIso hchainN).trans eA)
+            let u₂₃ : F.chain.obj' (F.n - 1) (by omega) ⟶ A :=
+              e₁.inv ≫ T.mor₁ ≫ e₂A.hom
+            let Tiso := Triangle.isoMk
+              (Triangle.mk u₂₃ (e₂A.inv ≫ T.mor₂)
+                (T.mor₃ ≫ e₁.hom⟦(1 : ℤ)⟧')) T
+              e₁.symm e₂A.symm (Iso.refl _)
+              (by simp [u₂₃, e₂A])
+              (by simp [e₂A])
+              (by simp)
+            have hTu₂₃ :
+                Triangle.mk u₂₃ (e₂A.inv ≫ T.mor₂)
+                    (T.mor₃ ≫ e₁.hom⟦(1 : ℤ)⟧') ∈ distTriang C :=
+              isomorphic_distinguished _ (F.triangle_dist jLast) _ Tiso
+            have hGn : 0 < G.n := by
+              change 0 < F.n - 1
+              omega
+            have hφlast_lt :
+                ∀ j : Fin GY'.n, F.φ jLast < GY'.φ j := by
+              intro j
+              calc
+                F.φ jLast < F.φ ⟨F.n - 2, by omega⟩ :=
+                  F.hφ (Fin.mk_lt_mk.mpr (by omega))
+                _ = G.φ ⟨G.n - 1, by omega⟩ := by
+                  change F.φ ⟨F.n - 2, _⟩ = F.φ ⟨(F.n - 1) - 1, _⟩
+                  congr 1
+                _ ≤ GY'.φ j := hGY'_bound hGn j
+            obtain ⟨Z, v₁₃, w₁₃, h₁₃⟩ := distinguished_cocone_triangle (f' ≫ u₂₃)
+            let oct := Triangulated.someOctahedron rfl hT' hTu₂₃ h₁₃
+            let GZ := GY'.appendFactor C oct.triangle oct.mem (Iso.refl _)
+              (Iso.refl _) (F.φ jLast) (F.semistable jLast) hφlast_lt
+            refine ⟨X, Z, GX, GZ, f' ≫ u₂₃, v₁₃, w₁₃, h₁₃, hGX_gt, ?_, ?_, ?_⟩
+            · intro j
+              change GZ.φ j ≤ t
+              simp only [GZ, HNFiltration.appendFactor]
+              split_ifs with hj
+              · exact hGY'_le ⟨j.val, hj⟩
+              · exact hlast_le
+            · intro _ j
+              change F.φ jLast ≤ GZ.φ j
+              simp only [GZ, HNFiltration.appendFactor]
+              split_ifs with hj
+              · exact (hφlast_lt ⟨j.val, hj⟩).le
+              · exact le_rfl
+            · intro j
+              obtain ⟨iG, hiG⟩ := hGX_contain j
+              have hi_lt := iG.isLt
+              change iG.val < F.n - 1 at hi_lt
+              exact ⟨⟨iG.val, by omega⟩, by
+                simp [G, HNFiltration.prefix] at hiG
+                exact hiG⟩
+
 /-- Shift every stage and factor of an HN filtration. -/
 def HNFiltration.shift (s : Slicing C) {E : C}
     (F : HNFiltration C s.P E) (a : ℤ) : HNFiltration C s.P (E⟦a⟧) where
