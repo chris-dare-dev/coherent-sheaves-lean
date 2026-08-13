@@ -304,6 +304,95 @@ theorem phiPlus_eq {Z : StabilityFunction A} {E : A}
       G.chain_one_isSemistable (G.phase_chain_one ▸ hFG)
     exact G.chain_one_ne_bot hbot
 
+/-- Every morphism from an HN-filtered object to a semistable object whose
+phase is below the lowest HN phase is zero. -/
+theorem hom_eq_zero_to_semistable_of_phase_lt_phiMinus
+    {Z : StabilityFunction A} {E B : A} (F : AbelianHNFiltration Z E)
+    (hB : Z.IsSemistable B) (hphase : Z.phase B < F.phiMinus)
+    (f : E ⟶ B) : f = 0 := by
+  have hrestrict : ∀ m : ℕ, (hm : m ≤ F.n) →
+      (F.chain ⟨m, by lia⟩).arrow ≫ f = 0 := by
+    intro m
+    induction m with
+    | zero =>
+        intro _
+        rw [F.chain_bot]
+        simp
+    | succ m ih =>
+        intro hm
+        let j : Fin F.n := ⟨m, by lia⟩
+        have hprevious : (F.chain j.castSucc).arrow ≫ f = 0 := by
+          change (F.chain ⟨m, by lia⟩).arrow ≫ f = 0
+          exact ih (by lia)
+        have hcomp : Subobject.ofLE (F.chain j.castSucc) (F.chain j.succ)
+              (le_of_lt (F.chain_strictMono j.castSucc_lt_succ)) ≫
+            ((F.chain j.succ).arrow ≫ f) = 0 := by
+          calc
+            Subobject.ofLE (F.chain j.castSucc) (F.chain j.succ)
+                  (le_of_lt (F.chain_strictMono j.castSucc_lt_succ)) ≫
+                ((F.chain j.succ).arrow ≫ f) =
+                (F.chain j.castSucc).arrow ≫ f := by
+              rw [← Category.assoc, Subobject.ofLE_arrow]
+            _ = 0 := hprevious
+        let descended := cokernel.desc
+          (Subobject.ofLE (F.chain j.castSucc) (F.chain j.succ)
+            (le_of_lt (F.chain_strictMono j.castSucc_lt_succ)))
+          ((F.chain j.succ).arrow ≫ f) hcomp
+        have hfactor_phase : Z.phase B <
+            Z.phase (cokernel (Subobject.ofLE (F.chain j.castSucc)
+              (F.chain j.succ)
+              (le_of_lt (F.chain_strictMono j.castSucc_lt_succ)))) := by
+          rw [F.factor_phase j]
+          exact lt_of_lt_of_le hphase (F.phase_mem_range j).1
+        have hdescended : descended = 0 :=
+          Z.hom_eq_zero_of_semistable_phase_gt (F.factor_semistable j) hB
+            hfactor_phase descended
+        change (F.chain j.succ).arrow ≫ f = 0
+        calc
+          (F.chain j.succ).arrow ≫ f =
+              cokernel.π (Subobject.ofLE (F.chain j.castSucc)
+                (F.chain j.succ)
+                (le_of_lt (F.chain_strictMono j.castSucc_lt_succ))) ≫
+                descended := (cokernel.π_desc _ _ _).symm
+          _ = 0 := by rw [hdescended, comp_zero]
+  have htop : (⊤ : Subobject E).arrow ≫ f = 0 := by
+    rw [← F.chain_top]
+    exact hrestrict F.n le_rfl
+  apply (cancel_epi (⊤ : Subobject E).arrow).mp
+  simpa using htop
+
+/-- The lowest phase is intrinsic: any two owner HN filtrations of the same
+object have the same last phase. -/
+theorem phiMinus_eq {Z : StabilityFunction A} {E : A}
+    (F G : AbelianHNFiltration Z E) : F.phiMinus = G.phiMinus := by
+  have no_strict_order : ∀ (H K : AbelianHNFiltration Z E),
+      ¬H.phiMinus < K.phiMinus := by
+    intro H K hHK
+    have hn := H.nonempty
+    let last : Fin H.n := ⟨H.n - 1, by have := H.nonempty; lia⟩
+    have hlast : H.chain last.succ = ⊤ := by
+      have hindex : last.succ = ⟨H.n, by lia⟩ :=
+        Fin.ext (by simp [last]; lia)
+      rw [hindex, H.chain_top]
+    haveI : IsIso (H.chain last.succ).arrow := by
+      rw [hlast]
+      infer_instance
+    let q : E ⟶ cokernel (Subobject.ofLE (H.chain last.castSucc)
+        (H.chain last.succ)
+        (le_of_lt (H.chain_strictMono last.castSucc_lt_succ))) :=
+      inv (H.chain last.succ).arrow ≫
+        cokernel.π (Subobject.ofLE (H.chain last.castSucc)
+          (H.chain last.succ)
+          (le_of_lt (H.chain_strictMono last.castSucc_lt_succ)))
+    haveI : Epi q := inferInstance
+    have hq : q = 0 := K.hom_eq_zero_to_semistable_of_phase_lt_phiMinus
+      (H.factor_semistable last) (by
+        rw [H.factor_phase last]
+        exact hHK) q
+    exact (H.factor_semistable last).1 (IsZero.of_epi_eq_zero q hq)
+  exact le_antisymm (le_of_not_gt (no_strict_order G F))
+    (le_of_not_gt (no_strict_order F G))
+
 end AbelianHNFiltration
 
 end BridgelandStabLean.Foundation

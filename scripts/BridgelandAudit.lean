@@ -73,7 +73,7 @@ four qualifications in this comment are unaffected by it:
   green without an entry here. Zero is a measurement taken at a commit, not a
   property the build maintains.
 
-* It issues **1777** audit commands. The environment holds **2122** authored
+* It issues **1779** audit commands. The environment holds **2124** authored
   declarations under `BridgelandStabLean.*`, so **345 are outside this gate**,
   all of them private or projections. ("Authored" excludes constructors,
   recursors, `casesOn`, matchers, equation lemmas, internal names, and the six
@@ -111,7 +111,7 @@ four qualifications in this comment are unaffected by it:
   For a `def`, `#print axioms` reports the axiom closure of a CONSTRUCTION and
   asserts nothing about any proposition. In particular
   `CategoryTheory.Triangulated.StabilityMassTriangleInequality` appears below
-formatted identically to the **1235** real theorems, but it is a `def ... :
+formatted identically to the **1237** real theorems, but it is a `def ... :
   Prop` -- its clean line means the definition is axiom-clean, NOT that the
   proposition holds.
 
@@ -418,6 +418,8 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.phase_chain_one
 #print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.chain_one_isSemistable
 #print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.phiPlus_eq
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.hom_eq_zero_to_semistable_of_phase_lt_phiMinus
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.phiMinus_eq
 
 /-! ## Cohomology exactness (#146) -/
 
