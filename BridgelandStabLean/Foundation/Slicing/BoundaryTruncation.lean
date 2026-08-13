@@ -154,4 +154,44 @@ theorem Slicing.exists_lower_boundary_triangle (s : Slicing C)
   exact ⟨X, Y, f, g, h, hT,
     s.intervalProp_of_intrinsic_phases C hXne hXlo hXhi, hY⟩
 
+omit [IsTriangulated C] in
+/-- The first term of an upper-boundary triangle remains in the original
+thin interval. -/
+theorem Slicing.intervalProp_of_upper_boundary_triangle (s : Slicing C)
+    {a b₁ b₂ : ℝ} (hab₁ : a < b₁) (hab₂ : a < b₂)
+    (hb₁ : b₁ ≤ a + 1) {E X Y : C}
+    (hE : s.intervalProp C a b₂ E) (hX : s.geProp C b₁ X)
+    (hY : s.intervalProp C a b₁ Y)
+    {f : X ⟶ E} {g : E ⟶ Y} {h : Y ⟶ X⟦(1 : ℤ)⟧}
+    (hT : Triangle.mk f g h ∈ distTriang C) :
+    s.intervalProp C a b₂ X := by
+  have hYle : s.leProp C (a + 1) Y :=
+    s.leProp_mono C hb₁ Y
+      (s.leProp_of_ltProp C Y (s.ltProp_of_intervalProp C hY))
+  have hXgt : s.gtProp C a X := by
+    rcases hX with hzero | ⟨F, hF, hge⟩
+    · exact Or.inl hzero
+    · exact Or.inr ⟨F, hF, hab₁.trans_le hge⟩
+  exact s.first_intervalProp_of_triangle C hab₂ hE hYle hXgt hT
+
+omit [IsTriangulated C] in
+/-- The third term of a lower-boundary triangle remains in the original
+thin interval. -/
+theorem Slicing.intervalProp_of_lower_boundary_triangle (s : Slicing C)
+    {a₁ a₂ b : ℝ} (ha₁ : a₁ < b) (ha : a₂ ≤ a₁)
+    {E X Y : C} (hE : s.intervalProp C a₂ b E)
+    (hX : s.intervalProp C a₁ b X) (hY : s.leProp C a₁ Y)
+    {f : X ⟶ E} {g : E ⟶ Y} {h : Y ⟶ X⟦(1 : ℤ)⟧}
+    (hT : Triangle.mk f g h ∈ distTriang C) :
+    s.intervalProp C a₂ b Y := by
+  by_cases hYne : IsZero Y
+  · exact Or.inl hYne
+  have hYhi : s.phiPlus C Y hYne < b :=
+    (s.phiPlus_le_of_leProp C hYne hY).trans_lt ha₁
+  have hYlo : a₂ < s.phiMinus C Y hYne :=
+    s.phiMinus_gt_of_triangle_with_gtProp C hYne
+      (fun hEne => s.phiMinus_gt_of_intervalProp C hEne hE)
+      (s.gtProp_of_intervalProp C hX) (by linarith) hT
+  exact s.intervalProp_of_intrinsic_phases C hYne hYlo hYhi
+
 end BridgelandStabLean.Foundation
