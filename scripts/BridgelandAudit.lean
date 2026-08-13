@@ -73,7 +73,7 @@ four qualifications in this comment are unaffected by it:
   green without an entry here. Zero is a measurement taken at a commit, not a
   property the build maintains.
 
-* It issues **1807** audit commands. The environment holds **2152** authored
+* It issues **1810** audit commands. The environment holds **2155** authored
   declarations under `BridgelandStabLean.*`, so **345 are outside this gate**,
   all of them private or projections. ("Authored" excludes constructors,
   recursors, `casesOn`, matchers, equation lemmas, internal names, and the six
@@ -106,12 +106,12 @@ four qualifications in this comment are unaffected by it:
   when a name it *should* list appears. `scripts/Census.lean` is the thing that
   reports it, but it is a script you run, not a CI gate; a name added without a
   matching entry here still lands green.
-* **541 of the distinct gated declarations are not theorems** (60 `structure`, 481 other
+* **542 of the distinct gated declarations are not theorems** (60 `structure`, 482 other
   constructions).
   For a `def`, `#print axioms` reports the axiom closure of a CONSTRUCTION and
   asserts nothing about any proposition. In particular
   `CategoryTheory.Triangulated.StabilityMassTriangleInequality` appears below
-formatted identically to the **1261** real theorems, but it is a `def ... :
+formatted identically to the **1263** real theorems, but it is a `def ... :
   Prop` -- its clean line means the definition is axiom-clean, NOT that the
   proposition holds.
 
@@ -442,6 +442,9 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Foundation.StabilityFunction.destabilizingQuotient
 #print axioms BridgelandStabLean.Foundation.StabilityFunction.isZero_destabilizingQuotient_iff_isSemistable
 #print axioms BridgelandStabLean.Foundation.StabilityFunction.destabilizingQuotient_not_isZero_of_not_isSemistable
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.destabilizingShortComplex
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.destabilizingShortComplex_shortExact
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.charge_eq_maxDestabilizingSubobject_add_destabilizingQuotient
 #print axioms BridgelandStabLean.Foundation.StabilityFunction.phiPlus_eq_filtration
 #print axioms BridgelandStabLean.Foundation.StabilityFunction.phase_maxDestabilizingSubobject
 #print axioms BridgelandStabLean.Foundation.StabilityFunction.le_maxDestabilizingSubobject_of_semistable_phase_eq_phiPlus

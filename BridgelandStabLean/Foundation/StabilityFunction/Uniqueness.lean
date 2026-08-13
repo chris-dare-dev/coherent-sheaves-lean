@@ -533,6 +533,34 @@ theorem destabilizingQuotient_not_isZero_of_not_isSemistable
   fun hzero => hnot ((Z.isZero_destabilizingQuotient_iff_isSemistable
     hHN E hE).1 hzero)
 
+/-- The canonical short complex presenting an object as an extension of its
+maximally destabilizing subobject by the destabilizing quotient. -/
+noncomputable def destabilizingShortComplex (Z : StabilityFunction A)
+    (hHN : Z.HasHNProperty) (E : A) (hE : ¬IsZero E) : ShortComplex A :=
+  ShortComplex.mk (Z.maxDestabilizingSubobject hHN E hE).arrow
+    (cokernel.π (Z.maxDestabilizingSubobject hHN E hE).arrow)
+    (cokernel.condition (Z.maxDestabilizingSubobject hHN E hE).arrow)
+
+/-- The canonical destabilizing short complex is short exact. -/
+theorem destabilizingShortComplex_shortExact (Z : StabilityFunction A)
+    (hHN : Z.HasHNProperty) (E : A) (hE : ¬IsZero E) :
+    (Z.destabilizingShortComplex hHN E hE).ShortExact := by
+  change (ShortComplex.mk _ _ _).ShortExact
+  exact ShortComplex.ShortExact.mk'
+    (ShortComplex.exact_cokernel
+      (Z.maxDestabilizingSubobject hHN E hE).arrow)
+    inferInstance inferInstance
+
+/-- The central charge splits across the canonical destabilizing short exact
+sequence. -/
+theorem charge_eq_maxDestabilizingSubobject_add_destabilizingQuotient
+    (Z : StabilityFunction A) (hHN : Z.HasHNProperty)
+    (E : A) (hE : ¬IsZero E) :
+    Z.charge E = Z.charge (Z.maxDestabilizingSubobject hHN E hE : A) +
+      Z.charge (Z.destabilizingQuotient hHN E hE) :=
+  Z.additive (Z.destabilizingShortComplex hHN E hE)
+    (Z.destabilizingShortComplex_shortExact hHN E hE)
+
 /-- The intrinsic highest HN phase of a nonzero object. -/
 noncomputable def phiPlus (Z : StabilityFunction A) (hHN : Z.HasHNProperty)
     (E : A) (hE : ¬IsZero E) : ℝ :=
