@@ -36,11 +36,22 @@ What the pin does supply, and which both routes consume:
   classical side of the seam, which this track compares against and does not
   fork.
 
-The measurements above were taken by inspection of a Mathlib checkout that is
-**not** the pinned revision. `dg-enhancements-e1` must re-run them against
-`mathlib_rev` in `pins.json` exactly, record the commands and their output, and
-correct anything here that does not survive. Nothing in this ADR may be cited
-as a pin-accurate fact until that has happened.
+**Measured 2026-08-13** against `mathlib_rev` exactly — see
+`.claude/notes/2026-08-13-dg-surface-reconnaissance.md` for the commands, the
+raw output, and the elaboration probes. Two results change this ADR:
+
+1. **`CochainComplex (ModuleCat k) ℤ` is not monoidal at the pin.**
+   `HomologicalComplex.HasTensor` does not synthesize for the ℤ-indexed shape,
+   because the degree-`n` tensor is a coproduct over the infinite set
+   `{(i,j) : i+j = n}` and Mathlib supplies only the finite-fibre instances.
+   `ChainComplex (ModuleCat k) ℕ` *is* monoidal, which localizes the gap
+   precisely. It is an instance/API gap, not a mathematical obstruction.
+2. **The H⁰ seam is largely already proved.**
+   `CochainComplex.HomComplex.CohomologyClass.homAddEquiv` gives
+   Hⁿ(Hom•(K,L)) ≅ Hom_{K(C)}(K, L⟦n⟧) as an `AddEquiv`.
+
+The first result invalidates Option A as originally written. The options below
+are revised accordingly.
 
 ## Question 1 — the encoding
 
@@ -70,20 +81,43 @@ maps and the associativity and unit axioms written out.
 - Diverges from Mathlib's own vocabulary, which makes upstreaming any part of
   this track harder later — `upstream-candidate` becomes mostly unavailable.
 
+### Option A′: build the ℤ-graded monoidal structure first, then enrich
+
+Supply the missing `HasTensor` / `HasGoodTensor₁₂` / `HasGoodTensor₂₃`
+instances for `HomologicalComplex C (ComplexShape.up ℤ)` under small-coproduct
+hypotheses, in `ForMathlib`, then take Option A on top.
+
+- The only route that ends with the track's declarations shaped like Mathlib's
+  and genuinely upstreamable — the missing instances are themselves a clean
+  `upstream-candidate`, useful to Mathlib independently of this repository.
+- Pays a prerequisite before the first dg definition is written. The size of
+  that prerequisite is not yet measured; measuring it is a spike, not a guess.
+- Risks the track's first milestone becoming a homological-algebra milestone
+  with no dg content, which is how a track loses its thread.
+
 ### Recommendation, not a decision
 
-**Option A, contingent on e1's elaboration evidence.** The deciding argument is
-not elegance but maintenance: the track's value is the seam, and Option A
-spends its budget on the seam instead of on re-deriving categorical
-plumbing. Option B is the fallback and must be taken without reluctance if the
-monoidal instance does not carry its weight at the pin — a bespoke structure
-that elaborates beats an enriched one that fights the elaborator for a year.
+**Option B now, Option A′ as a separately scheduled `upstream-candidate` slice.**
 
-**What changes either way:** under A, `dg-enhancements-e2` is small and the
-track's declarations are shaped like Mathlib's, so individual results stay
-`upstream-candidate`-eligible. Under B, e2 grows by roughly the content of the
-enriched-category files, e5 (opposite/product/functor dg categories) grows
-similarly, and the track should be assumed to stay in-repository permanently.
+The measurement inverted the original recommendation. Option A was recommended
+on the argument that it spends the budget on the seam rather than on categorical
+plumbing — but at this pin, Option A *is* plumbing: it requires building the
+ℤ-graded monoidal structure before a single dg definition can be written.
+Option B needs no monoidal structure at all, because `Cochain.comp` already
+supplies the graded composition law directly.
+
+The second measurement reinforces this. With `homAddEquiv` in hand, DG1's
+headline theorem is close, and the fastest route to it does not pass through a
+monoidal category.
+
+**What changes either way.** Under B, `dg-enhancements-e2` carries the
+structure and its companions (opposite, product, functor dg categories) are
+owner-authored; the track should be assumed to stay in-repository, and
+`upstream-candidate` mostly does not apply to it. Under A′, e2 stays small and
+Mathlib-shaped, but DG1 acquires an unmeasured prerequisite ahead of its first
+theorem. Choosing B does not foreclose A′: the ℤ-graded instances remain worth
+building, and a later `EnrichedOrdinaryCategory` instance for a bespoke
+`DGCategory` is an ordinary refactor rather than a rewrite.
 
 ## Question 2 — the root and the namespace
 
