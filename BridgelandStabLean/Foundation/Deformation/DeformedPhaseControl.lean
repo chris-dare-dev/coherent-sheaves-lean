@@ -3,6 +3,7 @@ Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under the MIT license.
 -/
 import BridgelandStabLean.Foundation.Deformation.DeformedPredicate
+import BridgelandStabLean.Foundation.Deformation.PhaseSum
 
 /-!
 # Phase control inside an owner deformed interval
@@ -112,6 +113,94 @@ theorem skewedPhase_mem_upper_branch
     hab hε hε2 hthin hsin hP hE haφ hφb
   rcases hphase with ⟨hlo, hhi⟩
   constructor <;> linarith
+
+/-- Phase control on old semistable factors lifts to every nonzero object in
+the same thin owner interval. -/
+theorem skewedPhase_mem_expanded_interval
+    (σ : StabilityCondition.WithClassMap C κ)
+    (W : Λ →+ ℂ) {r : ℝ} (hr0 : 0 ≤ r) (hr1 : r < 1)
+    (hW : stabilitySeminorm C σ (W - σ.Z) ≤ ENNReal.ofReal r)
+    {a b ε : ℝ} (hab : a < b) (hε : 0 < ε) (hε2 : ε ≤ 1 / 2)
+    (hthin : b - a + 2 * ε < 1)
+    (hsin : stabilitySeminorm C σ (W - σ.Z) <
+      ENNReal.ofReal (Real.sin (Real.pi * ε)))
+    {E : C} (hI : σ.slicing.intervalProp C a b E) (hE : ¬IsZero E) :
+    (skewedStabilityFunctionOfSeminormLtOne C σ W hr0 hr1 hW hab).phase E ∈
+      Set.Ioo (a - ε) (b + ε) := by
+  let F := skewedStabilityFunctionOfSeminormLtOne C σ W hr0 hr1 hW hab
+  have hα : F.α = (a + b) / 2 := rfl
+  have him_lower : 0 < rotatedIm (W (classOf C κ E)) (a - ε) := by
+    apply σ.slicing.rotatedIm_charge_pos_of_interval C W hI hE
+    intro G φ hP hG haφ hφb
+    have hphase := σ.skewedPhase_mem_lower_branch C W hr0 hr1 hW hab hε hε2
+      hthin hsin hP hG haφ hφb
+    exact rotatedIm_pos_of_relativePhase_gt (F.nonzero G φ haφ hφb hP hG)
+      hphase.1 hphase.2
+  have hcharge : W (classOf C κ E) ≠ 0 := by
+    intro hzero
+    simp [hzero, rotatedIm] at him_lower
+  let pLower := relativePhase (W (classOf C κ E)) (a - ε)
+  have hpLower_mem := relativePhase_mem_Ioc (W (classOf C κ E)) (a - ε)
+  have hpLower_hi : pLower < a - ε + 1 := by
+    by_contra h
+    push Not at h
+    have heq : pLower = a - ε + 1 := le_antisymm hpLower_mem.2 h
+    have him_zero : rotatedIm (W (classOf C κ E)) (a - ε) = 0 := by
+      rw [rotatedIm_eq_norm_mul_sin (W (classOf C κ E)) (a - ε) (a - ε),
+        show relativePhase (W (classOf C κ E)) (a - ε) = pLower from rfl,
+        heq]
+      ring_nf
+      simp
+    linarith
+  have hpLower_gt : a - ε < pLower :=
+    relativePhase_gt_of_rotatedIm_pos him_lower ⟨hpLower_mem.1, hpLower_hi⟩
+  have hpLower_branch : pLower ∈ Set.Ioc (F.α - 1) (F.α + 1) := by
+    constructor
+    · calc
+        F.α - 1 < a - ε := by rw [hα]; linarith
+        _ < pLower := hpLower_gt
+    · calc
+        pLower ≤ a - ε + 1 := hpLower_hi.le
+        _ ≤ F.α + 1 := by rw [hα]; linarith
+  have hlower : a - ε < F.phase E := by
+    change a - ε < relativePhase (W (classOf C κ E)) F.α
+    rw [← relativePhase_eq_of_mem hcharge (a - ε) F.α hpLower_branch]
+    exact hpLower_gt
+  have him_upper : rotatedIm (W (classOf C κ E)) (b + ε) < 0 := by
+    apply σ.slicing.rotatedIm_charge_neg_of_interval C W hI hE
+    intro G φ hP hG haφ hφb
+    have hphase := σ.skewedPhase_mem_upper_branch C W hr0 hr1 hW hab hε hε2
+      hthin hsin hP hG haφ hφb
+    exact rotatedIm_neg_of_relativePhase_lt (F.nonzero G φ haφ hφb hP hG)
+      hphase.1 hphase.2
+  let pUpper := relativePhase (W (classOf C κ E)) (b + ε)
+  have hpUpper_mem := relativePhase_mem_Ioc (W (classOf C κ E)) (b + ε)
+  have hpUpper_hi : pUpper < b + ε + 1 := by
+    by_contra h
+    push Not at h
+    have heq : pUpper = b + ε + 1 := le_antisymm hpUpper_mem.2 h
+    have him_zero : rotatedIm (W (classOf C κ E)) (b + ε) = 0 := by
+      rw [rotatedIm_eq_norm_mul_sin (W (classOf C κ E)) (b + ε) (b + ε),
+        show relativePhase (W (classOf C κ E)) (b + ε) = pUpper from rfl,
+        heq]
+      ring_nf
+      simp
+    linarith
+  have hpUpper_lt : pUpper < b + ε :=
+    relativePhase_lt_of_rotatedIm_neg him_upper ⟨hpUpper_mem.1, hpUpper_hi⟩
+  have hpUpper_branch : pUpper ∈ Set.Ioc (F.α - 1) (F.α + 1) := by
+    constructor
+    · calc
+        F.α - 1 < b + ε - 1 := by rw [hα]; linarith
+        _ < pUpper := hpUpper_mem.1
+    · calc
+        pUpper ≤ b + ε := hpUpper_lt.le
+        _ ≤ F.α + 1 := by rw [hα]; linarith
+  have hupper : F.phase E < b + ε := by
+    change relativePhase (W (classOf C κ E)) F.α < b + ε
+    rw [← relativePhase_eq_of_mem hcharge (b + ε) F.α hpUpper_branch]
+    exact hpUpper_lt
+  exact ⟨hlower, hupper⟩
 
 end StabilityCondition.WithClassMap
 

@@ -4,6 +4,7 @@ Released under the MIT license.
 -/
 import BridgelandStabLean.Foundation.Deformation.DeformedTriangulated
 import BridgelandStabLean.Foundation.Deformation.MidpointHeart
+import BridgelandStabLean.Foundation.Deformation.PhaseConfinement
 
 /-!
 # Hom-vanishing preparations for owner deformed slices
@@ -36,10 +37,10 @@ theorem hom_eq_zero_of_intrinsic_deformed_gap
     (σ : StabilityCondition.WithClassMap C κ)
     {E F : C} {ψ₁ ψ₂ ε : ℝ}
     (hE : ¬IsZero E) (hF : ¬IsZero F)
-    (hElo : ψ₁ - ε < σ.slicing.phiMinus C E hE)
-    (hEhi : σ.slicing.phiPlus C E hE < ψ₁ + ε)
-    (hFlo : ψ₂ - ε < σ.slicing.phiMinus C F hF)
-    (hFhi : σ.slicing.phiPlus C F hF < ψ₂ + ε)
+    (hElo : ψ₁ - ε ≤ σ.slicing.phiMinus C E hE)
+    (hEhi : σ.slicing.phiPlus C E hE ≤ ψ₁ + ε)
+    (hFlo : ψ₂ - ε ≤ σ.slicing.phiMinus C F hF)
+    (hFhi : σ.slicing.phiPlus C F hF ≤ ψ₂ + ε)
     (hgap : ψ₂ + 2 * ε < ψ₁) (f : E ⟶ F) : f = 0 := by
   let δ := (ψ₁ - ψ₂ - 2 * ε) / 4
   have hδ : 0 < δ := by dsimp [δ]; linarith
@@ -51,8 +52,8 @@ theorem hom_eq_zero_of_intrinsic_deformed_gap
       (by linarith) (by linarith)
   exact σ.slicing.intervalHom_eq_zero C hEI hFI (by dsimp [δ]; linarith) f
 
-/-- Large-gap Hom-vanishing for owner deformed predicates once the phase
-confinement estimates for their nonzero witnesses are available. -/
+/-- Large-gap Hom-vanishing for owner deformed predicates from weak intrinsic
+phase confinement. -/
 theorem hom_eq_zero_of_deformedPred_large_gap
     (σ : StabilityCondition.WithClassMap C κ)
     (W : Λ →+ ℂ) {r : ℝ} (hr0 : 0 ≤ r) (hr1 : r < 1)
@@ -63,8 +64,8 @@ theorem hom_eq_zero_of_deformedPred_large_gap
     (hconf : ∀ {X : C} {ψ : ℝ}
       (_ : σ.deformedPred C W hr0 hr1 hW ε ψ X)
       (hX : ¬IsZero X),
-      ψ - ε < σ.slicing.phiMinus C X hX ∧
-        σ.slicing.phiPlus C X hX < ψ + ε)
+      ψ - ε ≤ σ.slicing.phiMinus C X hX ∧
+        σ.slicing.phiPlus C X hX ≤ ψ + ε)
     (hgap : ψ₂ + 2 * ε < ψ₁) (f : E ⟶ F) : f = 0 := by
   by_cases hEZ : IsZero E
   · exact hEZ.eq_of_src f 0
@@ -73,6 +74,30 @@ theorem hom_eq_zero_of_deformedPred_large_gap
   exact σ.hom_eq_zero_of_intrinsic_deformed_gap C hEZ hFZ
     (hconf hE hEZ).1 (hconf hE hEZ).2
     (hconf hF hFZ).1 (hconf hF hFZ).2 hgap f
+
+/-- Owner deformed slices separated by more than twice the deformation radius
+are Hom-orthogonal. -/
+theorem hom_eq_zero_of_deformedPred_gap
+    [IsTriangulated C]
+    (σ : StabilityCondition.WithClassMap C κ)
+    (W : Λ →+ ℂ) {r : ℝ} (hr0 : 0 ≤ r) (hr1 : r < 1)
+    (hW : stabilitySeminorm C σ (W - σ.Z) ≤ ENNReal.ofReal r)
+    {ε ψ₁ ψ₂ : ℝ} (hε : 0 < ε) (hε2 : ε ≤ 1 / 2)
+    (hsin : stabilitySeminorm C σ (W - σ.Z) <
+      ENNReal.ofReal (Real.sin (Real.pi * ε)))
+    {E F : C}
+    (hE : σ.deformedPred C W hr0 hr1 hW ε ψ₁ E)
+    (hF : σ.deformedPred C W hr0 hr1 hW ε ψ₂ F)
+    (hgap : ψ₂ + 2 * ε < ψ₁) (f : E ⟶ F) : f = 0 := by
+  apply σ.hom_eq_zero_of_deformedPred_large_gap C W hr0 hr1 hW hE hF
+  · intro X ψ hX hXne
+    obtain ⟨a, b, hab, hthin, haψ, hψb, hSS⟩ :=
+      σ.exists_deformedPred_witness C W hr0 hr1 hW hX hXne
+    exact ⟨σ.skewed_phiMinus_ge C W hr0 hr1 hW hab hε hε2 hthin hsin
+        haψ hψb hSS,
+      σ.skewed_phiPlus_le C W hr0 hr1 hW hab hε hε2 hthin hsin
+        haψ hψb hSS⟩
+  · exact hgap
 
 end StabilityCondition.WithClassMap
 
