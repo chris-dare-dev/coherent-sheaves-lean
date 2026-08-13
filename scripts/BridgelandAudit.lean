@@ -377,6 +377,10 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Foundation.Slicing.geProp_of_phiMinus_ge
 #print axioms BridgelandStabLean.Foundation.Slicing.leProp_of_phiPlus_le
 #print axioms BridgelandStabLean.Foundation.Slicing.ltProp_of_phiPlus_lt
+#print axioms BridgelandStabLean.Foundation.Slicing.ltProp_of_leProp_of_lt
+#print axioms BridgelandStabLean.Foundation.Slicing.phiPlus_lt_of_triangle_with_leProp
+#print axioms BridgelandStabLean.Foundation.Slicing.phiMinus_gt_of_triangle_with_gtProp
+#print axioms BridgelandStabLean.Foundation.Slicing.first_intervalProp_of_triangle
 #print axioms BridgelandStabLean.Foundation.HNFiltration.phaseShift
 #print axioms BridgelandStabLean.Foundation.Slicing.phaseShift
 #print axioms BridgelandStabLean.Foundation.Slicing.phaseShift_gtProp_zero

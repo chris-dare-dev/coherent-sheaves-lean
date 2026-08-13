@@ -2,7 +2,7 @@
 Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under the MIT license.
 -/
-import BridgelandStabLean.Foundation.Slicing.IntrinsicPhases
+import BridgelandStabLean.Foundation.Slicing.PhaseCutClosure
 
 /-!
 # Intrinsic phase bounds and interval membership
@@ -219,6 +219,79 @@ theorem Slicing.phiPlus_lt_of_ltProp (s : Slicing C) {E : C}
       _ ≤ F.phiPlus C hn :=
         G.phiPlus_le_of_firstFactor_nonzero C s F hG hn hfirst
       _ < b := hplus
+
+/-- A weak upper phase bound becomes a strict upper phase bound after strictly
+enlarging its endpoint. -/
+theorem Slicing.ltProp_of_leProp_of_lt (s : Slicing C) {a b : ℝ}
+    (hab : a < b) : s.leProp C a ≤ s.ltProp C b := by
+  rintro E (hE | ⟨F, hF, hle⟩)
+  · exact Or.inl hE
+  · exact Or.inr ⟨F, hF, hle.trans_lt hab⟩
+
+/-- In a distinguished triangle `K → E → Q → K[1]`, an upper phase bound
+on `E` and a compatible weak upper bound on `Q` bound `K` from above. -/
+theorem Slicing.phiPlus_lt_of_triangle_with_leProp (s : Slicing C)
+    {K E Q : C} (hK : ¬IsZero K) {b : ℝ}
+    (hE_lt : ∀ hE : ¬IsZero E, s.phiPlus C E hE < b)
+    {c : ℝ} (hQ_le : s.leProp C c Q) (hcb : c < b + 1)
+    {f₁ : K ⟶ E} {f₂ : E ⟶ Q} {f₃ : Q ⟶ K⟦(1 : ℤ)⟧}
+    (hT : Triangle.mk f₁ f₂ f₃ ∈ distTriang C) :
+    s.phiPlus C K hK < b := by
+  let T := Triangle.mk f₁ f₂ f₃
+  have hE_upper : s.ltProp C b E := by
+    by_cases hE : IsZero E
+    · exact Or.inl hE
+    · exact s.ltProp_of_phiPlus_lt C hE (hE_lt hE)
+  have hQ_shift : s.leProp C (c + ((-1 : ℤ) : ℝ)) (Q⟦(-1 : ℤ)⟧) :=
+    s.leProp_shift C c Q (-1) hQ_le
+  have hQ_upper : s.ltProp C b (Q⟦(-1 : ℤ)⟧) :=
+    s.ltProp_of_leProp_of_lt C (by push_cast; linarith) _ hQ_shift
+  have hK_upper : s.ltProp C b K := by
+    simpa [T] using s.ltProp_of_triangle C b hQ_upper hE_upper
+      (inv_rot_of_distTriang T hT)
+  exact s.phiPlus_lt_of_ltProp C hK hK_upper
+
+/-- In a distinguished triangle `K → E → Q → K[1]`, a lower phase bound
+on `E` and a compatible strict lower bound on `K` bound `Q` from below. -/
+theorem Slicing.phiMinus_gt_of_triangle_with_gtProp (s : Slicing C)
+    {K E Q : C} (hQ : ¬IsZero Q) {a : ℝ}
+    (hE_gt : ∀ hE : ¬IsZero E, a < s.phiMinus C E hE)
+    {c : ℝ} (hK_gt : s.gtProp C c K) (hca : a < c + 1)
+    {f₁ : K ⟶ E} {f₂ : E ⟶ Q} {f₃ : Q ⟶ K⟦(1 : ℤ)⟧}
+    (hT : Triangle.mk f₁ f₂ f₃ ∈ distTriang C) :
+    a < s.phiMinus C Q hQ := by
+  let T := Triangle.mk f₁ f₂ f₃
+  have hE_lower : s.gtProp C a E := by
+    by_cases hE : IsZero E
+    · exact Or.inl hE
+    · exact s.gtProp_of_phiMinus_gt C hE (hE_gt hE)
+  have hK_shift : s.gtProp C (c + ((1 : ℤ) : ℝ)) (K⟦(1 : ℤ)⟧) :=
+    s.gtProp_shift C c K 1 hK_gt
+  have hK_lower : s.gtProp C a (K⟦(1 : ℤ)⟧) :=
+    s.gtProp_anti C (by push_cast; linarith) _ hK_shift
+  have hQ_lower : s.gtProp C a Q := by
+    simpa [T] using s.gtProp_of_triangle C a hE_lower hK_lower
+      (rot_of_distTriang T hT)
+  exact s.phiMinus_gt_of_gtProp C hQ hQ_lower
+
+/-- The first vertex of a distinguished triangle stays in an open phase
+interval when its middle vertex is in that interval and the first and third
+vertices satisfy the one-sided bounds supplied by a common heart. -/
+theorem Slicing.first_intervalProp_of_triangle (s : Slicing C)
+    {a b : ℝ} (hab : a < b) {K E Q : C}
+    (hE : s.intervalProp C a b E)
+    (hQ_le : s.leProp C (a + 1) Q)
+    (hK_gt : s.gtProp C a K)
+    {f₁ : K ⟶ E} {f₂ : E ⟶ Q} {f₃ : Q ⟶ K⟦(1 : ℤ)⟧}
+    (hT : Triangle.mk f₁ f₂ f₃ ∈ distTriang C) :
+    s.intervalProp C a b K := by
+  by_cases hK : IsZero K
+  · exact Or.inl hK
+  · apply s.intervalProp_of_intrinsic_phases C hK
+    · exact s.phiMinus_gt_of_gtProp C hK hK_gt
+    · exact s.phiPlus_lt_of_triangle_with_leProp C hK
+        (fun hEne => s.phiPlus_lt_of_intervalProp C hEne hE)
+        hQ_le (by linarith) hT
 
 /-- The intersection of strict lower and upper owner cuts is the corresponding
 open owner phase interval. -/
