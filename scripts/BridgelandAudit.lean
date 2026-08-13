@@ -342,6 +342,13 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Foundation.HNFiltration.exists_of_distinguished_triangle
 #print axioms BridgelandStabLean.Foundation.HNFiltration.exists_of_distinguished_triangle_phase_bounds
 #print axioms BridgelandStabLean.Foundation.HNFiltration.exists_split_at_cutoff
+#print axioms BridgelandStabLean.Foundation.Deformation.ThinStrictFiniteLength
+#print axioms BridgelandStabLean.Foundation.Deformation.ThinStrictFiniteLength.of_finiteLength
+#print axioms BridgelandStabLean.Foundation.Deformation.IsStrictMDQ
+#print axioms BridgelandStabLean.Foundation.Deformation.IsStrictMDQ.epi
+#print axioms BridgelandStabLean.Foundation.Deformation.IsStrictMDQ.strict
+#print axioms BridgelandStabLean.Foundation.Deformation.IsStrictMDQ.phase_le
+#print axioms BridgelandStabLean.Foundation.Deformation.IsStrictMDQ.factor_of_phase_eq
 #print axioms BridgelandStabLean.Foundation.HNFiltration.shift
 #print axioms BridgelandStabLean.Foundation.HNFiltration.shift_phiPlus
 #print axioms BridgelandStabLean.Foundation.HNFiltration.shift_phiMinus
