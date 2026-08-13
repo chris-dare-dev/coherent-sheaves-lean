@@ -3,6 +3,8 @@ Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under the MIT license.
 -/
 import BridgelandStabLean.Foundation.Deformation.DeformedTriangulated
+import BridgelandStabLean.Foundation.Deformation.HeartImage
+import BridgelandStabLean.Foundation.Deformation.IntervalIndependence
 import BridgelandStabLean.Foundation.Deformation.MidpointHeart
 import BridgelandStabLean.Foundation.Deformation.PhaseConfinement
 
@@ -119,6 +121,77 @@ theorem hom_eq_zero_of_deformedCuts_gap
   obtain ⟨ψ₂, hψt, hPredY⟩ := hY
   exact σ.hom_eq_zero_of_deformedPred_gap C W hr0 hr1 hW hε hε2 hsin
     hPredX hPredY (by linarith)
+
+/-- Sharp Hom-vanishing in the small-gap branch once the source and target
+have been transported to the two overlapping thin interval presentations.
+The common midpoint heart supplies an abelian image; semistability bounds its
+phase from opposite sides, while interval independence identifies the two
+selected image phases. -/
+theorem hom_eq_zero_of_skewed_small_gap
+    [IsTriangulated C]
+    (σ : StabilityCondition.WithClassMap C κ)
+    (W : Λ →+ ℂ) {r : ℝ} (hr0 : 0 ≤ r) (hr1 : r < 1)
+    (hW : stabilitySeminorm C σ (W - σ.Z) ≤ ENNReal.ofReal r)
+    {a l u δ ε ψ₁ ψ₂ : ℝ}
+    (hau : a < u) (hua : u ≤ a + 1) (hla : l < a + 1) (hδ : 0 < δ)
+    (hε : 0 < ε) (hε2 : ε ≤ 1 / 2)
+    (hthinLeft : u - a + 2 * ε < 1)
+    (_hthinRight : (a + 1 + δ) - l + 2 * ε < 1)
+    (hsin : stabilitySeminorm C σ (W - σ.Z) <
+      ENNReal.ofReal (Real.sin (Real.pi * ε)))
+    (haψ : a + ε ≤ ψ₁) (hψu : ψ₁ ≤ u - ε)
+    (hbranchLeft : (l + (a + 1 + δ)) / 2 - 1 < a - ε)
+    (hbranchRight : u + ε ≤ (l + (a + 1 + δ)) / 2 + 1)
+    {E F : C}
+    (hE : (skewedStabilityFunctionOfSeminormLtOne C σ W hr0 hr1 hW hau).IsSemistable
+      E ψ₁)
+    (hF : (skewedStabilityFunctionOfSeminormLtOne C σ W hr0 hr1 hW
+      (show l < a + 1 + δ by linarith)).IsSemistable F ψ₂)
+    (hE_lower : ∀ hEne : ¬IsZero E, l < σ.slicing.phiMinus C E hEne)
+    (hF_upper : ∀ hFne : ¬IsZero F, σ.slicing.phiPlus C F hFne < u)
+    (hEheart : ((σ.slicing.phaseShift C a).toTStructure C).heart E)
+    (hFheart : ((σ.slicing.phaseShift C a).toTStructure C).heart F)
+    (hgap : ψ₂ < ψ₁) (f : E ⟶ F) : f = 0 := by
+  by_contra hf
+  have hright : l < a + 1 + δ := by linarith
+  obtain ⟨I, K, Q, p, i, k, q, δp, δi, _hfac, _hp, _hi,
+      hTp, hTi, hIne, hKLeft, hILeft, hIRightSmall, hQRight⟩ :=
+    σ.slicing.exists_heart_image_factorisation_windows C hau hua hla hδ
+      hEheart hFheart
+      hE_lower
+      (fun hEne => σ.slicing.phiPlus_lt_of_intervalProp C hEne hE.interval)
+      (fun hFne => σ.slicing.phiMinus_gt_of_intervalProp C hFne hF.interval)
+      hF_upper hf
+  let Fleft := skewedStabilityFunctionOfSeminormLtOne C σ W hr0 hr1 hW hau
+  let Fright := skewedStabilityFunctionOfSeminormLtOne C σ W hr0 hr1 hW hright
+  have hIphaseLeft := σ.skewedPhase_mem_expanded_interval C W hr0 hr1 hW
+    hau hε hε2 hthinLeft hsin hILeft hIne
+  change Fleft.phase I.obj ∈ Set.Ioo (a - ε) (u + ε) at hIphaseLeft
+  have hIrange : Fleft.phase I.obj ∈ Set.Ioo (ψ₁ - 1) (ψ₁ + 1) := by
+    exact ⟨by linarith [hIphaseLeft.1], by linarith [hIphaseLeft.2]⟩
+  have hKrange : ∀ hKne : ¬IsZero K.obj,
+      Fleft.phase K.obj ∈ Set.Ioc (ψ₁ - 1) ψ₁ := by
+    intro hKne
+    have hKphase := σ.skewedPhase_mem_expanded_interval C W hr0 hr1 hW
+      hau hε hε2 hthinLeft hsin hKLeft hKne
+    change Fleft.phase K.obj ∈ Set.Ioo (a - ε) (u + ε) at hKphase
+    exact ⟨by linarith [hKphase.1],
+      hE.phase_le_of_triangle hTp hKLeft hILeft hKne⟩
+  have hPhaseLower : ψ₁ ≤ Fleft.phase I.obj := by
+    apply hE.phase_le_of_quotient_triangle hTp
+    · exact σ.charge_ne_of_interval C W hr0 hr1 hW hau hε hε2
+        hthinLeft hsin hILeft hIne
+    · exact hIrange
+    · exact hKrange
+  have hIRight : σ.slicing.intervalProp C l (a + 1 + δ) I.obj :=
+    σ.slicing.intervalProp_mono C le_rfl (by linarith) I.obj hIRightSmall
+  have hPhaseUpper : Fright.phase I.obj ≤ ψ₂ := by
+    exact hF.phase_le_of_triangle hTi hIRight hQRight hIne
+  have hPhaseEq : Fleft.phase I.obj = Fright.phase I.obj := by
+    exact σ.skewedPhase_eq_of_common_interval C W hr0 hr1 hW hau hright
+      hε hε2 hthinLeft hsin hbranchLeft hbranchRight hILeft hIne
+  rw [hPhaseEq] at hPhaseLower
+  linarith
 
 end StabilityCondition.WithClassMap
 
