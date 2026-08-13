@@ -4,6 +4,7 @@ Released under the MIT license.
 -/
 import BridgelandStabLean.Foundation.Deformation.IntervalHeart
 import BridgelandStabLean.Foundation.Slicing.BoundaryTruncation
+import BridgelandStabLean.ForMathlib.CategoryTheory.Triangulated.TStructure.ImageFactorisation
 
 /-!
 # Two-heart embeddings of owner interval categories
@@ -25,6 +26,8 @@ namespace BridgelandStabLean.Foundation
 variable (C : Type u) [Category.{v} C] [HasZeroObject C] [HasShift C ℤ]
   [Preadditive C] [∀ n : ℤ, (shiftFunctor C n).Additive] [Pretriangulated C]
   [IsTriangulated C]
+
+open BridgelandStabLean.ForMathlib.CategoryTheory.Triangulated.TStructure
 
 /-- Owner interval objects lie in the left adjacent slicing heart
 `P((a,a+1])`. -/
@@ -136,5 +139,89 @@ instance Slicing.IntervalCat.toRightHeart_faithful (s : Slicing C) (a b : ℝ)
     cases g
     cases h
     rfl
+
+omit [IsTriangulated C] in
+/-- A non-strict lower phase bound propagates through the third vertex of a
+distinguished triangle. -/
+theorem Slicing.phiMinus_gt_of_triangle_with_geProp (s : Slicing C)
+    {K E Q : C} (hQ : ¬IsZero Q) {a : ℝ}
+    (hE : ∀ hE : ¬IsZero E, a < s.phiMinus C E hE)
+    {c : ℝ} (hK : s.geProp C c K) (hca : a < c + 1)
+    {f : K ⟶ E} {g : E ⟶ Q} {h : Q ⟶ K⟦(1 : ℤ)⟧}
+    (hT : Triangle.mk f g h ∈ distTriang C) :
+    a < s.phiMinus C Q hQ := by
+  let T := Triangle.mk f g h
+  have hElower : s.gtProp C a E := by
+    by_cases hEzero : IsZero E
+    · exact Or.inl hEzero
+    · exact s.gtProp_of_phiMinus_gt C hEzero (hE hEzero)
+  have hKshift : s.geProp C (c + ((1 : ℤ) : ℝ)) (K⟦(1 : ℤ)⟧) :=
+    s.geProp_shift C c K 1 hK
+  have hKlower : s.gtProp C a (K⟦(1 : ℤ)⟧) := by
+    rcases hKshift with hzero | ⟨F, hF, hge⟩
+    · exact Or.inl hzero
+    · exact Or.inr ⟨F, hF, by push_cast at hge; linarith⟩
+  have hQlower : s.gtProp C a Q := by
+    simpa [T] using s.gtProp_of_triangle C a hElower hKlower
+      (rot_of_distTriang T hT)
+  exact s.phiMinus_gt_of_gtProp C hQ hQlower
+
+omit [IsTriangulated C] in
+/-- The third vertex stays in a thin owner interval when right-heart bounds
+are available on the first and third vertices. -/
+theorem Slicing.third_intervalProp_of_triangle (s : Slicing C)
+    {a b : ℝ} (hab : a < b) {K E Q : C}
+    (hE : s.intervalProp C a b E) (hK : s.geProp C (b - 1) K)
+    (hQ : s.ltProp C b Q)
+    {f : K ⟶ E} {g : E ⟶ Q} {h : Q ⟶ K⟦(1 : ℤ)⟧}
+    (hT : Triangle.mk f g h ∈ distTriang C) :
+    s.intervalProp C a b Q := by
+  by_cases hQzero : IsZero Q
+  · exact Or.inl hQzero
+  exact s.intervalProp_of_intrinsic_phases C hQzero
+    (s.phiMinus_gt_of_triangle_with_geProp C hQzero
+      (fun hEne => s.phiMinus_gt_of_intervalProp C hEne hE)
+      hK (by linarith) hT)
+    (s.phiPlus_lt_of_ltProp C hQzero hQ)
+
+/-- A monomorphism in the left adjacent heart with interval target has an
+interval source. -/
+theorem Slicing.intervalProp_of_mono_leftHeart (s : Slicing C)
+    {a b : ℝ} (hab : a < b)
+    {X Y : ((s.phaseShift C a).toTStructure C).heart.FullSubcategory}
+    (hY : s.intervalProp C a b Y.obj) (f : X ⟶ Y) [Mono f] :
+    s.intervalProp C a b X.obj := by
+  let t := (s.phaseShift C a).toTStructure C
+  letI := t.hasHeartFullSubcategory
+  obtain ⟨Q, q, δ, hT⟩ := exists_distinguished_triangle_of_heart_mono t f
+  have hXgt : s.gtProp C a X.obj :=
+    (s.phaseShift_gtProp_zero C a X.obj).mp
+      (((s.phaseShift C a).toTStructure_heart_iff C X.obj).mp X.property).1
+  have hQle : s.leProp C (a + 1) Q.obj := by
+    simpa [add_comm] using
+      (s.phaseShift_leProp C a 1 Q.obj).mp
+        (((s.phaseShift C a).toTStructure_heart_iff C Q.obj).mp Q.property).2
+  exact s.first_intervalProp_of_triangle C hab hY hQle hXgt hT
+
+/-- An epimorphism in the right adjacent heart with interval source has an
+interval target. -/
+theorem Slicing.intervalProp_of_epi_rightHeart (s : Slicing C)
+    {a b : ℝ} (hab : a < b)
+    {X Y : ((s.phaseShift C (b - 1)).toDualTStructure C).heart.FullSubcategory}
+    (hX : s.intervalProp C a b X.obj) (f : X ⟶ Y) [Epi f] :
+    s.intervalProp C a b Y.obj := by
+  let t := (s.phaseShift C (b - 1)).toDualTStructure C
+  letI := t.hasHeartFullSubcategory
+  obtain ⟨K, i, δ, hT⟩ :=
+    exists_distinguished_triangle_of_heart_epi t f
+  have hKge : s.geProp C (b - 1) K.obj :=
+    (s.phaseShift_geProp_zero C (b - 1) K.obj).mp
+      (((s.phaseShift C (b - 1)).toDualTStructure_heart_iff C K.obj).mp K.property).1
+  have hYlt : s.ltProp C b Y.obj := by
+    have h := (s.phaseShift_ltProp C (b - 1) 1 Y.obj).mp
+      (((s.phaseShift C (b - 1)).toDualTStructure_heart_iff C Y.obj).mp Y.property).2
+    have heq : 1 + (b - 1) = b := by linarith
+    rwa [heq] at h
+  exact s.third_intervalProp_of_triangle C hab hX hKge hYlt hT
 
 end BridgelandStabLean.Foundation
