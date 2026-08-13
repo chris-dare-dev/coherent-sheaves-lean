@@ -731,4 +731,63 @@ theorem isStrictNoetherianObject_of_fullFaithful_map_strictMono
 end
 
 
+section
+
+variable [HasKernels C] [HasCokernels C]
+
+/-- An object has owner strict finite length when both chain conditions on
+strict subobjects hold. -/
+def IsStrictFiniteLengthObject (X : C) : Prop :=
+  IsStrictArtinianObject X ∧ IsStrictNoetherianObject X
+
+/-- An object has ordinary finite length when it is Artinian and
+Noetherian. -/
+def IsFiniteLengthObject (X : C) : Prop :=
+  IsArtinianObject X ∧ IsNoetherianObject X
+
+/-- Build owner strict finite length from the two strict chain conditions. -/
+theorem isStrictFiniteLengthObject_iff {X : C} :
+    IsStrictFiniteLengthObject X ↔
+      IsStrictArtinianObject X ∧ IsStrictNoetherianObject X :=
+  Iff.rfl
+
+/-- A finite subobject lattice gives owner strict finite length. -/
+theorem isStrictFiniteLengthObject_of_finite_subobjects {X : C}
+    (h : Finite (Subobject X)) : IsStrictFiniteLengthObject X := by
+  letI : Finite (Subobject X) := h
+  exact ⟨ObjectProperty.is_of_prop _
+      (show WellFoundedLT (StrictSubobject X) from by infer_instance),
+    ObjectProperty.is_of_prop _
+      (show WellFoundedGT (StrictSubobject X) from by infer_instance)⟩
+
+/-- Ordinary finite length implies owner strict finite length. -/
+theorem isStrictFiniteLengthObject_of_isFiniteLengthObject {X : C}
+    (h : IsFiniteLengthObject X) : IsStrictFiniteLengthObject X := by
+  letI : IsArtinianObject X := h.1
+  letI : IsNoetherianObject X := h.2
+  exact ⟨isStrictArtinianObject_of_isArtinianObject,
+    isStrictNoetherianObject_of_isNoetherianObject⟩
+
+end
+
+
+section
+
+variable {D : Type u} [Category.{v} D] [Abelian D]
+
+/-- In an abelian category, owner strict finite length agrees with ordinary
+finite length. -/
+theorem isStrictFiniteLengthObject_iff_isFiniteLengthObject {X : D} :
+    IsStrictFiniteLengthObject X ↔ IsFiniteLengthObject X := by
+  constructor
+  · intro h
+    letI : IsStrictArtinianObject X := h.1
+    letI : IsStrictNoetherianObject X := h.2
+    exact ⟨isArtinianObject_of_isStrictArtinianObject,
+      isNoetherianObject_of_isStrictNoetherianObject⟩
+  · exact isStrictFiniteLengthObject_of_isFiniteLengthObject
+
+end
+
+
 end BridgelandStabLean.Foundation
