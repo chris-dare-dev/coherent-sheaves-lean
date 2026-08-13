@@ -59,8 +59,8 @@ to **488**. Both were right against the filter of the day, and both are
 superseded here -- the 821 in particular counted the 30 generated names
 described above. **Re-run the command; do not adjust the numbers.**
 
-**THE GAP IS NOW ZERO, re-measured while adding the issue #228 owner
-Grothendieck and pre-stability foundation on 2026-08-13.** Every
+**THE GAP IS NOW ZERO, re-measured while adding the issue #229 owner local
+finiteness and full stability-condition foundation on 2026-08-13.** Every
 public declaration in this library that is not a structure field projection is
 named below. Be precise about what that does and does not mean -- three of the
 four qualifications in this comment are unaffected by it:
@@ -73,18 +73,18 @@ four qualifications in this comment are unaffected by it:
   green without an entry here. Zero is a measurement taken at a commit, not a
   property the build maintains.
 
-* It issues **1604** audit commands for **1602** distinct names. The environment holds **1926** authored
-  declarations under `BridgelandStabLean.*`, so **324 are outside this gate**,
+* It issues **1639** audit commands. The environment holds **1968** authored
+  declarations under `BridgelandStabLean.*`, so **331 are outside this gate**,
   all of them private or projections. ("Authored" excludes constructors,
   recursors, `casesOn`, matchers, equation lemmas, internal names, and the five
   generated families named above -- none of which anybody writes or could
   list.)
-* **119 are `private`** -- 103 of them theorems -- and are *structurally*
+* **123 are `private`** -- 107 of them theorems -- and are *structurally*
   unlistable: Lean mangles a private name to `_private.<Module>.<n>.<Name>`,
   which cannot be written as a short name from an importing module. The
   instruction below cannot be followed for them, and no amount of diligence
   changes that.
-* **205 are structure field projections** emitted by the `structure` command.
+* **208 are structure field projections** emitted by the `structure` command.
   These are not a coverage gap in any useful sense; listing them would be noise.
   They are called out because a census that does not separate them reports a
   shortfall five times the real one.
@@ -106,7 +106,7 @@ four qualifications in this comment are unaffected by it:
   when a name it *should* list appears. `scripts/Census.lean` is the thing that
   reports it, but it is a script you run, not a CI gate; a name added without a
   matching entry here still lands green.
-* **489 of the 1604 audited records are not theorems** (55 `structure`, 434 other
+* **507 of the distinct gated declarations are not theorems** (57 `structure`, 450 other
   constructions).
   For a `def`, `#print axioms` reports the axiom closure of a CONSTRUCTION and
   asserts nothing about any proposition. In particular
@@ -239,6 +239,44 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Compatibility.BridgelandStability.PreStabilityCondition.ofVendor_toVendor
 #print axioms BridgelandStabLean.Compatibility.BridgelandStability.PreStabilityCondition.toVendor_ofVendor
 #print axioms BridgelandStabLean.Compatibility.BridgelandStability.PreStabilityCondition.equiv
+
+/-! ## Owner-controlled local finiteness and stability conditions (#229) -/
+
+#print axioms BridgelandStabLean.Foundation.Slicing.intervalProp
+#print axioms BridgelandStabLean.Foundation.Slicing.IntervalCat
+#print axioms BridgelandStabLean.Foundation.Slicing.IntervalCat.ι
+#print axioms BridgelandStabLean.Foundation.Slicing.intervalProp_of_isZero
+#print axioms BridgelandStabLean.Foundation.Slicing.intervalProp_containsZero
+#print axioms BridgelandStabLean.Foundation.Slicing.IsAdmissibleSubobject
+#print axioms BridgelandStabLean.Foundation.Slicing.AdmissibleSubobject
+#print axioms BridgelandStabLean.Foundation.Slicing.IsAdmissiblyArtinian
+#print axioms BridgelandStabLean.Foundation.Slicing.IsAdmissiblyNoetherian
+#print axioms BridgelandStabLean.Foundation.Slicing.IsFiniteLength
+#print axioms BridgelandStabLean.Foundation.admissibleSubobjectOrderIso
+#print axioms BridgelandStabLean.Foundation.admissibleSubobjectOrderIso_wellFoundedLT_iff
+#print axioms BridgelandStabLean.Foundation.admissibleSubobjectOrderIso_wellFoundedGT_iff
+#print axioms BridgelandStabLean.Foundation.Slicing.IsLocallyFinite
+#print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap
+#print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.ext
+#print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.ext_iff
+#print axioms BridgelandStabLean.Foundation.StabilityCondition
+#print axioms BridgelandStabLean.Foundation.stabilityCondition_compat_apply
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.Slicing.toVendor_intervalProp_iff
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.Slicing.intervalEquiv
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.Slicing.intervalSubobjectOrderIso
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.Slicing.intervalSubobjectOrderIso_wellFoundedLT_iff
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.Slicing.intervalSubobjectOrderIso_wellFoundedGT_iff
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.Slicing.intervalSubobjectOrderIso_isStrict_of_isAdmissible
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.Slicing.isAdmissible_of_intervalSubobjectOrderIso_isStrict
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.Slicing.intervalSubobjectOrderIso_isAdmissible_iff_isStrict
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.Slicing.intervalAdmissibleSubobjectOrderIso
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.Slicing.isFiniteLength_iff
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.Slicing.isLocallyFinite_iff
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.StabilityCondition.toVendor
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.StabilityCondition.ofVendor
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.StabilityCondition.ofVendor_toVendor
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.StabilityCondition.toVendor_ofVendor
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.StabilityCondition.equiv
 
 /-! ## Cohomology exactness (#146) -/
 
