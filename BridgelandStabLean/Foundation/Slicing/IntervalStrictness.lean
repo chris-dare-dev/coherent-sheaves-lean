@@ -528,6 +528,112 @@ theorem Slicing.IsLocallyFinite.of_finiteSubobjects (s : Slicing C)
   intro E
   exact isStrictFiniteLengthObject_of_finite_subobjects (hfinite t E)
 
+/-- A distinguished ambient triangle on three thin-interval objects defines
+an owner strict short exact sequence in the interval category. -/
+theorem Slicing.IntervalCat.strictShortExact_of_distinguished
+    (s : Slicing C) {S : ShortComplex (s.IntervalCat C a b)}
+    {δ : S.X₃.obj ⟶ S.X₁.obj⟦(1 : ℤ)⟧}
+    (hT : Triangle.mk S.f.hom S.g.hom δ ∈ distTriang C) :
+    StrictShortExact S := by
+  let tL := (s.phaseShift C a).toTStructure C
+  letI := tL.hasHeartFullSubcategory
+  letI : Abelian tL.heart.FullSubcategory := heartFullSubcategoryAbelian tL
+  let FL := Slicing.IntervalCat.toLeftHeart
+    (C := C) (s := s) a b (Fact.out : b - a ≤ 1)
+  have hL : (S.map FL).ShortExact := by
+    change (ShortComplex.mk (FL.map S.f) (FL.map S.g) _).ShortExact
+    exact heartFullSubcategory_shortExact_of_distTriang tL hT
+  have hKerL : IsLimit
+      (KernelFork.ofι ((S.map FL).f) (S.map FL).zero) := hL.fIsKernel
+  have hKerMap : IsLimit
+      (FL.mapCone (KernelFork.ofι S.f S.zero)) :=
+    (isLimitMapConeForkEquiv' FL S.zero).symm hKerL
+  have hKer : IsLimit (KernelFork.ofι S.f S.zero) :=
+    isLimitOfReflects FL hKerMap
+  let tR := (s.phaseShift C (b - 1)).toDualTStructure C
+  letI := tR.hasHeartFullSubcategory
+  letI : Abelian tR.heart.FullSubcategory := heartFullSubcategoryAbelian tR
+  let FR := Slicing.IntervalCat.toRightHeart
+    (C := C) (s := s) a b (Fact.out : b - a ≤ 1)
+  have hR : (S.map FR).ShortExact := by
+    change (ShortComplex.mk (FR.map S.f) (FR.map S.g) _).ShortExact
+    exact heartFullSubcategory_shortExact_of_distTriang tR hT
+  have hCokR : IsColimit
+      (CokernelCofork.ofπ ((S.map FR).g) (S.map FR).zero) := hR.gIsCokernel
+  have hCokMap : IsColimit
+      (FR.mapCocone (CokernelCofork.ofπ S.g S.zero)) :=
+    (isColimitMapCoconeCoforkEquiv' FR S.zero).symm hCokR
+  have hCok : IsColimit (CokernelCofork.ofπ S.g S.zero) :=
+    isColimitOfReflects FR hCokMap
+  letI : Mono (FR.map S.f) := hR.mono_f
+  letI : Epi (FL.map S.g) := hL.epi_g
+  have hf : IsStrictMono S.f :=
+    Slicing.IntervalCat.strictMono_of_mono_toRightHeart C s S.f
+  have hg : IsStrictEpi S.g :=
+    Slicing.IntervalCat.strictEpi_of_epi_toLeftHeart C s S.g
+  let eK' : kernel S.g ≅ S.X₁ :=
+    IsLimit.conePointUniqueUpToIso (kernelIsKernel S.g) hKer
+  let eK : S.X₁ ≅ kernel S.g := eK'.symm
+  have heK : eK.hom ≫ kernel.ι S.g = S.f := by
+    change (IsLimit.conePointUniqueUpToIso (kernelIsKernel S.g) hKer).inv ≫
+      kernel.ι S.g = S.f
+    exact IsLimit.conePointUniqueUpToIso_inv_comp (kernelIsKernel S.g) hKer
+      Limits.WalkingParallelPair.zero
+  have hLift : kernel.lift S.g S.f S.zero = eK.hom := by
+    apply (cancel_mono (kernel.ι S.g)).1
+    rw [heK]
+    exact kernel.lift_ι S.g S.f S.zero
+  have hKernelComp : kernel.ι S.g ≫ cokernel.π S.f = 0 := by
+    have hιEq : kernel.ι S.g = eK.inv ≫ S.f := by
+      apply (cancel_epi eK.hom).1
+      simp [heK]
+    rw [hιEq, Category.assoc, cokernel.condition]
+    simp
+  let eQ : cokernel S.f ≅ S.X₃ :=
+    IsColimit.coconePointUniqueUpToIso (cokernelIsCokernel S.f) hCok
+  have heQ : cokernel.π S.f ≫ eQ.hom = S.g := by
+    change cokernel.π S.f ≫
+        (IsColimit.coconePointUniqueUpToIso (cokernelIsCokernel S.f) hCok).hom =
+      (CokernelCofork.ofπ S.g S.zero).ι.app Limits.WalkingParallelPair.one
+    exact IsColimit.comp_coconePointUniqueUpToIso_hom
+      (cokernelIsCokernel S.f) hCok Limits.WalkingParallelPair.one
+  have hDesc : cokernel.desc S.f S.g S.zero = eQ.hom := by
+    apply (cancel_epi (cokernel.π S.f)).1
+    rw [heQ]
+    exact cokernel.π_desc S.f S.g S.zero
+  let hLeft : S.LeftHomologyData :=
+    ShortComplex.LeftHomologyData.ofHasKernelOfHasCokernel S
+  let hRight : S.RightHomologyData :=
+    ShortComplex.RightHomologyData.ofHasCokernelOfHasKernel S
+  have hLeftZero : IsZero hLeft.H := by
+    haveI : IsIso (kernel.lift S.g S.f S.zero) := by
+      rw [hLift]
+      infer_instance
+    haveI : Epi (kernel.lift S.g S.f S.zero) := by infer_instance
+    dsimp [hLeft]
+    simpa [hLift] using isZero_cokernel_of_epi (kernel.lift S.g S.f S.zero)
+  have hRightZero : IsZero hRight.H := by
+    haveI : IsIso (cokernel.desc S.f S.g S.zero) := by
+      rw [hDesc]
+      infer_instance
+    haveI : Mono (cokernel.desc S.f S.g S.zero) := by infer_instance
+    dsimp [hRight]
+    simpa [hDesc] using isZero_kernel_of_mono (cokernel.desc S.f S.g S.zero)
+  have hComp : hLeft.i ≫ hRight.p = 0 := by
+    dsimp [hLeft, hRight]
+    exact hKernelComp
+  have hExact : S.Exact := by
+    let hData : S.HomologyData :=
+      { left := hLeft
+        right := hRight
+        iso := IsZero.iso hLeftZero hRightZero
+        comm := by
+          have hπZero : hLeft.π = 0 := hLeftZero.eq_of_tgt _ _
+          simpa [hπZero, Category.assoc] using hComp.symm }
+    exact ⟨⟨hData, hLeftZero⟩⟩
+  exact ⟨ShortComplex.ShortExact.mk' hExact hf.mono hg.epi,
+    hf.strict, hg.strict⟩
+
 /-- The left adjacent-heart embedding preserves the canonical interval
 kernel. -/
 noncomputable instance Slicing.IntervalCat.toLeftHeart_preservesKernel
