@@ -20,6 +20,7 @@ import BridgelandStabLean.Foundation.Slicing.PhaseCutClosure
 import BridgelandStabLean.Foundation.Slicing.PhaseShift
 import BridgelandStabLean.Foundation.Slicing.PhaseTruncation
 import BridgelandStabLean.Foundation.Slicing.CutoffTruncation
+import BridgelandStabLean.Foundation.Slicing.BoundaryTruncation
 import BridgelandStabLean.Foundation.Deformation.RelativePhase
 import BridgelandStabLean.Foundation.Deformation.NearIdentity
 import BridgelandStabLean.Foundation.Deformation.LocalFiniteness
@@ -33,6 +34,7 @@ import BridgelandStabLean.Foundation.Deformation.DeformedCuts
 import BridgelandStabLean.Foundation.Deformation.DeformedShift
 import BridgelandStabLean.Foundation.Deformation.DeformedTriangulated
 import BridgelandStabLean.Foundation.Deformation.DeformedPhaseControl
+import BridgelandStabLean.Foundation.Deformation.BoundaryTransport
 import BridgelandStabLean.Foundation.Deformation.IntervalIndependence
 import BridgelandStabLean.Foundation.Deformation.PhaseConfinement
 import BridgelandStabLean.Foundation.Deformation.IntervalHeart

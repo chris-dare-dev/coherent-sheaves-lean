@@ -304,4 +304,18 @@ theorem Slicing.intervalProp_of_gtProp_ltProp (s : Slicing C) {E : C}
       (s.phiMinus_gt_of_gtProp C hE hgt)
       (s.phiPlus_lt_of_ltProp C hE hlt)
 
+/-- Open owner phase intervals are extension-closed along distinguished
+triangles. -/
+theorem Slicing.intervalProp_of_triangle (s : Slicing C)
+    {A E B : C} {a b : ℝ}
+    (hA : s.intervalProp C a b A) (hB : s.intervalProp C a b B)
+    {f : A ⟶ E} {g : E ⟶ B} {h : B ⟶ A⟦(1 : ℤ)⟧}
+    (hT : Triangle.mk f g h ∈ distTriang C) :
+    s.intervalProp C a b E := by
+  exact s.intervalProp_of_gtProp_ltProp C
+    (s.gtProp_of_triangle C a (s.gtProp_of_intervalProp C hA)
+      (s.gtProp_of_intervalProp C hB) hT)
+    (s.ltProp_of_triangle C b (s.ltProp_of_intervalProp C hA)
+      (s.ltProp_of_intervalProp C hB) hT)
+
 end BridgelandStabLean.Foundation

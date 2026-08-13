@@ -3,6 +3,7 @@ Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under the MIT license.
 -/
 import BridgelandStabLean.Foundation.Deformation.DeformedTriangulated
+import BridgelandStabLean.Foundation.Deformation.BoundaryTransport
 import BridgelandStabLean.Foundation.Deformation.HeartImage
 import BridgelandStabLean.Foundation.Deformation.IntervalIndependence
 import BridgelandStabLean.Foundation.Deformation.MidpointHeart
@@ -192,6 +193,120 @@ theorem hom_eq_zero_of_skewed_small_gap
       hε hε2 hthinLeft hsin hbranchLeft hbranchRight hILeft hIne
   rw [hPhaseEq] at hPhaseLower
   linarith
+
+/-- Sharp Hom-vanishing reduced to the one remaining interval-widening
+contract.  All witness extraction, boundary reduction, midpoint-heart
+placement, and small-gap phase arithmetic are owner-native in this theorem.
+The transport hypothesis says that semistability may be read on any second
+thin interval which contains the object and envelops the same phase. -/
+theorem hom_eq_zero_of_deformedPred_of_target_transport
+    [IsTriangulated C]
+    (σ : StabilityCondition.WithClassMap C κ)
+    (W : Λ →+ ℂ) {r : ℝ} (hr0 : 0 ≤ r) (hr1 : r < 1)
+    (hW : stabilitySeminorm C σ (W - σ.Z) ≤ ENNReal.ofReal r)
+    {ε : ℝ} (hε : 0 < ε) (hε2 : ε ≤ 1 / 2) (hε8 : ε < 1 / 8)
+    (hsin : stabilitySeminorm C σ (W - σ.Z) <
+      ENNReal.ofReal (Real.sin (Real.pi * ε)))
+    (htransport : ∀ {a b c d ψ : ℝ} {X : C}
+      (hab : a < b) (hcd : c < d)
+      (_ : b - a + 2 * ε < 1) (_ : d - c + 2 * ε < 1)
+      (_ : a + ε ≤ ψ) (_ : ψ ≤ b - ε)
+      (_ : c + ε ≤ ψ) (_ : ψ ≤ d - ε)
+      (_ : σ.slicing.intervalProp C c d X),
+      (skewedStabilityFunctionOfSeminormLtOne C σ W hr0 hr1 hW hab).IsSemistable
+        X ψ →
+      (skewedStabilityFunctionOfSeminormLtOne C σ W hr0 hr1 hW hcd).IsSemistable
+        X ψ)
+    {E F : C} {ψ₁ ψ₂ : ℝ}
+    (hE : σ.deformedPred C W hr0 hr1 hW ε ψ₁ E)
+    (hF : σ.deformedPred C W hr0 hr1 hW ε ψ₂ F)
+    (hgap : ψ₂ < ψ₁) (f : E ⟶ F) : f = 0 := by
+  by_cases hlarge : ψ₂ + 2 * ε < ψ₁
+  · exact σ.hom_eq_zero_of_deformedPred_gap C W hr0 hr1 hW hε hε2 hsin
+      hE hF hlarge f
+  push Not at hlarge
+  by_cases hEZ : IsZero E
+  · exact hEZ.eq_of_src f 0
+  by_cases hFZ : IsZero F
+  · exact hFZ.eq_of_tgt f 0
+  obtain ⟨aE, bE, habE, hthinE, haEψ, hψbE, hSSE⟩ :=
+    σ.exists_deformedPred_witness C W hr0 hr1 hW hE hEZ
+  obtain ⟨aF, bF, habF, hthinF, haFψ, hψbF, hSSF⟩ :=
+    σ.exists_deformedPred_witness C W hr0 hr1 hW hF hFZ
+  have hEbounds := σ.deformedPred_intrinsic_bounds C W hr0 hr1 hW
+    hε hε2 hsin hE hEZ
+  have hFbounds := σ.deformedPred_intrinsic_bounds C W hr0 hr1 hW
+    hε hε2 hsin hF hFZ
+  let a : ℝ := (ψ₁ + ψ₂) / 2 - 1 / 2
+  let u : ℝ := ψ₁ + ε
+  let l : ℝ := ψ₂ - ε
+  let margin : ℝ := 1 - ((a + 1) - l + 2 * ε)
+  let δ : ℝ := margin / 2
+  have hleftThin : u - a + 2 * ε < 1 := by
+    dsimp [u, a]
+    linarith
+  have hrightBase : (a + 1) - l + 2 * ε < 1 := by
+    dsimp [a, l]
+    linarith
+  have hmargin : 0 < margin := by dsimp [margin]; linarith
+  have hδ : 0 < δ := by dsimp [δ]; linarith
+  have hrightThin : (a + 1 + δ) - l + 2 * ε < 1 := by
+    dsimp [δ, margin]
+    linarith
+  have hau : a < u := by dsimp [a, u]; linarith
+  have hua : u ≤ a + 1 := by dsimp [a, u]; linarith
+  have hla : l < a + 1 := by dsimp [a, l]; linarith
+  have haψ : a + ε ≤ ψ₁ := by dsimp [a]; linarith
+  have hψu : ψ₁ ≤ u - ε := by dsimp [u]; linarith
+  have hlψ : l + ε ≤ ψ₂ := by dsimp [l]; linarith
+  have hψright : ψ₂ ≤ a + 1 + δ - ε := by
+    dsimp [a, δ, margin, l]
+    linarith
+  have hbranchLeft : (l + (a + 1 + δ)) / 2 - 1 < a - ε := by
+    dsimp [a, l, δ, margin]
+    linarith
+  have hbranchRight : u + ε ≤ (l + (a + 1 + δ)) / 2 + 1 := by
+    dsimp [a, l, u, δ, margin]
+    linarith
+  have haEu : aE < u := by dsimp [u]; linarith
+  have hubE : u ≤ bE := by dsimp [u]; linarith
+  have hEupper : σ.slicing.intervalProp C aE u E :=
+    σ.intervalProp_of_skewedSemistable_upper_target C W hr0 hr1 hW
+      haEu habE hubE hε hε2 hthinE hsin haEψ hψu hSSE
+  have hEI : σ.slicing.intervalProp C a u E :=
+    σ.slicing.intervalProp_of_intrinsic_phases C hEZ
+      (lt_of_lt_of_le (by dsimp [a]; linarith) hEbounds.1)
+      (σ.slicing.phiPlus_lt_of_intervalProp C hEZ hEupper)
+  have hlbF : l < bF := by dsimp [l]; linarith
+  have haFl : aF ≤ l := by dsimp [l]; linarith
+  have hFlower : σ.slicing.intervalProp C l bF F :=
+    σ.intervalProp_of_skewedSemistable_lower_target C W hr0 hr1 hW
+      habF hlbF haFl hε hε2 hthinF hsin hlψ hψbF hSSF
+  have hFI : σ.slicing.intervalProp C l (a + 1 + δ) F :=
+    σ.slicing.intervalProp_of_intrinsic_phases C hFZ
+      (σ.slicing.phiMinus_gt_of_intervalProp C hFZ hFlower)
+      (hFbounds.2.trans_lt (by dsimp [a, δ, margin, l]; linarith))
+  have hSSEleft := htransport habE hau hthinE hleftThin haEψ hψbE
+    haψ hψu hEI hSSE
+  have hSSFright := htransport habF (show l < a + 1 + δ by linarith)
+    hthinF hrightThin haFψ hψbF hlψ hψright hFI hSSF
+  have hε4 : ε < 1 / 4 := by linarith
+  have hEheart : ((σ.slicing.phaseShift C a).toTStructure C).heart E := by
+    simpa [a] using σ.slicing.mem_phaseShiftHeart_of_midpoint_left C hEZ
+      hEbounds.1 hEbounds.2 hgap hlarge hε4
+  have hFheart : ((σ.slicing.phaseShift C a).toTStructure C).heart F := by
+    simpa [a] using σ.slicing.mem_phaseShiftHeart_of_midpoint_right C hFZ
+      hFbounds.1 hFbounds.2 hgap hlarge hε4
+  apply σ.hom_eq_zero_of_skewed_small_gap C W hr0 hr1 hW hau hua hla hδ
+    hε hε2 hleftThin hrightThin hsin haψ hψu hbranchLeft hbranchRight
+    hSSEleft hSSFright
+  · intro hEne
+    exact lt_of_lt_of_le (by dsimp [l]; linarith) hEbounds.1
+  · intro hFne
+    exact hFbounds.2.trans_lt (by dsimp [u]; linarith)
+  · exact hEheart
+  · exact hFheart
+  · exact hgap
 
 end StabilityCondition.WithClassMap
 
