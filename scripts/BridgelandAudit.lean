@@ -59,13 +59,13 @@ to **488**. Both were right against the filter of the day, and both are
 superseded here -- the 821 in particular counted the 30 generated names
 described above. **Re-run the command; do not adjust the numbers.**
 
-**THE GAP IS NOW ZERO, re-measured while adding the issue #229 owner local
-finiteness and full stability-condition foundation on 2026-08-13.** Every
+**THE GAP IS NOW ZERO, re-measured while adding the issue #231 owner slicing
+t-structure foundation on 2026-08-13.** Every
 public declaration in this library that is not a structure field projection is
 named below. Be precise about what that does and does not mean -- three of the
 four qualifications in this comment are unaffected by it:
 
-* it does NOT cover the **119 private** declarations, which remain structurally
+* it does NOT cover the **126 private** declarations, which remain structurally
   unlistable;
 * it does NOT make this file a gate -- `#print axioms` still exits 0 on
   `[sorryAx]`, and nothing here fails on a missing name;
@@ -73,18 +73,18 @@ four qualifications in this comment are unaffected by it:
   green without an entry here. Zero is a measurement taken at a commit, not a
   property the build maintains.
 
-* It issues **1639** audit commands. The environment holds **1968** authored
-  declarations under `BridgelandStabLean.*`, so **331 are outside this gate**,
+* It issues **1694** audit commands. The environment holds **2027** authored
+  declarations under `BridgelandStabLean.*`, so **333 are outside this gate**,
   all of them private or projections. ("Authored" excludes constructors,
   recursors, `casesOn`, matchers, equation lemmas, internal names, and the five
   generated families named above -- none of which anybody writes or could
   list.)
-* **123 are `private`** -- 107 of them theorems -- and are *structurally*
+* **126 are `private`** -- 110 of them theorems -- and are *structurally*
   unlistable: Lean mangles a private name to `_private.<Module>.<n>.<Name>`,
   which cannot be written as a short name from an importing module. The
   instruction below cannot be followed for them, and no amount of diligence
   changes that.
-* **208 are structure field projections** emitted by the `structure` command.
+* **209 are structure field projections** emitted by the `structure` command.
   These are not a coverage gap in any useful sense; listing them would be noise.
   They are called out because a census that does not separate them reports a
   shortfall five times the real one.
@@ -277,6 +277,64 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Compatibility.BridgelandStability.StabilityCondition.ofVendor_toVendor
 #print axioms BridgelandStabLean.Compatibility.BridgelandStability.StabilityCondition.toVendor_ofVendor
 #print axioms BridgelandStabLean.Compatibility.BridgelandStability.StabilityCondition.equiv
+
+/-! ## Owner slicing phase bounds and filtration operations (#231) -/
+
+#print axioms BridgelandStabLean.Foundation.Slicing.shift_nat
+#print axioms BridgelandStabLean.Foundation.Slicing.unshift_nat
+#print axioms BridgelandStabLean.Foundation.Slicing.shift_int
+#print axioms BridgelandStabLean.Foundation.HNFiltration.phiPlus
+#print axioms BridgelandStabLean.Foundation.HNFiltration.phiMinus
+#print axioms BridgelandStabLean.Foundation.HNFiltration.phase_mem_range
+#print axioms BridgelandStabLean.Foundation.HNFiltration.phiMinus_le_phiPlus
+#print axioms BridgelandStabLean.Foundation.HNFiltration.ofIso
+#print axioms BridgelandStabLean.Foundation.Slicing.leProp
+#print axioms BridgelandStabLean.Foundation.Slicing.gtProp
+#print axioms BridgelandStabLean.Foundation.Slicing.ltProp
+#print axioms BridgelandStabLean.Foundation.Slicing.geProp
+#print axioms BridgelandStabLean.Foundation.Slicing.leProp_isClosedUnderIsomorphisms
+#print axioms BridgelandStabLean.Foundation.Slicing.gtProp_isClosedUnderIsomorphisms
+#print axioms BridgelandStabLean.Foundation.Slicing.ltProp_isClosedUnderIsomorphisms
+#print axioms BridgelandStabLean.Foundation.Slicing.geProp_isClosedUnderIsomorphisms
+#print axioms BridgelandStabLean.Foundation.Slicing.leProp_of_isZero
+#print axioms BridgelandStabLean.Foundation.Slicing.gtProp_of_isZero
+#print axioms BridgelandStabLean.Foundation.Slicing.ltProp_of_isZero
+#print axioms BridgelandStabLean.Foundation.Slicing.geProp_of_isZero
+#print axioms BridgelandStabLean.Foundation.Slicing.leProp_mono
+#print axioms BridgelandStabLean.Foundation.Slicing.gtProp_anti
+#print axioms BridgelandStabLean.Foundation.Slicing.ltProp_mono
+#print axioms BridgelandStabLean.Foundation.Slicing.geProp_anti
+#print axioms BridgelandStabLean.Foundation.Slicing.leProp_of_ltProp
+#print axioms BridgelandStabLean.Foundation.Slicing.geProp_of_gtProp
+#print axioms BridgelandStabLean.Foundation.Slicing.ltProp_of_intervalProp
+#print axioms BridgelandStabLean.Foundation.Slicing.gtProp_of_intervalProp
+#print axioms BridgelandStabLean.Foundation.Slicing.hom_eq_zero_of_phase_gap
+#print axioms BridgelandStabLean.Foundation.Slicing.zero_of_gtProp_leProp
+#print axioms BridgelandStabLean.Foundation.Slicing.zero_of_geProp_ltProp
+#print axioms BridgelandStabLean.Foundation.HNFiltration.zero
+#print axioms BridgelandStabLean.Foundation.HNFiltration.single
+#print axioms BridgelandStabLean.Foundation.HNFiltration.prefix
+#print axioms BridgelandStabLean.Foundation.HNFiltration.prefix_φ
+#print axioms BridgelandStabLean.Foundation.HNFiltration.shift
+#print axioms BridgelandStabLean.Foundation.HNFiltration.shift_phiPlus
+#print axioms BridgelandStabLean.Foundation.HNFiltration.shift_phiMinus
+#print axioms BridgelandStabLean.Foundation.Slicing.leProp_shift
+#print axioms BridgelandStabLean.Foundation.Slicing.gtProp_shift
+#print axioms BridgelandStabLean.Foundation.Slicing.ltProp_shift
+#print axioms BridgelandStabLean.Foundation.Slicing.geProp_shift
+#print axioms BridgelandStabLean.Foundation.Slicing.leProp_of_hn
+#print axioms BridgelandStabLean.Foundation.Slicing.gtProp_of_hn
+#print axioms BridgelandStabLean.Foundation.Slicing.ltProp_of_hn
+#print axioms BridgelandStabLean.Foundation.Slicing.geProp_of_hn
+#print axioms BridgelandStabLean.Foundation.Slicing.leProp_of_semistable
+#print axioms BridgelandStabLean.Foundation.Slicing.gtProp_of_semistable
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.Slicing.toVendor_leProp_iff
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.Slicing.toVendor_gtProp_iff
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.Slicing.toVendor_ltProp_iff
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.Slicing.toVendor_geProp_iff
+#print axioms BridgelandStabLean.Foundation.Slicing.HasPhaseTruncations
+#print axioms BridgelandStabLean.Foundation.Slicing.toTStructure
+#print axioms BridgelandStabLean.Foundation.Slicing.toTStructure_heart_iff
 
 /-! ## Cohomology exactness (#146) -/
 
