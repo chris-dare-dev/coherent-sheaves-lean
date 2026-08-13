@@ -604,4 +604,131 @@ theorem isNoetherianObject_of_fullFaithful_preservesMono (F : A ⥤ D)
 end
 
 
+section
+
+variable {A : Type u} [Category.{v} A] [HasZeroMorphisms A]
+  [HasKernels A] [HasCokernels A]
+  {D : Type u} [Category.{v} D] [HasZeroMorphisms D]
+  [HasKernels D] [HasCokernels D]
+
+/-- A full faithful functor that maps strict monomorphisms induces a map from
+owner strict subobjects to ambient subobjects. -/
+noncomputable def strictSubobjectImageOfFullFaithful (F : A ⥤ D)
+    [F.Full] [F.Faithful]
+    (hF : ∀ {X Y : A} (f : X ⟶ Y),
+      IsStrictMono f → IsStrictMono (F.map f)) {E : A} :
+    StrictSubobject E → Subobject (F.obj E) :=
+  fun B ↦ by
+    let hstrict : IsStrictMono (F.map B.1.arrow) := hF B.1.arrow B.2
+    letI : Mono (F.map B.1.arrow) := hstrict.mono
+    exact Subobject.mk (F.map B.1.arrow)
+
+/-- The ambient-subobject image of owner strict subobjects is monotone. -/
+theorem strictSubobjectImageOfFullFaithful_monotone (F : A ⥤ D)
+    [F.Full] [F.Faithful]
+    (hF : ∀ {X Y : A} (f : X ⟶ Y),
+      IsStrictMono f → IsStrictMono (F.map f)) {E : A} :
+    Monotone
+      (strictSubobjectImageOfFullFaithful (A := A) (D := D) F hF
+        (E := E)) := by
+  intro B₁ B₂ hB
+  let hstrict₁ : IsStrictMono (F.map B₁.1.arrow) := hF B₁.1.arrow B₁.2
+  let hstrict₂ : IsStrictMono (F.map B₂.1.arrow) := hF B₂.1.arrow B₂.2
+  letI : Mono (F.map B₁.1.arrow) := hstrict₁.mono
+  letI : Mono (F.map B₂.1.arrow) := hstrict₂.mono
+  have hB' : B₁.1 ≤ B₂.1 := by simpa using hB
+  have hmk : Subobject.mk B₁.1.arrow ≤ Subobject.mk B₂.1.arrow := by
+    simpa [Subobject.mk_arrow] using hB'
+  change Subobject.mk (F.map B₁.1.arrow) ≤
+    Subobject.mk (F.map B₂.1.arrow)
+  exact Subobject.mk_le_mk_of_comm
+    (F.map (Subobject.ofMkLEMk B₁.1.arrow B₂.1.arrow hmk)) (by
+      rw [← F.map_comp]
+      exact congrArg F.map (Subobject.ofMkLEMk_comp hmk))
+
+/-- The ambient-subobject image of owner strict subobjects is injective. -/
+theorem strictSubobjectImageOfFullFaithful_injective (F : A ⥤ D)
+    [F.Full] [F.Faithful]
+    (hF : ∀ {X Y : A} (f : X ⟶ Y),
+      IsStrictMono f → IsStrictMono (F.map f)) {E : A} :
+    Function.Injective
+      (strictSubobjectImageOfFullFaithful (A := A) (D := D) F hF
+        (E := E)) := by
+  intro B₁ B₂ hEq
+  let hstrict₁ : IsStrictMono (F.map B₁.1.arrow) := hF B₁.1.arrow B₁.2
+  let hstrict₂ : IsStrictMono (F.map B₂.1.arrow) := hF B₂.1.arrow B₂.2
+  letI : Mono (F.map B₁.1.arrow) := hstrict₁.mono
+  letI : Mono (F.map B₂.1.arrow) := hstrict₂.mono
+  apply Subtype.ext
+  have hEq' : Subobject.mk (F.map B₁.1.arrow) =
+      Subobject.mk (F.map B₂.1.arrow) := hEq
+  simpa [Subobject.mk_arrow] using
+    (Subobject.mk_eq_mk_of_comm B₁.1.arrow B₂.1.arrow
+      (F.preimageIso (Subobject.isoOfMkEqMk _ _ hEq'))
+      (F.map_injective (by
+        simp only [Functor.preimageIso_hom, Functor.map_comp,
+          Functor.map_preimage]
+        exact Subobject.ofMkLEMk_comp hEq'.le)))
+
+/-- Strict-Artinian objects transfer across full faithful functors that map
+strict monomorphisms to strict monomorphisms. -/
+theorem isStrictArtinianObject_of_fullFaithful_map_strictMono (F : A ⥤ D)
+    [F.Full] [F.Faithful]
+    (hF : ∀ {X Y : A} (f : X ⟶ Y),
+      IsStrictMono f → IsStrictMono (F.map f)) {E : A}
+    [IsArtinianObject (F.obj E)] : IsStrictArtinianObject E :=
+  ObjectProperty.is_of_prop _
+    (show WellFoundedLT (StrictSubobject E) from by
+      rw [← wellFoundedGT_dual_iff,
+        wellFoundedGT_iff_monotone_chain_condition]
+      intro f
+      let g : ℕ →o (Subobject (F.obj E))ᵒᵈ :=
+        ⟨fun n ↦ OrderDual.toDual <|
+            strictSubobjectImageOfFullFaithful
+              (A := A) (D := D) F hF (E := E) (f n),
+          fun i j hij ↦ by
+            change strictSubobjectImageOfFullFaithful
+                (A := A) (D := D) F hF (f j) ≤
+              strictSubobjectImageOfFullFaithful
+                (A := A) (D := D) F hF (f i)
+            exact strictSubobjectImageOfFullFaithful_monotone
+              (A := A) (D := D) F hF (f.2 hij)⟩
+      obtain ⟨n, hn⟩ := antitone_chain_condition_of_isArtinianObject g
+      exact ⟨n, fun m hm ↦
+        strictSubobjectImageOfFullFaithful_injective
+          (A := A) (D := D) F hF (by
+            have h := congrArg
+              (fun S : (Subobject (F.obj E))ᵒᵈ => OrderDual.ofDual S)
+              (hn m hm)
+            change strictSubobjectImageOfFullFaithful
+                (A := A) (D := D) F hF (f n) =
+              strictSubobjectImageOfFullFaithful
+                (A := A) (D := D) F hF (f m) at h
+            exact h)⟩)
+
+/-- Strict-Noetherian objects transfer across full faithful functors that map
+strict monomorphisms to strict monomorphisms. -/
+theorem isStrictNoetherianObject_of_fullFaithful_map_strictMono
+    (F : A ⥤ D) [F.Full] [F.Faithful]
+    (hF : ∀ {X Y : A} (f : X ⟶ Y),
+      IsStrictMono f → IsStrictMono (F.map f)) {E : A}
+    [IsNoetherianObject (F.obj E)] : IsStrictNoetherianObject E :=
+  ObjectProperty.is_of_prop _
+    (show WellFoundedGT (StrictSubobject E) from by
+      rw [wellFoundedGT_iff_monotone_chain_condition]
+      intro f
+      let g : ℕ →o Subobject (F.obj E) :=
+        ⟨fun n ↦ strictSubobjectImageOfFullFaithful
+            (A := A) (D := D) F hF (E := E) (f n),
+          fun i j hij ↦
+            strictSubobjectImageOfFullFaithful_monotone
+              (A := A) (D := D) F hF (f.2 hij)⟩
+      obtain ⟨n, hn⟩ := monotone_chain_condition_of_isNoetherianObject g
+      exact ⟨n, fun m hm ↦
+        strictSubobjectImageOfFullFaithful_injective
+          (A := A) (D := D) F hF (hn m hm)⟩)
+
+end
+
+
 end BridgelandStabLean.Foundation
