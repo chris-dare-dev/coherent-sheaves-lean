@@ -336,6 +336,7 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Foundation.HNFiltration.prefix
 #print axioms BridgelandStabLean.Foundation.HNFiltration.prefix_φ
 #print axioms BridgelandStabLean.Foundation.HNFiltration.appendFactor
+#print axioms BridgelandStabLean.Foundation.HNFiltration.appendLengthOne
 #print axioms BridgelandStabLean.Foundation.HNFiltration.shift
 #print axioms BridgelandStabLean.Foundation.HNFiltration.shift_phiPlus
 #print axioms BridgelandStabLean.Foundation.HNFiltration.shift_phiMinus
