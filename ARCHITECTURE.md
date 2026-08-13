@@ -22,7 +22,7 @@ the mathematics and is independent of the package path.
 | `Topology` | Reusable open-cover infrastructure |
 | `Development` | Compile-only API audits; not part of the stable root import |
 | `BridgelandStabLean/Lattice` | Abstract numerical and Mukai lattice infrastructure |
-| `BridgelandStabLean/Foundation` | Owner-authored Postnikov towers, HN filtrations, slicings, and later root stability APIs |
+| `BridgelandStabLean/Foundation` | Owner-authored Postnikov towers, HN filtrations, slicings, triangulated Grothendieck groups, class maps, and pre-stability conditions |
 | `BridgelandStabLean/Compatibility` | Temporary, explicit adapters across retained third-party boundaries |
 | `BridgelandStabLean/StabilityCondition` | Stability metrics, support, symmetry, walls, and weak stability |
 | `vendor/BridgelandStability` | Apache-2.0 foundational slicing and deformation implementation |

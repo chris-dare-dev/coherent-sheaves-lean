@@ -13,6 +13,13 @@ Ownership migration began in destination issues
 live in `BridgelandStabLean.Compatibility.BridgelandStability`. This document
 continues to describe the retained API while consumers are migrated.
 
+Slice [#228](https://github.com/chris-dare-dev/derived-alg-geo-lean/issues/228)
+adds the owner `GrothendieckPresentation`, triangulated `K₀`, class maps,
+functoriality, and pre-stability conditions. The owner and retained `K₀`
+quotients are connected by a canonical additive equivalence; pre-stability
+conditions round-trip after transporting the class map across that
+equivalence. Local finiteness and full stability conditions remain in slice 3.
+
 At the start of slice #226, 28 owner modules contain 32 direct imports from 20
 vendored module roots. `scripts/check_anchor_free.py` freezes that exact module
 set. Each later slice must shrink it, and no new direct vendor consumer may be
