@@ -28,6 +28,7 @@ jobs:
           set -euo pipefail
           python3 scripts/check_pin.py
           python3 scripts/check_coverage_map.py
+          python3 scripts/check_coverage_map.py registry/coverage-2607.28411.json
 
       - name: Coherent-sheaf axiom audit
         run: |

@@ -1409,6 +1409,64 @@ this against the file by eye. -/
 #print axioms BridgelandStabLean.GroupAction.AutPairQuot.mk_smul_Z
 #print axioms BridgelandStabLean.GroupAction.AutPairQuot.toAutQuot
 
+/-! ## Phase lane — slicing orders, Bayer bounds, and cofiltrations -/
+
+#print axioms CategoryTheory.Triangulated.Slicing.Precedes
+#print axioms CategoryTheory.Triangulated.Slicing.PrecedesWeak
+#print axioms CategoryTheory.Triangulated.Slicing.LiPrecedes
+#print axioms CategoryTheory.Triangulated.Slicing.LiPrecedesWeak
+#print axioms CategoryTheory.Triangulated.Slicing.liPrecedes_iff_precedes
+#print axioms CategoryTheory.Triangulated.Slicing.liPrecedesWeak_iff_precedesWeak
+#print axioms CategoryTheory.Triangulated.Slicing.precedes_iff_phiPlus_lt
+#print axioms CategoryTheory.Triangulated.Slicing.precedesWeak_iff_phiPlus_le
+#print axioms CategoryTheory.Triangulated.Slicing.Precedes.weak
+#print axioms CategoryTheory.Triangulated.Slicing.precedesWeak_refl
+#print axioms CategoryTheory.Triangulated.Slicing.precedes_phaseShift_one
+#print axioms CategoryTheory.Triangulated.Slicing.precedes_iff_lt_phiMinus
+#print axioms CategoryTheory.Triangulated.Slicing.precedesWeak_iff_le_phiMinus
+#print axioms CategoryTheory.Triangulated.Slicing.precedes_iff_extreme_phases_lt
+#print axioms CategoryTheory.Triangulated.Slicing.precedesWeak_iff_extreme_phases_le
+#print axioms CategoryTheory.Triangulated.Slicing.Precedes.trans
+#print axioms CategoryTheory.Triangulated.Slicing.PrecedesWeak.trans
+#print axioms CategoryTheory.Triangulated.Slicing.Precedes.trans_weak
+#print axioms CategoryTheory.Triangulated.Slicing.PrecedesWeak.trans_strict
+#print axioms CategoryTheory.Triangulated.Slicing.mapEquiv_ltProp_iff
+#print axioms CategoryTheory.Triangulated.Slicing.mapEquiv_leProp_iff
+#print axioms BridgelandStabLean.GroupAction.TriEquiv.precedes_act_iff
+#print axioms BridgelandStabLean.GroupAction.TriEquiv.precedesWeak_act_iff
+#print axioms BridgelandStabLean.GroupAction.AutQuot.precedes_smul_iff
+#print axioms BridgelandStabLean.GroupAction.AutQuot.precedesWeak_smul_iff
+#print axioms BridgelandStabLean.GroupAction.AutPairQuot.smul_slicing
+#print axioms BridgelandStabLean.GroupAction.AutPairQuot.precedes_smul_stability_iff
+#print axioms BridgelandStabLean.GroupAction.AutPairQuot.precedesWeak_smul_stability_iff
+#print axioms BridgelandStabLean.GroupAction.HasBayerProperty
+#print axioms BridgelandStabLean.GroupAction.SlicingBayerProperty
+#print axioms BridgelandStabLean.GroupAction.hasBayerProperty_iff
+#print axioms BridgelandStabLean.GroupAction.hasBayerProperty_one_zero
+#print axioms BridgelandStabLean.GroupAction.hasBayerProperty_smul_iff
+#print axioms BridgelandStabLean.GroupAction.BayerProperty
+#print axioms BridgelandStabLean.GroupAction.bayerProperty_iff
+#print axioms BridgelandStabLean.GroupAction.bayerProperty_one_zero
+#print axioms CategoryTheory.Triangulated.CofiltrationData
+#print axioms CategoryTheory.Triangulated.CofiltrationData.remainder
+#print axioms CategoryTheory.Triangulated.CofiltrationProperty
+#print axioms CategoryTheory.Triangulated.CofiltrationPropertyInfinity
+#print axioms CategoryTheory.Triangulated.CofiltrationPropertyInfinity.toCofiltrationProperty
+#print axioms CategoryTheory.Triangulated.Slicing.phaseShift_phiPlus
+#print axioms CategoryTheory.Triangulated.Slicing.phaseShift_phiMinus
+#print axioms CategoryTheory.Triangulated.SlicingOrderPreimageData
+#print axioms CategoryTheory.Triangulated.SlicingOrderPreimageData.precedes
+#print axioms CategoryTheory.Triangulated.SlicingOrderPreimageData.precedesWeak
+#print axioms CategoryTheory.Triangulated.Slicing.Precedes.pushforward_of_preimage
+#print axioms CategoryTheory.Triangulated.Slicing.PrecedesWeak.pushforward_of_preimage
+#print axioms CategoryTheory.Triangulated.Slicing.Precedes.pullback_of_preimage
+#print axioms CategoryTheory.Triangulated.Slicing.PrecedesWeak.pullback_of_preimage
+#print axioms BridgelandStabLean.GroupAction.bayerProperty_iff_phiPlus_le
+#print axioms BridgelandStabLean.GroupAction.bayerProperty_iff_le_phiMinus
+#print axioms BridgelandStabLean.GroupAction.bayerProperty_mk_iff_inverse_phiPlus_le
+#print axioms BridgelandStabLean.GroupAction.bayerProperty_mk_iff_inverse_le_phiMinus
+#print axioms BridgelandStabLean.GroupAction.bayerProperty_mk_iff_sub_le_functor_phiMinus
+
 /-! ## Normalized quotient, combined action, and topological action layer -/
 
 #print axioms BridgelandStabLean.GroupAction.TriEquiv.inverseIsoOfFunctorIso

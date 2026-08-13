@@ -1,0 +1,110 @@
+{
+  "_readme": [
+    "Coverage map for arXiv:2607.28411v1 -- 'Stability conditions and moduli spaces on projective families', Li, Liu, Liu, Macri, Perry, Stellari, Zhao. Created for destination issue #211, transferred from source issue #141.",
+    "",
+    "THIS IS NOT A TRUST RECORD AND NOT A MINT SURFACE. It is a zero-claim map of the paper's structure onto statuses. formalization.yaml's `source` remains the Bridgeland 2007 record, and registry/bridgeland2007.json remains the only mint surface; nothing in this file changes either, and nothing in this file may be cited as theorem coverage. The only status that ever counts as coverage is 'formalized'.",
+    "",
+    "Validation: python scripts/check_coverage_map.py registry/coverage-2607.28411.json",
+    "Run it before and after every edit. It fails on any status outside the vocabulary, any non-target status without complete evidence, and any corpus-derived identifier key.",
+    "",
+    "Update ownership: the owner (Chris Dare) promotes statuses; agents may propose a promotion only by a landing PR carrying the evidence fields the validator demands, and 'formalized' additionally requires explicit owner acceptance recorded in the entry. Adding sections, fixing titles against the pinned PDF, and adding tracking links are ordinary edits; status promotion is not.",
+    "",
+    "Quotes: none are minted here. When a quote is later needed it must be checked directly against the v1 artifact identified in `source`, never against an unversioned corpus extraction."
+  ],
+  "schema": "coverage-map/1",
+  "created": "2026-08-11",
+  "issue": "https://github.com/chris-dare-dev/derived-alg-geo-lean/issues/211",
+  "source": {
+    "title": "Stability conditions and moduli spaces on projective families",
+    "authors": [
+      "Chunyi Li",
+      "Zhiyu Liu",
+      "Ziqi Liu",
+      "Emanuele Macri",
+      "Alexander Perry",
+      "Paolo Stellari",
+      "Xiaolei Zhao"
+    ],
+    "arxiv_id": "2607.28411",
+    "arxiv_version": "v1",
+    "version_submitted_utc": "2026-07-30T15:58:54Z",
+    "version_history": [
+      {
+        "version": "v1",
+        "submitted_utc": "2026-07-30T15:58:54Z",
+        "source_size": "83 KB"
+      }
+    ],
+    "latest_version_at_pin_time": "v1",
+    "doi": "10.48550/arXiv.2607.28411",
+    "primary_category": "math.AG",
+    "pinned_from": "https://arxiv.org/abs/2607.28411 (submission history and metadata), https://arxiv.org/html/2607.28411v1 (section titles and statements), and https://arxiv.org/pdf/2607.28411v1, fetched 2026-08-11.",
+    "pdf_sha256": "f8770154235fe2c82698513b4633b3ee509fa11f722190a4c9f573fca589a98c",
+    "pdf_bytes": 811269,
+    "pdf_pin_caveat": "The hash pins the artifact as served on 2026-08-11. arXiv PDFs may be re-rendered without a content change; the durable identity is (arxiv_id, v1, version_submitted_utc, doi)."
+  },
+  "corpus_note": {
+    "arxiv_version_in_corpus": "not used as evidence by this map",
+    "mint_rule": "No durable key in this repository may be derived from a chunk ID or notebook slug. This file contains neither."
+  },
+  "status_vocabulary": {
+    "target": "Named for future work. No claim of any kind.",
+    "mapped": "Specific Lean declarations are candidate counterparts of a specific v1 statement. Still no coverage claim; complete evidence is required.",
+    "reviewed": "A candidate binding has been reviewed against the pinned v1 artifact. Complete evidence is required.",
+    "formalized": "Reviewed and explicitly accepted by the owner. The only status that counts as coverage."
+  },
+  "parts": [
+    {
+      "part": "front",
+      "title": "Front matter",
+      "status": "target",
+      "sections": [
+        { "n": 1, "title": "Introduction" }
+      ]
+    },
+    {
+      "part": "I",
+      "title": "Absolute case",
+      "status": "target",
+      "sections": [
+        { "n": 2, "title": "Stability conditions and base change" },
+        { "n": 3, "title": "Pullback and pushforward of stability conditions" },
+        { "n": 4, "title": "Stability conditions on powers of an elliptic curve" },
+        { "n": 5, "title": "Stability conditions on projective space" },
+        { "n": 6, "title": "Stability conditions on projective schemes" },
+        { "n": 7, "title": "Complements" }
+      ]
+    },
+    {
+      "part": "II",
+      "title": "Relative case",
+      "status": "target",
+      "sections": [
+        { "n": 8, "title": "Stability conditions in families" },
+        { "n": 9, "title": "Pullback and pushforward of stability conditions in families" },
+        { "n": 10, "title": "Stability conditions on projective families" },
+        { "n": 11, "title": "Stability of skyscraper sheaves and the Bondal-Orlov theorem" }
+      ]
+    },
+    {
+      "part": "III",
+      "title": "Appendices",
+      "status": "target",
+      "sections": [
+        { "n": "A", "title": "Inducing t-structures and slicings" },
+        { "n": "B", "title": "Almost disconnected morphisms" }
+      ]
+    }
+  ],
+  "near_term_coordinates": [
+    {
+      "id": "sec-3-4-bayer-property",
+      "sections": [3],
+      "subsection": "3.4",
+      "part": "I",
+      "status": "target",
+      "tracking": "https://github.com/chris-dare-dev/derived-alg-geo-lean/issues/211",
+      "note": "Target only. The destination-issue-#211 migration branch contains candidate order, Bayer-property, and abstract cofiltration declarations, but only the landing PR may propose target-to-mapped with its exact review evidence. This skeleton itself makes no mapping or coverage claim."
+    }
+  ]
+}

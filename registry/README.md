@@ -1,9 +1,8 @@
 # The statement registry
 
 `bridgeland2007.json` is the only contract artifact in this repo, and the only
-place a citation key is minted. Everything else is measured. (One other
-hand-authored file lives in this directory — the `1902.08184v4` coverage map
-below — and it mints nothing.)
+place a citation key is minted. Everything else is measured. The hand-authored
+coverage maps below mint nothing.
 
 Validate it with the contract package:
 
@@ -36,6 +35,20 @@ python scripts/check_coverage_map.py
 It fails on any status outside the vocabulary, any promotion without complete
 evidence, and any `chunk_id`/notebook-slug key. Status promotion is owned by
 the owner; agents propose it only by PR carrying the evidence fields.
+
+## The 2607.28411v1 coverage map — zero-claim skeleton
+
+`coverage-2607.28411.json` pins arXiv:2607.28411**v1** (Li–Liu–Liu–Macrì–
+Perry–Stellari–Zhao) for issue #211 (transferred from source issue #141). Every part and its §3.4 near-term
+coordinate is `target`: candidate declarations on a branch do not promote a
+coordinate. The landing PR may propose §3.4 `target → mapped` only with the
+evidence object required by the validator; that status would still be only a
+candidate mapping, not a source-faithfulness or coverage verdict. Validate it
+with:
+
+```sh
+python scripts/check_coverage_map.py registry/coverage-2607.28411.json
+```
 
 `kind_label` is a free per-topic string and `mfc lint` checks it against exactly
 the list you pass here, so **a new label must be added to this command in the
