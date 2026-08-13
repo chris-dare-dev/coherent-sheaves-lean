@@ -71,6 +71,7 @@ ANCHOR_FREE = [
     "BridgelandStabLean.Foundation.Slicing.TwoHeartEmbedding",
     "BridgelandStabLean.Foundation.Slicing.IntervalPreabelian",
     "BridgelandStabLean.Foundation.Slicing.IntervalComparisons",
+    "BridgelandStabLean.Foundation.Slicing.IntervalStrictness",
     "BridgelandStabLean.Foundation.StabilityFunction.Basic",
     "BridgelandStabLean.Foundation.StabilityFunction.HarderNarasimhan",
     "BridgelandStabLean.Foundation.StabilityFunction.Subobject",
