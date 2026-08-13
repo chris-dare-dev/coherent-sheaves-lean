@@ -928,8 +928,10 @@ fidelity:
     the owner API. A single filtration can now be chosen with both boundary
     factors nonzero and hence realizing both intrinsic extrema; intrinsic
     phases of a nonzero semistable object reduce to its declared phase. The
-    census reports 2272 authored declarations, 126 private declarations, and
-    233 structure-field projections. Audit issues 1918 commands, of which 1350
+    distance control now also places every nonzero semistable object for the
+    nearby slicing inside the expected owner interval category. The census
+    reports 2273 authored declarations, 126 private declarations, and 233
+    structure-field projections. Audit issues 1919 commands, of which 1351
     records are theorems, 62 are structures, and 501
     are other non-theorems; no authored public declaration remains outside the
     hand audit. All 26

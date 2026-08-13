@@ -119,6 +119,27 @@ theorem abs_phiMinus_sub_lt_of_slicingDist (s t : Slicing C) {E : C} (hE : ¬IsZ
   exact (ENNReal.ofReal_lt_ofReal_iff hε).mp
     ((phiMinusDist_le C s t E hE).trans_lt hd)
 
+/-- A nonzero semistable object for a nearby slicing lies in the corresponding
+phase window for the original slicing. -/
+theorem intervalProp_of_semistable_slicingDist (s t : Slicing C) {E : C} {φ : ℝ}
+    (hE : ¬IsZero E) (hP : t.P φ E) {ε : ℝ} (hε : 0 < ε)
+    (hd : slicingDist C s t < ENNReal.ofReal ε) :
+    s.intervalProp C (φ - ε) (φ + ε) E := by
+  have hplus := abs_phiPlus_sub_lt_of_slicingDist C s t hE hε hd
+  have hminus := abs_phiMinus_sub_lt_of_slicingDist C s t hE hε hd
+  rw [t.phiPlus_eq_of_semistable C E hE φ hP, abs_lt] at hplus
+  rw [t.phiMinus_eq_of_semistable C E hE φ hP, abs_lt] at hminus
+  obtain ⟨F, hn, hFplus, hFminus⟩ := s.exists_hn_intrinsic_width C hE
+  refine Or.inr ⟨F, fun i => ⟨?_, ?_⟩⟩
+  · calc
+      φ - ε < s.phiMinus C E hE := by linarith [hminus.1]
+      _ = F.phiMinus C hn := hFminus.symm
+      _ ≤ F.φ i := (F.phase_mem_range C hn i).1
+  · calc
+      F.φ i ≤ F.phiPlus C hn := (F.phase_mem_range C hn i).2
+      _ = s.phiPlus C E hE := hFplus
+      _ < φ + ε := by linarith [hplus.2]
+
 /-- Uniform phase bounds give an upper bound for the owner slicing distance. -/
 theorem slicingDist_le_of_phase_bounds (s t : Slicing C) {ε : ℝ}
     (hplus : ∀ (E : C) (hE : ¬IsZero E),

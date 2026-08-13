@@ -431,6 +431,7 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Foundation.instPseudoEMetricSpaceSlicing
 #print axioms BridgelandStabLean.Foundation.abs_phiPlus_sub_lt_of_slicingDist
 #print axioms BridgelandStabLean.Foundation.abs_phiMinus_sub_lt_of_slicingDist
+#print axioms BridgelandStabLean.Foundation.intervalProp_of_semistable_slicingDist
 #print axioms BridgelandStabLean.Foundation.slicingDist_le_of_phase_bounds
 #print axioms BridgelandStabLean.Compatibility.BridgelandStability.Deformation.relativePhase_eq_wPhaseOf
 
