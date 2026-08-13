@@ -172,6 +172,38 @@ theorem skewedSemistable_on_witness_intersection
   · exact σ.slicing.intervalProp_intersection C hSS.interval hI
   · exact hSS
 
+/-- Two complete witness presentations restrict to semistability proofs on
+one common thin intersection interval. -/
+theorem skewedSemistable_common_refinement
+    (σ : StabilityCondition.WithClassMap C κ)
+    (W : Λ →+ ℂ) {r : ℝ} (hr0 : 0 ≤ r) (hr1 : r < 1)
+    (hW : stabilitySeminorm C σ (W - σ.Z) ≤ ENNReal.ofReal r)
+    {a b c d ε ψ : ℝ} (hab : a < b) (hcd : c < d)
+    (hε : 0 < ε) (hε2 : ε ≤ 1 / 2)
+    (hthinAB : b - a + 2 * ε < 1)
+    (hsin : stabilitySeminorm C σ (W - σ.Z) <
+      ENNReal.ofReal (Real.sin (Real.pi * ε)))
+    (haψ : a + ε ≤ ψ) (hψb : ψ ≤ b - ε)
+    (hcψ : c + ε ≤ ψ) (hψd : ψ ≤ d - ε)
+    {E : C}
+    (hAB : (skewedStabilityFunctionOfSeminormLtOne C σ W hr0 hr1 hW hab).IsSemistable
+      E ψ)
+    (hCD : (skewedStabilityFunctionOfSeminormLtOne C σ W hr0 hr1 hW hcd).IsSemistable
+      E ψ) :
+    ∃ hinter : max a c < min b d,
+      (skewedStabilityFunctionOfSeminormLtOne C σ W hr0 hr1 hW hinter).IsSemistable
+        E ψ := by
+  have hmax : max a c + ε ≤ ψ := by
+    have hmax' : max a c ≤ ψ - ε := max_le (by linarith) (by linarith)
+    linarith
+  have hmin : ψ ≤ min b d - ε := by
+    have hmin' : ψ + ε ≤ min b d := le_min (by linarith) (by linarith)
+    linarith
+  have hinter : max a c < min b d := by linarith
+  exact ⟨hinter,
+    σ.skewedSemistable_on_witness_intersection C W hr0 hr1 hW hab hcd hε hε2
+      hthinAB hsin haψ hψb hcψ hψd hCD.interval hAB⟩
+
 /-- A deformed-slice witness may be replaced by a nested compatible thin
 interval using only endpoint inequalities. -/
 theorem deformedPred_rewitness_nested_interval
