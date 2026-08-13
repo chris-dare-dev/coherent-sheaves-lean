@@ -4,6 +4,7 @@ Released under the MIT license.
 -/
 import BridgelandStabLean.Foundation.Deformation.SkewedStability
 import BridgelandStabLean.Foundation.Slicing.IntervalStrictness
+import Mathlib.CategoryTheory.Subobject.Limits
 
 /-!
 # Strict maximal destabilizing quotients in owner thin intervals
@@ -100,6 +101,25 @@ theorem factor_of_phase_eq (hq : IsStrictMDQ C σ F q)
     (hphase : F.phase B'.obj = F.phase B.obj) :
     ∃ t : B ⟶ B', q' = q ≫ t :=
   (hq.minimal q' hq' hB' hss).2 hphase
+
+/-- A strict MDQ of a non-semistable source has a genuinely nonzero kernel
+subobject. -/
+theorem kernelSubobject_ne_bot_of_not_semistable
+    (hq : IsStrictMDQ C σ F q)
+    (hns : ¬F.IsSemistable X.obj (F.phase X.obj)) :
+    kernelSubobject q ≠ ⊥ := by
+  intro hK
+  have hkerZero : IsZero (kernelSubobject q : σ.slicing.IntervalCat C a b) := by
+    rw [hK]
+    exact (isZero_zero (σ.slicing.IntervalCat C a b)).of_iso
+      Subobject.botCoeIsoZero
+  haveI : Mono q := Preadditive.mono_of_kernel_zero <|
+    zero_of_source_iso_zero _ (hkerZero.of_iso (kernelSubobjectIso q).symm).isoZero
+  haveI : IsIso q := IsStrictEpi.isIso hq.strictEpi
+  let e : X.obj ≅ B.obj :=
+    (Slicing.IntervalCat.ι (C := C) (s := σ.slicing) a b).mapIso (asIso q)
+  have hphase : F.phase B.obj = F.phase X.obj := F.phase_iso e.symm
+  exact hns (hphase ▸ hq.semistable.ofIso e.symm)
 
 end IsStrictMDQ
 

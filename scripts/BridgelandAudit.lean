@@ -349,6 +349,7 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Foundation.Deformation.IsStrictMDQ.strict
 #print axioms BridgelandStabLean.Foundation.Deformation.IsStrictMDQ.phase_le
 #print axioms BridgelandStabLean.Foundation.Deformation.IsStrictMDQ.factor_of_phase_eq
+#print axioms BridgelandStabLean.Foundation.Deformation.IsStrictMDQ.kernelSubobject_ne_bot_of_not_semistable
 #print axioms BridgelandStabLean.Foundation.HNFiltration.shift
 #print axioms BridgelandStabLean.Foundation.HNFiltration.shift_phiPlus
 #print axioms BridgelandStabLean.Foundation.HNFiltration.shift_phiMinus
