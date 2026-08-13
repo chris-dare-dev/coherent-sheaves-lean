@@ -3,6 +3,7 @@ Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under the MIT license.
 -/
 import BridgelandStabLean.Foundation.Deformation.PhaseArithmetic
+import BridgelandStabLean.Foundation.Slicing.PhaseBounds
 import BridgelandStabLean.Foundation.StabilityCondition
 
 /-!
@@ -130,6 +131,33 @@ theorem IsSemistable.charge_polar {F : SkewedStabilityFunction C κ s a b}
       Complex.exp (↑(Real.pi * ψ) * Complex.I) := by
   rw [← h.phase_eq]
   exact relativePhase_polar _ _
+
+/-- Transport perturbed semistability across an isomorphism of ambient
+objects. -/
+theorem IsSemistable.ofIso {F : SkewedStabilityFunction C κ s a b}
+    {E E' : C} {ψ : ℝ} (h : F.IsSemistable E ψ) (e : E ≅ E') :
+    F.IsSemistable E' ψ where
+  interval := by
+    rcases h.interval with hzero | ⟨G, hG⟩
+    · exact Or.inl ((Iso.isZero_iff e).mp hzero)
+    · exact Or.inr ⟨G.ofIso C e, fun i => by
+        simpa [HNFiltration.ofIso] using hG i⟩
+  nonzero hE' := h.nonzero ((Iso.isZero_iff e).mpr hE')
+  charge_ne := by
+    change F.W (classOf C κ E') ≠ 0
+    rw [← classOf_iso C κ e]
+    exact h.charge_ne
+  phase_eq := by
+    rw [← F.phase_iso e]
+    exact h.phase_eq
+  phase_le_of_triangle := by
+    intro K Q i q δ hT hK hQ hKne
+    have hT' : Triangle.mk (i ≫ e.inv) (e.hom ≫ q) δ ∈ distTriang C := by
+      unfold Triangle.mk at hT ⊢
+      exact isomorphic_distinguished _ hT _
+        (Triangle.isoMk _ _ (Iso.refl _) e (Iso.refl _)
+          (by simp) (by simp) (by simp))
+    exact h.phase_le_of_triangle hT' hK hQ hKne
 
 end SkewedStabilityFunction
 

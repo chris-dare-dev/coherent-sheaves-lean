@@ -417,6 +417,7 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Foundation.Deformation.SkewedStabilityFunction.IsSemistable
 #print axioms BridgelandStabLean.Foundation.Deformation.SkewedStabilityFunction.IsSemistable.phase_mem_Ioc
 #print axioms BridgelandStabLean.Foundation.Deformation.SkewedStabilityFunction.IsSemistable.charge_polar
+#print axioms BridgelandStabLean.Foundation.Deformation.SkewedStabilityFunction.IsSemistable.ofIso
 #print axioms BridgelandStabLean.Foundation.Deformation.SemistableChargeBound
 #print axioms BridgelandStabLean.Foundation.Deformation.relativePhase_charge_eq
 #print axioms BridgelandStabLean.Foundation.Deformation.perturbedCharge_ne_zero
@@ -433,6 +434,13 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Foundation.Deformation.semistableChargeBound_toReal
 #print axioms BridgelandStabLean.Foundation.Deformation.skewedStabilityFunctionOfSeminormLtOne
 #print axioms BridgelandStabLean.Foundation.Deformation.relativePhase_perturbation_of_stabilitySeminorm
+#print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.deformedPred
+#print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.deformedPred_of_isZero
+#print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.deformedPred_isClosedUnderIsomorphisms
+#print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.exists_deformedPred_witness
+#print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.deformedPred_charge_ne
+#print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.deformedPred_charge_polar
+#print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.deformedPred_intrinsic_phase_window
 #print axioms BridgelandStabLean.Foundation.slicingDist
 #print axioms BridgelandStabLean.Foundation.slicingDistTerm_le
 #print axioms BridgelandStabLean.Foundation.phiPlusDist_le
