@@ -32,6 +32,7 @@ import BridgelandStabLean.Foundation.Deformation.DeformedTriangulated
 import BridgelandStabLean.Foundation.Deformation.DeformedPhaseControl
 import BridgelandStabLean.Foundation.Deformation.IntervalHeart
 import BridgelandStabLean.Foundation.Deformation.MidpointHeart
+import BridgelandStabLean.Foundation.Deformation.DeformedHom
 import BridgelandStabLean.Foundation.Deformation.SlicingDistance
 import BridgelandStabLean.Foundation.Deformation.StabilityTopology
 import BridgelandStabLean.Foundation.StabilityFunction.Basic
