@@ -8,6 +8,8 @@ import BridgelandStabLean.Foundation.GrothendieckPresentation
 import BridgelandStabLean.Foundation.TriangulatedGrothendieck
 import BridgelandStabLean.Foundation.TriangulatedGrothendieckFunctorial
 import BridgelandStabLean.Foundation.PreStabilityCondition
+import BridgelandStabLean.Foundation.IntervalCategory
+import BridgelandStabLean.Foundation.StabilityCondition
 
 /-!
 # Repository-owned Bridgeland foundations

@@ -48,7 +48,10 @@ The numerical layer is a visible axiomatic boundary. Geometric modules construct
 discharges that boundary; they do not silently turn assumptions into theorems.
 
 `BridgelandStabLean/Foundation` is the bottom-up replacement boundary for the vendored
-stability implementation. Owner-authored definitions depend directly on Mathlib.
+stability implementation. It now owns Postnikov and HN filtrations, slicings,
+triangulated Grothendieck groups, pre-stability conditions, thin interval categories,
+intrinsic admissible finite length, local finiteness, and full stability conditions.
+Owner-authored definitions depend directly on Mathlib.
 Conversions involving Apache-2.0 declarations live only under
 `BridgelandStabLean/Compatibility/BridgelandStability`; downstream modules migrate to the
 owner API one dependency layer at a time. The vendor library is removed only after no
