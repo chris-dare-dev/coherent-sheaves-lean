@@ -6,6 +6,7 @@ import BridgelandStabLean.Foundation
 import BridgelandStability.GrothendieckGroup.Basic
 import BridgelandStability.Slicing.TStructureConstruction
 import BridgelandStability.StabilityCondition.Defs
+import BridgelandStability.StabilityFunction.Basic
 
 /-!
 # Compatibility with the vendored BridgelandStability API
@@ -26,6 +27,87 @@ namespace BridgelandStabLean.Compatibility.BridgelandStability
 
 variable (C : Type u) [Category.{v} C] [HasZeroObject C] [HasShift C ℤ]
   [Preadditive C] [∀ n : ℤ, (shiftFunctor C n).Additive] [Pretriangulated C]
+
+namespace StabilityFunction
+
+variable (A : Type u) [Category.{v} A] [Abelian A]
+
+/-- The owner and retained semi-closed upper half-planes are definitionally
+the same subset of `ℂ`. -/
+theorem semiClosedUpperHalfPlane_eq :
+    Foundation.semiClosedUpperHalfPlane = CategoryTheory.upperHalfPlaneUnion :=
+  rfl
+
+/-- Convert an owner stability function to the retained representation. -/
+def toVendor (Z : Foundation.StabilityFunction A) :
+    CategoryTheory.StabilityFunction A where
+  Zobj := Z.charge
+  map_zero' := Z.map_zero
+  additive := Z.additive
+  upper E hE := by
+    simpa [semiClosedUpperHalfPlane_eq] using Z.nonzero_mem E hE
+
+/-- Convert a retained stability function to the owner representation. -/
+def ofVendor (Z : CategoryTheory.StabilityFunction A) :
+    Foundation.StabilityFunction A where
+  charge := Z.Zobj
+  map_zero := Z.map_zero'
+  map_iso := Z.Zobj_eq_of_iso
+  additive := Z.additive
+  nonzero_mem E hE := by
+    simpa [semiClosedUpperHalfPlane_eq] using Z.upper E hE
+
+@[simp]
+theorem toVendor_charge (Z : Foundation.StabilityFunction A) (E : A) :
+    (toVendor A Z).Zobj E = Z.charge E :=
+  rfl
+
+@[simp]
+theorem ofVendor_charge (Z : CategoryTheory.StabilityFunction A) (E : A) :
+    (ofVendor A Z).charge E = Z.Zobj E :=
+  rfl
+
+@[simp]
+theorem ofVendor_toVendor (Z : Foundation.StabilityFunction A) :
+    ofVendor A (toVendor A Z) = Z := by
+  ext E
+  rfl
+
+@[simp]
+theorem toVendor_ofVendor (Z : CategoryTheory.StabilityFunction A) :
+    toVendor A (ofVendor A Z) = Z := by
+  rcases Z with ⟨Z, hzero, hadd, hupper⟩
+  rfl
+
+/-- Owner and retained stability functions are equivalent. -/
+def equiv : Foundation.StabilityFunction A ≃ CategoryTheory.StabilityFunction A where
+  toFun := toVendor A
+  invFun := ofVendor A
+  left_inv := ofVendor_toVendor A
+  right_inv := toVendor_ofVendor A
+
+@[simp]
+theorem toVendor_phase (Z : Foundation.StabilityFunction A) (E : A) :
+    (toVendor A Z).phase E = Z.phase E := by
+  simp only [CategoryTheory.StabilityFunction.phase, Foundation.StabilityFunction.phase]
+  rw [toVendor_charge]
+  rw [div_eq_mul_inv, div_eq_mul_inv]
+  simpa only [one_mul] using
+    mul_comm (Real.pi⁻¹) (Complex.arg (Z.charge E))
+
+@[simp]
+theorem toVendor_isSemistable_iff (Z : Foundation.StabilityFunction A) (E : A) :
+    (toVendor A Z).IsSemistable E ↔ Z.IsSemistable E := by
+  simp only [CategoryTheory.StabilityFunction.IsSemistable,
+    Foundation.StabilityFunction.IsSemistable, toVendor_phase]
+
+@[simp]
+theorem toVendor_isStable_iff (Z : Foundation.StabilityFunction A) (E : A) :
+    (toVendor A Z).IsStable E ↔ Z.IsStable E := by
+  simp only [CategoryTheory.StabilityFunction.IsStable,
+    Foundation.StabilityFunction.IsStable, toVendor_phase]
+
+end StabilityFunction
 
 namespace GrothendieckGroup
 

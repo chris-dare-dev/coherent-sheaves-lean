@@ -73,7 +73,7 @@ four qualifications in this comment are unaffected by it:
   green without an entry here. Zero is a measurement taken at a commit, not a
   property the build maintains.
 
-* It issues **1717** audit commands. The environment holds **2052** authored
+* It issues **1728** audit commands. The environment holds **2063** authored
   declarations under `BridgelandStabLean.*`, so **335 are outside this gate**,
   all of them private or projections. ("Authored" excludes constructors,
   recursors, `casesOn`, matchers, equation lemmas, internal names, and the six
@@ -358,6 +358,17 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Foundation.StabilityFunction.phase_eq_of_iso
 #print axioms BridgelandStabLean.Foundation.StabilityFunction.isSemistable_of_iso
 #print axioms BridgelandStabLean.Foundation.StabilityFunction.isSemistable_iff_of_iso
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.StabilityFunction.semiClosedUpperHalfPlane_eq
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.StabilityFunction.toVendor
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.StabilityFunction.ofVendor
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.StabilityFunction.toVendor_charge
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.StabilityFunction.ofVendor_charge
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.StabilityFunction.ofVendor_toVendor
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.StabilityFunction.toVendor_ofVendor
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.StabilityFunction.equiv
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.StabilityFunction.toVendor_phase
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.StabilityFunction.toVendor_isSemistable_iff
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.StabilityFunction.toVendor_isStable_iff
 
 /-! ## Cohomology exactness (#146) -/
 
