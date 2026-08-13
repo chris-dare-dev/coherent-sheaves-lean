@@ -422,6 +422,7 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.skewedPhase_lt_of_leProp
 #print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.intervalProp_of_skewedSemistable_upper_target
 #print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.intervalProp_of_skewedSemistable_lower_target
+#print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.hom_eq_zero_of_deformedPred_of_target_transport
 #print axioms BridgelandStabLean.Foundation.Slicing.toTStructure
 #print axioms BridgelandStabLean.Foundation.Slicing.toTStructure_heart_iff
 #print axioms BridgelandStabLean.Foundation.Slicing.toTStructure_bounded
