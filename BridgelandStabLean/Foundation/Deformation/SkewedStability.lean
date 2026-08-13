@@ -117,6 +117,28 @@ structure IsSemistable (F : SkewedStabilityFunction C κ s a b)
     s.intervalProp C a b K → s.intervalProp C a b Q →
     ¬IsZero K → F.phase K ≤ ψ
 
+/-- A nonzero quotient in an admissible interval triangle has phase at least
+that of a skewed-semistable object, provided all three selected phases lie on
+the same branch. -/
+theorem IsSemistable.phase_le_of_quotient_triangle
+    {F : SkewedStabilityFunction C κ s a b} {E : C} {ψ : ℝ}
+    (h : F.IsSemistable E ψ) {K Q : C}
+    {i : K ⟶ E} {q : E ⟶ Q} {δ : Q ⟶ K⟦(1 : ℤ)⟧}
+    (hT : Triangle.mk i q δ ∈ distTriang C)
+    (hQcharge : F.ChargeNe Q)
+    (hQrange : F.phase Q ∈ Set.Ioo (ψ - 1) (ψ + 1))
+    (hKrange : ∀ _ : ¬IsZero K, F.phase K ∈ Set.Ioc (ψ - 1) ψ) :
+    ψ ≤ F.phase Q := by
+  have hsum : F.charge K + F.charge Q = F.charge E :=
+    (F.charge_triangle (Triangle.mk i q δ) hT).symm
+  by_cases hKne : IsZero K
+  · have hKcharge : F.charge K = 0 := by
+      simp only [charge, classOf_isZero C κ hKne, map_zero]
+    have hQE : F.charge Q = F.charge E := by
+      simpa [hKcharge] using hsum
+    exact le_of_eq ((F.phase_congr hQE).trans h.phase_eq).symm
+  · exact F.phase_seesaw hsum h.phase_eq (hKrange hKne) hQcharge hQrange
+
 /-- A perturbed-semistable object's phase lies on its chosen branch. -/
 theorem IsSemistable.phase_mem_Ioc {F : SkewedStabilityFunction C κ s a b}
     {E : C} {ψ : ℝ} (h : F.IsSemistable E ψ) :

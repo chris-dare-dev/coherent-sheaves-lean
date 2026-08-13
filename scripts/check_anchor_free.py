@@ -52,6 +52,7 @@ ANCHOR_FREE = [
     "BridgelandStabLean.Foundation.Deformation.PhaseConfinement",
     "BridgelandStabLean.Foundation.Deformation.IntervalHeart",
     "BridgelandStabLean.Foundation.Deformation.MidpointHeart",
+    "BridgelandStabLean.Foundation.Deformation.HeartImage",
     "BridgelandStabLean.Foundation.Deformation.DeformedHom",
     "BridgelandStabLean.Foundation.Deformation.SlicingDistance",
     "BridgelandStabLean.Foundation.Deformation.StabilityTopology",

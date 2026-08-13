@@ -377,6 +377,10 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Foundation.Slicing.geProp_of_phiMinus_ge
 #print axioms BridgelandStabLean.Foundation.Slicing.leProp_of_phiPlus_le
 #print axioms BridgelandStabLean.Foundation.Slicing.ltProp_of_phiPlus_lt
+#print axioms BridgelandStabLean.Foundation.Slicing.ltProp_of_leProp_of_lt
+#print axioms BridgelandStabLean.Foundation.Slicing.phiPlus_lt_of_triangle_with_leProp
+#print axioms BridgelandStabLean.Foundation.Slicing.phiMinus_gt_of_triangle_with_gtProp
+#print axioms BridgelandStabLean.Foundation.Slicing.first_intervalProp_of_triangle
 #print axioms BridgelandStabLean.Foundation.HNFiltration.phaseShift
 #print axioms BridgelandStabLean.Foundation.Slicing.phaseShift
 #print axioms BridgelandStabLean.Foundation.Slicing.phaseShift_gtProp_zero
@@ -456,6 +460,7 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Foundation.Deformation.SkewedStabilityFunction.phase_seesaw
 #print axioms BridgelandStabLean.Foundation.Deformation.SkewedStabilityFunction.phase_seesaw_strict
 #print axioms BridgelandStabLean.Foundation.Deformation.SkewedStabilityFunction.IsSemistable
+#print axioms BridgelandStabLean.Foundation.Deformation.SkewedStabilityFunction.IsSemistable.phase_le_of_quotient_triangle
 #print axioms BridgelandStabLean.Foundation.Deformation.SkewedStabilityFunction.IsSemistable.phase_mem_Ioc
 #print axioms BridgelandStabLean.Foundation.Deformation.SkewedStabilityFunction.IsSemistable.charge_polar
 #print axioms BridgelandStabLean.Foundation.Deformation.SkewedStabilityFunction.IsSemistable.ofIso
@@ -512,6 +517,7 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.hom_eq_zero_of_deformedPred_large_gap
 #print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.hom_eq_zero_of_deformedPred_gap
 #print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.hom_eq_zero_of_deformedCuts_gap
+#print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.hom_eq_zero_of_skewed_small_gap
 #print axioms BridgelandStabLean.Foundation.midpoint_branch_contains
 #print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.skewedPhase_sub_lt_of_stabilitySeminorm
 #print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.skewedPhase_mem_interval_of_stabilitySeminorm
@@ -549,6 +555,7 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Foundation.midpoint_image_window_thin
 #print axioms BridgelandStabLean.Foundation.Slicing.mem_phaseShiftHeart_of_midpoint_left
 #print axioms BridgelandStabLean.Foundation.Slicing.mem_phaseShiftHeart_of_midpoint_right
+#print axioms BridgelandStabLean.Foundation.Slicing.exists_heart_image_factorisation_windows
 #print axioms BridgelandStabLean.Foundation.slicingDist
 #print axioms BridgelandStabLean.Foundation.slicingDistTerm_le
 #print axioms BridgelandStabLean.Foundation.phiPlusDist_le
@@ -756,6 +763,8 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.ForMathlib.CategoryTheory.Triangulated.TStructure.heart_biprod
 #print axioms BridgelandStabLean.ForMathlib.CategoryTheory.Triangulated.TStructure.heartFullSubcategoryAbelian
 #print axioms BridgelandStabLean.ForMathlib.CategoryTheory.Triangulated.TStructure.exists_image_factorisation_epi_triangle
+#print axioms BridgelandStabLean.ForMathlib.CategoryTheory.Triangulated.TStructure.exists_distinguished_triangle_of_heart_mono
+#print axioms BridgelandStabLean.ForMathlib.CategoryTheory.Triangulated.TStructure.exists_image_factorisation_triangles
 #print axioms BridgelandStabLean.ForMathlib.CategoryTheory.Triangulated.TStructure.heartFullSubcategory_shortExact_of_distTriang
 #print axioms BridgelandStabLean.ForMathlib.CategoryTheory.Triangulated.TStructure.truncGE_map_comp_descTruncGE
 #print axioms BridgelandStabLean.ForMathlib.CategoryTheory.Triangulated.TStructure.truncGE_map_comp_descTruncGE_assoc
