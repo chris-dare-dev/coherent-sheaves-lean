@@ -256,6 +256,19 @@ theorem Slicing.hom_eq_zero_of_phase_gap (s : Slicing C) {X Y : C}
   rw [← cancel_epi eX.hom]
   simpa using h
 
+/-- Morphisms from an open interval strictly above another open interval
+vanish. -/
+theorem Slicing.intervalHom_eq_zero (s : Slicing C) {A B : C}
+    {a₁ b₁ a₂ b₂ : ℝ} (hA : s.intervalProp C a₁ b₁ A)
+    (hB : s.intervalProp C a₂ b₂ B) (hgap : b₂ ≤ a₁)
+    (f : A ⟶ B) : f = 0 := by
+  rcases hA with hAZ | ⟨FA, hFA⟩
+  · exact hAZ.eq_of_src f 0
+  rcases hB with hBZ | ⟨FB, hFB⟩
+  · exact hBZ.eq_of_tgt f 0
+  exact s.hom_eq_zero_of_phase_gap C FA FB
+    (fun i j => ((hFB j).2.trans_le hgap).trans (hFA i).1) f
+
 /-- The hom-vanishing statement for the `(> 0, ≤ 0)` phase cut. -/
 theorem Slicing.zero_of_gtProp_leProp (s : Slicing C) {X Y : C}
     (hX : s.gtProp C 0 X) (hY : s.leProp C 0 Y) (f : X ⟶ Y) : f = 0 := by

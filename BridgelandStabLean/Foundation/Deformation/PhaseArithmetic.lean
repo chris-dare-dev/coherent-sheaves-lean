@@ -48,6 +48,28 @@ theorem rotatedIm_eq_zero_of_relativePhase_eq {w : ℂ} {α ψ : ℝ}
   rw [rotatedIm_eq_norm_mul_sin w α ψ, h, sub_self, mul_zero,
     Real.sin_zero, mul_zero]
 
+/-- A nonzero vector whose selected phase lies strictly below the rotation
+phase by less than one has negative rotated imaginary part. -/
+theorem rotatedIm_neg_of_relativePhase_lt {w : ℂ} {α ψ : ℝ}
+    (hw : w ≠ 0) (hlo : ψ - 1 < relativePhase w α)
+    (hlt : relativePhase w α < ψ) : rotatedIm w ψ < 0 := by
+  rw [rotatedIm_eq_norm_mul_sin w α ψ]
+  apply mul_neg_of_pos_of_neg (norm_pos_iff.mpr hw)
+  apply Real.sin_neg_of_neg_of_neg_pi_lt
+  · nlinarith [Real.pi_pos, hlt]
+  · nlinarith [Real.pi_pos, hlo]
+
+/-- A nonzero vector whose selected phase lies strictly above the rotation
+phase by less than one has positive rotated imaginary part. -/
+theorem rotatedIm_pos_of_relativePhase_gt {w : ℂ} {α ψ : ℝ}
+    (hw : w ≠ 0) (hgt : ψ < relativePhase w α)
+    (hhi : relativePhase w α < ψ + 1) : 0 < rotatedIm w ψ := by
+  rw [rotatedIm_eq_norm_mul_sin w α ψ]
+  apply mul_pos (norm_pos_iff.mpr hw)
+  apply Real.sin_pos_of_pos_of_lt_pi
+  · nlinarith [Real.pi_pos, hgt]
+  · nlinarith [Real.pi_pos, hhi]
+
 /-- Positive rotated imaginary part forces a relative phase above the rotation
 phase, provided the selected branch does not wrap around it. -/
 theorem relativePhase_gt_of_rotatedIm_pos {w : ℂ} {α ψ : ℝ}

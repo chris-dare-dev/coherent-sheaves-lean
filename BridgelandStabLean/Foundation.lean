@@ -3,6 +3,7 @@ Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under the MIT license.
 -/
 import BridgelandStabLean.Foundation.PostnikovTower
+import BridgelandStabLean.Foundation.ExtensionClosure
 import BridgelandStabLean.Foundation.Slicing
 import BridgelandStabLean.Foundation.GrothendieckPresentation
 import BridgelandStabLean.Foundation.TriangulatedGrothendieck
@@ -14,14 +15,27 @@ import BridgelandStabLean.Foundation.Slicing.PhaseBounds
 import BridgelandStabLean.Foundation.Slicing.FiltrationOperations
 import BridgelandStabLean.Foundation.Slicing.BoundaryFactors
 import BridgelandStabLean.Foundation.Slicing.IntrinsicPhases
+import BridgelandStabLean.Foundation.Slicing.IntrinsicPhaseBounds
+import BridgelandStabLean.Foundation.Slicing.PhaseCutClosure
+import BridgelandStabLean.Foundation.Slicing.PhaseShift
 import BridgelandStabLean.Foundation.Slicing.PhaseTruncation
+import BridgelandStabLean.Foundation.Slicing.CutoffTruncation
 import BridgelandStabLean.Foundation.Deformation.RelativePhase
 import BridgelandStabLean.Foundation.Deformation.NearIdentity
 import BridgelandStabLean.Foundation.Deformation.LocalFiniteness
 import BridgelandStabLean.Foundation.Deformation.PhaseArithmetic
+import BridgelandStabLean.Foundation.Deformation.PhaseSum
 import BridgelandStabLean.Foundation.Deformation.SkewedStability
 import BridgelandStabLean.Foundation.Deformation.ChargePerturbation
 import BridgelandStabLean.Foundation.Deformation.StabilitySeminorm
+import BridgelandStabLean.Foundation.Deformation.DeformedPredicate
+import BridgelandStabLean.Foundation.Deformation.DeformedCuts
+import BridgelandStabLean.Foundation.Deformation.DeformedShift
+import BridgelandStabLean.Foundation.Deformation.DeformedTriangulated
+import BridgelandStabLean.Foundation.Deformation.DeformedPhaseControl
+import BridgelandStabLean.Foundation.Deformation.IntervalHeart
+import BridgelandStabLean.Foundation.Deformation.MidpointHeart
+import BridgelandStabLean.Foundation.Deformation.DeformedHom
 import BridgelandStabLean.Foundation.Deformation.SlicingDistance
 import BridgelandStabLean.Foundation.Deformation.StabilityTopology
 import BridgelandStabLean.Foundation.StabilityFunction.Basic
