@@ -58,13 +58,13 @@ to **488**. Both were right against the filter of the day, and both are
 superseded here -- the 821 in particular counted the 30 generated names
 described above. **Re-run the command; do not adjust the numbers.**
 
-**THE GAP IS NOW ZERO, re-measured after adding the issue #83 abstract
-families interfaces on 2026-08-11.** Every
+**THE GAP IS NOW ZERO, re-measured while adding the issue #226 owner
+foundation on 2026-08-12.** Every
 public declaration in this library that is not a structure field projection is
 named below. Be precise about what that does and does not mean -- three of the
 four qualifications in this comment are unaffected by it:
 
-* it does NOT cover the **114 private** declarations, which remain structurally
+* it does NOT cover the **116 private** declarations, which remain structurally
   unlistable;
 * it does NOT make this file a gate -- `#print axioms` still exits 0 on
   `[sorryAx]`, and nothing here fails on a missing name;
@@ -72,18 +72,18 @@ four qualifications in this comment are unaffected by it:
   green without an entry here. Zero is a measurement taken at a commit, not a
   property the build maintains.
 
-* It names **1353** declarations. The environment holds **1621** authored
-  declarations under `BridgelandStabLean.*`, so **268 are outside this gate**,
+* It issues **1531** audit commands for **1529** distinct names. The environment holds **1842** authored
+  declarations under `BridgelandStabLean.*`, so **313 are outside this gate**,
   all of them private or projections. ("Authored" excludes constructors,
   recursors, `casesOn`, matchers, equation lemmas, internal names, and the four
   generated families named above -- none of which anybody writes or could
   list.)
-* **114 are `private`** -- 100 of them theorems -- and are *structurally*
+* **116 are `private`** -- 100 of them theorems -- and are *structurally*
   unlistable: Lean mangles a private name to `_private.<Module>.<n>.<Name>`,
   which cannot be written as a short name from an importing module. The
   instruction below cannot be followed for them, and no amount of diligence
   changes that.
-* **154 are structure field projections** emitted by the `structure` command.
+* **197 are structure field projections** emitted by the `structure` command.
   These are not a coverage gap in any useful sense; listing them would be noise.
   They are called out because a census that does not separate them reports a
   shortfall five times the real one.
@@ -105,12 +105,12 @@ four qualifications in this comment are unaffected by it:
   when a name it *should* list appears. `scripts/Census.lean` is the thing that
   reports it, but it is a script you run, not a CI gate; a name added without a
   matching entry here still lands green.
-* **410 of the 1353 are not theorems** (40 `structure`, 370 other
+* **465 of the 1531 audited records are not theorems** (51 `structure`, 414 other
   constructions).
   For a `def`, `#print axioms` reports the axiom closure of a CONSTRUCTION and
   asserts nothing about any proposition. In particular
   `CategoryTheory.Triangulated.StabilityMassTriangleInequality` appears below
-  formatted identically to the **943** real theorems, but it is a `def ... :
+  formatted identically to the **1064** real theorems, but it is a `def ... :
   Prop` -- its clean line means the definition is axiom-clean, NOT that the
   proposition holds.
 
@@ -134,6 +134,34 @@ invisible.
 import BridgelandStabLean
 
 open BridgelandStabLean
+
+/-! ## Owner-controlled Bridgeland foundation (#226) -/
+
+#print axioms BridgelandStabLean.Foundation.PostnikovTower
+#print axioms BridgelandStabLean.Foundation.PostnikovTower.length
+#print axioms BridgelandStabLean.Foundation.PostnikovTower.factor
+#print axioms BridgelandStabLean.Foundation.PostnikovTower.factors
+#print axioms BridgelandStabLean.Foundation.HNFiltration
+#print axioms BridgelandStabLean.Foundation.Slicing
+#print axioms BridgelandStabLean.Foundation.Slicing.ext
+#print axioms BridgelandStabLean.Foundation.Slicing.ext_iff
+#print axioms BridgelandStabLean.Foundation.Slicing.zero_mem_of_isZero
+#print axioms BridgelandStabLean.Foundation.Slicing.shift
+#print axioms BridgelandStabLean.Foundation.Slicing.unshift
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.PostnikovTower.toVendor
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.PostnikovTower.ofVendor
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.PostnikovTower.ofVendor_toVendor
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.PostnikovTower.toVendor_ofVendor
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.HNFiltration.toVendor
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.HNFiltration.ofVendor
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.HNFiltration.ofVendor_toVendor
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.HNFiltration.toVendor_ofVendor
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.Slicing.toVendor
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.Slicing.ofVendor
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.Slicing.toVendor_P
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.Slicing.ofVendor_P
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.Slicing.ofVendor_toVendor
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.Slicing.toVendor_ofVendor
 
 /-! ## Cohomology exactness (#146) -/
 
@@ -182,12 +210,17 @@ open BridgelandStabLean
 -- need not import `BridgelandStability`. Deletion conditions are in the file headers.
 #print axioms BridgelandStabLean.ForMathlib.CategoryTheory.ObjectProperty.FullSubcategory.isZero_of_obj_isZero
 #print axioms BridgelandStabLean.ForMathlib.CategoryTheory.Triangulated.TStructure.heart_hι
+#print axioms BridgelandStabLean.ForMathlib.CategoryTheory.Triangulated.TStructure.heart_containsZero
+#print axioms BridgelandStabLean.ForMathlib.CategoryTheory.Triangulated.TStructure.heart_closedUnderBinaryProducts
+#print axioms BridgelandStabLean.ForMathlib.CategoryTheory.Triangulated.TStructure.heart_closedUnderFiniteProducts
+#print axioms BridgelandStabLean.ForMathlib.CategoryTheory.Triangulated.TStructure.heart_hasFiniteProducts
 #print axioms BridgelandStabLean.ForMathlib.CategoryTheory.Triangulated.TStructure.heart_admissible
 #print axioms BridgelandStabLean.ForMathlib.CategoryTheory.Triangulated.TStructure.heartAbelian
 #print axioms BridgelandStabLean.ForMathlib.CategoryTheory.Triangulated.TStructure.heart_biprod
 #print axioms BridgelandStabLean.ForMathlib.CategoryTheory.Triangulated.TStructure.heartFullSubcategoryAbelian
 #print axioms BridgelandStabLean.ForMathlib.CategoryTheory.Triangulated.TStructure.heartFullSubcategory_shortExact_of_distTriang
 #print axioms BridgelandStabLean.ForMathlib.CategoryTheory.Triangulated.TStructure.truncGE_map_comp_descTruncGE
+#print axioms BridgelandStabLean.ForMathlib.CategoryTheory.Triangulated.TStructure.truncGE_map_comp_descTruncGE_assoc
 #print axioms BridgelandStabLean.ForMathlib.CategoryTheory.Triangulated.TStructure.exists_truncLT_octahedral_split
 #print axioms Matrix.polarFactor_posSemidef
 #print axioms Matrix.polarFactor_mul_self

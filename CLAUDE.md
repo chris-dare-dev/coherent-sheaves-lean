@@ -22,6 +22,10 @@ license, full-build, linter, and axiom-gate evidence.
   intersection theory, numerical invariants, and Riemann–Roch.
 - `BridgelandStabLean/` owns stability-condition extensions, abstract lattice
   theory, support, weak stability, tilting, metrics, walls, and symmetries.
+- `BridgelandStabLean/Foundation/` owns the replacement root API. It must be
+  Mathlib-only and remain anchor-free under `scripts/check_anchor_free.py`.
+- `BridgelandStabLean/Compatibility/` is the only place new conversion code may
+  name the retained Apache vendor API during the ownership migration.
 - `BridgelandStabLean/TStructure/` owns anchor-free abstract t-structure theory.
 - `BridgelandStabLean/Anchor/` owns explicit compatibility bridges to the
   foundational library. Nothing anchor-free may depend on it.
@@ -38,6 +42,10 @@ Export new leaves through their nearest subsystem umbrella. Keep
 The owner-authored trunk is MIT. Retained third-party source is Apache-2.0 and
 must keep its copyright, licence headers, component `LICENSE`, and `NOTICE`.
 Never rewrite third-party headers as MIT. See `LICENSES/README.md`.
+
+The direct vendor-import inventory is frozen by `scripts/check_anchor_free.py`.
+Each ownership slice removes entries from that allowlist; new entries outside
+`Compatibility/` are forbidden.
 
 ## Proof integrity
 

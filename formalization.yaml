@@ -842,6 +842,20 @@ fidelity:
     proposition companion in `Phase.Transfer.Phase`; every named declaration
     migrated from source PR #155 is in the hand audit.
 
+    COUNT UPDATE (destination issue #226; owner-controlled Bridgeland
+    foundation), 2026-08-12. The first Mathlib-only foundation slice adds
+    repository-owned Postnikov towers, HN filtrations, slicings, elementary
+    accessors, and explicit lossless conversions at the retained Apache vendor
+    boundary. The census now reports 1842 authored declarations, 116 private
+    declarations, and 197 structure-field projections. Audit issues 1531
+    commands (1529 distinct names), of which 1064 records are theorems, 51 are
+    structures, and 414 are other non-theorems; no authored public declaration
+    remains outside the hand audit. `scripts/Census.lean` now also excludes the
+    generated `hcongr_*` family after confirming that no source file writes such
+    a name. This is an ownership and compatibility milestone, not a claim that
+    the vendor can yet be removed: the frozen direct-import inventory still
+    contains 28 modules, including the compatibility boundary itself.
+
     COUNT UPDATE (Wall lane, the nested wall theorem), 2026-08-07. The 13
     additional records are the orthogonality identity minor_orth, the three
     cross terms crossAB/crossAC/crossBC with their three antisymmetry lemmas,

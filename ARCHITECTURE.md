@@ -22,6 +22,8 @@ the mathematics and is independent of the package path.
 | `Topology` | Reusable open-cover infrastructure |
 | `Development` | Compile-only API audits; not part of the stable root import |
 | `BridgelandStabLean/Lattice` | Abstract numerical and Mukai lattice infrastructure |
+| `BridgelandStabLean/Foundation` | Owner-authored Postnikov towers, HN filtrations, slicings, and later root stability APIs |
+| `BridgelandStabLean/Compatibility` | Temporary, explicit adapters across retained third-party boundaries |
 | `BridgelandStabLean/StabilityCondition` | Stability metrics, support, symmetry, walls, and weak stability |
 | `vendor/BridgelandStability` | Apache-2.0 foundational slicing and deformation implementation |
 
@@ -44,6 +46,13 @@ schemes and geometric hypotheses
 
 The numerical layer is a visible axiomatic boundary. Geometric modules construct data that
 discharges that boundary; they do not silently turn assumptions into theorems.
+
+`BridgelandStabLean/Foundation` is the bottom-up replacement boundary for the vendored
+stability implementation. Owner-authored definitions depend directly on Mathlib.
+Conversions involving Apache-2.0 declarations live only under
+`BridgelandStabLean/Compatibility/BridgelandStability`; downstream modules migrate to the
+owner API one dependency layer at a time. The vendor library is removed only after no
+owner-authored module imports it and the full trust gates pass without it.
 
 `Duality/Canonical/Descent` similarly separates the smooth affine-chart theorem from the missing
 sheafification comparison: explicit rank-`n` trivializations on the canonical chart cover produce
