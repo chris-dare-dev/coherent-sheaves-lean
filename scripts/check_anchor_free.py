@@ -34,6 +34,7 @@ ANCHOR_FREE = [
     "BridgelandStabLean.Foundation.TriangulatedGrothendieckFunctorial",
     "BridgelandStabLean.Foundation.PreStabilityCondition",
     "BridgelandStabLean.Foundation.IntervalCategory",
+    "BridgelandStabLean.Foundation.QuasiAbelian",
     "BridgelandStabLean.Foundation.StabilityCondition",
     "BridgelandStabLean.Foundation.Deformation.RelativePhase",
     "BridgelandStabLean.Foundation.Deformation.NearIdentity",

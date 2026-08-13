@@ -433,6 +433,14 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Foundation.Slicing.intervalCat_hasCokernels
 #print axioms BridgelandStabLean.Foundation.Slicing.IntervalCat.toLeftHeartKernelIso
 #print axioms BridgelandStabLean.Foundation.Slicing.IntervalCat.toRightHeartCokernelIso
+#print axioms BridgelandStabLean.Foundation.IsStrict
+#print axioms BridgelandStabLean.Foundation.IsStrictMono
+#print axioms BridgelandStabLean.Foundation.IsStrictEpi
+#print axioms BridgelandStabLean.Foundation.isStrictEpi_of_isColimitCokernelCofork
+#print axioms BridgelandStabLean.Foundation.isStrictMono_of_isLimitKernelFork
+#print axioms BridgelandStabLean.Foundation.isStrictMono_kernel
+#print axioms BridgelandStabLean.Foundation.isStrictEpi_cokernel
+#print axioms BridgelandStabLean.Foundation.StrictShortExact
 #print axioms BridgelandStabLean.ForMathlib.CategoryTheory.Triangulated.TStructure.exists_distinguished_triangle_of_heart_epi
 #print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.skewedPhase_mem_enveloped_branch
 #print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.skewedPhase_gt_of_geProp
