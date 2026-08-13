@@ -191,8 +191,12 @@ theorem skewedSemistable_common_refinement
     (hCD : (skewedStabilityFunctionOfSeminormLtOne C σ W hr0 hr1 hW hcd).IsSemistable
       E ψ) :
     ∃ hinter : max a c < min b d,
-      (skewedStabilityFunctionOfSeminormLtOne C σ W hr0 hr1 hW hinter).IsSemistable
-        E ψ := by
+      let F := skewedStabilityFunctionOfSeminormLtOne C σ W hr0 hr1 hW hinter
+      F.IsSemistable E ψ ∧
+        F.phase E =
+          (skewedStabilityFunctionOfSeminormLtOne C σ W hr0 hr1 hW hab).phase E ∧
+        F.phase E =
+          (skewedStabilityFunctionOfSeminormLtOne C σ W hr0 hr1 hW hcd).phase E := by
   have hmax : max a c + ε ≤ ψ := by
     have hmax' : max a c ≤ ψ - ε := max_le (by linarith) (by linarith)
     linarith
@@ -200,9 +204,15 @@ theorem skewedSemistable_common_refinement
     have hmin' : ψ + ε ≤ min b d := le_min (by linarith) (by linarith)
     linarith
   have hinter : max a c < min b d := by linarith
-  exact ⟨hinter,
-    σ.skewedSemistable_on_witness_intersection C W hr0 hr1 hW hab hcd hε hε2
-      hthinAB hsin haψ hψb hcψ hψd hCD.interval hAB⟩
+  refine ⟨hinter,
+    σ.skewedSemistable_on_witness_intersection C W hr0 hr1 hW hab hcd
+      hε hε2 hthinAB hsin haψ hψb hcψ hψd hCD.interval hAB, ?_, ?_⟩
+  · rw [hAB.phase_eq]
+    exact (σ.skewedSemistable_on_witness_intersection C W hr0 hr1 hW hab hcd
+      hε hε2 hthinAB hsin haψ hψb hcψ hψd hCD.interval hAB).phase_eq
+  · rw [hCD.phase_eq]
+    exact (σ.skewedSemistable_on_witness_intersection C W hr0 hr1 hW hab hcd
+      hε hε2 hthinAB hsin haψ hψb hcψ hψd hCD.interval hAB).phase_eq
 
 /-- A deformed-slice witness may be replaced by a nested compatible thin
 interval using only endpoint inequalities. -/
