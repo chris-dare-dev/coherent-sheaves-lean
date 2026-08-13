@@ -73,7 +73,7 @@ four qualifications in this comment are unaffected by it:
   green without an entry here. Zero is a measurement taken at a commit, not a
   property the build maintains.
 
-* It issues **1734** audit commands. The environment holds **2079** authored
+* It issues **1740** audit commands. The environment holds **2085** authored
   declarations under `BridgelandStabLean.*`, so **345 are outside this gate**,
   all of them private or projections. ("Authored" excludes constructors,
   recursors, `casesOn`, matchers, equation lemmas, internal names, and the six
@@ -375,6 +375,12 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.phase_mem_range
 #print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.phiMinus_le_phiPlus
 #print axioms BridgelandStabLean.Foundation.StabilityFunction.HasHNProperty
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.AbelianHNFiltration.toVendor
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.AbelianHNFiltration.ofVendor
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.AbelianHNFiltration.toVendor_n
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.AbelianHNFiltration.ofVendor_n
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.AbelianHNFiltration.toVendor_phase
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.AbelianHNFiltration.ofVendor_phase
 
 /-! ## Cohomology exactness (#146) -/
 

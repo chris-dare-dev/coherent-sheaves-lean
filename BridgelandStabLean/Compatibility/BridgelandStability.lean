@@ -6,7 +6,7 @@ import BridgelandStabLean.Foundation
 import BridgelandStability.GrothendieckGroup.Basic
 import BridgelandStability.Slicing.TStructureConstruction
 import BridgelandStability.StabilityCondition.Defs
-import BridgelandStability.StabilityFunction.Basic
+import BridgelandStability.StabilityFunction.HarderNarasimhan
 
 /-!
 # Compatibility with the vendored BridgelandStability API
@@ -108,6 +108,75 @@ theorem toVendor_isStable_iff (Z : Foundation.StabilityFunction A) (E : A) :
     Foundation.StabilityFunction.IsStable, toVendor_phase]
 
 end StabilityFunction
+
+namespace AbelianHNFiltration
+
+variable (A : Type u) [Category.{v} A] [Abelian A]
+
+/-- Convert an owner abelian HN filtration to the retained representation. -/
+def toVendor {Z : Foundation.StabilityFunction A} {E : A}
+    (F : Foundation.AbelianHNFiltration Z E) :
+    CategoryTheory.AbelianHNFiltration (StabilityFunction.toVendor A Z) E where
+  n := F.n
+  hn := F.nonempty
+  chain := F.chain
+  chain_strictMono := F.chain_strictMono
+  chain_bot := F.chain_bot
+  chain_top := F.chain_top
+  φ := F.phase
+  φ_anti := F.phase_strictAnti
+  factor_phase j := by
+    rw [StabilityFunction.toVendor_phase]
+    exact F.factor_phase j
+  factor_semistable j :=
+    (StabilityFunction.toVendor_isSemistable_iff A Z _).2 (F.factor_semistable j)
+
+/-- Convert a retained abelian HN filtration to the owner representation. -/
+def ofVendor {Z : CategoryTheory.StabilityFunction A} {E : A}
+    (F : CategoryTheory.AbelianHNFiltration Z E) :
+    Foundation.AbelianHNFiltration (StabilityFunction.ofVendor A Z) E where
+  n := F.n
+  nonempty := F.hn
+  chain := F.chain
+  chain_strictMono := F.chain_strictMono
+  chain_bot := F.chain_bot
+  chain_top := F.chain_top
+  phase := F.φ
+  phase_strictAnti := F.φ_anti
+  factor_phase j := by
+    simpa only [Foundation.StabilityFunction.phase,
+      CategoryTheory.StabilityFunction.phase, StabilityFunction.ofVendor_charge,
+      div_eq_mul_inv, one_mul, mul_one, mul_comm] using F.factor_phase j
+  factor_semistable j := by
+    simpa only [Foundation.StabilityFunction.IsSemistable,
+      CategoryTheory.StabilityFunction.IsSemistable,
+      Foundation.StabilityFunction.phase,
+      CategoryTheory.StabilityFunction.phase, StabilityFunction.ofVendor_charge,
+      div_eq_mul_inv, one_mul, mul_one, mul_comm] using F.factor_semistable j
+
+@[simp]
+theorem toVendor_n {Z : Foundation.StabilityFunction A} {E : A}
+    (F : Foundation.AbelianHNFiltration Z E) : (toVendor A F).n = F.n :=
+  rfl
+
+@[simp]
+theorem ofVendor_n {Z : CategoryTheory.StabilityFunction A} {E : A}
+    (F : CategoryTheory.AbelianHNFiltration Z E) : (ofVendor A F).n = F.n :=
+  rfl
+
+@[simp]
+theorem toVendor_phase {Z : Foundation.StabilityFunction A} {E : A}
+    (F : Foundation.AbelianHNFiltration Z E) (i : Fin F.n) :
+    (toVendor A F).φ i = F.phase i :=
+  rfl
+
+@[simp]
+theorem ofVendor_phase {Z : CategoryTheory.StabilityFunction A} {E : A}
+    (F : CategoryTheory.AbelianHNFiltration Z E) (i : Fin F.n) :
+    (ofVendor A F).phase i = F.φ i :=
+  rfl
+
+end AbelianHNFiltration
 
 namespace GrothendieckGroup
 
