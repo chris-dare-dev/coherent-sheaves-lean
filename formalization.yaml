@@ -906,14 +906,18 @@ fidelity:
     on old semistable charges now supplies nonvanishing below relative norm
     one, constructs the skewed-stability interface, and converts a strict
     `sin (π ε)` charge bound into the selected-phase perturbation estimate.
+    The corresponding owner `ℝ≥0∞` stability seminorm is now defined as the
+    supremum of semistable charge ratios; its universal bound recovers the
+    pointwise hypothesis, constructs skewed stability below one, and gives
+    phase control directly from a strict seminorm bound.
     The compatibility
     boundary records definitional agreement with the retained wPhaseOf
     representation while every mathematical proof lives in the owner
-    namespace. The census reports 2228 authored declarations,
+    namespace. The census reports 2234 authored declarations,
     126 private declarations, and 233 structure-field projections. Audit
-    issues 1874 commands, of which 1314 records are theorems, 62 are
-    structures, and 493 are other non-theorems; no authored public declaration
-    remains outside the hand audit. All 22 owner foundation modules are
+    issues 1880 commands, of which 1318 records are theorems, 62 are
+    structures, and 495 are other non-theorems; no authored public declaration
+    remains outside the hand audit. All 23 owner foundation modules are
     import-level anchor-free. The direct vendor-import inventory remains
     frozen at 28.
 
