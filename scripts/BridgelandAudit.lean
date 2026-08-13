@@ -391,7 +391,12 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Foundation.Deformation.stabilitySeminorm
 #print axioms BridgelandStabLean.Foundation.Deformation.charge_norm_pos
 #print axioms BridgelandStabLean.Foundation.Deformation.ratio_le_stabilitySeminorm
+#print axioms BridgelandStabLean.Foundation.Deformation.stabilitySeminorm_nonneg
+#print axioms BridgelandStabLean.Foundation.Deformation.stabilitySeminorm_zero
+#print axioms BridgelandStabLean.Foundation.Deformation.stabilitySeminorm_neg
+#print axioms BridgelandStabLean.Foundation.Deformation.stabilitySeminorm_add_le
 #print axioms BridgelandStabLean.Foundation.Deformation.semistableChargeBound_of_stabilitySeminorm_le
+#print axioms BridgelandStabLean.Foundation.Deformation.semistableChargeBound_toReal
 #print axioms BridgelandStabLean.Foundation.Deformation.skewedStabilityFunctionOfSeminormLtOne
 #print axioms BridgelandStabLean.Foundation.Deformation.relativePhase_perturbation_of_stabilitySeminorm
 #print axioms BridgelandStabLean.Compatibility.BridgelandStability.Deformation.relativePhase_eq_wPhaseOf

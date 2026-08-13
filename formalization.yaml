@@ -909,13 +909,15 @@ fidelity:
     The corresponding owner `ℝ≥0∞` stability seminorm is now defined as the
     supremum of semistable charge ratios; its universal bound recovers the
     pointwise hypothesis, constructs skewed stability below one, and gives
-    phase control directly from a strict seminorm bound.
+    phase control directly from a strict seminorm bound. The seminorm is zero
+    at zero, invariant under negation, subadditive, and a finite value supplies
+    its real pointwise bound.
     The compatibility
     boundary records definitional agreement with the retained wPhaseOf
     representation while every mathematical proof lives in the owner
-    namespace. The census reports 2234 authored declarations,
+    namespace. The census reports 2239 authored declarations,
     126 private declarations, and 233 structure-field projections. Audit
-    issues 1880 commands, of which 1318 records are theorems, 62 are
+    issues 1885 commands, of which 1323 records are theorems, 62 are
     structures, and 495 are other non-theorems; no authored public declaration
     remains outside the hand audit. All 23 owner foundation modules are
     import-level anchor-free. The direct vendor-import inventory remains

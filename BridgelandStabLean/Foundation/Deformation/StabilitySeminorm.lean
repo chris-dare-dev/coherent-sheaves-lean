@@ -49,6 +49,56 @@ theorem ratio_le_stabilitySeminorm
   le_iSup_of_le E (le_iSup_of_le φ
     (le_iSup_of_le hP (le_iSup_of_le hE le_rfl)))
 
+/-- The stability seminorm is nonnegative. -/
+theorem stabilitySeminorm_nonneg
+    (σ : StabilityCondition.WithClassMap C κ) (U : Λ →+ ℂ) :
+    0 ≤ stabilitySeminorm C σ U :=
+  zero_le
+
+/-- The zero charge homomorphism has zero stability seminorm. -/
+@[simp]
+theorem stabilitySeminorm_zero
+    (σ : StabilityCondition.WithClassMap C κ) :
+    stabilitySeminorm C σ 0 = 0 := by
+  simp [stabilitySeminorm]
+
+/-- Negation preserves the stability seminorm. -/
+@[simp]
+theorem stabilitySeminorm_neg
+    (σ : StabilityCondition.WithClassMap C κ) (U : Λ →+ ℂ) :
+    stabilitySeminorm C σ (-U) = stabilitySeminorm C σ U := by
+  simp [stabilitySeminorm]
+
+/-- The owner stability seminorm satisfies the triangle inequality. -/
+theorem stabilitySeminorm_add_le
+    (σ : StabilityCondition.WithClassMap C κ) (U V : Λ →+ ℂ) :
+    stabilitySeminorm C σ (U + V) ≤
+      stabilitySeminorm C σ U + stabilitySeminorm C σ V := by
+  apply iSup_le
+  intro E
+  apply iSup_le
+  intro φ
+  apply iSup_le
+  intro hP
+  apply iSup_le
+  intro hE
+  calc
+    ENNReal.ofReal (‖(U + V) (classOf C κ E)‖ / ‖σ.charge E‖) ≤
+        ENNReal.ofReal (‖U (classOf C κ E)‖ / ‖σ.charge E‖ +
+          ‖V (classOf C κ E)‖ / ‖σ.charge E‖) := by
+      apply ENNReal.ofReal_le_ofReal
+      rw [AddMonoidHom.add_apply, ← add_div]
+      exact div_le_div_of_nonneg_right (norm_add_le _ _) (norm_nonneg _)
+    _ = ENNReal.ofReal (‖U (classOf C κ E)‖ / ‖σ.charge E‖) +
+        ENNReal.ofReal (‖V (classOf C κ E)‖ / ‖σ.charge E‖) :=
+      ENNReal.ofReal_add
+        (div_nonneg (norm_nonneg _) (norm_nonneg _))
+        (div_nonneg (norm_nonneg _) (norm_nonneg _))
+    _ ≤ stabilitySeminorm C σ U + stabilitySeminorm C σ V :=
+      add_le_add
+        (ratio_le_stabilitySeminorm C σ U hP hE)
+        (ratio_le_stabilitySeminorm C σ V hP hE)
+
 /-- A real upper bound on the stability seminorm supplies the corresponding
 pointwise relative norm bound. -/
 theorem semistableChargeBound_of_stabilitySeminorm_le
@@ -66,6 +116,17 @@ theorem semistableChargeBound_of_stabilitySeminorm_le
       ‖(W - σ.Z) (classOf C κ E)‖ / ‖σ.charge E‖ ≤ r :=
     (ENNReal.ofReal_le_ofReal_iff hr).mp hratio
   rwa [div_le_iff₀ (charge_norm_pos C σ hP hE)] at hreal
+
+/-- A finite stability seminorm supplies its `toReal` as a pointwise bound on
+semistable charge perturbations. -/
+theorem semistableChargeBound_toReal
+    (σ : StabilityCondition.WithClassMap C κ) (W : Λ →+ ℂ)
+    (hfinite : stabilitySeminorm C σ (W - σ.Z) ≠ ⊤) :
+    SemistableChargeBound C σ W
+      (stabilitySeminorm C σ (W - σ.Z)).toReal := by
+  apply semistableChargeBound_of_stabilitySeminorm_le C σ W
+    ENNReal.toReal_nonneg
+  rw [ENNReal.ofReal_toReal hfinite]
 
 /-- A stability-seminorm bound below one produces skewed stability data on
 every nonempty interval. -/
