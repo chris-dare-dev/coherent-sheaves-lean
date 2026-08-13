@@ -15,6 +15,7 @@ import BridgelandStabLean.Foundation.Slicing.FiltrationOperations
 import BridgelandStabLean.Foundation.Slicing.BoundaryFactors
 import BridgelandStabLean.Foundation.Slicing.IntrinsicPhases
 import BridgelandStabLean.Foundation.Slicing.IntrinsicPhaseBounds
+import BridgelandStabLean.Foundation.Slicing.PhaseShift
 import BridgelandStabLean.Foundation.Slicing.PhaseTruncation
 import BridgelandStabLean.Foundation.Deformation.RelativePhase
 import BridgelandStabLean.Foundation.Deformation.NearIdentity
@@ -25,6 +26,7 @@ import BridgelandStabLean.Foundation.Deformation.ChargePerturbation
 import BridgelandStabLean.Foundation.Deformation.StabilitySeminorm
 import BridgelandStabLean.Foundation.Deformation.DeformedPredicate
 import BridgelandStabLean.Foundation.Deformation.DeformedPhaseControl
+import BridgelandStabLean.Foundation.Deformation.IntervalHeart
 import BridgelandStabLean.Foundation.Deformation.SlicingDistance
 import BridgelandStabLean.Foundation.Deformation.StabilityTopology
 import BridgelandStabLean.Foundation.StabilityFunction.Basic

@@ -118,4 +118,36 @@ theorem Slicing.intrinsic_phases_mem_interval (s : Slicing C) {E : C}
     s.phiMinus_gt_of_intervalProp C hE hI,
     s.phiMinus_lt_of_intervalProp C hE hI⟩
 
+/-- A strict bound on the intrinsic lowest phase yields the corresponding
+strict lower phase cut. -/
+theorem Slicing.gtProp_of_phiMinus_gt (s : Slicing C) {E : C}
+    (hE : ¬IsZero E) {a : ℝ} (h : a < s.phiMinus C E hE) :
+    s.gtProp C a E := by
+  obtain ⟨F, hn, _, hminus⟩ := s.exists_hn_intrinsic_width C hE
+  exact Or.inr ⟨F, hn, by rw [hminus]; exact h⟩
+
+/-- A weak bound on the intrinsic lowest phase yields the corresponding weak
+lower phase cut. -/
+theorem Slicing.geProp_of_phiMinus_ge (s : Slicing C) {E : C}
+    (hE : ¬IsZero E) {a : ℝ} (h : a ≤ s.phiMinus C E hE) :
+    s.geProp C a E := by
+  obtain ⟨F, hn, _, hminus⟩ := s.exists_hn_intrinsic_width C hE
+  exact Or.inr ⟨F, hn, by rw [hminus]; exact h⟩
+
+/-- A weak bound on the intrinsic highest phase yields the corresponding weak
+upper phase cut. -/
+theorem Slicing.leProp_of_phiPlus_le (s : Slicing C) {E : C}
+    (hE : ¬IsZero E) {b : ℝ} (h : s.phiPlus C E hE ≤ b) :
+    s.leProp C b E := by
+  obtain ⟨F, hn, hplus, _⟩ := s.exists_hn_intrinsic_width C hE
+  exact Or.inr ⟨F, hn, by rw [hplus]; exact h⟩
+
+/-- A strict bound on the intrinsic highest phase yields the corresponding
+strict upper phase cut. -/
+theorem Slicing.ltProp_of_phiPlus_lt (s : Slicing C) {E : C}
+    (hE : ¬IsZero E) {b : ℝ} (h : s.phiPlus C E hE < b) :
+    s.ltProp C b E := by
+  obtain ⟨F, hn, hplus, _⟩ := s.exists_hn_intrinsic_width C hE
+  exact Or.inr ⟨F, hn, by rw [hplus]; exact h⟩
+
 end BridgelandStabLean.Foundation
