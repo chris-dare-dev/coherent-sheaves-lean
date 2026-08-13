@@ -73,7 +73,7 @@ four qualifications in this comment are unaffected by it:
   green without an entry here. Zero is a measurement taken at a commit, not a
   property the build maintains.
 
-* It issues **1760** audit commands. The environment holds **2105** authored
+* It issues **1768** audit commands. The environment holds **2113** authored
   declarations under `BridgelandStabLean.*`, so **345 are outside this gate**,
   all of them private or projections. ("Authored" excludes constructors,
   recursors, `casesOn`, matchers, equation lemmas, internal names, and the six
@@ -106,12 +106,12 @@ four qualifications in this comment are unaffected by it:
   when a name it *should* list appears. `scripts/Census.lean` is the thing that
   reports it, but it is a script you run, not a CI gate; a name added without a
   matching entry here still lands green.
-* **507 of the distinct gated declarations are not theorems** (57 `structure`, 450 other
+* **537 of the distinct gated declarations are not theorems** (60 `structure`, 477 other
   constructions).
   For a `def`, `#print axioms` reports the axiom closure of a CONSTRUCTION and
   asserts nothing about any proposition. In particular
   `CategoryTheory.Triangulated.StabilityMassTriangleInequality` appears below
-  formatted identically to the **1113** real theorems, but it is a `def ... :
+formatted identically to the **1226** real theorems, but it is a `def ... :
   Prop` -- its clean line means the definition is axiom-clean, NOT that the
   proposition holds.
 
@@ -385,6 +385,8 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Foundation.StabilityFunction.subobject_ne_bot_of_not_isZero
 #print axioms BridgelandStabLean.Foundation.StabilityFunction.subobject_not_isZero_of_ne_bot
 #print axioms BridgelandStabLean.Foundation.StabilityFunction.subobject_top_ne_bot_of_not_isZero
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.subobject_ofLE_bot
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.subobjectCokernelBotIso
 #print axioms BridgelandStabLean.Foundation.StabilityFunction.cokernel_not_isZero_of_ne_top
 #print axioms BridgelandStabLean.Foundation.im_nonneg_of_mem_semiClosedUpperHalfPlane
 #print axioms BridgelandStabLean.Foundation.add_mem_semiClosedUpperHalfPlane
@@ -401,6 +403,12 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Foundation.StabilityFunction.min_phase_le_of_shortExact
 #print axioms BridgelandStabLean.Foundation.StabilityFunction.phase_le_of_epi
 #print axioms BridgelandStabLean.Foundation.StabilityFunction.hom_eq_zero_of_semistable_phase_gt
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.phase_cokernel_ofLE_congr
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.isSemistable_cokernel_ofLE_congr
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.n_eq_one_of_semistable
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.isSemistable_of_n_eq_one
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.n_eq_one_iff_isSemistable
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.two_le_n_of_not_isSemistable
 
 /-! ## Cohomology exactness (#146) -/
 

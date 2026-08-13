@@ -53,6 +53,18 @@ theorem subobject_top_ne_bot_of_not_isZero {E : A} (hE : ¬IsZero E) :
     (subobject_isZero_iff_eq_bot _).2 h
   exact htop.of_iso (asIso (⊤ : Subobject E).arrow).symm
 
+/-- The inclusion from the bottom subobject is the zero morphism. -/
+@[simp]
+theorem subobject_ofLE_bot {E : A} (S : Subobject E) (h : ⊥ ≤ S) :
+    Subobject.ofLE ⊥ S h = 0 :=
+  zero_of_source_iso_zero _ Subobject.botCoeIsoZero
+
+/-- The cokernel of the inclusion from bottom is the target subobject. -/
+def subobjectCokernelBotIso {E : A} (S : Subobject E) (h : ⊥ ≤ S) :
+    cokernel (Subobject.ofLE ⊥ S h) ≅ (S : A) := by
+  rw [subobject_ofLE_bot S h]
+  exact cokernelZeroIsoTarget
+
 /-- A proper subobject of an abelian object has nonzero cokernel. -/
 theorem cokernel_not_isZero_of_ne_top {E : A} {B : Subobject E}
     (hB : B ≠ ⊤) : ¬IsZero (cokernel B.arrow) := by

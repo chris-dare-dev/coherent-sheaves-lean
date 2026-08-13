@@ -41,6 +41,7 @@ ANCHOR_FREE = [
     "BridgelandStabLean.Foundation.StabilityFunction.HarderNarasimhan",
     "BridgelandStabLean.Foundation.StabilityFunction.Subobject",
     "BridgelandStabLean.Foundation.StabilityFunction.PhaseGeometry",
+    "BridgelandStabLean.Foundation.StabilityFunction.Uniqueness",
     "BridgelandStabLean.TStructure",
     "BridgelandStabLean.TStructure.Exactness",
     "BridgelandStabLean.TStructure.Shift",
