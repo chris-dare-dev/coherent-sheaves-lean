@@ -427,6 +427,9 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Foundation.Deformation.relativePhase_seesaw
 #print axioms BridgelandStabLean.Foundation.Deformation.relativePhase_seesaw_strict
 #print axioms BridgelandStabLean.Foundation.Deformation.relativePhase_seesaw_dual
+#print axioms BridgelandStabLean.Foundation.rotatedIm_charge_eq_sum
+#print axioms BridgelandStabLean.Foundation.rotatedIm_charge_neg_of_hn
+#print axioms BridgelandStabLean.Foundation.rotatedIm_charge_pos_of_hn
 #print axioms BridgelandStabLean.Foundation.Deformation.SkewedStabilityFunction
 #print axioms BridgelandStabLean.Foundation.Deformation.SkewedStabilityFunction.charge
 #print axioms BridgelandStabLean.Foundation.Deformation.SkewedStabilityFunction.phase

@@ -22,6 +22,7 @@ import BridgelandStabLean.Foundation.Deformation.RelativePhase
 import BridgelandStabLean.Foundation.Deformation.NearIdentity
 import BridgelandStabLean.Foundation.Deformation.LocalFiniteness
 import BridgelandStabLean.Foundation.Deformation.PhaseArithmetic
+import BridgelandStabLean.Foundation.Deformation.PhaseSum
 import BridgelandStabLean.Foundation.Deformation.SkewedStability
 import BridgelandStabLean.Foundation.Deformation.ChargePerturbation
 import BridgelandStabLean.Foundation.Deformation.StabilitySeminorm
