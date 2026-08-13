@@ -37,17 +37,21 @@ proof uses an augmented Cech resolution and its Leray spectral sequence.
 `CohLean.Cohomology.Cech.Bicomplex` now constructs that bicomplex from an explicit injective
 resolution, retains its augmentation, totalizes its column filtration, constructs the spectral
 sequence, identifies its entries with `Cech^p(U, I^q)`, computes the initial page as the homology of
-an adjacent filtration layer, and names the total-complex abutment candidate.  Three precise
+an adjacent filtration layer, and names the total-complex abutment candidate.  Two precise
 boundaries remain:
 
-* this Mathlib revision has no `EnoughInjectives` instance for abelian sheaves, so an injective
-  resolution cannot yet be chosen from the current hypotheses;
 * the initial page is identified with fixed-column homology, and its positive resolution rows
   vanish under `IsCechAcyclicFor`; the remaining page computation is to identify the degree-zero
   row and its horizontal differential with the Cech complex;
 * Mathlib's `SpectralSequence` structure records pages and page-to-page homology isomorphisms but
   has no convergence or abutment field, so comparison with the named total complex must be proved
   as a separate theorem.
+
+The declarations below take an explicit `InjectiveResolution F` because the site here is a general
+`C : Type u` with `Category.{a} C`, and the pinned Mathlib supplies `EnoughInjectives` for abelian
+sheaves only over a *small* site.  That is the only obstruction: on a small site the resolution is
+chosen rather than assumed, and `CohLean.Cohomology.Cech.SmallSiteResolution` restates this
+interface without the resolution argument.
 -/
 
 universe i h a v u

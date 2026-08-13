@@ -673,8 +673,9 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 
 -- Layer B stage 3: an explicit injective resolution now produces the augmented Cech
 -- bicomplex, its total complex, the column-filtered spectral sequence, and the formal
--- initial-page identification. The pin still has no EnoughInjectives instance for sheaves
--- and no convergence/abutment field in SpectralSequence; neither gap is hidden by an axiom.
+-- initial-page identification. Over a general site the pin still has no EnoughInjectives
+-- instance for sheaves, and SpectralSequence still has no convergence/abutment field;
+-- neither gap is hidden by an axiom.
 #print axioms CategoryTheory.Limits.FormalCoproduct.evalOp_additive
 #print axioms CategoryTheory.Sheaf.cechComplexFunctor_additive
 #print axioms CategoryTheory.Sheaf.cechCochainFunctorInt
@@ -691,6 +692,21 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms CategoryTheory.Sheaf.cechInjectiveAdjacentLayerComplex
 #print axioms CategoryTheory.Sheaf.cechInjectiveAdjacentLayerHomologyIso
 #print axioms CategoryTheory.Sheaf.cechInjectiveInitialPageColumnHomologyIso
+
+-- Layer B stage 3: over a SMALL site the resolution hypothesis is redundant. Mathlib's
+-- Grothendieck-abelian chain supplies enough injectives, so the Cech spectral sequence and
+-- its acyclicity consequences are restated with no InjectiveResolution argument. These are
+-- inferInstance and wrapper terms, not new instances or axioms.
+#print axioms CategoryTheory.Sheaf.enoughInjectives_of_small
+#print axioms CategoryTheory.Sheaf.hasInjectiveResolutions_of_small
+#print axioms CategoryTheory.Sheaf.enoughInjectives_opens
+#print axioms CategoryTheory.Sheaf.canonicalInjectiveResolution
+#print axioms CategoryTheory.Sheaf.canonicalSectionsCohomologyAddEquivHPrime
+#print axioms CategoryTheory.Sheaf.canonicalCechBicomplex
+#print axioms CategoryTheory.Sheaf.canonicalCechSpectralSequence
+#print axioms CategoryTheory.Sheaf.canonicalCechInitialPageColumnHomologyIso
+#print axioms CategoryTheory.Sheaf.isZero_canonicalCechInitialPage_of_isCechAcyclicFor
+#print axioms CategoryTheory.Sheaf.subsingleton_canonicalCechInitialPage_of_isCechAcyclicFor
 
 -- Layer B stage 3: the initial page's degree-zero row, including its horizontal
 -- differential, is the ordinary Cech complex. Consequently the following page is
