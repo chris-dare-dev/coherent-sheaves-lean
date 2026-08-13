@@ -1,0 +1,417 @@
+schema: roadmap/1
+slug: dg-enhancements
+project: derived-alg-geo-lean
+title: "DG enhancements — the H⁰ seam between dg categories and classical derived categories"
+status: proposed
+phase: sequenced
+brief: |
+  Open a second track alongside `stability-families`. Where that track climbs
+  from an absolute Bridgeland foundation toward relative moduli, this one
+  builds the *other* axis the repository's name promises: the passage between
+  a triangulated category and a dg category enhancing it.
+
+  The programme this track reads from is Canonaco–Stellari and
+  Canonaco–Neeman–Stellari, fifteen years of work on existence and uniqueness
+  of dg enhancements. Its motivating claim — that dg categories are the
+  correct ambient objects because naturality of functors falls out of the
+  definitions rather than being repaired afterwards — is exactly the kind of
+  claim a formalization can test rather than repeat. This roadmap therefore
+  treats "the dg side is easier" as a **hypothesis with a falsifiable check**
+  (see dg-enhancements-m4 acceptance), not as a premise.
+
+  What the pinned environment already supplies is unusually favourable and is
+  the reason this track is filed now rather than parked. At `mathlib_rev` in
+  `pins.json`, Mathlib has: the Hom cochain complex between cochain complexes
+  (`Algebra/Homology/HomotopyCategory/HomComplex`, with its shift and
+  cohomology files) — which is the dg structure on complexes, already built;
+  the monoidal structure on homological complexes (`Algebra/Homology/Monoidal`);
+  enriched and enriched-ordinary categories (`CategoryTheory/Enriched`);
+  the homotopy category with its pretriangulated and triangulated instances;
+  K-projective/K-injective objects; and `DerivedCategory` with a t-structure,
+  `Ext`, and fractions. What Mathlib has **none** of is a dg category, a dg
+  functor, a quasi-equivalence, or an enhancement. That gap is this track's
+  subject, and DG0 measures it declaration by declaration before anything is
+  built on the estimate above.
+
+  The track deliberately stops short of the theorems the source papers are
+  famous for. Uniqueness of enhancements, intrinsicness of subcategories of
+  weakly approximable triangulated categories, and internal Homs in Hqe all
+  need machinery — Bousfield localization of dgCat, model structures, Brown
+  representability at scale — that does not exist at the pin. Those enter as
+  *statements over the formalized definitions* with no inhabitant, on the same
+  zero-claim discipline `registry/coverage-*.json` already enforces.
+
+goal:
+  hmw: "How might we make a dg enhancement a first-class object in this repository, and make the passage H⁰ between a dg category and a classical triangulated category a proved equivalence rather than an informal identification?"
+  objective: "Formalize dg categories, dg functors, H⁰, and enhancements at the pin; prove that the h-injective dg category of complexes enhances Mathlib's DerivedCategory; and expose a transport API that carries t-structures, slicings, and stability conditions across that equivalence in both directions."
+  key_results:
+    - "A dg category and a dg functor are definable at the pin with k-linearity explicit, no new axiom, and no sorry."
+    - "H⁰ is a functor, is additive, and satisfies H⁰(C^dg A) ≌ HomotopyCategory A — proved, not asserted."
+    - "A pretriangulated dg category transports a triangulated structure to its H⁰, and on K^dg(A) the transported structure is proved to agree with Mathlib's existing instance rather than merely to exist."
+    - "DerivedCategory A has a constructed, non-vacuous enhancement, compatible with shift, distinguished triangles, and Ext."
+    - "A t-structure, a slicing, and a pre-stability condition each transport across an enhancement equivalence with round-trip identities proved, so a Bridgeland-side statement can be made on either side of the seam."
+    - "Every uniqueness-of-enhancements statement is a Prop over the formalized definitions with no inhabitant, and every source coordinate stays `target` until reviewed evidence promotes it."
+  assumptions:
+    - tier: must
+      text: "A dg category is expressible at the pin as a category enriched over cochain complexes of k-modules, using CategoryTheory/Enriched/Ordinary together with Algebra/Homology/Monoidal."
+      validation: "DG0 reconnaissance must exhibit the monoidal instance actually available on `CochainComplex (ModuleCat k) ℤ` at `mathlib_rev`, and elaborate a two-object example. If the enriched route does not elaborate, ADR-0010 falls back to the bespoke structure and records why."
+    - tier: must
+      text: "Mathlib's HomComplex API is complete enough to give C^dg(A) without re-deriving the Hom complex."
+      validation: "DG0 lists the `Cochain`, `δ`, shift, and cohomology declarations reachable at the pin, and names any missing lemma as a DG1 sub-issue rather than as a hidden assumption."
+    - tier: should
+      text: "The h-injective (respectively h-projective) model of the derived enhancement is reachable before the Drinfeld dg quotient is."
+      validation: "Mathlib already builds DerivedCategory through KInjective/KProjective. If the seam theorem cannot be closed on that model, the Drinfeld quotient epic un-parks and the milestone slips rather than the claim weakening."
+    - tier: should
+      text: "Transport across an enhancement equivalence makes at least one functor-naturality obligation cheaper than its classical proof."
+      validation: "dg-enhancements-e12 must exhibit one such lemma with both proofs, or record the negative result in the roadmap and in the epic. A negative result retires the m4 rationale; it does not get quietly dropped."
+  wont:
+    - "No model structure on dgCat, no Tabuada machinery, no Bousfield localization of dg categories."
+    - "No ∞-categorical enhancement, no comparison between dg and stable-∞ enhancements."
+    - "No claim that a triangulated category not constructed in this repository admits an enhancement, and no existence claim from a uniqueness statement."
+    - "No axiom, sorry-backed instance, or vacuous structure to make a source definition typecheck — the repository rule stands unchanged for this track."
+    - "No replacement of Mathlib's DerivedCategory. The seam theorem compares the two objects; it does not fork one of them."
+    - "No modification to formalization.yaml's `source` and no new key minted outside registry/bridgeland2007.json."
+  evidence:
+    - "arXiv:1507.05509v5 — Canonaco–Stellari, 'Uniqueness of dg enhancements for the derived category of a Grothendieck category', JEMS 20 (2018) 2607–2641."
+    - "arXiv:2101.04404v1 — Canonaco–Neeman–Stellari, 'Uniqueness of enhancements for derived and geometric categories'."
+    - "arXiv:2402.04605v1 — Canonaco–Haesemeyer–Neeman–Stellari, 'The passage among the subcategories of weakly approximable triangulated categories'."
+    - "arXiv:2407.05946v2 — Canonaco–Neeman–Stellari, survey, to appear in Boll. Unione Mat. Ital."
+    - "arXiv:1312.5619v3 — Canonaco–Stellari, 'Internal Homs via extensions of dg functors', Adv. Math. 277 (2015) 100–123."
+    - "Pinned Mathlib surface: Algebra/Homology/HomotopyCategory/HomComplex{,Shift,Cohomology,Single,Induction}, Algebra/Homology/Monoidal, CategoryTheory/Enriched/{Basic,EnrichedCat,Ordinary/Basic}, Algebra/Homology/DerivedCategory/{Basic,TStructure,KInjective,KProjective,Ext/*}, CategoryTheory/Localization/*, CategoryTheory/Triangulated/*."
+    - "Absence measured, not assumed: no declaration matching DifferentialGraded/DGCategory/quasi-equivalence exists at the pin. DG0 re-runs this search against `mathlib_rev` exactly and records the command and its output."
+    - "ARCHITECTURE.md growth rule 1 and CLAUDE.md's repository taxonomy: 'Future derived-category and Fourier–Mukai libraries get dedicated roots with their first real theorem.'"
+
+generated_by: { agent: claude, at: "2026-08-13" }
+generations:
+  - { rev: 1, at: "2026-08-13", note: "Track proposed. Nothing materialized: every gh_milestone and gh_issue is null, and no label, milestone, issue, or project view exists yet. Materialization is dg-enhancements-e0." }
+retired: []
+
+# GitHub milestones are roadmap phases. Epic issues live inside them, and
+# gh_sub_issues records native GitHub sub-issue relationships. IDs are
+# write-once; retire an item instead of reusing its id.
+#
+# Every gh_* field below is null on purpose. This file is the plan; the
+# tracker is not yet aware of it.
+items:
+  - id: dg-enhancements-m0
+    gh_milestone: null
+    kind: milestone
+    title: "DG0 — Boundary, pins, and the definition decision"
+    status: planned
+    lane: now
+    acceptance:
+      - "A reconnaissance note records, declaration by declaration and against `mathlib_rev` in pins.json, what the enriched-category, HomComplex, monoidal, homotopy-category, K-injective, localization, and DerivedCategory surfaces actually provide — including the commands run and their output."
+      - "ADR-0010 records the dg-category encoding decision (enriched over cochain complexes vs bespoke structure) with the elaboration evidence for the chosen route; if it stays `open`, it names the owner and what changes either way."
+      - "ADR-0010 also fixes the library root name and namespace, and states that the root is created by DG1's first real theorem, not before — ARCHITECTURE.md growth rule 1."
+      - "Five zero-claim coverage maps exist under registry/ for 1312.5619v3, 1507.05509v5, 2101.04404v1, 2402.04605v1, and 2407.05946v2, each validating under scripts/check_coverage_map.py with every part at `target`."
+      - "formalization.yaml's `source` is unchanged, registry/bridgeland2007.json is unchanged, and no coverage map contains a corpus-derived key."
+      - "Labels, milestones, and project views for this track exist; every epic below carries at least one `source:` label and exactly one `area:` primary."
+      - "No Lean declaration lands in DG0. If one is written to test elaboration, it lives in a throwaway branch named in the reconnaissance note and is not merged."
+
+  - id: dg-enhancements-e0
+    gh_issue: null
+    gh_sub_issues: []
+    kind: epic
+    parent: dg-enhancements-m0
+    title: "Materialize the DG track: labels, milestones, views, and the source pins"
+    status: planned
+    summary: "Create the eight new labels, the six milestones, the project views and fields, and the five zero-claim coverage maps. Mechanical, but it is the gate that makes every later epic filable with correct provenance."
+    priority: must
+    size: S
+    tags: [governance, tracker, source-pin]
+    labels: [area:governance, type:infra]
+
+  - id: dg-enhancements-e1
+    gh_issue: null
+    gh_sub_issues: []
+    kind: epic
+    parent: dg-enhancements-m0
+    title: "Measure the pinned Mathlib dg surface and decide the encoding"
+    status: planned
+    summary: "Reconnaissance plus ADR-0010. Establish whether EnrichedOrdinaryCategory over CochainComplex (ModuleCat k) ℤ elaborates at the pin with the monoidal instance Mathlib actually ships, and choose between that and a bespoke DGCategory structure. Output is a note and an ADR, not a library."
+    priority: must
+    size: M
+    tags: [research, adr, mathlib-surface]
+    labels: [area:dg, area:governance, type:spike, research]
+
+  - id: dg-enhancements-m1
+    gh_milestone: null
+    kind: milestone
+    title: "DG1 — The dg category, its H⁰, and the complexes model"
+    status: planned
+    lane: now
+    acceptance:
+      - "A dg category and a dg functor are defined at the pin, k-linearity carried explicitly rather than as a global instance, with no new axiom and no sorry."
+      - "Z⁰ and H⁰ are defined; H⁰ is a functor on dg categories and is proved additive."
+      - "Quasi-equivalence is defined (fully faithful on H⁰ up to quasi-isomorphism of Hom-complexes, essentially surjective on H⁰). It is a definition in this milestone; no comparison theorem is claimed."
+      - "C^dg(A) is constructed from Mathlib's HomComplex for an abelian (or preadditive, if the reconnaissance permits) category A, without re-deriving the Hom complex."
+      - "H⁰(C^dg A) ≌ HomotopyCategory A (ComplexShape.up ℤ) is proved. This is the milestone's first real theorem and the trigger that creates the library root."
+      - "The new root builds, is anchor-free under scripts/check_anchor_free.py, exports through its own umbrella, and is added to DerivedAlgGeoLean.lean only once it is stable."
+      - "Zero sorries; lake build, both audits, both linters, lint-style, check_pin, check_anchor_free, check_coverage_map, and the emitter gate are green."
+
+  - id: dg-enhancements-e2
+    gh_issue: null
+    gh_sub_issues: []
+    kind: epic
+    parent: dg-enhancements-m1
+    title: "DG categories, dg functors, and the Hom-complex shift"
+    status: planned
+    summary: "The definitional core: a dg category over a commutative ring k, dg functors, the opposite and product dg categories, and the shift on Hom-complexes with its sign conventions fixed once and documented where a reader will find them."
+    priority: must
+    size: L
+    tags: [lean, definitions, dg-core]
+    labels: [area:dg, type:feature, source:1507.05509]
+
+  - id: dg-enhancements-e3
+    gh_issue: null
+    gh_sub_issues: []
+    kind: epic
+    parent: dg-enhancements-m1
+    title: "Z⁰, H⁰, and the definition of a quasi-equivalence"
+    status: planned
+    summary: "The passage functors. Z⁰ and H⁰ from a dg category to an ordinary category, additivity of H⁰, functoriality on dg functors, and quasi-equivalence as a definition with no comparison theorem attached to it yet."
+    priority: must
+    size: M
+    tags: [lean, h0, seam]
+    labels: [area:dg, bridge:h0-seam, type:feature, source:1507.05509]
+
+  - id: dg-enhancements-e4
+    gh_issue: null
+    gh_sub_issues: []
+    kind: epic
+    parent: dg-enhancements-m1
+    title: "C^dg(A) from HomComplex, and H⁰(C^dg A) ≌ HomotopyCategory A"
+    status: planned
+    summary: "The first bridge to an object the repository already uses. Build the dg category of cochain complexes on Mathlib's HomComplex, then prove its H⁰ is the homotopy category. Creates the library root under ARCHITECTURE.md growth rule 1."
+    priority: must
+    size: L
+    tags: [lean, model, seam, first-theorem]
+    labels: [area:dg, area:derived, bridge:h0-seam, type:feature, source:1507.05509]
+
+  - id: dg-enhancements-m2
+    gh_milestone: null
+    kind: milestone
+    title: "DG2 — Pretriangulated dg categories and the enhancement structure"
+    status: planned
+    lane: next
+    acceptance:
+      - "Shift and cone are available at the dg level, and `IsPretriangulated` is a predicate on a dg category rather than an assumption carried in prose."
+      - "`Enhancement T` is a structure bundling a dg category with an equivalence H⁰ A ≌ T, and it is inhabited by a constructed example before any theorem quantifies over it."
+      - "A pretriangulated dg category transports a Pretriangulated (and, where the octahedral axiom is available, Triangulated) instance to its H⁰."
+      - "On K^dg(A) the transported structure is proved to agree with Mathlib's existing instance on HomotopyCategory A — an explicit comparison, stated as an isomorphism of triangulated structures, not left as a definitional coincidence."
+      - "Nonvacuity: K^dg(A) inhabits Enhancement (HomotopyCategory A) with the agreement theorem as its evidence."
+      - "Zero sorries; all gates green; nothing anchor-free depends on the Anchor or Compatibility roots."
+
+  - id: dg-enhancements-e5
+    gh_issue: null
+    gh_sub_issues: []
+    kind: epic
+    parent: dg-enhancements-m2
+    title: "Dg-level shift and cone, and the pretriangulated predicate"
+    status: planned
+    summary: "Twisted-complex-style shift and cone objects inside a dg category, and IsPretriangulated as a predicate. Where Mathlib's MappingCone already supplies the model case, consume it rather than re-proving it."
+    priority: must
+    size: L
+    tags: [lean, pretriangulated, cone]
+    labels: [area:dg, type:feature, source:1507.05509]
+
+  - id: dg-enhancements-e6
+    gh_issue: null
+    gh_sub_issues: []
+    kind: epic
+    parent: dg-enhancements-m2
+    title: "The Enhancement structure and transport of the triangulated structure to H⁰"
+    status: planned
+    summary: "Enhancement T as a structure, and the transport theorem: H⁰ of a pretriangulated dg category carries a pretriangulated structure. The transport is the whole point of the track and must be proved, not instantiated by fiat."
+    priority: must
+    size: XL
+    tags: [lean, enhancement, transport, seam]
+    labels: [area:dg, area:derived, bridge:h0-seam, type:feature, source:2101.04404]
+
+  - id: dg-enhancements-e7
+    gh_issue: null
+    gh_sub_issues: []
+    kind: epic
+    parent: dg-enhancements-m2
+    title: "K^dg(A) enhances the homotopy category, and the structures agree"
+    status: planned
+    summary: "The first inhabited enhancement, plus the agreement theorem against Mathlib's own triangulated instance. Without the agreement clause this epic would produce a second, incomparable triangulated structure on the same category."
+    priority: must
+    size: L
+    tags: [lean, nonvacuity, agreement]
+    labels: [area:dg, area:derived, bridge:h0-seam, type:feature, source:1507.05509]
+
+  - id: dg-enhancements-m3
+    gh_milestone: null
+    kind: milestone
+    title: "DG3 — The derived enhancement and the classical seam"
+    status: planned
+    lane: next
+    acceptance:
+      - "D^dg(A) is constructed on the h-injective (or h-projective) model, reusing Mathlib's KInjective/KProjective rather than a new resolution theory."
+      - "The seam theorem H⁰(D^dg A) ≌ DerivedCategory A is proved as an equivalence of triangulated categories under Mathlib's HasDerivedCategory hypotheses, with the universe conditions stated where a reader meets them."
+      - "The equivalence is proved compatible with shift, with distinguished triangles, and with Mathlib's Ext through the enhancement."
+      - "A dg functor induces an exact functor on H⁰, and H⁰ sends a quasi-equivalence to an equivalence."
+      - "Nothing in this milestone weakens or duplicates Mathlib's DerivedCategory; the comparison direction is explicit in both the statement and the module docstring."
+      - "Zero sorries; all gates green."
+
+  - id: dg-enhancements-e8
+    gh_issue: null
+    gh_sub_issues: []
+    kind: epic
+    parent: dg-enhancements-m3
+    title: "D^dg(A) on the h-injective model"
+    status: planned
+    summary: "The derived enhancement as the full dg subcategory of h-injective (dually h-projective) complexes, built on Mathlib's KInjective/KProjective so the resolution theory is consumed rather than rebuilt."
+    priority: must
+    size: XL
+    tags: [lean, derived, h-injective]
+    labels: [area:dg, area:derived, type:feature, source:1507.05509]
+
+  - id: dg-enhancements-e9
+    gh_issue: null
+    gh_sub_issues: []
+    kind: epic
+    parent: dg-enhancements-m3
+    title: "The seam theorem: H⁰(D^dg A) ≌ DerivedCategory A"
+    status: planned
+    summary: "The theorem the track exists for. An equivalence of triangulated categories between the H⁰ of the derived enhancement and Mathlib's DerivedCategory, compatible with shift, triangles, and Ext."
+    priority: must
+    size: XL
+    tags: [lean, seam, headline]
+    labels: [area:dg, area:derived, bridge:h0-seam, type:feature, source:2101.04404]
+
+  - id: dg-enhancements-e10
+    gh_issue: null
+    gh_sub_issues: []
+    kind: epic
+    parent: dg-enhancements-m3
+    title: "Dg functors induce exact functors, and quasi-equivalences induce equivalences"
+    status: planned
+    summary: "The functor half of the passage. This is where the programme's naturality claim first becomes testable: an induced functor should arrive with its compatibilities rather than acquire them by separate argument."
+    priority: must
+    size: L
+    tags: [lean, functors, naturality]
+    labels: [area:dg, area:derived, bridge:h0-seam, type:feature, source:1312.5619]
+
+  - id: dg-enhancements-e11
+    gh_issue: null
+    gh_sub_issues: []
+    kind: epic
+    parent: dg-enhancements-m3
+    title: "The Drinfeld dg quotient"
+    status: parked
+    summary: "Parked. The explicit Drinfeld quotient needs no model structure, but relating H⁰(A/N) to the Verdier quotient H⁰(A)/H⁰(N) is a research-scale obligation. Un-park trigger: the seam theorem in e9 is closed on the h-injective model AND a downstream epic needs a quotient the h-injective model cannot supply."
+    priority: could
+    size: XL
+    tags: [parked, quotient, research]
+    labels: [area:dg, parked, research, source:1507.05509]
+
+  - id: dg-enhancements-m4
+    gh_milestone: null
+    kind: milestone
+    title: "DG4 — Transport: t-structures, slicings, and stability across the seam"
+    status: planned
+    lane: later
+    acceptance:
+      - "A t-structure transports across an enhancement equivalence in both directions, with the round trip proved to be the identity."
+      - "A slicing and a pre-stability condition from BridgelandStabLean.Foundation transport the same way, with heart, phase, and Harder–Narasimhan data proved to correspond."
+      - "The transported slicing is proved natural with respect to H⁰ of a dg functor, and that statement is connected to the pullback/pushforward interfaces of the stability-families track rather than restated independently."
+      - "The programme's central claim is tested, not assumed: at least one naturality obligation is proved on both sides of the seam and the two proofs are compared in the epic. If the dg proof is not cheaper, the negative result is recorded in this roadmap and in formalization.yaml prose, and the m4 rationale is revised."
+      - "No stability-condition result acquires a geometric hypothesis it did not have before; realization hypotheses stay explicit, per CLAUDE.md."
+      - "Zero sorries; all gates green."
+
+  - id: dg-enhancements-e12
+    gh_issue: null
+    gh_sub_issues: []
+    kind: epic
+    parent: dg-enhancements-m4
+    title: "Transport a t-structure and a slicing across an enhancement equivalence"
+    status: planned
+    summary: "The transitional API. Transport in both directions with round-trip identities, so a statement may be made on whichever side is cheaper and read on the other."
+    priority: must
+    size: L
+    tags: [lean, transport, t-structure, slicing]
+    labels: [area:dg, area:stability, bridge:h0-seam, type:feature, source:2101.04404]
+
+  - id: dg-enhancements-e13
+    gh_issue: null
+    gh_sub_issues: []
+    kind: epic
+    parent: dg-enhancements-m4
+    title: "Transport stability conditions, and test the naturality claim"
+    status: planned
+    summary: "Carry a pre-stability condition across the seam, prove the transported slicing natural under H⁰ of a dg functor, and settle whether the dg side is genuinely cheaper by proving one obligation twice. The negative result is a permitted and publishable outcome of this epic."
+    priority: should
+    size: XL
+    tags: [lean, stability, naturality, falsifiable]
+    labels: [area:dg, area:stability, bridge:h0-seam, type:feature, source:2101.04404]
+    links:
+      roadmaps: [stability-families]
+
+  - id: dg-enhancements-e14
+    gh_issue: null
+    gh_sub_issues: []
+    kind: epic
+    parent: dg-enhancements-m4
+    title: "Dg-native statements of the relative and family interfaces"
+    status: blocked
+    summary: "State the §§20–23 family conditions dg-natively once the seam and the uniform-support layer both exist. Blocked on stability-families SF2; filing it now only fixes the dependency, and no interface may be introduced without an inhabitant."
+    priority: could
+    size: XL
+    tags: [blocked, families, cross-track]
+    labels: [area:dg, area:families, blocked, source:2101.04404]
+    links:
+      roadmaps: [stability-families]
+
+  - id: dg-enhancements-m5
+    gh_milestone: null
+    kind: milestone
+    title: "DG5 — Uniqueness of enhancements: the statement layer"
+    status: planned
+    lane: later
+    acceptance:
+      - "Uniqueness of enhancements is stated as a Prop over this repository's own definitions, for each decoration the source papers treat, with no inhabitant, no axiom, and no sorry."
+      - "Every source coordinate in the five coverage maps remains `target` unless a landing PR carries the evidence object the validator demands; nothing here promotes a status."
+      - "No prose in README.md, formalization.yaml, or ARCHITECTURE.md claims coverage of any uniqueness theorem."
+      - "The weakly-approximable vocabulary is recorded as source coordinates only; no definition is imported into the library without a theorem that needs it."
+      - "If a statement cannot be written without machinery the pin lacks, that is recorded as a named `mathlib-gap` kind_label in the appropriate map, and the corresponding command in registry/README.md is updated in the same commit."
+
+  - id: dg-enhancements-e15
+    gh_issue: null
+    gh_sub_issues: []
+    kind: epic
+    parent: dg-enhancements-m5
+    title: "State uniqueness of enhancements for the derived category, zero-claim"
+    status: planned
+    summary: "Write the statements of Canonaco–Neeman–Stellari for the unbounded, bounded, bounded-above and bounded-below decorations as Props over the formalized definitions. No proof is attempted and none is implied."
+    priority: should
+    size: M
+    tags: [statement-layer, zero-claim]
+    labels: [area:dg, type:docs, source:2101.04404, source:1507.05509]
+
+  - id: dg-enhancements-e16
+    gh_issue: null
+    gh_sub_issues: []
+    kind: epic
+    parent: dg-enhancements-m5
+    title: "Record the weakly-approximable and intrinsic-subcategory vocabulary"
+    status: planned
+    summary: "Map the 2402.04605 and 2407.05946 vocabulary onto coverage coordinates without importing any of it into the library. A definition enters the library only when a theorem in this repository needs it."
+    priority: could
+    size: S
+    tags: [statement-layer, vocabulary]
+    labels: [area:dg, type:docs, source:2402.04605, source:2407.05946]
+
+  - id: dg-enhancements-e17
+    gh_issue: null
+    gh_sub_issues: []
+    kind: epic
+    parent: dg-enhancements-m5
+    title: "Internal Homs in Hqe and derived Morita theory"
+    status: parked
+    summary: "Parked with an un-park trigger. Toën's theorem, reproved by Canonaco–Stellari via extensions of dg functors, needs the localization of dgCat at quasi-equivalences — a homotopy theory the pin does not have. Un-park trigger: Mathlib gains a model structure or a Bousfield localization applicable to dgCat, or the owner accepts a bespoke localization as a track of its own."
+    priority: wont
+    size: XL
+    tags: [parked, hqe, morita]
+    labels: [area:dg, parked, source:1312.5619]

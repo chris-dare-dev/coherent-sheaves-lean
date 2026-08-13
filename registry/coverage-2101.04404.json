@@ -1,0 +1,167 @@
+{
+  "_readme": [
+    "Coverage map for arXiv:2101.04404v1 -- 'Uniqueness of enhancements for derived and geometric categories', Canonaco, Neeman, Stellari. Created for the dg-enhancements track (.claude/roadmap/dg-enhancements.yaml, item dg-enhancements-e0).",
+    "",
+    "THIS IS NOT A TRUST RECORD AND NOT A MINT SURFACE. It is a zero-claim map of the paper's structure onto statuses. formalization.yaml's `source` remains the Bridgeland 2007 record, and registry/bridgeland2007.json remains the only mint surface; nothing in this file changes either, and nothing in this file may be cited as theorem coverage. The only status that ever counts as coverage is 'formalized'.",
+    "",
+    "Validation: python scripts/check_coverage_map.py registry/coverage-2101.04404.json",
+    "Run it before and after every edit. It fails on any status outside the vocabulary, any non-target status without complete evidence, and any corpus-derived identifier key.",
+    "",
+    "Update ownership: the owner (Chris Dare) promotes statuses; agents may propose a promotion only by a landing PR carrying the evidence fields the validator demands, and 'formalized' additionally requires explicit owner acceptance recorded in the entry. Adding sections, fixing titles against the pinned PDF, and adding tracking links are ordinary edits; status promotion is not.",
+    "",
+    "Two incompletenesses are recorded rather than papered over. First, source.pdf_sha256 is null: the artifact has not been fetched and hashed, so the pin currently rests on (arxiv_id, v1, version_submitted_utc, doi) alone. Second, the subsection titles of sections 5 and 6 are absent, and the subsection titles present elsewhere were read from the ar5iv rendering, not from the pinned PDF. The dg-enhancements-e0 landing PR mints the hash and reconciles every title against the PDF; until then treat the section list as provisional structure, not as evidence.",
+    "",
+    "Quotes: none are minted here. When a quote is later needed it must be checked directly against the v1 artifact identified in `source`, never against an unversioned corpus extraction."
+  ],
+  "schema": "coverage-map/1",
+  "created": "2026-08-13",
+  "issue": null,
+  "roadmap": ".claude/roadmap/dg-enhancements.yaml",
+  "source": {
+    "title": "Uniqueness of enhancements for derived and geometric categories",
+    "authors": [
+      "Alberto Canonaco",
+      "Amnon Neeman",
+      "Paolo Stellari"
+    ],
+    "arxiv_id": "2101.04404",
+    "arxiv_version": "v1",
+    "version_submitted_utc": "2021-01-12T11:05:02Z",
+    "version_history": [
+      {
+        "version": "v1",
+        "submitted_utc": "2021-01-12T11:05:02Z"
+      }
+    ],
+    "latest_version_at_pin_time": "v1",
+    "doi": "10.48550/arXiv.2101.04404",
+    "primary_category": "math.AG",
+    "pinned_from": "http://export.arxiv.org/api/query?id_list=2101.04404 (identity, authors, submission timestamps) and https://ar5iv.labs.arxiv.org/html/2101.04404 (provisional section structure), fetched 2026-08-13.",
+    "pdf_sha256": null,
+    "pdf_bytes": null,
+    "pdf_pin_caveat": "The PDF has not been fetched or hashed. The durable identity here is (arxiv_id, v1, version_submitted_utc, doi); the hash is minted by the dg-enhancements-e0 landing PR and not before."
+  },
+  "corpus_note": {
+    "arxiv_version_in_corpus": "not used as evidence by this map",
+    "mint_rule": "No durable key in this repository may be derived from a chunk ID or notebook slug. This file contains neither."
+  },
+  "status_vocabulary": {
+    "target": "Named for future work. No claim of any kind.",
+    "mapped": "Specific Lean declarations are candidate counterparts of a specific v1 statement. Still no coverage claim; complete evidence is required.",
+    "reviewed": "A candidate binding has been reviewed against the pinned v1 artifact. Complete evidence is required.",
+    "formalized": "Reviewed and explicitly accepted by the owner. The only status that counts as coverage."
+  },
+  "parts": [
+    {
+      "part": "front",
+      "title": "Front matter and main theorems",
+      "status": "target",
+      "note": "Theorem A (unique dg enhancements for D^?(A), ? = b, +, -, none, and for the unseparated and left-completed derived categories of a Grothendieck abelian category) and Theorem B (D^?_qc(X) and Perf(X) for X quasi-compact and quasi-separated). Both are named here as targets only; neither is stated in Lean and neither is claimed.",
+      "sections": []
+    },
+    {
+      "part": "I",
+      "title": "Triangulated background",
+      "status": "target",
+      "sections": [
+        {
+          "n": 1,
+          "title": "The triangulated categories",
+          "subsections": [
+            { "n": "1.1", "title": "The categories" },
+            { "n": "1.2", "title": "More on products and coproducts" },
+            { "n": "1.3", "title": "(Co)products and functors" }
+          ]
+        },
+        {
+          "n": 2,
+          "title": "Generation",
+          "subsections": [
+            { "n": "2.1", "title": "Well generated triangulated categories" },
+            { "n": "2.2", "title": "Generating derived categories" }
+          ]
+        }
+      ]
+    },
+    {
+      "part": "II",
+      "title": "Dg categories and enhancements",
+      "status": "target",
+      "sections": [
+        {
+          "n": 3,
+          "title": "Dg categories and enhancements",
+          "subsections": [
+            { "n": "3.1", "title": "Dg categories" },
+            { "n": "3.2", "title": "Drinfeld quotients and h-flat resolutions" },
+            { "n": "3.3", "title": "The model structure and homotopy pullbacks" },
+            { "n": "3.4", "title": "Localizations in dg categories" },
+            { "n": "3.5", "title": "Dg enhancements and their uniqueness" }
+          ]
+        },
+        {
+          "n": 4,
+          "title": "A special zigzag of dg functors",
+          "subsections": []
+        }
+      ]
+    },
+    {
+      "part": "III",
+      "title": "Uniqueness results",
+      "status": "target",
+      "sections": [
+        {
+          "n": 5,
+          "title": "Uniqueness for D^?(A)",
+          "subsections": [],
+          "subsections_note": "Subsection titles not yet read from the pinned PDF."
+        },
+        {
+          "n": 6,
+          "title": "The unseparated and completed derived categories",
+          "subsections": [],
+          "subsections_note": "Subsection titles not yet read from the pinned PDF."
+        },
+        {
+          "n": 7,
+          "title": "Homotopy pullbacks and enhancements",
+          "subsections": []
+        },
+        {
+          "n": 8,
+          "title": "Uniqueness of enhancements for geometric categories",
+          "subsections": []
+        }
+      ]
+    }
+  ],
+  "near_term_coordinates": [
+    {
+      "id": "sec-3-1-dg-categories",
+      "sections": [3],
+      "subsection": "3.1",
+      "part": "II",
+      "status": "target",
+      "tracking_roadmap_id": "dg-enhancements-e2",
+      "note": "Target only. The dg-category and dg-functor definitions this repository writes in DG1 are written to be usable, not to match this paper's presentation; a mapping claim would require the review evidence the validator demands and is not made here."
+    },
+    {
+      "id": "sec-3-5-enhancements-and-uniqueness",
+      "sections": [3],
+      "subsection": "3.5",
+      "part": "II",
+      "status": "target",
+      "tracking_roadmap_id": "dg-enhancements-e6",
+      "note": "Target only. DG2 introduces an Enhancement structure and DG5 states uniqueness as an uninhabited Prop. Neither is a mapping to this subsection, and no proof is attempted at any point in the roadmap."
+    },
+    {
+      "id": "thm-A-uniqueness-for-derived-categories",
+      "sections": [5, 6],
+      "part": "III",
+      "status": "target",
+      "tracking_roadmap_id": "dg-enhancements-e15",
+      "note": "Target only. DG5 writes the statement of Theorem A over this repository's definitions with no inhabitant. Writing a statement is not coverage of it."
+    }
+  ]
+}
