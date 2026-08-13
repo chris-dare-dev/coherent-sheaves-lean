@@ -94,6 +94,22 @@ theorem Slicing.intervalProp_of_intrinsic_phases (s : Slicing C) {E : C}
       _ = s.phiPlus C E hE := hFplus
       _ < b := hplus
 
+/-- Membership in two owner intervals implies membership in their
+intersection. -/
+theorem Slicing.intervalProp_intersection (s : Slicing C) {E : C}
+    {a b c d : ℝ} (hab : s.intervalProp C a b E)
+    (hcd : s.intervalProp C c d E) :
+    s.intervalProp C (max a c) (min b d) E := by
+  by_cases hE : IsZero E
+  · exact Or.inl hE
+  · apply s.intervalProp_of_intrinsic_phases C hE
+    · exact max_lt
+        (s.phiMinus_gt_of_intervalProp C hE hab)
+        (s.phiMinus_gt_of_intervalProp C hE hcd)
+    · exact lt_min
+        (s.phiPlus_lt_of_intervalProp C hE hab)
+        (s.phiPlus_lt_of_intervalProp C hE hcd)
+
 /-- For a nonzero object, owner interval membership is equivalent to bounds
 on both intrinsic phase extrema. -/
 theorem Slicing.intervalProp_iff_intrinsic_phases (s : Slicing C) {E : C}
@@ -149,5 +165,70 @@ theorem Slicing.ltProp_of_phiPlus_lt (s : Slicing C) {E : C}
     s.ltProp C b E := by
   obtain ⟨F, hn, hplus, _⟩ := s.exists_hn_intrinsic_width C hE
   exact Or.inr ⟨F, hn, by rw [hplus]; exact h⟩
+
+/-- Membership in a strict lower phase cut bounds the intrinsic lowest phase. -/
+theorem Slicing.phiMinus_gt_of_gtProp (s : Slicing C) {E : C}
+    (hE : ¬IsZero E) {a : ℝ} (h : s.gtProp C a E) :
+    a < s.phiMinus C E hE := by
+  rcases h with hzero | ⟨F, hn, hminus⟩
+  · exact (hE hzero).elim
+  · obtain ⟨G, hG, hlast⟩ := s.exists_hn_nonzero_last C hE
+    calc
+      a < F.phiMinus C hn := hminus
+      _ ≤ G.phiMinus C hG :=
+        F.phiMinus_le_of_lastFactor_nonzero C s G hn hG hlast
+      _ = s.phiMinus C E hE := (s.phiMinus_eq C E hE G hG hlast).symm
+
+/-- Membership in a weak lower phase cut bounds the intrinsic lowest phase. -/
+theorem Slicing.phiMinus_ge_of_geProp (s : Slicing C) {E : C}
+    (hE : ¬IsZero E) {a : ℝ} (h : s.geProp C a E) :
+    a ≤ s.phiMinus C E hE := by
+  rcases h with hzero | ⟨F, hn, hminus⟩
+  · exact (hE hzero).elim
+  · obtain ⟨G, hG, hlast⟩ := s.exists_hn_nonzero_last C hE
+    calc
+      a ≤ F.phiMinus C hn := hminus
+      _ ≤ G.phiMinus C hG :=
+        F.phiMinus_le_of_lastFactor_nonzero C s G hn hG hlast
+      _ = s.phiMinus C E hE := (s.phiMinus_eq C E hE G hG hlast).symm
+
+/-- Membership in a weak upper phase cut bounds the intrinsic highest phase. -/
+theorem Slicing.phiPlus_le_of_leProp (s : Slicing C) {E : C}
+    (hE : ¬IsZero E) {b : ℝ} (h : s.leProp C b E) :
+    s.phiPlus C E hE ≤ b := by
+  rcases h with hzero | ⟨F, hn, hplus⟩
+  · exact (hE hzero).elim
+  · obtain ⟨G, hG, hfirst⟩ := s.exists_hn_nonzero_first C hE
+    calc
+      s.phiPlus C E hE = G.phiPlus C hG :=
+        s.phiPlus_eq C E hE G hG hfirst
+      _ ≤ F.phiPlus C hn :=
+        G.phiPlus_le_of_firstFactor_nonzero C s F hG hn hfirst
+      _ ≤ b := hplus
+
+/-- Membership in a strict upper phase cut bounds the intrinsic highest phase. -/
+theorem Slicing.phiPlus_lt_of_ltProp (s : Slicing C) {E : C}
+    (hE : ¬IsZero E) {b : ℝ} (h : s.ltProp C b E) :
+    s.phiPlus C E hE < b := by
+  rcases h with hzero | ⟨F, hn, hplus⟩
+  · exact (hE hzero).elim
+  · obtain ⟨G, hG, hfirst⟩ := s.exists_hn_nonzero_first C hE
+    calc
+      s.phiPlus C E hE = G.phiPlus C hG :=
+        s.phiPlus_eq C E hE G hG hfirst
+      _ ≤ F.phiPlus C hn :=
+        G.phiPlus_le_of_firstFactor_nonzero C s F hG hn hfirst
+      _ < b := hplus
+
+/-- The intersection of strict lower and upper owner cuts is the corresponding
+open owner phase interval. -/
+theorem Slicing.intervalProp_of_gtProp_ltProp (s : Slicing C) {E : C}
+    {a b : ℝ} (hgt : s.gtProp C a E) (hlt : s.ltProp C b E) :
+    s.intervalProp C a b E := by
+  by_cases hE : IsZero E
+  · exact Or.inl hE
+  · exact s.intervalProp_of_intrinsic_phases C hE
+      (s.phiMinus_gt_of_gtProp C hE hgt)
+      (s.phiPlus_lt_of_ltProp C hE hlt)
 
 end BridgelandStabLean.Foundation

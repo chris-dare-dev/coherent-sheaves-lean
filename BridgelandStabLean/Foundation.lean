@@ -33,6 +33,8 @@ import BridgelandStabLean.Foundation.Deformation.DeformedCuts
 import BridgelandStabLean.Foundation.Deformation.DeformedShift
 import BridgelandStabLean.Foundation.Deformation.DeformedTriangulated
 import BridgelandStabLean.Foundation.Deformation.DeformedPhaseControl
+import BridgelandStabLean.Foundation.Deformation.IntervalIndependence
+import BridgelandStabLean.Foundation.Deformation.PhaseConfinement
 import BridgelandStabLean.Foundation.Deformation.IntervalHeart
 import BridgelandStabLean.Foundation.Deformation.MidpointHeart
 import BridgelandStabLean.Foundation.Deformation.DeformedHom
@@ -43,6 +45,7 @@ import BridgelandStabLean.Foundation.StabilityFunction.HarderNarasimhan
 import BridgelandStabLean.Foundation.StabilityFunction.Subobject
 import BridgelandStabLean.Foundation.StabilityFunction.PhaseGeometry
 import BridgelandStabLean.Foundation.StabilityFunction.Uniqueness
+import BridgelandStabLean.ForMathlib.CategoryTheory.Triangulated.TStructure.ImageFactorisation
 
 /-!
 # Repository-owned Bridgeland foundations

@@ -159,6 +159,32 @@ theorem IsSemistable.ofIso {F : SkewedStabilityFunction C κ s a b}
           (by simp) (by simp) (by simp))
     exact h.phase_le_of_triangle hT' hK hQ hKne
 
+/-- Transport skewed semistability to a second interval presentation once
+the admissible triangles widen to the old interval and the selected phases
+agree on the ambient object and every nonzero candidate subobject. -/
+theorem IsSemistable.ofCompatibleInterval
+    {c d : ℝ} {F : SkewedStabilityFunction C κ s a b}
+    {G : SkewedStabilityFunction C κ s c d}
+    {E : C} {ψ : ℝ} (h : F.IsSemistable E ψ)
+    (hI : s.intervalProp C c d E)
+    (hmono : s.intervalProp C c d ≤ s.intervalProp C a b)
+    (hcharge : G.charge E = F.charge E)
+    (hphaseE : G.phase E = F.phase E)
+    (hphaseSub : ∀ {K : C}, s.intervalProp C c d K → ¬IsZero K →
+      G.phase K = F.phase K) :
+    G.IsSemistable E ψ where
+  interval := hI
+  nonzero := h.nonzero
+  charge_ne := by
+    change G.charge E ≠ 0
+    rw [hcharge]
+    exact h.charge_ne
+  phase_eq := hphaseE.trans h.phase_eq
+  phase_le_of_triangle := by
+    intro K Q i q δ hT hK hQ hKne
+    rw [hphaseSub hK hKne]
+    exact h.phase_le_of_triangle hT (hmono K hK) (hmono Q hQ) hKne
+
 end SkewedStabilityFunction
 
 end BridgelandStabLean.Foundation.Deformation
