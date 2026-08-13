@@ -27,6 +27,7 @@ import BridgelandStabLean.Foundation.Deformation.ChargePerturbation
 import BridgelandStabLean.Foundation.Deformation.StabilitySeminorm
 import BridgelandStabLean.Foundation.Deformation.DeformedPredicate
 import BridgelandStabLean.Foundation.Deformation.DeformedCuts
+import BridgelandStabLean.Foundation.Deformation.DeformedShift
 import BridgelandStabLean.Foundation.Deformation.DeformedPhaseControl
 import BridgelandStabLean.Foundation.Deformation.IntervalHeart
 import BridgelandStabLean.Foundation.Deformation.MidpointHeart
