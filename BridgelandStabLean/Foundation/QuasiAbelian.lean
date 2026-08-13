@@ -377,6 +377,7 @@ variable {D : Type u} [Category.{v} D] [Preadditive D]
 
 /-- The canonical kernel sequence of a strict epimorphism is strict short
 exact. -/
+@[nolint unusedArguments]
 theorem IsStrictEpi.strictShortExact_kernel {X Y : D} (q : X ⟶ Y)
     [HasZeroObject D] (hq : IsStrictEpi q) :
     StrictShortExact
