@@ -19,6 +19,11 @@ where state is one of:
     CONFLICT   Behind main in a file another open PR also touches. Rebase first.
     SKIP       Draft with no commits, or explicitly parked.
 
+A PR that touches the loop's own machinery -- the gate scripts, the edit hook,
+the skills, this file -- is flagged BOOTSTRAP and sorts ahead of every state.
+It is not a bigger version of READY: it is the PR that decides whether anything
+after it is gated correctly at all.
+
 Usage:  python3 scripts/pr_queue.py [--json]
 """
 
@@ -31,6 +36,23 @@ from collections import Counter
 
 REPO = "chris-dare-dev/derived-alg-geo-lean"
 FIELDS = "number,title,headRefName,isDraft,mergeable,additions,files,statusCheckRollup,createdAt"
+
+# A PR that changes the machinery the landing loop itself runs on sorts ahead of
+# everything, whatever its size. Until it is on `main`, every later iteration is
+# gated by the wrong version of these files -- or, for a branch cut before they
+# existed, by nothing at all. Size-first ordering is the right rule for the
+# stack and the wrong rule here, so bootstrap is a separate axis, not a state.
+BOOTSTRAP_PATHS = {
+    "scripts/gates.sh",
+    "scripts/check_mathlib_style.py",
+    "scripts/pr_queue.py",
+    ".claude/settings.json",
+}
+BOOTSTRAP_PREFIXES = (".claude/skills/", ".claude/agents/")
+
+
+def is_bootstrap(paths: list[str]) -> bool:
+    return any(p in BOOTSTRAP_PATHS or p.startswith(BOOTSTRAP_PREFIXES) for p in paths)
 
 
 def gh_json(args: list[str]) -> object:
@@ -91,6 +113,7 @@ def main(argv: list[str]) -> int:
                 "draft": pr["isDraft"],
                 "checks": rollup(pr),
                 "contested_files": overlap,
+                "bootstrap": is_bootstrap(pr["_paths"]),
                 "_paths": pr["_paths"],
             }
         )
@@ -106,7 +129,7 @@ def main(argv: list[str]) -> int:
         r["stacked_under"] = sorted(
             n for n, other in paths.items() if n != r["number"] and mine < other
         )
-    rows.sort(key=lambda r: (ORDER[r["state"]], r["additions"], r["number"]))
+    rows.sort(key=lambda r: (not r["bootstrap"], ORDER[r["state"]], r["additions"], r["number"]))
 
     if "--json" in argv:
         json.dump(rows, sys.stdout, indent=2)
@@ -118,8 +141,15 @@ def main(argv: list[str]) -> int:
     print()
     for r in rows:
         n = len(r["stacked_under"])
-        flag = f"  [base of a {n}-deep stack]" if n else ""
+        if r["bootstrap"]:
+            flag = "  [BOOTSTRAP -- gates every later iteration]"
+        elif n:
+            flag = f"  [base of a {n}-deep stack]"
+        else:
+            flag = ""
         print(f"{r['number']:>5}  {r['state']:<8} +{r['additions']:<5} {r['title'][:56]}{flag}")
+    if any(r["bootstrap"] for r in rows):
+        print("\nBootstrap PRs first: until they land, later iterations run on stale gates.")
     print("\nLand top-down. Each merge shrinks the diff of everything below it.")
     return 0
 
