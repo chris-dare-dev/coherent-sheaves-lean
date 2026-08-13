@@ -3,6 +3,7 @@ Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under the MIT license.
 -/
 import BridgelandStabLean.Foundation.Deformation.DeformedPhaseControl
+import BridgelandStabLean.Foundation.Deformation.DeformedCuts
 import BridgelandStabLean.Foundation.ExtensionClosure
 import BridgelandStabLean.Foundation.Slicing.CutoffTruncation
 
@@ -293,6 +294,75 @@ theorem intervalProp_of_deformed_hn
           (σ.slicing.ltProp_of_intervalProp C hX)
           (σ.slicing.ltProp_of_intervalProp C hY) hT)
     E hclosure
+
+/-- The extension-closed owner cut `Q(>t)` lies above the old phase cutoff
+`t-ε`. -/
+theorem deformedGtPred_gtProp
+    (σ : StabilityCondition.WithClassMap C κ)
+    (W : Λ →+ ℂ) {r : ℝ} (hr0 : 0 ≤ r) (hr1 : r < 1)
+    (hW : stabilitySeminorm C σ (W - σ.Z) ≤ ENNReal.ofReal r)
+    {ε t : ℝ} (hε : 0 < ε) (hε2 : ε ≤ 1 / 2)
+    (hsin : stabilitySeminorm C σ (W - σ.Z) <
+      ENNReal.ofReal (Real.sin (Real.pi * ε))) :
+    σ.deformedGtPred C W hr0 hr1 hW ε t ≤ σ.slicing.gtProp C (t - ε) := by
+  apply ExtensionClosure.le_of_closed
+  · exact fun hzero => Or.inl hzero
+  · intro E hE
+    obtain ⟨ψ, htψ, hP⟩ := hE
+    by_cases hzero : IsZero E
+    · exact Or.inl hzero
+    · apply σ.slicing.gtProp_of_phiMinus_gt C hzero
+      have hbound :=
+        (σ.deformedPred_intrinsic_bounds C W hr0 hr1 hW hε hε2 hsin hP hzero).1
+      linarith
+  · exact fun hT hX hY =>
+      σ.slicing.gtProp_of_triangle C (t - ε) hX hY hT
+
+/-- The extension-closed owner cut `Q(≤t)` lies below the old phase cutoff
+`t+ε`. -/
+theorem deformedLePred_leProp
+    (σ : StabilityCondition.WithClassMap C κ)
+    (W : Λ →+ ℂ) {r : ℝ} (hr0 : 0 ≤ r) (hr1 : r < 1)
+    (hW : stabilitySeminorm C σ (W - σ.Z) ≤ ENNReal.ofReal r)
+    {ε t : ℝ} (hε : 0 < ε) (hε2 : ε ≤ 1 / 2)
+    (hsin : stabilitySeminorm C σ (W - σ.Z) <
+      ENNReal.ofReal (Real.sin (Real.pi * ε))) :
+    σ.deformedLePred C W hr0 hr1 hW ε t ≤ σ.slicing.leProp C (t + ε) := by
+  apply ExtensionClosure.le_of_closed
+  · exact fun hzero => Or.inl hzero
+  · intro E hE
+    obtain ⟨ψ, hψt, hP⟩ := hE
+    by_cases hzero : IsZero E
+    · exact Or.inl hzero
+    · apply σ.slicing.leProp_of_phiPlus_le C hzero
+      have hbound :=
+        (σ.deformedPred_intrinsic_bounds C W hr0 hr1 hW hε hε2 hsin hP hzero).2
+      linarith
+  · exact fun hT hX hY =>
+      σ.slicing.leProp_of_triangle C (t + ε) hX hY hT
+
+/-- The extension-closed owner cut `Q(<t)` lies strictly below the old phase
+cutoff `t+ε`. -/
+theorem deformedLtPred_ltProp
+    (σ : StabilityCondition.WithClassMap C κ)
+    (W : Λ →+ ℂ) {r : ℝ} (hr0 : 0 ≤ r) (hr1 : r < 1)
+    (hW : stabilitySeminorm C σ (W - σ.Z) ≤ ENNReal.ofReal r)
+    {ε t : ℝ} (hε : 0 < ε) (hε2 : ε ≤ 1 / 2)
+    (hsin : stabilitySeminorm C σ (W - σ.Z) <
+      ENNReal.ofReal (Real.sin (Real.pi * ε))) :
+    σ.deformedLtPred C W hr0 hr1 hW ε t ≤ σ.slicing.ltProp C (t + ε) := by
+  apply ExtensionClosure.le_of_closed
+  · exact fun hzero => Or.inl hzero
+  · intro E hE
+    obtain ⟨ψ, hψt, hP⟩ := hE
+    by_cases hzero : IsZero E
+    · exact Or.inl hzero
+    · apply σ.slicing.ltProp_of_phiPlus_lt C hzero
+      have hbound :=
+        (σ.deformedPred_intrinsic_bounds C W hr0 hr1 hW hε hε2 hsin hP hzero).2
+      linarith
+  · exact fun hT hX hY =>
+      σ.slicing.ltProp_of_triangle C (t + ε) hX hY hT
 
 end StabilityCondition.WithClassMap
 
