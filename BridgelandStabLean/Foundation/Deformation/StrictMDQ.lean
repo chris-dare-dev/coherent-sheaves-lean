@@ -102,6 +102,32 @@ theorem factor_of_phase_eq (hq : IsStrictMDQ C σ F q)
     ∃ t : B ⟶ B', q' = q ≫ t :=
   (hq.minimal q' hq' hB' hss).2 hphase
 
+/-- Precomposing a strict MDQ by an isomorphism of source interval objects
+preserves its universal property. -/
+theorem precomposeIso (hq : IsStrictMDQ C σ F q)
+    {X' : σ.slicing.IntervalCat C a b} (e : X' ≅ X) :
+    IsStrictMDQ C σ F (e.hom ≫ q) where
+  strictEpi := Slicing.IntervalCat.comp_strictEpi
+    (C := C) (s := σ.slicing) (a := a) (b := b) e.hom q
+    (isStrictEpi_of_isIso (f := e.hom)) hq.strictEpi
+  nonzero := hq.nonzero
+  semistable := hq.semistable
+  minimal := by
+    intro B' q' hq' hB' hss
+    let q'' : X ⟶ B' := e.inv ≫ q'
+    have hq'' : IsStrictEpi q'' := Slicing.IntervalCat.comp_strictEpi
+      (C := C) (s := σ.slicing) (a := a) (b := b) e.inv q'
+      (isStrictEpi_of_isIso (f := e.inv)) hq'
+    refine ⟨(hq.minimal q'' hq'' hB' hss).1, ?_⟩
+    intro hphase
+    obtain ⟨t, ht⟩ := (hq.minimal q'' hq'' hB' hss).2 hphase
+    refine ⟨t, ?_⟩
+    calc
+      q' = e.hom ≫ (e.inv ≫ q') := by simp
+      _ = e.hom ≫ (q ≫ t) := by
+        simpa [q''] using congrArg (fun f : X ⟶ B' => e.hom ≫ f) ht
+      _ = (e.hom ≫ q) ≫ t := by rw [Category.assoc]
+
 /-- A strict MDQ of a non-semistable source has a genuinely nonzero kernel
 subobject. -/
 theorem kernelSubobject_ne_bot_of_not_semistable
