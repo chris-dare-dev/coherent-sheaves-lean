@@ -18,7 +18,24 @@ adds the owner `GrothendieckPresentation`, triangulated `K₀`, class maps,
 functoriality, and pre-stability conditions. The owner and retained `K₀`
 quotients are connected by a canonical additive equivalence; pre-stability
 conditions round-trip after transporting the class map across that
-equivalence. Local finiteness and full stability conditions remain in slice 3.
+equivalence. Local finiteness and full stability conditions were assigned to
+slice 3.
+
+Slices [#229](https://github.com/chris-dare-dev/derived-alg-geo-lean/issues/229)
+and [#231](https://github.com/chris-dare-dev/derived-alg-geo-lean/issues/231)
+now own local finiteness, full stability conditions, phase bounds, HN
+filtration operations, phase truncations, and the slicing t-structure. These
+modules remain Mathlib-only; the compatibility file proves that the resulting
+t-structure and heart agree with the retained construction.
+
+Slice [#233](https://github.com/chris-dare-dev/derived-alg-geo-lean/issues/233)
+owns abelian stability functions and their HN filtrations. It provides
+owner-native phase geometry, semistable descent, intrinsic HN extrema, the
+canonical maximally destabilizing subobject, and its short exact quotient
+sequence. The stability-function and filtration adapters preserve phase,
+semistability, HN existence, and the extreme phases in both directions. The
+remaining recursive comparison is deliberately built through the owner
+quotient-tail construction rather than by invoking retained uniqueness.
 
 At the start of slice #226, 28 owner modules contain 32 direct imports from 20
 vendored module roots. `scripts/check_anchor_free.py` freezes that exact module

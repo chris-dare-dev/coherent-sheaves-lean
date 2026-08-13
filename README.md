@@ -43,9 +43,11 @@ Riemann–Roch and stability theory while keeping every hypothesis and trust bou
   threefold and fourfold `NumericalVariety` bridges reconstructed from Picard Euler polynomials.
 - Abstract numerical and Mukai lattices, support properties, weak stability conditions,
   HRS tilting, stability metrics, and symmetry actions on stability conditions.
-- A ported foundational implementation of Bridgeland slicings, Harder–Narasimhan
-  filtrations, deformation theory, and heart equivalences, retained as a clearly
-  marked Apache-2.0 vendored component.
+- An owner-controlled, Mathlib-only Bridgeland foundation for slicings,
+  stability conditions, abelian stability functions, HN filtrations, phase
+  truncations, and their canonical t-structures.
+- Retained deformation theory and heart-equivalence layers, isolated as a
+  clearly marked Apache-2.0 vendored component while their consumers migrate.
 
 Incomplete theorems are described in module documentation and tracked as GitHub issues; the
 library contains no `sorry` declarations.
