@@ -572,6 +572,84 @@ noncomputable instance Slicing.IntervalCat.toRightHeart_preservesFiniteColimits
   letI : Abelian t.heart.FullSubcategory := heartFullSubcategoryAbelian t
   exact Functor.preservesFiniteColimits_of_preservesCokernels _
 
+/-- Finiteness of the subobject lattice in the left adjacent heart descends
+to the thin interval category. -/
+theorem Slicing.IntervalCat.finite_subobject_of_leftHeart (s : Slicing C)
+    {X : s.IntervalCat C a b}
+    (hX : Finite (Subobject
+      ((Slicing.IntervalCat.toLeftHeart (C := C) (s := s) a b
+        (Fact.out : b - a ≤ 1)).obj X))) : Finite (Subobject X) := by
+  let t := (s.phaseShift C a).toTStructure C
+  letI := t.hasHeartFullSubcategory
+  letI : Abelian t.heart.FullSubcategory := heartFullSubcategoryAbelian t
+  exact Finite.subobject_of_fullFaithful_preservesMono
+    (Slicing.IntervalCat.toLeftHeart (C := C) (s := s) a b
+      (Fact.out : b - a ≤ 1)) hX
+
+/-- An Artinian object in the left adjacent heart is Artinian in the thin
+interval category. -/
+theorem Slicing.IntervalCat.isArtinianObject_of_leftHeart (s : Slicing C)
+    {X : s.IntervalCat C a b}
+    [IsArtinianObject
+      ((Slicing.IntervalCat.toLeftHeart (C := C) (s := s) a b
+        (Fact.out : b - a ≤ 1)).obj X)] : IsArtinianObject X := by
+  let t := (s.phaseShift C a).toTStructure C
+  letI := t.hasHeartFullSubcategory
+  letI : Abelian t.heart.FullSubcategory := heartFullSubcategoryAbelian t
+  exact isArtinianObject_of_fullFaithful_preservesMono
+    (Slicing.IntervalCat.toLeftHeart (C := C) (s := s) a b
+      (Fact.out : b - a ≤ 1))
+
+/-- A Noetherian object in the left adjacent heart is Noetherian in the thin
+interval category. -/
+theorem Slicing.IntervalCat.isNoetherianObject_of_leftHeart (s : Slicing C)
+    {X : s.IntervalCat C a b}
+    [IsNoetherianObject
+      ((Slicing.IntervalCat.toLeftHeart (C := C) (s := s) a b
+        (Fact.out : b - a ≤ 1)).obj X)] : IsNoetherianObject X := by
+  let t := (s.phaseShift C a).toTStructure C
+  letI := t.hasHeartFullSubcategory
+  letI : Abelian t.heart.FullSubcategory := heartFullSubcategoryAbelian t
+  exact isNoetherianObject_of_fullFaithful_preservesMono
+    (Slicing.IntervalCat.toLeftHeart (C := C) (s := s) a b
+      (Fact.out : b - a ≤ 1))
+
+/-- An Artinian object in the right adjacent heart is strict-Artinian in the
+thin interval category. -/
+theorem Slicing.IntervalCat.isStrictArtinianObject_of_rightHeart
+    (s : Slicing C) {X : s.IntervalCat C a b}
+    [IsArtinianObject
+      ((Slicing.IntervalCat.toRightHeart (C := C) (s := s) a b
+        (Fact.out : b - a ≤ 1)).obj X)] : IsStrictArtinianObject X := by
+  let t := (s.phaseShift C (b - 1)).toDualTStructure C
+  letI := t.hasHeartFullSubcategory
+  letI : Abelian t.heart.FullSubcategory := heartFullSubcategoryAbelian t
+  let FR := Slicing.IntervalCat.toRightHeart
+    (C := C) (s := s) a b (Fact.out : b - a ≤ 1)
+  exact isStrictArtinianObject_of_fullFaithful_map_strictMono FR
+    (fun f hf ↦ by
+      letI : Mono (FR.map f) :=
+        Slicing.IntervalCat.mono_toRightHeart_of_strictMono C s f hf
+      exact isStrictMono_of_mono (FR.map f))
+
+/-- A Noetherian object in the right adjacent heart is strict-Noetherian in
+the thin interval category. -/
+theorem Slicing.IntervalCat.isStrictNoetherianObject_of_rightHeart
+    (s : Slicing C) {X : s.IntervalCat C a b}
+    [IsNoetherianObject
+      ((Slicing.IntervalCat.toRightHeart (C := C) (s := s) a b
+        (Fact.out : b - a ≤ 1)).obj X)] : IsStrictNoetherianObject X := by
+  let t := (s.phaseShift C (b - 1)).toDualTStructure C
+  letI := t.hasHeartFullSubcategory
+  letI : Abelian t.heart.FullSubcategory := heartFullSubcategoryAbelian t
+  let FR := Slicing.IntervalCat.toRightHeart
+    (C := C) (s := s) a b (Fact.out : b - a ≤ 1)
+  exact isStrictNoetherianObject_of_fullFaithful_map_strictMono FR
+    (fun f hf ↦ by
+      letI : Mono (FR.map f) :=
+        Slicing.IntervalCat.mono_toRightHeart_of_strictMono C s f hf
+      exact isStrictMono_of_mono (FR.map f))
+
 /-- A thin owner slicing interval is quasi-abelian. -/
 noncomputable instance Slicing.intervalCat_quasiAbelian (s : Slicing C) :
     QuasiAbelian (s.IntervalCat C a b) where
