@@ -879,9 +879,9 @@ fidelity:
     destabilizing subobject, its quotient, and the associated short exact
     central-charge decomposition. The compatibility boundary preserves and
     reflects stability functions, filtrations, HN existence, phase extrema,
-    stability, and semistability. The census reports 2172 authored
+    stability, and semistability. The census reports 2175 authored
     declarations, 126 private declarations, and 224 structure-field
-    projections. Audit issues 1827 commands, of which 1278 records are
+    projections. Audit issues 1830 commands, of which 1281 records are
     theorems, 60 are structures, and 484 are other non-theorems; no authored
     public declaration remains outside the hand audit. All 17 owner foundation
     modules are import-level anchor-free. The direct vendor-import inventory

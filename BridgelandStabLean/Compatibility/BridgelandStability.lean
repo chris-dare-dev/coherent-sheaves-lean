@@ -204,6 +204,29 @@ theorem ofVendor_phiMinus {Z : CategoryTheory.StabilityFunction A} {E : A}
       F.φ ⟨F.n - 1, Nat.sub_lt F.hn (by decide)⟩ :=
   rfl
 
+/-- The owner and retained HN length-uniqueness theorems agree after
+conversion: both compare the same natural-number filtration lengths. -/
+theorem toVendor_n_eq_iff {Z : Foundation.StabilityFunction A} {E : A}
+    (F G : Foundation.AbelianHNFiltration Z E) :
+    (toVendor A F).n = (toVendor A G).n ↔ F.n = G.n :=
+  Iff.rfl
+
+/-- Owner-native HN uniqueness transports to the retained representation
+without invoking the retained uniqueness proof. -/
+theorem toVendor_n_eq_of_owner {Z : Foundation.StabilityFunction A} {E : A}
+    (hE : ¬IsZero E) (hFinite : ∀ X : A, Finite (Subobject X))
+    (F G : Foundation.AbelianHNFiltration Z E) :
+    (toVendor A F).n = (toVendor A G).n :=
+  F.n_eq hE hFinite G
+
+/-- Retained HN filtrations have the same length whenever their owner
+conversions do, making the agreement symmetric at the compatibility boundary. -/
+theorem ofVendor_n_eq_of_owner {Z : CategoryTheory.StabilityFunction A} {E : A}
+    (hE : ¬IsZero E) (hFinite : ∀ X : A, Finite (Subobject X))
+    (F G : CategoryTheory.AbelianHNFiltration Z E) :
+    (ofVendor A F).n = (ofVendor A G).n :=
+  (ofVendor A F).n_eq hE hFinite (ofVendor A G)
+
 end AbelianHNFiltration
 
 namespace StabilityFunction

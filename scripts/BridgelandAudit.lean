@@ -73,7 +73,7 @@ four qualifications in this comment are unaffected by it:
   green without an entry here. Zero is a measurement taken at a commit, not a
   property the build maintains.
 
-* It issues **1827** audit commands. The environment holds **2172** authored
+* It issues **1830** audit commands. The environment holds **2175** authored
   declarations under `BridgelandStabLean.*`, so **345 are outside this gate**,
   all of them private or projections. ("Authored" excludes constructors,
   recursors, `casesOn`, matchers, equation lemmas, internal names, and the six
@@ -111,7 +111,7 @@ four qualifications in this comment are unaffected by it:
   For a `def`, `#print axioms` reports the axiom closure of a CONSTRUCTION and
   asserts nothing about any proposition. In particular
   `CategoryTheory.Triangulated.StabilityMassTriangleInequality` appears below
-formatted identically to the **1278** real theorems, but it is a `def ... :
+formatted identically to the **1281** real theorems, but it is a `def ... :
   Prop` -- its clean line means the definition is axiom-clean, NOT that the
   proposition holds.
 
@@ -385,6 +385,9 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Compatibility.BridgelandStability.AbelianHNFiltration.toVendor_phiMinus
 #print axioms BridgelandStabLean.Compatibility.BridgelandStability.AbelianHNFiltration.ofVendor_phiPlus
 #print axioms BridgelandStabLean.Compatibility.BridgelandStability.AbelianHNFiltration.ofVendor_phiMinus
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.AbelianHNFiltration.toVendor_n_eq_iff
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.AbelianHNFiltration.toVendor_n_eq_of_owner
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.AbelianHNFiltration.ofVendor_n_eq_of_owner
 #print axioms BridgelandStabLean.Compatibility.BridgelandStability.StabilityFunction.toVendor_hasHNProperty
 #print axioms BridgelandStabLean.Compatibility.BridgelandStability.StabilityFunction.ofVendor_hasHNProperty
 #print axioms BridgelandStabLean.Compatibility.BridgelandStability.StabilityFunction.toVendor_hasHNProperty_iff
