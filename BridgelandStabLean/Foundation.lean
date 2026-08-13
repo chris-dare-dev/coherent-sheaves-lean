@@ -25,6 +25,7 @@ import BridgelandStabLean.Foundation.Slicing.BoundaryTruncation
 import BridgelandStabLean.Foundation.Slicing.TwoHeartEmbedding
 import BridgelandStabLean.Foundation.Slicing.IntervalPreabelian
 import BridgelandStabLean.Foundation.Slicing.IntervalComparisons
+import BridgelandStabLean.Foundation.Slicing.IntervalStrictness
 import BridgelandStabLean.Foundation.Deformation.RelativePhase
 import BridgelandStabLean.Foundation.Deformation.NearIdentity
 import BridgelandStabLean.Foundation.Deformation.LocalFiniteness

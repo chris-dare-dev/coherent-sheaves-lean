@@ -433,6 +433,10 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Foundation.Slicing.intervalCat_hasCokernels
 #print axioms BridgelandStabLean.Foundation.Slicing.IntervalCat.toLeftHeartKernelIso
 #print axioms BridgelandStabLean.Foundation.Slicing.IntervalCat.toRightHeartCokernelIso
+#print axioms BridgelandStabLean.Foundation.Slicing.IntervalCat.toLeftHeartKernelIso_hom_comp_ι
+#print axioms BridgelandStabLean.Foundation.Slicing.IntervalCat.toRightHeartCokernelIso_π_comp_hom
+#print axioms BridgelandStabLean.Foundation.Slicing.IntervalCat.strictMono_of_mono_toRightHeart
+#print axioms BridgelandStabLean.Foundation.Slicing.IntervalCat.strictEpi_of_epi_toLeftHeart
 #print axioms BridgelandStabLean.Foundation.IsStrict
 #print axioms BridgelandStabLean.Foundation.IsStrictMono
 #print axioms BridgelandStabLean.Foundation.IsStrictEpi
