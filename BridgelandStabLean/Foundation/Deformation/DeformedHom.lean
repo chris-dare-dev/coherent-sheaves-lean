@@ -99,6 +99,27 @@ theorem hom_eq_zero_of_deformedPred_gap
         haψ hψb hSS⟩
   · exact hgap
 
+/-- Extension-closed owner deformed cuts are Hom-orthogonal once their cutoffs
+are separated by twice the deformation radius. -/
+theorem hom_eq_zero_of_deformedCuts_gap
+    [IsTriangulated C]
+    (σ : StabilityCondition.WithClassMap C κ)
+    (W : Λ →+ ℂ) {r : ℝ} (hr0 : 0 ≤ r) (hr1 : r < 1)
+    (hW : stabilitySeminorm C σ (W - σ.Z) ≤ ENNReal.ofReal r)
+    {ε t₁ t₂ : ℝ} (hε : 0 < ε) (hε2 : ε ≤ 1 / 2)
+    (hsin : stabilitySeminorm C σ (W - σ.Z) <
+      ENNReal.ofReal (Real.sin (Real.pi * ε)))
+    (hsep : t₂ + 2 * ε ≤ t₁) {E F : C}
+    (hE : σ.deformedGtPred C W hr0 hr1 hW ε t₁ E)
+    (hF : σ.deformedLePred C W hr0 hr1 hW ε t₂ F)
+    (f : E ⟶ F) : f = 0 := by
+  apply ExtensionClosure.hom_eq_zero _ hE hF f
+  intro X Y hX hY
+  obtain ⟨ψ₁, htψ, hPredX⟩ := hX
+  obtain ⟨ψ₂, hψt, hPredY⟩ := hY
+  exact σ.hom_eq_zero_of_deformedPred_gap C W hr0 hr1 hW hε hε2 hsin
+    hPredX hPredY (by linarith)
+
 end StabilityCondition.WithClassMap
 
 end BridgelandStabLean.Foundation
