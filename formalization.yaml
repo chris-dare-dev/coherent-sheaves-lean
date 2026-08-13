@@ -922,10 +922,14 @@ fidelity:
     Hom-vanishing now proves that nonzero first and last factors have phases
     independent of the selected HN filtration, and therefore defines intrinsic
     owner `phiPlus` and `phiMinus` with their comparison theorems. The census
-    reports 2257 authored declarations, 126 private declarations, and 233
-    structure-field projections. Audit issues 1903 commands, of which 1337
-    records are theorems, 62 are structures, and 499 are other non-theorems;
-    no authored public declaration remains outside the hand audit. All 25
+    The intrinsic phase discrepancies now define the owner generalized slicing
+    distance and its pseudo-extended-metric instance; diagonal, symmetry,
+    triangle, coordinate-control, and uniform-bound theorems are all proved on
+    the owner API. The census reports 2268 authored declarations, 126 private
+    declarations, and 233 structure-field projections. Audit issues 1914
+    commands, of which 1346 records are theorems, 62 are structures, and 501
+    are other non-theorems; no authored public declaration remains outside the
+    hand audit. All 26
     owner foundation modules are
     import-level anchor-free. The direct vendor-import inventory remains
     frozen at 28.

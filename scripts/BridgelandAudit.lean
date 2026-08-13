@@ -417,6 +417,17 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Foundation.Deformation.semistableChargeBound_toReal
 #print axioms BridgelandStabLean.Foundation.Deformation.skewedStabilityFunctionOfSeminormLtOne
 #print axioms BridgelandStabLean.Foundation.Deformation.relativePhase_perturbation_of_stabilitySeminorm
+#print axioms BridgelandStabLean.Foundation.slicingDist
+#print axioms BridgelandStabLean.Foundation.slicingDistTerm_le
+#print axioms BridgelandStabLean.Foundation.phiPlusDist_le
+#print axioms BridgelandStabLean.Foundation.phiMinusDist_le
+#print axioms BridgelandStabLean.Foundation.slicingDist_self
+#print axioms BridgelandStabLean.Foundation.slicingDist_symm
+#print axioms BridgelandStabLean.Foundation.slicingDist_triangle
+#print axioms BridgelandStabLean.Foundation.instPseudoEMetricSpaceSlicing
+#print axioms BridgelandStabLean.Foundation.abs_phiPlus_sub_lt_of_slicingDist
+#print axioms BridgelandStabLean.Foundation.abs_phiMinus_sub_lt_of_slicingDist
+#print axioms BridgelandStabLean.Foundation.slicingDist_le_of_phase_bounds
 #print axioms BridgelandStabLean.Compatibility.BridgelandStability.Deformation.relativePhase_eq_wPhaseOf
 
 #print axioms BridgelandStabLean.Foundation.semiClosedUpperHalfPlane
