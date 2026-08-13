@@ -13,6 +13,7 @@ import BridgelandStabLean.Foundation.StabilityCondition
 import BridgelandStabLean.Foundation.Slicing.PhaseBounds
 import BridgelandStabLean.Foundation.Slicing.FiltrationOperations
 import BridgelandStabLean.Foundation.Slicing.BoundaryFactors
+import BridgelandStabLean.Foundation.Slicing.IntrinsicPhases
 import BridgelandStabLean.Foundation.Slicing.PhaseTruncation
 import BridgelandStabLean.Foundation.Deformation.RelativePhase
 import BridgelandStabLean.Foundation.Deformation.NearIdentity
