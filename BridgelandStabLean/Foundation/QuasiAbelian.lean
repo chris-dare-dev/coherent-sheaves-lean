@@ -505,4 +505,104 @@ theorem isNoetherianObject_of_isStrictNoetherianObject
 end
 
 
+section
+
+variable {A : Type u} [Category.{v} A]
+  {D : Type u} [Category.{v} D]
+
+/-- The map on subobjects induced by a full faithful functor preserving
+monomorphisms. -/
+@[nolint unusedArguments]
+noncomputable def subobjectImageOfFullFaithful (F : A ⥤ D)
+    [F.Full] [F.Faithful] [F.PreservesMonomorphisms] {E : A} :
+    Subobject E → Subobject (F.obj E) :=
+  Subobject.lift (fun {S} (f : S ⟶ E) [Mono f] ↦ Subobject.mk (F.map f))
+    (fun {S₁ S₂} f g [Mono f] [Mono g] i w ↦
+      Subobject.mk_eq_mk_of_comm _ _ (F.mapIso i) (by
+        change F.map i.hom ≫ F.map g = F.map f
+        rw [← F.map_comp, w]))
+
+/-- The induced map on subobjects is injective. -/
+theorem subobjectImageOfFullFaithful_injective (F : A ⥤ D)
+    [F.Full] [F.Faithful] [F.PreservesMonomorphisms] {E : A} :
+    Function.Injective
+      (subobjectImageOfFullFaithful (A := A) (D := D) F (E := E)) := by
+  intro s₁ s₂ heq
+  induction s₁ using Subobject.ind
+  induction s₂ using Subobject.ind
+  rename_i S₁ f₁ _ S₂ f₂ _
+  change Subobject.mk (F.map f₁) = Subobject.mk (F.map f₂) at heq
+  exact Subobject.mk_eq_mk_of_comm f₁ f₂
+    (F.preimageIso (Subobject.isoOfMkEqMk _ _ heq))
+    (F.map_injective (by
+      simp only [Functor.preimageIso_hom, Functor.map_comp,
+        Functor.map_preimage]
+      exact Subobject.ofMkLEMk_comp heq.le))
+
+/-- The induced map on subobjects is monotone. -/
+theorem subobjectImageOfFullFaithful_monotone (F : A ⥤ D)
+    [F.Full] [F.Faithful] [F.PreservesMonomorphisms] {E : A} :
+    Monotone (subobjectImageOfFullFaithful (A := A) (D := D) F (E := E)) := by
+  intro s₁ s₂ h
+  induction s₁ using Subobject.ind
+  induction s₂ using Subobject.ind
+  rename_i S₁ f₁ _ S₂ f₂ _
+  change Subobject.mk (F.map f₁) ≤ Subobject.mk (F.map f₂)
+  exact Subobject.mk_le_mk_of_comm
+    (F.map (Subobject.ofMkLEMk f₁ f₂ h)) (by
+      rw [← F.map_comp]
+      exact congrArg F.map (Subobject.ofMkLEMk_comp h))
+
+/-- A full faithful functor preserving monomorphisms reflects finiteness of
+subobject lattices. -/
+theorem Finite.subobject_of_fullFaithful_preservesMono (F : A ⥤ D)
+    [F.Full] [F.Faithful] [F.PreservesMonomorphisms] {E : A}
+    (h : Finite (Subobject (F.obj E))) : Finite (Subobject E) :=
+  Finite.of_injective
+    (subobjectImageOfFullFaithful (A := A) (D := D) F)
+    (subobjectImageOfFullFaithful_injective (A := A) (D := D) F)
+
+/-- Artinian objects transfer across full faithful functors preserving
+monomorphisms. -/
+theorem isArtinianObject_of_fullFaithful_preservesMono (F : A ⥤ D)
+    [F.Full] [F.Faithful] [F.PreservesMonomorphisms] {E : A}
+    [IsArtinianObject (F.obj E)] : IsArtinianObject E := by
+  rw [isArtinianObject_iff_antitone_chain_condition]
+  intro f
+  let g : ℕ →o (Subobject (F.obj E))ᵒᵈ :=
+    ⟨fun n ↦ OrderDual.toDual <|
+        subobjectImageOfFullFaithful (A := A) (D := D) F (E := E) (f n),
+      fun i j hij ↦ by
+        change subobjectImageOfFullFaithful (A := A) (D := D) F (f j) ≤
+          subobjectImageOfFullFaithful (A := A) (D := D) F (f i)
+        exact subobjectImageOfFullFaithful_monotone
+          (A := A) (D := D) F (f.2 hij)⟩
+  obtain ⟨n, hn⟩ := antitone_chain_condition_of_isArtinianObject g
+  exact ⟨n, fun m hm ↦
+    subobjectImageOfFullFaithful_injective (A := A) (D := D) F (by
+      have h := congrArg
+        (fun S : (Subobject (F.obj E))ᵒᵈ => OrderDual.ofDual S) (hn m hm)
+      change subobjectImageOfFullFaithful (A := A) (D := D) F (f n) =
+        subobjectImageOfFullFaithful (A := A) (D := D) F (f m) at h
+      exact h)⟩
+
+/-- Noetherian objects transfer across full faithful functors preserving
+monomorphisms. -/
+theorem isNoetherianObject_of_fullFaithful_preservesMono (F : A ⥤ D)
+    [F.Full] [F.Faithful] [F.PreservesMonomorphisms] {E : A}
+    [IsNoetherianObject (F.obj E)] : IsNoetherianObject E := by
+  rw [isNoetherianObject_iff_monotone_chain_condition]
+  intro f
+  let g : ℕ →o Subobject (F.obj E) :=
+    ⟨fun n ↦ subobjectImageOfFullFaithful
+        (A := A) (D := D) F (E := E) (f n),
+      fun i j hij ↦ subobjectImageOfFullFaithful_monotone
+        (A := A) (D := D) F (f.2 hij)⟩
+  obtain ⟨n, hn⟩ := monotone_chain_condition_of_isNoetherianObject g
+  exact ⟨n, fun m hm ↦
+    subobjectImageOfFullFaithful_injective (A := A) (D := D) F (hn m hm)⟩
+
+end
+
+
 end BridgelandStabLean.Foundation
