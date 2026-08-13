@@ -101,6 +101,32 @@ theorem skewedSemistable_of_nested_interval
     hthin hsin hleft hright _ hI hSS
   exact σ.slicing.intervalProp_mono C hac hdb
 
+/-- Semistability restricts to a nested thin interval when the smaller
+interval's controlled phase window lies in the original branch. -/
+theorem skewedSemistable_of_controlled_subinterval
+    (σ : StabilityCondition.WithClassMap C κ)
+    (W : Λ →+ ℂ) {r : ℝ} (hr0 : 0 ≤ r) (hr1 : r < 1)
+    (hW : stabilitySeminorm C σ (W - σ.Z) ≤ ENNReal.ofReal r)
+    {a b c d ε ψ : ℝ} (hab : a < b) (hcd : c < d)
+    (hε : 0 < ε) (hε2 : ε ≤ 1 / 2)
+    (hthinTarget : d - c + 2 * ε < 1)
+    (hsin : stabilitySeminorm C σ (W - σ.Z) <
+      ENNReal.ofReal (Real.sin (Real.pi * ε)))
+    (hleft : (a + b) / 2 - 1 < c - ε)
+    (hright : d + ε ≤ (a + b) / 2 + 1)
+    (hac : a ≤ c) (hdb : d ≤ b)
+    {E : C} (hI : σ.slicing.intervalProp C c d E)
+    (hSS : (skewedStabilityFunctionOfSeminormLtOne C σ W hr0 hr1 hW hab).IsSemistable
+      E ψ) :
+    (skewedStabilityFunctionOfSeminormLtOne C σ W hr0 hr1 hW hcd).IsSemistable
+      E ψ := by
+  apply hSS.ofCompatibleInterval hI (σ.slicing.intervalProp_mono C hac hdb) rfl
+  · exact σ.skewedPhase_eq_of_common_interval C W hr0 hr1 hW hcd hab hε hε2
+      hthinTarget hsin hleft hright hI hSS.nonzero
+  · intro K hK hKne
+    exact σ.skewedPhase_eq_of_common_interval C W hr0 hr1 hW hcd hab hε hε2
+      hthinTarget hsin hleft hright hK hKne
+
 /-- A deformed-slice witness may be replaced by a nested compatible thin
 interval using only endpoint inequalities. -/
 theorem deformedPred_rewitness_nested_interval
