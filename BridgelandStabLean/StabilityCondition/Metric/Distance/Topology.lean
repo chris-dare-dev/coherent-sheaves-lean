@@ -19,10 +19,12 @@ merely propositionally equal instance.
 
 The constructor below instead uses
 `PseudoEMetricSpace.ofEDistOfTopology`.  Its input is precisely the remaining
-mathematical theorem: full-distance balls form a neighbourhood basis for the
-*existing* Section 6 topology.  Mathlib then constructs the compatible
+interface at this layer: full-distance balls form a neighbourhood basis for
+the *existing* Section 6 topology.  The completed mass-subadditivity module
+later inhabits that interface as `stabilityDistanceTopologyCompatible`.
+Mathlib then constructs the compatible
 uniformity while retaining that topology definitionally.  No metric instance
-is installed before this comparison theorem is proved.
+is installed by either module.
 
 The first part of the file records elimination lemmas for a strict full-
 distance bound.  They feed the **easy** direction only —
@@ -973,7 +975,7 @@ full-distance balls form a basis for the existing Section 6 topology.  This
 packages both cofinality directions and is the exact hypothesis consumed by
 `PseudoEMetricSpace.ofEDistOfTopology`. -/
 @[cites "stmt:a520a8d4f877:bridgeland2007.prop-8.1" (relation := no_claim)
-        (note := "Conditional topology-comparison theorem. All analytic estimates and both neighborhood cofinality directions are formalized; the explicit argument is StabilityMassTriangleInequality, whose filtration-assembly proof remains to be supplied before Proposition 8.1 is claimed complete.")]
+        (note := "Conditional topology-comparison substrate. All analytic estimates and both neighborhood cofinality directions are formalized here; Mass/Subadditivity/Triangle.lean supplies the proved mass premise and exposes the unconditional corollary. The citation remains no_claim pending exact-head source-faithfulness review and owner acceptance.")]
 theorem stabilityDistanceTopologyCompatible_of_mass_triangle
     (htriangle : StabilityMassTriangleInequality (C := C) (v := v)) :
     StabilityDistanceTopologyCompatible (C := C) (v := v) := by
@@ -1044,7 +1046,7 @@ theorem stabilityEMetricSpace_toTopologicalSpace
       (inferInstance : TopologicalSpace (StabilityCondition.WithClassMap C v)) :=
   rfl
 
-/-- Conditional end-to-end pseudo-extended-metric package.  Its topology is
+/-- Mass-premise-parameterized end-to-end pseudo-extended-metric package.  Its topology is
 definitionally the pre-existing Section 6 topology because it is routed
 through `stabilityPseudoEMetricSpace`, not through a fresh metric topology. -/
 @[reducible] noncomputable def stabilityPseudoEMetricSpaceOfMassTriangle
@@ -1053,8 +1055,9 @@ through `stabilityPseudoEMetricSpace`, not through a fresh metric topology. -/
   stabilityPseudoEMetricSpace
     (stabilityDistanceTopologyCompatible_of_mass_triangle htriangle)
 
-/-- Conditional end-to-end extended-metric package for a surjective class
-map.  No instance is installed until the mass-triangle theorem is closed. -/
+/-- Mass-premise-parameterized end-to-end extended-metric package for a
+surjective class map.  The completed mass-subadditivity module supplies the
+premise; no global instance is installed. -/
 @[reducible] noncomputable def stabilityEMetricSpaceOfMassTriangle
     (hv : Function.Surjective v)
     (htriangle : StabilityMassTriangleInequality (C := C) (v := v)) :

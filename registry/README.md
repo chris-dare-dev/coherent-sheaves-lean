@@ -8,7 +8,7 @@ Validate it with the contract package:
 
 ```sh
 mfc registry validate registry/bridgeland2007.json \
-  --frontier-kind-labels mathlib-gap,unproved-here,definitional-divergence
+  --frontier-kind-labels mathlib-gap unproved-here definitional-divergence source-review-pending
 ```
 
 ## The 1902.08184v4 coverage map — not a mint surface
@@ -52,13 +52,14 @@ python scripts/check_coverage_map.py registry/coverage-2607.28411.json
 
 `kind_label` is a free per-topic string and `mfc lint` checks it against exactly
 the list you pass here, so **a new label must be added to this command in the
-same commit that introduces it**. Three are in use:
+same commit that introduces it**. Four are in use:
 
 | label | means |
 |---|---|
 | `mathlib-gap` | the pinned Mathlib has no API to instantiate, so the claim is recorded as a conjunction of named theorems |
 | `unproved-here` | the statement exists in the literature but no theorem inhabits it in this environment |
 | `definitional-divergence` | what is formalized is a different object from the paper's, and the difference is not a presentation choice |
+| `source-review-pending` | the mathematical premise is proved, but exact-head human source review and owner acceptance are still required to discharge the frontier item |
 
 ## Rules that are easy to break by typing
 
@@ -136,12 +137,15 @@ review on 2026-08-06 and **accepted by the owner on 2026-08-07**, at which point
 `minted_by` was corrected from the draft marker to the owner. Two distinct
 things must not be conflated here: the acceptance is of the **mint** — that the
 obligation is well-posed and belongs in the registry — and is **not** a
-discharge of the proof. The frontier item `stability-mass-triangle` remains
-open (`discharged_by: null`); it was narrowed on 2026-08-07 to the
-semistable-left case via `stabilityMassTriangleInequality_of_semistable`, and
-Proposition 8.1 stays non-`exact` under E-05 until it is discharged. No `quote`
-was minted for the obligation, so the three-way verification above does not
-apply and nothing corpus-derived entered the key. The `informal` field of `lem-3.4` was corrected in the same pass:
+discharge of the proof. The mathematics is now closed by
+`stabilityMassSemistableLeftTriangleInequality`,
+`stabilityMassTriangleInequality`, and
+`stabilityDistanceTopologyCompatible`. The frontier item nevertheless remains
+open (`discharged_by: null`) with label `source-review-pending`, because an
+agent may not supply the named exact-head human review or owner acceptance.
+Proposition 8.1 stays non-`exact` under E-05 until that governance step. No
+`quote` was minted for the obligation, so the three-way verification above
+does not apply and nothing corpus-derived entered the key. The `informal` field of `lem-3.4` was corrected in the same pass:
 it had described Bridgeland's Lemma 4.3 (`P(I)` quasi-abelian) rather than the
 extreme-phase monotonicity its own stored quote states.
 
