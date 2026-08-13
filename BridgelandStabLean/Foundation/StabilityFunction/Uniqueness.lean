@@ -304,6 +304,63 @@ theorem phiPlus_eq {Z : StabilityFunction A} {E : A}
       G.chain_one_isSemistable (G.phase_chain_one ▸ hFG)
     exact G.chain_one_ne_bot hbot
 
+/-- The first nonzero term is intrinsic: any two owner HN filtrations of the
+same object have the same maximally destabilizing subobject. -/
+theorem chain_one_eq {Z : StabilityFunction A} {E : A}
+    (F G : AbelianHNFiltration Z E) :
+    F.chain ⟨1, by have := F.nonempty; lia⟩ =
+      G.chain ⟨1, by have := G.nonempty; lia⟩ := by
+  apply le_antisymm
+  · apply G.le_chain_of_semistable_phase_gt F.chain_one_isSemistable G.nonempty
+    intro j hj
+    calc
+      G.phase j < G.phiPlus :=
+        G.phase_strictAnti (Fin.mk_lt_mk.mpr (by lia))
+      _ = F.phiPlus := (F.phiPlus_eq G).symm
+      _ = Z.phase (F.chain ⟨1, by have := F.nonempty; lia⟩ : A) :=
+        F.phase_chain_one.symm
+  · apply F.le_chain_of_semistable_phase_gt G.chain_one_isSemistable F.nonempty
+    intro j hj
+    calc
+      F.phase j < F.phiPlus :=
+        F.phase_strictAnti (Fin.mk_lt_mk.mpr (by lia))
+      _ = G.phiPlus := F.phiPlus_eq G
+      _ = Z.phase (G.chain ⟨1, by have := G.nonempty; lia⟩ : A) :=
+        G.phase_chain_one.symm
+
+/-- No nonzero semistable subobject has phase above the first HN phase. -/
+theorem semistable_phase_le_phiPlus {Z : StabilityFunction A} {E : A}
+    (F : AbelianHNFiltration Z E) {B : Subobject E}
+    (hB : Z.IsSemistable (B : A)) : Z.phase (B : A) ≤ F.phiPlus := by
+  apply le_of_not_gt
+  intro hphase
+  have hbot := F.eq_bot_of_semistable_phase_gt_phiPlus hB hphase
+  exact hB.1 ((StabilityFunction.subobject_isZero_iff_eq_bot B).2 hbot)
+
+/-- A semistable subobject at the highest HN phase is contained in the
+intrinsic first HN term. -/
+theorem le_chain_one_of_semistable_phase_eq_phiPlus
+    {Z : StabilityFunction A} {E : A}
+    (F : AbelianHNFiltration Z E) {B : Subobject E}
+    (hB : Z.IsSemistable (B : A))
+    (hphase : Z.phase (B : A) = F.phiPlus) :
+    B ≤ F.chain ⟨1, by have := F.nonempty; lia⟩ := by
+  apply F.le_chain_of_semistable_phase_gt hB F.nonempty
+  intro j hj
+  calc
+    F.phase j < F.phiPlus :=
+      F.phase_strictAnti (Fin.mk_lt_mk.mpr (by lia))
+    _ = Z.phase (B : A) := hphase.symm
+
+/-- The first HN term contains every semistable subobject having the highest
+HN phase. -/
+theorem chain_one_maximal_semistable_phase {Z : StabilityFunction A} {E : A}
+    (F : AbelianHNFiltration Z E) {B : Subobject E}
+    (hB : Z.IsSemistable (B : A))
+    (hphase : Z.phase (B : A) = F.phiPlus) :
+    B ≤ F.chain ⟨1, by have := F.nonempty; lia⟩ :=
+  F.le_chain_one_of_semistable_phase_eq_phiPlus hB hphase
+
 /-- Every morphism from an HN-filtered object to a semistable object whose
 phase is below the lowest HN phase is zero. -/
 theorem hom_eq_zero_to_semistable_of_phase_lt_phiMinus
