@@ -40,6 +40,23 @@ Never eligible: anything labelled `blocked`, `epic`, `type:spike`, or
 formalizations. Also skip any issue whose named leaf path already exists with
 the theorem proved.
 
+**Never eligible, and this is the one that actually bites:** an issue that
+already has an open PR or an existing `agent/` branch. At the time of writing,
+28 of the 30-odd open implementation issues were already in flight, so an
+iteration that skips this check will silently redo finished work. Compute the
+exclusion before choosing:
+
+```bash
+gh pr list -R chris-dare-dev/derived-alg-geo-lean --state open --limit 200 \
+  --json number,headRefName,body \
+  --jq '.[] | "\(.headRefName)\t\(.body)"' | grep -oiE '(closes|fixes|resolves) #[0-9]+'
+git branch -a --list 'agent/*'
+```
+
+If every eligible issue is already claimed, **stop and say so.** The bottleneck
+is review, not formalization; report the open-PR count and halt. Do not pick a
+claimed issue, and do not invent work.
+
 Most open issues carry no `ready` label today, so do not filter on it with
 `--label`; read the labels and decide.
 

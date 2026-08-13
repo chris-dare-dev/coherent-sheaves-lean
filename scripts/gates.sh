@@ -46,7 +46,10 @@ bridgeland_audit() {
 }
 
 changed_lean_files() {
-  git diff --name-only main...HEAD -- '*.lean'
+  # `origin/main`, not `main`: the local `main` in this clone is hundreds of
+  # commits stale, and diffing against it would hand every gate the whole
+  # library instead of the branch's own changes.
+  git diff --name-only origin/main...HEAD -- '*.lean'
   git diff --name-only -- '*.lean'
 }
 
