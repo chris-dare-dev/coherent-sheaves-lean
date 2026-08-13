@@ -454,6 +454,33 @@ end AbelianHNFiltration
 
 namespace StabilityFunction
 
+/-- The canonical maximally destabilizing subobject of a nonzero object. -/
+noncomputable def maxDestabilizingSubobject (Z : StabilityFunction A)
+    (hHN : Z.HasHNProperty) (E : A) (hE : ¬IsZero E) : Subobject E :=
+  let F := Classical.choice (hHN E hE)
+  F.chain ⟨1, by have := F.nonempty; lia⟩
+
+/-- The canonical maximally destabilizing subobject agrees with the first
+nonzero term of every owner HN filtration. -/
+theorem maxDestabilizingSubobject_eq_filtration (Z : StabilityFunction A)
+    (hHN : Z.HasHNProperty) {E : A} (hE : ¬IsZero E)
+    (F : AbelianHNFiltration Z E) :
+    Z.maxDestabilizingSubobject hHN E hE =
+      F.chain ⟨1, by have := F.nonempty; lia⟩ :=
+  (Classical.choice (hHN E hE)).chain_one_eq F
+
+/-- The canonical maximally destabilizing subobject is nonzero. -/
+theorem maxDestabilizingSubobject_ne_bot (Z : StabilityFunction A)
+    (hHN : Z.HasHNProperty) (E : A) (hE : ¬IsZero E) :
+    Z.maxDestabilizingSubobject hHN E hE ≠ ⊥ :=
+  (Classical.choice (hHN E hE)).chain_one_ne_bot
+
+/-- The canonical maximally destabilizing subobject is semistable. -/
+theorem maxDestabilizingSubobject_isSemistable (Z : StabilityFunction A)
+    (hHN : Z.HasHNProperty) (E : A) (hE : ¬IsZero E) :
+    Z.IsSemistable (Z.maxDestabilizingSubobject hHN E hE : A) :=
+  (Classical.choice (hHN E hE)).chain_one_isSemistable
+
 /-- The intrinsic highest HN phase of a nonzero object. -/
 noncomputable def phiPlus (Z : StabilityFunction A) (hHN : Z.HasHNProperty)
     (E : A) (hE : ¬IsZero E) : ℝ :=
@@ -469,6 +496,27 @@ theorem phiPlus_eq_filtration (Z : StabilityFunction A) (hHN : Z.HasHNProperty)
     {E : A} (hE : ¬IsZero E) (F : AbelianHNFiltration Z E) :
     Z.phiPlus hHN E hE = F.phiPlus :=
   (Classical.choice (hHN E hE)).phiPlus_eq F
+
+/-- The canonical maximally destabilizing subobject has the intrinsic highest
+HN phase. -/
+theorem phase_maxDestabilizingSubobject (Z : StabilityFunction A)
+    (hHN : Z.HasHNProperty) (E : A) (hE : ¬IsZero E) :
+    Z.phase (Z.maxDestabilizingSubobject hHN E hE : A) =
+      Z.phiPlus hHN E hE :=
+  (Classical.choice (hHN E hE)).phase_chain_one
+
+/-- Every semistable subobject at the intrinsic highest HN phase lies in the
+canonical maximally destabilizing subobject. -/
+theorem le_maxDestabilizingSubobject_of_semistable_phase_eq_phiPlus
+    (Z : StabilityFunction A) (hHN : Z.HasHNProperty)
+    {E : A} (hE : ¬IsZero E) {B : Subobject E}
+    (hB : Z.IsSemistable (B : A))
+    (hphase : Z.phase (B : A) = Z.phiPlus hHN E hE) :
+    B ≤ Z.maxDestabilizingSubobject hHN E hE := by
+  let F := Classical.choice (hHN E hE)
+  rw [Z.phiPlus_eq_filtration hHN hE F] at hphase
+  rw [Z.maxDestabilizingSubobject_eq_filtration hHN hE F]
+  exact F.le_chain_one_of_semistable_phase_eq_phiPlus hB hphase
 
 /-- The intrinsic lowest phase agrees with every owner HN filtration. -/
 theorem phiMinus_eq_filtration (Z : StabilityFunction A) (hHN : Z.HasHNProperty)
