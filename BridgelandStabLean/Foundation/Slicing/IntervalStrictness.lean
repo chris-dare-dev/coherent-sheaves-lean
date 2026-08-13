@@ -634,6 +634,70 @@ theorem Slicing.IntervalCat.strictShortExact_of_distinguished
   exact ⟨ShortComplex.ShortExact.mk' hExact hf.mono hg.epi,
     hf.strict, hg.strict⟩
 
+omit [Fact (a < b)] in
+set_option backward.isDefEq.respectTransparency false in
+/-- A short exact sequence obtained in the left adjacent heart extends to an
+ambient distinguished triangle with the original interval objects. -/
+theorem Slicing.IntervalCat.exists_distinguished_of_shortExact_toLeftHeart
+    (s : Slicing C) {S : ShortComplex (s.IntervalCat C a b)}
+    (hL :
+      (S.map (Slicing.IntervalCat.toLeftHeart
+        (C := C) (s := s) a b (Fact.out : b - a ≤ 1))).ShortExact) :
+    ∃ (δ : S.X₃.obj ⟶ S.X₁.obj⟦(1 : ℤ)⟧),
+      Triangle.mk S.f.hom S.g.hom δ ∈ distTriang C := by
+  let t := (s.phaseShift C a).toTStructure C
+  letI := t.hasHeartFullSubcategory
+  letI : Abelian t.heart.FullSubcategory := heartFullSubcategoryAbelian t
+  letI : IsNormalMonoCategory t.heart.FullSubcategory :=
+    Abelian.toIsNormalMonoCategory
+  letI : IsNormalEpiCategory t.heart.FullSubcategory :=
+    Abelian.toIsNormalEpiCategory
+  let FL := Slicing.IntervalCat.toLeftHeart
+    (C := C) (s := s) a b (Fact.out : b - a ≤ 1)
+  let ι := t.ιHeart (H := t.heart.FullSubcategory)
+  letI : Balanced t.heart.FullSubcategory := by infer_instance
+  letI : Epi ((S.map FL).g) := hL.epi_g
+  obtain ⟨K, i, δ, hT⟩ :=
+    exists_distinguished_triangle_of_heart_epi t ((S.map FL).g)
+  have hKer : IsLimit
+      (KernelFork.ofι i (show i ≫ (S.map FL).g = 0 by
+        exact ι.map_injective (comp_distTriang_mor_zero₁₂ _ hT))) :=
+    Triangulated.AbelianSubcategory.isLimitKernelForkOfDistTriang
+      (heart_hι t) i ((S.map FL).g) δ hT
+  have hLfIsKernel : IsLimit
+      (KernelFork.ofι ((S.map FL).f) (S.map FL).zero) := hL.fIsKernel
+  let eK : K ≅ FL.obj S.X₁ :=
+    IsLimit.conePointUniqueUpToIso hKer hLfIsKernel
+  refine ⟨δ ≫ (shiftFunctor C (1 : ℤ)).map (ι.map eK.hom), ?_⟩
+  refine isomorphic_distinguished _ hT _
+    (Triangle.isoMk _ _ (ι.mapIso eK.symm) (Iso.refl _) (Iso.refl _) ?_ ?_ ?_)
+  · simp only [Iso.refl_hom, Functor.mapIso_hom, Iso.symm_hom,
+      Triangle.mk_mor₁]
+    have hcomp : ι.map eK.inv ≫ ι.map i = S.f.hom := by
+      have hmapf : ι.map ((S.map FL).f) = S.f.hom := rfl
+      rw [← Functor.map_comp, ← hmapf]
+      exact congrArg (fun k ↦ ι.map k)
+        (IsLimit.conePointUniqueUpToIso_inv_comp hKer hLfIsKernel
+          Limits.WalkingParallelPair.zero)
+    change S.f.hom ≫ 𝟙 S.X₂.obj = ι.map eK.inv ≫ t.ιHeart.map i
+    simpa [FL] using hcomp.symm
+  · have hmap : t.ιHeart.map ((S.map FL).g) = S.g.hom := rfl
+    simp only [Iso.refl_hom, Triangle.mk_mor₂]
+    rw [hmap]
+    simp
+  · simp only [Iso.refl_hom, Triangle.mk_mor₃, Functor.mapIso_hom,
+      Iso.symm_hom]
+    change (δ ≫ (shiftFunctor C (1 : ℤ)).map (ι.map eK.hom)) ≫
+        (shiftFunctor C (1 : ℤ)).map (ι.map eK.inv) = 𝟙 _ ≫ δ
+    rw [Category.assoc, ← (shiftFunctor C (1 : ℤ)).map_comp,
+      ← ι.map_comp, eK.hom_inv_id]
+    have hιid : ι.map (𝟙 K) = 𝟙 (ι.obj K) := ι.map_id K
+    rw [hιid]
+    have hshift : (shiftFunctor C (1 : ℤ)).map (𝟙 (ι.obj K)) =
+        𝟙 ((shiftFunctor C (1 : ℤ)).obj (ι.obj K)) :=
+      (shiftFunctor C (1 : ℤ)).map_id (ι.obj K)
+    rw [hshift, Category.comp_id, Category.id_comp]
+
 /-- The left adjacent-heart embedding preserves the canonical interval
 kernel. -/
 noncomputable instance Slicing.IntervalCat.toLeftHeart_preservesKernel
@@ -700,6 +764,72 @@ noncomputable instance Slicing.IntervalCat.toRightHeart_preservesCokernel
                 (C := C) (s := s) (a := a) (b := b) f).inv =
             FR.map (cokernel.π f)
           rw [← hπ, Category.assoc, Iso.hom_inv_id, Category.comp_id])
+
+/-- An owner strict short exact sequence in a thin interval extends to an
+ambient distinguished triangle. -/
+theorem Slicing.IntervalCat.exists_distinguished_of_strictShortExact
+    (s : Slicing C) {S : ShortComplex (s.IntervalCat C a b)}
+    (hS : StrictShortExact S) :
+    ∃ (δ : S.X₃.obj ⟶ S.X₁.obj⟦(1 : ℤ)⟧),
+      Triangle.mk S.f.hom S.g.hom δ ∈ distTriang C := by
+  let tL := (s.phaseShift C a).toTStructure C
+  letI := tL.hasHeartFullSubcategory
+  letI : Abelian tL.heart.FullSubcategory := heartFullSubcategoryAbelian tL
+  letI : CategoryWithHomology tL.heart.FullSubcategory :=
+    categoryWithHomology_of_abelian
+  let FL := Slicing.IntervalCat.toLeftHeart
+    (C := C) (s := s) a b (Fact.out : b - a ≤ 1)
+  let tR := (s.phaseShift C (b - 1)).toDualTStructure C
+  letI := tR.hasHeartFullSubcategory
+  letI : Abelian tR.heart.FullSubcategory := heartFullSubcategoryAbelian tR
+  let FR := Slicing.IntervalCat.toRightHeart
+    (C := C) (s := s) a b (Fact.out : b - a ≤ 1)
+  letI : Mono S.f := hS.shortExact.mono_f
+  letI : Epi S.g := hS.shortExact.epi_g
+  let h := hS.shortExact.exact.condition.choose
+  let eKh : kernel S.g ≅ h.left.K :=
+    IsLimit.conePointUniqueUpToIso (kernelIsKernel S.g) h.left.hi
+  have heKh : eKh.inv ≫ kernel.ι S.g = h.left.i := by
+    change (IsLimit.conePointUniqueUpToIso
+      (kernelIsKernel S.g) h.left.hi).inv ≫ kernel.ι S.g = h.left.i
+    exact IsLimit.conePointUniqueUpToIso_inv_comp
+      (kernelIsKernel S.g) h.left.hi Limits.WalkingParallelPair.zero
+  letI : Epi h.left.f' := hS.shortExact.exact.epi_f' h.left
+  have hFRMono : Mono (FR.map h.left.f') := by
+    letI : Mono (FR.map S.f) :=
+      Slicing.IntervalCat.mono_toRightHeart_of_strictMono C s S.f
+        ⟨inferInstance, hS.strict_f⟩
+    have hcomp : FR.map h.left.f' ≫ FR.map h.left.i = FR.map S.f := by
+      calc
+        FR.map h.left.f' ≫ FR.map h.left.i =
+            FR.map (h.left.f' ≫ h.left.i) := by rw [← FR.map_comp]
+        _ = FR.map S.f := by simp [h.left.f'_i]
+    haveI : Mono (FR.map h.left.f' ≫ FR.map h.left.i) := by
+      rw [hcomp]
+      infer_instance
+    exact mono_of_mono (FR.map h.left.f') (FR.map h.left.i)
+  have hf'Strict : IsStrictMono h.left.f' :=
+    Slicing.IntervalCat.strictMono_of_mono_toRightHeart C s h.left.f'
+  letI : IsIso h.left.f' := hf'Strict.isIso
+  let eK : S.X₁ ≅ kernel S.g := asIso h.left.f' ≪≫ eKh.symm
+  have hKerBase : IsLimit (KernelFork.ofι S.f S.zero) := by
+    refine kernel.isoKernel S.g S.f eK ?_
+    calc
+      eK.hom ≫ kernel.ι S.g = h.left.f' ≫ h.left.i := by
+        simp [eK, heKh, Category.assoc]
+      _ = S.f := h.left.f'_i
+  have hEpi : Epi (FL.map S.g) :=
+    Slicing.IntervalCat.epi_toLeftHeart_of_strictEpi C s S.g
+      ⟨inferInstance, hS.strict_g⟩
+  have hKer : IsLimit
+      (KernelFork.ofι ((S.map FL).f) (S.map FL).zero) :=
+    isLimitForkMapOfIsLimit' FL S.zero hKerBase
+  have hExact : (S.map FL).Exact :=
+    ShortComplex.exact_of_f_is_kernel (S := S.map FL) hKer
+  have hL : (S.map FL).ShortExact :=
+    ShortComplex.ShortExact.mk' hExact (Fork.IsLimit.mono hKer) hEpi
+  exact Slicing.IntervalCat.exists_distinguished_of_shortExact_toLeftHeart
+    C s hL
 
 /-- Open slicing intervals are closed under binary products. -/
 instance Slicing.intervalProp_isClosedUnderBinaryProducts (s : Slicing C) :
