@@ -22,6 +22,9 @@ license, full-build, linter, and axiom-gate evidence.
   intersection theory, numerical invariants, and Riemann–Roch.
 - `BridgelandStabLean/` owns stability-condition extensions, abstract lattice
   theory, support, weak stability, tilting, metrics, walls, and symmetries.
+- `BridgelandStabLean/TStructure/` owns anchor-free abstract t-structure theory.
+- `BridgelandStabLean/Anchor/` owns explicit compatibility bridges to the
+  foundational library. Nothing anchor-free may depend on it.
 - `vendor/BridgelandStability/` is third-party Apache-2.0 source. Do not place
   owner-authored work there.
 - Future derived-category and Fourier–Mukai libraries get dedicated roots with
