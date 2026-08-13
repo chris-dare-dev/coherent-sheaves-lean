@@ -422,6 +422,8 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Foundation.Deformation.rotatedIm_polar
 #print axioms BridgelandStabLean.Foundation.Deformation.rotatedIm_eq_norm_mul_sin
 #print axioms BridgelandStabLean.Foundation.Deformation.rotatedIm_eq_zero_of_relativePhase_eq
+#print axioms BridgelandStabLean.Foundation.Deformation.rotatedIm_neg_of_relativePhase_lt
+#print axioms BridgelandStabLean.Foundation.Deformation.rotatedIm_pos_of_relativePhase_gt
 #print axioms BridgelandStabLean.Foundation.Deformation.relativePhase_gt_of_rotatedIm_pos
 #print axioms BridgelandStabLean.Foundation.Deformation.relativePhase_lt_of_rotatedIm_neg
 #print axioms BridgelandStabLean.Foundation.Deformation.relativePhase_seesaw
