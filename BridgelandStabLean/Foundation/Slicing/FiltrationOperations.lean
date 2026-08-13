@@ -214,6 +214,27 @@ def HNFiltration.appendLengthOne
   GX.appendFactor C (Triangle.mk f g h) hT (Iso.refl _) (Iso.refl _)
     (GY.φ ⟨0, by omega⟩) (GY.semistable_of_length_one C hPiso hGY) hsep
 
+/-- Lower and upper phase bounds pass through a one-factor HN splice. -/
+theorem HNFiltration.appendLengthOne_phase_bounds
+    {P : ℝ → ObjectProperty C}
+    (hPiso : ∀ φ : ℝ, (P φ).IsClosedUnderIsomorphisms)
+    {X E Y : C} (GX : HNFiltration C P X) (GY : HNFiltration C P Y)
+    (hGY : GY.n = 1)
+    (f : X ⟶ E) (g : E ⟶ Y) (h : Y ⟶ X⟦(1 : ℤ)⟧)
+    (hT : Triangle.mk f g h ∈ distTriang C)
+    (hsep : ∀ j : Fin GX.n, GY.φ ⟨0, by omega⟩ < GX.φ j)
+    (t U : ℝ)
+    (hX : ∀ j : Fin GX.n, t < GX.φ j ∧ GX.φ j ≤ U)
+    (hY : t < GY.φ ⟨0, by omega⟩ ∧ GY.φ ⟨0, by omega⟩ ≤ U) :
+    ∀ j : Fin (GX.appendLengthOne C hPiso GY hGY f g h hT hsep).n,
+      t < (GX.appendLengthOne C hPiso GY hGY f g h hT hsep).φ j ∧
+        (GX.appendLengthOne C hPiso GY hGY f g h hT hsep).φ j ≤ U := by
+  intro j
+  simp only [HNFiltration.appendLengthOne, HNFiltration.appendFactor]
+  split_ifs with hj
+  · exact hX ⟨j.val, hj⟩
+  · exact hY
+
 /-- Shift every stage and factor of an HN filtration. -/
 def HNFiltration.shift (s : Slicing C) {E : C}
     (F : HNFiltration C s.P E) (a : ℤ) : HNFiltration C s.P (E⟦a⟧) where
