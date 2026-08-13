@@ -35,6 +35,20 @@ namespace Slicing.IntervalCat
 variable {s : Slicing C} {a b : ℝ}
 variable [Fact (a < b)] [Fact (b - a ≤ 1)]
 
+/-- The bottom subobject has a strict canonical arrow. -/
+theorem bot_arrow_strictMono {X : s.IntervalCat C a b} :
+    IsStrictMono ((⊥ : Subobject X).arrow) := by
+  let f : ((⊥ : Subobject X) : s.IntervalCat C a b) ⟶ X :=
+    (⊥ : Subobject X).arrow
+  have hzero : f = 0 := by simp [f, Subobject.bot_arrow]
+  letI : IsIso (cokernel.π f) := by
+    rw [hzero]
+    infer_instance
+  apply isStrictMono_of_isLimitKernelFork
+  refine KernelFork.IsLimit.ofMonoOfIsZero
+    (KernelFork.ofι f (cokernel.condition f)) inferInstance ?_
+  exact (isZero_zero (s.IntervalCat C a b)).of_iso Subobject.botCoeIsoZero
+
 /-- Pulling back a strict epimorphism along an interval subobject preserves
 strict epimorphy of the pullback projection. -/
 theorem pullbackProjection_strictEpi {X Y : s.IntervalCat C a b}
