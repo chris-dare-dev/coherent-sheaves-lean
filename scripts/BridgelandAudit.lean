@@ -457,6 +457,7 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Foundation.Slicing.IntervalCat.epi_toLeftHeart_of_strictEpi
 #print axioms BridgelandStabLean.Foundation.Slicing.IntervalCat.comp_strictMono
 #print axioms BridgelandStabLean.Foundation.Slicing.IntervalCat.comp_strictEpi
+#print axioms BridgelandStabLean.Foundation.Slicing.IntervalCat.strictEpi_of_comp_strictEpi
 #print axioms BridgelandStabLean.Foundation.Slicing.intervalProp_isClosedUnderIsomorphisms
 #print axioms BridgelandStabLean.Foundation.Slicing.IntervalCat.toLeftHeart_preservesKernel
 #print axioms BridgelandStabLean.Foundation.Slicing.IntervalCat.toRightHeart_preservesCokernel
