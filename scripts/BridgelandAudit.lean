@@ -438,6 +438,10 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Foundation.IsStrictEpi
 #print axioms BridgelandStabLean.Foundation.isStrictEpi_of_isColimitCokernelCofork
 #print axioms BridgelandStabLean.Foundation.isStrictMono_of_isLimitKernelFork
+#print axioms BridgelandStabLean.Foundation.IsStrictEpi.isColimitCokernelCofork
+#print axioms BridgelandStabLean.Foundation.IsStrictMono.isLimitKernelFork
+#print axioms BridgelandStabLean.Foundation.IsStrictEpi.normalEpi
+#print axioms BridgelandStabLean.Foundation.IsStrictMono.normalMono
 #print axioms BridgelandStabLean.Foundation.isStrictMono_kernel
 #print axioms BridgelandStabLean.Foundation.isStrictEpi_cokernel
 #print axioms BridgelandStabLean.Foundation.StrictShortExact
