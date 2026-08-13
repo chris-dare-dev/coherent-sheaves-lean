@@ -73,7 +73,7 @@ four qualifications in this comment are unaffected by it:
   green without an entry here. Zero is a measurement taken at a commit, not a
   property the build maintains.
 
-* It issues **1755** audit commands. The environment holds **2100** authored
+* It issues **1760** audit commands. The environment holds **2105** authored
   declarations under `BridgelandStabLean.*`, so **345 are outside this gate**,
   all of them private or projections. ("Authored" excludes constructors,
   recursors, `casesOn`, matchers, equation lemmas, internal names, and the six
@@ -392,10 +392,15 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Foundation.phaseCross_eq_norm_mul_sin
 #print axioms BridgelandStabLean.Foundation.phaseCross_nonneg_of_arg_le
 #print axioms BridgelandStabLean.Foundation.arg_le_of_phaseCross_nonneg
+#print axioms BridgelandStabLean.Foundation.phaseCross_pos_of_arg_lt
+#print axioms BridgelandStabLean.Foundation.arg_lt_of_phaseCross_pos
 #print axioms BridgelandStabLean.Foundation.arg_add_le_max
+#print axioms BridgelandStabLean.Foundation.arg_add_lt_max
 #print axioms BridgelandStabLean.Foundation.min_arg_le_arg_add
 #print axioms BridgelandStabLean.Foundation.StabilityFunction.phase_le_max_of_shortExact
 #print axioms BridgelandStabLean.Foundation.StabilityFunction.min_phase_le_of_shortExact
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.phase_le_of_epi
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.hom_eq_zero_of_semistable_phase_gt
 
 /-! ## Cohomology exactness (#146) -/
 

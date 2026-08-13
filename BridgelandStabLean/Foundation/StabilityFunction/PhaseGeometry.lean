@@ -3,6 +3,8 @@ Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under the MIT license.
 -/
 import BridgelandStabLean.Foundation.StabilityFunction.Subobject
+import Mathlib.CategoryTheory.Abelian.Exact
+import Mathlib.CategoryTheory.Subobject.Limits
 
 /-!
 # Phase geometry for owner stability functions
@@ -83,6 +85,34 @@ theorem arg_le_of_phaseCross_nonneg {z w : ℂ}
   exact (not_lt_of_ge hcross)
     (Real.sin_neg_of_neg_of_neg_pi_lt hneg hneg_pi)
 
+theorem phaseCross_pos_of_arg_lt {z w : ℂ}
+    (hz_arg : 0 < arg z) (hz : z ≠ 0) (hw : w ≠ 0)
+    (harg : arg z < arg w) : 0 < phaseCross z w := by
+  have hnorm : 0 < ‖z‖ * ‖w‖ :=
+    mul_pos (norm_pos_iff.mpr hz) (norm_pos_iff.mpr hw)
+  rw [phaseCross_eq_norm_mul_sin]
+  exact mul_pos hnorm (Real.sin_pos_of_pos_of_lt_pi (sub_pos.mpr harg)
+    (by linarith [arg_le_pi w]))
+
+theorem arg_lt_of_phaseCross_pos {z w : ℂ}
+    (hz : z ≠ 0) (hw : w ≠ 0) (hw_arg : 0 < arg w)
+    (hcross : 0 < phaseCross z w) : arg z < arg w := by
+  have hnorm : 0 < ‖z‖ * ‖w‖ :=
+    mul_pos (norm_pos_iff.mpr hz) (norm_pos_iff.mpr hw)
+  rw [phaseCross_eq_norm_mul_sin] at hcross
+  have hsin : 0 < Real.sin (arg w - arg z) :=
+    ((mul_pos_iff.mp hcross).elim id
+      (fun h => absurd h.1 (not_lt.mpr hnorm.le))).2
+  by_contra h
+  have hwz : arg w ≤ arg z := le_of_not_gt h
+  rcases hwz.eq_or_lt with heq | hlt
+  · rw [heq, sub_self, Real.sin_zero] at hsin
+    exact (lt_irrefl 0) hsin
+  · have hneg : arg w - arg z < 0 := sub_neg.mpr hlt
+    have hneg_pi : -Real.pi < arg w - arg z := by
+      linarith [arg_le_pi z]
+    exact (not_lt_of_ge (Real.sin_neg_of_neg_of_neg_pi_lt hneg hneg_pi).le) hsin
+
 theorem arg_add_le_max {z w : ℂ}
     (hz : z ∈ semiClosedUpperHalfPlane)
     (hw : w ∈ semiClosedUpperHalfPlane) :
@@ -131,6 +161,30 @@ theorem min_arg_le_arg_add {z w : ℂ}
     simp only [phaseCross, Complex.add_re, Complex.add_im] at hcross ⊢
     linarith
 
+theorem arg_add_lt_max {z w : ℂ}
+    (hz : z ∈ semiClosedUpperHalfPlane)
+    (hw : w ∈ semiClosedUpperHalfPlane) (hne : arg z ≠ arg w) :
+    arg (z + w) < max (arg z) (arg w) := by
+  have hz0 := semiClosedUpperHalfPlane_ne_zero hz
+  have hw0 := semiClosedUpperHalfPlane_ne_zero hw
+  have hsum := add_mem_semiClosedUpperHalfPlane hz hw
+  have hsum0 := semiClosedUpperHalfPlane_ne_zero hsum
+  rcases hne.lt_or_gt with h | h
+  · rw [max_eq_right h.le]
+    apply arg_lt_of_phaseCross_pos hsum0 hw0
+      (arg_pos_of_mem_semiClosedUpperHalfPlane hw)
+    have hcross := phaseCross_pos_of_arg_lt
+      (arg_pos_of_mem_semiClosedUpperHalfPlane hz) hz0 hw0 h
+    simp only [phaseCross, Complex.add_re, Complex.add_im] at hcross ⊢
+    linarith
+  · rw [max_eq_left h.le]
+    apply arg_lt_of_phaseCross_pos hsum0 hz0
+      (arg_pos_of_mem_semiClosedUpperHalfPlane hz)
+    have hcross := phaseCross_pos_of_arg_lt
+      (arg_pos_of_mem_semiClosedUpperHalfPlane hw) hw0 hz0 h
+    simp only [phaseCross, Complex.add_re, Complex.add_im] at hcross ⊢
+    linarith
+
 variable {A : Type u} [Category.{v} A] [Abelian A]
 
 namespace StabilityFunction
@@ -154,6 +208,61 @@ theorem min_phase_le_of_shortExact (Z : StabilityFunction A)
   rw [min_div_div_right Real.pi_pos.le]
   exact (div_le_div_iff_of_pos_right Real.pi_pos).2
     (min_arg_le_arg_add (Z.nonzero_mem S.X₁ h₁) (Z.nonzero_mem S.X₃ h₃))
+
+/-- A nonzero quotient of a semistable object has phase at least the source
+phase. -/
+theorem phase_le_of_epi (Z : StabilityFunction A) {E Q : A}
+    (p : E ⟶ Q) [Epi p] (hE : Z.IsSemistable E) (hQ : ¬IsZero Q) :
+    Z.phase E ≤ Z.phase Q := by
+  by_cases hker : IsZero (kernel p)
+  · haveI : Mono p := Preadditive.mono_of_kernel_zero
+      (zero_of_source_iso_zero _ hker.isoZero)
+    haveI : IsIso p := isIso_of_mono_of_epi p
+    exact le_of_eq (Z.phase_eq_of_iso (asIso p))
+  · have hker_le : Z.phase (kernel p) ≤ Z.phase E := by
+      calc Z.phase (kernel p)
+          = Z.phase (kernelSubobject p : A) :=
+            Z.phase_eq_of_iso (kernelSubobjectIso p).symm
+        _ ≤ Z.phase E := hE.2 _ fun hzero =>
+            hker (hzero.of_iso (kernelSubobjectIso p).symm)
+    by_contra h
+    have hQ_lt : Z.phase Q < Z.phase E := lt_of_not_ge h
+    have hshort : (ShortComplex.mk (kernel.ι p) p (kernel.condition p)).ShortExact :=
+      ShortComplex.ShortExact.mk' (ShortComplex.exact_kernel p) inferInstance inferInstance
+    have hsum := Z.additive _ hshort
+    have hker_mem := Z.nonzero_mem (kernel p) hker
+    have hQ_mem := Z.nonzero_mem Q hQ
+    have harg_ker : arg (Z.charge (kernel p)) ≤ arg (Z.charge E) := by
+      exact (div_le_div_iff_of_pos_right Real.pi_pos).1 hker_le
+    have harg_Q : arg (Z.charge Q) < arg (Z.charge E) := by
+      exact (div_lt_div_iff_of_pos_right Real.pi_pos).1 hQ_lt
+    rw [hsum] at harg_ker harg_Q
+    have hub := arg_add_le_max hker_mem hQ_mem
+    have hQ_lt_max := lt_of_lt_of_le harg_Q hub
+    have hker_gt_Q : arg (Z.charge Q) < arg (Z.charge (kernel p)) := by
+      simpa only [lt_max_iff, lt_irrefl, or_false] using hQ_lt_max
+    have hstrict := arg_add_lt_max hker_mem hQ_mem (ne_of_gt hker_gt_Q)
+    rw [max_eq_left hker_gt_Q.le] at hstrict
+    exact (not_lt_of_ge harg_ker) hstrict
+
+/-- Hom-vanishing between semistable objects of decreasing phase. -/
+theorem hom_eq_zero_of_semistable_phase_gt (Z : StabilityFunction A)
+    {E F : A} (hE : Z.IsSemistable E) (hF : Z.IsSemistable F)
+    (hphase : Z.phase F < Z.phase E) (f : E ⟶ F) : f = 0 := by
+  by_contra hf
+  have himage : ¬IsZero (image f) := by
+    intro hzero
+    apply hf
+    have hι : image.ι f = 0 := zero_of_source_iso_zero _ hzero.isoZero
+    rw [← image.fac f, hι, comp_zero]
+  have hsource := Z.phase_le_of_epi (factorThruImage f) hE himage
+  have htarget : Z.phase (image f) ≤ Z.phase F := by
+    calc Z.phase (image f)
+        = Z.phase (imageSubobject f : A) :=
+          Z.phase_eq_of_iso (imageSubobjectIso f).symm
+      _ ≤ Z.phase F := hF.2 _ fun hzero =>
+          himage (hzero.of_iso (imageSubobjectIso f).symm)
+  exact (not_lt_of_ge (hsource.trans htarget)) hphase
 
 end StabilityFunction
 
