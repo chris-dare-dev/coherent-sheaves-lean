@@ -317,6 +317,10 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Foundation.Slicing.gtProp_of_intervalProp
 #print axioms BridgelandStabLean.Foundation.Slicing.hom_eq_zero_of_phase_gap
 #print axioms BridgelandStabLean.Foundation.Slicing.intervalHom_eq_zero
+#print axioms BridgelandStabLean.Foundation.Slicing.leProp_of_triangle
+#print axioms BridgelandStabLean.Foundation.Slicing.ltProp_of_triangle
+#print axioms BridgelandStabLean.Foundation.Slicing.gtProp_of_triangle
+#print axioms BridgelandStabLean.Foundation.Slicing.geProp_of_triangle
 #print axioms BridgelandStabLean.Foundation.Slicing.zero_of_gtProp_leProp
 #print axioms BridgelandStabLean.Foundation.Slicing.zero_of_geProp_ltProp
 #print axioms BridgelandStabLean.Foundation.HNFiltration.zero

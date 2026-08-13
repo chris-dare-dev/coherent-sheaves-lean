@@ -16,6 +16,7 @@ import BridgelandStabLean.Foundation.Slicing.FiltrationOperations
 import BridgelandStabLean.Foundation.Slicing.BoundaryFactors
 import BridgelandStabLean.Foundation.Slicing.IntrinsicPhases
 import BridgelandStabLean.Foundation.Slicing.IntrinsicPhaseBounds
+import BridgelandStabLean.Foundation.Slicing.PhaseCutClosure
 import BridgelandStabLean.Foundation.Slicing.PhaseShift
 import BridgelandStabLean.Foundation.Slicing.PhaseTruncation
 import BridgelandStabLean.Foundation.Deformation.RelativePhase
