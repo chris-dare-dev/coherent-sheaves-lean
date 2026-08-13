@@ -34,6 +34,7 @@ ANCHOR_FREE = [
     "BridgelandStabLean.Foundation.PreStabilityCondition",
     "BridgelandStabLean.Foundation.IntervalCategory",
     "BridgelandStabLean.Foundation.StabilityCondition",
+    "BridgelandStabLean.Foundation.Deformation.RelativePhase",
     "BridgelandStabLean.Foundation.Slicing.PhaseBounds",
     "BridgelandStabLean.Foundation.Slicing.FiltrationOperations",
     "BridgelandStabLean.Foundation.Slicing.PhaseTruncation",

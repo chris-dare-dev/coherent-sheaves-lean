@@ -59,8 +59,8 @@ to **488**. Both were right against the filter of the day, and both are
 superseded here -- the 821 in particular counted the 30 generated names
 described above. **Re-run the command; do not adjust the numbers.**
 
-**THE GAP IS NOW ZERO, re-measured while adding the issue #233 owner stability
-function and HN uniqueness foundation on 2026-08-13.** Every
+**THE GAP IS NOW ZERO, re-measured while adding the issue #236 owner relative
+phase foundation on 2026-08-13.** Every
 public declaration in this library that is not a structure field projection is
 named below. Be precise about what that does and does not mean -- three of the
 four qualifications in this comment are unaffected by it:
@@ -73,7 +73,7 @@ four qualifications in this comment are unaffected by it:
   green without an entry here. Zero is a measurement taken at a commit, not a
   property the build maintains.
 
-* It issues **1830** audit commands. The environment holds **2175** authored
+* It issues **1839** audit commands. The environment holds **2184** authored
   declarations under `BridgelandStabLean.*`, so **345 are outside this gate**,
   all of them private or projections. ("Authored" excludes constructors,
   recursors, `casesOn`, matchers, equation lemmas, internal names, and the six
@@ -342,6 +342,19 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Foundation.Slicing.toTStructure
 #print axioms BridgelandStabLean.Foundation.Slicing.toTStructure_heart_iff
 #print axioms BridgelandStabLean.Foundation.Slicing.toTStructure_bounded
+
+/-! ## Owner relative phase geometry (#236) -/
+
+#print axioms BridgelandStabLean.Foundation.Deformation.relativePhase
+#print axioms BridgelandStabLean.Foundation.Deformation.relativePhase_mem_Ioc
+#print axioms BridgelandStabLean.Foundation.Deformation.relativePhase_polar
+#print axioms BridgelandStabLean.Foundation.Deformation.relativePhase_of_ray
+#print axioms BridgelandStabLean.Foundation.Deformation.relativePhase_zero
+#print axioms BridgelandStabLean.Foundation.Deformation.relativePhase_neg
+#print axioms BridgelandStabLean.Foundation.Deformation.relativePhase_add_two
+#print axioms BridgelandStabLean.Foundation.Deformation.relativePhase_eq_of_mem
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.Deformation.relativePhase_eq_wPhaseOf
+
 #print axioms BridgelandStabLean.Foundation.semiClosedUpperHalfPlane
 #print axioms BridgelandStabLean.Foundation.semiClosedUpperHalfPlane_ne_zero
 #print axioms BridgelandStabLean.Foundation.arg_pos_of_mem_semiClosedUpperHalfPlane

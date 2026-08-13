@@ -7,6 +7,7 @@ import BridgelandStability.GrothendieckGroup.Basic
 import BridgelandStability.Slicing.TStructureConstruction
 import BridgelandStability.StabilityCondition.Defs
 import BridgelandStability.StabilityFunction.HarderNarasimhan
+import BridgelandStability.Deformation.WPhase
 
 /-!
 # Compatibility with the vendored BridgelandStability API
@@ -27,6 +28,18 @@ namespace BridgelandStabLean.Compatibility.BridgelandStability
 
 variable (C : Type u) [Category.{v} C] [HasZeroObject C] [HasShift C ℤ]
   [Preadditive C] [∀ n : ℤ, (shiftFunctor C n).Additive] [Pretriangulated C]
+
+namespace Deformation
+
+/-- The owner relative phase agrees definitionally with the retained
+`wPhaseOf` representation. The independent owner proofs may therefore be
+used on retained consumers without appealing to retained phase geometry. -/
+theorem relativePhase_eq_wPhaseOf (w : ℂ) (α : ℝ) :
+    Foundation.Deformation.relativePhase w α =
+      CategoryTheory.Triangulated.wPhaseOf w α :=
+  rfl
+
+end Deformation
 
 namespace StabilityFunction
 
