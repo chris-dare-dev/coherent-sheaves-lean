@@ -266,4 +266,31 @@ theorem Slicing.phiMinus_le_phiPlus (s : Slicing C) (E : C) (hE : ¬IsZero E) :
   have hid : (𝟙 E : E ⟶ E) = 0 := s.hom_eq_zero_of_phase_gap C G F hgap (𝟙 E)
   exact hE ((IsZero.iff_id_eq_zero E).mpr hid)
 
+/-- A nonzero semistable object's intrinsic highest phase is its semistable phase. -/
+theorem Slicing.phiPlus_eq_of_semistable (s : Slicing C) (E : C) (hE : ¬IsZero E)
+    (φ : ℝ) (hP : s.P φ E) : s.phiPlus C E hE = φ := by
+  let F := HNFiltration.single C E φ hP
+  have hn : 0 < F.n := by simp [F, HNFiltration.single]
+  have hfactor : F.factor ⟨0, hn⟩ = E := rfl
+  have hne : ¬IsZero (F.factor ⟨0, hn⟩) := by simpa [hfactor] using hE
+  simpa [F, HNFiltration.phiPlus, HNFiltration.single] using s.phiPlus_eq C E hE F hn hne
+
+/-- A nonzero semistable object's intrinsic lowest phase is its semistable phase. -/
+theorem Slicing.phiMinus_eq_of_semistable (s : Slicing C) (E : C) (hE : ¬IsZero E)
+    (φ : ℝ) (hP : s.P φ E) : s.phiMinus C E hE = φ := by
+  let F := HNFiltration.single C E φ hP
+  have hn : 0 < F.n := by simp [F, HNFiltration.single]
+  have hfactor : F.factor ⟨F.n - 1, by omega⟩ = E := rfl
+  have hne : ¬IsZero (F.factor ⟨F.n - 1, by omega⟩) := by simpa [hfactor] using hE
+  simpa [F, HNFiltration.phiMinus, HNFiltration.single] using s.phiMinus_eq C E hE F hn hne
+
+/-- Some HN filtration realizes both intrinsic phase extrema. -/
+theorem Slicing.exists_hn_intrinsic_width (s : Slicing C) {E : C} (hE : ¬IsZero E) :
+    ∃ (F : HNFiltration C s.P E) (hn : 0 < F.n),
+      F.phiPlus C hn = s.phiPlus C E hE ∧
+        F.phiMinus C hn = s.phiMinus C E hE := by
+  obtain ⟨F, hn, hfirst, hlast⟩ := s.exists_hn_nonzero_boundaries C hE
+  exact ⟨F, hn, (s.phiPlus_eq C E hE F hn hfirst).symm,
+    (s.phiMinus_eq C E hE F hn hlast).symm⟩
+
 end BridgelandStabLean.Foundation

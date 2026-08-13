@@ -325,6 +325,7 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Foundation.Slicing.exists_hn_nonzero_first
 #print axioms BridgelandStabLean.Foundation.HNFiltration.dropLast
 #print axioms BridgelandStabLean.Foundation.Slicing.exists_hn_nonzero_last
+#print axioms BridgelandStabLean.Foundation.Slicing.exists_hn_nonzero_boundaries
 #print axioms BridgelandStabLean.Foundation.HNFiltration.firstFactor_hom_chain_eq_zero
 #print axioms BridgelandStabLean.Foundation.HNFiltration.firstFactor_isZero_of_hom_eq_zero
 #print axioms BridgelandStabLean.Foundation.HNFiltration.phiPlus_le_of_firstFactor_nonzero
@@ -337,6 +338,9 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Foundation.Slicing.phiPlus_eq
 #print axioms BridgelandStabLean.Foundation.Slicing.phiMinus_eq
 #print axioms BridgelandStabLean.Foundation.Slicing.phiMinus_le_phiPlus
+#print axioms BridgelandStabLean.Foundation.Slicing.phiPlus_eq_of_semistable
+#print axioms BridgelandStabLean.Foundation.Slicing.phiMinus_eq_of_semistable
+#print axioms BridgelandStabLean.Foundation.Slicing.exists_hn_intrinsic_width
 #print axioms BridgelandStabLean.Foundation.Slicing.leProp_shift
 #print axioms BridgelandStabLean.Foundation.Slicing.gtProp_shift
 #print axioms BridgelandStabLean.Foundation.Slicing.ltProp_shift

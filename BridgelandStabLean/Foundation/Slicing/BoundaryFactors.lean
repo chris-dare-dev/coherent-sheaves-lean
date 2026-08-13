@@ -189,4 +189,35 @@ theorem Slicing.exists_hn_nonzero_last (s : Slicing C) {E : C} (hE : ¬IsZero E)
         omega
       · exact ⟨G, hn, hlast⟩
 
+/-- A nonzero object admits one HN filtration with both boundary factors nonzero. -/
+theorem Slicing.exists_hn_nonzero_boundaries (s : Slicing C) {E : C} (hE : ¬IsZero E) :
+    ∃ (F : HNFiltration C s.P E) (hn : 0 < F.n),
+      ¬IsZero (F.factor ⟨0, hn⟩) ∧
+        ¬IsZero (F.factor ⟨F.n - 1, by omega⟩) := by
+  obtain ⟨F, hF, hfirst⟩ := s.exists_hn_nonzero_first C hE
+  suffices hmain : ∀ m (G : HNFiltration C s.P E), G.n ≤ m →
+      ∀ (hn : 0 < G.n), ¬IsZero (G.factor ⟨0, hn⟩) →
+        ∃ (H : HNFiltration C s.P E) (hH : 0 < H.n),
+          ¬IsZero (H.factor ⟨0, hH⟩) ∧
+            ¬IsZero (H.factor ⟨H.n - 1, by omega⟩) from
+    hmain F.n F le_rfl hF hfirst
+  intro m
+  induction m with
+  | zero =>
+      intro G hG hn
+      omega
+  | succ m ih =>
+      intro G hG hn hGfirst
+      by_cases hlast : IsZero (G.factor ⟨G.n - 1, by omega⟩)
+      · have htwo : 1 < G.n := by
+          by_contra h
+          push Not at h
+          have hi : (⟨0, hn⟩ : Fin G.n) = ⟨G.n - 1, by omega⟩ := Fin.ext (by omega)
+          rw [hi] at hGfirst
+          exact hGfirst hlast
+        apply ih (G.dropLast C htwo hlast) (by change G.n - 1 ≤ m; omega)
+          (by change 0 < G.n - 1; omega)
+        exact hGfirst
+      · exact ⟨G, hn, hGfirst, hlast⟩
+
 end BridgelandStabLean.Foundation
