@@ -172,6 +172,20 @@ noncomputable def IsStrictMono.normalMono (hf : IsStrictMono f) : NormalMono f w
   w := cokernel.condition f
   isLimit := hf.isLimitKernelFork
 
+/-- Every isomorphism is a strict monomorphism. -/
+theorem isStrictMono_of_isIso [IsIso f] : IsStrictMono f := by
+  apply isStrictMono_of_isLimitKernelFork
+  have hk : cokernel.π f = 0 := (isZero_cokernel_of_epi f).eq_of_tgt _ _
+  refine KernelFork.IsLimit.ofι' f (by simp [hk]) (fun {A} k _ ↦ ?_)
+  exact ⟨k ≫ inv f, by simp [Category.assoc]⟩
+
+/-- Every isomorphism is a strict epimorphism. -/
+theorem isStrictEpi_of_isIso [IsIso f] : IsStrictEpi f := by
+  apply isStrictEpi_of_isColimitCokernelCofork
+  have hk : kernel.ι f = 0 := (isZero_kernel_of_mono f).eq_of_src _ _
+  refine CokernelCofork.IsColimit.ofπ' f (by simp [hk]) (fun {A} k _ ↦ ?_)
+  exact ⟨inv f ≫ k, by simp⟩
+
 /-- A strict epimorphism which is also monic is an isomorphism. -/
 theorem IsStrictEpi.isIso (hf : IsStrictEpi f) [Mono f] : IsIso f := by
   letI : Epi f := hf.epi
@@ -215,6 +229,24 @@ theorem isStrictMono_of_normalMono [hf : NormalMono f] : IsStrictMono f := by
     isKernelOfComp (f := cokernel.π f) g' hf.g hf.isLimit
       (cokernel.condition f) (cokernel.π_desc f hf.g hf.w)
   exact isStrictMono_of_isLimitKernelFork hlim
+
+/-- A strict epimorphism supplies a regular epimorphism witness. -/
+noncomputable def IsStrictEpi.regularEpi (hf : IsStrictEpi f) : RegularEpi f :=
+  hf.normalEpi.regularEpi f
+
+/-- Every strict epimorphism is strong. -/
+theorem IsStrictEpi.strongEpi (hf : IsStrictEpi f) : StrongEpi f := by
+  have := isRegularEpi_of_regularEpi hf.regularEpi
+  infer_instance
+
+/-- A strict monomorphism supplies a regular monomorphism witness. -/
+noncomputable def IsStrictMono.regularMono (hf : IsStrictMono f) : RegularMono f :=
+  hf.normalMono.regularMono f
+
+/-- Every strict monomorphism is strong. -/
+theorem IsStrictMono.strongMono (hf : IsStrictMono f) : StrongMono f := by
+  have := isRegularMono_of_regularMono hf.regularMono
+  infer_instance
 
 end
 
