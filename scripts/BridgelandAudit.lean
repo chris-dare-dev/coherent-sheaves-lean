@@ -362,6 +362,15 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Foundation.Deformation.WideSectorFiniteLength
 #print axioms BridgelandStabLean.Foundation.Deformation.exists_wideSectorRadius
 #print axioms BridgelandStabLean.Foundation.Deformation.exists_sectorRadius
+#print axioms BridgelandStabLean.Foundation.Deformation.rotatedIm
+#print axioms BridgelandStabLean.Foundation.Deformation.rotatedIm_polar
+#print axioms BridgelandStabLean.Foundation.Deformation.rotatedIm_eq_norm_mul_sin
+#print axioms BridgelandStabLean.Foundation.Deformation.rotatedIm_eq_zero_of_relativePhase_eq
+#print axioms BridgelandStabLean.Foundation.Deformation.relativePhase_gt_of_rotatedIm_pos
+#print axioms BridgelandStabLean.Foundation.Deformation.relativePhase_lt_of_rotatedIm_neg
+#print axioms BridgelandStabLean.Foundation.Deformation.relativePhase_seesaw
+#print axioms BridgelandStabLean.Foundation.Deformation.relativePhase_seesaw_strict
+#print axioms BridgelandStabLean.Foundation.Deformation.relativePhase_seesaw_dual
 #print axioms BridgelandStabLean.Compatibility.BridgelandStability.Deformation.relativePhase_eq_wPhaseOf
 
 #print axioms BridgelandStabLean.Foundation.semiClosedUpperHalfPlane

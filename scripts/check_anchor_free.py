@@ -37,6 +37,7 @@ ANCHOR_FREE = [
     "BridgelandStabLean.Foundation.Deformation.RelativePhase",
     "BridgelandStabLean.Foundation.Deformation.NearIdentity",
     "BridgelandStabLean.Foundation.Deformation.LocalFiniteness",
+    "BridgelandStabLean.Foundation.Deformation.PhaseArithmetic",
     "BridgelandStabLean.Foundation.Slicing.PhaseBounds",
     "BridgelandStabLean.Foundation.Slicing.FiltrationOperations",
     "BridgelandStabLean.Foundation.Slicing.PhaseTruncation",

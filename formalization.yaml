@@ -896,14 +896,16 @@ fidelity:
     centres. It also proves the near-identity argument estimate and the
     resulting quantitative phase-perturbation bound. Owner local finiteness
     is also rescaled into the thin and wide finite-length sector witnesses
-    used by the deformation construction. The compatibility
+    used by the deformation construction. Rotated imaginary parts are
+    expressed through relative phase, yielding positive/negative sign tests
+    and the strict and non-strict phase see-saw lemmas for sums. The compatibility
     boundary records definitional agreement with the retained wPhaseOf
     representation while every mathematical proof lives in the owner
-    namespace. The census reports 2193 authored declarations,
+    namespace. The census reports 2202 authored declarations,
     126 private declarations, and 224 structure-field projections. Audit
-    issues 1848 commands, of which 1296 records are theorems, 60 are
-    structures, and 487 are other non-theorems; no authored public declaration
-    remains outside the hand audit. All 19 owner foundation modules are
+    issues 1857 commands, of which 1304 records are theorems, 60 are
+    structures, and 488 are other non-theorems; no authored public declaration
+    remains outside the hand audit. All 20 owner foundation modules are
     import-level anchor-free. The direct vendor-import inventory remains
     frozen at 28.
 
