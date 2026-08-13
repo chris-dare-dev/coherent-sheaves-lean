@@ -85,6 +85,7 @@ generated_by: { agent: claude, at: "2026-08-13" }
 generations:
   - { rev: 1, at: "2026-08-13", note: "Track proposed. Nothing materialized: every gh_milestone and gh_issue is null, and no label, milestone, issue, or project view exists yet. Materialization is dg-enhancements-e0." }
   - { rev: 2, at: "2026-08-13", note: "Partially materialized: eight labels created, milestones #19-#24 created, and the two DG0 epics filed as #328 and #329. DG1-DG5 epics remain unfiled by design. Project views and fields are still pending the project scope on the gh token." }
+  - { rev: 3, at: "2026-08-13", note: "Source pins landed: five zero-claim coverage maps (1312.5619v3, 1507.05509v5, 2101.04404v1, 2402.04605v1, 2407.05946v2), each hashed against the PDF as served on 2026-08-13 and with section titles read from that PDF. registry/README.md documents all five. formalization.yaml and registry/bridgeland2007.json untouched." }
 retired: []
 
 # GitHub milestones are roadmap phases. Epic issues live inside them, and

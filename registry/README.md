@@ -50,6 +50,43 @@ with:
 python scripts/check_coverage_map.py registry/coverage-2607.28411.json
 ```
 
+## The five dg-enhancement coverage maps — zero-claim skeletons
+
+`.claude/roadmap/dg-enhancements.yaml` reads five Canonaco–Stellari-school
+papers, and issue #328 pins each of them before any issue body cites a section
+by memory. Every part and every near-term coordinate in all five is `target`;
+none of them has ever held another status.
+
+| file | pinned | what it is to this repository |
+|---|---|---|
+| `coverage-1312.5619.json` | v3, Adv. Math. 277 (2015) | Internal Homs in Hqe. The furthest out of reach — pinned so the parked epic's un-park trigger points at something concrete. |
+| `coverage-1507.05509.json` | v5, JEMS 20 (2018) | Uniqueness for the derived category of a Grothendieck category. §2.1 is the track's most-read page: it is where the vocabulary DG1 needs is collected. |
+| `coverage-2101.04404.json` | v1 | Uniqueness of enhancements, Theorems A and B. The paper DG2 and DG5 are written against. |
+| `coverage-2402.04605.json` | v1 | Subcategories of weakly approximable triangulated categories. Vocabulary only; nothing here enters the library. |
+| `coverage-2407.05946.json` | v2, Boll. UMI | The survey. A reading entry point, and the weakest possible thing to map a formalization against. |
+
+Validate them the same way, one path per run:
+
+```sh
+for f in registry/coverage-{1312.5619,1507.05509,2101.04404,2402.04605,2407.05946}.json; do
+  python scripts/check_coverage_map.py "$f"
+done
+```
+
+Three things about these five that are not true of the two maps above:
+
+- **The front/body split is editorial.** None of these papers declares Parts, so
+  the schema's per-part status is hung on a two-element grouping this repository
+  invented. Each map says so in its own `parts[0].note`. Do not read `part: "body"`
+  as a claim about the source's structure.
+- **Section titles were read from the pinned PDF**, with `pdftotext -layout`, not
+  from ar5iv or arXiv HTML. Where a title contains typography JSON cannot carry
+  safely (`T^b`, `D^?qc(X)`), it is transliterated and the PDF stays authoritative.
+- **`coverage-2402.04605.json` records two author lists.** arXiv metadata names
+  four authors; the PDF title page names three "with an appendix by Christian
+  Haesemeyer". The arXiv list is the identity pin, the title page is the
+  attribution, and `source.author_note` says which is which.
+
 `kind_label` is a free per-topic string and `mfc lint` checks it against exactly
 the list you pass here, so **a new label must be added to this command in the
 same commit that introduces it**. Four are in use:
