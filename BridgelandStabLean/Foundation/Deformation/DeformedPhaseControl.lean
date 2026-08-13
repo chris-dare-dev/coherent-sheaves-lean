@@ -202,6 +202,28 @@ theorem skewedPhase_mem_expanded_interval
     exact hpUpper_lt
   exact ⟨hlower, hupper⟩
 
+/-- Two owner skewed functions built from the same perturbed charge select the
+same phase whenever the charge is nonzero and one selected phase lies on the
+other's branch. -/
+theorem skewedPhase_eq_of_mem_branch
+    (σ : StabilityCondition.WithClassMap C κ)
+    (W : Λ →+ ℂ) {r : ℝ} (hr0 : 0 ≤ r) (hr1 : r < 1)
+    (hW : stabilitySeminorm C σ (W - σ.Z) ≤ ENNReal.ofReal r)
+    {a b c d : ℝ} (hab : a < b) (hcd : c < d) {E : C}
+    (hcharge : W (classOf C κ E) ≠ 0)
+    (hbranch :
+      (skewedStabilityFunctionOfSeminormLtOne C σ W hr0 hr1 hW hab).phase E ∈
+        Set.Ioc
+          ((skewedStabilityFunctionOfSeminormLtOne C σ W hr0 hr1 hW hcd).α - 1)
+          ((skewedStabilityFunctionOfSeminormLtOne C σ W hr0 hr1 hW hcd).α + 1)) :
+    (skewedStabilityFunctionOfSeminormLtOne C σ W hr0 hr1 hW hab).phase E =
+      (skewedStabilityFunctionOfSeminormLtOne C σ W hr0 hr1 hW hcd).phase E := by
+  let F := skewedStabilityFunctionOfSeminormLtOne C σ W hr0 hr1 hW hab
+  let G := skewedStabilityFunctionOfSeminormLtOne C σ W hr0 hr1 hW hcd
+  change relativePhase (W (classOf C κ E)) F.α =
+    relativePhase (W (classOf C κ E)) G.α
+  exact relativePhase_eq_of_mem hcharge F.α G.α hbranch
+
 end StabilityCondition.WithClassMap
 
 end BridgelandStabLean.Foundation
