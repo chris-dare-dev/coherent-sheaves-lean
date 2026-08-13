@@ -127,6 +127,51 @@ theorem skewedSemistable_of_controlled_subinterval
     exact σ.skewedPhase_eq_of_common_interval C W hr0 hr1 hW hcd hab hε hε2
       hthinTarget hsin hleft hright hK hKne
 
+/-- Two phase-enveloping witness intervals admit their intersection as a
+common thin presentation of the first skewed-semistability proof. -/
+theorem skewedSemistable_on_witness_intersection
+    (σ : StabilityCondition.WithClassMap C κ)
+    (W : Λ →+ ℂ) {r : ℝ} (hr0 : 0 ≤ r) (hr1 : r < 1)
+    (hW : stabilitySeminorm C σ (W - σ.Z) ≤ ENNReal.ofReal r)
+    {a b c d ε ψ : ℝ} (hab : a < b) (_hcd : c < d)
+    (hε : 0 < ε) (hε2 : ε ≤ 1 / 2)
+    (hthin : b - a + 2 * ε < 1)
+    (hsin : stabilitySeminorm C σ (W - σ.Z) <
+      ENNReal.ofReal (Real.sin (Real.pi * ε)))
+    (haψ : a + ε ≤ ψ) (hψb : ψ ≤ b - ε)
+    (hcψ : c + ε ≤ ψ) (hψd : ψ ≤ d - ε)
+    {E : C} (hI : σ.slicing.intervalProp C c d E)
+    (hSS : (skewedStabilityFunctionOfSeminormLtOne C σ W hr0 hr1 hW hab).IsSemistable
+      E ψ) :
+    (skewedStabilityFunctionOfSeminormLtOne C σ W hr0 hr1 hW
+      (show max a c < min b d by
+        have hmax : max a c + ε ≤ ψ := by
+          have hmax' : max a c ≤ ψ - ε := max_le (by linarith) (by linarith)
+          linarith
+        have hmin : ψ ≤ min b d - ε := by
+          have hmin' : ψ + ε ≤ min b d := le_min (by linarith) (by linarith)
+          linarith
+        linarith)).IsSemistable E ψ := by
+  have hmax : max a c + ε ≤ ψ := by
+    have hmax' : max a c ≤ ψ - ε := max_le (by linarith) (by linarith)
+    linarith
+  have hmin : ψ ≤ min b d - ε := by
+    have hmin' : ψ + ε ≤ min b d := le_min (by linarith) (by linarith)
+    linarith
+  have hinter : max a c < min b d := by linarith
+  have hthinInter : min b d - max a c + 2 * ε < 1 := by
+    have hlen : min b d - max a c + 2 * ε ≤ b - a + 2 * ε := by
+      linarith [min_le_left b d, le_max_left a c]
+    exact hlen.trans_lt hthin
+  apply σ.skewedSemistable_of_controlled_subinterval C W hr0 hr1 hW hab hinter
+    hε hε2 hthinInter hsin
+  · linarith [le_max_left a c]
+  · linarith [min_le_left b d]
+  · exact le_max_left a c
+  · exact min_le_left b d
+  · exact σ.slicing.intervalProp_intersection C hSS.interval hI
+  · exact hSS
+
 /-- A deformed-slice witness may be replaced by a nested compatible thin
 interval using only endpoint inequalities. -/
 theorem deformedPred_rewitness_nested_interval
