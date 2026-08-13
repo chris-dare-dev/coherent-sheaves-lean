@@ -50,7 +50,11 @@ discharges that boundary; they do not silently turn assumptions into theorems.
 `BridgelandStabLean/Foundation` is the bottom-up replacement boundary for the vendored
 stability implementation. It now owns Postnikov and HN filtrations, slicings,
 triangulated Grothendieck groups, pre-stability conditions, thin interval categories,
-intrinsic admissible finite length, local finiteness, and full stability conditions.
+intrinsic admissible finite length, local finiteness, full stability conditions,
+phase bounds, elementary filtration operations, and the phase-truncation interface
+that constructs the slicing t-structure. The canonical truncation triangle is
+constructed from HN filtrations by octahedral induction, and the resulting
+t-structure is proved bounded with heart `P((0, 1])`.
 Owner-authored definitions depend directly on Mathlib.
 Conversions involving Apache-2.0 declarations live only under
 `BridgelandStabLean/Compatibility/BridgelandStability`; downstream modules migrate to the

@@ -6,6 +6,8 @@ import BridgelandStabLean.Foundation.PostnikovTower
 import Mathlib.CategoryTheory.ObjectProperty.ContainsZero
 import Mathlib.CategoryTheory.Triangulated.Triangulated
 import Mathlib.Data.Real.Basic
+import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.Ring
 
 /-!
 # Owner-authored Harder--Narasimhan filtrations and slicings
@@ -77,5 +79,65 @@ theorem Slicing.shift (s : Slicing C) (φ : ℝ) (X : C) (h : s.P φ X) :
 theorem Slicing.unshift (s : Slicing C) (φ : ℝ) (X : C)
     (h : s.P (φ + 1) (X⟦(1 : ℤ)⟧)) : s.P φ X :=
   (s.shift_iff φ X).mpr h
+
+/-- Iterating the slicing axiom shifts a semistable object by a natural
+number and adds that number to its phase. -/
+theorem Slicing.shift_nat (s : Slicing C) (φ : ℝ) (X : C) (n : ℕ) :
+    s.P φ X → s.P (φ + (n : ℝ)) (X⟦(n : ℤ)⟧) := by
+  induction n with
+  | zero =>
+      intro h
+      simp only [Nat.cast_zero, add_zero]
+      exact (s.P φ).prop_of_iso ((shiftFunctorZero C ℤ).app X).symm h
+  | succ n ih =>
+      intro h
+      have h' := (s.shift_iff (φ + ↑n) ((shiftFunctor C (↑n : ℤ)).obj X)).mp (ih h)
+      have phase : φ + ↑n + 1 = φ + (↑(n + 1) : ℝ) := by push_cast; ring
+      rw [phase] at h'
+      exact (s.P _).prop_of_iso
+        ((shiftFunctorAdd' C (↑n : ℤ) 1 ((↑n : ℤ) + 1) (by omega)).app X).symm h'
+
+/-- Inverse form of `Slicing.shift_nat`. -/
+theorem Slicing.unshift_nat (s : Slicing C) (φ : ℝ) (X : C) (n : ℕ) :
+    s.P (φ + (n : ℝ)) (X⟦(n : ℤ)⟧) → s.P φ X := by
+  induction n with
+  | zero =>
+      intro h
+      simp only [Nat.cast_zero, add_zero] at h
+      exact (s.P φ).prop_of_iso ((shiftFunctorZero C ℤ).app X) h
+  | succ n ih =>
+      intro h
+      apply ih
+      have phase : (↑(n + 1) : ℝ) = ↑n + 1 := by push_cast; ring
+      rw [phase] at h
+      have h' := (s.P _).prop_of_iso
+        ((shiftFunctorAdd' C (↑n : ℤ) 1 ((↑n : ℤ) + 1) (by omega)).app X) h
+      rw [← add_assoc] at h'
+      exact (s.shift_iff (φ + ↑n) ((shiftFunctor C (↑n : ℤ)).obj X)).mpr h'
+
+/-- Shifting by any integer adds that integer to the phase. -/
+theorem Slicing.shift_int (s : Slicing C) (φ : ℝ) (X : C) (n : ℤ) :
+    s.P φ X ↔ s.P (φ + n) (X⟦n⟧) := by
+  cases n with
+  | ofNat m => exact ⟨s.shift_nat C φ X m, s.unshift_nat C φ X m⟩
+  | negSucc m =>
+      let addIso :=
+        (shiftFunctorAdd' C (Int.negSucc m) ((m + 1 : ℕ) : ℤ) 0 (by omega)).app X
+      let zeroIso := (shiftFunctorZero C ℤ).app X
+      constructor
+      · intro h
+        have h₀ := (s.P φ).prop_of_iso zeroIso.symm h
+        have h₁ := (s.P φ).prop_of_iso addIso h₀
+        have phase : φ = φ + ↑(Int.negSucc m) + ((m + 1 : ℕ) : ℝ) := by
+          simp [Int.negSucc_eq]; ring
+        rw [phase] at h₁
+        exact s.unshift_nat C _ _ (m + 1) h₁
+      · intro h
+        have h₁ := s.shift_nat C _ _ (m + 1) h
+        have phase : φ + ↑(Int.negSucc m) + ((m + 1 : ℕ) : ℝ) = φ := by
+          simp [Int.negSucc_eq]; ring
+        rw [phase] at h₁
+        have h₂ := (s.P φ).prop_of_iso addIso.symm h₁
+        exact (s.P φ).prop_of_iso zeroIso h₂
 
 end BridgelandStabLean.Foundation
