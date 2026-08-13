@@ -553,6 +553,7 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Foundation.midpoint_image_window_thin
 #print axioms BridgelandStabLean.Foundation.Slicing.mem_phaseShiftHeart_of_midpoint_left
 #print axioms BridgelandStabLean.Foundation.Slicing.mem_phaseShiftHeart_of_midpoint_right
+#print axioms BridgelandStabLean.Foundation.Slicing.exists_heart_image_factorisation_windows
 #print axioms BridgelandStabLean.Foundation.slicingDist
 #print axioms BridgelandStabLean.Foundation.slicingDistTerm_le
 #print axioms BridgelandStabLean.Foundation.phiPlusDist_le
