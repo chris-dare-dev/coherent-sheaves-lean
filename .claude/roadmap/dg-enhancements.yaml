@@ -2,7 +2,7 @@ schema: roadmap/1
 slug: dg-enhancements
 project: derived-alg-geo-lean
 title: "DG enhancements — the H⁰ seam between dg categories and classical derived categories"
-status: proposed
+status: active
 phase: sequenced
 brief: |
   Open a second track alongside `stability-families`. Where that track climbs
@@ -84,6 +84,7 @@ goal:
 generated_by: { agent: claude, at: "2026-08-13" }
 generations:
   - { rev: 1, at: "2026-08-13", note: "Track proposed. Nothing materialized: every gh_milestone and gh_issue is null, and no label, milestone, issue, or project view exists yet. Materialization is dg-enhancements-e0." }
+  - { rev: 2, at: "2026-08-13", note: "Partially materialized: eight labels created, milestones #19-#24 created, and the two DG0 epics filed as #328 and #329. DG1-DG5 epics remain unfiled by design. Project views and fields are still pending the project scope on the gh token." }
 retired: []
 
 # GitHub milestones are roadmap phases. Epic issues live inside them, and
@@ -94,7 +95,7 @@ retired: []
 # tracker is not yet aware of it.
 items:
   - id: dg-enhancements-m0
-    gh_milestone: null
+    gh_milestone: 19
     kind: milestone
     title: "DG0 — Boundary, pins, and the definition decision"
     status: planned
@@ -109,7 +110,7 @@ items:
       - "No Lean declaration lands in DG0. If one is written to test elaboration, it lives in a throwaway branch named in the reconnaissance note and is not merged."
 
   - id: dg-enhancements-e0
-    gh_issue: null
+    gh_issue: 328
     gh_sub_issues: []
     kind: epic
     parent: dg-enhancements-m0
@@ -122,7 +123,7 @@ items:
     labels: [area:governance, type:infra]
 
   - id: dg-enhancements-e1
-    gh_issue: null
+    gh_issue: 329
     gh_sub_issues: []
     kind: epic
     parent: dg-enhancements-m0
@@ -135,7 +136,7 @@ items:
     labels: [area:dg, area:governance, type:spike, research]
 
   - id: dg-enhancements-m1
-    gh_milestone: null
+    gh_milestone: 20
     kind: milestone
     title: "DG1 — The dg category, its H⁰, and the complexes model"
     status: planned
@@ -189,7 +190,7 @@ items:
     labels: [area:dg, area:derived, bridge:h0-seam, type:feature, source:1507.05509]
 
   - id: dg-enhancements-m2
-    gh_milestone: null
+    gh_milestone: 21
     kind: milestone
     title: "DG2 — Pretriangulated dg categories and the enhancement structure"
     status: planned
@@ -242,7 +243,7 @@ items:
     labels: [area:dg, area:derived, bridge:h0-seam, type:feature, source:1507.05509]
 
   - id: dg-enhancements-m3
-    gh_milestone: null
+    gh_milestone: 22
     kind: milestone
     title: "DG3 — The derived enhancement and the classical seam"
     status: planned
@@ -308,7 +309,7 @@ items:
     labels: [area:dg, parked, research, source:1507.05509]
 
   - id: dg-enhancements-m4
-    gh_milestone: null
+    gh_milestone: 23
     kind: milestone
     title: "DG4 — Transport: t-structures, slicings, and stability across the seam"
     status: planned
@@ -365,7 +366,7 @@ items:
       roadmaps: [stability-families]
 
   - id: dg-enhancements-m5
-    gh_milestone: null
+    gh_milestone: 24
     kind: milestone
     title: "DG5 — Uniqueness of enhancements: the statement layer"
     status: planned
