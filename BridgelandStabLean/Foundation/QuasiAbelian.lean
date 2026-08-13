@@ -460,4 +460,49 @@ theorem isStrictNoetherianObject_of_isNoetherianObject {X : C}
 end
 
 
+section
+
+variable {D : Type u} [Category.{v} D] [Abelian D]
+
+variable {X : D}
+
+/-- A strict-Artinian object in an abelian category is Artinian. -/
+theorem isArtinianObject_of_isStrictArtinianObject [IsStrictArtinianObject X] :
+    IsArtinianObject X := by
+  rw [isArtinianObject_iff_antitone_chain_condition]
+  intro f
+  let g : ℕ →o (StrictSubobject X)ᵒᵈ :=
+    ⟨fun n ↦ OrderDual.toDual ⟨f n, by
+        exact (isStrictSubobject_iff _).2
+          (isStrictMono_of_mono (Subobject.arrow (f n)))⟩,
+      fun i j hij ↦ f.2 hij⟩
+  haveI : WellFoundedGT (StrictSubobject X)ᵒᵈ := by
+    rw [wellFoundedGT_dual_iff]
+    infer_instance
+  obtain ⟨n, hn⟩ := WellFoundedGT.monotone_chain_condition g
+  exact ⟨n, fun m hm ↦ by
+    have h := congrArg
+      (fun S : (StrictSubobject X)ᵒᵈ => OrderDual.toDual S.ofDual.1) (hn m hm)
+    change OrderDual.toDual (f n) = OrderDual.toDual (f m) at h
+    exact h⟩
+
+/-- A strict-Noetherian object in an abelian category is Noetherian. -/
+theorem isNoetherianObject_of_isStrictNoetherianObject
+    [IsStrictNoetherianObject X] : IsNoetherianObject X := by
+  rw [isNoetherianObject_iff_monotone_chain_condition]
+  intro f
+  let g : ℕ →o StrictSubobject X :=
+    ⟨fun n ↦ ⟨f n, by
+        exact (isStrictSubobject_iff _).2
+          (isStrictMono_of_mono (Subobject.arrow (f n)))⟩,
+      fun i j hij ↦ f.2 hij⟩
+  obtain ⟨n, hn⟩ := WellFoundedGT.monotone_chain_condition g
+  exact ⟨n, fun m hm ↦ by
+    have h := congrArg (fun S : StrictSubobject X => S.1) (hn m hm)
+    change f n = f m at h
+    exact h⟩
+
+end
+
+
 end BridgelandStabLean.Foundation
