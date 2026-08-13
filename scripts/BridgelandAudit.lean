@@ -427,6 +427,10 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Foundation.Slicing.third_intervalProp_of_triangle
 #print axioms BridgelandStabLean.Foundation.Slicing.intervalProp_of_mono_leftHeart
 #print axioms BridgelandStabLean.Foundation.Slicing.intervalProp_of_epi_rightHeart
+#print axioms BridgelandStabLean.Foundation.Slicing.intervalCat_hasKernel
+#print axioms BridgelandStabLean.Foundation.Slicing.intervalCat_hasKernels
+#print axioms BridgelandStabLean.Foundation.Slicing.intervalCat_hasCokernel
+#print axioms BridgelandStabLean.Foundation.Slicing.intervalCat_hasCokernels
 #print axioms BridgelandStabLean.ForMathlib.CategoryTheory.Triangulated.TStructure.exists_distinguished_triangle_of_heart_epi
 #print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.skewedPhase_mem_enveloped_branch
 #print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.skewedPhase_gt_of_geProp

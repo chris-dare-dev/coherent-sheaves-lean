@@ -68,6 +68,7 @@ ANCHOR_FREE = [
     "BridgelandStabLean.Foundation.Slicing.CutoffTruncation",
     "BridgelandStabLean.Foundation.Slicing.BoundaryTruncation",
     "BridgelandStabLean.Foundation.Slicing.TwoHeartEmbedding",
+    "BridgelandStabLean.Foundation.Slicing.IntervalPreabelian",
     "BridgelandStabLean.Foundation.StabilityFunction.Basic",
     "BridgelandStabLean.Foundation.StabilityFunction.HarderNarasimhan",
     "BridgelandStabLean.Foundation.StabilityFunction.Subobject",
