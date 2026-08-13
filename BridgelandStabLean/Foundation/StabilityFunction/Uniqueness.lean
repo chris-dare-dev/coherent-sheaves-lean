@@ -395,4 +395,63 @@ theorem phiMinus_eq {Z : StabilityFunction A} {E : A}
 
 end AbelianHNFiltration
 
+namespace StabilityFunction
+
+/-- The intrinsic highest HN phase of a nonzero object. -/
+noncomputable def phiPlus (Z : StabilityFunction A) (hHN : Z.HasHNProperty)
+    (E : A) (hE : ¬IsZero E) : ℝ :=
+  (Classical.choice (hHN E hE)).phiPlus
+
+/-- The intrinsic lowest HN phase of a nonzero object. -/
+noncomputable def phiMinus (Z : StabilityFunction A) (hHN : Z.HasHNProperty)
+    (E : A) (hE : ¬IsZero E) : ℝ :=
+  (Classical.choice (hHN E hE)).phiMinus
+
+/-- The intrinsic highest phase agrees with every owner HN filtration. -/
+theorem phiPlus_eq_filtration (Z : StabilityFunction A) (hHN : Z.HasHNProperty)
+    {E : A} (hE : ¬IsZero E) (F : AbelianHNFiltration Z E) :
+    Z.phiPlus hHN E hE = F.phiPlus :=
+  (Classical.choice (hHN E hE)).phiPlus_eq F
+
+/-- The intrinsic lowest phase agrees with every owner HN filtration. -/
+theorem phiMinus_eq_filtration (Z : StabilityFunction A) (hHN : Z.HasHNProperty)
+    {E : A} (hE : ¬IsZero E) (F : AbelianHNFiltration Z E) :
+    Z.phiMinus hHN E hE = F.phiMinus :=
+  (Classical.choice (hHN E hE)).phiMinus_eq F
+
+/-- The intrinsic lowest HN phase is at most the intrinsic highest phase. -/
+theorem phiMinus_le_phiPlus (Z : StabilityFunction A) (hHN : Z.HasHNProperty)
+    (E : A) (hE : ¬IsZero E) :
+    Z.phiMinus hHN E hE ≤ Z.phiPlus hHN E hE := by
+  let F := Classical.choice (hHN E hE)
+  rw [Z.phiMinus_eq_filtration hHN hE F,
+    Z.phiPlus_eq_filtration hHN hE F]
+  exact F.phiMinus_le_phiPlus
+
+/-- A nonzero object is semistable exactly when its intrinsic HN phase
+interval degenerates to a point. -/
+theorem isSemistable_iff_phiPlus_eq_phiMinus (Z : StabilityFunction A)
+    (hHN : Z.HasHNProperty) (E : A) (hE : ¬IsZero E) :
+    Z.IsSemistable E ↔ Z.phiPlus hHN E hE = Z.phiMinus hHN E hE := by
+  let F := Classical.choice (hHN E hE)
+  rw [Z.phiPlus_eq_filtration hHN hE F,
+    Z.phiMinus_eq_filtration hHN hE F]
+  constructor
+  · intro hsemistable
+    have hn : F.n = 1 := F.n_eq_one_of_semistable hsemistable
+    apply congrArg F.phase
+    apply Fin.ext
+    lia
+  · intro hextrema
+    apply F.isSemistable_of_n_eq_one
+    by_contra hn
+    have hn_gt : 1 < F.n := by
+      have := F.nonempty
+      lia
+    have hlast_lt : F.phiMinus < F.phiPlus := by
+      exact F.phase_strictAnti (Fin.mk_lt_mk.mpr (by lia))
+    exact (ne_of_lt hlast_lt) hextrema.symm
+
+end StabilityFunction
+
 end BridgelandStabLean.Foundation
