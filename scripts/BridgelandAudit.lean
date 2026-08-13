@@ -460,6 +460,7 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Foundation.Deformation.SkewedStabilityFunction.phase_seesaw
 #print axioms BridgelandStabLean.Foundation.Deformation.SkewedStabilityFunction.phase_seesaw_strict
 #print axioms BridgelandStabLean.Foundation.Deformation.SkewedStabilityFunction.IsSemistable
+#print axioms BridgelandStabLean.Foundation.Deformation.SkewedStabilityFunction.IsSemistable.phase_le_of_quotient_triangle
 #print axioms BridgelandStabLean.Foundation.Deformation.SkewedStabilityFunction.IsSemistable.phase_mem_Ioc
 #print axioms BridgelandStabLean.Foundation.Deformation.SkewedStabilityFunction.IsSemistable.charge_polar
 #print axioms BridgelandStabLean.Foundation.Deformation.SkewedStabilityFunction.IsSemistable.ofIso
