@@ -82,5 +82,31 @@ lake exe emit --out /tmp/derived-alg-geo-emission.json
 pre-existing documentation/naming linter backlog is not blanket-suppressed by
 the merge; treat that as separate maintenance work.
 
+`scripts/gates.sh` runs that list in CI's order and prints one `GATE <name>:
+pass|FAIL` line per gate; `scripts/gates.sh fast` runs build, style, and the two
+axiom audits only.
+
 Review `git status` before staging. Keep transient `ROADMAP.md` and `HANDOFF.md`
 files outside Git.
+
+## Mathlib conventions
+
+`.claude/references/mathlib-style.md` is the standard: what CI already checks,
+what only a reviewer can check, and the deltas this repository keeps on purpose.
+Read it before writing Lean.
+
+`scripts/check_mathlib_style.py` runs after every `Write`/`Edit` of an
+owner-authored `.lean` file (see `.claude/settings.json`) and blocks on
+convention errors. It covers the gap CI leaves: `runLinter` is wired to
+`BridgelandStability` and `BridgelandStabLean` only, so `CohLean` and the
+umbrella are otherwise unlinted.
+
+The `mathlib-reviewer` agent reviews a branch diff for the conventions no script
+can check — names that do not transcribe their statement, and docstrings that
+restate the signature instead of explaining it.
+
+## Unattended runs
+
+The `formalize-issue` skill is one hands-off iteration: claim a ready issue,
+formalize on an `agent/` branch, run the gates, open a PR, halt. It never
+merges and never writes a `sorry`. Pair it with `/loop` for repeats.

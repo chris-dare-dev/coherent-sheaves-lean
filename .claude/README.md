@@ -13,6 +13,10 @@ still open, or the evidence a decision rests on.
 | `roadmap/contract-v1.yaml` | The track registry: milestones, epics, and their GitHub numbers. Schema mirrors arXMCP's `plans/*/roadmap.yaml` so one parser reads both. |
 | `notes/2026-08-04-*.md` | The four artifacts the 2026-08-04 workflows produced, verbatim. Dated because they are snapshots, not living docs. |
 | `open-questions.md` | The decisions blocking work, each with a GitHub issue. |
+| `references/mathlib-style.md` | The Mathlib conventions this repo holds itself to, and the deltas it keeps on purpose. The spec `agents/mathlib-reviewer.md` enforces. |
+| `agents/` | Repo-local subagents. One per file. |
+| `skills/` | Repo-local skills, one directory each. `formalize-issue` is the unattended iteration. |
+| `settings.json` | Hooks. Currently: the Mathlib-convention check on every Lean edit. |
 
 ## The artifacts in `notes/`
 
