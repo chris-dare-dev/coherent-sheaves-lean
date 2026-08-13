@@ -481,6 +481,26 @@ theorem maxDestabilizingSubobject_isSemistable (Z : StabilityFunction A)
     Z.IsSemistable (Z.maxDestabilizingSubobject hHN E hE : A) :=
   (Classical.choice (hHN E hE)).chain_one_isSemistable
 
+/-- A nonzero object is semistable exactly when its canonical maximally
+destabilizing subobject is the whole object. -/
+theorem maxDestabilizingSubobject_eq_top_iff_isSemistable
+    (Z : StabilityFunction A) (hHN : Z.HasHNProperty)
+    (E : A) (hE : ¬IsZero E) :
+    Z.maxDestabilizingSubobject hHN E hE = ⊤ ↔ Z.IsSemistable E := by
+  let F := Classical.choice (hHN E hE)
+  rw [Z.maxDestabilizingSubobject_eq_filtration hHN hE F]
+  constructor
+  · intro htop
+    have htopsemistable : Z.IsSemistable ((⊤ : Subobject E) : A) :=
+      htop ▸ F.chain_one_isSemistable
+    exact Z.isSemistable_of_iso (asIso (⊤ : Subobject E).arrow)
+      htopsemistable
+  · intro hEsemistable
+    have hn : F.n = 1 := F.n_eq_one_of_semistable hEsemistable
+    have hindex : (⟨1, by have := F.nonempty; lia⟩ : Fin (F.n + 1)) =
+        ⟨F.n, by lia⟩ := Fin.ext (by lia)
+    rw [hindex, F.chain_top]
+
 /-- The intrinsic highest HN phase of a nonzero object. -/
 noncomputable def phiPlus (Z : StabilityFunction A) (hHN : Z.HasHNProperty)
     (E : A) (hE : ¬IsZero E) : ℝ :=
