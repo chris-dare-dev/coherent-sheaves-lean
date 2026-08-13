@@ -74,6 +74,7 @@ ANCHOR_FREE = [
     "BridgelandStabLean.TStructure.Shift",
     "BridgelandStabLean.ForMathlib.CategoryTheory.ObjectProperty.FullSubcategory",
     "BridgelandStabLean.ForMathlib.CategoryTheory.Triangulated.TStructure.HeartAbelian",
+    "BridgelandStabLean.ForMathlib.CategoryTheory.Triangulated.TStructure.ImageFactorisation",
     "BridgelandStabLean.StabilityCondition.Weak.Tilting.Cohomology.Basic",
     "BridgelandStabLean.StabilityCondition.Weak.Tilting.Cohomology.Homological",
     "BridgelandStabLean.StabilityCondition.Weak.Tilting.Cohomology.Exactness",

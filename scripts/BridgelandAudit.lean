@@ -755,6 +755,7 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.ForMathlib.CategoryTheory.Triangulated.TStructure.heartAbelian
 #print axioms BridgelandStabLean.ForMathlib.CategoryTheory.Triangulated.TStructure.heart_biprod
 #print axioms BridgelandStabLean.ForMathlib.CategoryTheory.Triangulated.TStructure.heartFullSubcategoryAbelian
+#print axioms BridgelandStabLean.ForMathlib.CategoryTheory.Triangulated.TStructure.exists_image_factorisation_epi_triangle
 #print axioms BridgelandStabLean.ForMathlib.CategoryTheory.Triangulated.TStructure.heartFullSubcategory_shortExact_of_distTriang
 #print axioms BridgelandStabLean.ForMathlib.CategoryTheory.Triangulated.TStructure.truncGE_map_comp_descTruncGE
 #print axioms BridgelandStabLean.ForMathlib.CategoryTheory.Triangulated.TStructure.truncGE_map_comp_descTruncGE_assoc

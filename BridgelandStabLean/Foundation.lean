@@ -45,6 +45,7 @@ import BridgelandStabLean.Foundation.StabilityFunction.HarderNarasimhan
 import BridgelandStabLean.Foundation.StabilityFunction.Subobject
 import BridgelandStabLean.Foundation.StabilityFunction.PhaseGeometry
 import BridgelandStabLean.Foundation.StabilityFunction.Uniqueness
+import BridgelandStabLean.ForMathlib.CategoryTheory.Triangulated.TStructure.ImageFactorisation
 
 /-!
 # Repository-owned Bridgeland foundations
