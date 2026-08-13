@@ -172,6 +172,50 @@ noncomputable def IsStrictMono.normalMono (hf : IsStrictMono f) : NormalMono f w
   w := cokernel.condition f
   isLimit := hf.isLimitKernelFork
 
+/-- A strict epimorphism which is also monic is an isomorphism. -/
+theorem IsStrictEpi.isIso (hf : IsStrictEpi f) [Mono f] : IsIso f := by
+  letI : Epi f := hf.epi
+  have hk : kernel.ι f = 0 := (isZero_kernel_of_mono f).eq_of_src _ _
+  let s : Y ⟶ X :=
+    hf.isColimitCokernelCofork.desc
+      (CokernelCofork.ofπ (𝟙 X) (by simp [hk]))
+  have hs : f ≫ s = 𝟙 X :=
+    hf.isColimitCokernelCofork.fac
+      (CokernelCofork.ofπ (𝟙 X) (by simp [hk]))
+      Limits.WalkingParallelPair.one
+  letI : IsSplitMono f := IsSplitMono.mk' ⟨s, hs⟩
+  exact isIso_of_epi_of_isSplitMono f
+
+/-- A strict monomorphism which is also epic is an isomorphism. -/
+theorem IsStrictMono.isIso (hf : IsStrictMono f) [Epi f] : IsIso f := by
+  letI : Mono f := hf.mono
+  have hk : cokernel.π f = 0 := (isZero_cokernel_of_epi f).eq_of_tgt _ _
+  let s : Y ⟶ X :=
+    hf.isLimitKernelFork.lift
+      (KernelFork.ofι (𝟙 Y) (by simp [hk]))
+  have hs : s ≫ f = 𝟙 Y :=
+    hf.isLimitKernelFork.fac
+      (KernelFork.ofι (𝟙 Y) (by simp [hk]))
+      Limits.WalkingParallelPair.zero
+  letI : IsSplitEpi f := IsSplitEpi.mk' ⟨s, hs⟩
+  exact isIso_of_mono_of_isSplitEpi f
+
+/-- Every normal epimorphism is strict. -/
+theorem isStrictEpi_of_normalEpi [hf : NormalEpi f] : IsStrictEpi f := by
+  let g' : hf.W ⟶ kernel f := kernel.lift f hf.g hf.w
+  have hcolim : IsColimit (CokernelCofork.ofπ f (kernel.condition f)) :=
+    isCokernelOfComp (f := kernel.ι f) g' hf.g hf.isColimit
+      (kernel.condition f) (kernel.lift_ι f hf.g hf.w)
+  exact isStrictEpi_of_isColimitCokernelCofork hcolim
+
+/-- Every normal monomorphism is strict. -/
+theorem isStrictMono_of_normalMono [hf : NormalMono f] : IsStrictMono f := by
+  let g' : cokernel f ⟶ hf.Z := cokernel.desc f hf.g hf.w
+  have hlim : IsLimit (KernelFork.ofι f (cokernel.condition f)) :=
+    isKernelOfComp (f := cokernel.π f) g' hf.g hf.isLimit
+      (cokernel.condition f) (cokernel.π_desc f hf.g hf.w)
+  exact isStrictMono_of_isLimitKernelFork hlim
+
 end
 
 section
