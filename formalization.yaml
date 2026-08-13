@@ -856,6 +856,22 @@ fidelity:
     the vendor can yet be removed: the frozen direct-import inventory still
     contains 28 modules, including the compatibility boundary itself.
 
+    COUNT UPDATE (destination issue #228; owner Grothendieck and pre-stability
+    foundation), 2026-08-13. The second Mathlib-only foundation slice adds a
+    reusable three-term Grothendieck presentation, the triangulated `K₀` and
+    its universal property, zero/isomorphism/shift relations, Postnikov-factor
+    additivity, target-lattice class maps, functoriality under triangulated
+    functors, and owner pre-stability conditions. The compatibility boundary
+    proves a canonical additive equivalence with the retained quotient and
+    round-tripping pre-stability conversion after class-map transport. The
+    census reports 1926 authored declarations, 119 private declarations, and
+    205 structure-field projections. Audit issues 1604 commands, of which
+    1113 records are theorems, 55 are structures, and 434 are other
+    non-theorems; no authored public declaration remains outside the hand
+    audit. The direct vendor-import module inventory remains frozen at 28:
+    this slice establishes owned replacements and explicit equivalences but
+    does not disguise existing downstream vendor types through aliases.
+
     COUNT UPDATE (Wall lane, the nested wall theorem), 2026-08-07. The 13
     additional records are the orthogonality identity minor_orth, the three
     cross terms crossAB/crossAC/crossBC with their three antisymmetry lemmas,

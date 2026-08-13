@@ -42,7 +42,8 @@ The other 30 were compiler-generated names the sweep did not recognise --
 `<Struct>.ctorIdx`, `<Struct>.mk.inj`, `<def>.congr_simp`, and `ext'_iff` from
 `@[ext] theorem ext'`. Each family was then grepped for in
 `BridgelandStabLean/` and occurs there **zero** times, so none is a declaration
-anyone wrote or could list. `scripts/Census.lean` now filters all four.
+anyone wrote or could list. A later census correction added the likewise
+source-absent `hcongr_*` family; `scripts/Census.lean` now filters all five.
 
 The lesson is not that a number moved. It is that **a filter is itself a claim
 about what Lean emits, and it needs the same check as any other claim here.**
@@ -58,13 +59,13 @@ to **488**. Both were right against the filter of the day, and both are
 superseded here -- the 821 in particular counted the 30 generated names
 described above. **Re-run the command; do not adjust the numbers.**
 
-**THE GAP IS NOW ZERO, re-measured while adding the issue #226 owner
-foundation on 2026-08-12.** Every
+**THE GAP IS NOW ZERO, re-measured while adding the issue #228 owner
+Grothendieck and pre-stability foundation on 2026-08-13.** Every
 public declaration in this library that is not a structure field projection is
 named below. Be precise about what that does and does not mean -- three of the
 four qualifications in this comment are unaffected by it:
 
-* it does NOT cover the **116 private** declarations, which remain structurally
+* it does NOT cover the **119 private** declarations, which remain structurally
   unlistable;
 * it does NOT make this file a gate -- `#print axioms` still exits 0 on
   `[sorryAx]`, and nothing here fails on a missing name;
@@ -72,18 +73,18 @@ four qualifications in this comment are unaffected by it:
   green without an entry here. Zero is a measurement taken at a commit, not a
   property the build maintains.
 
-* It issues **1531** audit commands for **1529** distinct names. The environment holds **1842** authored
-  declarations under `BridgelandStabLean.*`, so **313 are outside this gate**,
+* It issues **1604** audit commands for **1602** distinct names. The environment holds **1926** authored
+  declarations under `BridgelandStabLean.*`, so **324 are outside this gate**,
   all of them private or projections. ("Authored" excludes constructors,
-  recursors, `casesOn`, matchers, equation lemmas, internal names, and the four
+  recursors, `casesOn`, matchers, equation lemmas, internal names, and the five
   generated families named above -- none of which anybody writes or could
   list.)
-* **116 are `private`** -- 100 of them theorems -- and are *structurally*
+* **119 are `private`** -- 103 of them theorems -- and are *structurally*
   unlistable: Lean mangles a private name to `_private.<Module>.<n>.<Name>`,
   which cannot be written as a short name from an importing module. The
   instruction below cannot be followed for them, and no amount of diligence
   changes that.
-* **197 are structure field projections** emitted by the `structure` command.
+* **205 are structure field projections** emitted by the `structure` command.
   These are not a coverage gap in any useful sense; listing them would be noise.
   They are called out because a census that does not separate them reports a
   shortfall five times the real one.
@@ -105,12 +106,12 @@ four qualifications in this comment are unaffected by it:
   when a name it *should* list appears. `scripts/Census.lean` is the thing that
   reports it, but it is a script you run, not a CI gate; a name added without a
   matching entry here still lands green.
-* **465 of the 1531 audited records are not theorems** (51 `structure`, 414 other
+* **489 of the 1604 audited records are not theorems** (55 `structure`, 434 other
   constructions).
   For a `def`, `#print axioms` reports the axiom closure of a CONSTRUCTION and
   asserts nothing about any proposition. In particular
   `CategoryTheory.Triangulated.StabilityMassTriangleInequality` appears below
-  formatted identically to the **1064** real theorems, but it is a `def ... :
+  formatted identically to the **1113** real theorems, but it is a `def ... :
   Prop` -- its clean line means the definition is axiom-clean, NOT that the
   proposition holds.
 
@@ -162,6 +163,82 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Compatibility.BridgelandStability.Slicing.ofVendor_P
 #print axioms BridgelandStabLean.Compatibility.BridgelandStability.Slicing.ofVendor_toVendor
 #print axioms BridgelandStabLean.Compatibility.BridgelandStability.Slicing.toVendor_ofVendor
+
+/-! ## Owner-controlled Grothendieck and pre-stability foundation (#228) -/
+
+#print axioms BridgelandStabLean.Foundation.GrothendieckPresentation
+#print axioms BridgelandStabLean.Foundation.GrothendieckPresentation.relationSubgroup
+#print axioms BridgelandStabLean.Foundation.GrothendieckPresentation.Group
+#print axioms BridgelandStabLean.Foundation.GrothendieckPresentation.instAddCommGroupGroup
+#print axioms BridgelandStabLean.Foundation.GrothendieckPresentation.of
+#print axioms BridgelandStabLean.Foundation.GrothendieckPresentation.of_relation
+#print axioms BridgelandStabLean.Foundation.GrothendieckPresentation.IsAdditive
+#print axioms BridgelandStabLean.Foundation.GrothendieckPresentation.lift
+#print axioms BridgelandStabLean.Foundation.GrothendieckPresentation.lift_of
+#print axioms BridgelandStabLean.Foundation.GrothendieckPresentation.hom_ext
+#print axioms BridgelandStabLean.Foundation.GrothendieckPresentation.hom_ext_iff
+#print axioms BridgelandStabLean.Foundation.GrothendieckPresentation.induction_on
+#print axioms BridgelandStabLean.Foundation.GrothendieckPresentation.isAdditive_of
+#print axioms BridgelandStabLean.Foundation.GrothendieckPresentation.map
+#print axioms BridgelandStabLean.Foundation.GrothendieckPresentation.map_of
+#print axioms BridgelandStabLean.Foundation.GrothendieckPresentation.IsAdditive.of_relationMap
+#print axioms BridgelandStabLean.Foundation.GrothendieckPresentation.map_id
+#print axioms BridgelandStabLean.Foundation.GrothendieckPresentation.map_comp
+#print axioms BridgelandStabLean.Foundation.triangulatedPresentation
+#print axioms BridgelandStabLean.Foundation.K₀
+#print axioms BridgelandStabLean.Foundation.K₀.of
+#print axioms BridgelandStabLean.Foundation.K₀.of_triangle
+#print axioms BridgelandStabLean.Foundation.K₀.of_zero
+#print axioms BridgelandStabLean.Foundation.K₀.of_iso
+#print axioms BridgelandStabLean.Foundation.K₀.of_isZero
+#print axioms BridgelandStabLean.Foundation.K₀.of_shift_one
+#print axioms BridgelandStabLean.Foundation.K₀.of_shift_neg_one
+#print axioms BridgelandStabLean.Foundation.IsTriangleAdditive
+#print axioms BridgelandStabLean.Foundation.instIsAdditiveSubtypeTriangleMemSetDistinguishedTrianglesTriangulatedPresentationOfIsTriangleAdditive
+#print axioms BridgelandStabLean.Foundation.K₀.lift
+#print axioms BridgelandStabLean.Foundation.K₀.lift_of
+#print axioms BridgelandStabLean.Foundation.K₀.hom_ext
+#print axioms BridgelandStabLean.Foundation.K₀.hom_ext_iff
+#print axioms BridgelandStabLean.Foundation.K₀.of_postnikovTower_eq_sum
+#print axioms BridgelandStabLean.Foundation.classOf
+#print axioms BridgelandStabLean.Foundation.classOf_id
+#print axioms BridgelandStabLean.Foundation.classOf_isZero
+#print axioms BridgelandStabLean.Foundation.classOf_triangle
+#print axioms BridgelandStabLean.Foundation.classOf_iso
+#print axioms BridgelandStabLean.Foundation.classOf_shift_one
+#print axioms BridgelandStabLean.Foundation.classOf_shift_neg_one
+#print axioms BridgelandStabLean.Foundation.classOf_postnikovTower_eq_sum
+#print axioms BridgelandStabLean.Foundation.K₀.isTriangleAdditive_map
+#print axioms BridgelandStabLean.Foundation.K₀.map
+#print axioms BridgelandStabLean.Foundation.K₀.map_of
+#print axioms BridgelandStabLean.Foundation.K₀.map_id
+#print axioms BridgelandStabLean.Foundation.K₀.map_comp
+#print axioms BridgelandStabLean.Foundation.K₀.map_congr
+#print axioms BridgelandStabLean.Foundation.PreStabilityCondition.WithClassMap
+#print axioms BridgelandStabLean.Foundation.PreStabilityCondition.WithClassMap.charge
+#print axioms BridgelandStabLean.Foundation.PreStabilityCondition.WithClassMap.charge_def
+#print axioms BridgelandStabLean.Foundation.PreStabilityCondition.WithClassMap.compat
+#print axioms BridgelandStabLean.Foundation.PreStabilityCondition.WithClassMap.charge_isZero
+#print axioms BridgelandStabLean.Foundation.PreStabilityCondition.WithClassMap.charge_congr
+#print axioms BridgelandStabLean.Foundation.PreStabilityCondition.WithClassMap.charge_postnikovTower_eq_sum
+#print axioms BridgelandStabLean.Foundation.PreStabilityCondition.WithClassMap.ext
+#print axioms BridgelandStabLean.Foundation.PreStabilityCondition.WithClassMap.ext_iff
+#print axioms BridgelandStabLean.Foundation.PreStabilityCondition
+#print axioms BridgelandStabLean.Foundation.preStabilityCondition_compat_apply
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.GrothendieckGroup.vendorOf_isTriangleAdditive
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.GrothendieckGroup.toVendor
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.GrothendieckGroup.toVendor_of
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.GrothendieckGroup.ownerOf_isTriangleAdditive
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.GrothendieckGroup.ofVendor
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.GrothendieckGroup.ofVendor_of
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.GrothendieckGroup.ofVendor_toVendor
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.GrothendieckGroup.toVendor_ofVendor
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.GrothendieckGroup.equiv
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.PreStabilityCondition.toVendor
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.PreStabilityCondition.ofVendor
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.PreStabilityCondition.ofVendor_toVendor
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.PreStabilityCondition.toVendor_ofVendor
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.PreStabilityCondition.equiv
 
 /-! ## Cohomology exactness (#146) -/
 
