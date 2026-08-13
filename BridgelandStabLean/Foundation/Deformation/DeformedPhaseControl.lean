@@ -114,6 +114,30 @@ theorem skewedPhase_mem_upper_branch
   rcases hphase with ⟨hlo, hhi⟩
   constructor <;> linarith
 
+/-- The perturbed charge of a nonzero object in a thin owner interval cannot
+vanish. -/
+theorem charge_ne_of_interval
+    (σ : StabilityCondition.WithClassMap C κ)
+    (W : Λ →+ ℂ) {r : ℝ} (hr0 : 0 ≤ r) (hr1 : r < 1)
+    (hW : stabilitySeminorm C σ (W - σ.Z) ≤ ENNReal.ofReal r)
+    {a b ε : ℝ} (hab : a < b) (hε : 0 < ε) (hε2 : ε ≤ 1 / 2)
+    (hthin : b - a + 2 * ε < 1)
+    (hsin : stabilitySeminorm C σ (W - σ.Z) <
+      ENNReal.ofReal (Real.sin (Real.pi * ε)))
+    {E : C} (hI : σ.slicing.intervalProp C a b E) (hE : ¬IsZero E) :
+    W (classOf C κ E) ≠ 0 := by
+  have him : 0 < rotatedIm (W (classOf C κ E)) (a - ε) := by
+    apply σ.slicing.rotatedIm_charge_pos_of_interval C W hI hE
+    intro G φ hP hG haφ hφb
+    have hphase := σ.skewedPhase_mem_lower_branch C W hr0 hr1 hW hab hε hε2
+      hthin hsin hP hG haφ hφb
+    exact rotatedIm_pos_of_relativePhase_gt
+      ((skewedStabilityFunctionOfSeminormLtOne C σ W hr0 hr1 hW hab).nonzero
+        G φ haφ hφb hP hG)
+      hphase.1 hphase.2
+  intro hzero
+  simp [hzero, rotatedIm] at him
+
 /-- Phase control on old semistable factors lifts to every nonzero object in
 the same thin owner interval. -/
 theorem skewedPhase_mem_expanded_interval
@@ -136,9 +160,8 @@ theorem skewedPhase_mem_expanded_interval
       hthin hsin hP hG haφ hφb
     exact rotatedIm_pos_of_relativePhase_gt (F.nonzero G φ haφ hφb hP hG)
       hphase.1 hphase.2
-  have hcharge : W (classOf C κ E) ≠ 0 := by
-    intro hzero
-    simp [hzero, rotatedIm] at him_lower
+  have hcharge : W (classOf C κ E) ≠ 0 :=
+    σ.charge_ne_of_interval C W hr0 hr1 hW hab hε hε2 hthin hsin hI hE
   let pLower := relativePhase (W (classOf C κ E)) (a - ε)
   have hpLower_mem := relativePhase_mem_Ioc (W (classOf C κ E)) (a - ε)
   have hpLower_hi : pLower < a - ε + 1 := by
@@ -223,6 +246,29 @@ theorem skewedPhase_eq_of_mem_branch
   change relativePhase (W (classOf C κ E)) F.α =
     relativePhase (W (classOf C κ E)) G.α
   exact relativePhase_eq_of_mem hcharge F.α G.α hbranch
+
+/-- Two owner skewed functions agree on a shared nonzero interval object when
+the first interval's controlled phase window lies in the second branch. -/
+theorem skewedPhase_eq_of_common_interval
+    (σ : StabilityCondition.WithClassMap C κ)
+    (W : Λ →+ ℂ) {r : ℝ} (hr0 : 0 ≤ r) (hr1 : r < 1)
+    (hW : stabilitySeminorm C σ (W - σ.Z) ≤ ENNReal.ofReal r)
+    {a b c d ε : ℝ} (hab : a < b) (hcd : c < d)
+    (hε : 0 < ε) (hε2 : ε ≤ 1 / 2)
+    (hthin : b - a + 2 * ε < 1)
+    (hsin : stabilitySeminorm C σ (W - σ.Z) <
+      ENNReal.ofReal (Real.sin (Real.pi * ε)))
+    (hleft : (c + d) / 2 - 1 < a - ε)
+    (hright : b + ε ≤ (c + d) / 2 + 1)
+    {E : C} (hI : σ.slicing.intervalProp C a b E) (hE : ¬IsZero E) :
+    (skewedStabilityFunctionOfSeminormLtOne C σ W hr0 hr1 hW hab).phase E =
+      (skewedStabilityFunctionOfSeminormLtOne C σ W hr0 hr1 hW hcd).phase E := by
+  have hphase := σ.skewedPhase_mem_expanded_interval C W hr0 hr1 hW hab hε hε2
+    hthin hsin hI hE
+  apply σ.skewedPhase_eq_of_mem_branch C W hr0 hr1 hW hab hcd
+    (σ.charge_ne_of_interval C W hr0 hr1 hW hab hε hε2 hthin hsin hI hE)
+  change _ ∈ Set.Ioc ((c + d) / 2 - 1) ((c + d) / 2 + 1)
+  exact ⟨hleft.trans hphase.1, hphase.2.le.trans hright⟩
 
 end StabilityCondition.WithClassMap
 
