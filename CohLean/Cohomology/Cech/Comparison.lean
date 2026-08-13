@@ -30,28 +30,29 @@ complex, a comparison morphism, or a theorem identifying the two.  We therefore:
 * prove the positive-degree comparison for the singleton cover of a terminal object, as well as
   the general implication from Cech exactness to derived vanishing once comparison is available.
 
-The remaining nontrivial-cover step is deliberately not hidden behind an axiom: one still has to
-prove that `IsCechAcyclicCover U F` implies `CechComputesDerivedCohomologyAt U F n`.  The standard
-proof uses an augmented Cech resolution and its Leray spectral sequence.
+This file is a layer, not the whole comparison.  The nontrivial-cover step -- that
+`IsCechAcyclicCover U F` implies `CechComputesDerivedCohomologyAt U F n` -- is **proved**, in
+`CohLean.Cohomology.Cech.GlobalComparison`, by the augmented Cech resolution and its
+column-filtration spectral sequence.  The chain runs:
 
-`CohLean.Cohomology.Cech.Bicomplex` now constructs that bicomplex from an explicit injective
-resolution, retains its augmentation, totalizes its column filtration, constructs the spectral
-sequence, identifies its entries with `Cech^p(U, I^q)`, computes the initial page as the homology of
-an adjacent filtration layer, and names the total-complex abutment candidate.  Two precise
-boundaries remain:
-
-* the initial page is identified with fixed-column homology, and its positive resolution rows
-  vanish under `IsCechAcyclicFor`; the remaining page computation is to identify the degree-zero
-  row and its horizontal differential with the Cech complex;
-* Mathlib's `SpectralSequence` structure records pages and page-to-page homology isomorphisms but
-  has no convergence or abutment field, so comparison with the named total complex must be proved
-  as a separate theorem.
+* `Bicomplex` builds `C^{p,q} = Cech^p(U, I^q)` from an injective resolution, totalizes its column
+  filtration, constructs the spectral sequence, and computes the initial page as the homology of an
+  adjacent filtration layer;
+* `InitialPage` identifies the degree-zero row, including its horizontal differential, with the
+  integer-extended Cech complex, so the following page is ordinary Cech cohomology along that row;
+* `TotalComparison` proves that under local acyclicity the augmentation from the ordinary Cech
+  complex to the total injective Cech complex is a quasi-isomorphism, which is the abutment
+  statement Mathlib's `SpectralSequence` structure cannot record as a field;
+* `GlobalComparison` assembles these into
+  `isCechAcyclicCover_cechComputesDerivedCohomology`.
 
 The declarations below take an explicit `InjectiveResolution F` because the site here is a general
 `C : Type u` with `Category.{a} C`, and the pinned Mathlib supplies `EnoughInjectives` for abelian
 sheaves only over a *small* site.  That is the only obstruction: on a small site the resolution is
-chosen rather than assumed, and `CohLean.Cohomology.Cech.SmallSiteResolution` restates this
-interface without the resolution argument.
+chosen rather than assumed.  `CohLean.Cohomology.Cech.SmallSiteResolution` restates this interface
+without the resolution argument, and
+`GlobalComparison.isCechAcyclicCover_cechComputesDerivedCohomology_opens` states the comparison
+itself with neither a resolution nor a `HasExt` argument.
 -/
 
 universe i h a v u

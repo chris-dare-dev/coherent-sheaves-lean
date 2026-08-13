@@ -750,6 +750,13 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms CategoryTheory.Sheaf.cechCochainFunctorIntHomologyIso
 #print axioms CategoryTheory.Sheaf.injectiveResolutionSectionsComplexUnliftedIso
 #print axioms CategoryTheory.Sheaf.isCechAcyclicCover_cechComputesDerivedCohomology
+
+-- On the small site Opens X the comparison needs no witness arguments at all: the
+-- injective resolution and the HasExt instance both come from Mathlib's Grothendieck
+-- abelian chain. The witness-carrying form above is retained for a general site.
+#print axioms CategoryTheory.Sheaf.isCechAcyclicCover_cechComputesDerivedCohomology_opens
+#print axioms CategoryTheory.Sheaf.isCechAcyclicCover_cechComputesDerivedCohomologyAt_opens
+
 #print axioms AlgebraicGeometry.Cohomology.AffineTildeCechDerivedComparisonAt
 #print axioms AlgebraicGeometry.Cohomology.AffineTildeCechDerivedComparison
 #print axioms AlgebraicGeometry.Cohomology.affineTildeCechDerivedComparisonAt_of_pos

@@ -3,7 +3,9 @@ Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under the MIT license.
 -/
 import CohLean.Cohomology.Cech.InjectiveAcyclic
+import CohLean.Cohomology.Cech.SmallSiteResolution
 import CohLean.Cohomology.Cech.TotalComparison
+import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.HasExt
 import Mathlib.CategoryTheory.Sites.CoversTop.Basic
 
 /-!
@@ -12,6 +14,17 @@ import Mathlib.CategoryTheory.Sites.CoversTop.Basic
 For a cover of the terminal object, the augmented Cech complex of a sheaf is exact in degree
 zero.  Combined with positive Cech exactness for injective sheaves, this identifies the total
 Cech complex of an injective resolution with the ordinary global-sections complex.
+
+The file closes with the Cech-to-derived comparison itself, in two forms.  The general form
+carries an explicit `InjectiveResolution` and an explicit `HasExt` witness, because neither is
+available over an arbitrary site.  On the small site `Opens X` both are supplied by Mathlib's
+Grothendieck-abelian instances, so the specialization at the end of the file states the theorem
+with no witness arguments at all.
+
+Importing `Mathlib.CategoryTheory.Abelian.GrothendieckCategory.HasExt` is what makes the second
+form possible: without it `HasExt` is not in scope as an instance, and instance search falls back
+to unfolding the abbreviation and diverges.  `HasExt` is a `Prop`, so bringing the instance into
+scope creates no diamond with the `HasExt.standard` witnesses used elsewhere.
 -/
 
 universe h a u
@@ -791,8 +804,11 @@ noncomputable def injectiveResolutionSectionsComplexUnliftedIso
       rfl)
 
 /-- A Cech-acyclic open cover computes derived sheaf cohomology, relative to an explicit
-injective resolution.  The resolution remains explicit because this Mathlib revision does not
-provide enough injectives for abelian sheaves globally. -/
+injective resolution and an explicit `HasExt` witness.
+
+Both stay explicit here because the statement is universe-general in the `HasExt` parameter `h`.
+For the small site `Opens X` at `h = u`, see
+`isCechAcyclicCover_cechComputesDerivedCohomology_opens`, which supplies both. -/
 theorem isCechAcyclicCover_cechComputesDerivedCohomology
     {X : TopCat.{u}} {T : Opens X} (hT : IsTerminal T)
     {index : Type u} (U : index → Opens X)
@@ -818,5 +834,30 @@ theorem isCechAcyclicCover_cechComputesDerivedCohomology
     (@injectiveResolutionSectionsCohomologyAddEquivHPrime (Opens X) _
       (Opens.grothendieckTopology X) _ hExt F T I n) |>.trans
     (@HPrimeAddEquivH (Opens X) _ (Opens.grothendieckTopology X) _ hExt T hT F n)⟩
+
+/-- A Cech-acyclic open cover computes derived sheaf cohomology.
+
+Neither an injective resolution nor a `HasExt` witness is supplied.  The site `Opens X` is small,
+so Mathlib's chain applies: `AddCommGrpCat.{u}` is Grothendieck abelian, hence so is the sheaf
+category, hence it has enough injectives and `HasExt.{u}`.  This is the form the coherent-sheaf
+cohomology layer consumes; the witness-carrying
+`isCechAcyclicCover_cechComputesDerivedCohomology` is retained for a general site. -/
+theorem isCechAcyclicCover_cechComputesDerivedCohomology_opens
+    {X : TopCat.{u}} {T : Opens X} (hT : IsTerminal T)
+    {index : Type u} (U : index → Opens X)
+    {F : TopCat.Sheaf AddCommGrpCat.{u} X}
+    (hcover : IsCechAcyclicCover U F) :
+    CechComputesDerivedCohomology U F :=
+  isCechAcyclicCover_cechComputesDerivedCohomology hT U
+    (canonicalInjectiveResolution F) inferInstance hcover
+
+/-- Degreewise form of `isCechAcyclicCover_cechComputesDerivedCohomology_opens`. -/
+theorem isCechAcyclicCover_cechComputesDerivedCohomologyAt_opens
+    {X : TopCat.{u}} {T : Opens X} (hT : IsTerminal T)
+    {index : Type u} (U : index → Opens X)
+    {F : TopCat.Sheaf AddCommGrpCat.{u} X}
+    (hcover : IsCechAcyclicCover U F) (n : ℕ) :
+    CechComputesDerivedCohomologyAt U F n :=
+  isCechAcyclicCover_cechComputesDerivedCohomology_opens hT U hcover n
 
 end CategoryTheory.Sheaf
