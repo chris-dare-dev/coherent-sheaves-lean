@@ -462,7 +462,14 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.skewedPhase_mem_upper_branch
 #print axioms BridgelandStabLean.Foundation.Slicing.mem_phaseShiftHeart_of_intrinsic_bounds
 #print axioms BridgelandStabLean.Foundation.Slicing.mem_phaseShiftHeart_of_intervalProp
+#print axioms BridgelandStabLean.Foundation.Slicing.gtProp_leProp_of_phaseShiftHeart
+#print axioms BridgelandStabLean.Foundation.Slicing.geProp_leProp_of_phaseShiftHeart
 #print axioms BridgelandStabLean.Foundation.Slicing.gtProp_leProp_of_intrinsic_bounds
+#print axioms BridgelandStabLean.Foundation.midpoint_left_target_thin
+#print axioms BridgelandStabLean.Foundation.midpoint_right_target_thin
+#print axioms BridgelandStabLean.Foundation.midpoint_image_window_thin
+#print axioms BridgelandStabLean.Foundation.Slicing.mem_phaseShiftHeart_of_midpoint_left
+#print axioms BridgelandStabLean.Foundation.Slicing.mem_phaseShiftHeart_of_midpoint_right
 #print axioms BridgelandStabLean.Foundation.slicingDist
 #print axioms BridgelandStabLean.Foundation.slicingDistTerm_le
 #print axioms BridgelandStabLean.Foundation.phiPlusDist_le
