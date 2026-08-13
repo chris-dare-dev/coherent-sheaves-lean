@@ -239,6 +239,71 @@ theorem eq_bot_of_semistable_phase_gt_phiPlus {Z : StabilityFunction A} {E : A}
   exact lt_of_le_of_lt
     (F.phase_strictAnti.antitone (Fin.mk_le_mk.mpr (Nat.zero_le _))) hphase
 
+/-- The first nonzero term in an HN filtration is not bottom. -/
+theorem chain_one_ne_bot {Z : StabilityFunction A} {E : A}
+    (F : AbelianHNFiltration Z E) :
+    F.chain ⟨1, by have := F.nonempty; lia⟩ ≠ ⊥ := by
+  have hn := F.nonempty
+  intro heq
+  have hlt : F.chain ⟨0, by lia⟩ < F.chain ⟨1, by lia⟩ :=
+    F.chain_strictMono (Fin.mk_lt_mk.mpr (by lia))
+  rw [F.chain_bot, heq] at hlt
+  exact lt_irrefl _ hlt
+
+/-- The phase of the first nonzero term is the highest HN phase. -/
+theorem phase_chain_one {Z : StabilityFunction A} {E : A}
+    (F : AbelianHNFiltration Z E) :
+    Z.phase (F.chain ⟨1, by have := F.nonempty; lia⟩ : A) = F.phiPlus := by
+  have hn := F.nonempty
+  change Z.phase (F.chain ⟨1, by lia⟩ : A) = F.phase ⟨0, F.nonempty⟩
+  rw [← F.factor_phase ⟨0, F.nonempty⟩]
+  have hzero : F.chain (⟨0, F.nonempty⟩ : Fin F.n).castSucc = ⊥ := by
+    change F.chain ⟨0, by lia⟩ = ⊥
+    exact F.chain_bot
+  exact ((Z.phase_cokernel_ofLE_congr hzero rfl).trans
+    (Z.phase_eq_of_iso
+      (StabilityFunction.subobjectCokernelBotIso
+        (F.chain ⟨1, by lia⟩) bot_le))).symm
+
+/-- The first nonzero term in an HN filtration is semistable. -/
+theorem chain_one_isSemistable {Z : StabilityFunction A} {E : A}
+    (F : AbelianHNFiltration Z E) :
+    Z.IsSemistable (F.chain ⟨1, by have := F.nonempty; lia⟩ : A) := by
+  have hn := F.nonempty
+  have hzero : F.chain (⟨0, F.nonempty⟩ : Fin F.n).castSucc = ⊥ := by
+    change F.chain ⟨0, by lia⟩ = ⊥
+    exact F.chain_bot
+  have hfactor : Z.IsSemistable
+      (cokernel (Subobject.ofLE (F.chain
+        (⟨0, F.nonempty⟩ : Fin F.n).castSucc)
+        (F.chain (⟨0, F.nonempty⟩ : Fin F.n).succ)
+        (le_of_lt (F.chain_strictMono
+          (⟨0, F.nonempty⟩ : Fin F.n).castSucc_lt_succ)))) :=
+    F.factor_semistable ⟨0, F.nonempty⟩
+  have hnormalized : Z.IsSemistable
+      (cokernel (Subobject.ofLE (⊥ : Subobject E)
+        (F.chain ⟨1, by lia⟩) bot_le)) :=
+    Z.isSemistable_cokernel_ofLE_congr hzero.symm rfl hfactor
+  exact Z.isSemistable_of_iso
+    (StabilityFunction.subobjectCokernelBotIso
+      (F.chain ⟨1, by lia⟩) bot_le) hnormalized
+
+/-- The highest phase is intrinsic: any two owner HN filtrations of the same
+object have the same first phase. -/
+theorem phiPlus_eq {Z : StabilityFunction A} {E : A}
+    (F G : AbelianHNFiltration Z E) : F.phiPlus = G.phiPlus := by
+  apply le_antisymm
+  · apply le_of_not_gt
+    intro hGF
+    have hbot := G.eq_bot_of_semistable_phase_gt_phiPlus
+      F.chain_one_isSemistable (F.phase_chain_one ▸ hGF)
+    exact F.chain_one_ne_bot hbot
+  · apply le_of_not_gt
+    intro hFG
+    have hbot := F.eq_bot_of_semistable_phase_gt_phiPlus
+      G.chain_one_isSemistable (G.phase_chain_one ▸ hFG)
+    exact G.chain_one_ne_bot hbot
+
 end AbelianHNFiltration
 
 end BridgelandStabLean.Foundation
