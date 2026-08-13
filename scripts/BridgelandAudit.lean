@@ -411,6 +411,9 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Foundation.Slicing.HasPhaseTruncations
 #print axioms BridgelandStabLean.Foundation.Slicing.exists_phase_truncation
 #print axioms BridgelandStabLean.Foundation.Slicing.hasPhaseTruncations
+#print axioms BridgelandStabLean.Foundation.Slicing.exists_dual_phase_truncation
+#print axioms BridgelandStabLean.Foundation.Slicing.exists_upper_boundary_triangle
+#print axioms BridgelandStabLean.Foundation.Slicing.exists_lower_boundary_triangle
 #print axioms BridgelandStabLean.Foundation.Slicing.toTStructure
 #print axioms BridgelandStabLean.Foundation.Slicing.toTStructure_heart_iff
 #print axioms BridgelandStabLean.Foundation.Slicing.toTStructure_bounded
