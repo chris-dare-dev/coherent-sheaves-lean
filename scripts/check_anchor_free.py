@@ -45,6 +45,7 @@ ANCHOR_FREE = [
     "BridgelandStabLean.Foundation.Deformation.FirstStrictSES",
     "BridgelandStabLean.Foundation.Deformation.PullbackCokernel",
     "BridgelandStabLean.Foundation.Deformation.StrictMDQ",
+    "BridgelandStabLean.Foundation.Deformation.FiniteLengthHN",
     "BridgelandStabLean.Foundation.Deformation.ChargePerturbation",
     "BridgelandStabLean.Foundation.Deformation.StabilitySeminorm",
     "BridgelandStabLean.Foundation.Deformation.DeformedPredicate",
