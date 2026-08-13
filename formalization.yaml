@@ -785,6 +785,22 @@ fidelity:
     review and owner acceptance; the registry frontier record is corrected
     mechanically but not discharged by an agent.
 
+    COUNT UPDATE (issue #133 H-zero cokernel isomorphism), 2026-08-11. The
+    current-main H-zero exactness bridge gains one additive public theorem,
+    `isIso_heartSourceH0primeShortComplex_cokernelDesc_unconditional`. It
+    rotates a distinguished heart-source triangle, uses unconditional
+    homologicality of `H0primeFunctor`, proves `H0prime(A[1])` is zero from the
+    shifted heart bound, transfers epicity through the canonical cokernel
+    factorization, and combines it with the existing monicity theorem. Audit
+    names 1355 declarations and the environment census reports 1623 authored
+    declarations, 114 private declarations, and 154 structure-field
+    projections, leaving 0 authored public declarations outside the hand
+    audit. Of the gated declarations, 945 are theorems, 40 are structures, and
+    370 are other non-theorems. The result is additive: the seven reviewed
+    issue #89 declarations are unchanged, the first map is not claimed monic,
+    and no `ShortExact`, mass-triangle, source-faithfulness, or human-review
+    claim is added.
+
     COUNT UPDATE (Wall lane, the nested wall theorem), 2026-08-07. The 13
     additional records are the orthogonality identity minor_orth, the three
     cross terms crossAB/crossAC/crossBC with their three antisymmetry lemmas,

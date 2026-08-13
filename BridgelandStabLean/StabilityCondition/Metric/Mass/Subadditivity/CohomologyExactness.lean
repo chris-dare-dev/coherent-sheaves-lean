@@ -22,7 +22,11 @@ monicity of the canonical map
 
 This file records that exact equivalence and connects it to Mathlib's
 `Functor.IsHomological` interface.  It is deliberately a bridge, not an
-assumption or a global instance.
+assumption or a global instance.  For a distinguished heart-source triangle,
+the canonical cokernel comparison is ultimately an isomorphism: the rotated
+triangle makes it epic because `H⁰'(A[1])` vanishes, while exactness makes it
+monic.  This does not make the displayed three-term complex short exact; its
+first map can still have a nonzero incoming `H⁻¹(X₃)` term.
 -/
 
 open CategoryTheory CategoryTheory.Limits CategoryTheory.Pretriangulated
@@ -662,6 +666,61 @@ theorem HeartStabilityData.mono_heartSourceH0primeShortComplex_cokernelDesc_unco
       (comp_distTriang_mor_zero₁₂ _ hT)) :=
   (h.heartSourceH0Complex_exact_iff_mono_cokernelDesc (C := C) A hT).mp
     (h.heartSourceH0Complex_exact (C := C) A hT)
+
+/-- The canonical cokernel comparison for a distinguished heart-source
+triangle is an isomorphism.  Epicity comes from applying homological `H⁰'` to
+the rotated triangle: its last term is `H⁰'(A[1]) = 0`.  Monicity is the
+existing heart-source exactness theorem. -/
+theorem HeartStabilityData.isIso_heartSourceH0primeShortComplex_cokernelDesc_unconditional
+    (h : HeartStabilityData C)
+    (A : h.t.heart.FullSubcategory) {X₂ X₃ : C}
+    {f : A.obj ⟶ X₂} {g : X₂ ⟶ X₃} {δ : X₃ ⟶ A.obj⟦(1 : ℤ)⟧}
+    (hT : Triangle.mk f g δ ∈ distTriang C) :
+    IsIso (h.heartSourceH0primeShortComplex_cokernelDesc (C := C) A f g
+      (comp_distTriang_mor_zero₁₂ _ hT)) := by
+  letI := h.t.hasHeartFullSubcategory
+  letI : Abelian h.t.heart.FullSubcategory := h.t.heartFullSubcategoryAbelian
+  letI : Functor.IsHomological (h.H0primeFunctor (C := C)) :=
+    h.H0primeFunctor_isHomological_unconditional (C := C)
+  let T : Triangle C := Triangle.mk f g δ
+  have hTrot : T.rotate ∈ distTriang C := rot_of_distTriang T hT
+  let Srot := (shortComplexOfDistTriangle T.rotate hTrot).map
+    (h.H0primeFunctor (C := C))
+  have hExact : Srot.Exact :=
+    Functor.map_distinguished_exact (h.H0primeFunctor (C := C)) T.rotate hTrot
+  letI : h.t.IsLE A.obj 0 := (h.t.mem_heart_iff A.obj).mp A.property |>.1
+  letI : h.t.IsLE (A.obj⟦(1 : ℤ)⟧) (-1) :=
+    h.t.isLE_shift A.obj 0 1 (-1)
+  have hH0shift : IsZero (h.H0prime (C := C) (A.obj⟦(1 : ℤ)⟧)) := by
+    refine ObjectProperty.FullSubcategory.isZero_of_obj_isZero (C := C) ?_
+    simpa [HeartStabilityData.H0prime, TStructure.truncLEGE] using
+      (h.t.truncLE 0).map_isZero
+        (h.t.isZero_truncGE_obj_of_isLE (-1) 0 (by lia)
+          (A.obj⟦(1 : ℤ)⟧))
+  have hzero : Srot.g = 0 := hH0shift.eq_of_tgt _ _
+  letI : Epi Srot.f := hExact.epi_f hzero
+  haveI hEpiMap : Epi ((h.H0primeFunctor (C := C)).map g) := by
+    change Epi Srot.f
+    infer_instance
+  let hfg := comp_distTriang_mor_zero₁₂ (Triangle.mk f g δ) hT
+  let d := h.heartSourceH0primeShortComplex_cokernelDesc (C := C) A f g hfg
+  haveI hEpiShortG :
+      Epi (h.heartSourceH0primeShortComplex (C := C) A f g hfg).g := by
+    change Epi ((h.H0primeFunctor (C := C)).map g)
+    infer_instance
+  haveI hEpiDesc : Epi d := by
+    haveI : Epi
+        (cokernel.π
+            (h.heartSourceH0primeShortComplex (C := C) A f g hfg).f ≫ d) := by
+      rw [h.heartSourceH0primeShortComplex_cokernelπ_comp_cokernelDesc
+        (C := C) A f g hfg]
+      exact hEpiShortG
+    exact epi_of_epi
+      (cokernel.π (h.heartSourceH0primeShortComplex (C := C) A f g hfg).f) d
+  haveI hMonoDesc : Mono d :=
+    h.mono_heartSourceH0primeShortComplex_cokernelDesc_unconditional
+      (C := C) A hT
+  exact isIso_of_mono_of_epi d
 
 /-- With homological `H⁰`, the exact obstruction is therefore discharged: the
 canonical cokernel comparison is monic. -/
