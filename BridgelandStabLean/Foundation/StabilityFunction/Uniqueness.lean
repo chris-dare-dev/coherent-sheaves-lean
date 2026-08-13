@@ -501,6 +501,38 @@ theorem maxDestabilizingSubobject_eq_top_iff_isSemistable
         ⟨F.n, by lia⟩ := Fin.ext (by lia)
     rw [hindex, F.chain_top]
 
+/-- The quotient left after removing the canonical maximally destabilizing
+subobject. -/
+noncomputable def destabilizingQuotient (Z : StabilityFunction A)
+    (hHN : Z.HasHNProperty) (E : A) (hE : ¬IsZero E) : A :=
+  cokernel (Z.maxDestabilizingSubobject hHN E hE).arrow
+
+/-- The destabilizing quotient is zero exactly for semistable objects. -/
+theorem isZero_destabilizingQuotient_iff_isSemistable
+    (Z : StabilityFunction A) (hHN : Z.HasHNProperty)
+    (E : A) (hE : ¬IsZero E) :
+    IsZero (Z.destabilizingQuotient hHN E hE) ↔ Z.IsSemistable E := by
+  rw [← Z.maxDestabilizingSubobject_eq_top_iff_isSemistable hHN E hE]
+  constructor
+  · intro hquotient
+    haveI : Epi (Z.maxDestabilizingSubobject hHN E hE).arrow :=
+      Preadditive.epi_of_isZero_cokernel _ hquotient
+    haveI : IsIso (Z.maxDestabilizingSubobject hHN E hE).arrow :=
+      isIso_of_mono_of_epi _
+    exact Subobject.eq_top_of_isIso_arrow _
+  · intro htop
+    change IsZero (cokernel (Z.maxDestabilizingSubobject hHN E hE).arrow)
+    rw [htop]
+    exact isZero_cokernel_of_epi (⊤ : Subobject E).arrow
+
+/-- A non-semistable object has a nonzero destabilizing quotient. -/
+theorem destabilizingQuotient_not_isZero_of_not_isSemistable
+    (Z : StabilityFunction A) (hHN : Z.HasHNProperty)
+    (E : A) (hE : ¬IsZero E) (hnot : ¬Z.IsSemistable E) :
+    ¬IsZero (Z.destabilizingQuotient hHN E hE) :=
+  fun hzero => hnot ((Z.isZero_destabilizingQuotient_iff_isSemistable
+    hHN E hE).1 hzero)
+
 /-- The intrinsic highest HN phase of a nonzero object. -/
 noncomputable def phiPlus (Z : StabilityFunction A) (hHN : Z.HasHNProperty)
     (E : A) (hE : ¬IsZero E) : ℝ :=
