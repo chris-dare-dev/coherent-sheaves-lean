@@ -853,6 +853,32 @@ theorem Slicing.IntervalCat.K₀_of_strictShortExact
     Slicing.IntervalCat.exists_distinguished_of_strictShortExact C s hS
   simpa using K₀.of_triangle C (Triangle.mk S.f.hom S.g.hom δ) hT
 
+/-- The fully faithful inclusion from a thin interval into a wider interval. -/
+abbrev Slicing.IntervalCat.inclusion (s : Slicing C) {a₂ b₂ : ℝ}
+    (ha : a₂ ≤ a) (hb : b ≤ b₂) :
+    s.IntervalCat C a b ⥤ s.IntervalCat C a₂ b₂ :=
+  ObjectProperty.ιOfLE (s.intervalProp_mono C ha hb)
+
+set_option backward.isDefEq.respectTransparency false in
+/-- A strict short exact sequence remains strict short exact after widening
+the ambient thin interval. -/
+theorem Slicing.IntervalCat.strictShortExact_inclusion
+    (s : Slicing C) {a₂ b₂ : ℝ}
+    [Fact (a₂ < b₂)] [Fact (b₂ - a₂ ≤ 1)]
+    (ha : a₂ ≤ a) (hb : b ≤ b₂)
+    {S : ShortComplex (s.IntervalCat C a b)} (hS : StrictShortExact S) :
+    StrictShortExact
+      (S.map (Slicing.IntervalCat.inclusion C s ha hb)) := by
+  obtain ⟨δ, hT⟩ :=
+    Slicing.IntervalCat.exists_distinguished_of_strictShortExact C s hS
+  have hT' :
+      Triangle.mk
+          ((S.map (Slicing.IntervalCat.inclusion C s ha hb)).f.hom)
+          ((S.map (Slicing.IntervalCat.inclusion C s ha hb)).g.hom) δ ∈
+        distTriang C := by
+    simpa [Slicing.IntervalCat.inclusion] using hT
+  exact Slicing.IntervalCat.strictShortExact_of_distinguished C s hT'
+
 /-- Open slicing intervals are closed under binary products. -/
 instance Slicing.intervalProp_isClosedUnderBinaryProducts (s : Slicing C) :
     (s.intervalProp C a b).IsClosedUnderBinaryProducts where
