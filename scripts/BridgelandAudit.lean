@@ -39,11 +39,11 @@ lake build && lake env lean scripts/Census.lean
 **REVISED AGAIN 2026-08-07 (later), and the correction is the useful part.**
 The revision below reported a real gap of **59**. The true figure was **29**.
 The other 30 were compiler-generated names the sweep did not recognise --
-`<Struct>.ctorIdx`, `<Struct>.mk.inj`, `<def>.congr_simp`, and `ext'_iff` from
-`@[ext] theorem ext'`. Each family was then grepped for in
+`<Struct>.ctorIdx`, `<Struct>.mk.inj`, `<def>.congr_simp`, and generated
+`ext_iff`/`ext'_iff` companions of `@[ext]` theorems. Each family was then grepped for in
 `BridgelandStabLean/` and occurs there **zero** times, so none is a declaration
 anyone wrote or could list. A later census correction added the likewise
-source-absent `hcongr_*` family; `scripts/Census.lean` now filters all five.
+source-absent `hcongr_*` family; `scripts/Census.lean` now filters all six.
 
 The lesson is not that a number moved. It is that **a filter is itself a claim
 about what Lean emits, and it needs the same check as any other claim here.**
@@ -73,10 +73,10 @@ four qualifications in this comment are unaffected by it:
   green without an entry here. Zero is a measurement taken at a commit, not a
   property the build maintains.
 
-* It issues **1701** audit commands. The environment holds **2034** authored
-  declarations under `BridgelandStabLean.*`, so **333 are outside this gate**,
+* It issues **1717** audit commands. The environment holds **2052** authored
+  declarations under `BridgelandStabLean.*`, so **335 are outside this gate**,
   all of them private or projections. ("Authored" excludes constructors,
-  recursors, `casesOn`, matchers, equation lemmas, internal names, and the five
+  recursors, `casesOn`, matchers, equation lemmas, internal names, and the six
   generated families named above -- none of which anybody writes or could
   list.)
 * **126 are `private`** -- 110 of them theorems -- and are *structurally*
@@ -84,7 +84,7 @@ four qualifications in this comment are unaffected by it:
   which cannot be written as a short name from an importing module. The
   instruction below cannot be followed for them, and no amount of diligence
   changes that.
-* **209 are structure field projections** emitted by the `structure` command.
+* **214 are structure field projections** emitted by the `structure` command.
   These are not a coverage gap in any useful sense; listing them would be noise.
   They are called out because a census that does not separate them reports a
   shortfall five times the real one.
@@ -342,6 +342,22 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Foundation.Slicing.toTStructure
 #print axioms BridgelandStabLean.Foundation.Slicing.toTStructure_heart_iff
 #print axioms BridgelandStabLean.Foundation.Slicing.toTStructure_bounded
+#print axioms BridgelandStabLean.Foundation.semiClosedUpperHalfPlane
+#print axioms BridgelandStabLean.Foundation.semiClosedUpperHalfPlane_ne_zero
+#print axioms BridgelandStabLean.Foundation.arg_pos_of_mem_semiClosedUpperHalfPlane
+#print axioms BridgelandStabLean.Foundation.StabilityFunction
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.ext
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.phase
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.phase_pos
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.phase_le_one
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.phase_mem_Ioc
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.IsSemistable
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.IsStable
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.exists_destabilizing_of_not_semistable
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.charge_eq_of_iso
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.phase_eq_of_iso
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.isSemistable_of_iso
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.isSemistable_iff_of_iso
 
 /-! ## Cohomology exactness (#146) -/
 

@@ -22,7 +22,7 @@ the mathematics and is independent of the package path.
 | `Topology` | Reusable open-cover infrastructure |
 | `Development` | Compile-only API audits; not part of the stable root import |
 | `BridgelandStabLean/Lattice` | Abstract numerical and Mukai lattice infrastructure |
-| `BridgelandStabLean/Foundation` | Owner-authored Postnikov towers, HN filtrations, slicings, triangulated Grothendieck groups, class maps, and pre-stability conditions |
+| `BridgelandStabLean/Foundation` | Owner-authored Postnikov towers, HN filtrations, slicings, triangulated Grothendieck groups, class maps, stability conditions, and abelian stability functions |
 | `BridgelandStabLean/Compatibility` | Temporary, explicit adapters across retained third-party boundaries |
 | `BridgelandStabLean/StabilityCondition` | Stability metrics, support, symmetry, walls, and weak stability |
 | `vendor/BridgelandStability` | Apache-2.0 foundational slicing and deformation implementation |
@@ -55,6 +55,9 @@ phase bounds, elementary filtration operations, and the phase-truncation interfa
 that constructs the slicing t-structure. The canonical truncation triangle is
 constructed from HN filtrations by octahedral induction, and the resulting
 t-structure is proved bounded with heart `P((0, 1])`.
+The abelian stability-function lane owns the central-charge contract, normalized
+phase, stability, and semistability; HN existence and uniqueness build on that
+interface in later slice-5 leaves.
 Owner-authored definitions depend directly on Mathlib.
 Conversions involving Apache-2.0 declarations live only under
 `BridgelandStabLean/Compatibility/BridgelandStability`; downstream modules migrate to the
