@@ -521,6 +521,7 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.deformedPred_geProp
 #print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.deformedPred_leProp
 #print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.deformedPred_intervalProp
+#print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.intervalProp_of_deformed_hn
 #print axioms BridgelandStabLean.Foundation.Slicing.mem_phaseShiftHeart_of_intrinsic_bounds
 #print axioms BridgelandStabLean.Foundation.Slicing.mem_phaseShiftHeart_of_intervalProp
 #print axioms BridgelandStabLean.Foundation.Slicing.gtProp_leProp_of_phaseShiftHeart

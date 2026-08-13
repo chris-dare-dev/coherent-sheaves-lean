@@ -3,6 +3,7 @@ Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under the MIT license.
 -/
 import BridgelandStabLean.Foundation.Deformation.DeformedPhaseControl
+import BridgelandStabLean.Foundation.ExtensionClosure
 import BridgelandStabLean.Foundation.Slicing.CutoffTruncation
 
 /-!
@@ -255,6 +256,43 @@ theorem deformedPred_intervalProp
       σ.deformedPred_intrinsic_bounds C W hr0 hr1 hW hε hε2 hsin h hE
     exact σ.slicing.intervalProp_of_intrinsic_phases C hE
       (by linarith) (by linarith)
+
+/-- An owner HN filtration by deformed slices inside a common phase window
+places its ambient object in the corresponding padded old phase interval. -/
+theorem intervalProp_of_deformed_hn
+    (σ : StabilityCondition.WithClassMap C κ)
+    (W : Λ →+ ℂ) {r : ℝ} (hr0 : 0 ≤ r) (hr1 : r < 1)
+    (hW : stabilitySeminorm C σ (W - σ.Z) ≤ ENNReal.ofReal r)
+    {ε a b δ : ℝ} (hε : 0 < ε) (hε2 : ε ≤ 1 / 2)
+    (hsin : stabilitySeminorm C σ (W - σ.Z) <
+      ENNReal.ofReal (Real.sin (Real.pi * ε))) (hδ : 0 < δ)
+    {E : C} (G : HNFiltration C
+      (σ.deformedPred C W hr0 hr1 hW ε) E)
+    (hphase : ∀ i : Fin G.n, a ≤ G.φ i ∧ G.φ i ≤ b) :
+    σ.slicing.intervalProp C (a - ε - δ) (b + ε + δ) E := by
+  have hfactors : ∀ i : Fin G.n,
+      σ.slicing.intervalProp C (a - ε - δ) (b + ε + δ) (G.factor i) := by
+    intro i
+    have hI := σ.deformedPred_intervalProp C W hr0 hr1 hW
+      (ψ := G.φ i) hε hε2 hsin hδ (G.factor i) (G.semistable i)
+    exact σ.slicing.intervalProp_mono C (by linarith [(hphase i).1])
+      (by linarith [(hphase i).2]) _ hI
+  let Q := σ.slicing.intervalProp C (a - ε - δ) (b + ε + δ)
+  have hclosure : ExtensionClosure Q E :=
+    ExtensionClosure.ofPostnikovTower (Q := Q) G.toPostnikovTower hfactors
+  exact ExtensionClosure.le_of_closed (P := Q) (Q := Q)
+    (fun hzero => Or.inl hzero)
+    (fun X hX => hX)
+    (fun hT hX hY => by
+      change σ.slicing.intervalProp C (a - ε - δ) (b + ε + δ) _
+      apply σ.slicing.intervalProp_of_gtProp_ltProp C
+      · exact σ.slicing.gtProp_of_triangle C (a - ε - δ)
+          (σ.slicing.gtProp_of_intervalProp C hX)
+          (σ.slicing.gtProp_of_intervalProp C hY) hT
+      · exact σ.slicing.ltProp_of_triangle C (b + ε + δ)
+          (σ.slicing.ltProp_of_intervalProp C hX)
+          (σ.slicing.ltProp_of_intervalProp C hY) hT)
+    E hclosure
 
 end StabilityCondition.WithClassMap
 
