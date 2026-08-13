@@ -1,9 +1,17 @@
 # ADR-0010 — How a dg category is encoded, and where the H⁰ seam lives
 
-- **Status:** open
+- **Status:** accepted for Question 1; Question 2 narrowed and still open
 - **Date:** 2026-08-13 (UTC)
-- **Decider:** Chris Dare. Two questions, below, must be answered before any
-  Lean lands for the `dg-enhancements` track.
+- **Decider:** Chris Dare
+- **Decision (Question 1, 2026-08-13):** **Option B — a bespoke `DGCategory`
+  structure.** Taken on the measurement in
+  `.claude/notes/2026-08-13-dg-surface-reconnaissance.md`, which showed the
+  enriching category of Option A does not exist at the pin. Option A′ stays
+  live as a separate `upstream-candidate` slice and is not a prerequisite of
+  anything in DG1.
+- **Still open (Question 2):** the root name is provisionally `DGLean` and is
+  not needed until `dg-enhancements-e4` creates the root; the DG4 dependency
+  direction is not needed until DG4. Neither blocks DG1.
 - **Related:** ARCHITECTURE.md growth rule 1 and its taxonomy line *"Future
   derived-category and Fourier–Mukai libraries get dedicated roots with their
   first real theorem"*; `.claude/roadmap/dg-enhancements.yaml` (m0, e1)

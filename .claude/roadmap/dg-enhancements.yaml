@@ -54,10 +54,12 @@ goal:
   assumptions:
     - tier: must
       text: "A dg category is expressible at the pin as a category enriched over cochain complexes of k-modules, using CategoryTheory/Enriched/Ordinary together with Algebra/Homology/Monoidal."
-      validation: "DG0 reconnaissance must exhibit the monoidal instance actually available on `CochainComplex (ModuleCat k) ℤ` at `mathlib_rev`, and elaborate a two-object example. If the enriched route does not elaborate, ADR-0010 falls back to the bespoke structure and records why."
+      status: refuted
+      validation: "REFUTED 2026-08-13 against mathlib_rev. `HomologicalComplex.HasTensor` does not synthesize for `CochainComplex (ModuleCat k) ℤ`; the degree-n tensor is a coproduct over the infinite set {(i,j) : i+j=n} and only the finite-fibre instances exist. `ChainComplex (ModuleCat k) ℕ` IS monoidal, which localizes the gap. Evidence and probes: .claude/notes/2026-08-13-dg-surface-reconnaissance.md. ADR-0010 Question 1 therefore decided for Option B (bespoke DGCategory); the enriched route survives as Option A′, an upstreamable ForMathlib slice that blocks nothing in DG1."
     - tier: must
       text: "Mathlib's HomComplex API is complete enough to give C^dg(A) without re-deriving the Hom complex."
-      validation: "DG0 lists the `Cochain`, `δ`, shift, and cohomology declarations reachable at the pin, and names any missing lemma as a DG1 sub-issue rather than as a hidden assumption."
+      status: confirmed
+      validation: "CONFIRMED 2026-08-13, and stronger than stated: besides `Cochain`, `Cochain.comp`, `δ`, `Cocycle` and `CochainComplex.HomComplex`, the pin already proves `CohomologyClass.homAddEquiv : Hⁿ(Hom•(K,L)) ≅+ Hom_{K(C)}(K, L⟦n⟧)`. The seam theorem of e4 is packaging, not construction. Evidence: .claude/notes/2026-08-13-dg-surface-reconnaissance.md."
     - tier: should
       text: "The h-injective (respectively h-projective) model of the derived enhancement is reachable before the Drinfeld dg quotient is."
       validation: "Mathlib already builds DerivedCategory through KInjective/KProjective. If the seam theorem cannot be closed on that model, the Drinfeld quotient epic un-parks and the milestone slips rather than the claim weakening."
@@ -86,6 +88,7 @@ generations:
   - { rev: 1, at: "2026-08-13", note: "Track proposed. Nothing materialized: every gh_milestone and gh_issue is null, and no label, milestone, issue, or project view exists yet. Materialization is dg-enhancements-e0." }
   - { rev: 2, at: "2026-08-13", note: "Partially materialized: eight labels created, milestones #19-#24 created, and the two DG0 epics filed as #328 and #329. DG1-DG5 epics remain unfiled by design. Project views and fields are still pending the project scope on the gh token." }
   - { rev: 3, at: "2026-08-13", note: "Source pins landed: five zero-claim coverage maps (1312.5619v3, 1507.05509v5, 2101.04404v1, 2402.04605v1, 2407.05946v2), each hashed against the PDF as served on 2026-08-13 and with section titles read from that PDF. registry/README.md documents all five. formalization.yaml and registry/bridgeland2007.json untouched." }
+  - { rev: 4, at: "2026-08-13", note: "ADR-0010 Question 1 decided: Option B, a bespoke DGCategory structure, after the pinned-Mathlib measurement refuted the enriched route's enriching category. Assumption 1 marked refuted, assumption 2 confirmed and strengthened, e2 resized up and e4 down. DG1 is unblocked." }
 retired: []
 
 # GitHub milestones are roadmap phases. Epic issues live inside them, and
@@ -157,10 +160,10 @@ items:
     kind: epic
     parent: dg-enhancements-m1
     title: "DG categories, dg functors, and the Hom-complex shift"
-    status: planned
-    summary: "The definitional core: a dg category over a commutative ring k, dg functors, the opposite and product dg categories, and the shift on Hom-complexes with its sign conventions fixed once and documented where a reader will find them."
+    status: ready
+    summary: "The definitional core: a bespoke `DGCategory` structure over a commutative ring k (ADR-0010 Question 1, Option B), dg functors, the opposite and product dg categories, and the shift on Hom-complexes with its sign conventions fixed once and documented where a reader will find them. Composition is written directly on `Cochain.comp`; no monoidal structure is required or assumed."
     priority: must
-    size: L
+    size: XL
     tags: [lean, definitions, dg-core]
     labels: [area:dg, type:feature, source:1507.05509]
 
@@ -188,6 +191,7 @@ items:
     priority: must
     size: L
     tags: [lean, model, seam, first-theorem]
+    size: M
     labels: [area:dg, area:derived, bridge:h0-seam, type:feature, source:1507.05509]
 
   - id: dg-enhancements-m2
