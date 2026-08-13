@@ -417,6 +417,17 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Foundation.Slicing.intervalProp_of_upper_boundary_triangle
 #print axioms BridgelandStabLean.Foundation.Slicing.intervalProp_of_lower_boundary_triangle
 #print axioms BridgelandStabLean.Foundation.Slicing.intervalProp_of_triangle
+#print axioms BridgelandStabLean.Foundation.Slicing.intervalProp_implies_leftHeart
+#print axioms BridgelandStabLean.Foundation.Slicing.toDualTStructure
+#print axioms BridgelandStabLean.Foundation.Slicing.toDualTStructure_heart_iff
+#print axioms BridgelandStabLean.Foundation.Slicing.intervalProp_implies_rightHeart
+#print axioms BridgelandStabLean.Foundation.Slicing.IntervalCat.toLeftHeart
+#print axioms BridgelandStabLean.Foundation.Slicing.IntervalCat.toRightHeart
+#print axioms BridgelandStabLean.Foundation.Slicing.phiMinus_gt_of_triangle_with_geProp
+#print axioms BridgelandStabLean.Foundation.Slicing.third_intervalProp_of_triangle
+#print axioms BridgelandStabLean.Foundation.Slicing.intervalProp_of_mono_leftHeart
+#print axioms BridgelandStabLean.Foundation.Slicing.intervalProp_of_epi_rightHeart
+#print axioms BridgelandStabLean.ForMathlib.CategoryTheory.Triangulated.TStructure.exists_distinguished_triangle_of_heart_epi
 #print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.skewedPhase_mem_enveloped_branch
 #print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.skewedPhase_gt_of_geProp
 #print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.skewedPhase_lt_of_leProp

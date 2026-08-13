@@ -68,6 +68,20 @@ theorem exists_distinguished_triangle_of_heart_mono (t : TStructure C)
   refine isomorphic_distinguished _ hT _ ?_
   exact Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (asIso β).symm
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
+omit [IsTriangulated C] in
+/-- An epimorphism in any presentation of a t-structure heart completes to a
+distinguished triangle whose first vertex is again in that heart. -/
+theorem exists_distinguished_triangle_of_heart_epi (t : TStructure C)
+    [hHeart : t.Heart H] {X Y : H} (p : X ⟶ Y) [Epi p] :
+    ∃ (K : H) (i : K ⟶ X)
+      (δ : (t.ιHeart.obj Y) ⟶ (t.ιHeart.obj K)⟦(1 : ℤ)⟧),
+      Triangle.mk ((t.ιHeart (H := H)).map i)
+        ((t.ιHeart (H := H)).map p) δ ∈ distTriang C := by
+  exact _root_.CategoryTheory.Triangulated.AbelianSubcategory.exists_distinguished_triangle_of_epi
+    (heart_hι t) (heart_admissible t) p
+
 /-- The canonical image factorisation of a heart morphism supplies its image,
 epimorphic projection, monomorphic inclusion, and the distinguished kernel
 triangle of that projection in the ambient triangulated category. -/
