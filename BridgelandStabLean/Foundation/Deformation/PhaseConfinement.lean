@@ -185,6 +185,77 @@ theorem skewed_phiMinus_ge
     hSS.phase_le_of_triangle hT hXI hYI hXne
   linarith
 
+/-- A nonzero owner deformed-slice object has both intrinsic old phase bounds
+predicted by its phase and the deformation radius. -/
+theorem deformedPred_intrinsic_bounds
+    (σ : StabilityCondition.WithClassMap C κ)
+    (W : Λ →+ ℂ) {r : ℝ} (hr0 : 0 ≤ r) (hr1 : r < 1)
+    (hW : stabilitySeminorm C σ (W - σ.Z) ≤ ENNReal.ofReal r)
+    {ε ψ : ℝ} (hε : 0 < ε) (hε2 : ε ≤ 1 / 2)
+    (hsin : stabilitySeminorm C σ (W - σ.Z) <
+      ENNReal.ofReal (Real.sin (Real.pi * ε)))
+    {E : C} (h : σ.deformedPred C W hr0 hr1 hW ε ψ E)
+    (hE : ¬IsZero E) :
+    ψ - ε ≤ σ.slicing.phiMinus C E hE ∧
+      σ.slicing.phiPlus C E hE ≤ ψ + ε := by
+  obtain ⟨a, b, hab, hthin, haψ, hψb, hSS⟩ :=
+    σ.exists_deformedPred_witness C W hr0 hr1 hW h hE
+  exact ⟨σ.skewed_phiMinus_ge C W hr0 hr1 hW hab hε hε2 hthin hsin
+      haψ hψb hSS,
+    σ.skewed_phiPlus_le C W hr0 hr1 hW hab hε hε2 hthin hsin
+      haψ hψb hSS⟩
+
+/-- Every owner deformed-slice object lies above its weak old lower phase
+cut. -/
+theorem deformedPred_geProp
+    (σ : StabilityCondition.WithClassMap C κ)
+    (W : Λ →+ ℂ) {r : ℝ} (hr0 : 0 ≤ r) (hr1 : r < 1)
+    (hW : stabilitySeminorm C σ (W - σ.Z) ≤ ENNReal.ofReal r)
+    {ε ψ : ℝ} (hε : 0 < ε) (hε2 : ε ≤ 1 / 2)
+    (hsin : stabilitySeminorm C σ (W - σ.Z) <
+      ENNReal.ofReal (Real.sin (Real.pi * ε))) :
+    σ.deformedPred C W hr0 hr1 hW ε ψ ≤ σ.slicing.geProp C (ψ - ε) := by
+  intro E h
+  by_cases hE : IsZero E
+  · exact Or.inl hE
+  · exact σ.slicing.geProp_of_phiMinus_ge C hE
+      (σ.deformedPred_intrinsic_bounds C W hr0 hr1 hW hε hε2 hsin h hE).1
+
+/-- Every owner deformed-slice object lies below its weak old upper phase
+cut. -/
+theorem deformedPred_leProp
+    (σ : StabilityCondition.WithClassMap C κ)
+    (W : Λ →+ ℂ) {r : ℝ} (hr0 : 0 ≤ r) (hr1 : r < 1)
+    (hW : stabilitySeminorm C σ (W - σ.Z) ≤ ENNReal.ofReal r)
+    {ε ψ : ℝ} (hε : 0 < ε) (hε2 : ε ≤ 1 / 2)
+    (hsin : stabilitySeminorm C σ (W - σ.Z) <
+      ENNReal.ofReal (Real.sin (Real.pi * ε))) :
+    σ.deformedPred C W hr0 hr1 hW ε ψ ≤ σ.slicing.leProp C (ψ + ε) := by
+  intro E h
+  by_cases hE : IsZero E
+  · exact Or.inl hE
+  · exact σ.slicing.leProp_of_phiPlus_le C hE
+      (σ.deformedPred_intrinsic_bounds C W hr0 hr1 hW hε hε2 hsin h hE).2
+
+/-- Adding any positive padding turns weak confinement of an owner deformed
+slice into membership in an open old phase interval. -/
+theorem deformedPred_intervalProp
+    (σ : StabilityCondition.WithClassMap C κ)
+    (W : Λ →+ ℂ) {r : ℝ} (hr0 : 0 ≤ r) (hr1 : r < 1)
+    (hW : stabilitySeminorm C σ (W - σ.Z) ≤ ENNReal.ofReal r)
+    {ε ψ δ : ℝ} (hε : 0 < ε) (hε2 : ε ≤ 1 / 2)
+    (hsin : stabilitySeminorm C σ (W - σ.Z) <
+      ENNReal.ofReal (Real.sin (Real.pi * ε))) (hδ : 0 < δ) :
+    σ.deformedPred C W hr0 hr1 hW ε ψ ≤
+      σ.slicing.intervalProp C (ψ - ε - δ) (ψ + ε + δ) := by
+  intro E h
+  by_cases hE : IsZero E
+  · exact Or.inl hE
+  · obtain ⟨hminus, hplus⟩ :=
+      σ.deformedPred_intrinsic_bounds C W hr0 hr1 hW hε hε2 hsin h hE
+    exact σ.slicing.intervalProp_of_intrinsic_phases C hE
+      (by linarith) (by linarith)
+
 end StabilityCondition.WithClassMap
 
 end BridgelandStabLean.Foundation
