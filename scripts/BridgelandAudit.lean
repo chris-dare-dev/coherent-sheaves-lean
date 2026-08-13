@@ -73,7 +73,7 @@ four qualifications in this comment are unaffected by it:
   green without an entry here. Zero is a measurement taken at a commit, not a
   property the build maintains.
 
-* It issues **1768** audit commands. The environment holds **2113** authored
+* It issues **1773** audit commands. The environment holds **2118** authored
   declarations under `BridgelandStabLean.*`, so **345 are outside this gate**,
   all of them private or projections. ("Authored" excludes constructors,
   recursors, `casesOn`, matchers, equation lemmas, internal names, and the six
@@ -111,7 +111,7 @@ four qualifications in this comment are unaffected by it:
   For a `def`, `#print axioms` reports the axiom closure of a CONSTRUCTION and
   asserts nothing about any proposition. In particular
   `CategoryTheory.Triangulated.StabilityMassTriangleInequality` appears below
-formatted identically to the **1226** real theorems, but it is a `def ... :
+formatted identically to the **1231** real theorems, but it is a `def ... :
   Prop` -- its clean line means the definition is axiom-clean, NOT that the
   proposition holds.
 
@@ -409,6 +409,11 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.isSemistable_of_n_eq_one
 #print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.n_eq_one_iff_isSemistable
 #print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.two_le_n_of_not_isSemistable
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.le_of_arrow_comp_cokernel_zero
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.le_of_ofLE_comp_cokernel_zero
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.hom_eq_zero_to_factor
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.le_chain_of_semistable_phase_gt
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.eq_bot_of_semistable_phase_gt_phiPlus
 
 /-! ## Cohomology exactness (#146) -/
 

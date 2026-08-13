@@ -144,6 +144,101 @@ theorem two_le_n_of_not_isSemistable {Z : StabilityFunction A} {E : A}
   have := F.nonempty
   lia
 
+/-- If a subobject maps trivially to the quotient by another subobject, it is
+contained in that subobject. -/
+theorem le_of_arrow_comp_cokernel_zero {E : A} {B M : Subobject E}
+    (h : B.arrow ≫ cokernel.π M.arrow = 0) : B ≤ M := by
+  have hkernel : kernelSubobject (cokernel.π M.arrow) = M := by
+    simpa [imageSubobject_mono, Subobject.mk_arrow] using
+      ((ShortComplex.mk M.arrow (cokernel.π M.arrow)
+        (cokernel.condition M.arrow)).exact_iff_image_eq_kernel.mp
+        (ShortComplex.exact_cokernel M.arrow)).symm
+  rw [← hkernel]
+  exact Subobject.le_of_comm
+    (factorThruKernelSubobject _ B.arrow h)
+    (factorThruKernelSubobject_comp_arrow _ _ _)
+
+/-- The relative form of `le_of_arrow_comp_cokernel_zero`: a subobject of `S`
+that maps trivially to the quotient `S / M` is contained in `M`. -/
+theorem le_of_ofLE_comp_cokernel_zero {E : A} {B M S : Subobject E}
+    (hBS : B ≤ S) (hMS : M ≤ S)
+    (h : Subobject.ofLE B S hBS ≫
+      cokernel.π (Subobject.ofLE M S hMS) = 0) : B ≤ M := by
+  have hse : (ShortComplex.mk (Subobject.ofLE M S hMS)
+      (cokernel.π (Subobject.ofLE M S hMS))
+      (cokernel.condition _)).ShortExact :=
+    ShortComplex.ShortExact.mk' (ShortComplex.exact_cokernel _)
+      inferInstance inferInstance
+  set g := hse.fIsKernel.lift (KernelFork.ofι (Subobject.ofLE B S hBS) h)
+  have hg : g ≫ Subobject.ofLE M S hMS = Subobject.ofLE B S hBS :=
+    hse.fIsKernel.fac (KernelFork.ofι (Subobject.ofLE B S hBS) h)
+      WalkingParallelPair.zero
+  apply Subobject.le_of_comm g
+  calc
+    g ≫ M.arrow = g ≫ (Subobject.ofLE M S hMS ≫ S.arrow) := by
+      congr 1
+      exact (Subobject.ofLE_arrow hMS).symm
+    _ = (g ≫ Subobject.ofLE M S hMS) ≫ S.arrow :=
+      (Category.assoc _ _ _).symm
+    _ = Subobject.ofLE B S hBS ≫ S.arrow := by congr 1
+    _ = B.arrow := Subobject.ofLE_arrow hBS
+
+/-- A semistable object of phase above an HN factor has no morphisms to that
+factor. -/
+theorem hom_eq_zero_to_factor {Z : StabilityFunction A} {E B : A}
+    (F : AbelianHNFiltration Z E) (hB : Z.IsSemistable B)
+    (j : Fin F.n) (hphase : F.phase j < Z.phase B)
+    (f : B ⟶ cokernel (Subobject.ofLE (F.chain j.castSucc) (F.chain j.succ)
+      (le_of_lt (F.chain_strictMono j.castSucc_lt_succ)))) : f = 0 :=
+  Z.hom_eq_zero_of_semistable_phase_gt hB (F.factor_semistable j)
+    (F.factor_phase j ▸ hphase) f
+
+/-- A semistable subobject whose phase is above every factor from index `k`
+onward lies in the `k`-th term of an HN filtration. -/
+theorem le_chain_of_semistable_phase_gt {Z : StabilityFunction A} {E : A}
+    (F : AbelianHNFiltration Z E) {B : Subobject E}
+    (hB : Z.IsSemistable (B : A)) {k : ℕ} (hk : k ≤ F.n)
+    (hphase : ∀ j : Fin F.n, k ≤ j.val →
+      F.phase j < Z.phase (B : A)) :
+    B ≤ F.chain ⟨k, by lia⟩ := by
+  suffices descend : ∀ d m (hm : m < F.n + 1), F.n - m = d → k ≤ m →
+      B ≤ F.chain ⟨m, hm⟩ from
+    descend (F.n - k) k (by lia) rfl le_rfl
+  intro d
+  induction d with
+  | zero =>
+      intro m hm hd _
+      have hmn : m = F.n := by lia
+      subst hmn
+      rw [F.chain_top]
+      exact le_top
+  | succ d ih =>
+      intro m hm hd hkm
+      have hnext : B ≤ F.chain ⟨m + 1, by lia⟩ :=
+        ih (m + 1) (by lia) (by lia) (by lia)
+      let j : Fin F.n := ⟨m, by lia⟩
+      have hsucc : (j.succ : Fin (F.n + 1)) = ⟨m + 1, by lia⟩ :=
+        Fin.ext (by simp [j])
+      have hBnext : B ≤ F.chain j.succ := hsucc ▸ hnext
+      have hzero : Subobject.ofLE B (F.chain j.succ) hBnext ≫
+          cokernel.π (Subobject.ofLE (F.chain j.castSucc) (F.chain j.succ)
+            (le_of_lt (F.chain_strictMono j.castSucc_lt_succ))) = 0 :=
+        F.hom_eq_zero_to_factor hB j (hphase j (by simp [j]; lia)) _
+      exact le_of_ofLE_comp_cokernel_zero hBnext
+        (le_of_lt (F.chain_strictMono j.castSucc_lt_succ)) hzero
+
+/-- A semistable subobject whose phase is above the highest HN phase is zero. -/
+theorem eq_bot_of_semistable_phase_gt_phiPlus {Z : StabilityFunction A} {E : A}
+    (F : AbelianHNFiltration Z E) {B : Subobject E}
+    (hB : Z.IsSemistable (B : A))
+    (hphase : F.phiPlus < Z.phase (B : A)) : B = ⊥ := by
+  apply le_bot_iff.mp
+  rw [← F.chain_bot]
+  apply F.le_chain_of_semistable_phase_gt hB (Nat.zero_le _)
+  intro j _
+  exact lt_of_le_of_lt
+    (F.phase_strictAnti.antitone (Fin.mk_le_mk.mpr (Nat.zero_le _))) hphase
+
 end AbelianHNFiltration
 
 end BridgelandStabLean.Foundation
