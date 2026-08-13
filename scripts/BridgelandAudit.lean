@@ -73,7 +73,7 @@ four qualifications in this comment are unaffected by it:
   green without an entry here. Zero is a measurement taken at a commit, not a
   property the build maintains.
 
-* It issues **1700** audit commands. The environment holds **2033** authored
+* It issues **1701** audit commands. The environment holds **2034** authored
   declarations under `BridgelandStabLean.*`, so **333 are outside this gate**,
   all of them private or projections. ("Authored" excludes constructors,
   recursors, `casesOn`, matchers, equation lemmas, internal names, and the five
@@ -335,6 +335,7 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Compatibility.BridgelandStability.Slicing.toVendor_geProp_iff
 #print axioms BridgelandStabLean.Compatibility.BridgelandStability.Slicing.toVendor_toTStructure_le_iff
 #print axioms BridgelandStabLean.Compatibility.BridgelandStability.Slicing.toVendor_toTStructure_ge_iff
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.Slicing.toVendor_toTStructure_heart_iff
 #print axioms BridgelandStabLean.Foundation.Slicing.HasPhaseTruncations
 #print axioms BridgelandStabLean.Foundation.Slicing.exists_phase_truncation
 #print axioms BridgelandStabLean.Foundation.Slicing.hasPhaseTruncations

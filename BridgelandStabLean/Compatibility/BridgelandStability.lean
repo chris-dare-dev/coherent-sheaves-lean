@@ -260,6 +260,14 @@ theorem toVendor_toTStructure_ge_iff [IsTriangulated C]
     ((toVendor C s).toTStructure).ge n E ↔ (s.toTStructure C).ge n E :=
   toVendor_leProp_iff C s (1 - n) E
 
+/-- The owner and retained slicing t-structures have the same heart. -/
+theorem toVendor_toTStructure_heart_iff [IsTriangulated C]
+    (s : Foundation.Slicing C) (E : C) :
+    ((toVendor C s).toTStructure).heart E ↔ (s.toTStructure C).heart E := by
+  exact and_congr
+    (toVendor_toTStructure_le_iff C s 0 E)
+    (toVendor_toTStructure_ge_iff C s 0 E)
+
 /-- The owner and retained thin interval categories are canonically
 equivalent: they have the same objects and morphisms after translating HN
 filtration witnesses. -/
