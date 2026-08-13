@@ -937,8 +937,9 @@ fidelity:
     distance, supplies positive-radius self-membership, and generates the owner
     topology from radii below one eighth. The census reports 2282 authored
     declarations, 126 private declarations, and 233 structure-field
-    projections. Audit issues 1928 commands, of which 1358 records are
-    theorems, 62 are structures, and 503
+    projections. Basic-neighborhood membership now agrees exactly across the
+    retained stability-condition conversion as well. Audit issues 1929
+    commands, of which 1359 records are theorems, 62 are structures, and 503
     are other non-theorems; no authored public declaration remains outside the
     hand audit. All 27
     owner foundation modules are

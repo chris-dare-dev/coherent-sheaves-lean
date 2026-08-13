@@ -928,6 +928,24 @@ theorem toVendor_stabilitySeminorm {v : Foundation.K₀ C →+ Λ}
     Foundation.Deformation.stabilitySeminorm
   congr with E φ hP hE
 
+/-- Conversion preserves membership in every basic stability-space
+neighborhood. -/
+@[simp]
+theorem toVendor_mem_basisNhd_iff {v : Foundation.K₀ C →+ Λ}
+    (σ τ : Foundation.StabilityCondition.WithClassMap C v) (ε : ℝ) :
+    toVendor C τ ∈ CategoryTheory.Triangulated.basisNhd C (toVendor C σ) ε ↔
+      τ ∈ Foundation.Deformation.basisNhd C σ ε := by
+  change
+    CategoryTheory.Triangulated.stabSeminorm C (toVendor C σ) (τ.Z - σ.Z) <
+        ENNReal.ofReal (Real.sin (Real.pi * ε)) ∧
+      CategoryTheory.Triangulated.slicingDist C
+          (Slicing.toVendor C σ.slicing) (Slicing.toVendor C τ.slicing) <
+        ENNReal.ofReal ε ↔
+    Foundation.Deformation.stabilitySeminorm C σ (τ.Z - σ.Z) <
+        ENNReal.ofReal (Real.sin (Real.pi * ε)) ∧
+      Foundation.slicingDist C σ.slicing τ.slicing < ENNReal.ofReal ε
+  rw [toVendor_stabilitySeminorm, Slicing.toVendor_slicingDist]
+
 /-- Owner and retained stability conditions are equivalent after transporting
 the Grothendieck class map. -/
 def equiv (v : Foundation.K₀ C →+ Λ) :

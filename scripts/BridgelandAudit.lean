@@ -443,6 +443,7 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Foundation.Deformation.basisNhd_isOpen_generator
 #print axioms BridgelandStabLean.Compatibility.BridgelandStability.Deformation.relativePhase_eq_wPhaseOf
 #print axioms BridgelandStabLean.Compatibility.BridgelandStability.StabilityCondition.toVendor_stabilitySeminorm
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.StabilityCondition.toVendor_mem_basisNhd_iff
 
 #print axioms BridgelandStabLean.Foundation.semiClosedUpperHalfPlane
 #print axioms BridgelandStabLean.Foundation.semiClosedUpperHalfPlane_ne_zero
