@@ -22,6 +22,22 @@ along one chain. Two consequences drive everything below:
   28 PRs. Local gates answer the same question in minutes, so never wait on
   GitHub CI — gate locally and let CI confirm afterwards.
 
+## 0a. This skill needs its own tooling on `main`
+
+`gh pr checkout` puts you on a branch cut before this tooling existed, so
+`scripts/gates.sh`, `scripts/check_mathlib_style.py`, and the edit hook are all
+absent there until the tooling commit is on `main` and the PR has been rebased.
+
+Check first:
+
+```bash
+git ls-tree origin/main --name-only scripts/gates.sh
+```
+
+Empty output? Stop: land the tooling PR before running this loop. Running the
+gates from another branch's copy works for a one-off dry run but leaves the
+branch's own edits ungated, which is the opposite of the point.
+
 ## 0. Refuse to start if the tree is dirty
 
 ```bash
