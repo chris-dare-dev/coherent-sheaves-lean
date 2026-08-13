@@ -73,8 +73,8 @@ four qualifications in this comment are unaffected by it:
   green without an entry here. Zero is a measurement taken at a commit, not a
   property the build maintains.
 
-* It issues **1728** audit commands. The environment holds **2063** authored
-  declarations under `BridgelandStabLean.*`, so **335 are outside this gate**,
+* It issues **1734** audit commands. The environment holds **2079** authored
+  declarations under `BridgelandStabLean.*`, so **345 are outside this gate**,
   all of them private or projections. ("Authored" excludes constructors,
   recursors, `casesOn`, matchers, equation lemmas, internal names, and the six
   generated families named above -- none of which anybody writes or could
@@ -84,7 +84,7 @@ four qualifications in this comment are unaffected by it:
   which cannot be written as a short name from an importing module. The
   instruction below cannot be followed for them, and no amount of diligence
   changes that.
-* **214 are structure field projections** emitted by the `structure` command.
+* **224 are structure field projections** emitted by the `structure` command.
   These are not a coverage gap in any useful sense; listing them would be noise.
   They are called out because a census that does not separate them reports a
   shortfall five times the real one.
@@ -369,6 +369,12 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Compatibility.BridgelandStability.StabilityFunction.toVendor_phase
 #print axioms BridgelandStabLean.Compatibility.BridgelandStability.StabilityFunction.toVendor_isSemistable_iff
 #print axioms BridgelandStabLean.Compatibility.BridgelandStability.StabilityFunction.toVendor_isStable_iff
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.phiPlus
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.phiMinus
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.phase_mem_range
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.phiMinus_le_phiPlus
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.HasHNProperty
 
 /-! ## Cohomology exactness (#146) -/
 

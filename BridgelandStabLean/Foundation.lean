@@ -14,6 +14,7 @@ import BridgelandStabLean.Foundation.Slicing.PhaseBounds
 import BridgelandStabLean.Foundation.Slicing.FiltrationOperations
 import BridgelandStabLean.Foundation.Slicing.PhaseTruncation
 import BridgelandStabLean.Foundation.StabilityFunction.Basic
+import BridgelandStabLean.Foundation.StabilityFunction.HarderNarasimhan
 
 /-!
 # Repository-owned Bridgeland foundations
