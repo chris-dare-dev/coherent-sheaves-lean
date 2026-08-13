@@ -384,6 +384,96 @@ theorem pullback_imageSubobject_eq (Z : StabilityFunction A) {E : A}
     exact semiClosedUpperHalfPlane_ne_zero
       (Z.nonzero_mem _ hnonzero) hcokernel
 
+/-- Consecutive pulled-back quotient subobjects have the same charge as the
+corresponding quotient factor. -/
+theorem charge_cokernel_pullback_eq (Z : StabilityFunction A) {E : A}
+    (M : Subobject E) {B₁ B₂ : Subobject (cokernel M.arrow)} (h : B₁ ≤ B₂) :
+    Z.charge (cokernel (Subobject.ofLE
+      ((Subobject.pullback (cokernel.π M.arrow)).obj B₁)
+      ((Subobject.pullback (cokernel.π M.arrow)).obj B₂)
+      (Functor.monotone _ h))) =
+      Z.charge (cokernel (Subobject.ofLE B₁ B₂ h)) := by
+  let pbB₁ := (Subobject.pullback (cokernel.π M.arrow)).obj B₁
+  let pbB₂ := (Subobject.pullback (cokernel.π M.arrow)).obj B₂
+  let hpull : pbB₁ ≤ pbB₂ := Functor.monotone _ h
+  have hshort₁ := ShortComplex.ShortExact.mk'
+    (ShortComplex.exact_cokernel (Subobject.ofLE pbB₁ pbB₂ hpull))
+    inferInstance inferInstance
+  have hshort₂ := ShortComplex.ShortExact.mk'
+    (ShortComplex.exact_cokernel (Subobject.ofLE B₁ B₂ h))
+    inferInstance inferInstance
+  have h₁ := Z.additive _ hshort₁
+  have h₂ := Z.additive _ hshort₂
+  have hB₁ := charge_pullback_eq_add Z M B₁
+  have hB₂ := charge_pullback_eq_add Z M B₂
+  linear_combination -h₁ + h₂ - hB₁ + hB₂
+
+/-- Consecutive pulled-back quotient subobjects have the same phase as the
+corresponding quotient factor. -/
+theorem phase_cokernel_pullback_eq (Z : StabilityFunction A) {E : A}
+    (M : Subobject E) {B₁ B₂ : Subobject (cokernel M.arrow)} (h : B₁ ≤ B₂) :
+    Z.phase (cokernel (Subobject.ofLE
+      ((Subobject.pullback (cokernel.π M.arrow)).obj B₁)
+      ((Subobject.pullback (cokernel.π M.arrow)).obj B₂)
+      (Functor.monotone _ h))) =
+      Z.phase (cokernel (Subobject.ofLE B₁ B₂ h)) := by
+  simp only [StabilityFunction.phase, charge_cokernel_pullback_eq Z M h]
+
+/-- Consecutive pulled-back quotient factors are canonically isomorphic. -/
+noncomputable def cokernelPullbackIso (Z : StabilityFunction A) {E : A}
+    (M : Subobject E) {B₁ B₂ : Subobject (cokernel M.arrow)} (h : B₁ < B₂) :
+    cokernel (Subobject.ofLE
+      ((Subobject.pullback (cokernel.π M.arrow)).obj B₁)
+      ((Subobject.pullback (cokernel.π M.arrow)).obj B₂)
+      (Functor.monotone _ h.le)) ≅
+      cokernel (Subobject.ofLE B₁ B₂ h.le) := by
+  let p := cokernel.π M.arrow
+  let pbB₁ := (Subobject.pullback p).obj B₁
+  let pbB₂ := (Subobject.pullback p).obj B₂
+  let hpull : pbB₁ ≤ pbB₂ := Functor.monotone _ h.le
+  have hw₁ := (Subobject.isPullback p B₁).w
+  have hw₂ := (Subobject.isPullback p B₂).w
+  have hcomm : Subobject.ofLE pbB₁ pbB₂ hpull ≫
+      Subobject.pullbackπ p B₂ =
+      Subobject.pullbackπ p B₁ ≫ Subobject.ofLE B₁ B₂ h.le := by
+    apply (cancel_mono B₂.arrow).mp
+    simp only [Category.assoc, Subobject.ofLE_arrow]
+    calc
+      Subobject.ofLE pbB₁ pbB₂ hpull ≫
+          (Subobject.pullbackπ p B₂ ≫ B₂.arrow) =
+          Subobject.ofLE pbB₁ pbB₂ hpull ≫ (pbB₂.arrow ≫ p) := by rw [hw₂]
+      _ = (Subobject.ofLE pbB₁ pbB₂ hpull ≫ pbB₂.arrow) ≫ p := by
+        rw [Category.assoc]
+      _ = pbB₁.arrow ≫ p := by rw [Subobject.ofLE_arrow]
+      _ = Subobject.pullbackπ p B₁ ≫ B₁.arrow := hw₁.symm
+  have hfactor : Subobject.ofLE pbB₁ pbB₂ hpull ≫
+      (Subobject.pullbackπ p B₂ ≫ cokernel.π (Subobject.ofLE B₁ B₂ h.le)) = 0 := by
+    rw [← Category.assoc, hcomm, Category.assoc, cokernel.condition, comp_zero]
+  let f := cokernel.desc (Subobject.ofLE pbB₁ pbB₂ hpull)
+    (Subobject.pullbackπ p B₂ ≫ cokernel.π (Subobject.ofLE B₁ B₂ h.le)) hfactor
+  haveI : Epi (Subobject.pullbackπ p B₂) := by
+    rw [← (Subobject.isPullback p B₂).isoPullback_hom_fst]
+    infer_instance
+  haveI : Epi f := epi_of_epi_fac (cokernel.π_desc _ _ _)
+  haveI : Mono f := by
+    suffices hk : kernel.ι f = 0 from Preadditive.mono_of_kernel_zero hk
+    have hshort := ShortComplex.ShortExact.mk'
+      (ShortComplex.exact_kernel f) inferInstance inferInstance
+    have hadd := Z.additive _ hshort
+    have hcharge : Z.charge (cokernel (Subobject.ofLE pbB₁ pbB₂ hpull)) =
+        Z.charge (cokernel (Subobject.ofLE B₁ B₂ h.le)) :=
+      charge_cokernel_pullback_eq Z M h.le
+    rw [hcharge] at hadd
+    have hkernelCharge : Z.charge (kernel f) = 0 :=
+      add_eq_right.mp hadd.symm
+    by_contra hk
+    have hkernel : ¬IsZero (kernel f) := fun hzero =>
+      hk (zero_of_source_iso_zero _ hzero.isoZero)
+    exact semiClosedUpperHalfPlane_ne_zero
+      (Z.nonzero_mem _ hkernel) hkernelCharge
+  haveI : IsIso f := isIso_of_mono_of_epi f
+  exact asIso f
+
 /-- A semistable object of phase above an HN factor has no morphisms to that
 factor. -/
 theorem hom_eq_zero_to_factor {Z : StabilityFunction A} {E B : A}
@@ -650,6 +740,167 @@ theorem phiMinus_eq {Z : StabilityFunction A} {E : A}
     exact (H.factor_semistable last).1 (IsZero.of_epi_eq_zero q hq)
   exact le_antisymm (le_of_not_gt (no_strict_order G F))
     (le_of_not_gt (no_strict_order F G))
+
+/-- Remove the first factor of a nontrivial HN filtration and push the
+remaining chain to the quotient by its first nonzero term. -/
+noncomputable def tail {Z : StabilityFunction A} {E : A}
+    (F : AbelianHNFiltration Z E) (hn : 2 ≤ F.n) :
+    AbelianHNFiltration Z (cokernel (F.chain ⟨1, by lia⟩).arrow) where
+  n := F.n - 1
+  nonempty := by lia
+  chain := fun ⟨j, _⟩ => imageSubobject
+    ((F.chain ⟨j + 1, by lia⟩).arrow ≫
+      cokernel.π (F.chain ⟨1, by lia⟩).arrow)
+  chain_strictMono := by
+    apply Fin.strictMono_iff_lt_succ.mpr
+    intro ⟨j, hj⟩
+    change imageSubobject ((F.chain ⟨j + 1, by lia⟩).arrow ≫
+        cokernel.π (F.chain ⟨1, by lia⟩).arrow) <
+      imageSubobject ((F.chain ⟨j + 2, by lia⟩).arrow ≫
+        cokernel.π (F.chain ⟨1, by lia⟩).arrow)
+    have hM₁ : F.chain ⟨1, by lia⟩ ≤ F.chain ⟨j + 1, by lia⟩ :=
+      F.chain_strictMono.monotone (Fin.mk_le_mk.mpr (by lia))
+    have hM₂ : F.chain ⟨1, by lia⟩ ≤ F.chain ⟨j + 2, by lia⟩ :=
+      F.chain_strictMono.monotone (Fin.mk_le_mk.mpr (by lia))
+    have hstep : F.chain ⟨j + 1, by lia⟩ < F.chain ⟨j + 2, by lia⟩ :=
+      F.chain_strictMono (Fin.mk_lt_mk.mpr (by lia))
+    have hle : imageSubobject ((F.chain ⟨j + 1, by lia⟩).arrow ≫
+          cokernel.π (F.chain ⟨1, by lia⟩).arrow) ≤
+        imageSubobject ((F.chain ⟨j + 2, by lia⟩).arrow ≫
+          cokernel.π (F.chain ⟨1, by lia⟩).arrow) := by
+      rw [show (F.chain ⟨j + 1, by lia⟩).arrow ≫
+          cokernel.π (F.chain ⟨1, by lia⟩).arrow =
+        Subobject.ofLE _ _ hstep.le ≫
+          ((F.chain ⟨j + 2, by lia⟩).arrow ≫
+            cokernel.π (F.chain ⟨1, by lia⟩).arrow) by
+        rw [← Category.assoc, Subobject.ofLE_arrow]]
+      exact imageSubobject_comp_le _ _
+    exact lt_of_le_of_ne hle (fun heq => (ne_of_lt hstep) <|
+      (pullback_imageSubobject_eq Z hM₁).symm.trans
+        (heq ▸ pullback_imageSubobject_eq Z hM₂))
+  chain_bot := by
+    change imageSubobject ((F.chain ⟨1, by lia⟩).arrow ≫
+      cokernel.π (F.chain ⟨1, by lia⟩).arrow) = ⊥
+    rw [cokernel.condition, imageSubobject_zero]
+  chain_top := by
+    change imageSubobject ((F.chain ⟨F.n - 1 + 1, by lia⟩).arrow ≫
+      cokernel.π (F.chain ⟨1, by lia⟩).arrow) = ⊤
+    have htop : F.chain ⟨F.n - 1 + 1, by lia⟩ = ⊤ :=
+      (congrArg F.chain (Fin.ext (Nat.sub_add_cancel (by lia)))).trans F.chain_top
+    rw [htop]
+    haveI : IsIso (⊤ : Subobject E).arrow := inferInstance
+    rw [imageSubobject_iso_comp]
+    exact StabilityFunction.imageSubobject_eq_top_of_epi _
+  phase := fun ⟨j, _⟩ => F.phase ⟨j + 1, by lia⟩
+  phase_strictAnti := by
+    intro ⟨j₁, _⟩ ⟨j₂, _⟩ h
+    exact F.phase_strictAnti (Fin.mk_lt_mk.mpr (by simpa using h))
+  factor_phase := by
+    intro ⟨j, hj⟩
+    exact (phase_cokernel_pullback_eq Z (F.chain ⟨1, by lia⟩) _).symm.trans
+      ((Z.phase_cokernel_ofLE_congr
+        (pullback_imageSubobject_eq Z
+          (F.chain_strictMono.monotone (Fin.mk_le_mk.mpr (by lia))))
+        (pullback_imageSubobject_eq Z
+          (F.chain_strictMono.monotone (Fin.mk_le_mk.mpr (by lia))))).trans
+        (F.factor_phase ⟨j + 1, by lia⟩))
+  factor_semistable := by
+    intro ⟨j, hj⟩
+    have hM₁ : F.chain ⟨1, by lia⟩ ≤ F.chain ⟨j + 1, by lia⟩ :=
+      F.chain_strictMono.monotone (Fin.mk_le_mk.mpr (by lia))
+    have hM₂ : F.chain ⟨1, by lia⟩ ≤ F.chain ⟨j + 2, by lia⟩ :=
+      F.chain_strictMono.monotone (Fin.mk_le_mk.mpr (by lia))
+    have hstep : F.chain ⟨j + 1, by lia⟩ < F.chain ⟨j + 2, by lia⟩ :=
+      F.chain_strictMono (Fin.mk_lt_mk.mpr (by lia))
+    have hle : imageSubobject ((F.chain ⟨j + 1, by lia⟩).arrow ≫
+          cokernel.π (F.chain ⟨1, by lia⟩).arrow) ≤
+        imageSubobject ((F.chain ⟨j + 2, by lia⟩).arrow ≫
+          cokernel.π (F.chain ⟨1, by lia⟩).arrow) := by
+      rw [show (F.chain ⟨j + 1, by lia⟩).arrow ≫
+          cokernel.π (F.chain ⟨1, by lia⟩).arrow =
+        Subobject.ofLE _ _ hstep.le ≫
+          ((F.chain ⟨j + 2, by lia⟩).arrow ≫
+            cokernel.π (F.chain ⟨1, by lia⟩).arrow) by
+        rw [← Category.assoc, Subobject.ofLE_arrow]]
+      exact imageSubobject_comp_le _ _
+    have hstrict : imageSubobject ((F.chain ⟨j + 1, by lia⟩).arrow ≫
+          cokernel.π (F.chain ⟨1, by lia⟩).arrow) <
+        imageSubobject ((F.chain ⟨j + 2, by lia⟩).arrow ≫
+          cokernel.π (F.chain ⟨1, by lia⟩).arrow) :=
+      lt_of_le_of_ne hle (fun heq => (ne_of_lt hstep) <|
+        (pullback_imageSubobject_eq Z hM₁).symm.trans
+          (heq ▸ pullback_imageSubobject_eq Z hM₂))
+    exact Z.isSemistable_of_iso
+      (cokernelPullbackIso Z (F.chain ⟨1, by lia⟩) hstrict)
+      (Z.isSemistable_cokernel_ofLE_congr
+        (pullback_imageSubobject_eq Z hM₁)
+        (pullback_imageSubobject_eq Z hM₂)
+        (F.factor_semistable ⟨j + 1, by lia⟩))
+
+@[simp]
+theorem tail_n {Z : StabilityFunction A} {E : A}
+    (F : AbelianHNFiltration Z E) (hn : 2 ≤ F.n) :
+    (F.tail hn).n = F.n - 1 :=
+  rfl
+
+/-- Transporting an owner HN filtration along equality of its ambient objects
+preserves the number of factors. -/
+theorem transport_n {Z : StabilityFunction A} {E₁ E₂ : A}
+    (h : E₁ = E₂) (F : AbelianHNFiltration Z E₁) :
+    (h ▸ F).n = F.n := by
+  subst h
+  rfl
+
+/-- Owner HN filtrations have a unique length when every object has a finite
+subobject lattice.  The proof recursively removes the intrinsic first HN term
+and descends to its strictly smaller quotient subobject lattice. -/
+theorem n_eq {Z : StabilityFunction A} {E : A} (hE : ¬IsZero E)
+    (hFinite : ∀ X : A, Finite (Subobject X))
+    (F G : AbelianHNFiltration Z E) : F.n = G.n := by
+  suffices main : ∀ k : ℕ, ∀ X : A, ¬IsZero X →
+      Nat.card (Subobject X) ≤ k →
+      ∀ F₁ F₂ : AbelianHNFiltration Z X, F₁.n = F₂.n by
+    exact main _ E hE le_rfl F G
+  intro k
+  induction k with
+  | zero =>
+      intro X hX hcard F₁ F₂
+      haveI := hFinite X
+      haveI := Fintype.ofFinite (Subobject X)
+      have hpositive : 0 < Nat.card (Subobject X) := by
+        rw [Nat.card_eq_fintype_card]
+        haveI : Nonempty (Subobject X) := ⟨⊥⟩
+        exact Fintype.card_pos
+      lia
+  | succ k ih =>
+      intro X hX hcard F₁ F₂
+      haveI := hFinite X
+      by_cases hsemistable : Z.IsSemistable X
+      · exact (F₁.n_eq_one_of_semistable hsemistable).trans
+          (F₂.n_eq_one_of_semistable hsemistable).symm
+      · have hn₁ : 2 ≤ F₁.n := F₁.two_le_n_of_not_isSemistable hsemistable
+        have hn₂ : 2 ≤ F₂.n := F₂.two_le_n_of_not_isSemistable hsemistable
+        let M := F₁.chain ⟨1, by lia⟩
+        have hMnonzero : M ≠ ⊥ := F₁.chain_one_ne_bot
+        have hMproper : M ≠ ⊤ := by
+          intro htop
+          have hlt : F₁.chain ⟨1, by lia⟩ < F₁.chain ⟨F₁.n, by lia⟩ :=
+            F₁.chain_strictMono (Fin.mk_lt_mk.mpr (by lia))
+          change F₁.chain ⟨1, by lia⟩ = ⊤ at htop
+          rw [F₁.chain_top, htop] at hlt
+          exact lt_irrefl _ hlt
+        have hcardQuotient : Nat.card (Subobject (cokernel M.arrow)) <
+            Nat.card (Subobject X) := card_subobject_cokernel_lt hMnonzero
+        have hfirst : F₂.chain ⟨1, by lia⟩ = M :=
+          (F₁.chain_one_eq F₂).symm
+        have hquotient : cokernel (F₂.chain ⟨1, by lia⟩).arrow =
+            cokernel M.arrow := congrArg (fun S => cokernel (Subobject.arrow S)) hfirst
+        have htail : (F₁.tail hn₁).n = (hquotient ▸ F₂.tail hn₂).n :=
+          ih (cokernel M.arrow)
+            (StabilityFunction.cokernel_not_isZero_of_ne_top hMproper)
+            (by lia) _ _
+        rw [F₁.tail_n, transport_n, F₂.tail_n] at htail
+        lia
 
 end AbelianHNFiltration
 
