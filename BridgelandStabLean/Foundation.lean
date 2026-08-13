@@ -3,6 +3,7 @@ Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under the MIT license.
 -/
 import BridgelandStabLean.Foundation.PostnikovTower
+import BridgelandStabLean.Foundation.ExtensionClosure
 import BridgelandStabLean.Foundation.Slicing
 import BridgelandStabLean.Foundation.GrothendieckPresentation
 import BridgelandStabLean.Foundation.TriangulatedGrothendieck
@@ -25,6 +26,7 @@ import BridgelandStabLean.Foundation.Deformation.SkewedStability
 import BridgelandStabLean.Foundation.Deformation.ChargePerturbation
 import BridgelandStabLean.Foundation.Deformation.StabilitySeminorm
 import BridgelandStabLean.Foundation.Deformation.DeformedPredicate
+import BridgelandStabLean.Foundation.Deformation.DeformedCuts
 import BridgelandStabLean.Foundation.Deformation.DeformedPhaseControl
 import BridgelandStabLean.Foundation.Deformation.IntervalHeart
 import BridgelandStabLean.Foundation.Deformation.MidpointHeart

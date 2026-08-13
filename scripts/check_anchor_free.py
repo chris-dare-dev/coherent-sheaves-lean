@@ -27,6 +27,7 @@ ANCHOR = "BridgelandStability"
 ANCHOR_FREE = [
     "BridgelandStabLean.Foundation",
     "BridgelandStabLean.Foundation.PostnikovTower",
+    "BridgelandStabLean.Foundation.ExtensionClosure",
     "BridgelandStabLean.Foundation.Slicing",
     "BridgelandStabLean.Foundation.GrothendieckPresentation",
     "BridgelandStabLean.Foundation.TriangulatedGrothendieck",
@@ -42,6 +43,7 @@ ANCHOR_FREE = [
     "BridgelandStabLean.Foundation.Deformation.ChargePerturbation",
     "BridgelandStabLean.Foundation.Deformation.StabilitySeminorm",
     "BridgelandStabLean.Foundation.Deformation.DeformedPredicate",
+    "BridgelandStabLean.Foundation.Deformation.DeformedCuts",
     "BridgelandStabLean.Foundation.Deformation.DeformedPhaseControl",
     "BridgelandStabLean.Foundation.Deformation.IntervalHeart",
     "BridgelandStabLean.Foundation.Deformation.MidpointHeart",
