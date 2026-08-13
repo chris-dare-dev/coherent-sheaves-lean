@@ -176,7 +176,73 @@ theorem ofVendor_phase {Z : CategoryTheory.StabilityFunction A} {E : A}
     (ofVendor A F).phase i = F.φ i :=
   rfl
 
+/-- Conversion preserves the highest phase of an owner HN filtration. -/
+theorem toVendor_phiPlus {Z : Foundation.StabilityFunction A} {E : A}
+    (F : Foundation.AbelianHNFiltration Z E) :
+    (toVendor A F).φ ⟨0, (toVendor A F).hn⟩ = F.phiPlus :=
+  rfl
+
+/-- Conversion preserves the lowest phase of an owner HN filtration. -/
+theorem toVendor_phiMinus {Z : Foundation.StabilityFunction A} {E : A}
+    (F : Foundation.AbelianHNFiltration Z E) :
+    (toVendor A F).φ ⟨(toVendor A F).n - 1,
+      Nat.sub_lt (toVendor A F).hn (by decide)⟩ = F.phiMinus :=
+  rfl
+
+/-- Conversion preserves the highest phase of a retained HN filtration. -/
+@[simp]
+theorem ofVendor_phiPlus {Z : CategoryTheory.StabilityFunction A} {E : A}
+    (F : CategoryTheory.AbelianHNFiltration Z E) :
+    (ofVendor A F).phiPlus = F.φ ⟨0, F.hn⟩ :=
+  rfl
+
+/-- Conversion preserves the lowest phase of a retained HN filtration. -/
+@[simp]
+theorem ofVendor_phiMinus {Z : CategoryTheory.StabilityFunction A} {E : A}
+    (F : CategoryTheory.AbelianHNFiltration Z E) :
+    (ofVendor A F).phiMinus =
+      F.φ ⟨F.n - 1, Nat.sub_lt F.hn (by decide)⟩ :=
+  rfl
+
 end AbelianHNFiltration
+
+namespace StabilityFunction
+
+variable (A : Type u) [Category.{v} A] [Abelian A]
+
+/-- The HN property passes from an owner stability function to its retained
+representation. -/
+theorem toVendor_hasHNProperty {Z : Foundation.StabilityFunction A}
+    (hZ : Z.HasHNProperty) : (toVendor A Z).HasHNProperty :=
+  fun E hE => (hZ E hE).map (AbelianHNFiltration.toVendor A)
+
+/-- The HN property passes from a retained stability function to its owner
+representation. -/
+theorem ofVendor_hasHNProperty {Z : CategoryTheory.StabilityFunction A}
+    (hZ : Z.HasHNProperty) : (ofVendor A Z).HasHNProperty :=
+  fun E hE => (hZ E hE).map (AbelianHNFiltration.ofVendor A)
+
+/-- Passing to the retained representation preserves and reflects the HN
+property. -/
+@[simp]
+theorem toVendor_hasHNProperty_iff (Z : Foundation.StabilityFunction A) :
+    (toVendor A Z).HasHNProperty ↔ Z.HasHNProperty := by
+  constructor
+  · intro hZ
+    simpa only [ofVendor_toVendor] using ofVendor_hasHNProperty A hZ
+  · exact toVendor_hasHNProperty A
+
+/-- Passing to the owner representation preserves and reflects the HN
+property. -/
+@[simp]
+theorem ofVendor_hasHNProperty_iff (Z : CategoryTheory.StabilityFunction A) :
+    (ofVendor A Z).HasHNProperty ↔ Z.HasHNProperty := by
+  constructor
+  · intro hZ
+    simpa only [toVendor_ofVendor] using toVendor_hasHNProperty A hZ
+  · exact ofVendor_hasHNProperty A
+
+end StabilityFunction
 
 namespace GrothendieckGroup
 

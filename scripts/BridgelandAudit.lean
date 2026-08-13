@@ -59,8 +59,8 @@ to **488**. Both were right against the filter of the day, and both are
 superseded here -- the 821 in particular counted the 30 generated names
 described above. **Re-run the command; do not adjust the numbers.**
 
-**THE GAP IS NOW ZERO, re-measured while adding the issue #231 owner slicing
-t-structure foundation on 2026-08-13.** Every
+**THE GAP IS NOW ZERO, re-measured while adding the issue #233 owner stability
+function and HN uniqueness foundation on 2026-08-13.** Every
 public declaration in this library that is not a structure field projection is
 named below. Be precise about what that does and does not mean -- three of the
 four qualifications in this comment are unaffected by it:
@@ -73,7 +73,7 @@ four qualifications in this comment are unaffected by it:
   green without an entry here. Zero is a measurement taken at a commit, not a
   property the build maintains.
 
-* It issues **1785** audit commands. The environment holds **2130** authored
+* It issues **1793** audit commands. The environment holds **2138** authored
   declarations under `BridgelandStabLean.*`, so **345 are outside this gate**,
   all of them private or projections. ("Authored" excludes constructors,
   recursors, `casesOn`, matchers, equation lemmas, internal names, and the six
@@ -111,7 +111,7 @@ four qualifications in this comment are unaffected by it:
   For a `def`, `#print axioms` reports the axiom closure of a CONSTRUCTION and
   asserts nothing about any proposition. In particular
   `CategoryTheory.Triangulated.StabilityMassTriangleInequality` appears below
-formatted identically to the **1241** real theorems, but it is a `def ... :
+formatted identically to the **1249** real theorems, but it is a `def ... :
   Prop` -- its clean line means the definition is axiom-clean, NOT that the
   proposition holds.
 
@@ -381,6 +381,14 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Compatibility.BridgelandStability.AbelianHNFiltration.ofVendor_n
 #print axioms BridgelandStabLean.Compatibility.BridgelandStability.AbelianHNFiltration.toVendor_phase
 #print axioms BridgelandStabLean.Compatibility.BridgelandStability.AbelianHNFiltration.ofVendor_phase
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.AbelianHNFiltration.toVendor_phiPlus
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.AbelianHNFiltration.toVendor_phiMinus
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.AbelianHNFiltration.ofVendor_phiPlus
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.AbelianHNFiltration.ofVendor_phiMinus
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.StabilityFunction.toVendor_hasHNProperty
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.StabilityFunction.ofVendor_hasHNProperty
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.StabilityFunction.toVendor_hasHNProperty_iff
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.StabilityFunction.ofVendor_hasHNProperty_iff
 #print axioms BridgelandStabLean.Foundation.StabilityFunction.subobject_isZero_iff_eq_bot
 #print axioms BridgelandStabLean.Foundation.StabilityFunction.subobject_ne_bot_of_not_isZero
 #print axioms BridgelandStabLean.Foundation.StabilityFunction.subobject_not_isZero_of_ne_bot
