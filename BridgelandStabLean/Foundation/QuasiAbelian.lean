@@ -124,6 +124,54 @@ theorem isStrictMono_of_isLimitKernelFork
     simpa [Abelian.image] using hcomp]
   infer_instance
 
+/-- A strict epimorphism is the cokernel of its kernel. -/
+noncomputable def IsStrictEpi.isColimitCokernelCofork
+    (hf : IsStrictEpi f) :
+    IsColimit (CokernelCofork.ofπ f (kernel.condition f)) := by
+  letI : Epi f := hf.epi
+  letI : IsIso (Abelian.coimageImageComparison f) := hf.strict
+  letI : IsIso (kernel.ι (cokernel.π f)) :=
+    kernel.of_cokernel_of_epi (f := f)
+  let e : cokernel (kernel.ι f) ≅ Y :=
+    asIso (Abelian.coimageImageComparison f ≫ kernel.ι (cokernel.π f))
+  have hm : cokernel.π (kernel.ι f) ≫ e.hom = f := by
+    change cokernel.π (kernel.ι f) ≫ Abelian.coimageImageComparison f ≫
+      kernel.ι (cokernel.π f) = f
+    exact Abelian.coimage_image_factorisation (f := f)
+  exact cokernel.cokernelIso (kernel.ι f) f e hm
+
+/-- A strict monomorphism is the kernel of its cokernel. -/
+noncomputable def IsStrictMono.isLimitKernelFork
+    (hf : IsStrictMono f) :
+    IsLimit (KernelFork.ofι f (cokernel.condition f)) := by
+  letI : Mono f := hf.mono
+  letI : IsIso (Abelian.coimageImageComparison f) := hf.strict
+  letI : IsIso (cokernel.π (kernel.ι f)) :=
+    cokernel.of_kernel_of_mono (f := f)
+  let e : X ≅ kernel (cokernel.π f) :=
+    asIso (cokernel.π (kernel.ι f) ≫ Abelian.coimageImageComparison f)
+  have hm : e.hom ≫ kernel.ι (cokernel.π f) = f := by
+    dsimp [e]
+    rw [Category.assoc]
+    exact Abelian.coimage_image_factorisation (f := f)
+  exact kernel.isoKernel (cokernel.π f) f e hm
+
+/-- A strict epimorphism supplies a normal epimorphism witness. -/
+@[reducible]
+noncomputable def IsStrictEpi.normalEpi (hf : IsStrictEpi f) : NormalEpi f where
+  W := kernel f
+  g := kernel.ι f
+  w := kernel.condition f
+  isColimit := hf.isColimitCokernelCofork
+
+/-- A strict monomorphism supplies a normal monomorphism witness. -/
+@[reducible]
+noncomputable def IsStrictMono.normalMono (hf : IsStrictMono f) : NormalMono f where
+  Z := cokernel f
+  g := cokernel.π f
+  w := cokernel.condition f
+  isLimit := hf.isLimitKernelFork
+
 end
 
 section
