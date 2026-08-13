@@ -270,6 +270,33 @@ theorem skewedPhase_eq_of_common_interval
   change _ ∈ Set.Ioc ((c + d) / 2 - 1) ((c + d) / 2 + 1)
   exact ⟨hleft.trans hphase.1, hphase.2.le.trans hright⟩
 
+/-- Perturbed semistability transports to a narrower interval presentation
+when the source phase window lies in the target branch. -/
+theorem skewedSemistable_of_subinterval
+    (σ : StabilityCondition.WithClassMap C κ)
+    (W : Λ →+ ℂ) {r : ℝ} (hr0 : 0 ≤ r) (hr1 : r < 1)
+    (hW : stabilitySeminorm C σ (W - σ.Z) ≤ ENNReal.ofReal r)
+    {a b c d ε ψ : ℝ} (hab : a < b) (hcd : c < d)
+    (hε : 0 < ε) (hε2 : ε ≤ 1 / 2)
+    (hthin : b - a + 2 * ε < 1)
+    (hsin : stabilitySeminorm C σ (W - σ.Z) <
+      ENNReal.ofReal (Real.sin (Real.pi * ε)))
+    (hleft : (c + d) / 2 - 1 < a - ε)
+    (hright : b + ε ≤ (c + d) / 2 + 1)
+    (hmono : σ.slicing.intervalProp C c d ≤ σ.slicing.intervalProp C a b)
+    {E : C}
+    (hI : σ.slicing.intervalProp C c d E)
+    (hSS : (skewedStabilityFunctionOfSeminormLtOne C σ W hr0 hr1 hW hab).IsSemistable
+      E ψ) :
+    (skewedStabilityFunctionOfSeminormLtOne C σ W hr0 hr1 hW hcd).IsSemistable
+      E ψ := by
+  apply hSS.ofCompatibleInterval hI hmono rfl
+  · exact (σ.skewedPhase_eq_of_common_interval C W hr0 hr1 hW hab hcd hε hε2
+      hthin hsin hleft hright hSS.interval hSS.nonzero).symm
+  · intro K hK hKne
+    exact (σ.skewedPhase_eq_of_common_interval C W hr0 hr1 hW hab hcd hε hε2
+      hthin hsin hleft hright (hmono K hK) hKne).symm
+
 end StabilityCondition.WithClassMap
 
 end BridgelandStabLean.Foundation
