@@ -3,6 +3,7 @@ Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under the MIT license.
 -/
 import BridgelandStabLean.Foundation.StabilityFunction.HarderNarasimhan
+import Mathlib.CategoryTheory.Subobject.Limits
 
 /-!
 # Subobject lemmas for owner stability functions
@@ -72,6 +73,53 @@ theorem cokernel_not_isZero_of_ne_top {E : A} {B : Subobject E}
   haveI : Epi B.arrow := Preadditive.epi_of_isZero_cokernel B.arrow hcoker
   haveI : IsIso B.arrow := isIso_of_mono_of_epi B.arrow
   exact hB (Subobject.eq_top_of_isIso_arrow B)
+
+/-- Precomposing a morphism by an epimorphism does not change its image
+subobject in an abelian category. -/
+theorem imageSubobject_epi_comp {X Y Z : A} (e : X ⟶ Y) [Epi e]
+    (f : Y ⟶ Z) : imageSubobject (e ≫ f) = imageSubobject f := by
+  apply le_antisymm (imageSubobject_comp_le e f)
+  have hle := imageSubobject_comp_le e f
+  haveI : Mono (Subobject.ofLE _ _ hle) := by
+    apply (mono_comp_iff_of_mono _ (imageSubobject f).arrow).mp
+    rw [Subobject.ofLE_arrow]
+    infer_instance
+  haveI : Epi (Subobject.ofLE _ _ hle) :=
+    imageSubobject_comp_le_epi_of_epi e f
+  haveI : IsIso (Subobject.ofLE _ _ hle) :=
+    isIso_of_mono_of_epi _
+  exact Subobject.le_of_comm (inv (Subobject.ofLE _ _ hle)) (by
+    rw [IsIso.inv_comp_eq, Subobject.ofLE_arrow])
+
+/-- The image subobject of an epimorphism is top. -/
+theorem imageSubobject_eq_top_of_epi {X Y : A} (f : X ⟶ Y) [Epi f] :
+    imageSubobject f = ⊤ := by
+  haveI : Epi (imageSubobject f).arrow :=
+    epi_of_epi_fac (imageSubobject_arrow_comp f)
+  haveI : IsIso (imageSubobject f).arrow :=
+    isIso_of_mono_of_epi _
+  exact Subobject.eq_top_of_isIso_arrow _
+
+/-- Pullback along an epimorphism is injective on subobjects. -/
+theorem pullback_obj_injective_of_epi {X Y : A} (p : X ⟶ Y) [Epi p] :
+    Function.Injective (Subobject.pullback p).obj := by
+  intro B₁ B₂ h
+  haveI : Epi (Subobject.pullbackπ p B₁) := by
+    rw [← (Subobject.isPullback p B₁).isoPullback_hom_fst]
+    infer_instance
+  haveI : Epi (Subobject.pullbackπ p B₂) := by
+    rw [← (Subobject.isPullback p B₂).isoPullback_hom_fst]
+    infer_instance
+  calc
+    B₁ = imageSubobject (Subobject.pullbackπ p B₁ ≫ B₁.arrow) := by
+      rw [imageSubobject_epi_comp, imageSubobject_mono, Subobject.mk_arrow]
+    _ = imageSubobject (((Subobject.pullback p).obj B₁).arrow ≫ p) := by
+      rw [(Subobject.isPullback p B₁).w]
+    _ = imageSubobject (((Subobject.pullback p).obj B₂).arrow ≫ p) := by rw [h]
+    _ = imageSubobject (Subobject.pullbackπ p B₂ ≫ B₂.arrow) := by
+      rw [← (Subobject.isPullback p B₂).w]
+    _ = B₂ := by
+      rw [imageSubobject_epi_comp, imageSubobject_mono, Subobject.mk_arrow]
 
 end StabilityFunction
 

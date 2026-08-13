@@ -183,6 +183,50 @@ theorem le_of_ofLE_comp_cokernel_zero {E : A} {B M S : Subobject E}
     _ = Subobject.ofLE B S hBS ≫ S.arrow := by congr 1
     _ = B.arrow := Subobject.ofLE_arrow hBS
 
+/-- Pulling bottom back along the quotient by a subobject recovers the
+subobject. -/
+theorem pullback_cokernel_bot_eq {E : A} (M : Subobject E) :
+    (Subobject.pullback (cokernel.π M.arrow)).obj ⊥ = M := by
+  apply le_antisymm
+  · let P := (Subobject.pullback (cokernel.π M.arrow)).obj ⊥
+    have hP : P.arrow ≫ cokernel.π M.arrow = 0 := by
+      have h := (Subobject.isPullback (cokernel.π M.arrow)
+        (⊥ : Subobject (cokernel M.arrow))).w
+      simp only [Subobject.bot_arrow, comp_zero] at h
+      exact h.symm
+    exact le_of_arrow_comp_cokernel_zero hP
+  · exact Subobject.le_of_comm
+      ((Subobject.isPullback (cokernel.π M.arrow) (⊥ : Subobject _)).isLimit.lift
+        (PullbackCone.mk 0 M.arrow (by simp [cokernel.condition])))
+      ((Subobject.isPullback (cokernel.π M.arrow) (⊥ : Subobject _)).isLimit.fac _
+        WalkingCospan.right)
+
+/-- Quotienting by a nonzero subobject strictly decreases a finite subobject
+lattice. -/
+theorem card_subobject_cokernel_lt {E : A} {M : Subobject E}
+    (hM : M ≠ ⊥) [Finite (Subobject E)] :
+    Nat.card (Subobject (cokernel M.arrow)) < Nat.card (Subobject E) := by
+  haveI := Fintype.ofFinite (Subobject E)
+  haveI : Finite (Subobject (cokernel M.arrow)) :=
+    Finite.of_injective _ (StabilityFunction.pullback_obj_injective_of_epi
+      (cokernel.π M.arrow))
+  haveI := Fintype.ofFinite (Subobject (cokernel M.arrow))
+  rw [Nat.card_eq_fintype_card, Nat.card_eq_fintype_card]
+  exact Fintype.card_lt_of_injective_of_notMem
+    (Subobject.pullback (cokernel.π M.arrow)).obj
+    (StabilityFunction.pullback_obj_injective_of_epi _)
+    (by
+      simp only [Set.mem_range, not_exists]
+      intro B hB
+      apply hM
+      apply le_bot_iff.mp
+      calc
+        M = (Subobject.pullback (cokernel.π M.arrow)).obj ⊥ :=
+          (pullback_cokernel_bot_eq M).symm
+        _ ≤ (Subobject.pullback (cokernel.π M.arrow)).obj B :=
+          Functor.monotone _ bot_le
+        _ = ⊥ := hB)
+
 /-- A semistable object of phase above an HN factor has no morphisms to that
 factor. -/
 theorem hom_eq_zero_to_factor {Z : StabilityFunction A} {E B : A}
