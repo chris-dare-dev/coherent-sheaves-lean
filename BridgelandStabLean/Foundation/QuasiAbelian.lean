@@ -4,6 +4,7 @@ Released under the MIT license.
 -/
 import Mathlib.CategoryTheory.Abelian.Basic
 import Mathlib.Algebra.Homology.ShortComplex.ShortExact
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 
 /-!
 # Strict morphisms for owner quasi-abelian foundations
@@ -335,6 +336,22 @@ theorem isStrictEpi_cokernel {X Y : C} (g : X ⟶ Y) :
           inv (kernel.ι (cokernel.π (cokernel.π g))) from by
       rw [← hcomp, Category.assoc, IsIso.hom_inv_id, Category.comp_id]]
     infer_instance
+
+end
+
+section
+
+variable (C : Type u) [Category.{v} C] [Preadditive C]
+  [HasKernels C] [HasCokernels C] [HasPullbacks C] [HasPushouts C]
+
+/-- An owner quasi-abelian category is preabelian and has pullbacks and
+pushouts, with strict epimorphisms stable under pullback and strict
+monomorphisms stable under pushout. -/
+class QuasiAbelian : Prop where
+  pullback_strictEpi : ∀ {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z),
+    IsStrictEpi g → IsStrictEpi (pullback.fst f g)
+  pushout_strictMono : ∀ {X Y Z : C} (f : Z ⟶ X) (g : Z ⟶ Y),
+    IsStrictMono f → IsStrictMono (pushout.inr f g)
 
 end
 

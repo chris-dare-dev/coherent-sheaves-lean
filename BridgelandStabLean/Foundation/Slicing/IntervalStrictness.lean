@@ -4,6 +4,8 @@ Released under the MIT license.
 -/
 import BridgelandStabLean.Foundation.QuasiAbelian
 import BridgelandStabLean.Foundation.Slicing.IntervalComparisons
+import Mathlib.CategoryTheory.ObjectProperty.FiniteProducts
+import Mathlib.CategoryTheory.Preadditive.LeftExact
 
 /-!
 # Strict morphisms detected by adjacent slicing hearts
@@ -17,7 +19,7 @@ fully faithful interval embedding.
 
 noncomputable section
 
-open CategoryTheory CategoryTheory.Limits
+open CategoryTheory CategoryTheory.Limits CategoryTheory.Pretriangulated
 
 universe u v
 
@@ -32,6 +34,13 @@ variable (C : Type u) [Category.{v} C] [HasZeroObject C] [HasShift C ℤ]
 section
 
 variable {a b : ℝ} [Fact (a < b)] [Fact (b - a ≤ 1)]
+
+/-- Open slicing intervals are invariant under isomorphism. -/
+instance Slicing.intervalProp_isClosedUnderIsomorphisms (s : Slicing C) :
+    (s.intervalProp C a b).IsClosedUnderIsomorphisms where
+  of_iso e h := h.elim
+    (fun hE ↦ Or.inl (IsZero.of_iso hE e.symm))
+    (fun ⟨F, hF⟩ ↦ Or.inr ⟨F.ofIso C e, hF⟩)
 
 /-- A strict monomorphism in a thin interval becomes monic in the right
 adjacent heart. -/
@@ -422,6 +431,198 @@ theorem Slicing.IntervalCat.comp_strictMono (s : Slicing C)
   haveI : Mono (FR.map (f ≫ g)) := by
     simpa using (show Mono (FR.map f ≫ FR.map g) by infer_instance)
   exact Slicing.IntervalCat.strictMono_of_mono_toRightHeart C s (f ≫ g)
+
+/-- The left adjacent-heart embedding preserves the canonical interval
+kernel. -/
+noncomputable instance Slicing.IntervalCat.toLeftHeart_preservesKernel
+    (s : Slicing C) {X Y : s.IntervalCat C a b} (f : X ⟶ Y) :
+    PreservesLimit (parallelPair f 0)
+      (Slicing.IntervalCat.toLeftHeart (C := C) (s := s) a b
+        (Fact.out : b - a ≤ 1)) := by
+  let t := (s.phaseShift C a).toTStructure C
+  letI := t.hasHeartFullSubcategory
+  letI : Abelian t.heart.FullSubcategory := heartFullSubcategoryAbelian t
+  let FL := Slicing.IntervalCat.toLeftHeart (C := C) (s := s) a b
+    (Fact.out : b - a ≤ 1)
+  apply preservesLimit_of_preserves_limit_cone (kernelIsKernel f)
+  change IsLimit (FL.mapCone
+    (KernelFork.ofι (kernel.ι f) (kernel.condition f)))
+  exact (isLimitMapConeForkEquiv' FL (kernel.condition f)).symm <|
+    IsLimit.ofIsoLimit (kernelIsKernel (FL.map f)) <|
+      Fork.ext
+        ((Slicing.IntervalCat.toLeftHeartKernelIso
+          (C := C) (s := s) (a := a) (b := b) f).symm) (by
+          have hι :
+              (Slicing.IntervalCat.toLeftHeartKernelIso
+                (C := C) (s := s) (a := a) (b := b) f).hom ≫
+                kernel.ι (FL.map f) = FL.map (kernel.ι f) := by
+            simpa [FL] using
+              Slicing.IntervalCat.toLeftHeartKernelIso_hom_comp_ι
+                (C := C) (s := s) (a := a) (b := b) f
+          change
+            (Slicing.IntervalCat.toLeftHeartKernelIso
+              (C := C) (s := s) (a := a) (b := b) f).inv ≫
+              FL.map (kernel.ι f) = kernel.ι (FL.map f)
+          rw [← hι]
+          simp)
+
+/-- The right adjacent-heart embedding preserves the canonical interval
+cokernel. -/
+noncomputable instance Slicing.IntervalCat.toRightHeart_preservesCokernel
+    (s : Slicing C) {X Y : s.IntervalCat C a b} (f : X ⟶ Y) :
+    PreservesColimit (parallelPair f 0)
+      (Slicing.IntervalCat.toRightHeart (C := C) (s := s) a b
+        (Fact.out : b - a ≤ 1)) := by
+  let t := (s.phaseShift C (b - 1)).toDualTStructure C
+  letI := t.hasHeartFullSubcategory
+  letI : Abelian t.heart.FullSubcategory := heartFullSubcategoryAbelian t
+  let FR := Slicing.IntervalCat.toRightHeart (C := C) (s := s) a b
+    (Fact.out : b - a ≤ 1)
+  apply preservesColimit_of_preserves_colimit_cocone (cokernelIsCokernel f)
+  change IsColimit (FR.mapCocone
+    (CokernelCofork.ofπ (cokernel.π f) (cokernel.condition f)))
+  exact (isColimitMapCoconeCoforkEquiv' FR (cokernel.condition f)).symm <|
+    IsColimit.ofIsoColimit (cokernelIsCokernel (FR.map f)) <|
+      Cofork.ext
+        ((Slicing.IntervalCat.toRightHeartCokernelIso
+          (C := C) (s := s) (a := a) (b := b) f).symm) (by
+          have hπ : FR.map (cokernel.π f) ≫
+                (Slicing.IntervalCat.toRightHeartCokernelIso
+                  (C := C) (s := s) (a := a) (b := b) f).hom =
+              cokernel.π (FR.map f) := by
+            simpa [FR] using
+              Slicing.IntervalCat.toRightHeartCokernelIso_π_comp_hom
+                (C := C) (s := s) (a := a) (b := b) f
+          change cokernel.π (FR.map f) ≫
+              (Slicing.IntervalCat.toRightHeartCokernelIso
+                (C := C) (s := s) (a := a) (b := b) f).inv =
+            FR.map (cokernel.π f)
+          rw [← hπ, Category.assoc, Iso.hom_inv_id, Category.comp_id])
+
+/-- Open slicing intervals are closed under binary products. -/
+instance Slicing.intervalProp_isClosedUnderBinaryProducts (s : Slicing C) :
+    (s.intervalProp C a b).IsClosedUnderBinaryProducts where
+  limitsOfShape_le := by
+    rintro X ⟨p⟩
+    refine (s.intervalProp C a b).prop_of_iso ?_
+      (s.intervalProp_of_triangle C
+        (p.prop_diag_obj ⟨WalkingPair.left⟩)
+        (p.prop_diag_obj ⟨WalkingPair.right⟩)
+        (binaryProductTriangle_distinguished _ _))
+    exact IsLimit.conePointUniqueUpToIso (prodIsProd _ _)
+      ((IsLimit.postcomposeHomEquiv (diagramIsoPair p.diag) _).2 p.isLimit)
+
+/-- Open slicing intervals are closed under finite products. -/
+instance Slicing.intervalProp_isClosedUnderFiniteProducts (s : Slicing C) :
+    (s.intervalProp C a b).IsClosedUnderFiniteProducts :=
+  ObjectProperty.IsClosedUnderFiniteProducts.mk'
+
+/-- Thin interval categories have finite products. -/
+noncomputable instance Slicing.intervalCat_hasFiniteProducts
+    (s : Slicing C) : HasFiniteProducts (s.IntervalCat C a b) := by
+  infer_instance
+
+/-- Thin interval categories have binary biproducts. -/
+noncomputable instance Slicing.intervalCat_hasBinaryBiproducts
+    (s : Slicing C) : HasBinaryBiproducts (s.IntervalCat C a b) :=
+  HasBinaryBiproducts.of_hasBinaryProducts
+
+/-- Thin interval categories have finite biproducts. -/
+noncomputable instance Slicing.intervalCat_hasFiniteBiproducts
+    (s : Slicing C) : HasFiniteBiproducts (s.IntervalCat C a b) :=
+  HasFiniteBiproducts.of_hasFiniteProducts
+
+/-- Thin interval categories have equalizers. -/
+noncomputable instance Slicing.intervalCat_hasEqualizers
+    (s : Slicing C) : HasEqualizers (s.IntervalCat C a b) :=
+  Preadditive.hasEqualizers_of_hasKernels
+
+/-- Thin interval categories have coequalizers. -/
+noncomputable instance Slicing.intervalCat_hasCoequalizers
+    (s : Slicing C) : HasCoequalizers (s.IntervalCat C a b) :=
+  Preadditive.hasCoequalizers_of_hasCokernels
+
+/-- Thin interval categories have pullbacks. -/
+noncomputable instance Slicing.intervalCat_hasPullbacks
+    (s : Slicing C) : HasPullbacks (s.IntervalCat C a b) :=
+  Limits.hasPullbacks_of_hasBinaryProducts_of_hasEqualizers _
+
+/-- Thin interval categories have pushouts. -/
+noncomputable instance Slicing.intervalCat_hasPushouts
+    (s : Slicing C) : HasPushouts (s.IntervalCat C a b) :=
+  Limits.hasPushouts_of_hasBinaryCoproducts_of_hasCoequalizers _
+
+/-- The left adjacent-heart embedding preserves finite limits. -/
+noncomputable instance Slicing.IntervalCat.toLeftHeart_preservesFiniteLimits
+    (s : Slicing C) : PreservesFiniteLimits
+      (Slicing.IntervalCat.toLeftHeart (C := C) (s := s) a b
+        (Fact.out : b - a ≤ 1)) := by
+  let t := (s.phaseShift C a).toTStructure C
+  letI := t.hasHeartFullSubcategory
+  letI : Abelian t.heart.FullSubcategory := heartFullSubcategoryAbelian t
+  exact Functor.preservesFiniteLimits_of_preservesKernels _
+
+/-- The right adjacent-heart embedding preserves finite colimits. -/
+noncomputable instance Slicing.IntervalCat.toRightHeart_preservesFiniteColimits
+    (s : Slicing C) : PreservesFiniteColimits
+      (Slicing.IntervalCat.toRightHeart (C := C) (s := s) a b
+        (Fact.out : b - a ≤ 1)) := by
+  let t := (s.phaseShift C (b - 1)).toDualTStructure C
+  letI := t.hasHeartFullSubcategory
+  letI : Abelian t.heart.FullSubcategory := heartFullSubcategoryAbelian t
+  exact Functor.preservesFiniteColimits_of_preservesCokernels _
+
+/-- A thin owner slicing interval is quasi-abelian. -/
+noncomputable instance Slicing.intervalCat_quasiAbelian (s : Slicing C) :
+    QuasiAbelian (s.IntervalCat C a b) where
+  pullback_strictEpi := by
+    intro X Y Z f g hg
+    let t := (s.phaseShift C a).toTStructure C
+    letI := t.hasHeartFullSubcategory
+    letI : Abelian t.heart.FullSubcategory := heartFullSubcategoryAbelian t
+    let FL := Slicing.IntervalCat.toLeftHeart (C := C) (s := s) a b
+      (Fact.out : b - a ≤ 1)
+    haveI : Epi (FL.map g) :=
+      Slicing.IntervalCat.epi_toLeftHeart_of_strictEpi C s g hg
+    have hpb : IsLimit
+        (PullbackCone.mk
+          (FL.map (pullback.fst f g))
+          (FL.map (pullback.snd f g))
+          (by
+            have h := congrArg FL.map
+              (pullback.condition (f := f) (g := g))
+            simpa using h) :
+          PullbackCone (FL.map f) (FL.map g)) :=
+      isLimitOfHasPullbackOfPreservesLimit FL f g
+    haveI : Epi (FL.map (pullback.fst f g)) :=
+      CategoryTheory.Abelian.epi_fst_of_isLimit
+        (f := FL.map f) (g := FL.map g) hpb
+    exact Slicing.IntervalCat.strictEpi_of_epi_toLeftHeart C s
+      (pullback.fst f g)
+  pushout_strictMono := by
+    intro X Y Z f g hf
+    let t := (s.phaseShift C (b - 1)).toDualTStructure C
+    letI := t.hasHeartFullSubcategory
+    letI : Abelian t.heart.FullSubcategory := heartFullSubcategoryAbelian t
+    let FR := Slicing.IntervalCat.toRightHeart (C := C) (s := s) a b
+      (Fact.out : b - a ≤ 1)
+    haveI : Mono (FR.map f) :=
+      Slicing.IntervalCat.mono_toRightHeart_of_strictMono C s f hf
+    have hpo : IsColimit
+        (PushoutCocone.mk
+          (FR.map (pushout.inl f g))
+          (FR.map (pushout.inr f g))
+          (by
+            have h := congrArg FR.map
+              (pushout.condition (f := f) (g := g))
+            simpa using h) :
+          PushoutCocone (FR.map f) (FR.map g)) :=
+      isColimitOfHasPushoutOfPreservesColimit FR f g
+    haveI : Mono (FR.map (pushout.inr f g)) :=
+      CategoryTheory.Abelian.mono_inr_of_isColimit
+        (f := FR.map f) (g := FR.map g) hpo
+    exact Slicing.IntervalCat.strictMono_of_mono_toRightHeart C s
+      (pushout.inr f g)
 
 end
 
