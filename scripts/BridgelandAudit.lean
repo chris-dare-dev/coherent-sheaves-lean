@@ -338,6 +338,7 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Foundation.HNFiltration.appendFactor
 #print axioms BridgelandStabLean.Foundation.HNFiltration.appendLengthOne
 #print axioms BridgelandStabLean.Foundation.HNFiltration.appendLengthOne_phase_bounds
+#print axioms BridgelandStabLean.Foundation.HNFiltration.ofTriangleThirdZero
 #print axioms BridgelandStabLean.Foundation.HNFiltration.shift
 #print axioms BridgelandStabLean.Foundation.HNFiltration.shift_phiPlus
 #print axioms BridgelandStabLean.Foundation.HNFiltration.shift_phiMinus
