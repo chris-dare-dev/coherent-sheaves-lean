@@ -41,8 +41,10 @@ Slice [#236](https://github.com/chris-dare-dev/derived-alg-geo-lean/issues/236)
 starts the deformation layer with a Mathlib-only relative phase for complex
 charges. It owns branch bounds, polar reconstruction, ray recognition,
 periodicity, and branch independence; the compatibility boundary records its
-definitional agreement with the retained `wPhaseOf` representation. The
-categorical perturbation and topology layers build on this primitive.
+definitional agreement with the retained `wPhaseOf` representation. The next
+owner module proves the near-identity argument estimate and converts it to a
+quantitative relative-phase perturbation bound. The categorical perturbation
+and topology layers build on these primitives.
 
 At the start of slice #226, 28 owner modules contain 32 direct imports from 20
 vendored module roots. `scripts/check_anchor_free.py` freezes that exact module

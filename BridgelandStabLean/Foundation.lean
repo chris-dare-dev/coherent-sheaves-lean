@@ -14,6 +14,7 @@ import BridgelandStabLean.Foundation.Slicing.PhaseBounds
 import BridgelandStabLean.Foundation.Slicing.FiltrationOperations
 import BridgelandStabLean.Foundation.Slicing.PhaseTruncation
 import BridgelandStabLean.Foundation.Deformation.RelativePhase
+import BridgelandStabLean.Foundation.Deformation.NearIdentity
 import BridgelandStabLean.Foundation.StabilityFunction.Basic
 import BridgelandStabLean.Foundation.StabilityFunction.HarderNarasimhan
 import BridgelandStabLean.Foundation.StabilityFunction.Subobject

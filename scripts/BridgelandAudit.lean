@@ -73,7 +73,7 @@ four qualifications in this comment are unaffected by it:
   green without an entry here. Zero is a measurement taken at a commit, not a
   property the build maintains.
 
-* It issues **1839** audit commands. The environment holds **2184** authored
+* It issues **1844** audit commands. The environment holds **2189** authored
   declarations under `BridgelandStabLean.*`, so **345 are outside this gate**,
   all of them private or projections. ("Authored" excludes constructors,
   recursors, `casesOn`, matchers, equation lemmas, internal names, and the six
@@ -353,6 +353,11 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Foundation.Deformation.relativePhase_neg
 #print axioms BridgelandStabLean.Foundation.Deformation.relativePhase_add_two
 #print axioms BridgelandStabLean.Foundation.Deformation.relativePhase_eq_of_mem
+#print axioms BridgelandStabLean.Foundation.Deformation.im_sq_le_norm_sub_one_sq_mul
+#print axioms BridgelandStabLean.Foundation.Deformation.abs_sin_arg_le_norm_sub_one
+#print axioms BridgelandStabLean.Foundation.Deformation.sin_abs_eq_abs_sin
+#print axioms BridgelandStabLean.Foundation.Deformation.abs_arg_one_add_lt
+#print axioms BridgelandStabLean.Foundation.Deformation.relativePhase_perturbation
 #print axioms BridgelandStabLean.Compatibility.BridgelandStability.Deformation.relativePhase_eq_wPhaseOf
 
 #print axioms BridgelandStabLean.Foundation.semiClosedUpperHalfPlane
