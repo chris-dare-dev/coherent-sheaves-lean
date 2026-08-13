@@ -203,6 +203,50 @@ theorem toVendor_intervalProp_iff (s : Foundation.Slicing C) (a b : ℝ) (E : C)
     · exact Or.inl hE
     · exact Or.inr ⟨HNFiltration.toVendor C F, hF⟩
 
+/-- Owner and retained non-strict upper phase cuts agree. -/
+theorem toVendor_leProp_iff (s : Foundation.Slicing C) (t : ℝ) (E : C) :
+    (toVendor C s).leProp C t E ↔ s.leProp C t E := by
+  constructor
+  · rintro (hE | ⟨F, hF, hle⟩)
+    · exact Or.inl hE
+    · exact Or.inr ⟨HNFiltration.ofVendor C F, hF, hle⟩
+  · rintro (hE | ⟨F, hF, hle⟩)
+    · exact Or.inl hE
+    · exact Or.inr ⟨HNFiltration.toVendor C F, hF, hle⟩
+
+/-- Owner and retained strict lower phase cuts agree. -/
+theorem toVendor_gtProp_iff (s : Foundation.Slicing C) (t : ℝ) (E : C) :
+    (toVendor C s).gtProp C t E ↔ s.gtProp C t E := by
+  constructor
+  · rintro (hE | ⟨F, hF, hgt⟩)
+    · exact Or.inl hE
+    · exact Or.inr ⟨HNFiltration.ofVendor C F, hF, hgt⟩
+  · rintro (hE | ⟨F, hF, hgt⟩)
+    · exact Or.inl hE
+    · exact Or.inr ⟨HNFiltration.toVendor C F, hF, hgt⟩
+
+/-- Owner and retained strict upper phase cuts agree. -/
+theorem toVendor_ltProp_iff (s : Foundation.Slicing C) (t : ℝ) (E : C) :
+    (toVendor C s).ltProp C t E ↔ s.ltProp C t E := by
+  constructor
+  · rintro (hE | ⟨F, hF, hlt⟩)
+    · exact Or.inl hE
+    · exact Or.inr ⟨HNFiltration.ofVendor C F, hF, hlt⟩
+  · rintro (hE | ⟨F, hF, hlt⟩)
+    · exact Or.inl hE
+    · exact Or.inr ⟨HNFiltration.toVendor C F, hF, hlt⟩
+
+/-- Owner and retained non-strict lower phase cuts agree. -/
+theorem toVendor_geProp_iff (s : Foundation.Slicing C) (t : ℝ) (E : C) :
+    (toVendor C s).geProp C t E ↔ s.geProp C t E := by
+  constructor
+  · rintro (hE | ⟨F, hF, hge⟩)
+    · exact Or.inl hE
+    · exact Or.inr ⟨HNFiltration.ofVendor C F, hF, hge⟩
+  · rintro (hE | ⟨F, hF, hge⟩)
+    · exact Or.inl hE
+    · exact Or.inr ⟨HNFiltration.toVendor C F, hF, hge⟩
+
 /-- The owner and retained thin interval categories are canonically
 equivalent: they have the same objects and morphisms after translating HN
 filtration witnesses. -/

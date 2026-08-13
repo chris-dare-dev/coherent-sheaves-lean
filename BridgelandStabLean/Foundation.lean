@@ -10,6 +10,7 @@ import BridgelandStabLean.Foundation.TriangulatedGrothendieckFunctorial
 import BridgelandStabLean.Foundation.PreStabilityCondition
 import BridgelandStabLean.Foundation.IntervalCategory
 import BridgelandStabLean.Foundation.StabilityCondition
+import BridgelandStabLean.Foundation.Slicing.PhaseBounds
 
 /-!
 # Repository-owned Bridgeland foundations
