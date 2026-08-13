@@ -87,6 +87,97 @@ theorem HNFiltration.prefix_φ {P : ℝ → ObjectProperty C} {E : C}
     (F : HNFiltration C P E) (k : ℕ) (hk : k ≤ F.n) (hk₀ : 0 < k)
     (i : Fin k) : (F.prefix C k hk hk₀).φ i = F.φ ⟨i, by omega⟩ := rfl
 
+/-- Append one lower-phase semistable factor along a distinguished triangle. -/
+def HNFiltration.appendFactor {P : ℝ → ObjectProperty C} {Y Z : C}
+    (G : HNFiltration C P Y) (T : Triangle C) (hT : T ∈ distTriang C)
+    (e₁ : T.obj₁ ≅ Y) (e₂ : T.obj₂ ≅ Z) (ψ : ℝ) (hψ : P ψ T.obj₃)
+    (hψ_lt : ∀ i : Fin G.n, ψ < G.φ i) : HNFiltration C P Z := by
+  let obj : Fin (G.n + 2) → C := fun i =>
+    if h : i ≤ G.n then G.chain.obj ⟨i, by omega⟩ else Z
+  let last : G.chain.obj (Fin.last G.n) ⟶ Z :=
+    (Classical.choice G.top_iso).hom ≫ e₁.inv ≫ T.mor₁ ≫ e₂.hom
+  have mapSucc : ∀ i : Fin (G.n + 1), obj (Fin.castSucc i) ⟶ obj (Fin.succ i) := by
+    rintro ⟨i, hi⟩
+    simp only [obj, Fin.castSucc_mk, Fin.succ_mk]
+    by_cases h : i + 1 ≤ G.n
+    · simp only [show i ≤ G.n by omega, h, dite_true]
+      exact G.chain.map' i (i + 1) (by omega) (by omega)
+    · simp only [show i ≤ G.n by omega, h, dite_true, dite_false]
+      exact eqToHom (by congr 1; ext; simp [Fin.val_last]; omega) ≫ last
+  exact
+    { n := G.n + 1
+      chain := ComposableArrows.mkOfObjOfMapSucc obj mapSucc
+      triangle := fun i => if h : i < G.n then G.triangle ⟨i, h⟩ else T
+      triangle_dist := fun i => by
+        split_ifs with h
+        · exact G.triangle_dist ⟨i, h⟩
+        · exact hT
+      triangle_obj₁ := fun i => by
+        have chainObj : ∀ k (hk : k ≤ G.n),
+            (ComposableArrows.mkOfObjOfMapSucc obj mapSucc).obj ⟨k, by omega⟩ =
+              G.chain.obj ⟨k, by omega⟩ := by
+          intro k hk
+          simp [ComposableArrows.mkOfObjOfMapSucc_obj, obj, hk]
+        split_ifs with h
+        · exact ⟨(Classical.choice (G.triangle_obj₁ ⟨i, h⟩)).trans
+            (eqToIso (by simpa [ComposableArrows.obj'] using (chainObj i (by omega)).symm))⟩
+        · have hi : i = G.n := by omega
+          exact ⟨e₁.trans ((Classical.choice G.top_iso).symm.trans (eqToIso (by
+            change G.chain.obj (Fin.last G.n) =
+              (ComposableArrows.mkOfObjOfMapSucc obj mapSucc).obj' i _
+            simp only [ComposableArrows.obj', ComposableArrows.mkOfObjOfMapSucc_obj,
+              obj, show i ≤ G.n by omega, dite_true]
+            congr 1
+            ext
+            simp [Fin.val_last, hi])))⟩
+      triangle_obj₂ := fun i => by
+        have chainObj : ∀ k (hk : k ≤ G.n),
+            (ComposableArrows.mkOfObjOfMapSucc obj mapSucc).obj ⟨k, by omega⟩ =
+              G.chain.obj ⟨k, by omega⟩ := by
+          intro k hk
+          simp [ComposableArrows.mkOfObjOfMapSucc_obj, obj, hk]
+        split_ifs with h
+        · exact ⟨(Classical.choice (G.triangle_obj₂ ⟨i, h⟩)).trans
+            (eqToIso (by simpa [ComposableArrows.obj'] using
+              (chainObj (i + 1) (by omega)).symm))⟩
+        · exact ⟨e₂.trans (eqToIso (by
+            simp only [ComposableArrows.obj', ComposableArrows.mkOfObjOfMapSucc_obj,
+              obj, show ¬(i + 1 ≤ G.n) by omega, dite_false]))⟩
+      base_isZero := by
+        change IsZero ((ComposableArrows.mkOfObjOfMapSucc obj mapSucc).obj ⟨0, by omega⟩)
+        simp only [ComposableArrows.mkOfObjOfMapSucc_obj, obj,
+          show (0 : ℕ) ≤ G.n by omega, dite_true]
+        exact G.base_isZero
+      top_iso := ⟨by
+        change (ComposableArrows.mkOfObjOfMapSucc obj mapSucc).obj
+            ⟨G.n + 1, by omega⟩ ≅ Z
+        simp only [ComposableArrows.mkOfObjOfMapSucc_obj, obj,
+          show ¬(G.n + 1 ≤ G.n) by omega, dite_false]
+        exact Iso.refl Z⟩
+      zero_isZero := fun h => by omega
+      φ := fun i => if h : i < G.n then G.φ ⟨i, h⟩ else ψ
+      hφ := by
+        intro i j hij
+        rcases i with ⟨a, ha⟩
+        rcases j with ⟨b, hb⟩
+        have hab : a < b := Fin.mk_lt_mk.mp hij
+        change (if h : b < G.n then G.φ ⟨b, h⟩ else ψ) <
+          (if h : a < G.n then G.φ ⟨a, h⟩ else ψ)
+        by_cases hb' : b < G.n
+        · have ha' : a < G.n := by omega
+          simp only [hb', ha', dite_true]
+          exact G.hφ (Fin.mk_lt_mk.mpr hab)
+        · by_cases ha' : a < G.n
+          · simp only [hb', ha', dite_true, dite_false]
+            exact hψ_lt ⟨a, ha'⟩
+          · omega
+      semistable := fun i => by
+        change P (if h : i < G.n then G.φ ⟨i, h⟩ else ψ)
+          ((if h : i < G.n then G.triangle ⟨i, h⟩ else T).obj₃)
+        split_ifs with h
+        · exact G.semistable ⟨i, h⟩
+        · exact hψ }
+
 /-- Shift every stage and factor of an HN filtration. -/
 def HNFiltration.shift (s : Slicing C) {E : C}
     (F : HNFiltration C s.P E) (a : ℤ) : HNFiltration C s.P (E⟦a⟧) where

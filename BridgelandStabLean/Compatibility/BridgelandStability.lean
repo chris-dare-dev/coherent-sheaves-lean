@@ -4,7 +4,7 @@ Released under the MIT license.
 -/
 import BridgelandStabLean.Foundation
 import BridgelandStability.GrothendieckGroup.Basic
-import BridgelandStability.Slicing.Defs
+import BridgelandStability.Slicing.TStructureConstruction
 import BridgelandStability.StabilityCondition.Defs
 
 /-!
@@ -246,6 +246,19 @@ theorem toVendor_geProp_iff (s : Foundation.Slicing C) (t : ℝ) (E : C) :
   · rintro (hE | ⟨F, hF, hge⟩)
     · exact Or.inl hE
     · exact Or.inr ⟨HNFiltration.toVendor C F, hF, hge⟩
+
+/-- The owner slicing t-structure has exactly the same aisle and coaisle as
+the retained construction. -/
+theorem toVendor_toTStructure_le_iff [IsTriangulated C]
+    (s : Foundation.Slicing C) (n : ℤ) (E : C) :
+    ((toVendor C s).toTStructure).le n E ↔ (s.toTStructure C).le n E :=
+  toVendor_gtProp_iff C s (-n) E
+
+/-- Coaisle form of `toVendor_toTStructure_le_iff`. -/
+theorem toVendor_toTStructure_ge_iff [IsTriangulated C]
+    (s : Foundation.Slicing C) (n : ℤ) (E : C) :
+    ((toVendor C s).toTStructure).ge n E ↔ (s.toTStructure C).ge n E :=
+  toVendor_leProp_iff C s (1 - n) E
 
 /-- The owner and retained thin interval categories are canonically
 equivalent: they have the same objects and morphisms after translating HN
