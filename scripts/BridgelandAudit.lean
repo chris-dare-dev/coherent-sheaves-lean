@@ -338,6 +338,9 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Foundation.Slicing.phiPlus_eq
 #print axioms BridgelandStabLean.Foundation.Slicing.phiMinus_eq
 #print axioms BridgelandStabLean.Foundation.Slicing.phiMinus_le_phiPlus
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.Slicing.toVendor_phiPlus
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.Slicing.toVendor_phiMinus
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.Slicing.toVendor_slicingDist
 #print axioms BridgelandStabLean.Foundation.Slicing.phiPlus_eq_of_semistable
 #print axioms BridgelandStabLean.Foundation.Slicing.phiMinus_eq_of_semistable
 #print axioms BridgelandStabLean.Foundation.Slicing.exists_hn_intrinsic_width
@@ -434,6 +437,7 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Foundation.intervalProp_of_semistable_slicingDist
 #print axioms BridgelandStabLean.Foundation.slicingDist_le_of_phase_bounds
 #print axioms BridgelandStabLean.Compatibility.BridgelandStability.Deformation.relativePhase_eq_wPhaseOf
+#print axioms BridgelandStabLean.Compatibility.BridgelandStability.StabilityCondition.toVendor_stabilitySeminorm
 
 #print axioms BridgelandStabLean.Foundation.semiClosedUpperHalfPlane
 #print axioms BridgelandStabLean.Foundation.semiClosedUpperHalfPlane_ne_zero

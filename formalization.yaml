@@ -930,8 +930,11 @@ fidelity:
     phases of a nonzero semistable object reduce to its declared phase. The
     distance control now also places every nonzero semistable object for the
     nearby slicing inside the expected owner interval category. The census
-    reports 2273 authored declarations, 126 private declarations, and 233
-    structure-field projections. Audit issues 1919 commands, of which 1351
+    The compatibility boundary now proves exact preservation of owner
+    intrinsic highest and lowest phases, generalized slicing distance, and
+    stability seminorm under the retained representations. The census reports
+    2277 authored declarations, 126 private declarations, and 233
+    structure-field projections. Audit issues 1923 commands, of which 1355
     records are theorems, 62 are structures, and 501
     are other non-theorems; no authored public declaration remains outside the
     hand audit. All 26

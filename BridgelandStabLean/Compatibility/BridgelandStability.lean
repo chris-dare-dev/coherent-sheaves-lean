@@ -444,6 +444,37 @@ theorem ofVendor_toVendor (s : Foundation.Slicing C) : ofVendor C (toVendor C s)
 theorem toVendor_ofVendor (s : CategoryTheory.Triangulated.Slicing C) : toVendor C (ofVendor C s) = s :=
   CategoryTheory.Triangulated.Slicing.ext C rfl
 
+/-- Conversion preserves the intrinsic highest phase of every nonzero object. -/
+@[simp]
+theorem toVendor_phiPlus (s : Foundation.Slicing C) (E : C) (hE : ¬IsZero E) :
+    (toVendor C s).phiPlus C E hE = s.phiPlus C E hE := by
+  obtain ⟨F, hn, hfirst, hlast⟩ := s.exists_hn_nonzero_boundaries C hE
+  calc
+    (toVendor C s).phiPlus C E hE = (HNFiltration.toVendor C F).phiPlus C hn :=
+      (toVendor C s).phiPlus_eq C E hE (HNFiltration.toVendor C F) hn hfirst
+    _ = F.phiPlus C hn := rfl
+    _ = s.phiPlus C E hE := (s.phiPlus_eq C E hE F hn hfirst).symm
+
+/-- Conversion preserves the intrinsic lowest phase of every nonzero object. -/
+@[simp]
+theorem toVendor_phiMinus (s : Foundation.Slicing C) (E : C) (hE : ¬IsZero E) :
+    (toVendor C s).phiMinus C E hE = s.phiMinus C E hE := by
+  obtain ⟨F, hn, hfirst, hlast⟩ := s.exists_hn_nonzero_boundaries C hE
+  calc
+    (toVendor C s).phiMinus C E hE = (HNFiltration.toVendor C F).phiMinus C hn :=
+      (toVendor C s).phiMinus_eq C E hE (HNFiltration.toVendor C F) hn hlast
+    _ = F.phiMinus C hn := rfl
+    _ = s.phiMinus C E hE := (s.phiMinus_eq C E hE F hn hlast).symm
+
+/-- The owner and retained generalized slicing distances agree exactly under
+conversion. -/
+@[simp]
+theorem toVendor_slicingDist (s t : Foundation.Slicing C) :
+    CategoryTheory.Triangulated.slicingDist C (toVendor C s) (toVendor C t) =
+      Foundation.slicingDist C s t := by
+  simp only [CategoryTheory.Triangulated.slicingDist, Foundation.slicingDist,
+    toVendor_phiPlus, toVendor_phiMinus]
+
 /-- Owner and retained thin-interval predicates agree under slicing
 conversion. -/
 theorem toVendor_intervalProp_iff (s : Foundation.Slicing C) (a b : ℝ) (E : C) :
@@ -886,6 +917,16 @@ theorem toVendor_ofVendor {v : Foundation.K₀ C →+ Λ}
       (v.comp (GrothendieckGroup.ofVendor C))) :
     toVendor C (ofVendor C σ) = σ :=
   vendor_ext (C := C) (CategoryTheory.Triangulated.Slicing.ext C rfl) rfl
+
+/-- Conversion preserves the extended stability seminorm exactly. -/
+@[simp]
+theorem toVendor_stabilitySeminorm {v : Foundation.K₀ C →+ Λ}
+    (σ : Foundation.StabilityCondition.WithClassMap C v) (U : Λ →+ ℂ) :
+    CategoryTheory.Triangulated.stabSeminorm C (toVendor C σ) U =
+      Foundation.Deformation.stabilitySeminorm C σ U := by
+  unfold CategoryTheory.Triangulated.stabSeminorm
+    Foundation.Deformation.stabilitySeminorm
+  congr with E φ hP hE
 
 /-- Owner and retained stability conditions are equivalent after transporting
 the Grothendieck class map. -/
