@@ -512,6 +512,7 @@ variable {A : Type u} [Category.{v} A]
 
 /-- The map on subobjects induced by a full faithful functor preserving
 monomorphisms. -/
+@[nolint unusedArguments]
 noncomputable def subobjectImageOfFullFaithful (F : A ⥤ D)
     [F.Full] [F.Faithful] [F.PreservesMonomorphisms] {E : A} :
     Subobject E → Subobject (F.obj E) :=
