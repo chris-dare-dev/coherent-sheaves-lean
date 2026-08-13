@@ -496,6 +496,7 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Foundation.isStrictMono_kernel
 #print axioms BridgelandStabLean.Foundation.isStrictEpi_cokernel
 #print axioms BridgelandStabLean.Foundation.StrictShortExact
+#print axioms BridgelandStabLean.Foundation.IsStrictEpi.strictShortExact_kernel
 #print axioms BridgelandStabLean.Foundation.QuasiAbelian
 #print axioms BridgelandStabLean.Foundation.isStrict_of_abelian
 #print axioms BridgelandStabLean.Foundation.isStrictMono_of_mono

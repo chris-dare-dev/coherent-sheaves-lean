@@ -372,6 +372,66 @@ end
 
 section
 
+variable {D : Type u} [Category.{v} D] [Preadditive D]
+  [HasKernels D] [HasCokernels D]
+
+/-- The canonical kernel sequence of a strict epimorphism is strict short
+exact. -/
+theorem IsStrictEpi.strictShortExact_kernel {X Y : D} (q : X ⟶ Y)
+    [HasZeroObject D] (hq : IsStrictEpi q) :
+    StrictShortExact
+      (ShortComplex.mk (kernel.ι q) q (kernel.condition q)) := by
+  let S := ShortComplex.mk (kernel.ι q) q (kernel.condition q)
+  change StrictShortExact S
+  letI : Epi q := hq.epi
+  have hExact : S.Exact := by
+    let hLeft : S.LeftHomologyData :=
+      ShortComplex.LeftHomologyData.ofHasKernelOfHasCokernel S
+    let hRight : S.RightHomologyData :=
+      ShortComplex.RightHomologyData.ofHasCokernelOfHasKernel S
+    have hlift : kernel.lift q (kernel.ι q) (kernel.condition q) = 𝟙 _ := by
+      apply (cancel_mono (kernel.ι q)).1
+      rw [kernel.lift_ι, Category.id_comp]
+    have hLeftZero : IsZero hLeft.H := by
+      haveI : Epi (kernel.lift q (kernel.ι q) (kernel.condition q)) := by
+        rw [hlift]
+        infer_instance
+      dsimp [hLeft]
+      exact isZero_cokernel_of_epi _
+    have hdesc : cokernel.desc (kernel.ι q) q (kernel.condition q) =
+        Abelian.coimageImageComparison q ≫ kernel.ι (cokernel.π q) := by
+      apply (cancel_epi (cokernel.π (kernel.ι q))).1
+      rw [cokernel.π_desc]
+      symm
+      exact Abelian.coimage_image_factorisation (f := q)
+    have hRightZero : IsZero hRight.H := by
+      letI : IsIso (Abelian.coimageImageComparison q) := hq.strict
+      letI : IsIso (kernel.ι (cokernel.π q)) :=
+        kernel.of_cokernel_of_epi (f := q)
+      haveI : Mono (cokernel.desc (kernel.ι q) q (kernel.condition q)) := by
+        rw [hdesc]
+        infer_instance
+      dsimp [hRight]
+      exact isZero_kernel_of_mono _
+    have hComp : hLeft.i ≫ hRight.p = 0 := by
+      dsimp [hLeft, hRight]
+      exact cokernel.condition (kernel.ι q)
+    let hData : S.HomologyData :=
+      { left := hLeft
+        right := hRight
+        iso := IsZero.iso hLeftZero hRightZero
+        comm := by
+          have hπZero : hLeft.π = 0 := hLeftZero.eq_of_tgt _ _
+          simpa [hπZero, Category.assoc] using hComp.symm }
+    exact ⟨⟨hData, hLeftZero⟩⟩
+  refine ⟨ShortComplex.ShortExact.mk' hExact inferInstance inferInstance,
+    ?_, hq.strict⟩
+  exact (isStrictMono_kernel q).strict
+
+end
+
+section
+
 variable {D : Type u} [Category.{v} D] [Abelian D]
 
 /-- Every morphism in an abelian category is strict. -/
