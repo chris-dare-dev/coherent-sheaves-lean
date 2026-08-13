@@ -438,6 +438,30 @@ cohomology sequence remains deliberately undeclared. -/
 #print axioms Tilting.HeartTorsionPair.originalCohomologyShortComplex_f_isKernel
 #print axioms Tilting.HeartTorsionPair.originalCohomologyShortComplex_g_isCokernel
 
+/-! ## TStructure lane — truncation functors commute with the shift -/
+
+#print axioms BridgelandStabLean.TStructure.shiftedTriangleLTGE
+#print axioms BridgelandStabLean.TStructure.shiftedTriangleLTGE_distinguished
+#print axioms BridgelandStabLean.TStructure.isLE_shiftedTriangleLTGE_obj₁
+#print axioms BridgelandStabLean.TStructure.isGE_shiftedTriangleLTGE_obj₃
+#print axioms BridgelandStabLean.TStructure.exists_shiftedTriangleLTGE_iso
+#print axioms BridgelandStabLean.TStructure.shiftedTriangleLTGEIso
+#print axioms BridgelandStabLean.TStructure.shiftedTriangleLTGEIso_hom₂
+#print axioms BridgelandStabLean.TStructure.truncLTShiftIso
+#print axioms BridgelandStabLean.TStructure.truncGEShiftIso
+#print axioms BridgelandStabLean.TStructure.truncLTShiftIso_hom_comp_truncLTι
+#print axioms BridgelandStabLean.TStructure.truncLTShiftIso_hom_comp_truncLTι_assoc
+#print axioms BridgelandStabLean.TStructure.truncGEπ_comp_truncGEShiftIso_hom
+#print axioms BridgelandStabLean.TStructure.truncGEπ_comp_truncGEShiftIso_hom_assoc
+#print axioms BridgelandStabLean.TStructure.truncGEπ_comp_truncGEShiftIso_inv
+#print axioms BridgelandStabLean.TStructure.truncGEπ_comp_truncGEShiftIso_inv_assoc
+#print axioms BridgelandStabLean.TStructure.truncLTShiftNatIso
+#print axioms BridgelandStabLean.TStructure.truncGEShiftNatIso
+#print axioms BridgelandStabLean.TStructure.truncLEShiftNatIso
+#print axioms BridgelandStabLean.TStructure.truncGELEShiftNatIso
+#print axioms Tilting.originalHeartCohUnderlyingShiftNatIso
+#print axioms Tilting.originalHeartCohShiftNatIso
+
 /-! ## Tilting lane — six-term original-heart cohomology sequence
 
 Degree-zero cohomology of an arbitrary t-structure is proved homological.

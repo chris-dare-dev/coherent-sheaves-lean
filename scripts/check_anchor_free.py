@@ -27,6 +27,7 @@ ANCHOR = "BridgelandStability"
 ANCHOR_FREE = [
     "BridgelandStabLean.TStructure",
     "BridgelandStabLean.TStructure.Exactness",
+    "BridgelandStabLean.TStructure.Shift",
     "BridgelandStabLean.ForMathlib.CategoryTheory.ObjectProperty.FullSubcategory",
     "BridgelandStabLean.ForMathlib.CategoryTheory.Triangulated.TStructure.HeartAbelian",
     "BridgelandStabLean.StabilityCondition.Weak.Tilting.Cohomology.Basic",
