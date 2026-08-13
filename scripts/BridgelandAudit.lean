@@ -319,6 +319,12 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Foundation.HNFiltration.shift
 #print axioms BridgelandStabLean.Foundation.HNFiltration.shift_phiPlus
 #print axioms BridgelandStabLean.Foundation.HNFiltration.shift_phiMinus
+#print axioms BridgelandStabLean.Foundation.HNFiltration.n_pos
+#print axioms BridgelandStabLean.Foundation.HNFiltration.exists_nonzero_factor
+#print axioms BridgelandStabLean.Foundation.HNFiltration.dropFirst
+#print axioms BridgelandStabLean.Foundation.Slicing.exists_hn_nonzero_first
+#print axioms BridgelandStabLean.Foundation.HNFiltration.dropLast
+#print axioms BridgelandStabLean.Foundation.Slicing.exists_hn_nonzero_last
 #print axioms BridgelandStabLean.Foundation.Slicing.leProp_shift
 #print axioms BridgelandStabLean.Foundation.Slicing.gtProp_shift
 #print axioms BridgelandStabLean.Foundation.Slicing.ltProp_shift

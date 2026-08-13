@@ -915,11 +915,15 @@ fidelity:
     The compatibility
     boundary records definitional agreement with the retained wPhaseOf
     representation while every mathematical proof lives in the owner
-    namespace. The census reports 2239 authored declarations,
-    126 private declarations, and 233 structure-field projections. Audit
-    issues 1885 commands, of which 1323 records are theorems, 62 are
-    structures, and 495 are other non-theorems; no authored public declaration
-    remains outside the hand audit. All 23 owner foundation modules are
+    namespace. Boundary-factor reduction now removes zero first or last
+    factors from an owner HN filtration and proves that every nonzero object
+    admits filtrations with nonzero extremal factors. These constructors are
+    the prerequisite for filtration-independent highest and lowest phases.
+    The census reports 2245 authored declarations, 126 private declarations,
+    and 233 structure-field projections. Audit issues 1891 commands, of which
+    1327 records are theorems, 62 are structures, and 497 are other
+    non-theorems; no authored public declaration remains outside the hand
+    audit. All 24 owner foundation modules are
     import-level anchor-free. The direct vendor-import inventory remains
     frozen at 28.
 
