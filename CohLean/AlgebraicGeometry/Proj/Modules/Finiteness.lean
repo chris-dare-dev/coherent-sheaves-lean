@@ -135,6 +135,36 @@ noncomputable def localizedNatShiftDegreeOneIso (f : 𝒜 1) (d : ℕ) :
   LinearEquiv.toModuleIso
     (DegreeZeroLocalization.natShiftAwayLinearEquiv 𝒜 f.2 d)
 
+/-- Over an open contained in a degree-one chart, the nonnegative twist `A(d)̃` is isomorphic to
+the structure module as a sheaf of modules on the slice site.
+
+The componentwise map is the chart trivialization `natShiftSectionLinearEquivOn`, and naturality
+is `natShiftSectionToSelfOn_map`: dividing by `f ^ d` is pointwise, so it commutes with
+restriction on the nose.  Working on the slice over `V` rather than after restriction along the
+chart immersion avoids crossing the open immersion entirely; `SheafOfModules.QuasicoherentData`
+transports along this isomorphism directly. -/
+noncomputable def natShiftOverIso {f : A} (hf : f ∈ 𝒜 1) (d : ℕ)
+    {V : (AlgebraicGeometry.Proj 𝒜).Opens}
+    (hV : V ≤ ProjectiveSpectrum.basicOpen 𝒜 f) :
+    (associatedSheaf 𝒜 (natShift 𝒜 d)).over V ≅ (associatedSheaf 𝒜 𝒜).over V :=
+  (SheafOfModules.fullyFaithfulForget _).preimageIso <|
+    PresheafOfModules.isoMk
+      (fun W ↦ (natShiftSectionLinearEquivOn 𝒜 hf d
+        ((leOfHom W.unop.hom).trans hV)).toModuleIso)
+      (by
+        intro W W' g
+        ext s
+        apply section_ext
+        funext x
+        rfl)
+
+/-- A degree-one standard chart has range exactly its basic open, so the twist trivialization
+applies over it. -/
+theorem standardAway_degreeOne_opensRange_le (f : 𝒜 1) :
+    (standardAway 𝒜 (degreeOneStandardChart 𝒜 f)).opensRange ≤
+      ProjectiveSpectrum.basicOpen 𝒜 (f : A) :=
+  le_of_eq (AlgebraicGeometry.Proj.opensRange_awayι 𝒜 (f : A) f.2 Nat.zero_lt_one)
+
 /-- The canonical affine-chart comparison for the graded ring considered as a module over
 itself.  This is constructed from the global structure-module isomorphism, restriction of the
 unit module, and Mathlib's `tildeSelf`; it is not certificate input. -/
@@ -276,6 +306,22 @@ theorem associatedSheaf_self_isQuasicoherent :
     (associatedSheaf 𝒜 𝒜).IsQuasicoherent :=
   AffineComparisonData.associatedSheaf_isQuasicoherent 𝒜 𝒜
     (affineComparisonDataSelf 𝒜)
+
+/-- Quasi-coherent data for a nonnegative twist on a **degree-one** standard chart, obtained by
+transporting the structure module's data along the chart trivialization.
+
+No `AffineComparisonData` for `natShift 𝒜 d` is required, and none is available: that structure
+demands a comparison on every standard chart, including charts of degree greater than one, where
+`A(d)` need not be trivial at all.  Quasi-coherence does not need them.  It is local, so data on
+any covering family suffices, and `SheafOfModules.QuasicoherentData.bind` accepts any such
+family — for a graded ring generated in degree one the degree-one charts already cover. -/
+noncomputable def natShiftLocalQuasicoherentData (f : 𝒜 1) (d : ℕ) :
+    ((associatedSheaf 𝒜 (natShift 𝒜 d)).over
+      (standardAway 𝒜 (degreeOneStandardChart 𝒜 f)).opensRange).QuasicoherentData :=
+  SheafOfModules.QuasicoherentData.ofIsIso.{u, u, u, u}
+    (natShiftOverIso 𝒜 f.2 d (standardAway_degreeOne_opensRange_le 𝒜 f)).inv
+    (AffineComparisonData.localQuasicoherentData 𝒜 𝒜 (affineComparisonDataSelf 𝒜)
+      (degreeOneStandardChart 𝒜 f))
 
 /-! ## Coherence -/
 

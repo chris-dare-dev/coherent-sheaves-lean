@@ -66,6 +66,9 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 -- for O(d) will be assembled from.
 #print axioms CohLean.AlgebraicGeometry.Proj.natShiftSectionToSelfOn_map
 #print axioms CohLean.AlgebraicGeometry.Proj.natShiftSectionFromSelfOn_map
+#print axioms CohLean.AlgebraicGeometry.Proj.natShiftOverIso
+#print axioms CohLean.AlgebraicGeometry.Proj.standardAway_degreeOne_opensRange_le
+#print axioms CohLean.AlgebraicGeometry.Proj.natShiftLocalQuasicoherentData
 #print axioms CohLean.AlgebraicGeometry.Proj.affineComparisonDataSelf
 #print axioms CohLean.AlgebraicGeometry.Proj.associatedSheaf_self_isQuasicoherent
 #print axioms CohLean.AlgebraicGeometry.Proj.AffineComparisonData.quasicoherentData
