@@ -415,6 +415,22 @@ theorem Slicing.IntervalCat.comp_strictEpi (s : Slicing C)
     simpa using (show Epi (FL.map f ≫ FL.map g) by infer_instance)
   exact Slicing.IntervalCat.strictEpi_of_epi_toLeftHeart C s (f ≫ g)
 
+/-- If a composite is a strict epimorphism in a thin interval, then its
+second factor is a strict epimorphism. -/
+theorem Slicing.IntervalCat.strictEpi_of_comp_strictEpi (s : Slicing C)
+    {X Y Z : s.IntervalCat C a b} (f : X ⟶ Y) (g : Y ⟶ Z)
+    (hfg : IsStrictEpi (f ≫ g)) : IsStrictEpi g := by
+  let t := (s.phaseShift C a).toTStructure C
+  letI := t.hasHeartFullSubcategory
+  letI : Abelian t.heart.FullSubcategory := heartFullSubcategoryAbelian t
+  let FL := Slicing.IntervalCat.toLeftHeart (C := C) (s := s) a b
+    (Fact.out : b - a ≤ 1)
+  haveI : Epi (FL.map (f ≫ g)) :=
+    Slicing.IntervalCat.epi_toLeftHeart_of_strictEpi C s (f ≫ g) hfg
+  have hfac : FL.map f ≫ FL.map g = FL.map (f ≫ g) := by simp
+  haveI : Epi (FL.map g) := epi_of_epi_fac hfac
+  exact Slicing.IntervalCat.strictEpi_of_epi_toLeftHeart C s g
+
 /-- Strict monomorphisms in a thin interval are closed under composition. -/
 theorem Slicing.IntervalCat.comp_strictMono (s : Slicing C)
     {X Y Z : s.IntervalCat C a b} (f : X ⟶ Y) (g : Y ⟶ Z)
