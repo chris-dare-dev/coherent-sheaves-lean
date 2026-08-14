@@ -209,4 +209,47 @@ noncomputable def h0Functor : H0 (Cdg A) ⥤ HomotopyCategory A (ComplexShape.up
         rw [homOf_dgComp z w, Functor.map_comp]
 
 
+/-! ## The seam functor is an equivalence -/
+
+instance : h0Functor (A := A).Faithful where
+  map_injective {K L} f g h := by
+    induction f using Quotient.ind with
+    | _ z =>
+      induction g using Quotient.ind with
+      | _ w =>
+        -- Equal images means the two representatives are homotopic, and a
+        -- homotopy is exactly a primitive for their difference.
+        obtain ⟨β, hβ⟩ := (Cochain.equivHomotopy _ _)
+          (HomotopyCategory.homotopyOfEq _ _ h)
+        -- `hβ` is already an identity of `Cochain`s once the `ofHom ∘ homOf`
+        -- round trip is collapsed; keeping everything there avoids the carrier.
+        rw [Cocycle.cochain_ofHom_homOf_eq_coe, Cocycle.cochain_ofHom_homOf_eq_coe] at hβ
+        apply QuotientAddGroup.eq.mpr
+        refine ⟨-β, ?_⟩
+        have key : δ (-1) 0 (-β) =
+            -(↑(toCocycle _ _ z) : Cochain (of A (H0.of (Cdg A) K))
+                (of A (H0.of (Cdg A) L)) 0) + ↑(toCocycle _ _ w) := by
+          rw [δ_neg, hβ]
+          abel
+        exact key
+
+instance : h0Functor (A := A).Full where
+  map_surjective {K L} φ := by
+    obtain ⟨f, hf⟩ := (HomotopyCategory.quotient A (ComplexShape.up ℤ)).map_surjective φ
+    exact ⟨QuotientAddGroup.mk ⟨Cochain.ofHom f, δ_ofHom f⟩, by
+      show (HomotopyCategory.quotient A (ComplexShape.up ℤ)).map _ = φ
+      rw [show Cocycle.homOf (toCocycle _ _ ⟨Cochain.ofHom f, _⟩) = f from
+        Cocycle.homOf_ofHom_eq_self f]
+      exact hf⟩
+
+instance : h0Functor (A := A).EssSurj where
+  mem_essImage Y := ⟨(Y.as : Cdg A), ⟨Iso.refl _⟩⟩
+
+instance : h0Functor (A := A).IsEquivalence where
+
+/-- **The seam.** `H⁰(C^dg A) ≌ K(A)`: the `H⁰` of the dg category of cochain
+complexes is the homotopy category. -/
+noncomputable def seam : H0 (Cdg A) ≌ HomotopyCategory A (ComplexShape.up ℤ) :=
+  (h0Functor (A := A)).asEquivalence
+
 end Cdg
