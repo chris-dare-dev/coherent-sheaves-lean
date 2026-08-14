@@ -532,6 +532,12 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Foundation.IsStrictFiniteLengthObject
 #print axioms BridgelandStabLean.Foundation.IsFiniteLengthObject
 #print axioms BridgelandStabLean.Foundation.isStrictFiniteLengthObject_iff
+#print axioms BridgelandStabLean.Foundation.IsStrictFiniteLengthObject.isStrictArtinianObject
+#print axioms BridgelandStabLean.Foundation.IsStrictFiniteLengthObject.isStrictNoetherianObject
+#print axioms BridgelandStabLean.Foundation.IsStrictFiniteLengthObject.mk'
+#print axioms BridgelandStabLean.Foundation.IsFiniteLengthObject.isArtinianObject
+#print axioms BridgelandStabLean.Foundation.IsFiniteLengthObject.isNoetherianObject
+#print axioms BridgelandStabLean.Foundation.IsFiniteLengthObject.mk'
 #print axioms BridgelandStabLean.Foundation.isStrictFiniteLengthObject_of_finite_subobjects
 #print axioms BridgelandStabLean.Foundation.isStrictFiniteLengthObject_of_isFiniteLengthObject
 #print axioms BridgelandStabLean.Foundation.isStrictFiniteLengthObject_iff_isFiniteLengthObject
