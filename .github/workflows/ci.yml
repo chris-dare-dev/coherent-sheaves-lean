@@ -107,6 +107,23 @@ jobs:
           }
           python3 scripts/check_audit.py dg-audit.txt scripts/DGLeanAudit.lean
 
+      - name: Audit completeness
+        run: |
+          set -euo pipefail
+          # check_audit.py catches an audit that lists a name the source no
+          # longer has. This catches the reverse -- a new public declaration
+          # nobody listed -- which is how PR #354 landed IsQuasiEquivalence
+          # outside the DG audit entirely. A ratchet, not a hard gate: CohLean
+          # and BridgelandStabLean carry large pre-existing gaps, recorded as
+          # ceilings in check_audit_complete.py, and only growth fails.
+          lake build DGLean
+          lake env lean scripts/EnumDecls.lean > enum-decls.txt 2>&1 || {
+            echo "::error::scripts/EnumDecls.lean failed to elaborate"
+            cat enum-decls.txt
+            exit 1
+          }
+          python3 scripts/check_audit_complete.py enum-decls.txt
+
       - name: Environment linters
         run: |
           set -euo pipefail

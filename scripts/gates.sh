@@ -71,6 +71,21 @@ dg_audit() {
   python3 scripts/check_audit.py /tmp/dg-audit.txt scripts/DGLeanAudit.lean
 }
 
+audit_complete() {
+  # The other direction from check_audit.py: a new public declaration nobody
+  # listed. Needs the same prerequisite build as coh_audit, because the sweep
+  # imports Development and the dimension specializations.
+  lake build CohLean.Development \
+    CohLean.Numerical.Specializations.Surface \
+    CohLean.Numerical.Specializations.Threefold \
+    CohLean.Numerical.Specializations.Fourfold DGLean || return 1
+  lake env lean scripts/EnumDecls.lean > /tmp/enum-decls.txt 2>&1 || {
+    tail -20 /tmp/enum-decls.txt
+    return 1
+  }
+  python3 scripts/check_audit_complete.py /tmp/enum-decls.txt
+}
+
 bridgeland_audit() {
   lake env lean scripts/BridgelandAudit.lean > /tmp/bridgeland-audit.txt 2>&1 || {
     tail -20 /tmp/bridgeland-audit.txt
@@ -117,6 +132,7 @@ if [ "$MODE" != "fast" ]; then
   gate pin python3 scripts/check_pin.py
   gate anchor-free python3 scripts/check_anchor_free.py
   gate coverage-map python3 scripts/check_coverage_map.py
+  gate audit-complete audit_complete
   gate emit-build lake build emit
   gate emit lake exe emit --out /tmp/derived-alg-geo-emission.json
 fi
