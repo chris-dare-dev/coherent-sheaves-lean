@@ -38,33 +38,49 @@ lemma mem_coboundaries_iff' (K L : Cdg A) (f : (DGCategoryStruct.dgHom K L).X 0)
     f ∈ _root_.coboundaries K L ↔ ∃ β : Cochain (of A K) (of A L) (-1), δ (-1) 0 β = f :=
   Iff.rfl
 
-/-!
-## Where this stops, and why
+/-! ## Crossing the instance boundary
 
-Two identifications hold **definitionally**, which is the substance of the seam:
+`Cocycle K L 0` and `↥(cocycles K L)` are the same subtype of the same group,
+but `Cocycle` is a `def` carrying `instAddCommGroupCocycle` while the subgroup
+carries the one `AddSubgroup` supplies. `AddSubgroup` is indexed by that
+instance, so the two subgroup terms do not share a type for `rw`, and an `ext`
+proof fails on an application type mismatch rather than on content.
 
-* `cocycles_eq` — this repository's degree-zero cocycles are Mathlib's `cocycle`;
-* `mem_coboundaries_iff'` — its coboundaries are Mathlib's condition at `m = -1`.
+Building the maps explicitly avoids the question: a hand-written
+`AddMonoidHom` typechecks by defeq, where instance *matching* would not. -/
 
-What is not yet built is the packaging. `H0`'s Hom-group is
-`↥(cocycles K L) ⧸ H0.coboundariesIn K L`, and Mathlib's `CohomologyClass K L 0`
-is `Cocycle K L 0 ⧸ HomComplex.coboundaries K L 0`. Same underlying type, same
-subgroup — but `Cocycle` is a `def` for `↥(cocycle …)` carrying its own
-`instAddCommGroupCocycle`, while the subgroup carries the one `AddSubgroup`
-supplies. `AddSubgroup` is indexed by that instance, so
-`HomComplex.coboundaries … 0` and `H0.coboundariesIn …` do not even have the
-same type as far as `rw` is concerned, and the `ext` proof fails on an
-application type mismatch rather than on any mathematical content.
+/-- This repository's degree-zero cocycles, as Mathlib's. -/
+def toCocycle (K L : Cdg A) : ↥(cocycles K L) →+ Cocycle (of A K) (of A L) 0 where
+  toFun z := ⟨z.1, z.2⟩
+  map_zero' := rfl
+  map_add' _ _ := rfl
 
-The way through is to build the equivalence on representatives with
-`QuotientAddGroup.map` rather than to make the two subgroup types agree — the
-instance mismatch is not something to argue away, it is something to route
-around. That is the next commit, and after it `CohomologyClass.homAddEquiv`
-plus `shiftFunctorZero` give the Hom-level seam.
+/-- And back. -/
+def ofCocycle (K L : Cdg A) : Cocycle (of A K) (of A L) 0 →+ ↥(cocycles K L) where
+  toFun z := ⟨z.1, z.2⟩
+  map_zero' := rfl
+  map_add' _ _ := rfl
 
-This is the same lesson as everywhere else in this track, one level up: two
-things can be definitionally identical and still not interchangeable to
-elaboration that matches on instance paths.
--/
+@[simp]
+lemma toCocycle_val (K L : Cdg A) (z : ↥(cocycles K L)) :
+    (toCocycle K L z).1 = z.1 := rfl
+
+@[simp]
+lemma ofCocycle_val (K L : Cdg A) (z : Cocycle (of A K) (of A L) 0) :
+    (ofCocycle K L z).1 = z.1 := rfl
+
+lemma ofCocycle_toCocycle (K L : Cdg A) (z : ↥(cocycles K L)) :
+    ofCocycle K L (toCocycle K L z) = z := rfl
+
+lemma toCocycle_ofCocycle (K L : Cdg A) (z : Cocycle (of A K) (of A L) 0) :
+    toCocycle K L (ofCocycle K L z) = z := rfl
+
+/-- The two subtypes are the same group; only their instance paths differ. -/
+def cocycleAddEquiv (K L : Cdg A) : ↥(cocycles K L) ≃+ Cocycle (of A K) (of A L) 0 where
+  toFun := toCocycle K L
+  invFun := ofCocycle K L
+  left_inv := ofCocycle_toCocycle K L
+  right_inv := toCocycle_ofCocycle K L
+  map_add' _ _ := rfl
 
 end Cdg
