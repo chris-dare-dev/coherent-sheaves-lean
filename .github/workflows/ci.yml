@@ -54,6 +54,55 @@ jobs:
     timeout-minutes: 90
     steps:
       - uses: actions/checkout@v4
+        with:
+          # A diff base is needed by "What changed" below. On the self-hosted
+          # lane the repository is already present, so this costs a fetch, not a
+          # clone.
+          fetch-depth: 0
+
+      # Path scoping (2026-08-14). #362 removed the per-file sorry sweep, which
+      # was 72.9% of a 54-minute run; what is left is dominated by three axiom
+      # audits and four linter passes, each of which used to run whatever the
+      # change touched. Each is now gated on its own tree.
+      #
+      # FAIL-OPEN BY DESIGN: if the diff base cannot be resolved, or if anything
+      # structural changed, `scope` is `all` and every gate runs exactly as
+      # before. A gate is skipped only when this step has positively established
+      # that no file it could possibly judge has changed. Never invert that
+      # default -- a gate that silently does not run is worse than a slow one,
+      # and this repository has already lost an audit to a subtler version of
+      # that (scripts/check_audit.py's 2026-08-07 note).
+      - name: What changed
+        id: changed
+        run: |
+          set -euo pipefail
+          base=""
+          case "${{ github.event_name }}" in
+            pull_request) base="${{ github.event.pull_request.base.sha }}" ;;
+            push) base="${{ github.event.before }}" ;;
+          esac
+          if [ -z "$base" ] || [ "$base" = "0000000000000000000000000000000000000000" ] \
+             || ! git cat-file -e "$base^{commit}" 2>/dev/null; then
+            echo "scope=all" >> "$GITHUB_OUTPUT"
+            echo "no usable diff base -- running every gate"
+            exit 0
+          fi
+          # Three-dot: diff from the MERGE BASE, so commits that landed on the
+          # base branch after this one forked are not counted as ours.
+          files=$(git diff --name-only "$base...HEAD")
+          echo "$files" | sed 's/^/  /'
+          if printf '%s\n' "$files" | grep -qE '^(lakefile\.toml|lean-toolchain|lake-manifest\.json|pins\.json|\.github/|scripts/|exe/)'; then
+            echo "scope=all" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "scope=partial" >> "$GITHUB_OUTPUT"
+          for tree in CohLean BridgelandStabLean DGLean vendor; do
+            if printf '%s\n' "$files" | grep -qE "^$tree/"; then
+              echo "${tree}=true" >> "$GITHUB_OUTPUT"
+            else
+              echo "${tree}=false" >> "$GITHUB_OUTPUT"
+            fi
+          done
 
       - uses: leanprover/lean-action@v1
         with:
@@ -73,6 +122,7 @@ jobs:
           done
 
       - name: Coherent-sheaf axiom audit
+        if: steps.changed.outputs.scope == 'all' || steps.changed.outputs.CohLean == 'true'
         run: |
           set -euo pipefail
           # The optional Development umbrella is outside CohLean's stable root;
@@ -88,6 +138,10 @@ jobs:
           fi
 
       - name: Stability-condition axiom audit
+        if: >-
+          steps.changed.outputs.scope == 'all'
+          || steps.changed.outputs.BridgelandStabLean == 'true'
+          || steps.changed.outputs.vendor == 'true'
         run: |
           set -euo pipefail
           lake env lean scripts/BridgelandAudit.lean > bridgeland-audit.txt 2>&1 || {
@@ -98,6 +152,7 @@ jobs:
           python3 scripts/check_audit.py bridgeland-audit.txt
 
       - name: DG axiom audit
+        if: steps.changed.outputs.scope == 'all' || steps.changed.outputs.DGLean == 'true'
         run: |
           set -euo pipefail
           lake env lean scripts/DGLeanAudit.lean > dg-audit.txt 2>&1 || {
@@ -110,20 +165,29 @@ jobs:
       - name: Environment linters
         run: |
           set -euo pipefail
-          lake exe runLinter BridgelandStability
-          lake exe runLinter BridgelandStabLean
+          scope='${{ steps.changed.outputs.scope }}'
+          run_if () {  # run_if <changed-flag> <command...>
+            if [ "$scope" = "all" ] || [ "$1" = "true" ]; then shift; "$@";
+            else shift; echo "skipped (tree untouched): $*"; fi
+          }
+          run_if '${{ steps.changed.outputs.vendor }}' lake exe runLinter BridgelandStability
+          run_if '${{ steps.changed.outputs.BridgelandStabLean }}' lake exe runLinter BridgelandStabLean
           # CohLean's pre-existing backlog is enumerated per declaration in
           # scripts/nolints.json, so this gate rejects anything NEW while the
           # 203 known violations stay visible and countable. Never silence a
           # failure with `runLinter --update`: that rewrites the whole file
           # from the current run and would bless the new violation along with
           # everything else. Fix the declaration, or argue for the exception.
-          lake exe runLinter CohLean
+          #
+          # check_nolints.py is NOT scoped: it reads the checked-in file, it is
+          # cheap, and it is the half of this gate that catches a stale entry.
+          run_if '${{ steps.changed.outputs.CohLean }}' lake exe runLinter CohLean
           python3 scripts/check_nolints.py
           # DGLean is gated from its first commit and has no nolints entries.
           # Keep it that way: it is clean at 62 declarations, and CohLean shows
           # what retrofitting costs once a backlog exists.
-          lake exe runLinter DGLean
+          run_if '${{ steps.changed.outputs.DGLean }}' lake exe runLinter DGLean
+          # Style is per-file and cheap; it always runs.
           lake exe lint-style
 
       - name: Anchor-free import boundary
