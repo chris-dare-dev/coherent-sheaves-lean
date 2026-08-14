@@ -235,6 +235,20 @@ theorem HNFiltration.appendLengthOne_phase_bounds
   · exact hX ⟨j.val, hj⟩
   · exact hY
 
+/-- If the quotient term of a distinguished triangle has an empty HN
+filtration, transport the filtration of the first term across the resulting
+isomorphism to the middle term. -/
+def HNFiltration.ofTriangleThirdZero
+    {P : ℝ → ObjectProperty C}
+    {X E Y : C} (GX : HNFiltration C P X) (GY : HNFiltration C P Y)
+    (hGY : GY.n = 0)
+    (f : X ⟶ E) (g : E ⟶ Y) (h : Y ⟶ X⟦(1 : ℤ)⟧)
+    (hT : Triangle.mk f g h ∈ distTriang C) :
+    HNFiltration C P E := by
+  have hY : IsZero Y := GY.zero_isZero hGY
+  letI : IsIso f := (Triangle.isZero₃_iff_isIso₁ _ hT).mp hY
+  exact GX.ofIso C (asIso f)
+
 /-- Shift every stage and factor of an HN filtration. -/
 def HNFiltration.shift (s : Slicing C) {E : C}
     (F : HNFiltration C s.P E) (a : ℤ) : HNFiltration C s.P (E⟦a⟧) where
