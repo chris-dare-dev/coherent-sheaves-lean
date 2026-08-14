@@ -835,29 +835,41 @@ theorem isCechAcyclicCover_cechComputesDerivedCohomology
       (Opens.grothendieckTopology X) _ hExt F T I n) |>.trans
     (@HPrimeAddEquivH (Opens X) _ (Opens.grothendieckTopology X) _ hExt T hT F n)⟩
 
-/-- A Cech-acyclic open cover computes derived sheaf cohomology.
+/-- A Cech-acyclic open cover computes derived sheaf cohomology, with no injective resolution
+supplied.  The site `Opens X` is small, so Mathlib's Grothendieck-abelian chain gives enough
+injectives and `canonicalInjectiveResolution` chooses one.
 
-Neither an injective resolution nor a `HasExt` witness is supplied.  The site `Opens X` is small,
-so Mathlib's chain applies: `AddCommGrpCat.{u}` is Grothendieck abelian, hence so is the sheaf
-category, hence it has enough injectives and `HasExt.{u}`.  This is the form the coherent-sheaf
-cohomology layer consumes; the witness-carrying
-`isCechAcyclicCover_cechComputesDerivedCohomology` is retained for a general site. -/
+The `HasExt` witness stays **explicit, with a free universe `h`**, and deliberately so.
+`Sheaf.H` is `abbrev H (n : ℕ) : Type w'`, so the cohomology groups live in the `HasExt` universe:
+`HasExt.{u}` and `HasExt.{u + 1}` name genuinely different groups, not two proofs of one
+statement.  The small site does permit pinning `h := u` through `IsGrothendieckAbelian.hasExt`,
+but that would state the theorem about groups no other part of this library computes --
+`Cohomology/Derived/AffineVanishing` and `Cohomology/Finiteness/FiniteDimensional` both work at
+`HasExt.{u + 1}` through `HasExt.standard`.  Keeping the witness explicit also stops instance
+search from silently resolving it to `u` inside `IsCechAcyclicCover`, which is why the hypothesis
+and conclusion below name it positionally. -/
 theorem isCechAcyclicCover_cechComputesDerivedCohomology_opens
     {X : TopCat.{u}} {T : Opens X} (hT : IsTerminal T)
     {index : Type u} (U : index → Opens X)
     {F : TopCat.Sheaf AddCommGrpCat.{u} X}
-    (hcover : IsCechAcyclicCover U F) :
-    CechComputesDerivedCohomology U F :=
+    (hExt : HasExt.{h} (TopCat.Sheaf AddCommGrpCat.{u} X))
+    (hcover : @IsCechAcyclicCover (Opens X) _
+      (Opens.grothendieckTopology X) _ hExt index _ U F) :
+    @CechComputesDerivedCohomology (Opens X) _
+      (Opens.grothendieckTopology X) _ hExt index _ U F :=
   isCechAcyclicCover_cechComputesDerivedCohomology hT U
-    (canonicalInjectiveResolution F) inferInstance hcover
+    (canonicalInjectiveResolution F) hExt hcover
 
 /-- Degreewise form of `isCechAcyclicCover_cechComputesDerivedCohomology_opens`. -/
 theorem isCechAcyclicCover_cechComputesDerivedCohomologyAt_opens
     {X : TopCat.{u}} {T : Opens X} (hT : IsTerminal T)
     {index : Type u} (U : index → Opens X)
     {F : TopCat.Sheaf AddCommGrpCat.{u} X}
-    (hcover : IsCechAcyclicCover U F) (n : ℕ) :
-    CechComputesDerivedCohomologyAt U F n :=
-  isCechAcyclicCover_cechComputesDerivedCohomology_opens hT U hcover n
+    (hExt : HasExt.{h} (TopCat.Sheaf AddCommGrpCat.{u} X))
+    (hcover : @IsCechAcyclicCover (Opens X) _
+      (Opens.grothendieckTopology X) _ hExt index _ U F) (n : ℕ) :
+    @CechComputesDerivedCohomologyAt (Opens X) _
+      (Opens.grothendieckTopology X) _ hExt index _ U F n :=
+  isCechAcyclicCover_cechComputesDerivedCohomology_opens hT U hExt hcover n
 
 end CategoryTheory.Sheaf
