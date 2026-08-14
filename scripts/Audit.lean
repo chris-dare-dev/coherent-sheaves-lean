@@ -56,6 +56,11 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms CohLean.AlgebraicGeometry.Proj.associatedSheaf_self_isQuasicoherent
 #print axioms CohLean.AlgebraicGeometry.Proj.AffineComparisonData.quasicoherentData
 #print axioms CohLean.AlgebraicGeometry.Proj.AffineComparisonData.associatedSheaf_isQuasicoherent
+#print axioms CohLean.AlgebraicGeometry.Proj.AffineComparisonDataOn
+#print axioms CohLean.AlgebraicGeometry.Proj.AffineComparisonDataOn.localQuasicoherentData
+#print axioms CohLean.AlgebraicGeometry.Proj.AffineComparisonDataOn.associatedSheaf_isQuasicoherent
+#print axioms CohLean.AlgebraicGeometry.Proj.AffineComparisonData.toOn
+#print axioms CohLean.AlgebraicGeometry.Proj.degreeOneCharts_coversTop
 #print axioms CohLean.AlgebraicGeometry.Proj.associatedSheaf_isCoherent_of_finitePresentation
 #print axioms CohLean.AlgebraicGeometry.Proj.associatedSheaf_self_isCoherent
 #print axioms CohLean.AlgebraicGeometry.Proj.associatedSheaf_isCoherent_of_noetherian_finite

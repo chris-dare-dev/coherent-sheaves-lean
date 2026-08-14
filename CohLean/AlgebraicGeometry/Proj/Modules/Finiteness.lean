@@ -189,6 +189,88 @@ theorem associatedSheaf_isQuasicoherent (c : AffineComparisonData 𝒜 𝓜) :
 
 end AffineComparisonData
 
+/-! ### Comparison on a sub-family of charts
+
+`AffineComparisonData` asks for a comparison on **every** standard chart, and for some modules
+that is more than is true.  The nonnegative twist `A(d)` is the motivating case: it is
+trivialized on a chart `D₊(f)` by dividing by a power of `f`, which needs `deg f` to divide the
+twist, so `localizedNatShiftDegreeOneIso` is available in degree one and not in general.  Asking
+for all degrees would be asking for `O(d)` to be locally free on `Proj` of an arbitrary graded
+ring, which is false.
+
+Quasi-coherence does not need it.  It is a local property and
+`SheafOfModules.QuasicoherentData.bind` glues over *any* covering family, so a sub-family that
+still covers is enough.  `AffineComparisonDataOn` is that weakening; `AffineComparisonData` is
+the total-family case and is unchanged. -/
+
+/-- Affine `tilde` comparison on a chosen family of standard charts, together with the proof
+that the family covers.  Weaker than `AffineComparisonData`, and enough for quasi-coherence. -/
+structure AffineComparisonDataOn {ι : Type u} (charts : ι → StandardChartIndex 𝒜) where
+  /-- The chosen charts cover `Proj A`; without this the local data glues to nothing. -/
+  coversTop : (Opens.grothendieckTopology (AlgebraicGeometry.Proj 𝒜)).CoversTop
+    (fun j : ι => (standardAway 𝒜 (charts j)).opensRange)
+  /-- The affine comparison on each chart of the family. -/
+  localIso (j : ι) :
+    (associatedSheaf 𝒜 𝓜).restrict (standardAway 𝒜 (charts j)) ≅
+      AlgebraicGeometry.tilde.{u}
+        (R := .of (HomogeneousLocalization.Away 𝒜 ((charts j).2 : A)))
+        (localizedModule 𝒜 𝓜 (charts j))
+
+namespace AffineComparisonDataOn
+
+variable {𝒜 𝓜} {ι : Type u} {charts : ι → StandardChartIndex 𝒜}
+
+/-- Quasi-coherent data on one chart of the family, transported from its `tilde` presentation.
+The same argument as `AffineComparisonData.localQuasicoherentData`, over one index. -/
+noncomputable def localQuasicoherentData (c : AffineComparisonDataOn 𝒜 𝓜 charts) (j : ι) :
+    SheafOfModules.QuasicoherentData.{u, u, u, u}
+      ((associatedSheaf 𝒜 𝓜).over (standardAway 𝒜 (charts j)).opensRange) := by
+  let q : (AlgebraicGeometry.tilde.{u}
+      (R := .of (HomogeneousLocalization.Away 𝒜 ((charts j).2 : A)))
+      (localizedModule 𝒜 𝓜 (charts j))).QuasicoherentData.{u, u, u, u} :=
+    SheafOfModules.IsQuasicoherent.nonempty_quasicoherentData.some
+  let q' : ((associatedSheaf 𝒜 𝓜).restrict
+      (standardAway 𝒜 (charts j))).QuasicoherentData.{u, u, u, u} :=
+    SheafOfModules.QuasicoherentData.ofIsIso.{u, u, u, u}
+      (c.localIso j).inv q
+  exact (standardAway 𝒜 (charts j)).overQuasicoherentData (associatedSheaf 𝒜 𝓜) q'
+
+/-- Quasi-coherence from comparisons on a covering sub-family of charts. -/
+theorem associatedSheaf_isQuasicoherent (c : AffineComparisonDataOn 𝒜 𝓜 charts) :
+    (associatedSheaf 𝒜 𝓜).IsQuasicoherent :=
+  (SheafOfModules.QuasicoherentData.bind (associatedSheaf 𝒜 𝓜)
+    (fun j : ι => (standardAway 𝒜 (charts j)).opensRange)
+    c.coversTop c.localQuasicoherentData).isQuasicoherent
+
+end AffineComparisonDataOn
+
+/-- A family of degree-one elements generating `A` over `𝒜 0` gives a covering family of
+degree-one charts.
+
+This is what makes the sub-family weakening usable: `AffineComparisonDataOn` needs a covering
+family, and for a graded ring generated in degree one — projective space being the case this
+library computes on — the degree-one charts already cover, so nothing of higher degree is
+needed.  Mathlib's `Proj.iSup_basicOpen_eq_top'` does the work; the content here is only
+identifying each chart's range with its basic open. -/
+theorem degreeOneCharts_coversTop {ι : Type u} (f : ι → 𝒜 1)
+    (hf : Algebra.adjoin (𝒜 0) (Set.range fun j => (f j : A)) = ⊤) :
+    (Opens.grothendieckTopology (AlgebraicGeometry.Proj 𝒜)).CoversTop
+      (fun j : ι => (standardAway 𝒜 (degreeOneStandardChart 𝒜 (f j))).opensRange) := by
+  apply TopCat.Opens.grothendieckTopology_coversTop
+  have hrange : ∀ j : ι,
+      (standardAway 𝒜 (degreeOneStandardChart 𝒜 (f j))).opensRange =
+        AlgebraicGeometry.Proj.basicOpen 𝒜 ((f j : A)) := fun j =>
+    AlgebraicGeometry.Proj.opensRange_awayι 𝒜 ((f j : A)) (f j).2 Nat.zero_lt_one
+  simp only [hrange]
+  exact AlgebraicGeometry.Proj.iSup_basicOpen_eq_top' 𝒜 (fun j => (f j : A))
+    (fun j => ⟨1, (f j).2⟩) hf
+
+/-- The total family is a family: every `AffineComparisonData` restricts to one on all charts. -/
+def AffineComparisonData.toOn (c : AffineComparisonData 𝒜 𝓜) :
+    AffineComparisonDataOn 𝒜 𝓜 (id : StandardChartIndex 𝒜 → StandardChartIndex 𝒜) where
+  coversTop := standardCharts_coversTop 𝒜
+  localIso := c.localIso
+
 /-- The associated structure module is quasi-coherent with no external chart certificate. -/
 theorem associatedSheaf_self_isQuasicoherent :
     (associatedSheaf 𝒜 𝒜).IsQuasicoherent :=
