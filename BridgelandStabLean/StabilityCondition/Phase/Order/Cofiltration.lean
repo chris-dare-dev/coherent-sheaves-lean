@@ -24,17 +24,18 @@ remain existential.  In a geometric instantiation these become
 
 This module does not construct any of those geometric data and makes no claim
 about Propositions 3.24, 3.26, or 3.27, whose pullback, tensor-product, scheme,
-and moduli hypotheses lie outside the anchor API.
+and moduli hypotheses lie outside this abstract categorical API.
 -/
 
 noncomputable section
 
+open BridgelandStabLean.Foundation
 open CategoryTheory CategoryTheory.Limits CategoryTheory.Pretriangulated
 open CategoryTheory.Triangulated
 
 universe v u
 
-namespace CategoryTheory.Triangulated
+namespace BridgelandStabLean.Foundation
 
 variable {C : Type u} [Category.{v} C] [HasZeroObject C] [HasShift C ℤ]
   [Preadditive C] [∀ n : ℤ, (shiftFunctor C n).Additive] [Pretriangulated C]
@@ -101,4 +102,4 @@ theorem CofiltrationPropertyInfinity.toCofiltrationProperty
   letI : t.IsLE F.remainder (-N) := t.isLE_of_isZero hRemainder (-N)
   exact ⟨F, t.le_of_isLE F.remainder (-N)⟩
 
-end CategoryTheory.Triangulated
+end BridgelandStabLean.Foundation

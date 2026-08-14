@@ -28,8 +28,8 @@ therefore **out of scope here**.
 
 So this is a real restriction, not a reformulation. It buys a strict
 `MulAction` today at the cost of generality; the general `Aut(D)` action still
-wants the quotient. Do not cite this as "the `Aut` action is formalized".
-`notes/dependencies/BridgelandStabilityAPI.md` §7 records the trade.
+wants the quotient. Do not cite this as "the `Aut` action is formalized". The
+stability-foundation ownership record notes this deliberate restriction.
 
 ## What it does cover
 
@@ -44,6 +44,7 @@ instance search, so as an `instance` it was dead code. See
 `mulActionSlicing`'s own docstring.
 -/
 
+open BridgelandStabLean.Foundation
 open CategoryTheory CategoryTheory.Limits CategoryTheory.Pretriangulated
 open CategoryTheory.Triangulated
 

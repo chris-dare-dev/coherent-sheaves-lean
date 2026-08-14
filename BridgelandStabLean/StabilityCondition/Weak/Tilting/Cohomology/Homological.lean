@@ -34,7 +34,7 @@ open scoped ZeroObject
 variable {C : Type*} [Category C] [Preadditive C] [HasZeroObject C] [HasShift C ℤ]
   [∀ n : ℤ, (shiftFunctor C n).Additive] [Pretriangulated C] [IsTriangulated C]
 
-attribute [local instance] BridgelandStabLean.ForMathlib.CategoryTheory.Triangulated.TStructure.heartFullSubcategoryAbelian
+attribute [local instance] CategoryTheory.Triangulated.TStructure.heartFullSubcategoryAbelian
 
 /-! ## The alternative degree-zero normal form -/
 
@@ -213,7 +213,7 @@ private theorem toOriginalHeartH0primeHomOfIsLE_comp
       (t.truncLE 0).map ((t.truncGE 0).map f) ≫
         (originalHeartH0primeObjIsoTruncGEOfIsLE t Y).hom ≫
           t.descTruncGE g 0
-  rw [← BridgelandStabLean.ForMathlib.CategoryTheory.Triangulated.TStructure.truncGE_map_comp_descTruncGE t (C := C) f g 0]
+  rw [← CategoryTheory.Triangulated.TStructure.truncGE_map_comp_descTruncGE t (C := C) f g 0]
   simpa [originalHeartH0primeObjIsoTruncGEOfIsLE, Category.assoc] using
     congrArg (fun k => k ≫ t.descTruncGE g 0)
       ((t.truncLEι 0).naturality ((t.truncGE 0).map f)).symm
@@ -629,7 +629,7 @@ private theorem toOriginalHeartH0primeHom_eq_zero_iff
 private theorem isZero_originalHeartH0prime_of_isGE_one
     (t : TStructure C) {X : C} [t.IsGE X 1] :
     IsZero (originalHeartH0prime t X) := by
-  refine BridgelandStabLean.ForMathlib.CategoryTheory.ObjectProperty.FullSubcategory.isZero_of_obj_isZero (C := C) ?_
+  refine CategoryTheory.ObjectProperty.FullSubcategory.isZero_of_obj_isZero (C := C) ?_
   change IsZero ((t.truncLE 0).obj ((t.truncGE 0).obj X))
   exact t.isZero_truncLE_obj_of_isGE 0 1 rfl ((t.truncGE 0).obj X)
 
@@ -818,7 +818,7 @@ private theorem originalHeartH0primeFunctor_isHomological
     Functor.IsHomological (originalHeartH0primeFunctor t) := by
   refine ⟨fun T hT => ?_⟩
   obtain ⟨Z, v, w, m₁, m₃, h13, h23, _hm₁, _hmw, hm₃⟩ :=
-    BridgelandStabLean.ForMathlib.CategoryTheory.Triangulated.TStructure.exists_truncLT_octahedral_split t (C := C) hT 1
+    CategoryTheory.Triangulated.TStructure.exists_truncLT_octahedral_split t (C := C) hT 1
   let Tle : Triangle C :=
     Triangle.mk ((t.truncLTι 1).app T.obj₁ ≫ T.mor₁) v w
   let Tge : Triangle C :=

@@ -44,6 +44,7 @@ Those declarations do not by themselves promote the coverage registry past
 
 namespace BridgelandStabLean.WeakStability
 
+open BridgelandStabLean.Foundation
 open CategoryTheory Limits Pretriangulated CategoryTheory.Triangulated
 open scoped ZeroObject
 
@@ -152,7 +153,8 @@ theorem TiltingProperty.hasTiltingEnvelope_of_phaseFree
       contractible_distinguished F, ?_⟩
     · refine ⟨mem_heart_of_bounds sigma.slicing
         (sigma.slicing.gtProp_zero C 0) (sigma.slicing.leProp_zero C 1), ?_⟩
-      rw [K₀.of_zero, map_zero, map_zero]
+      change sigma.Z (v (BridgelandStabLean.Foundation.K₀.of C (0 : C))) = 0
+      rw [BridgelandStabLean.Foundation.K₀.of_zero, map_zero, map_zero]
     · intro A0 hA0 f
       exact ((shiftFunctor C (1 : ℤ)).map_isZero hFzero).eq_of_tgt f 0
   · exact h.exists_envelope F hFheart

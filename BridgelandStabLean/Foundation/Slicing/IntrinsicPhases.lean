@@ -236,6 +236,17 @@ theorem Slicing.phiPlus_eq (s : Slicing C) (E : C) (hE : ¬IsZero E)
   let hneG := (s.exists_hn_nonzero_first C hE).choose_spec.choose_spec
   exact G.phiPlus_eq_of_firstFactors_nonzero C s F hG hn hneG hne
 
+/-- The intrinsic highest phase is invariant under isomorphism. -/
+theorem Slicing.phiPlus_iso (s : Slicing C) {E E' : C} (e : E ≅ E')
+    (hE : ¬IsZero E) (hE' : ¬IsZero E') :
+    s.phiPlus C E hE = s.phiPlus C E' hE' := by
+  obtain ⟨F, hn, hfirst⟩ := s.exists_hn_nonzero_first C hE
+  calc
+    s.phiPlus C E hE = F.phiPlus C hn :=
+      s.phiPlus_eq C E hE F hn hfirst
+    _ = s.phiPlus C E' hE' :=
+      (s.phiPlus_eq C E' hE' (F.ofIso C e) hn hfirst).symm
+
 /-- Any HN filtration with nonzero last factor computes the intrinsic lowest phase. -/
 theorem Slicing.phiMinus_eq (s : Slicing C) (E : C) (hE : ¬IsZero E)
     (F : HNFiltration C s.P E) (hn : 0 < F.n)
@@ -246,6 +257,17 @@ theorem Slicing.phiMinus_eq (s : Slicing C) (E : C) (hE : ¬IsZero E)
   let hG := (s.exists_hn_nonzero_last C hE).choose_spec.choose
   let hneG := (s.exists_hn_nonzero_last C hE).choose_spec.choose_spec
   exact G.phiMinus_eq_of_lastFactors_nonzero C s F hG hn hneG hne
+
+/-- The intrinsic lowest phase is invariant under isomorphism. -/
+theorem Slicing.phiMinus_iso (s : Slicing C) {E E' : C} (e : E ≅ E')
+    (hE : ¬IsZero E) (hE' : ¬IsZero E') :
+    s.phiMinus C E hE = s.phiMinus C E' hE' := by
+  obtain ⟨F, hn, hlast⟩ := s.exists_hn_nonzero_last C hE
+  calc
+    s.phiMinus C E hE = F.phiMinus C hn :=
+      s.phiMinus_eq C E hE F hn hlast
+    _ = s.phiMinus C E' hE' :=
+      (s.phiMinus_eq C E' hE' (F.ofIso C e) hn hlast).symm
 
 /-- The intrinsic lowest phase is no greater than the intrinsic highest phase. -/
 theorem Slicing.phiMinus_le_phiPlus (s : Slicing C) (E : C) (hE : ¬IsZero E) :

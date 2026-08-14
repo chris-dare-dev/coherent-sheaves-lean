@@ -228,6 +228,114 @@ theorem Slicing.ltProp_of_leProp_of_lt (s : Slicing C) {a b : ℝ}
   · exact Or.inl hE
   · exact Or.inr ⟨F, hF, hle.trans_lt hab⟩
 
+/-- In a distinguished triangle `A → E → B → A[1]` whose outer
+terms lie in an interval of width at most one, the highest phase of the first
+term is at most the highest phase of the middle term. -/
+theorem Slicing.phiPlus_triangle_le (s : Slicing C) {A E B : C}
+    (hA : ¬IsZero A) (hE : ¬IsZero E)
+    {a b : ℝ} (hab : b ≤ a + 1)
+    (hA_int : s.intervalProp C a b A)
+    (hB_int : s.intervalProp C a b B)
+    {f : A ⟶ E} {g : E ⟶ B} {h : B ⟶ A⟦(1 : ℤ)⟧}
+    (hT : Triangle.mk f g h ∈ distTriang C) :
+    s.phiPlus C A hA ≤ s.phiPlus C E hE := by
+  obtain ⟨FA, hnA, hneA⟩ := s.exists_hn_nonzero_first C hA
+  obtain ⟨FE, hnE, hneE⟩ := s.exists_hn_nonzero_first C hE
+  rw [s.phiPlus_eq C A hA FA hnA hneA,
+    s.phiPlus_eq C E hE FE hnE hneE]
+  by_contra hlt
+  push Not at hlt
+  have hE_gap : ∀ j : Fin FE.n, FE.φ j < FA.φ ⟨0, hnA⟩ := fun j ↦
+    lt_of_le_of_lt (FE.hφ.antitone
+      (Fin.mk_le_mk.mpr (Nat.zero_le j.val))) hlt
+  have hA_factor_zero :
+      ∀ α : (FA.triangle ⟨0, hnA⟩).obj₃ ⟶ A, α = 0 := by
+    intro α
+    let SA := HNFiltration.single C (FA.factor ⟨0, hnA⟩)
+      (FA.φ ⟨0, hnA⟩) (FA.semistable ⟨0, hnA⟩)
+    have hαf : α ≫ f = 0 := by
+      apply s.hom_eq_zero_of_phase_gap C SA FE
+      intro i j
+      simpa [SA, HNFiltration.single] using hE_gap j
+    let T := Triangle.mk f g h
+    obtain ⟨β, hβ⟩ := Triangle.coyoneda_exact₂ T.invRotate
+      (inv_rot_of_distTriang _ hT) α hαf
+    suffices hβ0 : β = 0 by rw [hβ, hβ0, zero_comp]; rfl
+    by_cases hBZ : IsZero B
+    · exact ((shiftFunctor C (-1 : ℤ)).map_isZero hBZ).eq_of_tgt β 0
+    · rcases hB_int with hBZ' | ⟨GB, hGB⟩
+      · exact absurd hBZ' hBZ
+      · let GBs := GB.shift C s (-1 : ℤ)
+        have hnB : 0 < GB.n := GB.n_pos C hBZ
+        have hBs_gap : ∀ j : Fin GBs.n,
+            GBs.φ j < FA.φ ⟨0, hnA⟩ := by
+          intro j
+          change GB.φ j + ((-1 : ℤ) : ℝ) < FA.φ ⟨0, hnA⟩
+          have h₁ : GB.φ j < b := (hGB j).2
+          have h₂ : a < FA.φ ⟨0, hnA⟩ := by
+            simpa [HNFiltration.phiPlus] using
+              (s.phiPlus_gt_of_intervalProp C hA hA_int).trans_eq
+                (s.phiPlus_eq C A hA FA hnA hneA)
+          norm_num at *
+          linarith
+        exact s.hom_eq_zero_of_phase_gap C SA GBs (fun i j ↦ by
+          simpa [SA, HNFiltration.single] using hBs_gap j) β
+  exact hneA (FA.firstFactor_isZero_of_hom_eq_zero C s hnA hA_factor_zero)
+
+/-- In a distinguished triangle `A → E → B → A[1]` whose outer terms lie
+in an interval of width at most one, the lowest phase of the middle term is
+at most the lowest phase of the third term. -/
+theorem Slicing.phiMinus_triangle_le (s : Slicing C) {A E B : C}
+    (hB : ¬IsZero B) (hE : ¬IsZero E)
+    {a b : ℝ} (hab : b ≤ a + 1)
+    (hA_int : s.intervalProp C a b A)
+    (hB_int : s.intervalProp C a b B)
+    {f : A ⟶ E} {g : E ⟶ B} {h : B ⟶ A⟦(1 : ℤ)⟧}
+    (hT : Triangle.mk f g h ∈ distTriang C) :
+    s.phiMinus C E hE ≤ s.phiMinus C B hB := by
+  obtain ⟨FB, hnB, hlastB⟩ := s.exists_hn_nonzero_last C hB
+  obtain ⟨FE, hnE, hlastE⟩ := s.exists_hn_nonzero_last C hE
+  rw [s.phiMinus_eq C E hE FE hnE hlastE,
+    s.phiMinus_eq C B hB FB hnB hlastB]
+  by_contra hle
+  push Not at hle
+  let jB : Fin FB.n := ⟨FB.n - 1, by omega⟩
+  let L := HNFiltration.single C (FB.factor jB) (FB.φ jB)
+    (FB.semistable jB)
+  have hgapE : ∀ i : Fin FE.n, FB.φ jB < FE.φ i := by
+    intro i
+    exact hle.trans_le
+      (FE.hφ.antitone (Fin.mk_le_mk.mpr (by omega)))
+  have hzero : ∀ q : B ⟶ FB.factor jB, q = 0 := by
+    intro q
+    have hgq : g ≫ q = 0 := by
+      apply s.hom_eq_zero_of_phase_gap C FE L
+      intro i j
+      simpa [L, HNFiltration.single] using hgapE i
+    obtain ⟨k, hk⟩ := Triangle.yoneda_exact₃ (Triangle.mk f g h) hT q hgq
+    suffices hkzero : k = 0 by
+      calc
+        q = (Triangle.mk f g h).mor₃ ≫ k := hk
+        _ = 0 := by rw [hkzero, comp_zero]
+    by_cases hAzero : IsZero A
+    · exact ((shiftFunctor C (1 : ℤ)).map_isZero hAzero).eq_of_src k 0
+    · obtain ⟨GA, hGA⟩ := hA_int.resolve_left hAzero
+      let GAs := GA.shift C s (1 : ℤ)
+      apply s.hom_eq_zero_of_phase_gap C GAs L
+      intro i j
+      change FB.φ jB < GA.φ i + ((1 : ℤ) : ℝ)
+      have hlow : a < GA.φ i := (hGA i).1
+      have hhigh : FB.φ jB < b := by
+        calc
+          FB.φ jB = FB.phiMinus C hnB := rfl
+          _ = s.phiMinus C B hB :=
+            (s.phiMinus_eq C B hB FB hnB hlastB).symm
+          _ ≤ s.phiPlus C B hB := s.phiMinus_le_phiPlus C B hB
+          _ < b := s.phiPlus_lt_of_intervalProp C hB hB_int
+      norm_num
+      linarith
+  exact hlastB (FB.lastFactor_isZero_of_hom_eq_zero C s hnB hzero)
+
 /-- In a distinguished triangle `K → E → Q → K[1]`, an upper phase bound
 on `E` and a compatible weak upper bound on `Q` bound `K` from above. -/
 theorem Slicing.phiPlus_lt_of_triangle_with_leProp (s : Slicing C)
@@ -317,5 +425,110 @@ theorem Slicing.intervalProp_of_triangle (s : Slicing C)
       (s.gtProp_of_intervalProp C hB) hT)
     (s.ltProp_of_triangle C b (s.ltProp_of_intervalProp C hA)
       (s.ltProp_of_intervalProp C hB) hT)
+
+/-- Every intermediate chain object belongs to an extension-closed slicing
+interval when all factors of the Postnikov tower do. -/
+theorem Slicing.intervalProp_chain_of_postnikovTower (s : Slicing C)
+    {E : C} {a b : ℝ} (P : PostnikovTower C E)
+    (hfactors : ∀ i, s.intervalProp C a b (P.factor i))
+    (k : ℕ) (hk : k ≤ P.n) :
+    s.intervalProp C a b (P.chain.obj' k (by omega)) := by
+  induction k with
+  | zero =>
+      change s.intervalProp C a b P.chain.left
+      exact Or.inl P.base_isZero
+  | succ k ih =>
+      let T := P.triangle ⟨k, by omega⟩
+      let e₁ := Classical.choice (P.triangle_obj₁ ⟨k, by omega⟩)
+      let e₂ := Classical.choice (P.triangle_obj₂ ⟨k, by omega⟩)
+      have h₁ : s.intervalProp C a b T.obj₁ := by
+        rcases ih (by omega) with hzero | ⟨F, hF⟩
+        · exact Or.inl ((Iso.isZero_iff e₁.symm).mp hzero)
+        · exact Or.inr ⟨F.ofIso C e₁.symm, hF⟩
+      have h₃ : s.intervalProp C a b T.obj₃ := hfactors ⟨k, by omega⟩
+      have h₂ : s.intervalProp C a b T.obj₂ :=
+        s.intervalProp_of_triangle C h₁ h₃ (P.triangle_dist ⟨k, by omega⟩)
+      rcases h₂ with hzero | ⟨F, hF⟩
+      · exact Or.inl ((Iso.isZero_iff e₂).mp hzero)
+      · exact Or.inr ⟨F.ofIso C e₂, hF⟩
+
+/-- An owner Postnikov tower whose factors lie in a slicing interval has its
+total object in that interval. -/
+theorem Slicing.intervalProp_of_postnikovTower (s : Slicing C)
+    {E : C} {a b : ℝ} (P : PostnikovTower C E)
+    (hfactors : ∀ i, s.intervalProp C a b (P.factor i)) :
+    s.intervalProp C a b E := by
+  have h := s.intervalProp_chain_of_postnikovTower C P hfactors P.n le_rfl
+  change s.intervalProp C a b P.chain.right at h
+  rcases h with hzero | ⟨F, hF⟩
+  · exact Or.inl ((Iso.isZero_iff (Classical.choice P.top_iso)).mp hzero)
+  · exact Or.inr ⟨F.ofIso C (Classical.choice P.top_iso), hF⟩
+
+/-- Semistable slices are extension-closed. -/
+theorem Slicing.semistable_of_triangle (s : Slicing C) {A E B : C} (φ : ℝ)
+    (hA : s.P φ A) (hB : s.P φ B)
+    {f : A ⟶ E} {g : E ⟶ B} {h : B ⟶ A⟦(1 : ℤ)⟧}
+    (hT : Triangle.mk f g h ∈ distTriang C) : s.P φ E := by
+  by_cases hE : IsZero E
+  · exact s.zero_mem_of_isZero C φ E hE
+  have hle : s.leProp C φ E :=
+    s.leProp_of_triangle C φ
+      (s.leProp_of_semistable C hA le_rfl)
+      (s.leProp_of_semistable C hB le_rfl) hT
+  have hge : s.geProp C φ E :=
+    s.geProp_of_triangle C φ
+      (s.geProp_of_semistable C hA)
+      (s.geProp_of_semistable C hB) hT
+  have hplus : s.phiPlus C E hE = φ := by
+    apply le_antisymm (s.phiPlus_le_of_leProp C hE hle)
+    exact (s.phiMinus_ge_of_geProp C hE hge).trans
+      (s.phiMinus_le_phiPlus C E hE)
+  have heq : s.phiPlus C E hE = s.phiMinus C E hE := by
+    apply le_antisymm
+    · rw [hplus]
+      exact s.phiMinus_ge_of_geProp C hE hge
+    · exact s.phiMinus_le_phiPlus C E hE
+  obtain ⟨F, hn, hfirst, hlast⟩ := s.exists_hn_nonzero_boundaries C hE
+  have hplusF := (s.phiPlus_eq C E hE F hn hfirst).symm
+  have hminusF := (s.phiMinus_eq C E hE F hn hlast).symm
+  have hn_eq : F.n = 1 := by
+    by_contra hne
+    have hlast_lt : F.n - 1 < F.n := by omega
+    have htop : F.φ ⟨0, hn⟩ = s.phiPlus C E hE := by
+      simpa only [HNFiltration.phiPlus] using hplusF
+    have hbot : F.φ ⟨F.n - 1, hlast_lt⟩ = s.phiMinus C E hE := by
+      simpa only [HNFiltration.phiMinus] using hminusF
+    have heq' : F.φ ⟨0, hn⟩ = F.φ ⟨F.n - 1, hlast_lt⟩ :=
+      htop.trans (heq.trans hbot.symm)
+    exact (F.hφ (Fin.mk_lt_mk.mpr (by omega))).ne heq'.symm
+  have hP := F.semistable_of_length_one C (fun ψ ↦ s.closedUnderIso ψ) hn_eq
+  have hphase : F.φ ⟨0, hn⟩ = φ := by
+    simpa only [HNFiltration.phiPlus] using hplusF.trans hplus
+  convert hP using 1
+  simpa [hn_eq] using hphase.symm
+
+/-- If every factor of an owner HN filtration has the same phase, then the
+ambient object lies in that semistable slice. -/
+theorem Slicing.semistable_of_HN_all_eq (s : Slicing C) {E : C} {φ : ℝ}
+    (F : HNFiltration C s.P E) (hall : ∀ i : Fin F.n, F.φ i = φ) :
+    s.P φ E := by
+  have hchain : ∀ k (hk : k ≤ F.n), s.P φ (F.chain.obj' k (by omega)) := by
+    intro k hk
+    induction k with
+    | zero => exact s.zero_mem_of_isZero C φ _ F.base_isZero
+    | succ k ih =>
+        have hkn : k < F.n := by omega
+        let T := F.triangle ⟨k, hkn⟩
+        have h₁ : s.P φ T.obj₁ :=
+          (s.P φ).prop_of_iso
+            (Classical.choice (F.triangle_obj₁ ⟨k, hkn⟩)).symm (ih (by omega))
+        have h₃ : s.P φ T.obj₃ := by
+          rw [← hall ⟨k, hkn⟩]
+          exact F.semistable ⟨k, hkn⟩
+        have h₂ : s.P φ T.obj₂ :=
+          s.semistable_of_triangle C φ h₁ h₃ (F.triangle_dist ⟨k, hkn⟩)
+        exact (s.P φ).prop_of_iso
+          (Classical.choice (F.triangle_obj₂ ⟨k, hkn⟩)) h₂
+  exact (s.P φ).prop_of_iso (Classical.choice F.top_iso) (hchain F.n le_rfl)
 
 end BridgelandStabLean.Foundation

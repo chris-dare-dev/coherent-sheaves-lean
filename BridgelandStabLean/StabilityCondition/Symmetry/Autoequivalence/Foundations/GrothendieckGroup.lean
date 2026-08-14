@@ -3,7 +3,7 @@ Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under the MIT license.
 -/
 import BridgelandStabLean.StabilityCondition.Symmetry.Autoequivalence.Slicing.Transport
-import BridgelandStability.GrothendieckGroup.Basic
+import BridgelandStabLean.Foundation
 
 /-!
 # Functoriality of the Grothendieck group
@@ -26,9 +26,10 @@ equal classes (`K₀.of_iso`). That is the `K₀`-level analogue of
 descend to the quotient.
 -/
 
+open BridgelandStabLean.Foundation
 open CategoryTheory CategoryTheory.Limits CategoryTheory.Pretriangulated
 
-namespace CategoryTheory.Triangulated
+namespace BridgelandStabLean.Foundation
 
 universe w u
 
@@ -76,4 +77,4 @@ theorem K₀.mapF_congr {F G : C ⥤ C} [F.Additive] [G.Additive]
     (h : F ≅ G) : K₀.mapF F = K₀.mapF G := by
   ext X; simp [K₀.of_iso C (h.app X)]
 
-end CategoryTheory.Triangulated
+end BridgelandStabLean.Foundation

@@ -3,7 +3,7 @@ Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under the MIT license.
 -/
 import BridgelandStabLean.StabilityCondition.Weak.Basic.Definitions
-import BridgelandStability.HeartEquivalence.Forward
+import BridgelandStabLean.Foundation
 
 set_option backward.defeqAttrib.useBackward true
 set_option backward.isDefEq.respectTransparency false
@@ -34,6 +34,7 @@ heart short exact sequence to have zero imaginary part, hence slope `+infinity`.
 
 namespace BridgelandStabLean.WeakStability
 
+open BridgelandStabLean.Foundation
 open CategoryTheory Limits Pretriangulated CategoryTheory.Triangulated Complex
 open scoped BigOperators ZeroObject
 
@@ -72,7 +73,7 @@ noncomputable def weakStabilityFunctionOnHeart
   upper E hE hne := by
     classical
     have hEheart := (σ.slicing.toTStructure_heart_iff C E).mp hE
-    obtain ⟨F, hn, hfirst, hlast⟩ := HNFiltration.exists_both_nonzero C σ.slicing hne
+    obtain ⟨F, hn, hfirst, hlast⟩ := σ.slicing.exists_hn_nonzero_boundaries C hne
     let P := F.toPostnikovTower
     have hphiMinus : 0 < σ.slicing.phiMinus C E hne :=
       σ.slicing.phiMinus_gt_of_gtProp C hne hEheart.1
@@ -84,12 +85,14 @@ noncomputable def weakStabilityFunctionOnHeart
       · calc
           0 < σ.slicing.phiMinus C E hne := hphiMinus
           _ = F.φ ⟨F.n - 1, by lia⟩ := by
-            rw [σ.slicing.phiMinus_eq C E hne F hn hlast]
+            simpa only [BridgelandStabLean.Foundation.HNFiltration.phiMinus] using
+              σ.slicing.phiMinus_eq C E hne F hn hlast
           _ ≤ F.φ i := F.hφ.antitone (Fin.mk_le_mk.mpr (by lia))
       · calc
           F.φ i ≤ F.φ ⟨0, hn⟩ := F.hφ.antitone (Fin.mk_le_mk.mpr (Nat.zero_le _))
           _ = σ.slicing.phiPlus C E hne := by
-            rw [σ.slicing.phiPlus_eq C E hne F hn hfirst]
+            simpa only [BridgelandStabLean.Foundation.HNFiltration.phiPlus] using
+              (σ.slicing.phiPlus_eq C E hne F hn hfirst).symm
           _ ≤ 1 := hphiPlus
     let f : Fin F.n → ℂ := fun i => σ.Z (v (K₀.of C (P.factor i)))
     have hterm : ∀ i, 0 ≤ (f i).im ∧ ((f i).im = 0 → (f i).re ≤ 0) := by
@@ -125,7 +128,8 @@ noncomputable def weakStabilityFunctionOnHeart
               (by nlinarith [Real.pi_pos]))
         exact ⟨himpos.le, fun hzeroim => absurd hzeroim (ne_of_gt himpos)⟩
     have hsum : (σ.Z.comp v) (K₀.of C E) = ∑ i, f i := by
-      rw [K₀.of_postnikovTower_eq_sum C P, map_sum]
+      change (σ.Z.comp v) (BridgelandStabLean.Foundation.K₀.of C E) = ∑ i, f i
+      rw [BridgelandStabLean.Foundation.K₀.of_postnikovTower_eq_sum C P, map_sum]
       simp [f]
       rfl
     rw [hsum]
@@ -167,8 +171,8 @@ theorem phiPlus_le_of_heart_subobject (s : Slicing C) {phi : ℝ}
   let A' : t.heart.FullSubcategory := ⟨A, hAheart⟩
   let E' : t.heart.FullSubcategory := ⟨E,
     (s.toTStructure_heart_iff C E).mpr
-      ⟨s.gtProp_of_semistable C phi 0 E hP hphi.1,
-        s.leProp_of_semistable C phi 1 E hP hphi.2⟩⟩
+      ⟨s.gtProp_of_semistable C hP hphi.1,
+        s.leProp_of_semistable C hP hphi.2⟩⟩
   let B' : t.heart.FullSubcategory := ⟨B, hBheart⟩
   let f' : A' ⟶ E' := ObjectProperty.homMk f
   let g' : E' ⟶ B' := ObjectProperty.homMk g
@@ -178,7 +182,7 @@ theorem phiPlus_le_of_heart_subobject (s : Slicing C) {phi : ℝ}
   by_contra hgt
   push Not at hgt
   have hAheart' := (s.toTStructure_heart_iff C A).mp hAheart
-  obtain ⟨F, hn, hfirst⟩ := HNFiltration.exists_nonzero_first C s hA
+  obtain ⟨F, hn, hfirst⟩ := s.exists_hn_nonzero_first C hA
   have htop : s.phiPlus C A hA = F.φ ⟨0, hn⟩ :=
     s.phiPlus_eq C A hA F hn hfirst
   have hphase_gt : phi < F.φ ⟨0, hn⟩ := by
@@ -191,10 +195,8 @@ theorem phiPlus_le_of_heart_subobject (s : Slicing C) {phi : ℝ}
       exact s.phiPlus_le_of_leProp C hA hAheart'.2
   have hfactor_heart : t.heart (F.triangle ⟨0, hn⟩).obj₃ := by
     rw [s.toTStructure_heart_iff C]
-    exact ⟨s.gtProp_of_semistable C (F.φ ⟨0, hn⟩) 0 _
-        (F.semistable ⟨0, hn⟩) hphase_mem.1,
-      s.leProp_of_semistable C (F.φ ⟨0, hn⟩) 1 _
-        (F.semistable ⟨0, hn⟩) hphase_mem.2⟩
+    exact ⟨s.gtProp_of_semistable C (F.semistable ⟨0, hn⟩) hphase_mem.1,
+      s.leProp_of_semistable C (F.semistable ⟨0, hn⟩) hphase_mem.2⟩
   have halpha : ∃ alpha : (F.triangle ⟨0, hn⟩).obj₃ ⟶ A, alpha ≠ 0 := by
     by_contra hzero
     push Not at hzero
@@ -222,12 +224,12 @@ theorem charge_mem_upperHalfPlane_and_arg_le_phiPlus
     (σ : WeakPreStabilityCondition v) (E : C)
     (hheart : σ.slicing.toTStructure.heart E) (hE : ¬IsZero E)
     (hplus : σ.slicing.phiPlus C E hE < 1) :
-    σ.weakStabilityFunctionOnHeart.charge E ∈ upperHalfPlaneUnion ∧
+    σ.weakStabilityFunctionOnHeart.charge E ∈ semiClosedUpperHalfPlane ∧
       Complex.arg (σ.weakStabilityFunctionOnHeart.charge E) ≤
         Real.pi * σ.slicing.phiPlus C E hE := by
   classical
   have hEheart := (σ.slicing.toTStructure_heart_iff C E).mp hheart
-  obtain ⟨F, hn, hfirst, hlast⟩ := HNFiltration.exists_both_nonzero C σ.slicing hE
+  obtain ⟨F, hn, hfirst, hlast⟩ := σ.slicing.exists_hn_nonzero_boundaries C hE
   let P := F.toPostnikovTower
   let s : Finset (Fin F.n) := Finset.univ.filter (fun i => ¬IsZero (P.factor i))
   have hs : s.Nonempty := by
@@ -244,15 +246,17 @@ theorem charge_mem_upperHalfPlane_and_arg_le_phiPlus
     · calc
         0 < σ.slicing.phiMinus C E hE := hminus
         _ = F.φ ⟨F.n - 1, by lia⟩ := by
-          rw [σ.slicing.phiMinus_eq C E hE F hn hlast]
+          simpa only [BridgelandStabLean.Foundation.HNFiltration.phiMinus] using
+            σ.slicing.phiMinus_eq C E hE F hn hlast
         _ ≤ F.φ i := F.hφ.antitone (Fin.mk_le_mk.mpr (by lia))
     · calc
         F.φ i ≤ F.φ ⟨0, hn⟩ := F.hφ.antitone (Fin.mk_le_mk.mpr (Nat.zero_le _))
         _ = σ.slicing.phiPlus C E hE := by
-          rw [σ.slicing.phiPlus_eq C E hE F hn hfirst]
+          simpa only [BridgelandStabLean.Foundation.HNFiltration.phiPlus] using
+            (σ.slicing.phiPlus_eq C E hE F hn hfirst).symm
         _ < 1 := hplus
   let f : Fin F.n → ℂ := fun i => σ.Z (v (K₀.of C (P.factor i)))
-  have hterm : ∀ i ∈ s, f i ∈ upperHalfPlaneUnion := by
+  have hterm : ∀ i ∈ s, f i ∈ semiClosedUpperHalfPlane := by
     intro i hi
     have hfactor : ¬IsZero (P.factor i) := by simpa [s, P] using hi
     obtain ⟨m, -, hm_strict, hmZ⟩ :=
@@ -263,7 +267,7 @@ theorem charge_mem_upperHalfPlane_and_arg_le_phiPlus
       have hn1 : n < 1 := by exact_mod_cast (hcast ▸ (hphase_mem i hi).2)
       omega
     have hmpos : 0 < m := hm_strict hnotint
-    apply mem_upperHalfPlaneUnion_of_arg_pos
+    apply mem_semiClosedUpperHalfPlane_of_arg_pos
     have harg : Complex.arg (f i) = Real.pi * F.φ i := by
       rw [show f i = (m : ℂ) * Complex.exp ((Real.pi * F.φ i : ℝ) * Complex.I) by
         simpa [f] using hmZ]
@@ -293,7 +297,9 @@ theorem charge_mem_upperHalfPlane_and_arg_le_phiPlus
     · have hlt := mul_lt_mul_of_pos_left (hphase_mem i hi).2 Real.pi_pos
       nlinarith
   have hsum_all : σ.weakStabilityFunctionOnHeart.charge E = ∑ i, f i := by
-    rw [weakStabilityFunctionOnHeart_charge, K₀.of_postnikovTower_eq_sum C P, map_sum]
+    rw [weakStabilityFunctionOnHeart_charge]
+    change σ.Z (v (BridgelandStabLean.Foundation.K₀.of C E)) = ∑ i, f i
+    rw [BridgelandStabLean.Foundation.K₀.of_postnikovTower_eq_sum C P, map_sum]
     rw [map_sum]
   let z : Finset (Fin F.n) := Finset.univ.filter (fun i => IsZero (P.factor i))
   have hzero_filter : ∑ i ∈ z, f i = 0 := by
@@ -317,11 +323,12 @@ theorem charge_mem_upperHalfPlane_and_arg_le_phiPlus
       calc
         F.φ i ≤ F.φ ⟨0, hn⟩ := F.hφ.antitone (Fin.mk_le_mk.mpr (Nat.zero_le _))
         _ = σ.slicing.phiPlus C E hE := by
-          rw [σ.slicing.phiPlus_eq C E hE F hn hfirst]
+          simpa only [BridgelandStabLean.Foundation.HNFiltration.phiPlus] using
+            (σ.slicing.phiPlus_eq C E hE F hn hfirst).symm
     nlinarith [Real.pi_pos, hle]
   rw [hsum_all, hsum_filter]
-  exact ⟨sum_mem_upperHalfPlane hs hterm,
-    (arg_sum_le_sup'_of_upperHalfPlane hs hterm).trans hsup_le⟩
+  exact ⟨sum_mem_semiClosedUpperHalfPlane hs hterm,
+    (arg_sum_le_sup_of_semiClosedUpperHalfPlane hs hterm).trans hsup_le⟩
 
 /-- If the induced weak charge has positive imaginary part, its argument is
 bounded below by the smallest slicing HN phase.  Zero-charge phase-`1`
@@ -335,7 +342,7 @@ theorem pi_mul_phiMinus_le_charge_arg_of_im_pos
       Complex.arg (σ.weakStabilityFunctionOnHeart.charge E) := by
   classical
   have hEheart := (σ.slicing.toTStructure_heart_iff C E).mp hheart
-  obtain ⟨F, hn, hfirst, hlast⟩ := HNFiltration.exists_both_nonzero C σ.slicing hE
+  obtain ⟨F, hn, hfirst, hlast⟩ := σ.slicing.exists_hn_nonzero_boundaries C hE
   let P := F.toPostnikovTower
   let f : Fin F.n → ℂ := fun i => σ.Z (v (K₀.of C (P.factor i)))
   let s : Finset (Fin F.n) := Finset.univ.filter (fun i => f i ≠ 0)
@@ -346,15 +353,19 @@ theorem pi_mul_phiMinus_le_charge_arg_of_im_pos
         0 < σ.slicing.phiMinus C E hE :=
           σ.slicing.phiMinus_gt_of_gtProp C hE hEheart.1
         _ = F.φ ⟨F.n - 1, by lia⟩ := by
-          rw [σ.slicing.phiMinus_eq C E hE F hn hlast]
+          simpa only [BridgelandStabLean.Foundation.HNFiltration.phiMinus] using
+            σ.slicing.phiMinus_eq C E hE F hn hlast
         _ ≤ F.φ i := F.hφ.antitone (Fin.mk_le_mk.mpr (by lia))
     · calc
         F.φ i ≤ F.φ ⟨0, hn⟩ := F.hφ.antitone (Fin.mk_le_mk.mpr (Nat.zero_le _))
         _ = σ.slicing.phiPlus C E hE := by
-          rw [σ.slicing.phiPlus_eq C E hE F hn hfirst]
+          simpa only [BridgelandStabLean.Foundation.HNFiltration.phiPlus] using
+            (σ.slicing.phiPlus_eq C E hE F hn hfirst).symm
         _ ≤ 1 := σ.slicing.phiPlus_le_of_leProp C hE hEheart.2
   have hsum_all : σ.weakStabilityFunctionOnHeart.charge E = ∑ i, f i := by
-    rw [weakStabilityFunctionOnHeart_charge, K₀.of_postnikovTower_eq_sum C P, map_sum]
+    rw [weakStabilityFunctionOnHeart_charge]
+    change σ.Z (v (BridgelandStabLean.Foundation.K₀.of C E)) = ∑ i, f i
+    rw [BridgelandStabLean.Foundation.K₀.of_postnikovTower_eq_sum C P, map_sum]
     rw [map_sum]
   have hs : s.Nonempty := by
     by_contra hempty
@@ -399,9 +410,9 @@ theorem pi_mul_phiMinus_le_charge_arg_of_im_pos
     · nlinarith [Real.pi_pos, mul_pos Real.pi_pos (hphase_mem i).1]
     · have hle := mul_le_mul_of_nonneg_left (hphase_mem i).2 Real.pi_pos.le
       nlinarith
-  have hterm : ∀ i ∈ s, f i ∈ upperHalfPlaneUnion := by
+  have hterm : ∀ i ∈ s, f i ∈ semiClosedUpperHalfPlane := by
     intro i hi
-    apply mem_upperHalfPlaneUnion_of_arg_pos
+    apply mem_semiClosedUpperHalfPlane_of_arg_pos
     rw [harg_factor i hi]
     exact mul_pos Real.pi_pos (hphase_mem i).1
   let z : Finset (Fin F.n) := Finset.univ.filter (fun i => f i = 0)
@@ -422,11 +433,12 @@ theorem pi_mul_phiMinus_le_charge_arg_of_im_pos
     have hle : σ.slicing.phiMinus C E hE ≤ F.φ i := by
       calc
         σ.slicing.phiMinus C E hE = F.φ ⟨F.n - 1, by lia⟩ := by
-          rw [σ.slicing.phiMinus_eq C E hE F hn hlast]
+          simpa only [BridgelandStabLean.Foundation.HNFiltration.phiMinus] using
+            σ.slicing.phiMinus_eq C E hE F hn hlast
         _ ≤ F.φ i := F.hφ.antitone (Fin.mk_le_mk.mpr (by lia))
     exact mul_le_mul_of_nonneg_left hle Real.pi_pos.le
   rw [hsum_all, hsum_filter]
-  exact hinf_ge.trans (inf'_le_arg_sum_of_upperHalfPlane hs hterm)
+  exact hinf_ge.trans (inf_le_arg_sum_of_semiClosedUpperHalfPlane hs hterm)
 
 /-- Slicing ray membership in `(0,1]` implies slope semistability for the
 induced weak stability function on the slicing heart. -/
@@ -437,8 +449,8 @@ theorem weakStabilityFunctionOnHeart_isSemistable_of_mem_P_phi
   let W := σ.weakStabilityFunctionOnHeart
   have hEheart : σ.slicing.toTStructure.heart E :=
     (σ.slicing.toTStructure_heart_iff C E).mpr
-      ⟨σ.slicing.gtProp_of_semistable C phi 0 E hP hphi.1,
-        σ.slicing.leProp_of_semistable C phi 1 E hP hphi.2⟩
+      ⟨σ.slicing.gtProp_of_semistable C hP hphi.1,
+        σ.slicing.leProp_of_semistable C hP hphi.2⟩
   refine ⟨hEheart, ?_⟩
   intro A B hAheart hBheart hA hB f g d hdist
   have hsum : W.charge E = W.charge A + W.charge B := W.charge_triangle' hdist
@@ -488,8 +500,8 @@ theorem weakStabilityFunctionOnHeart_isSemistable_of_mem_P_phi
         simpa using hmZ]
       rw [Complex.arg_real_mul _ hmpos, Complex.arg_exp_mul_I, toIocMod_eq_self]
       constructor <;> nlinarith [Real.pi_pos, hphi.1, hphi_lt]
-    have hEupper : W.charge E ∈ upperHalfPlaneUnion := by
-      apply mem_upperHalfPlaneUnion_of_arg_pos
+    have hEupper : W.charge E ∈ semiClosedUpperHalfPlane := by
+      apply mem_semiClosedUpperHalfPlane_of_arg_pos
       rw [hEarg]
       exact mul_pos Real.pi_pos hphi.1
     have harg_le : Complex.arg (W.charge A) ≤ Complex.arg (W.charge E) := by
@@ -498,8 +510,9 @@ theorem weakStabilityFunctionOnHeart_isSemistable_of_mem_P_phi
     have hcrossAE :
         0 ≤ (W.charge A).re * (W.charge E).im -
           (W.charge A).im * (W.charge E).re :=
-      cross_nonneg_of_arg_le (im_nonneg_of_mem_upperHalfPlaneUnion hAupper)
-        (upperHalfPlaneUnion_ne_zero hAupper) (upperHalfPlaneUnion_ne_zero hEupper) harg_le
+      cross_nonneg_of_arg_le (im_nonneg_of_mem_semiClosedUpperHalfPlane hAupper)
+        (semiClosedUpperHalfPlane_ne_zero hAupper)
+        (semiClosedUpperHalfPlane_ne_zero hEupper) harg_le
     have hcrossAB :
         0 ≤ (W.charge A).re * (W.charge B).im -
           (W.charge A).im * (W.charge B).re := by
@@ -552,7 +565,7 @@ theorem mem_P_phiPlus_of_weakStabilityFunctionOnHeart_isSemistable
     have hplus_one : σ.slicing.phiPlus C E hE ≤ 1 :=
       σ.slicing.phiPlus_le_of_leProp C hE hEbounds.2
     have hcut_one : cut < 1 := hcut_plus.trans_le hplus_one
-    obtain ⟨F, hn, hfirst, hlast⟩ := HNFiltration.exists_both_nonzero C σ.slicing hE
+    obtain ⟨F, hn, hfirst, hlast⟩ := σ.slicing.exists_hn_nonzero_boundaries C hE
     have hphase : ∀ i : Fin F.n, (0 : ℝ) < F.φ i ∧ F.φ i < 2 := by
       intro i
       constructor
@@ -560,16 +573,18 @@ theorem mem_P_phiPlus_of_weakStabilityFunctionOnHeart_isSemistable
           0 < σ.slicing.phiMinus C E hE :=
             σ.slicing.phiMinus_gt_of_gtProp C hE hEbounds.1
           _ = F.φ ⟨F.n - 1, by lia⟩ := by
-            rw [σ.slicing.phiMinus_eq C E hE F hn hlast]
+            simpa only [BridgelandStabLean.Foundation.HNFiltration.phiMinus] using
+              σ.slicing.phiMinus_eq C E hE F hn hlast
           _ ≤ F.φ i := F.hφ.antitone (Fin.mk_le_mk.mpr (by lia))
       · calc
           F.φ i ≤ F.φ ⟨0, hn⟩ := F.hφ.antitone (Fin.mk_le_mk.mpr (Nat.zero_le _))
           _ = σ.slicing.phiPlus C E hE := by
-            rw [σ.slicing.phiPlus_eq C E hE F hn hfirst]
+            simpa only [BridgelandStabLean.Foundation.HNFiltration.phiPlus] using
+              (σ.slicing.phiPlus_eq C E hE F hn hfirst).symm
           _ ≤ 1 := hplus_one
           _ < 2 := by norm_num
     obtain ⟨X, Y, f, g, d, hdist, hXgt, hYle, -⟩ :=
-      σ.slicing.exists_split_at_cutoff C F hphase hn (t := cut)
+      σ.slicing.exists_split_at_cutoff_with_upper_bound C F hphase hn (t := cut)
     have hXle : σ.slicing.leProp C 1 X := by
       have hYshift : σ.slicing.leProp C 1 (Y⟦(-1 : ℤ)⟧) := by
         have hshift := σ.slicing.leProp_shift C cut Y (-1) hYle
@@ -645,8 +660,8 @@ theorem mem_P_phiPlus_of_weakStabilityFunctionOnHeart_isSemistable
       have hcross :
           0 < (W.charge Y).re * (W.charge X).im -
             (W.charge Y).im * (W.charge X).re :=
-        cross_pos_of_arg_lt (arg_pos_of_mem_upperHalfPlaneUnion hYupper)
-          (upperHalfPlaneUnion_ne_zero hYupper)
+        cross_pos_of_arg_lt (arg_pos_of_mem_semiClosedUpperHalfPlane hYupper)
+          (semiClosedUpperHalfPlane_ne_zero hYupper)
           (ne_of_apply_ne Complex.im (ne_of_gt hXim)) harg_lt
       rw [W.slope_of_im_pos hXim, W.slope_of_im_pos hYim] at hslope
       have hreal :

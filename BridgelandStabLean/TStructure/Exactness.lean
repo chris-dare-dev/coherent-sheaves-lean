@@ -35,23 +35,13 @@ without those as definitions the hypothesis cannot be written down at all.
 * `Functor.isRightTExact_comp` / `isLeftTExact_comp` / `isTExact_comp`, and the
   identity functor.
 
-## Namespacing, and why it is not in `CategoryTheory`
+## Namespacing
 
-Everything here lives under `BridgelandStabLean`. The foundational library
-already declares `CategoryTheory.Triangulated.TStructure.IsBounded`
-(`BridgelandStability/Slicing/TStructure.lean:215`) with an equivalent meaning
-stated through `t.le`/`t.ge` rather than the `IsLE`/`IsGE` classes. Declaring
-this file's `IsBounded` in the same namespace makes the root aggregator fail to
-import — *"environment already contains ..."* — because both end up in one
-environment.
-
-This module is deliberately anchor-free, so it cannot simply reuse the
-foundational definition. The two are equivalent but **not** definitionally
-equal, and dot notation `t.IsBounded` always resolves to the foundational one,
-because dot notation looks in the namespace of the type rather than in the open
-namespaces. The bridge identifying them is proved in
-`BridgelandStabLean.Anchor.TStructure`, which imports the anchor; use it rather
-than assuming the two names interchange.
+Everything here lives under `BridgelandStabLean` so the exactness vocabulary
+can evolve as a repository-owned interface without adding declarations to
+Mathlib's `CategoryTheory` namespace. The slicing construction connects this
+interface to the canonical t-structure through repository-owned bridge
+theorems.
 
 ## Conventions
 

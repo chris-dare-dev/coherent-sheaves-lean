@@ -23,6 +23,7 @@ of one, up to such a zero class.  Finally, multiplication of the charge by
 
 namespace BridgelandStabLean.WeakStability
 
+open BridgelandStabLean.Foundation
 open CategoryTheory Limits Pretriangulated CategoryTheory.Triangulated
 open BridgelandStabLean.Support
 
@@ -149,11 +150,16 @@ theorem phaseTilt_hasSupportProperty
     · obtain ⟨U, V0, hUfree, hUss, hVzero, f, g, d, hdist, -⟩ := htypeTwo
       have hVclass : v (K₀.of C V0) = 0 :=
         W0.class_eq_zero_of_zeroCharge Zlin hcompat0 hsupport' hVzero
-      have hclass : v (K₀.of C E) = -(v (K₀.of C U)) := by
-        have hk : K₀.of C E = K₀.of C (U⟦(1 : ℤ)⟧) + K₀.of C V0 := by
-          simpa using K₀.of_triangle C (Triangle.mk f g d) hdist
+      have hclass : v (BridgelandStabLean.Foundation.K₀.of C E) =
+          -(v (BridgelandStabLean.Foundation.K₀.of C U)) := by
+        have hk : BridgelandStabLean.Foundation.K₀.of C E =
+            BridgelandStabLean.Foundation.K₀.of C (U⟦(1 : ℤ)⟧) +
+              BridgelandStabLean.Foundation.K₀.of C V0 := by
+          simpa using BridgelandStabLean.Foundation.K₀.of_triangle C
+            (Triangle.mk f g d) hdist
         rw [hk, map_add,
-          K₀.of_shift_one, map_neg, hVclass, add_zero]
+          BridgelandStabLean.Foundation.K₀.of_shift_one C U,
+          map_neg, hVclass, add_zero]
       have hU0 : ¬IsZero U := by
         intro hzero
         apply hcharge

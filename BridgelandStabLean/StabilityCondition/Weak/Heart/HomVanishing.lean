@@ -24,6 +24,7 @@ when the indices differ.
 
 namespace BridgelandStabLean.WeakStability
 
+open BridgelandStabLean.Foundation
 open CategoryTheory Limits Pretriangulated CategoryTheory.Triangulated
 
 noncomputable section

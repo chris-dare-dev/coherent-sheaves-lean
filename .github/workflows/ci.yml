@@ -96,7 +96,7 @@ jobs:
             exit 0
           fi
           echo "scope=partial" >> "$GITHUB_OUTPUT"
-          for tree in CohLean BridgelandStabLean DGLean vendor; do
+          for tree in CohLean BridgelandStabLean DGLean; do
             if printf '%s\n' "$files" | grep -qE "^$tree/"; then
               echo "${tree}=true" >> "$GITHUB_OUTPUT"
             else
@@ -169,7 +169,6 @@ jobs:
         if: >-
           steps.changed.outputs.scope == 'all'
           || steps.changed.outputs.BridgelandStabLean == 'true'
-          || steps.changed.outputs.vendor == 'true'
         run: |
           set -euo pipefail
           lake env lean scripts/BridgelandAudit.lean > bridgeland-audit.txt 2>&1 || {
@@ -215,7 +214,6 @@ jobs:
             if [ "$scope" = "all" ] || [ "$1" = "true" ]; then shift; "$@";
             else shift; echo "skipped (tree untouched): $*"; fi
           }
-          run_if '${{ steps.changed.outputs.vendor }}' lake exe runLinter BridgelandStability
           run_if '${{ steps.changed.outputs.BridgelandStabLean }}' lake exe runLinter BridgelandStabLean
           # CohLean's pre-existing backlog is enumerated per declaration in
           # scripts/nolints.json, so this gate rejects anything NEW while the
@@ -235,8 +233,8 @@ jobs:
           # Style is per-file and cheap; it always runs.
           lake exe lint-style
 
-      - name: Anchor-free import boundary
-        run: python3 scripts/check_anchor_free.py
+      - name: Stability source independence
+        run: python3 scripts/check_source_independence.py
 
       - name: No declaration uses sorry
         run: |

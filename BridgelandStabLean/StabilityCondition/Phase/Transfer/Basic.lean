@@ -3,8 +3,7 @@ Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under the MIT license.
 -/
 import BridgelandStabLean.StabilityCondition.Symmetry.Autoequivalence.Slicing.Transport
-import BridgelandStability.Slicing.Phase
-import BridgelandStability.Slicing.TStructure
+import BridgelandStabLean.Foundation
 
 /-!
 # Preimage transfer of slicings
@@ -27,12 +26,13 @@ expected to construct `PreimageData`; bare adjunction and conservativity do not.
 
 noncomputable section
 
+open BridgelandStabLean.Foundation
 open CategoryTheory CategoryTheory.Limits CategoryTheory.Pretriangulated
 open scoped ZeroObject
 
 universe v₁ u₁ v₂ u₂
 
-namespace CategoryTheory.Triangulated
+namespace BridgelandStabLean.Foundation
 
 variable {C : Type u₁} [Category.{v₁} C] [HasZeroObject C] [HasShift C ℤ]
   [Preadditive C] [∀ n : ℤ, (shiftFunctor C n).Additive] [Pretriangulated C]
@@ -78,7 +78,7 @@ def Slicing.preimage (s : Slicing D) (F : C ⥤ D) [F.Additive]
     intro X Y e hE
     change s.P phi (F.obj Y)
     exact ObjectProperty.prop_of_iso _ (F.mapIso e) hE⟩
-  zero_mem phi := s.zero_mem' D phi _ (F.map_isZero (isZero_zero C))
+  zero_mem phi := s.zero_mem_of_isZero D phi _ (F.map_isZero (isZero_zero C))
   shift_iff phi E := by
     change s.P phi (F.obj E) ↔
       s.P (phi + 1) (F.obj ((shiftFunctor C (1 : ℤ)).obj E))
@@ -114,14 +114,14 @@ all phases. -/
 def Slicing.PreimageData.phaseShift {s : Slicing D} {F : C ⥤ D}
     [F.Additive] [F.CommShift ℤ] [F.IsTriangulated]
     (h : s.PreimageData F) (t : ℝ) :
-    (s.phaseShift D t).PreimageData F where
+    Slicing.PreimageData (s.phaseShift D t) F where
   hom_vanishing phi₁ phi₂ A B hphi hA hB g :=
     h.hom_vanishing (phi₁ + t) (phi₂ + t) A B (by linarith) hA hB g
   hn_exists E := by
     obtain ⟨Fil⟩ := h.hn_exists E
     change Nonempty (HNFiltration C
       (fun psi X => s.P (psi + t) (F.obj X)) E)
-    exact ⟨@HNFiltration.phaseShift C _ _ _ _ _ _
+    exact ⟨@BridgelandStabLean.Foundation.HNFiltration.phaseShift C _ _ _ _ _ _
       (s.preimage F h) E Fil t⟩
 
 /-- Source-facing genuine pullback name.  Its explicit `PreimageData` argument
@@ -135,4 +135,4 @@ abbrev Slicing.pushforward (s : Slicing D) (pull : C ⥤ D) [pull.Additive]
     [pull.CommShift ℤ] [pull.IsTriangulated] (h : s.PreimageData pull) :
     Slicing C := s.preimage pull h
 
-end CategoryTheory.Triangulated
+end BridgelandStabLean.Foundation

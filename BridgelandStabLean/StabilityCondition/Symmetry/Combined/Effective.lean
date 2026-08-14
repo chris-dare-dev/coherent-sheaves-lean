@@ -3,7 +3,7 @@ Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under the MIT license.
 -/
 import BridgelandStabLean.StabilityCondition.Symmetry.Combined.PeriodMap
-import BridgelandStability.HeartEquivalence.Basic
+import BridgelandStabLean.Foundation
 import Mathlib.GroupTheory.QuotientGroup.Basic
 
 set_option backward.defeqAttrib.useBackward true
@@ -33,6 +33,7 @@ and `-2`, the sign in the triangle shift is `+1`, which makes both functors
 triangulated.
 -/
 
+open BridgelandStabLean.Foundation
 open CategoryTheory CategoryTheory.Limits CategoryTheory.Pretriangulated
 open CategoryTheory.Triangulated
 
@@ -148,7 +149,10 @@ noncomputable def shiftTwoTriEquiv : TriEquiv C where
 theorem K₀.mapF_shift_neg_two :
     K₀.mapF (shiftFunctor C (-2 : ℤ)) = AddMonoidHom.id (K₀ C) := by
   ext X
-  rw [K₀.mapF_of, K₀.of_shift_int]
+  rw [K₀.mapF_of]
+  change BridgelandStabLean.Foundation.K₀.of C (X⟦(-2 : ℤ)⟧) =
+    BridgelandStabLean.Foundation.K₀.of C X
+  rw [BridgelandStabLean.Foundation.K₀.of_shift_int]
   norm_num
 
 variable {Λ : Type u'} [AddCommGroup Λ]

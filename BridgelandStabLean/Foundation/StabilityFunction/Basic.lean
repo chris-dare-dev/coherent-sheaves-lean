@@ -15,8 +15,8 @@ central charge is additive on short exact sequences and sends every nonzero
 object to the semi-closed upper half-plane.  Phase, stability, and
 semistability are then defined intrinsically from that charge.
 
-The module is Mathlib-only.  Conversion to the retained implementation belongs
-in `BridgelandStabLean.Compatibility.BridgelandStability`.
+The module is Mathlib-only and is the canonical stability-function interface
+for this repository.
 -/
 
 noncomputable section

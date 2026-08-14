@@ -2,7 +2,7 @@
 Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under the MIT license.
 -/
-import BridgelandStability.Slicing.Defs
+import BridgelandStabLean.Foundation
 import Mathlib.CategoryTheory.Triangulated.Functor
 import Mathlib.CategoryTheory.Shift.Adjunction
 
@@ -12,9 +12,9 @@ import Mathlib.CategoryTheory.Shift.Adjunction
 Groundwork for §8's *other* half: the `Aut(D)` action. `G̃L⁺(2, ℝ)` acts by
 moving phases while fixing objects; an autoequivalence does the opposite.
 
-The foundational library has no functor-transport machinery at all — only
-`HNFiltration.ofIso`, which moves a filtration along an isomorphism of its
-*object*. So the three definitions here are built from scratch, and they are
+The base slicing API has only `HNFiltration.ofIso`, which moves a filtration
+along an isomorphism of its *object*. So the three transport definitions here
+are built directly, and they are
 the substantial part:
 
 * `PostnikovTower.mapF` — push a tower through a triangulated functor. Works
@@ -38,13 +38,12 @@ composition is associative only up to natural isomorphism, so it carries no
 `Group` instance and `MulAction` is the wrong target. Bridgeland's "`Aut(D)`
 acts" is a statement about the induced action on isomorphism classes; a strict
 formalisation would need to quotient, or to work with a strictified group of
-autoequivalences. That is a design decision, not an oversight — see
-`notes/dependencies/BridgelandStabilityAPI.md`.
+autoequivalences. That is a design decision, not an oversight.
 
 ## What the full stability-condition action still needs
 
 1. `K₀` functoriality — `K₀.map Φ`, via `K₀.lift` and an `IsTriangleAdditive`
-   proof. The foundational library has `K₀.lift` but no functor action.
+   proof.
 2. Class-map compatibility: an autoequivalence acts on `WithClassMap C v` only
    together with a `λ : Λ ≃+ Λ` satisfying `v ∘ K₀.map Φ = λ ∘ v`. For `v = id`
    this is forced; in general it is extra data, exactly as `Compatible` is for
@@ -52,7 +51,7 @@ autoequivalences. That is a design decision, not an oversight — see
 3. Local finiteness under `mapEquiv`. Note this is a *different* problem from
    step 3c: the phase windows do not move at all here, so no uniform-continuity
    argument is needed. What is needed instead is that strict finite length is
-   invariant under an equivalence of interval categories — and the foundational library's
+   invariant under an equivalence of interval categories — and
    `interval_thinFiniteLength_of_inclusion_strict` does not apply, since it
    compares two `intervalProp`s on the *same* object.
 
@@ -83,9 +82,10 @@ discharged: "triangulated functor" here means `Additive` + `CommShift ℤ` +
 does use additivity must not be a breaking signature change.
 -/
 
+open BridgelandStabLean.Foundation
 open CategoryTheory CategoryTheory.Limits CategoryTheory.Pretriangulated
 
-namespace CategoryTheory.Triangulated
+namespace BridgelandStabLean.Foundation
 
 universe w u w' u'
 
@@ -126,7 +126,7 @@ noncomputable def HNFiltration.mapF {P : ℝ → ObjectProperty C}
     [F.Additive] [F.CommShift ℤ] [F.IsTriangulated]
     (hP : ∀ φ X, P φ X → P' φ (F.obj X)) :
     HNFiltration D P' (F.obj E) where
-  toPostnikovTower := Fil.toPostnikovTower.mapF F
+  toPostnikovTower := PostnikovTower.mapF Fil.toPostnikovTower F
   φ := Fil.φ
   hφ := Fil.hφ
   semistable := fun j => hP _ _ (Fil.semistable j)
@@ -147,7 +147,7 @@ noncomputable def Slicing.mapEquiv (s : Slicing C) (Φ : C ≌ C)
     [Φ.functor.IsTriangulated] [Φ.inverse.IsTriangulated] : Slicing C where
   P φ := fun X => s.P φ (Φ.inverse.obj X)
   closedUnderIso φ := ⟨fun e h => ObjectProperty.prop_of_iso _ (Φ.inverse.mapIso e) h⟩
-  zero_mem φ := s.zero_mem' C φ _ (Φ.inverse.map_isZero (isZero_zero C))
+  zero_mem φ := s.zero_mem_of_isZero C φ _ (Φ.inverse.map_isZero (isZero_zero C))
   shift_iff φ X := by
     rw [s.shift_iff φ (Φ.inverse.obj X)]
     exact ⟨fun h => ObjectProperty.prop_of_iso _
@@ -159,9 +159,10 @@ noncomputable def Slicing.mapEquiv (s : Slicing C) (Φ : C ≌ C)
     exact Φ.inverse.map_injective (by simpa using h)
   hn_exists E := by
     obtain ⟨Fil⟩ := s.hn_exists (Φ.inverse.obj E)
-    exact ⟨(Fil.mapF (P' := fun φ X => s.P φ (Φ.inverse.obj X)) Φ.functor
-      (fun φ X h => ObjectProperty.prop_of_iso _ (Φ.unitIso.app X) h)).ofIso C
-        (Φ.counitIso.app E)⟩
+    exact ⟨BridgelandStabLean.Foundation.HNFiltration.ofIso C
+      (HNFiltration.mapF (P' := fun φ X => s.P φ (Φ.inverse.obj X)) Fil Φ.functor
+        (fun φ X h => ObjectProperty.prop_of_iso _ (Φ.unitIso.app X) h))
+      (Φ.counitIso.app E)⟩
 
 @[simp]
 theorem Slicing.mapEquiv_P (s : Slicing C) (Φ : C ≌ C)
@@ -170,4 +171,4 @@ theorem Slicing.mapEquiv_P (s : Slicing C) (Φ : C ≌ C)
     [Φ.functor.IsTriangulated] [Φ.inverse.IsTriangulated] (φ : ℝ) (X : C) :
     (s.mapEquiv Φ).P φ X = s.P φ (Φ.inverse.obj X) := rfl
 
-end CategoryTheory.Triangulated
+end BridgelandStabLean.Foundation

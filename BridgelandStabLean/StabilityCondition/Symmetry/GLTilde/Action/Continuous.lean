@@ -27,6 +27,8 @@ statement is proved in `StabilityCondition/Symmetry/GLTilde/Action/JointContinuo
 
 open CategoryTheory CategoryTheory.Limits CategoryTheory.Pretriangulated
 open CategoryTheory.Triangulated
+open BridgelandStabLean.Foundation
+open BridgelandStabLean.Foundation.Deformation
 
 namespace BridgelandStabLean.GroupAction
 
@@ -44,7 +46,7 @@ namespace Slicing
 theorem relabel_phiPlus (f : NormalizedShift) (s : Slicing C) (E : C)
     (hE : ¬IsZero E) :
     (relabel C f s).phiPlus C E hE = f.toOrderIso (s.phiPlus C E hE) := by
-  obtain ⟨G, hn, hfirst, hlast⟩ := HNFiltration.exists_both_nonzero C s hE
+  obtain ⟨G, hn, hfirst, hlast⟩ := s.exists_hn_nonzero_boundaries C hE
   let F : HNFiltration C (relabel C f s).P E :=
     { toPostnikovTower := G.toPostnikovTower
       φ := fun j ↦ f.toOrderIso (G.φ j)
@@ -55,12 +57,13 @@ theorem relabel_phiPlus (f : NormalizedShift) (s : Slicing C) (E : C)
         exact G.semistable j }
   rw [(relabel C f s).phiPlus_eq C E hE F hn hfirst,
     s.phiPlus_eq C E hE G hn hfirst]
+  rfl
 
 /-- Relabelling applies the normalized shift to the smallest HN phase. -/
 theorem relabel_phiMinus (f : NormalizedShift) (s : Slicing C) (E : C)
     (hE : ¬IsZero E) :
     (relabel C f s).phiMinus C E hE = f.toOrderIso (s.phiMinus C E hE) := by
-  obtain ⟨G, hn, hfirst, hlast⟩ := HNFiltration.exists_both_nonzero C s hE
+  obtain ⟨G, hn, hfirst, hlast⟩ := s.exists_hn_nonzero_boundaries C hE
   let F : HNFiltration C (relabel C f s).P E :=
     { toPostnikovTower := G.toPostnikovTower
       φ := fun j ↦ f.toOrderIso (G.φ j)
@@ -71,6 +74,7 @@ theorem relabel_phiMinus (f : NormalizedShift) (s : Slicing C) (E : C)
         exact G.semistable j }
   rw [(relabel C f s).phiMinus_eq C E hE F hn hlast,
     s.phiMinus_eq C E hE G hn hlast]
+  rfl
 
 end Slicing
 
@@ -79,25 +83,29 @@ phase relabelling. -/
 theorem exists_slicingDist_relabel_control (f : NormalizedShift) {e : ℝ}
     (he : 0 < e) :
     ∃ d : ℝ, 0 < d ∧ ∀ s₁ s₂ : Slicing C,
-      slicingDist C s₁ s₂ < ENNReal.ofReal d →
-      slicingDist C (relabel C f s₁) (relabel C f s₂) < ENNReal.ofReal e := by
+      BridgelandStabLean.Foundation.slicingDist C s₁ s₂ < ENNReal.ofReal d →
+      BridgelandStabLean.Foundation.slicingDist C
+        (relabel C f s₁) (relabel C f s₂) < ENNReal.ofReal e := by
   obtain ⟨d, hd, hmod⟩ := Metric.uniformContinuous_iff.mp f.uniformContinuous (e / 2) (by linarith)
   refine ⟨d, hd, fun s₁ s₂ hdist ↦ ?_⟩
-  have hle : slicingDist C (relabel C f s₁) (relabel C f s₂) ≤
+  have hle : BridgelandStabLean.Foundation.slicingDist C
+      (relabel C f s₁) (relabel C f s₂) ≤
       ENNReal.ofReal (e / 2) := by
-    apply slicingDist_le_of_phase_bounds
+    apply BridgelandStabLean.Foundation.slicingDist_le_of_phase_bounds
     · intro E hE
       rw [Slicing.relabel_phiPlus f s₁ E hE, Slicing.relabel_phiPlus f s₂ E hE]
       rw [← Real.dist_eq]
       exact le_of_lt (hmod (by
         rw [Real.dist_eq]
-        exact phiPlus_sub_lt_of_slicingDist C s₁ s₂ hE hdist))
+        exact BridgelandStabLean.Foundation.abs_phiPlus_sub_lt_of_slicingDist
+          C s₁ s₂ hE hd hdist))
     · intro E hE
       rw [Slicing.relabel_phiMinus f s₁ E hE, Slicing.relabel_phiMinus f s₂ E hE]
       rw [← Real.dist_eq]
       exact le_of_lt (hmod (by
         rw [Real.dist_eq]
-        exact phiMinus_sub_lt_of_slicingDist C s₁ s₂ hE hdist))
+        exact BridgelandStabLean.Foundation.abs_phiMinus_sub_lt_of_slicingDist
+          C s₁ s₂ hE hd hdist))
   exact lt_of_le_of_lt hle ((ENNReal.ofReal_lt_ofReal_iff he).2 (by linarith))
 
 /-! ## Central-charge operator bounds -/
@@ -165,8 +173,8 @@ variable [IsTriangulated C]
 condition bound. -/
 theorem stabSeminorm_gltilde_le (x : GLTilde)
     (σ τ : StabilityCondition.WithClassMap C v) :
-    stabSeminorm C (x • σ) ((x • τ).Z - (x • σ).Z) ≤
-      ENNReal.ofReal (actCCondition x.mat) * stabSeminorm C σ (τ.Z - σ.Z) := by
+    stabilitySeminorm C (x • σ) ((x • τ).Z - (x • σ).Z) ≤
+      ENNReal.ofReal (actCCondition x.mat) * stabilitySeminorm C σ (τ.Z - σ.Z) := by
   apply iSup_le
   intro E
   apply iSup_le
@@ -180,23 +188,23 @@ theorem stabSeminorm_gltilde_le (x : GLTilde)
     obtain ⟨m, hm, hZ⟩ := σ.compat (x.shift⁻¹.toOrderIso φ) E hP hE
     rw [hZ]
     exact mul_ne_zero (Complex.ofReal_ne_zero.mpr (ne_of_gt hm)) (Complex.exp_ne_zero _)
-  have hnum : ((x • τ).Z - (x • σ).Z) (cl C v E) =
-      actC x.mat ((τ.Z - σ.Z) (cl C v E)) := by
-    change actC x.mat (τ.Z (cl C v E)) - actC x.mat (σ.Z (cl C v E)) =
-      actC x.mat (τ.Z (cl C v E) - σ.Z (cl C v E))
+  have hnum : ((x • τ).Z - (x • σ).Z) (classOf C v E) =
+      actC x.mat ((τ.Z - σ.Z) (classOf C v E)) := by
+    change actC x.mat (τ.Z (classOf C v E)) - actC x.mat (σ.Z (classOf C v E)) =
+      actC x.mat (τ.Z (classOf C v E) - σ.Z (classOf C v E))
     exact (map_sub (actC x.mat) _ _).symm
   have hden : (x • σ).charge E = actC x.mat (σ.charge E) := rfl
   rw [hnum, hden]
   calc
     ENNReal.ofReal
-        (‖actC x.mat ((τ.Z - σ.Z) (cl C v E))‖ / ‖actC x.mat (σ.charge E)‖)
+        (‖actC x.mat ((τ.Z - σ.Z) (classOf C v E))‖ / ‖actC x.mat (σ.charge E)‖)
         ≤ ENNReal.ofReal (actCCondition x.mat *
-          (‖(τ.Z - σ.Z) (cl C v E)‖ / ‖σ.charge E‖)) :=
+          (‖(τ.Z - σ.Z) (classOf C v E)‖ / ‖σ.charge E‖)) :=
       ENNReal.ofReal_le_ofReal (norm_actC_div_norm_actC_le x.mat _ _ hcharge)
     _ = ENNReal.ofReal (actCCondition x.mat) *
-        ENNReal.ofReal (‖(τ.Z - σ.Z) (cl C v E)‖ / ‖σ.charge E‖) :=
+        ENNReal.ofReal (‖(τ.Z - σ.Z) (classOf C v E)‖ / ‖σ.charge E‖) :=
       ENNReal.ofReal_mul (le_of_lt (actCCondition_pos x.mat))
-    _ ≤ ENNReal.ofReal (actCCondition x.mat) * stabSeminorm C σ (τ.Z - σ.Z) := by
+    _ ≤ ENNReal.ofReal (actCCondition x.mat) * stabilitySeminorm C σ (τ.Z - σ.Z) := by
       apply mul_le_mul_right
       apply le_iSup_of_le E
       apply le_iSup_of_le (x.shift⁻¹.toOrderIso φ)
@@ -255,7 +263,7 @@ theorem exists_gltilde_basisNhd_control (x : GLTilde) {e : ℝ}
     exact lt_of_le_of_lt hbound <| lt_of_lt_of_le
       (by
         calc
-          ENNReal.ofReal K * stabSeminorm C σ (τ.Z - σ.Z)
+          ENNReal.ofReal K * stabilitySeminorm C σ (τ.Z - σ.Z)
               < ENNReal.ofReal K * ENNReal.ofReal (Real.sin (Real.pi * d)) := by
                 simpa [mul_comm] using hmul
           _ = ENNReal.ofReal (K * Real.sin (Real.pi * d)) :=
@@ -275,9 +283,11 @@ theorem GLTilde.continuous_const_smul_stability (x : GLTilde) :
   rw [isOpen_iff_mem_nhds]
   intro τ hτ
   change x • τ ∈ basisNhd C ξ e at hτ
-  obtain ⟨r, hr, hr8, hsub⟩ := exists_basisNhd_subset_basisNhd C ξ (x • τ) he he8 hτ
+  obtain ⟨r, hr, hr8, hsub⟩ :=
+    exists_basisNhd_subset_basisNhd C ξ (x • τ) he he8 hτ
   obtain ⟨d, hd, hd8, hmap⟩ := exists_gltilde_basisNhd_control (C := C) (v := v) x hr hr8
-  refine mem_nhds_iff.mpr ⟨basisNhd C τ d, ?_, ?_, basisNhd_self C τ hd hd8⟩
+  refine mem_nhds_iff.mpr ⟨basisNhd C τ d, ?_, ?_,
+    self_mem_basisNhd C τ hd (by linarith)⟩
   · exact fun ρ hρ ↦ hsub (hmap τ hρ)
   · exact TopologicalSpace.isOpen_generateFrom_of_mem ⟨τ, d, hd, hd8, rfl⟩
 

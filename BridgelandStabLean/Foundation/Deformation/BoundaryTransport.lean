@@ -52,9 +52,11 @@ theorem skewedPhase_mem_enveloped_branch
   exact ⟨by linarith [hphase.1], by linarith [hphase.2]⟩
 
 omit [IsTriangulated C] in
-/-- A nonzero thin interval object supported at or above `ψ + ε` has
-skewed phase strictly above `ψ`. -/
-theorem skewedPhase_gt_of_geProp
+/-- A nonzero interval object supported at or above `ψ + ε` has skewed
+phase above `ψ` whenever its selected phase lies on the same branch as
+`ψ`.  This range-based form is what the highest-phase split recursion uses
+before an enveloping interval has been established. -/
+theorem skewedPhase_gt_of_geProp_of_phase_range
     (σ : StabilityCondition.WithClassMap C κ)
     (W : Λ →+ ℂ) {r : ℝ} (hr0 : 0 ≤ r) (hr1 : r < 1)
     (hW : stabilitySeminorm C σ (W - σ.Z) ≤ ENNReal.ofReal r)
@@ -62,8 +64,11 @@ theorem skewedPhase_gt_of_geProp
     (hthin : b - a + 2 * ε < 1)
     (hsin : stabilitySeminorm C σ (W - σ.Z) <
       ENNReal.ofReal (Real.sin (Real.pi * ε)))
-    (haψ : a + ε ≤ ψ) (hψb : ψ ≤ b - ε)
     {E : C} (hI : σ.slicing.intervalProp C a b E) (hE : ¬IsZero E)
+    (hrange :
+      (skewedStabilityFunctionOfSeminormLtOne C σ W hr0 hr1 hW hab).phase E ∈
+        Set.Ioo (ψ - 1) (ψ + 1))
+    (hbranch : b + ε < ψ + 1)
     (hge : σ.slicing.geProp C (ψ + ε) E) :
     ψ < (skewedStabilityFunctionOfSeminormLtOne C σ W hr0 hr1 hW hab).phase E := by
   let F := skewedStabilityFunctionOfSeminormLtOne C σ W hr0 hr1 hW hab
@@ -95,10 +100,28 @@ theorem skewedPhase_gt_of_geProp
     apply rotatedIm_pos_of_relativePhase_gt
       (F.nonzero (G.factor i) (G.φ i) haφ hφb (G.semistable i) hi)
     · linarith [hp.1]
-    · linarith [hp.2]
-  exact relativePhase_gt_of_rotatedIm_pos him
+    · linarith [hp.2, hφb, hbranch]
+  exact relativePhase_gt_of_rotatedIm_pos him hrange
+
+omit [IsTriangulated C] in
+/-- A nonzero thin interval object supported at or above `ψ + ε` has
+skewed phase strictly above `ψ`. -/
+theorem skewedPhase_gt_of_geProp
+    (σ : StabilityCondition.WithClassMap C κ)
+    (W : Λ →+ ℂ) {r : ℝ} (hr0 : 0 ≤ r) (hr1 : r < 1)
+    (hW : stabilitySeminorm C σ (W - σ.Z) ≤ ENNReal.ofReal r)
+    {a b ε ψ : ℝ} (hab : a < b) (hε : 0 < ε) (hε2 : ε ≤ 1 / 2)
+    (hthin : b - a + 2 * ε < 1)
+    (hsin : stabilitySeminorm C σ (W - σ.Z) <
+      ENNReal.ofReal (Real.sin (Real.pi * ε)))
+    (haψ : a + ε ≤ ψ) (hψb : ψ ≤ b - ε)
+    {E : C} (hI : σ.slicing.intervalProp C a b E) (hE : ¬IsZero E)
+    (hge : σ.slicing.geProp C (ψ + ε) E) :
+    ψ < (skewedStabilityFunctionOfSeminormLtOne C σ W hr0 hr1 hW hab).phase E := by
+  exact σ.skewedPhase_gt_of_geProp_of_phase_range C W hr0 hr1 hW
+    hab hε hε2 hthin hsin hI hE
     (σ.skewedPhase_mem_enveloped_branch C W hr0 hr1 hW hab hε hε2
-      hthin hsin haψ hψb hI hE)
+      hthin hsin haψ hψb hI hE) (by linarith) hge
 
 omit [IsTriangulated C] in
 /-- A nonzero thin interval object supported at or below `ψ - ε` has

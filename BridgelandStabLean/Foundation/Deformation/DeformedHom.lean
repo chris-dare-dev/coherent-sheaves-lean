@@ -97,9 +97,9 @@ theorem hom_eq_zero_of_deformedPred_gap
     obtain ⟨a, b, hab, hthin, haψ, hψb, hSS⟩ :=
       σ.exists_deformedPred_witness C W hr0 hr1 hW hX hXne
     exact ⟨σ.skewed_phiMinus_ge C W hr0 hr1 hW hab hε hε2 hthin hsin
-        haψ hψb hSS,
+        hSS,
       σ.skewed_phiPlus_le C W hr0 hr1 hW hab hε hε2 hthin hsin
-        haψ hψb hSS⟩
+        hSS⟩
   · exact hgap
 
 /-- Extension-closed owner deformed cuts are Hom-orthogonal once their cutoffs

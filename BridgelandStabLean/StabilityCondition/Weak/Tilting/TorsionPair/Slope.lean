@@ -3,7 +3,7 @@ Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under the MIT license.
 -/
 import BridgelandStabLean.StabilityCondition.Weak.Tilting.TorsionPair.Heart
-import BridgelandStability.Slicing.TStructureConstruction
+import BridgelandStabLean.Foundation
 
 set_option backward.defeqAttrib.useBackward true
 set_option backward.isDefEq.respectTransparency false
@@ -42,6 +42,7 @@ downstream in `TorsionPair/SourceSlope.lean`.  The coverage map remains
 
 namespace BridgelandStabLean.WeakStability
 
+open BridgelandStabLean.Foundation
 open CategoryTheory Limits Pretriangulated CategoryTheory.Triangulated ZeroObject
 open BridgelandStabLean.Tilting
 
@@ -66,7 +67,8 @@ theorem leProp_of_iso {t : ℝ} {E E' : C} (e : E ≅ E') (h : s.leProp C t E) :
   rcases h with hZ | ⟨F, hn, hle⟩
   · exact Or.inl (hZ.of_iso e.symm)
   · exact Or.inr ⟨F.ofIso C e, hn, by
-      simpa [HNFiltration.phiPlus, HNFiltration.ofIso] using hle⟩
+      simpa [BridgelandStabLean.Foundation.HNFiltration.phiPlus,
+        BridgelandStabLean.Foundation.HNFiltration.ofIso] using hle⟩
 
 omit [IsTriangulated C] in
 /-- `gtProp` is closed under isomorphisms. -/
@@ -75,7 +77,8 @@ theorem gtProp_of_iso {t : ℝ} {E E' : C} (e : E ≅ E') (h : s.gtProp C t E) :
   rcases h with hZ | ⟨F, hn, hgt⟩
   · exact Or.inl (hZ.of_iso e.symm)
   · exact Or.inr ⟨F.ofIso C e, hn, by
-      simpa [HNFiltration.phiMinus, HNFiltration.ofIso] using hgt⟩
+      simpa [BridgelandStabLean.Foundation.HNFiltration.phiMinus,
+        BridgelandStabLean.Foundation.HNFiltration.ofIso] using hgt⟩
 
 /-- Heart membership from the two interval bounds, through the foundational library's heart
 identification. -/
@@ -124,7 +127,7 @@ def slicingTorsionPair {β : ℝ} (h0 : 0 ≤ β) (h1 : β ≤ 1) :
     · exact absurd hZ hE
     have hn : 0 < F.n := F.n_pos C hE
     obtain ⟨X, Y, f, g, h, hT, hXgt, hYle, -⟩ :=
-      s.exists_split_at_cutoff C F hI hn
+      s.exists_split_at_cutoff_with_upper_bound C F hI hn
     -- `X ∈ P((β, 1])`: the co-aisle bound comes from the inverse rotation.
     have hX1 : s.leProp C 1 X := by
       have hYshift : s.leProp C 1 (Y⟦(-1 : ℤ)⟧) := by

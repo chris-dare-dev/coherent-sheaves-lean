@@ -20,6 +20,7 @@ The general case follows from
 the action by the fixed element `x₀`.
 -/
 
+open BridgelandStabLean.Foundation
 open CategoryTheory CategoryTheory.Limits CategoryTheory.Pretriangulated
 open CategoryTheory.Triangulated
 
@@ -88,14 +89,18 @@ distance from `x • τ` back to the fixed slicing `σ`. -/
 theorem slicingDist_smul_le_of_displacement (x : GLTilde)
     (σ τ : StabilityCondition.WithClassMap C v) {a d : ℝ}
     (hdisp : ∀ φ : ℝ, |x.shift.toOrderIso φ - φ| < a)
-    (hdist : slicingDist C σ.slicing τ.slicing < ENNReal.ofReal d) :
-    slicingDist C σ.slicing (x • τ).slicing ≤ ENNReal.ofReal (d + a) := by
-  apply slicingDist_le_of_phase_bounds
+    (hdist : BridgelandStabLean.Foundation.slicingDist C
+      σ.slicing τ.slicing < ENNReal.ofReal d) :
+    BridgelandStabLean.Foundation.slicingDist C
+      σ.slicing (x • τ).slicing ≤ ENNReal.ofReal (d + a) := by
+  have hd : 0 < d := ENNReal.ofReal_pos.mp (lt_of_le_of_lt bot_le hdist)
+  apply BridgelandStabLean.Foundation.slicingDist_le_of_phase_bounds
   · intro E hE
     change |σ.slicing.phiPlus C E hE -
       (relabel C x.shift τ.slicing).phiPlus C E hE| ≤ d + a
     rw [Slicing.relabel_phiPlus x.shift τ.slicing E hE]
-    have hold := phiPlus_sub_lt_of_slicingDist C σ.slicing τ.slicing hE hdist
+    have hold := BridgelandStabLean.Foundation.abs_phiPlus_sub_lt_of_slicingDist
+      C σ.slicing τ.slicing hE hd hdist
     calc
       |σ.slicing.phiPlus C E hE -
           x.shift.toOrderIso (τ.slicing.phiPlus C E hE)| =
@@ -115,7 +120,8 @@ theorem slicingDist_smul_le_of_displacement (x : GLTilde)
     change |σ.slicing.phiMinus C E hE -
       (relabel C x.shift τ.slicing).phiMinus C E hE| ≤ d + a
     rw [Slicing.relabel_phiMinus x.shift τ.slicing E hE]
-    have hOld := phiMinus_sub_lt_of_slicingDist C σ.slicing τ.slicing hE hdist
+    have hOld := BridgelandStabLean.Foundation.abs_phiMinus_sub_lt_of_slicingDist
+      C σ.slicing τ.slicing hE hd hdist
     calc
       |σ.slicing.phiMinus C E hE -
           x.shift.toOrderIso (τ.slicing.phiMinus C E hE)| =
@@ -178,8 +184,9 @@ theorem norm_actC_sub_div_le (T : Matrix.GLPos (Fin 2) ℝ) (z w : ℂ) (hw : w 
 stability condition away from `σ` gives this affine seminorm bound. -/
 theorem stabSeminorm_near_identity_le (x : GLTilde)
     (σ τ : StabilityCondition.WithClassMap C v) :
-    stabSeminorm C σ ((x • τ).Z - σ.Z) ≤
-      ENNReal.ofReal ‖actCCLM x.mat‖ * stabSeminorm C σ (τ.Z - σ.Z) +
+    BridgelandStabLean.Foundation.Deformation.stabilitySeminorm C σ ((x • τ).Z - σ.Z) ≤
+      ENNReal.ofReal ‖actCCLM x.mat‖ *
+        BridgelandStabLean.Foundation.Deformation.stabilitySeminorm C σ (τ.Z - σ.Z) +
         ENNReal.ofReal
           ‖actCCLM x.mat - ContinuousLinearMap.id ℝ ℂ‖ := by
   apply iSup_le
@@ -194,31 +201,32 @@ theorem stabSeminorm_near_identity_le (x : GLTilde)
     obtain ⟨m, hm, hZ⟩ := σ.compat φ E hP hE
     rw [hZ]
     exact mul_ne_zero (Complex.ofReal_ne_zero.mpr (ne_of_gt hm)) (Complex.exp_ne_zero _)
-  have hnum : ((x • τ).Z - σ.Z) (cl C v E) =
-      actC x.mat (((τ.Z - σ.Z) (cl C v E)) + σ.charge E) - σ.charge E := by
-    change actC x.mat (τ.Z (cl C v E)) - σ.Z (cl C v E) =
-      actC x.mat ((τ.Z (cl C v E) - σ.Z (cl C v E)) + σ.Z (cl C v E)) -
-        σ.Z (cl C v E)
+  have hnum : ((x • τ).Z - σ.Z) (classOf C v E) =
+      actC x.mat (((τ.Z - σ.Z) (classOf C v E)) + σ.charge E) - σ.charge E := by
+    change actC x.mat (τ.Z (classOf C v E)) - σ.Z (classOf C v E) =
+      actC x.mat ((τ.Z (classOf C v E) - σ.Z (classOf C v E)) + σ.Z (classOf C v E)) -
+        σ.Z (classOf C v E)
     ring_nf
   rw [hnum]
   calc
     ENNReal.ofReal
-        (‖actC x.mat (((τ.Z - σ.Z) (cl C v E)) + σ.charge E) - σ.charge E‖ /
+        (‖actC x.mat (((τ.Z - σ.Z) (classOf C v E)) + σ.charge E) - σ.charge E‖ /
           ‖σ.charge E‖)
         ≤ ENNReal.ofReal
           (‖actCCLM x.mat‖ *
-              (‖(τ.Z - σ.Z) (cl C v E)‖ / ‖σ.charge E‖) +
+              (‖(τ.Z - σ.Z) (classOf C v E)‖ / ‖σ.charge E‖) +
             ‖actCCLM x.mat - ContinuousLinearMap.id ℝ ℂ‖) :=
       ENNReal.ofReal_le_ofReal (norm_actC_sub_div_le x.mat _ _ hcharge)
     _ = ENNReal.ofReal ‖actCCLM x.mat‖ *
-          ENNReal.ofReal (‖(τ.Z - σ.Z) (cl C v E)‖ / ‖σ.charge E‖) +
+          ENNReal.ofReal (‖(τ.Z - σ.Z) (classOf C v E)‖ / ‖σ.charge E‖) +
         ENNReal.ofReal
           ‖actCCLM x.mat - ContinuousLinearMap.id ℝ ℂ‖ := by
       rw [ENNReal.ofReal_add
           (mul_nonneg (norm_nonneg _) (div_nonneg (norm_nonneg _) (norm_nonneg _)))
           (norm_nonneg _),
         ENNReal.ofReal_mul (norm_nonneg _)]
-    _ ≤ ENNReal.ofReal ‖actCCLM x.mat‖ * stabSeminorm C σ (τ.Z - σ.Z) +
+    _ ≤ ENNReal.ofReal ‖actCCLM x.mat‖ *
+        BridgelandStabLean.Foundation.Deformation.stabilitySeminorm C σ (τ.Z - σ.Z) +
         ENNReal.ofReal
           ‖actCCLM x.mat - ContinuousLinearMap.id ℝ ℂ‖ := by
       apply add_le_add
@@ -237,7 +245,9 @@ theorem exists_identity_basisNhd_control
     (he : 0 < e) (he8 : e < 1 / 8) :
     ∃ d : ℝ, 0 < d ∧ d < 1 / 8 ∧
       ∀ᶠ x in nhds (1 : GLTilde),
-        Set.MapsTo (fun τ ↦ x • τ) (basisNhd C σ d) (basisNhd C σ e) := by
+        Set.MapsTo (fun τ ↦ x • τ)
+          (BridgelandStabLean.Foundation.Deformation.basisNhd C σ d)
+          (BridgelandStabLean.Foundation.Deformation.basisNhd C σ e) := by
   let S := Real.sin (Real.pi * e)
   have hS : 0 < S := by
     dsimp [S]
@@ -309,13 +319,17 @@ theorem exists_identity_basisNhd_control
         _ = S / 8 := by
           dsimp [dZ]
           field_simp [Real.pi_ne_zero]
-    have hOld : stabSeminorm C σ (τ.Z - σ.Z) < ENNReal.ofReal (S / 8) :=
+    have hOld : BridgelandStabLean.Foundation.Deformation.stabilitySeminorm C σ (τ.Z - σ.Z) <
+        ENNReal.ofReal (S / 8) :=
       lt_of_lt_of_le hτ.1 (ENNReal.ofReal_le_ofReal hsinD)
-    have hProd : ENNReal.ofReal N * stabSeminorm C σ (τ.Z - σ.Z) <
+    have hProd : ENNReal.ofReal N *
+        BridgelandStabLean.Foundation.Deformation.stabilitySeminorm C σ (τ.Z - σ.Z) <
         ENNReal.ofReal (S / 4) := by
       calc
-        ENNReal.ofReal N * stabSeminorm C σ (τ.Z - σ.Z)
-            ≤ ENNReal.ofReal 2 * stabSeminorm C σ (τ.Z - σ.Z) := by
+        ENNReal.ofReal N *
+            BridgelandStabLean.Foundation.Deformation.stabilitySeminorm C σ (τ.Z - σ.Z)
+            ≤ ENNReal.ofReal 2 *
+              BridgelandStabLean.Foundation.Deformation.stabilitySeminorm C σ (τ.Z - σ.Z) := by
               gcongr
         _ < ENNReal.ofReal 2 * ENNReal.ofReal (S / 8) := by
           exact ENNReal.mul_lt_mul_right
@@ -326,10 +340,12 @@ theorem exists_identity_basisNhd_control
           ring
     have hDof : ENNReal.ofReal D < ENNReal.ofReal (S / 4) :=
       (ENNReal.ofReal_lt_ofReal_iff (by positivity)).2 hDS4
-    have hsum : ENNReal.ofReal N * stabSeminorm C σ (τ.Z - σ.Z) +
+    have hsum : ENNReal.ofReal N *
+        BridgelandStabLean.Foundation.Deformation.stabilitySeminorm C σ (τ.Z - σ.Z) +
         ENNReal.ofReal D < ENNReal.ofReal S := by
       calc
-        ENNReal.ofReal N * stabSeminorm C σ (τ.Z - σ.Z) + ENNReal.ofReal D
+        ENNReal.ofReal N * BridgelandStabLean.Foundation.Deformation.stabilitySeminorm C
+          σ (τ.Z - σ.Z) + ENNReal.ofReal D
             < ENNReal.ofReal (S / 4) + ENNReal.ofReal (S / 4) :=
               ENNReal.add_lt_add hProd hDof
         _ = ENNReal.ofReal (S / 2) := by
@@ -358,12 +374,14 @@ theorem continuousAt_smul_identity
   rw [continuousAt_def]
   intro U hU
   have hU' : U ∈ nhds σ := by simpa using hU
-  obtain ⟨e, he, he8, heU⟩ := exists_basisNhd_subset_of_mem_nhds C σ hU'
+  obtain ⟨e, he, he8, heU⟩ :=
+    BridgelandStabLean.Foundation.exists_basisNhd_subset_of_mem_nhds C σ hU'
   obtain ⟨d, hd, hd8, hmaps⟩ := exists_identity_basisNhd_control σ he he8
-  have hdOpen : IsOpen (basisNhd C σ d) :=
+  have hdOpen : IsOpen (BridgelandStabLean.Foundation.Deformation.basisNhd C σ d) :=
     TopologicalSpace.isOpen_generateFrom_of_mem ⟨σ, d, hd, hd8, rfl⟩
-  have hdNhd : basisNhd C σ d ∈ nhds σ :=
-    hdOpen.mem_nhds (basisNhd_self C σ hd hd8)
+  have hdNhd : BridgelandStabLean.Foundation.Deformation.basisNhd C σ d ∈ nhds σ :=
+    hdOpen.mem_nhds
+      (BridgelandStabLean.Foundation.Deformation.self_mem_basisNhd C σ hd (by linarith))
   rw [nhds_prod_eq]
   apply Filter.mem_of_superset (Filter.prod_mem_prod hmaps hdNhd)
   intro p hp

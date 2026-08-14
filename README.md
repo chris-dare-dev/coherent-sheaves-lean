@@ -47,16 +47,16 @@ Riemann–Roch and stability theory while keeping every hypothesis and trust bou
 - An owner-controlled, Mathlib-only Bridgeland foundation for slicings,
   stability conditions, abelian stability functions, HN filtrations, phase
   truncations, and their canonical t-structures.
-- Retained deformation theory and heart-equivalence layers, isolated as a
-  clearly marked Apache-2.0 vendored component while their consumers migrate.
+- Repository-owned deformation theory, heart equivalences, and t-structure
+  bridges, with CI enforcing zero imports from the retired external source.
 
 Incomplete theorems are described in module documentation and tracked as GitHub issues; the
 library contains no `sorry` declarations.
 
 ## Repository map
 
-The owner-authored source trees retain their established module names and histories.
-The third-party foundation is isolated under `vendor/`.
+The owner-maintained source trees retain their established module names and histories.
+There is no external or vendored stability-condition library root.
 
 ```text
 DerivedAlgGeoLean.lean               # combined stable umbrella
@@ -101,9 +101,9 @@ CohLean/
 ├── Topology/Opens/
 └── Development/                  # compile-only API audits and probes
 BridgelandStabLean/
+├── Foundation/                   # owned slicings, HN theory, deformation, and stability conditions
 ├── Lattice/                      # arithmetic, numerical, and Mukai lattices
 └── StabilityCondition/           # metric, support, symmetry, walls, weak stability
-vendor/BridgelandStability/       # Apache-2.0 foundational implementation
 ```
 
 This layout reserves natural growth points for duality, higher-dimensional Riemann–Roch, and
@@ -198,8 +198,8 @@ lake build
 lake env lean scripts/Audit.lean
 lake env lean scripts/BridgelandAudit.lean > /tmp/bridgeland-audit.txt 2>&1
 python3 scripts/check_audit.py /tmp/bridgeland-audit.txt
-lake exe runLinter BridgelandStability
 lake exe runLinter BridgelandStabLean
+python3 scripts/check_source_independence.py
 ```
 
 The two audits retain their subsystem-specific declaration lists. The emitter
@@ -231,7 +231,6 @@ smallest existing mathematical subsystem and exported through its nearest umbrel
 
 ## License
 
-The owner-authored trunk is MIT; see [LICENSE](LICENSE). The vendored
-`BridgelandStability` component and the compatibility files identified in
-[LICENSES/README.md](LICENSES/README.md) remain Apache-2.0 with their original
-headers and notices intact.
+The owner-authored trunk is MIT; see [LICENSE](LICENSE). Repository-maintained
+files derived from Mathlib and the former comparison source retain their
+Apache-2.0 headers and notices in [LICENSES/README.md](LICENSES/README.md).

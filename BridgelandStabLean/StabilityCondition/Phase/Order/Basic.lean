@@ -2,7 +2,7 @@
 Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under the MIT license.
 -/
-import BridgelandStability.Slicing.TStructure
+import BridgelandStabLean.Foundation
 
 /-!
 # Order relations on slicings
@@ -19,12 +19,13 @@ central charge or geometric realization.
 
 noncomputable section
 
+open BridgelandStabLean.Foundation
 open CategoryTheory CategoryTheory.Limits CategoryTheory.Pretriangulated
 open scoped ZeroObject
 
 universe v u
 
-namespace CategoryTheory.Triangulated
+namespace BridgelandStabLean.Foundation
 
 variable (C : Type u) [Category.{v} C] [HasZeroObject C] [HasShift C ℤ]
   [Preadditive C] [∀ n : ℤ, (shiftFunctor C n).Additive] [Pretriangulated C]
@@ -99,7 +100,7 @@ theorem Slicing.Precedes.weak {s t : Slicing C} (h : s.Precedes C t) :
 /-- The weak slicing order is reflexive. -/
 theorem Slicing.precedesWeak_refl (s : Slicing C) : s.PrecedesWeak C s := by
   intro phi E hE
-  exact s.leProp_of_semistable C phi phi E hE le_rfl
+  exact s.leProp_of_semistable C hE le_rfl
 
 /-- Shifting all phases down by one strictly increases a slicing in the order:
 `P ≺ P[1]`, where `P[1](phi) = P(phi + 1)`. -/
@@ -116,7 +117,7 @@ nonzero object. -/
 theorem Slicing.phaseShift_phiPlus (s : Slicing C) (t : ℝ) (E : C)
     (hE0 : ¬IsZero E) :
     (s.phaseShift C t).phiPlus C E hE0 = s.phiPlus C E hE0 - t := by
-  obtain ⟨F, hn, hfirst, _⟩ := HNFiltration.exists_both_nonzero C s hE0
+  obtain ⟨F, hn, hfirst, _⟩ := s.exists_hn_nonzero_boundaries C hE0
   rw [(s.phaseShift C t).phiPlus_eq C E hE0 (F.phaseShift (C := C) t) hn hfirst,
     s.phiPlus_eq C E hE0 F hn hfirst]
   rfl
@@ -126,9 +127,9 @@ nonzero object. -/
 theorem Slicing.phaseShift_phiMinus (s : Slicing C) (t : ℝ) (E : C)
     (hE0 : ¬IsZero E) :
     (s.phaseShift C t).phiMinus C E hE0 = s.phiMinus C E hE0 - t := by
-  obtain ⟨F, hn, _, hlast⟩ := HNFiltration.exists_both_nonzero C s hE0
+  obtain ⟨F, hn, _, hlast⟩ := s.exists_hn_nonzero_boundaries C hE0
   rw [(s.phaseShift C t).phiMinus_eq C E hE0 (F.phaseShift (C := C) t) hn hlast,
     s.phiMinus_eq C E hE0 F hn hlast]
   rfl
 
-end CategoryTheory.Triangulated
+end BridgelandStabLean.Foundation

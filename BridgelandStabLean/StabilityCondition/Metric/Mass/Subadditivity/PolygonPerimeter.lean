@@ -22,10 +22,11 @@ select a monotone subsequence of the outer boundary, and discrete integration
 by parts reduces the perimeter comparison to the triangle inequality.
 -/
 
+open BridgelandStabLean.Foundation
 open Complex
 open scoped BigOperators ComplexConjugate
 
-namespace CategoryTheory.ComplexPolygonalPath
+namespace BridgelandStabLean.Foundation.ComplexPolygonalPath
 
 noncomputable section
 
@@ -385,10 +386,10 @@ theorem closedLength_le_of_monotone_support {n m : ℕ}
 
 /-- A nonempty path all of whose edges lie in the semi-closed upper
 half-plane has endpoint displacement in that half-plane. -/
-theorem last_sub_zero_mem_upperHalfPlaneUnion {n : ℕ} (hn : 0 < n)
+theorem last_sub_zero_mem_semiClosedUpperHalfPlane {n : ℕ} (hn : 0 < n)
     (z : Fin (n + 1) → ℂ)
-    (hedge : ∀ i : Fin n, z i.succ - z i.castSucc ∈ upperHalfPlaneUnion) :
-    z (Fin.last n) - z 0 ∈ upperHalfPlaneUnion := by
+    (hedge : ∀ i : Fin n, z i.succ - z i.castSucc ∈ semiClosedUpperHalfPlane) :
+    z (Fin.last n) - z 0 ∈ semiClosedUpperHalfPlane := by
   induction n with
   | zero => omega
   | succ n ih =>
@@ -397,29 +398,29 @@ theorem last_sub_zero_mem_upperHalfPlaneUnion {n : ℕ} (hn : 0 < n)
         simpa using hedge (0 : Fin 1)
       · have hnpos : 0 < n := Nat.pos_of_ne_zero hn₀
         let z' : Fin (n + 1) → ℂ := fun i ↦ z i.castSucc
-        have hp : z (Fin.last n).castSucc - z 0 ∈ upperHalfPlaneUnion := by
+        have hp : z (Fin.last n).castSucc - z 0 ∈ semiClosedUpperHalfPlane := by
           simpa [z'] using ih hnpos z' (fun i ↦ hedge i.castSucc)
         have hl : z (Fin.last (n + 1)) - z (Fin.last n).castSucc ∈
-            upperHalfPlaneUnion := by
+            semiClosedUpperHalfPlane := by
           have := hedge (Fin.last n)
           simpa using this
-        have hadd := mem_upperHalfPlaneUnion_of_add hp hl
+        have hadd := add_mem_semiClosedUpperHalfPlane hp hl
         convert hadd using 1
         ring
 
 /-- Every forward chord of such a path remains in the semi-closed upper
 half-plane. -/
-theorem sub_mem_upperHalfPlaneUnion_of_lt {n : ℕ}
+theorem sub_mem_semiClosedUpperHalfPlane_of_lt {n : ℕ}
     (z : Fin (n + 1) → ℂ)
-    (hedge : ∀ i : Fin n, z i.succ - z i.castSucc ∈ upperHalfPlaneUnion)
+    (hedge : ∀ i : Fin n, z i.succ - z i.castSucc ∈ semiClosedUpperHalfPlane)
     {a b : Fin (n + 1)} (hba : b < a) :
-    z a - z b ∈ upperHalfPlaneUnion := by
+    z a - z b ∈ semiClosedUpperHalfPlane := by
   let d : ℕ := a.1 - b.1
   have hd : 0 < d := Nat.sub_pos_of_lt hba
   let p : Fin (d + 1) → ℂ := fun j ↦ z ⟨b.1 + j.1, by
     dsimp [d] at j ⊢
     omega⟩
-  have hp := last_sub_zero_mem_upperHalfPlaneUnion hd p (fun j ↦ by
+  have hp := last_sub_zero_mem_semiClosedUpperHalfPlane hd p (fun j ↦ by
     let i : Fin n := ⟨b.1 + j.1, by
       dsimp [d] at j ⊢
       omega⟩
@@ -461,7 +462,7 @@ def interiorTurnScale {n : ℕ} (z : Fin (n + 1) → ℂ)
 bisector support functional used by the decreasing-argument proof. -/
 theorem turningFunctional_interior_eq_cross {n : ℕ}
     (z : Fin (n + 1) → ℂ)
-    (hedge : ∀ i : Fin n, z i.succ - z i.castSucc ∈ upperHalfPlaneUnion)
+    (hedge : ∀ i : Fin n, z i.succ - z i.castSucc ∈ semiClosedUpperHalfPlane)
     (k : Fin (n + 1)) (hk₀ : 0 < k) (hkn : k < Fin.last n) (x : ℂ) :
     turningFunctional z k x = interiorTurnScale z k hk₀ hkn *
       crossFunctional (unitRay (interiorBisector z k hk₀ hkn)) x := by
@@ -494,18 +495,18 @@ theorem turningFunctional_interior_eq_cross {n : ℕ}
       exact (finRotate (n + 1)).apply_symm_apply k]
     rw [hkPrev]
     exact unitDirection_eq_unitRay_arg
-      (upperHalfPlaneUnion_ne_zero (hedge iPrev))
+      (semiClosedUpperHalfPlane_ne_zero (hedge iPrev))
   have hnextTangent : closedTangent z k = unitRay (Complex.arg eNext) := by
     unfold closedTangent closedEdge
     rw [hrotNext, hkNext]
     exact unitDirection_eq_unitRay_arg
-      (upperHalfPlaneUnion_ne_zero (hedge iNext))
+      (semiClosedUpperHalfPlane_ne_zero (hedge iNext))
   rw [turningFunctional, hprevTangent, hnextTangent]
   rw [dotFunctional_unitRay_sub]
   rfl
 
 theorem interiorTurnScale_pos {n : ℕ} (z : Fin (n + 1) → ℂ)
-    (hedge : ∀ i : Fin n, z i.succ - z i.castSucc ∈ upperHalfPlaneUnion)
+    (hedge : ∀ i : Fin n, z i.succ - z i.castSucc ∈ semiClosedUpperHalfPlane)
     (harg : StrictAnti (fun i : Fin n ↦
       Complex.arg (z i.succ - z i.castSucc)))
     (k : Fin (n + 1)) (hk₀ : 0 < k) (hkn : k < Fin.last n) :
@@ -520,7 +521,7 @@ theorem interiorTurnScale_pos {n : ℕ} (z : Fin (n + 1) → ℂ)
   have hdiffpi :
       (Complex.arg (z iPrev.succ - z iPrev.castSucc) -
         Complex.arg (z iNext.succ - z iNext.castSucc)) / 2 < Real.pi := by
-    have hp := arg_pos_of_mem_upperHalfPlaneUnion (hedge iNext)
+    have hp := arg_pos_of_mem_semiClosedUpperHalfPlane (hedge iNext)
     have hle := Complex.arg_le_pi (z iPrev.succ - z iPrev.castSucc)
     linarith [Real.pi_pos]
   unfold interiorTurnScale interiorPrevEdge interiorNextEdge
@@ -530,15 +531,15 @@ theorem interiorTurnScale_pos {n : ℕ} (z : Fin (n + 1) → ℂ)
   exact mul_pos (by norm_num) (Real.sin_pos_of_pos_of_lt_pi (by linarith) hdiffpi)
 
 theorem interiorBisector_mem_Ioo {n : ℕ} (z : Fin (n + 1) → ℂ)
-    (hedge : ∀ i : Fin n, z i.succ - z i.castSucc ∈ upperHalfPlaneUnion)
+    (hedge : ∀ i : Fin n, z i.succ - z i.castSucc ∈ semiClosedUpperHalfPlane)
     (harg : StrictAnti (fun i : Fin n ↦
       Complex.arg (z i.succ - z i.castSucc)))
     (k : Fin (n + 1)) (hk₀ : 0 < k) (hkn : k < Fin.last n) :
     interiorBisector z k hk₀ hkn ∈ Set.Ioo 0 Real.pi := by
   let iPrev : Fin n := ⟨k.1 - 1, by omega⟩
   let iNext : Fin n := ⟨k.1, by omega⟩
-  have hp := arg_pos_of_mem_upperHalfPlaneUnion (hedge iPrev)
-  have hn := arg_pos_of_mem_upperHalfPlaneUnion (hedge iNext)
+  have hp := arg_pos_of_mem_semiClosedUpperHalfPlane (hedge iPrev)
+  have hn := arg_pos_of_mem_semiClosedUpperHalfPlane (hedge iNext)
   have hpp := Complex.arg_le_pi (z iPrev.succ - z iPrev.castSucc)
   have hipn : iPrev < iNext := by simp only [iPrev, iNext, Fin.mk_lt_mk]; omega
   have hnp := harg hipn
@@ -587,15 +588,15 @@ theorem crossMaxIndex_max {n : ℕ} (z : Fin (n + 1) → ℂ) (θ : ℝ)
 /-- As the support angle turns clockwise, a maximizing vertex of a
 decreasing-argument upper-half-plane path can only move forward. -/
 theorem crossMaxIndex_mono_of_angle_gt {n : ℕ} (z : Fin (n + 1) → ℂ)
-    (hedge : ∀ i : Fin n, z i.succ - z i.castSucc ∈ upperHalfPlaneUnion)
+    (hedge : ∀ i : Fin n, z i.succ - z i.castSucc ∈ semiClosedUpperHalfPlane)
     {θ₁ θ₂ : ℝ} (hθ₁ : θ₁ ∈ Set.Ioo 0 Real.pi)
     (hθ₂ : θ₂ ∈ Set.Ioo 0 Real.pi) (hθ : θ₂ < θ₁) :
     crossMaxIndex z θ₁ ≤ crossMaxIndex z θ₂ := by
   by_contra hle
   have hlt : crossMaxIndex z θ₂ < crossMaxIndex z θ₁ := lt_of_not_ge hle
   let c : ℂ := z (crossMaxIndex z θ₁) - z (crossMaxIndex z θ₂)
-  have hc : c ∈ upperHalfPlaneUnion :=
-    sub_mem_upperHalfPlaneUnion_of_lt z hedge hlt
+  have hc : c ∈ semiClosedUpperHalfPlane :=
+    sub_mem_semiClosedUpperHalfPlane_of_lt z hedge hlt
   have h₁nonneg : 0 ≤ crossFunctional (unitRay θ₁) c := by
     have hm := crossMaxIndex_max z θ₁ (crossMaxIndex z θ₂)
     rw [show crossFunctional (unitRay θ₁) c =
@@ -610,10 +611,10 @@ theorem crossMaxIndex_mono_of_angle_gt {n : ℕ} (z : Fin (n + 1) → ℂ)
         crossFunctional (unitRay θ₂) (z (crossMaxIndex z θ₂)) by
       exact map_sub (crossFunctional (unitRay θ₂)) _ _]
     linarith
-  have hr₁ : unitRay θ₁ ∈ upperHalfPlaneUnion :=
-    unitRay_mem_upperHalfPlaneUnion hθ₁.1 hθ₁.2
-  have hr₂ : unitRay θ₂ ∈ upperHalfPlaneUnion :=
-    unitRay_mem_upperHalfPlaneUnion hθ₂.1 hθ₂.2
+  have hr₁ : unitRay θ₁ ∈ semiClosedUpperHalfPlane :=
+    unitRay_mem_semiClosedUpperHalfPlane hθ₁.1 hθ₁.2
+  have hr₂ : unitRay θ₂ ∈ semiClosedUpperHalfPlane :=
+    unitRay_mem_semiClosedUpperHalfPlane hθ₂.1 hθ₂.2
   have harg₁ : θ₁ ≤ Complex.arg c := by
     by_contra h
     have hneg := crossFunctional_neg_of_arg_lt hr₁ hc (by
@@ -645,8 +646,8 @@ monotone, and applies `closedLength_le_of_monotone_support`. -/
 theorem length_le_of_convexHull_subset {n m : ℕ} (hn : 0 < n)
     (z : Fin (n + 1) → ℂ) (w : Fin (m + 1) → ℂ)
     (hzero : z 0 = w 0) (hlast : z (Fin.last n) = w (Fin.last m))
-    (hzedge : ∀ i : Fin n, z i.succ - z i.castSucc ∈ upperHalfPlaneUnion)
-    (hwedge : ∀ i : Fin m, w i.succ - w i.castSucc ∈ upperHalfPlaneUnion)
+    (hzedge : ∀ i : Fin n, z i.succ - z i.castSucc ∈ semiClosedUpperHalfPlane)
+    (hwedge : ∀ i : Fin m, w i.succ - w i.castSucc ∈ semiClosedUpperHalfPlane)
     (hzarg : StrictAnti (fun i : Fin n ↦
       Complex.arg (z i.succ - z i.castSucc)))
     (hcontain : convexHull ℝ (Set.range z) ⊆ convexHull ℝ (Set.range w)) :
@@ -729,11 +730,13 @@ theorem length_le_of_convexHull_subset {n m : ℕ} (hn : 0 < n)
 
 end
 
-end CategoryTheory.ComplexPolygonalPath
+end BridgelandStabLean.Foundation.ComplexPolygonalPath
 
-namespace CategoryTheory
+namespace BridgelandStabLean.Foundation
 
 noncomputable section
+
+open CategoryTheory CategoryTheory.Limits
 
 universe v u
 
@@ -750,18 +753,18 @@ support theorem instead of trying to derive this hypothesis from full ambient
 HN-polygon containment. -/
 theorem polygonLength_le_of_vertexHull_subset
     (F : AbelianHNFiltration Z E) (G : AbelianHNFiltration Z E')
-    (hcharge : Z.Zobj E = Z.Zobj E')
+    (hcharge : Z.charge E = Z.charge E')
     (hcontain : convexHull ℝ (Set.range F.polygonVertex) ⊆
       convexHull ℝ (Set.range G.polygonVertex)) :
     F.polygonLength ≤ G.polygonLength := by
-  apply ComplexPolygonalPath.length_le_of_convexHull_subset F.hn
+  apply ComplexPolygonalPath.length_le_of_convexHull_subset F.nonempty
   · rw [F.polygonVertex_zero, G.polygonVertex_zero]
   · calc
-      F.polygonVertex (Fin.last F.n) = Z.Zobj E := F.polygonVertex_last
-      _ = Z.Zobj E' := hcharge
+      F.polygonVertex (Fin.last F.n) = Z.charge E := F.polygonVertex_last
+      _ = Z.charge E' := hcharge
       _ = G.polygonVertex (Fin.last G.n) := G.polygonVertex_last.symm
-  · exact fun i ↦ F.polygonEdge_mem_upperHalfPlaneUnion i
-  · exact fun i ↦ G.polygonEdge_mem_upperHalfPlaneUnion i
+  · exact fun i ↦ F.polygonEdge_mem_semiClosedUpperHalfPlane i
+  · exact fun i ↦ G.polygonEdge_mem_semiClosedUpperHalfPlane i
   · exact F.polygonEdge_arg_strictAnti
   · exact hcontain
 
@@ -780,8 +783,8 @@ support-fan perimeter theorem closes the argument. -/
 theorem polygonLength_le_add_norm_charge_sub_of_mono
     (F : AbelianHNFiltration Z E) (G : AbelianHNFiltration Z E')
     (hHN : Z.HasHNProperty) (f : E ⟶ E') [Mono f] :
-    F.polygonLength ≤ G.polygonLength + ‖Z.Zobj E - Z.Zobj E'‖ := by
-  let w : Fin (G.n + 2) → ℂ := Fin.snoc G.polygonVertex (Z.Zobj E)
+    F.polygonLength ≤ G.polygonLength + ‖Z.charge E - Z.charge E'‖ := by
+  let w : Fin (G.n + 2) → ℂ := Fin.snoc G.polygonVertex (Z.charge E)
   let q : Fin (F.n + 1) → Fin (G.n + 2) := fun k ↦
     if hk₀ : k = 0 then 0
     else if hkl : k = Fin.last F.n then Fin.last (G.n + 1)
@@ -795,7 +798,7 @@ theorem polygonLength_le_add_norm_charge_sub_of_mono
       intro h
       have := congrArg Fin.val h
       simp only [Fin.val_last, Fin.val_zero] at this
-      have := F.hn
+      have := F.nonempty
       omega
     unfold q
     rw [dif_neg hne, dif_pos rfl]
@@ -825,12 +828,12 @@ theorem polygonLength_le_add_norm_charge_sub_of_mono
           simp only [q, dif_neg ha₀, dif_neg hal, dif_neg hb₀, dif_neg hbl,
             Fin.castSucc_le_castSucc_iff]
           exact ComplexPolygonalPath.crossMaxIndex_mono_of_angle_gt
-            G.polygonVertex (fun i ↦ G.polygonEdge_mem_upperHalfPlaneUnion i)
+            G.polygonVertex (fun i ↦ G.polygonEdge_mem_semiClosedUpperHalfPlane i)
             (ComplexPolygonalPath.interiorBisector_mem_Ioo F.polygonVertex
-              (fun i ↦ F.polygonEdge_mem_upperHalfPlaneUnion i)
+              (fun i ↦ F.polygonEdge_mem_semiClosedUpperHalfPlane i)
               F.polygonEdge_arg_strictAnti a ha_pos ha_last)
             (ComplexPolygonalPath.interiorBisector_mem_Ioo F.polygonVertex
-              (fun i ↦ F.polygonEdge_mem_upperHalfPlaneUnion i)
+              (fun i ↦ F.polygonEdge_mem_semiClosedUpperHalfPlane i)
               F.polygonEdge_arg_strictAnti b hb_pos hb_last)
             (ComplexPolygonalPath.interiorBisector_strictAnti F.polygonVertex
               F.polygonEdge_arg_strictAnti ha_pos ha_last hb_pos hb_last hab)
@@ -848,7 +851,7 @@ theorem polygonLength_le_add_norm_charge_sub_of_mono
       rw [hq_last]
       have hw : w (Fin.last (G.n + 1)) =
           F.polygonVertex (Fin.last F.n) := by
-        rw [show w (Fin.last (G.n + 1)) = Z.Zobj E by simp [w]]
+        rw [show w (Fin.last (G.n + 1)) = Z.charge E by simp [w]]
         exact F.polygonVertex_last.symm
       rw [hw]
     have hk_pos : 0 < k := Fin.pos_iff_ne_zero.mpr hk₀
@@ -859,7 +862,7 @@ theorem polygonLength_le_add_norm_charge_sub_of_mono
     let j := ComplexPolygonalPath.crossMaxIndex G.polygonVertex θ
     have hθ : θ ∈ Set.Ioo 0 Real.pi :=
       ComplexPolygonalPath.interiorBisector_mem_Ioo F.polygonVertex
-        (fun i ↦ F.polygonEdge_mem_upperHalfPlaneUnion i)
+        (fun i ↦ F.polygonEdge_mem_semiClosedUpperHalfPlane i)
         F.polygonEdge_arg_strictAnti k hk_pos hk_last
     have hzB : F.polygonVertex k ∈ Z.hnPolygon E' :=
       Z.hnPolygon_mono f (F.polygonVertex_mem_hnPolygon k)
@@ -873,15 +876,15 @@ theorem polygonLength_le_add_norm_charge_sub_of_mono
     have hqk : q k = j.castSucc := by
       simp [q, hk₀, hkl, θ, j]
     rw [ComplexPolygonalPath.turningFunctional_interior_eq_cross
-        F.polygonVertex (fun i ↦ F.polygonEdge_mem_upperHalfPlaneUnion i)
+        F.polygonVertex (fun i ↦ F.polygonEdge_mem_semiClosedUpperHalfPlane i)
         k hk_pos hk_last,
       ComplexPolygonalPath.turningFunctional_interior_eq_cross
-        F.polygonVertex (fun i ↦ F.polygonEdge_mem_upperHalfPlaneUnion i)
+        F.polygonVertex (fun i ↦ F.polygonEdge_mem_semiClosedUpperHalfPlane i)
         k hk_pos hk_last, hqk]
     simp only [w, Fin.snoc_castSucc]
     exact mul_le_mul_of_nonneg_left hcross
       (le_of_lt (ComplexPolygonalPath.interiorTurnScale_pos F.polygonVertex
-        (fun i ↦ F.polygonEdge_mem_upperHalfPlaneUnion i)
+        (fun i ↦ F.polygonEdge_mem_semiClosedUpperHalfPlane i)
         F.polygonEdge_arg_strictAnti k hk_pos hk_last))
   have hclosed := ComplexPolygonalPath.closedLength_le_of_monotone_support
     F.polygonVertex w q hq hq₀ hq_last hsupport
@@ -890,13 +893,13 @@ theorem polygonLength_le_add_norm_charge_sub_of_mono
   have hw₀ : w 0 = F.polygonVertex 0 := by
     simp [w, F.polygonVertex_zero, G.polygonVertex_zero]
   have hwlast : w (Fin.last (G.n + 1)) = F.polygonVertex (Fin.last F.n) := by
-    rw [show w (Fin.last (G.n + 1)) = Z.Zobj E by simp [w]]
+    rw [show w (Fin.last (G.n + 1)) = Z.charge E by simp [w]]
     exact F.polygonVertex_last.symm
   rw [hw₀, hwlast] at hclosed
   have hopen : F.polygonLength ≤ ComplexPolygonalPath.length w := by
     exact le_of_add_le_add_right hclosed
   rw [ComplexPolygonalPath.length_snoc] at hopen
-  have hGlast : G.polygonVertex (Fin.last G.n) = Z.Zobj E' :=
+  have hGlast : G.polygonVertex (Fin.last G.n) = Z.charge E' :=
     G.polygonVertex_last
   rw [hGlast] at hopen
   simpa [w, polygonLength] using hopen
@@ -907,12 +910,12 @@ function. -/
 theorem mass_le_add_norm_cokernel_of_mono
     (F : AbelianHNFiltration Z E) (G : AbelianHNFiltration Z E')
     (hHN : Z.HasHNProperty) (f : E ⟶ E') [Mono f] :
-    F.mass ≤ G.mass + ‖Z.Zobj (Limits.cokernel f)‖ := by
+    F.mass ≤ G.mass + ‖Z.charge (Limits.cokernel f)‖ := by
   have hse : (ShortComplex.mk f (Limits.cokernel.π f)
       (Limits.cokernel.condition f)).ShortExact :=
     StabilityFunction.shortExact_of_mono f
   have hadd := Z.additive _ hse
-  have hsub : Z.Zobj E - Z.Zobj E' = -Z.Zobj (Limits.cokernel f) := by
+  have hsub : Z.charge E - Z.charge E' = -Z.charge (Limits.cokernel f) := by
     linear_combination -hadd
   rw [← F.polygonLength_eq_mass, ← G.polygonLength_eq_mass, ← norm_neg,
     ← hsub]
@@ -922,14 +925,14 @@ theorem mass_le_add_norm_cokernel_of_mono
 theorem mass_le_add_norm_of_shortExact (S : ShortComplex A)
     (hS : S.ShortExact) (F : AbelianHNFiltration Z S.X₁)
     (G : AbelianHNFiltration Z S.X₂) (hHN : Z.HasHNProperty) :
-    F.mass ≤ G.mass + ‖Z.Zobj S.X₃‖ := by
+    F.mass ≤ G.mass + ‖Z.charge S.X₃‖ := by
   letI := hS.mono_f
   have hmass := F.mass_le_add_norm_cokernel_of_mono G hHN S.f
   let e : Limits.cokernel S.f ≅ S.X₃ :=
     Limits.IsColimit.coconePointUniqueUpToIso (Limits.cokernelIsCokernel S.f)
       hS.gIsCokernel
-  have hcharge : Z.Zobj (Limits.cokernel S.f) = Z.Zobj S.X₃ :=
-    Z.Zobj_eq_of_iso e
+  have hcharge : Z.charge (Limits.cokernel S.f) = Z.charge S.X₃ :=
+    Z.charge_eq_of_iso e
   rwa [hcharge] at hmass
 
 /-- The mass of an abelian HN filtration is independent of the chosen
@@ -948,4 +951,4 @@ end AbelianHNFiltration
 
 end
 
-end CategoryTheory
+end BridgelandStabLean.Foundation

@@ -22,11 +22,9 @@ the mathematics and is independent of the package path.
 | `Topology` | Reusable open-cover infrastructure |
 | `Development` | Compile-only API audits; not part of the stable root import |
 | `BridgelandStabLean/Lattice` | Abstract numerical and Mukai lattice infrastructure |
-| `BridgelandStabLean/Foundation` | Owner-authored Postnikov towers, HN filtrations, slicings, triangulated Grothendieck groups, class maps, stability conditions, and abelian stability functions |
-| `BridgelandStabLean/Compatibility` | Temporary, explicit adapters across retained third-party boundaries |
+| `BridgelandStabLean/Foundation` | Owner-authored Postnikov towers, HN filtrations, slicings, triangulated Grothendieck groups, class maps, deformation theory, stability conditions, and abelian stability functions |
 | `BridgelandStabLean/StabilityCondition` | Stability metrics, support, symmetry, walls, and weak stability |
 | `DGLean/Category` | Dg categories, dg functors, `k`-linearity, and the opposite and product constructions |
-| `vendor/BridgelandStability` | Apache-2.0 foundational slicing and deformation implementation |
 
 Every non-leaf subsystem has a same-named `.lean` umbrella. `CohLean.lean` imports only stable
 top-level umbrellas, keeping navigation and dependency boundaries aligned.
@@ -48,22 +46,21 @@ schemes and geometric hypotheses
 The numerical layer is a visible axiomatic boundary. Geometric modules construct data that
 discharges that boundary; they do not silently turn assumptions into theorems.
 
-`BridgelandStabLean/Foundation` is the bottom-up replacement boundary for the vendored
-stability implementation. It now owns Postnikov and HN filtrations, slicings,
+`BridgelandStabLean/Foundation` is the repository-owned stability foundation. It owns
+Postnikov and HN filtrations, slicings,
 triangulated Grothendieck groups, pre-stability conditions, thin interval categories,
 intrinsic admissible finite length, local finiteness, full stability conditions,
 phase bounds, elementary filtration operations, and the phase-truncation interface
 that constructs the slicing t-structure. The canonical truncation triangle is
 constructed from HN filtrations by octahedral induction, and the resulting
 t-structure is proved bounded with heart `P((0, 1])`.
+The deformation lane constructs the perturbed HN filtrations and slicing,
+packages the perturbed stability condition, proves local finiteness, and controls
+the slicing distance quantitatively.
 The abelian stability-function lane owns the central-charge contract, normalized
 phase, stability, and semistability; HN existence and uniqueness build on that
-interface in later slice-5 leaves.
-Owner-authored definitions depend directly on Mathlib.
-Conversions involving Apache-2.0 declarations live only under
-`BridgelandStabLean/Compatibility/BridgelandStability`; downstream modules migrate to the
-owner API one dependency layer at a time. The vendor library is removed only after no
-owner-authored module imports it and the full trust gates pass without it.
+interface. All stability definitions and proofs now depend on repository-owned
+source plus Mathlib; CI rejects restoration of the retired source and bridge roots.
 
 `Duality/Canonical/Descent` similarly separates the smooth affine-chart theorem from the missing
 sheafification comparison: explicit rank-`n` trivializations on the canonical chart cover produce

@@ -12,16 +12,13 @@ set_option backward.isDefEq.respectTransparency false
 /-!
 # The complex representation of real two-dimensional linear maps
 
-The foundational library's central charge is `Z : Λ →+ ℂ` — it lands in `ℂ`. `GLTilde.mat`
+The repository's central charge is `Z : Λ →+ ℂ` — it lands in `ℂ`. `GLTilde.mat`
 acts on `Fin 2 → ℝ`. These do not compose directly, so the two coordinate
 conventions must agree.
 
 They do, and `cplxCoord_exp` is the proof: under `Complex.basisOneI` (whose
-`repr` is `![z.re, z.im]`), the foundational library's ray `exp (i π φ)` has coordinates
+`repr` is `![z.re, z.im]`), the canonical ray `exp (i π φ)` has coordinates
 `![cos (π φ), sin (π φ)]`, which is exactly `rayVec φ`.
-
-See `notes/dependencies/BridgelandStabilityAPI.md` §3 for the dependency API
-and coordinate conventions behind this bridge.
 -/
 
 namespace BridgelandStabLean.GroupAction
@@ -32,7 +29,7 @@ open Matrix
 noncomputable def cplxCoord : ℂ ≃ₗ[ℝ] (Fin 2 → ℝ) :=
   Complex.basisOneI.equivFun
 
-/-- **The conventions agree.** The foundational library writes its rays as
+/-- **The conventions agree.** The stability foundation writes its rays as
 `exp (i π φ)` (`StabilityCondition/Defs.lean:68`); in `basisOneI` coordinates
 that is `rayVec φ`.
 
@@ -47,7 +44,7 @@ theorem cplxCoord_exp (φ : ℝ) :
     Complex.exp_ofReal_mul_I_im]
   rfl
 
-/-- `Compatible`, restated on the foundational library's rays.
+/-- `Compatible`, restated on the stability foundation's rays.
 
 It says `T` carries the charge-ray at phase `φ` to the charge-ray at phase
 `f φ`, entirely in the foundational library's own

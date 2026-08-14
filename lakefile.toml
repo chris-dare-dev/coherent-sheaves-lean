@@ -23,14 +23,6 @@ name = "MathFormalContract"
 git = "https://github.com/chris-dare-dev/math-formal-contract-lean"
 rev = "65d600b1e70e403e8bcb43975e6aa178ee5ba439"
 
-# Apache-2.0 third-party source vendored from mattrobball/BridgelandStability.
-# The source lives below vendor/BridgelandStability and retains its headers,
-# licence, NOTICE, and upstream provenance. It is part of this Lake package,
-# not an external Git dependency.
-[[lean_lib]]
-name = "BridgelandStability"
-srcDir = "vendor/BridgelandStability"
-
 [[lean_lib]]
 name = "CohLean"
 

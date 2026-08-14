@@ -3,7 +3,7 @@ Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under the MIT license.
 -/
 import BridgelandStabLean.StabilityCondition.Symmetry.Autoequivalence.Foundations.FiniteLength
-import BridgelandStability.Deformation.IntervalSelection
+import BridgelandStabLean.Foundation
 import MathFormalContract
 
 set_option backward.defeqAttrib.useBackward true
@@ -69,12 +69,15 @@ here is superseded by it**, and the split is worth keeping: that file needs
 datum still acts as a map and is simply not a member of that group, so this
 statement is strictly the more general of the two.
 
-See `notes/dependencies/BridgelandStabilityAPI.md` §7.
+See the stability-foundation ownership record in `notes/dependencies/`.
 -/
 
+open BridgelandStabLean.Foundation
 open CategoryTheory CategoryTheory.Limits CategoryTheory.Pretriangulated
 
-namespace CategoryTheory.Triangulated
+namespace BridgelandStabLean.Foundation
+
+open BridgelandStabLean.Foundation
 
 universe w u u'
 
@@ -105,14 +108,62 @@ theorem autFunctor_strictMono (s : Slicing C) (a b : ℝ)
     [Fact (a < b)] [Fact (b - a ≤ 1)]
     {X Y : (s.mapEquiv Φ).IntervalCat C a b} (f : X ⟶ Y) (hf : IsStrictMono f) :
     IsStrictMono ((autIntervalFunctor Φ s a b).map f) := by
-  have hsse := interval_strictShortExact_cokernel_of_strictMono (C := C) f hf
-  obtain ⟨δ, hδ⟩ := Slicing.IntervalCat.exists_distTriang_of_strictShortExact
-    (C := C) (s.mapEquiv Φ) hsse
-  exact (Slicing.IntervalCat.strictMono_strictEpi_of_distTriang (C := C) s
-    (S := (ShortComplex.mk f (cokernel.π f) (cokernel.condition f)).map
-      (autIntervalFunctor Φ s a b))
-    (δ := Φ.inverse.map δ ≫ (Φ.inverse.commShiftIso (1 : ℤ)).hom.app _)
-    (by simpa using Φ.inverse.map_distinguished _ hδ)).1
+  let S : ShortComplex ((s.mapEquiv Φ).IntervalCat C a b) :=
+    ShortComplex.mk f (cokernel.π f) (cokernel.condition f)
+  have hsse : StrictShortExact S :=
+    BridgelandStabLean.Foundation.Deformation.Slicing.IntervalCat.strictShortExact_cokernel
+      C f hf
+  obtain ⟨δ, hδ⟩ :=
+    BridgelandStabLean.Foundation.Slicing.IntervalCat.exists_distinguished_of_strictShortExact
+      C (s.mapEquiv Φ) hsse
+  let F := autIntervalFunctor Φ s a b
+  let SF := S.map F
+  have hmap : Triangle.mk SF.f.hom SF.g.hom
+      (Φ.inverse.map δ ≫ (Φ.inverse.commShiftIso (1 : ℤ)).hom.app _) ∈
+      distTriang C := by
+    simpa [SF, F, S] using Φ.inverse.map_distinguished _ hδ
+  have hSF :=
+    BridgelandStabLean.Foundation.Slicing.IntervalCat.strictShortExact_of_distinguished
+      (S := SF) C s hmap
+  exact ⟨hSF.shortExact.mono_f, hSF.strict_f⟩
+
+/-- The restricted inverse autoequivalence sends intrinsic admissible
+subobjects to intrinsic admissible subobjects. -/
+theorem autFunctor_isAdmissibleSubobject (s : Slicing C) (a b : ℝ)
+    [Fact (a < b)] [Fact (b - a ≤ 1)]
+    {E : (s.mapEquiv Φ).IntervalCat C a b} (A : Subobject E)
+    (hA : (s.mapEquiv Φ).IsAdmissibleSubobject C A) :
+    s.IsAdmissibleSubobject C
+      (strictSubobjectImageOfFullFaithful (autIntervalFunctor Φ s a b)
+        (fun f hf ↦ autFunctor_strictMono Φ s a b f hf)
+        ⟨A, Slicing.IntervalCat.isStrictSubobject_of_isAdmissible
+          C (s.mapEquiv Φ) A hA⟩) := by
+  rcases hA with ⟨Y, Q, i, hi, q, hAi, δ, hT⟩
+  let F := autIntervalFunctor Φ s a b
+  let S : ShortComplex ((s.mapEquiv Φ).IntervalCat C a b) :=
+    ShortComplex.mk i q (by
+      apply ((s.mapEquiv Φ).intervalProp C a b).ι.map_injective
+      exact comp_distTriang_mor_zero₁₂ _ hT)
+  have hS := Slicing.IntervalCat.strictShortExact_of_distinguished
+    (S := S) (δ := δ) C (s.mapEquiv Φ) hT
+  have hiStrict : IsStrictMono i := ⟨hS.shortExact.mono_f, hS.strict_f⟩
+  have hImap : IsStrictMono (F.map i) := autFunctor_strictMono Φ s a b i hiStrict
+  letI : Mono (F.map i) := hImap.mono
+  let δ' := Φ.inverse.map δ ≫ (Φ.inverse.commShiftIso (1 : ℤ)).hom.app _
+  refine ⟨F.obj Y, F.obj Q, F.map i, inferInstance, F.map q, ?_, δ', ?_⟩
+  · subst A
+    have hcanonical : IsStrictMono (Subobject.mk i).arrow :=
+      BridgelandStabLean.Foundation.Deformation.Slicing.IntervalCat.subobject_arrow_strictMono
+        C i hiStrict
+    have hcanonicalMap : IsStrictMono (F.map (Subobject.mk i).arrow) :=
+      autFunctor_strictMono Φ s a b _ hcanonical
+    letI : Mono (F.map (Subobject.mk i).arrow) := hcanonicalMap.mono
+    apply Subobject.mk_eq_mk_of_comm
+      (F.map i) (F.map (Subobject.mk i).arrow)
+      (F.mapIso (Subobject.underlyingIso i)).symm
+    simpa only [Functor.map_comp, Iso.symm_hom, Functor.mapIso_inv] using
+      congrArg F.map (Subobject.underlyingIso_arrow i)
+  · simpa [δ', F] using Φ.inverse.map_distinguished _ hT
 
 /-! ## Local finiteness -/
 
@@ -130,25 +181,43 @@ theorem mapEquiv_isLocallyFinite (s : Slicing C) (hs : s.IsLocallyFinite C) :
   intro t
   haveI : Fact (t - η < t + η) := ⟨by linarith⟩
   haveI : Fact ((t + η) - (t - η) ≤ 1) := ⟨by linarith⟩
-  -- `show` past the statement's own `let a := t - η` bindings, which `intro`
-  -- would otherwise consume before reaching the object.
-  show ∀ E : Slicing.IntervalCat C (s.mapEquiv Φ) (t - η) (t + η),
-    IsStrictArtinianObject E ∧ IsStrictNoetherianObject E
   intro E
-  have hbig := hlf t ((autIntervalFunctor Φ s (t - η) (t + η)).obj E)
-  letI := hbig.1
-  letI := hbig.2
-  refine ⟨?_, ?_⟩
-  · exact isStrictArtinian_of_faithful_strict
-      (autIntervalFunctor Φ s (t - η) (t + η))
-      (fun f hf => autFunctor_strictMono Φ s (t - η) (t + η) f hf)
-      (fun f _ hf => intervalSubobject_arrow_strictMono_of_strictMono
-        (C := C) (s := s) (a := t - η) (b := t + η) f hf)
-  · exact isStrictNoetherian_of_faithful_strict
-      (autIntervalFunctor Φ s (t - η) (t + η))
-      (fun f hf => autFunctor_strictMono Φ s (t - η) (t + η) f hf)
-      (fun f _ hf => intervalSubobject_arrow_strictMono_of_strictMono
-        (C := C) (s := s) (a := t - η) (b := t + η) f hf)
+  let F := autIntervalFunctor Φ s (t - η) (t + η)
+  let hmap : ∀ {A B : (s.mapEquiv Φ).IntervalCat C (t - η) (t + η)}
+      (f : A ⟶ B), IsStrictMono f → IsStrictMono (F.map f) := by
+    intro A B f hf
+    exact autFunctor_strictMono Φ s (t - η) (t + η) f hf
+  let AtoS := Slicing.IntervalCat.admissibleToStrictSubobject
+    C (s.mapEquiv Φ) E
+  let G : (s.mapEquiv Φ).AdmissibleSubobject C E →
+      s.AdmissibleSubobject C (F.obj E) := fun A ↦
+    ⟨strictSubobjectImageOfFullFaithful F hmap (AtoS A),
+      autFunctor_isAdmissibleSubobject Φ s (t - η) (t + η) A.1 A.2⟩
+  have hGmono : Monotone G := by
+    intro A B hAB
+    exact strictSubobjectImageOfFullFaithful_monotone F hmap
+      (AtoS.monotone hAB)
+  have hGinj : Function.Injective G := by
+    intro A B hAB
+    apply AtoS.injective
+    apply strictSubobjectImageOfFullFaithful_injective F hmap
+    exact congrArg Subtype.val hAB
+  have hGstrictLT : ∀ {A B}, A < B → G A < G B := by
+    intro A B hAB
+    exact lt_of_le_of_ne (hGmono hAB.le) (fun hEq ↦ hAB.ne (hGinj hEq))
+  have hGstrictGT : ∀ {A B}, A > B → G A > G B := by
+    intro A B hAB
+    exact hGstrictLT hAB
+  have hbig := hlf t (F.obj E)
+  constructor
+  · letI : WellFoundedLT (s.AdmissibleSubobject C (F.obj E)) := hbig.1
+    exact ⟨Subrelation.wf hGstrictLT
+      (InvImage.wf G (show WellFounded ((· < ·) :
+        s.AdmissibleSubobject C (F.obj E) → _ → Prop) from IsWellFounded.wf))⟩
+  · letI : WellFoundedGT (s.AdmissibleSubobject C (F.obj E)) := hbig.2
+    exact ⟨Subrelation.wf hGstrictGT
+      (InvImage.wf G (show WellFounded ((· > ·) :
+        s.AdmissibleSubobject C (F.obj E) → _ → Prop) from IsWellFounded.wf))⟩
 
 /-! ## The action -/
 
@@ -170,13 +239,13 @@ noncomputable def actStabAut (lam : Λ →+ Λ)
     (hlam : ∀ x : K₀ C, v (K₀.mapF Φ.inverse x) = lam (v x))
     (σ : StabilityCondition.WithClassMap C v) : StabilityCondition.WithClassMap C v where
   toWithClassMap :=
-    { slicing := σ.slicing.mapEquiv Φ
+    { slicing := BridgelandStabLean.Foundation.Slicing.mapEquiv σ.slicing Φ
       Z := σ.Z.comp lam
-      compat' := by
+      compatible := by
         intro φ E hP hE
         have hE' : ¬ IsZero (Φ.inverse.obj E) := fun h =>
           hE (IsZero.of_iso (Φ.functor.map_isZero h) (Φ.counitIso.app E).symm)
-        obtain ⟨m, hm, hZ⟩ := σ.compat' φ (Φ.inverse.obj E) hP hE'
+        obtain ⟨m, hm, hZ⟩ := σ.compatible φ (Φ.inverse.obj E) hP hE'
         refine ⟨m, hm, ?_⟩
         show σ.Z (lam (v (K₀.of C E))) = _
         rw [← hlam, K₀.mapF_of]
@@ -184,11 +253,12 @@ noncomputable def actStabAut (lam : Λ →+ Λ)
   locallyFinite := mapEquiv_isLocallyFinite Φ σ.slicing σ.locallyFinite
 
 @[simp] theorem actStabAut_slicing (lam : Λ →+ Λ) (hlam) (σ) :
-    (actStabAut Φ v lam hlam σ).slicing = σ.slicing.mapEquiv Φ := rfl
+    (actStabAut Φ v lam hlam σ).slicing =
+      BridgelandStabLean.Foundation.Slicing.mapEquiv σ.slicing Φ := rfl
 
 @[simp] theorem actStabAut_Z (lam : Λ →+ Λ) (hlam) (σ) (x : Λ) :
     (actStabAut Φ v lam hlam σ).Z x = σ.Z (lam x) := rfl
 
 end ClassMap
 
-end CategoryTheory.Triangulated
+end BridgelandStabLean.Foundation
