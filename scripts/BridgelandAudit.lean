@@ -345,6 +345,7 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Foundation.Deformation.ThinStrictFiniteLength
 #print axioms BridgelandStabLean.Foundation.Deformation.ThinStrictFiniteLength.of_finiteLength
 #print axioms BridgelandStabLean.Foundation.Deformation.IsStrictMDQ
+#print axioms BridgelandStabLean.Foundation.Deformation.IsStrictMDQ.id_of_semistable
 #print axioms BridgelandStabLean.Foundation.Deformation.IsStrictMDQ.epi
 #print axioms BridgelandStabLean.Foundation.Deformation.IsStrictMDQ.strict
 #print axioms BridgelandStabLean.Foundation.Deformation.IsStrictMDQ.phase_le

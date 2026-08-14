@@ -78,6 +78,39 @@ variable {F : SkewedStabilityFunction C κ σ.slicing a b}
 variable [Fact (a < b)] [Fact (b - a ≤ 1)]
 variable {X B : σ.slicing.IntervalCat C a b} {q : X ⟶ B}
 
+/-- A semistable interval object is its own strict MDQ when every nonzero
+interval object has phase in a common window of width less than one. -/
+theorem id_of_semistable {L U : ℝ}
+    (hWindow : ∀ Y : σ.slicing.IntervalCat C a b, ¬IsZero Y.obj →
+      L < F.phase Y.obj ∧ F.phase Y.obj < U)
+    (hWidth : U - L < 1)
+    (hss : F.IsSemistable X.obj (F.phase X.obj)) :
+    IsStrictMDQ C σ F (𝟙 X) where
+  strictEpi := isStrictEpi_of_isIso
+  nonzero := hss.nonzero
+  semistable := hss
+  minimal := by
+    intro B' q' hq' hB' hssB'
+    let S := ShortComplex.mk (kernel.ι q') q' (kernel.condition q')
+    have hS : StrictShortExact S := hq'.strictShortExact_kernel q'
+    obtain ⟨δ, hT⟩ :=
+      Slicing.IntervalCat.exists_distinguished_of_strictShortExact
+        C σ.slicing hS
+    have hXWindow := hWindow X hss.nonzero
+    have hB'Window := hWindow B' hB'
+    have hB'Range : F.phase B'.obj ∈
+        Set.Ioo (F.phase X.obj - 1) (F.phase X.obj + 1) := by
+      constructor <;> linarith
+    have hphase : F.phase X.obj ≤ F.phase B'.obj :=
+      hss.phase_le_of_quotient_triangle hT hssB'.charge_ne hB'Range
+        (fun hK ↦ by
+          have hKWindow := hWindow (kernel q') hK
+          refine ⟨?_, hss.phase_le_of_triangle hT
+            (kernel q').property B'.property hK⟩
+          linarith)
+    refine ⟨hphase, fun _ ↦ ⟨q', ?_⟩⟩
+    simp
+
 /-- A strict MDQ is epic. -/
 theorem epi (hq : IsStrictMDQ C σ F q) : Epi q := hq.strictEpi.epi
 
