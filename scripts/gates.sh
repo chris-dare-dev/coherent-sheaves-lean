@@ -79,6 +79,22 @@ bridgeland_audit() {
   python3 scripts/check_audit.py /tmp/bridgeland-audit.txt
 }
 
+exe_sorry() {
+  # The one file the emitter cannot cover: an `lean_exe` root is not part of the
+  # environment built from its own imports. CI runs the same loop; see the
+  # "No declaration uses sorry" step in .github/workflows/ci.yml.
+  local log=/tmp/exe-sorry-check.txt
+  : > "$log"
+  for f in exe/*.lean; do
+    lake env lean "$f" >> "$log" 2>&1 || { tail -20 "$log"; return 1; }
+  done
+  if grep -q "declaration uses 'sorry'" "$log"; then
+    echo "a declaration uses sorry"
+    return 1
+  fi
+  return 0
+}
+
 changed_lean_files() {
   # `origin/main`, not `main`: the local `main` in this clone is hundreds of
   # commits stale, and diffing against it would hand every gate the whole
@@ -119,6 +135,12 @@ if [ "$MODE" != "fast" ]; then
   gate coverage-map python3 scripts/check_coverage_map.py
   gate emit-build lake build emit
   gate emit lake exe emit --out /tmp/derived-alg-geo-emission.json
+  # The emit gate above is the repository-wide sorry gate. This one checks that
+  # it swept everything -- without it, a library root nobody imported into
+  # DerivedAlgGeoSweep.lean drops out of coverage with every gate still green.
+  gate emission-coverage python3 scripts/check_emission_coverage.py \
+    /tmp/derived-alg-geo-emission.json
+  gate exe-sorry exe_sorry
 fi
 
 echo

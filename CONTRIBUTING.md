@@ -49,12 +49,20 @@ python3 scripts/check_anchor_free.py
 python3 scripts/check_coverage_map.py
 lake build emit
 lake exe emit --out /tmp/derived-alg-geo-emission.json
+python3 scripts/check_emission_coverage.py /tmp/derived-alg-geo-emission.json
 ```
 
 Add new public theorems to the appropriate subsystem audit: `scripts/Audit.lean`
 for `CohLean` and `scripts/BridgelandAudit.lean` for `BridgelandStabLean`. Neither
-audit may report `sorryAx`; CI also re-elaborates tracked Lean files and emits the
-combined environment to catch declarations omitted from the hand-maintained audits.
+audit may report `sorryAx`; the emitter is the backstop that catches declarations
+omitted from the hand-maintained audits, since it sweeps the environment rather
+than a list and so sees private and internal declarations too.
+
+A new library root is not gated by being added to `lakefile.toml`. The emitter
+imports `DerivedAlgGeoSweep.lean` and sweeps what that reaches, so import every
+new root there as well — `scripts/check_emission_coverage.py` fails when a
+tracked module is absent from the emission, which is what stops the gate from
+shrinking to a scope where passing means nothing.
 The environment linter gates all three libraries. `CohLean`'s pre-existing
 backlog is enumerated per declaration in `scripts/nolints.json` rather than
 suppressed, so a new violation fails CI while the 203 known ones stay countable.

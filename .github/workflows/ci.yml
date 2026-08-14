@@ -132,14 +132,27 @@ jobs:
       - name: No declaration uses sorry
         run: |
           set -euo pipefail
+          # This step used to be a serial `lake env lean` over every tracked
+          # .lean file: 39m23s of a 54m01s run (72.9% of CI wall clock) spent
+          # re-elaborating from source what the build step had just built. The
+          # emitter below is both cheaper and stronger -- it reads the
+          # environment, not the text a `set_option ... in` evasion hides in --
+          # so the loop is now one file wide. See #361 and exe/Emit.lean.
+          #
+          # An `lean_exe` root cannot appear in an emission built from its own
+          # imports, so exe/ is exactly what the emitter cannot reach and this
+          # is exactly what is left of the loop. Keep the two in agreement:
+          # scripts/check_emission_coverage.py excludes exe/ on the strength of
+          # this step existing.
+          # `lake env lean` does not build; it only sets LEAN_PATH. The exe root
+          # imports the sweep umbrella, which is not a default target, so build
+          # it here rather than depending on what an earlier step happened to
+          # leave behind.
+          lake build emit
           : > lean-source-check.txt
-          while IFS= read -r f; do
-            case "$f" in
-              # Historical review fixtures and audit scripts are not library modules.
-              .claude/*|scripts/*) continue ;;
-            esac
+          for f in exe/*.lean; do
             lake env lean "$f" 2>&1 | tee -a lean-source-check.txt
-          done < <(git ls-files '*.lean')
+          done
           if grep -q "declaration uses 'sorry'" lean-source-check.txt; then
             echo "::error::a declaration uses sorry"
             exit 1
@@ -149,7 +162,12 @@ jobs:
         run: |
           set -euo pipefail
           lake build emit
+          # Non-zero when any constant's axiom closure contains sorryAx. This is
+          # the repository-wide sorry gate; the artifact is written either way.
           lake exe emit --out attest/lean-emission.json
+          # ...and this is what keeps that gate from silently shrinking to a
+          # scope where the claim is vacuously true. See the script's docstring.
+          python3 scripts/check_emission_coverage.py attest/lean-emission.json
           python3 - <<'PY'
           import json
           d = json.load(open("attest/lean-emission.json", encoding="utf-8"))

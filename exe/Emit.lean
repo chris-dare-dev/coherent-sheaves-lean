@@ -2,7 +2,7 @@
 Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under the MIT license.
 -/
-import DerivedAlgGeoLean
+import DerivedAlgGeoSweep
 import MathFormalContract
 
 /-!
@@ -29,6 +29,30 @@ It is also the only check that is complete across the combined environment.
 The subsystem audits structurally cannot name private declarations; this
 sweeps `Environment.constants`, so a declaration nobody remembered to list
 cannot slip past it.
+
+## It replaced the per-file source sweep (2026-08-14, #361)
+
+CI used to also run `lake env lean` once per tracked `.lean` file and grep the
+output for `declaration uses 'sorry'`. That loop was 39 m 23 s of a 54 m 01 s
+run — 72.9 % of CI wall clock — to re-elaborate from source what the build step
+had just built, and it was the *weaker* of the two mechanisms: it reads text,
+which is what the `set_option` evasion above hides in.
+
+Deleting it required closing a real coverage gap first. `rootLib` is what
+`emitToFileForRootsImpl` **imports**; `additionalRoots` only widens the scope
+filter over what that import brought in. Pointed at `DerivedAlgGeoLean`, this
+emitter therefore covered 406 of 419 tracked modules, silently: `DGLean`,
+`CohLean.Development` and the vendor umbrella are outside the stable umbrella
+by design, so no import reached them. `rootLib` is now `DerivedAlgGeoSweep`,
+whose only job is to import every tracked module, and
+`scripts/check_emission_coverage.py` fails the build if that ever stops being
+true. Coverage is 419 of 419 — one better than the loop, since a tracked module
+nothing imports now fails the coverage check instead of being swept in
+isolation.
+
+The one file no emission can cover is this one: an `lean_exe` root is not a
+library module and cannot appear in the environment built from its own
+imports. CI keeps a single `lake env lean exe/Emit.lean` for it.
 
 ## When CI actually started running this
 
@@ -60,8 +84,9 @@ change the other in the same commit.
 
 def main (args : List String) : IO UInt32 :=
   MathFormalContract.emitMainForRoots
-    (rootLib := `DerivedAlgGeoLean)
-    (additionalRoots := [`CohLean, `BridgelandStabLean, `BridgelandStability])
+    (rootLib := `DerivedAlgGeoSweep)
+    (additionalRoots := [`DerivedAlgGeoLean, `CohLean, `BridgelandStabLean,
+                         `BridgelandStability, `DGLean])
     (leanOptions := [("autoImplicit", .bool false),
                      ("relaxedAutoImplicit", .bool false)])
     args
