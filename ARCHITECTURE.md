@@ -25,6 +25,7 @@ the mathematics and is independent of the package path.
 | `BridgelandStabLean/Foundation` | Owner-authored Postnikov towers, HN filtrations, slicings, triangulated Grothendieck groups, class maps, stability conditions, and abelian stability functions |
 | `BridgelandStabLean/Compatibility` | Temporary, explicit adapters across retained third-party boundaries |
 | `BridgelandStabLean/StabilityCondition` | Stability metrics, support, symmetry, walls, and weak stability |
+| `DGLean/Category` | Dg categories, dg functors, `k`-linearity, and the opposite and product constructions |
 | `vendor/BridgelandStability` | Apache-2.0 foundational slicing and deformation implementation |
 
 Every non-leaf subsystem has a same-named `.lean` umbrella. `CohLean.lean` imports only stable
@@ -91,6 +92,15 @@ separate geometric problem rather than a hidden field or instance.
 4. Create a new intermediate directory when a subject gains multiple independent concepts.
 5. Keep temporary API reconnaissance under `Development/`; production theorems belong to
    their mathematical owner.
+6. Give a new subject its own **library root** when it has a proved theorem of its own *and*
+   its own gate wiring — not at its first definition, and not at its first theorem about an
+   object another root already owns. Namespace it after the root, and add it to this
+   document's package map in the same change. `DGLean` was created this way at
+   `dg-enhancements-e2`; see
+   [`ADR-0010`](.claude/decisions/ADR-0010-the-dg-encoding-and-the-h0-seam.md)'s 2026-08-14
+   amendment, which is where this rule comes from. The complementary rule — that a root
+   joins `DerivedAlgGeoLean.lean` only once it is stable — is CLAUDE.md's and is separate
+   from this one.
 
 Planned paths in GitHub issues follow these rules so future work extends the tree instead of
 re-flattening it.

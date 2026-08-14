@@ -85,7 +85,7 @@ goal:
     - "arXiv:1312.5619v3 — Canonaco–Stellari, 'Internal Homs via extensions of dg functors', Adv. Math. 277 (2015) 100–123."
     - "Pinned Mathlib surface: Algebra/Homology/HomotopyCategory/HomComplex{,Shift,Cohomology,Single,Induction}, Algebra/Homology/Monoidal, CategoryTheory/Enriched/{Basic,EnrichedCat,Ordinary/Basic}, Algebra/Homology/DerivedCategory/{Basic,TStructure,KInjective,KProjective,Ext/*}, CategoryTheory/Localization/*, CategoryTheory/Triangulated/*."
     - "Absence measured, not assumed: no declaration matching DifferentialGraded/DGCategory/quasi-equivalence exists at the pin. DG0 re-runs this search against `mathlib_rev` exactly and records the command and its output."
-    - "ARCHITECTURE.md growth rule 1 and CLAUDE.md's repository taxonomy: 'Future derived-category and Fourier–Mukai libraries get dedicated roots with their first real theorem.'"
+    - "CLAUDE.md's repository taxonomy: 'Future derived-category and Fourier–Mukai libraries get dedicated roots with their first real theorem.' ARCHITECTURE.md growth rule 6 is what says when that bar is met; rules 1-5 are about module placement inside an existing library and were miscited here and in ADR-0010 until 2026-08-14."
 
 generated_by: { agent: claude, at: "2026-08-13" }
 generations:
@@ -94,6 +94,7 @@ generations:
   - { rev: 3, at: "2026-08-13", note: "Source pins landed: five zero-claim coverage maps (1312.5619v3, 1507.05509v5, 2101.04404v1, 2402.04605v1, 2407.05946v2), each hashed against the PDF as served on 2026-08-13 and with section titles read from that PDF. registry/README.md documents all five. formalization.yaml and registry/bridgeland2007.json untouched." }
   - { rev: 4, at: "2026-08-13", note: "ADR-0010 Question 1 decided: Option B, a bespoke DGCategory structure, after the pinned-Mathlib measurement refuted the enriched route's enriching category. Assumption 1 marked refuted, assumption 2 confirmed and strengthened, e2 resized up and e4 down. DG1 is unblocked." }
   - { rev: 5, at: "2026-08-13", note: "DG1 epics filed as #335 (e2), #336 (e3), #337 (e4). e2 is agent-ready; implementation started on branch agent/dg-e2-dgcategory." }
+  - { rev: 6, at: "2026-08-14", note: "Root trigger corrected to match what happened. #343 (e2) created DGLean/ with fifteen proved lemmas and full gate wiring, two epics ahead of the e4 trigger this file named. ADR-0010's Question 2 is amended rather than this file being the primary move: its trigger was a prediction, and its citation of ARCHITECTURE.md growth rule 1 was wrong twice over -- that rule is about module placement, and the 'first real theorem' sentence is CLAUDE.md's. ARCHITECTURE.md gains growth rule 6 and a DGLean row. m1 acceptance gains a namespace clause: e2 landed the directory but not the DGLean namespace, and every declaration is still at the root." }
 retired: []
 
 # GitHub milestones are roadmap phases. Epic issues live inside them, and
@@ -112,7 +113,7 @@ items:
     acceptance:
       - "A reconnaissance note records, declaration by declaration and against `mathlib_rev` in pins.json, what the enriched-category, HomComplex, monoidal, homotopy-category, K-injective, localization, and DerivedCategory surfaces actually provide — including the commands run and their output."
       - "ADR-0010 records the dg-category encoding decision (enriched over cochain complexes vs bespoke structure) with the elaboration evidence for the chosen route; if it stays `open`, it names the owner and what changes either way."
-      - "ADR-0010 also fixes the library root name and namespace, and states that the root is created by DG1's first real theorem, not before — ARCHITECTURE.md growth rule 1."
+      - "ADR-0010 also fixes the library root name and namespace, and states when the root is created. As written on 2026-08-13 it named DG1's first real theorem (e4) as the trigger and cited ARCHITECTURE.md growth rule 1; both were corrected by its 2026-08-14 amendment after e2 created the root — the rule is CLAUDE.md's, and the trigger is now ARCHITECTURE.md growth rule 6."
       - "Five zero-claim coverage maps exist under registry/ for 1312.5619v3, 1507.05509v5, 2101.04404v1, 2402.04605v1, and 2407.05946v2, each validating under scripts/check_coverage_map.py with every part at `target`."
       - "formalization.yaml's `source` is unchanged, registry/bridgeland2007.json is unchanged, and no coverage map contains a corpus-derived key."
       - "Labels, milestones, and project views for this track exist; every epic below carries at least one `source:` label and exactly one `area:` primary."
@@ -155,8 +156,9 @@ items:
       - "Z⁰ and H⁰ are defined; H⁰ is a functor on dg categories and is proved additive."
       - "Quasi-equivalence is defined (fully faithful on H⁰ up to quasi-isomorphism of Hom-complexes, essentially surjective on H⁰). It is a definition in this milestone; no comparison theorem is claimed."
       - "C^dg(A) is constructed from Mathlib's HomComplex for an abelian (or preadditive, if the reconnaissance permits) category A, without re-deriving the Hom complex."
-      - "H⁰(C^dg A) ≌ HomotopyCategory A (ComplexShape.up ℤ) is proved. This is the milestone's first real theorem and the trigger that creates the library root."
-      - "The new root builds, is anchor-free under scripts/check_anchor_free.py, exports through its own umbrella, and is added to DerivedAlgGeoLean.lean only once it is stable."
+      - "H⁰(C^dg A) ≌ HomotopyCategory A (ComplexShape.up ℤ) is proved. This is the milestone's first real theorem. It is NOT the trigger that creates the library root: `DGLean` was created at e2 (#343), gated from its first commit, under ARCHITECTURE.md growth rule 6. See ADR-0010's 2026-08-14 amendment."
+      - "The root builds, is anchor-free under scripts/check_anchor_free.py, exports through its own umbrella, and is added to DerivedAlgGeoLean.lean only once it is stable — which the seam theorem above is what establishes."
+      - "Every DGLean declaration lives in the `DGLean` namespace. e2 landed the directory without the namespace; ADR-0010's amendment closes that half of Question 2 and the rename is done before this milestone completes."
       - "Zero sorries; lake build, both audits, both linters, lint-style, check_pin, check_anchor_free, check_coverage_map, and the emitter gate are green."
 
   - id: dg-enhancements-e2
@@ -192,7 +194,7 @@ items:
     parent: dg-enhancements-m1
     title: "C^dg(A) from HomComplex, and H⁰(C^dg A) ≌ HomotopyCategory A"
     status: planned
-    summary: "The first bridge to an object the repository already uses. Build the dg category of cochain complexes on Mathlib's HomComplex, then prove its H⁰ is the homotopy category. Creates the library root under ARCHITECTURE.md growth rule 1."
+    summary: "The first bridge to an object the repository already uses. Build the dg category of cochain complexes on Mathlib's HomComplex, then prove its H⁰ is the homotopy category. The library root already exists — e2 created it — so what this epic earns is the root's promotion into DerivedAlgGeoLean.lean, not its creation."
     priority: must
     size: L
     tags: [lean, model, seam, first-theorem]
