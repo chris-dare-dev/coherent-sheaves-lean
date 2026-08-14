@@ -27,7 +27,7 @@ non-zero differential waits for `C^dg` in `dg-enhancements-e4`.
 stated on `↑((constComplex).X p)` cannot use `mul_assoc`: the `Semigroup`
 instance is not found. Two things work. For a term proof, pin the type on the
 lemma — `mul_assoc (G := ℤ) f g h`. For a tactic proof, bind the arguments at
-type `ℤ` in the field's lambda — `fun p _ _ _ _ _ (f : ℤ) (g : ℤ) => ...` —
+type `ℤ` in the field's lambda — `fun _ q _ _ _ _ (f : ℤ) (g : ℤ) => ...` —
 after which the goal is about `ℤ` and ordinary `simp` works.
 -/
 
@@ -60,8 +60,8 @@ instance dgCategory (X : Type u) : DGCategory.{0} (Const X) where
   dgId_comp _ f := one_mul (M := ℤ) f
   dgComp_id _ f := mul_one (M := ℤ) f
   dgId_cocycle _ := rfl
-  dgComp_leibniz := fun p _ _ _ _ _ (f : ℤ) (g : ℤ) => by
-    show (0 : ℤ) = (0 : ℤ) * g + p.negOnePow • (f * (0 : ℤ))
+  dgComp_leibniz := fun _ q _ _ _ _ (f : ℤ) (g : ℤ) => by
+    show (0 : ℤ) = f * (0 : ℤ) + q.negOnePow • ((0 : ℤ) * g)
     simp
 
 end Const
