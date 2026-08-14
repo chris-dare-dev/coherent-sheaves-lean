@@ -132,3 +132,75 @@ lemma comp_val {X Y Z : Z0 C} (f : X ⟶ Y) (g : Y ⟶ Z) :
         ((f : cocycles (of C X) (of C Y)).val) ((g : cocycles (of C Y) (of C Z)).val) := rfl
 
 end Z0
+
+variable {C}
+
+/-- Composition respects cohomology classes. Writing
+`f₁ ∘ g₁ - f₂ ∘ g₂ = (f₁ - f₂) ∘ g₁ + f₂ ∘ (g₁ - g₂)` reduces this to the two
+descent lemmas, one for each summand.
+
+Only `f₂` and `g₁` are required to be closed — the split above touches the other
+two only through the differences, which are already assumed to be coboundaries. -/
+lemma comp_sub_mem {X Y Z : C} {f₁ f₂ : (dgHom X Y).X 0} {g₁ g₂ : (dgHom Y Z).X 0}
+    (hf₂ : f₂ ∈ cocycles X Y) (hg₁ : g₁ ∈ cocycles Y Z)
+    (hf : f₁ - f₂ ∈ coboundaries X Y) (hg : g₁ - g₂ ∈ coboundaries Y Z) :
+    dgComp 0 0 0 (by omega) f₁ g₁ - dgComp 0 0 0 (by omega) f₂ g₂ ∈ coboundaries X Z := by
+  have expand :
+      dgComp 0 0 0 (by omega) f₁ g₁ - dgComp 0 0 0 (by omega) f₂ g₂ =
+        dgComp 0 0 0 (by omega) (f₁ - f₂) g₁ + dgComp 0 0 0 (by omega) f₂ (g₁ - g₂) := by
+    simp [map_sub, AddMonoidHom.sub_apply]
+  rw [expand]
+  exact AddSubgroup.add_mem _ (coboundary_comp_mem hf hg₁)
+    (comp_coboundary_mem hf₂ hg)
+
+/-- Objects of `H⁰`. -/
+def H0 (C : Type u) [DGCategory.{v} C] : Type u := C
+
+namespace H0
+
+/-- The underlying object of `C`. -/
+def of (C : Type u) [DGCategory.{v} C] (X : H0 C) : C := X
+
+/-- The coboundaries, viewed inside the cocycles. -/
+def coboundariesIn (X Y : C) : AddSubgroup (cocycles X Y) :=
+  (coboundaries X Y).addSubgroupOf (cocycles X Y)
+
+instance category : Category.{v} (H0 C) where
+  Hom X Y := cocycles (of C X) (of C Y) ⧸ coboundariesIn (of C X) (of C Y)
+  id X := QuotientAddGroup.mk ⟨dgId (of C X), dgId_cocycle _⟩
+  comp {X Y Z} f g := by
+    refine Quotient.map₂ (fun f g => ⟨dgComp 0 0 0 (by omega) f.1 g.1,
+      Z0.comp_mem f.2 g.2⟩) ?_ f g
+    rintro ⟨f₁, hf₁⟩ ⟨f₂, hf₂⟩ hfr ⟨g₁, hg₁⟩ ⟨g₂, hg₂⟩ hgr
+    -- `≈` here is `QuotientAddGroup.leftRel`; `leftRel_apply` turns each side
+    -- into a membership, but only through `.mp`/`.mpr`, since the goal is stated
+    -- with the setoid's notation rather than the relation's name.
+    have hf : f₂ - f₁ ∈ coboundaries (of C X) (of C Y) := by
+      simpa [coboundariesIn, AddSubgroup.mem_addSubgroupOf, sub_eq_neg_add] using
+        QuotientAddGroup.leftRel_apply.mp hfr
+    have hg : g₂ - g₁ ∈ coboundaries (of C Y) (of C Z) := by
+      simpa [coboundariesIn, AddSubgroup.mem_addSubgroupOf, sub_eq_neg_add] using
+        QuotientAddGroup.leftRel_apply.mp hgr
+    refine QuotientAddGroup.leftRel_apply.mpr ?_
+    simpa [coboundariesIn, AddSubgroup.mem_addSubgroupOf, sub_eq_neg_add] using
+      comp_sub_mem hf₁ hg₂ hf hg
+  id_comp := by
+    rintro X Y f
+    induction f using Quotient.ind with
+    | _ f => exact congrArg _ (Subtype.ext (dgId_comp 0 f.1))
+  comp_id := by
+    rintro X Y f
+    induction f using Quotient.ind with
+    | _ f => exact congrArg _ (Subtype.ext (dgComp_id 0 f.1))
+  assoc := by
+    rintro W X Y Z f g h
+    induction f using Quotient.ind with
+    | _ f =>
+      induction g using Quotient.ind with
+      | _ g =>
+        induction h using Quotient.ind with
+        | _ h =>
+          exact congrArg _ (Subtype.ext
+            (dgComp_assoc 0 0 0 0 0 0 rfl rfl rfl f.1 g.1 h.1))
+
+end H0
