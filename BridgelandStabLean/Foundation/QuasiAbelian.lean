@@ -775,6 +775,55 @@ theorem isStrictFiniteLengthObject_iff {X : C} :
       IsStrictArtinianObject X ∧ IsStrictNoetherianObject X :=
   Iff.rfl
 
+/-- The descending chain condition carried by strict finite length.
+
+A deformation hypothesis arrives as a bare `IsStrictFiniteLengthObject X`, but
+every consumer downstream wants the chain conditions as instances, so the
+recurring idiom is `letI := h.isStrictArtinianObject`. Going through the named
+projection rather than `h.1` keeps those call sites readable and unbroken if
+the conjunction ever becomes a structure. -/
+theorem IsStrictFiniteLengthObject.isStrictArtinianObject {X : C}
+    (h : IsStrictFiniteLengthObject X) : IsStrictArtinianObject X :=
+  h.1
+
+/-- The ascending chain condition carried by strict finite length.
+
+See `IsStrictFiniteLengthObject.isStrictArtinianObject` for why this is a named
+projection rather than `h.2`. -/
+theorem IsStrictFiniteLengthObject.isStrictNoetherianObject {X : C}
+    (h : IsStrictFiniteLengthObject X) : IsStrictNoetherianObject X :=
+  h.2
+
+/-- Assemble strict finite length from the two chain conditions as instances.
+
+The mirror image of the projections: consumers hand back instances, and this is
+what turns them into the packaged hypothesis without an anonymous constructor
+at every call site. -/
+theorem IsStrictFiniteLengthObject.mk' {X : C} [IsStrictArtinianObject X]
+    [IsStrictNoetherianObject X] : IsStrictFiniteLengthObject X :=
+  ⟨inferInstance, inferInstance⟩
+
+-- The ordinary chain conditions are stated on `Subobject X`, which needs no
+-- kernels or cokernels; only the strict ones above do.
+omit [HasZeroMorphisms C] [HasKernels C] [HasCokernels C] in
+/-- The descending chain condition carried by ordinary finite length. -/
+theorem IsFiniteLengthObject.isArtinianObject {X : C}
+    (h : IsFiniteLengthObject X) : IsArtinianObject X :=
+  h.1
+
+omit [HasZeroMorphisms C] [HasKernels C] [HasCokernels C] in
+/-- The ascending chain condition carried by ordinary finite length. -/
+theorem IsFiniteLengthObject.isNoetherianObject {X : C}
+    (h : IsFiniteLengthObject X) : IsNoetherianObject X :=
+  h.2
+
+omit [HasZeroMorphisms C] [HasKernels C] [HasCokernels C] in
+/-- Assemble ordinary finite length from the two chain conditions as
+instances. -/
+theorem IsFiniteLengthObject.mk' {X : C} [IsArtinianObject X]
+    [IsNoetherianObject X] : IsFiniteLengthObject X :=
+  ⟨inferInstance, inferInstance⟩
+
 /-- Finitely many subobjects force strict finite length.
 
 Both halves come from the single `Finite (Subobject X)` hypothesis: it makes
@@ -801,8 +850,8 @@ strict, and so is available only under `Abelian` — see
 `isStrictFiniteLengthObject_iff_isFiniteLengthObject`. -/
 theorem isStrictFiniteLengthObject_of_isFiniteLengthObject {X : C}
     (h : IsFiniteLengthObject X) : IsStrictFiniteLengthObject X := by
-  letI : IsArtinianObject X := h.1
-  letI : IsNoetherianObject X := h.2
+  letI : IsArtinianObject X := h.isArtinianObject
+  letI : IsNoetherianObject X := h.isNoetherianObject
   exact ⟨isStrictArtinianObject_of_isArtinianObject,
     isStrictNoetherianObject_of_isNoetherianObject⟩
 
@@ -827,8 +876,8 @@ theorem isStrictFiniteLengthObject_iff_isFiniteLengthObject {X : D} :
     IsStrictFiniteLengthObject X ↔ IsFiniteLengthObject X := by
   constructor
   · intro h
-    letI : IsStrictArtinianObject X := h.1
-    letI : IsStrictNoetherianObject X := h.2
+    letI : IsStrictArtinianObject X := h.isStrictArtinianObject
+    letI : IsStrictNoetherianObject X := h.isStrictNoetherianObject
     exact ⟨isArtinianObject_of_isStrictArtinianObject,
       isNoetherianObject_of_isStrictNoetherianObject⟩
   · exact isStrictFiniteLengthObject_of_isFiniteLengthObject
