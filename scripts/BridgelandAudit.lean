@@ -344,6 +344,7 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Foundation.HNFiltration.exists_split_at_cutoff
 #print axioms BridgelandStabLean.Foundation.Deformation.ThinStrictFiniteLength
 #print axioms BridgelandStabLean.Foundation.Deformation.ThinStrictFiniteLength.of_finiteLength
+#print axioms BridgelandStabLean.Foundation.Deformation.SkewedStabilityFunction.exists_semistable_strictQuotient_le_phase
 #print axioms BridgelandStabLean.Foundation.Deformation.IsStrictMDQ
 #print axioms BridgelandStabLean.Foundation.Deformation.IsStrictMDQ.id_of_semistable
 #print axioms BridgelandStabLean.Foundation.Deformation.IsStrictMDQ.epi
@@ -352,6 +353,11 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Foundation.Deformation.IsStrictMDQ.factor_of_phase_eq
 #print axioms BridgelandStabLean.Foundation.Deformation.IsStrictMDQ.precomposeIso
 #print axioms BridgelandStabLean.Foundation.Deformation.IsStrictMDQ.of_strictEpi_factor
+#print axioms BridgelandStabLean.Foundation.Deformation.IsStrictMDQ.phase_le_of_strictQuotient
+#print axioms BridgelandStabLean.Foundation.Deformation.IsStrictMDQ.isSemistable_of_strictQuotient_phase_eq
+#print axioms BridgelandStabLean.Foundation.Deformation.IsStrictMDQ.factor_of_strictQuotient_phase_eq
+#print axioms BridgelandStabLean.Foundation.Deformation.IsStrictMDQ.comp_of_destabilizing_semistable_subobject
+#print axioms BridgelandStabLean.Foundation.Deformation.SkewedStabilityFunction.exists_strictMDQ
 #print axioms BridgelandStabLean.Foundation.Deformation.IsStrictMDQ.kernelSubobject_ne_bot_of_not_semistable
 #print axioms BridgelandStabLean.Foundation.HNFiltration.shift
 #print axioms BridgelandStabLean.Foundation.HNFiltration.shift_phiPlus
@@ -630,6 +636,7 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Foundation.Deformation.SkewedStabilityFunction.exists_phase_gt_strictSubobject_of_not_semistable
 #print axioms BridgelandStabLean.Foundation.Deformation.SkewedStabilityFunction.exists_first_strictShortExact_of_not_semistable
 #print axioms BridgelandStabLean.Foundation.Deformation.Slicing.IntervalCat.pullbackProjection_strictEpi
+#print axioms BridgelandStabLean.Foundation.Deformation.Slicing.IntervalCat.bot_arrow_strictMono
 #print axioms BridgelandStabLean.Foundation.Deformation.Slicing.IntervalCat.pullbackArrow_strictMono
 #print axioms BridgelandStabLean.Foundation.Deformation.Slicing.IntervalCat.le_pullbackCokernel
 #print axioms BridgelandStabLean.Foundation.Deformation.Slicing.IntervalCat.ofLE_pullbackProjection_eq_zero
