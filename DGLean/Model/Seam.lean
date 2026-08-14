@@ -139,4 +139,49 @@ noncomputable def homSeam (K L : Cdg A) :
       (postcompAddEquiv ((HomotopyCategory.quotient A (ComplexShape.up ℤ)).mapIso
         ((shiftFunctorZero (CochainComplex A ℤ) ℤ).app (of A L)))))
 
+/-! ## The functor `H⁰(C^dg A) ⥤ K(A)` -/
+
+/-- Composition of degree-zero cocycles names composition of morphisms. Both
+sides are `z.v i i ≫ w.v i i` in each degree. -/
+lemma homOf_comp {K L M : CochainComplex A ℤ} (z : Cocycle K L 0) (w : Cocycle L M 0)
+    (hzw : ((z : Cochain K L 0).comp (w : Cochain L M 0) (add_zero 0)) ∈
+      HomComplex.cocycle K M 0) :
+    Cocycle.homOf ⟨_, hzw⟩ = Cocycle.homOf z ≫ Cocycle.homOf w := by
+  ext i
+  simp [Cochain.comp_zero_cochain_v]
+
+/-- Two degree-zero cocycles differing by a coboundary name homotopic
+morphisms, so they agree in the homotopy category. -/
+lemma quotient_map_homOf_eq {K L : CochainComplex A ℤ}
+    (z w : Cocycle K L 0) (β : Cochain K L (-1))
+    (hβ : (z : Cochain K L 0) = δ (-1) 0 β + (w : Cochain K L 0)) :
+    (HomotopyCategory.quotient A (ComplexShape.up ℤ)).map (Cocycle.homOf z) =
+      (HomotopyCategory.quotient A (ComplexShape.up ℤ)).map (Cocycle.homOf w) := by
+  refine HomotopyCategory.eq_of_homotopy _ _ ((Cochain.equivHomotopy _ _).symm ⟨β, ?_⟩)
+  simpa using hβ
+
+/-!
+## What remains: the functor
+
+`h0Functor : H⁰(C^dg A) ⥤ K(A)` is **not** built, and no `sorry` stands in for
+it. Its two mathematical ingredients are proved above — `quotient_map_homOf_eq`
+for well-definedness on classes, `homOf_comp` for compatibility with
+composition — and `homSeam` already gives the Hom-group isomorphism it would be
+fully faithful by. What is missing is the assembly, which stalled on three
+mechanical points rather than on content:
+
+* `δ (-1) 0 (-β) = -(δ (-1) 0 β)` is not closed by `simp`; the additivity of `δ`
+  has to come from `δ_hom`'s `map_neg`, not from `δ` itself;
+* the `show` that states well-definedness mixes `Cochain K L 0` with the carrier
+  `((dgHom K L).X 0)`, which are defeq but which `+` will not accept together —
+  the same instance-path problem `cocycleAddEquiv` routes around, and it needs
+  routing around here too;
+* `map_id` does not close by `rfl` once `toCocycle` sits between `dgId` and
+  `Cocycle.ofHom`.
+
+None of the three is deep. All three are the kind of thing this track has hit
+five times before, and the fix in every previous case was to write the map
+explicitly rather than to make elaboration find it.
+-/
+
 end Cdg
