@@ -566,4 +566,63 @@ abbrev polynomialVariableCechCochains
     (ι k : Type u) [Field k] (d n : ℕ) :=
   ∀ x : Fin (n + 1) → ι, polynomialVariableCechTerm ι k d n x
 
+/-! ## Comparing the algebraic Čech terms with sections -/
+
+/-- The product of all but the first variable in a Čech index. -/
+noncomputable def cechCofactor (ι k : Type u) [Field k] {n : ℕ} (x : Fin (n + 1) → ι) :
+    MvPolynomial ι k :=
+  ∏ a : Fin n, MvPolynomial.X (x a.succ)
+
+/-- Splitting the Čech denominator off its first variable.  This is what exhibits `X (x 0)` as
+invertible in the localization at the denominator, without it being a member. -/
+theorem X_mul_cechCofactor (ι k : Type u) [Field k] {n : ℕ} (x : Fin (n + 1) → ι) :
+    (MvPolynomial.X (x 0) : MvPolynomial ι k) * cechCofactor ι k x =
+      polynomialVariableCechDenominator ι k x :=
+  (Fin.prod_univ_succ (fun a => MvPolynomial.X (x a))).symm
+
+/-- The cofactor is homogeneous of degree `n`. -/
+theorem cechCofactor_mem (ι k : Type u) [Field k] {n : ℕ} (x : Fin (n + 1) → ι) :
+    cechCofactor ι k x ∈ polynomialGrading ι k n := by
+  unfold cechCofactor
+  simpa using SetLike.prod_mem_graded (polynomialGrading ι k) (fun _ : Fin n => 1)
+    (fun a => MvPolynomial.X (x a.succ)) (F := Finset.univ)
+    (fun a _ => MvPolynomial.isHomogeneous_X k (x a.succ))
+
+/-- A Čech intersection lies inside the chart of its first variable, which is the degree-one
+chart the sheaf-level trivialization needs. -/
+theorem basicOpen_denominator_le (ι k : Type u) [Field k] {n : ℕ} (x : Fin (n + 1) → ι) :
+    ProjectiveSpectrum.basicOpen (polynomialGrading ι k)
+        (polynomialVariableCechDenominator ι k x) ≤
+      ProjectiveSpectrum.basicOpen (polynomialGrading ι k) (MvPolynomial.X (x 0)) := by
+  rw [← X_mul_cechCofactor ι k x, ProjectiveSpectrum.basicOpen_mul]
+  exact inf_le_left
+
+/-- The algebraic Čech term for `O(d)` is the sections of `O(d)` over the corresponding
+intersection.
+
+Three comparisons compose, and each is used at exactly the generality it has.  The denominator
+has degree `n + 1`, so no degree-one hypothesis can be applied to it directly:
+
+* `natShiftLinearEquivOfMulMem` trivializes `A(d)` at the *algebraic* level.  It needs `X (x 0)`
+  invertible in the localization rather than a member of it, which `X_mul_cechCofactor` supplies —
+  `.powers (∏ₐ X_{x a})` contains no degree-one element for `n ≥ 1`.
+* `selfBasicOpenSectionAddEquiv` compares the structure module with its sections, and is already
+  general in the degree of the denominator.
+* `natShiftSectionAddEquivOn` trivializes at the *sheaf* level, over any open below a degree-one
+  chart; `basicOpen_denominator_le` places the intersection below the first variable's chart. -/
+noncomputable def cechTermSectionAddEquiv (ι k : Type u) [Field k] (d : ℕ) {n : ℕ}
+    (x : Fin (n + 1) → ι) :
+    polynomialVariableCechTerm ι k d n x ≃+
+      (associatedSheafInType (polynomialGrading ι k)
+        (natShift (polynomialGrading ι k) d)).1.obj
+        (op (ProjectiveSpectrum.basicOpen (polynomialGrading ι k)
+          (polynomialVariableCechDenominator ι k x))) :=
+  (DegreeZeroLocalization.natShiftLinearEquivOfMulMem (polynomialGrading ι k)
+      (MvPolynomial.isHomogeneous_X k (x 0)) d (cechCofactor_mem ι k x)
+      (by rw [X_mul_cechCofactor]; exact Submonoid.mem_powers _)).toAddEquiv.trans
+    ((selfBasicOpenSectionAddEquiv (polynomialGrading ι k)
+        (polynomialVariableCechDenominator_mem ι k x) (Nat.succ_pos n)).trans
+      (natShiftSectionAddEquivOn (polynomialGrading ι k)
+        (MvPolynomial.isHomogeneous_X k (x 0)) d (basicOpen_denominator_le ι k x)).symm)
+
 end CohLean.AlgebraicGeometry.Proj

@@ -110,6 +110,15 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms CohLean.AlgebraicGeometry.Proj.polynomialTwistingGlobalSectionsAddEquiv
 #print axioms CohLean.AlgebraicGeometry.Proj.polynomialTwistingGlobalSectionsModuleIso
 #print axioms CohLean.AlgebraicGeometry.Proj.polynomialVariableCechDenominator_mem
+-- G2 (#339): the algebraic Cech term is the sections of O(d) on that intersection. The
+-- denominator has degree n+1, so the algebraic trivialization goes through invertibility
+-- (X_mul_cechCofactor) rather than membership, and the sheaf-level one through the first
+-- variable's degree-one chart.
+#print axioms CohLean.AlgebraicGeometry.Proj.cechCofactor
+#print axioms CohLean.AlgebraicGeometry.Proj.X_mul_cechCofactor
+#print axioms CohLean.AlgebraicGeometry.Proj.cechCofactor_mem
+#print axioms CohLean.AlgebraicGeometry.Proj.basicOpen_denominator_le
+#print axioms CohLean.AlgebraicGeometry.Proj.cechTermSectionAddEquiv
 #print axioms CohLean.AlgebraicGeometry.Proj.basicOpen_polynomialVariableCechDenominator
 
 -- The geometric source object is a bundle of explicit data, not an axiom identifying schemes
