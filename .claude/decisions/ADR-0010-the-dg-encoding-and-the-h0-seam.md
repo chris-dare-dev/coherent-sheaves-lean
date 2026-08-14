@@ -1,7 +1,8 @@
 # ADR-0010 — How a dg category is encoded, and where the H⁰ seam lives
 
-- **Status:** accepted for Question 1; Question 2 narrowed and still open
-- **Date:** 2026-08-13 (UTC)
+- **Status:** accepted — Question 1 on 2026-08-13, Question 2's root and
+  namespace on 2026-08-14. The DG4 dependency direction remains open.
+- **Date:** 2026-08-13 (UTC) · **Amended:** 2026-08-14 (UTC)
 - **Decider:** Chris Dare
 - **Decision (Question 1, 2026-08-13):** **Option B — a bespoke `DGCategory`
   structure.** Taken on the measurement in
@@ -9,12 +10,19 @@
   enriching category of Option A does not exist at the pin. Option A′ stays
   live as a separate `upstream-candidate` slice and is not a prerequisite of
   anything in DG1.
-- **Still open (Question 2):** the root name is provisionally `DGLean` and is
-  not needed until `dg-enhancements-e4` creates the root; the DG4 dependency
-  direction is not needed until DG4. Neither blocks DG1.
-- **Related:** ARCHITECTURE.md growth rule 1, and the CLAUDE.md taxonomy line *"Future
-  derived-category and Fourier–Mukai libraries get dedicated roots with their
-  first real theorem"*; `.claude/roadmap/dg-enhancements.yaml` (m0, e1)
+- **Decision (Question 2, root and namespace, 2026-08-14):** the root is
+  `DGLean`, the namespace is `DGLean`, and the root was created at
+  `dg-enhancements-e2` (#343), not e4. **Read "Amendment, 2026-08-14" at the
+  foot of this file** — the text of Question 2 below is preserved as written
+  and its trigger and its citation are both superseded there.
+- **Still open:** the DG4 dependency direction is not needed until DG4 and does
+  not block DG1.
+- **Related:** the CLAUDE.md taxonomy line *"Future derived-category and
+  Fourier–Mukai libraries get dedicated roots with their first real theorem"*,
+  ARCHITECTURE.md growth rule 6 (added 2026-08-14 by this amendment);
+  `.claude/roadmap/dg-enhancements.yaml` (m0, e1);
+  [`ADR-0011`](ADR-0011-hom-complexes-are-complexes-of-abelian-groups.md),
+  which refines Question 1
 
 ## Context
 
@@ -160,3 +168,83 @@ assumes the former and does not depend on it.
 labels, milestones, and views need neither answer. `dg-enhancements-m1` cannot
 start — e2 is the encoding, and writing it before the decision is how a
 repository ends up with two.
+
+---
+
+## Amendment, 2026-08-14 — the root arrived at e2, and the rule cited above is not in the document named
+
+Everything above is preserved verbatim as the record of what was decided on
+2026-08-13 and why. Three things in Question 2 did not survive contact with the
+tree.
+
+### 1. The trigger fired two epics early, and was right to
+
+`dg-enhancements-e2` (#343) created `DGLean/` on disk with `DGCategory`,
+`DGCategoryStruct`, `DGFunctor`, `DGLinear`, the opposite and the product, and
+fifteen proved lemmas, no `sorry` and no new axiom. It arrived gated rather
+than promised: `DGLean` is a default target in `lakefile.toml`,
+`scripts/DGLeanAudit.lean` runs under `scripts/check_audit.py`, and
+`scripts/gates.sh` and CI both carry `dg-audit` and `runLinter-dg` with no
+`scripts/nolints.json` entries.
+
+The rule Question 2's trigger was meant to honour is CLAUDE.md's: a new root
+arrives with **a theorem**, not with a bare definition. Its purpose is to stop a
+root being minted for a signature nothing has been proved about. e2 clears that
+bar — `dgComp_assoc`, `dgComp_leibniz`, `dgId_comp` and the opposite and product
+laws are theorems about the objects the whole track is stated against.
+
+What `dg-enhancements-e4` supplies is not the root's first theorem. It is the
+root's first theorem about **an object the repository already had**. That is the
+right gate for a *milestone*, and it stays m1's headline; it is the wrong gate
+for a *directory*, because it makes the root's existence depend on a comparison
+rather than on the subject having content of its own.
+
+**Decision:** root creation at e2 is accepted as taken. The root name is
+`DGLean`. Question 2's root half is closed.
+
+### 2. The namespace half of Question 2 was not taken, and should be
+
+Question 2 fixed *"the root **and the namespace**"*. The directory exists; the
+namespace does not. At `a321683`, every declaration originating in a `DGLean`
+module sits in the **root** namespace — `DGCategory`, `DGCategoryStruct`,
+`DGFunctor`, `DGLinear`, `Const`, `constComplex`, `prodComplex`, `prodComp`,
+`prodD`. No file under `DGLean/` opens `namespace DGLean`.
+
+`CohLean` namespaces as `CohLean.AlgebraicGeometry.Proj.*` and
+`BridgelandStabLean/Foundation` as `BridgelandStabLean.Foundation.*`. `Const`,
+`prodD` and `prodComp` at the root are collision-shaped names, and Mathlib does
+not declare library content at the root either.
+
+**Decision:** the namespace is `DGLean`, with the subsystem namespaces proposed
+in Question 2 (`DGLean.Category`, later `DGLean.Enhancement`, `DGLean.Model`)
+beneath it. This is a rename, and it is cheapest before `dg-enhancements-e3` and
+`-e4` state anything against the current names. It is follow-up work on `main`,
+not a revert of #343.
+
+### 3. The rule cited in Question 2 is not in the document it names
+
+Question 2 opens: *"ARCHITECTURE.md's growth rule says a new subject gets its
+own root with its first real theorem, not with its first definition."*
+
+ARCHITECTURE.md's growth rules 1–5 are about placing a **module** under the
+narrowest mathematical owner inside an existing library, exporting it through
+its nearest umbrella, and keeping reconnaissance under `Development/`. None of
+them mentions a library root. The sentence quoted is CLAUDE.md's, under
+"Repository taxonomy".
+
+So the miscitation is double: wrong document, and a rule that does not say this
+at all. That is the actual reason Question 2 was answerable two ways —
+ARCHITECTURE.md, the document that owns repository shape, had **no
+root-creation rule**.
+
+**Consequence:** ARCHITECTURE.md gains growth rule 6, stating when a subject
+earns a root and that the namespace follows the root, and its package map gains
+a `DGLean/Category` row. A root that CI gates but the architecture document does
+not mention is drift on day one.
+
+### What this amendment does not decide
+
+The DG4 dependency direction — whether the transport lemmas live in
+`DGLean/Enhancement/Transport` importing `BridgelandStabLean`, or in
+`BridgelandStabLean/` importing `DGLean`. Unchanged, still open, still an owner
+call, and still not needed until DG4.
