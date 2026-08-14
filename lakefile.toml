@@ -37,6 +37,12 @@ name = "CohLean"
 [[lean_lib]]
 name = "BridgelandStabLean"
 
+# Dg categories and enhancements. Built by CI from the moment it exists, but
+# deliberately not imported by DerivedAlgGeoLean.lean until the subsystem is
+# stable -- see DGLean.lean and ADR-0010.
+[[lean_lib]]
+name = "DGLean"
+
 # Stable umbrella for the combined environment.
 [[lean_lib]]
 name = "DerivedAlgGeoLean"
