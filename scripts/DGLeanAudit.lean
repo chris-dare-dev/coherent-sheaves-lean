@@ -110,3 +110,35 @@ import DGLean
 #print axioms comp_sub_mem
 #print axioms mem_coboundaries_iff
 #print axioms mem_cocycles_iff
+
+-- DGLean.Model: C^dg and the seam (dg-enhancements-e4).
+#print axioms Cdg
+#print axioms Cdg.coboundariesIn_le_comap
+#print axioms Cdg.coboundaries_le_comap
+#print axioms Cdg.cocycleAddEquiv
+#print axioms Cdg.cocycles_eq
+#print axioms Cdg.dgComp_eq
+#print axioms Cdg.dgHom_eq
+#print axioms Cdg.dgId_eq
+#print axioms Cdg.h0Functor
+#print axioms Cdg.homEquivCohomologyClass
+#print axioms Cdg.homOf_comp
+#print axioms Cdg.homOf_dgComp
+#print axioms Cdg.homSeam
+#print axioms Cdg.instDGCategory
+#print axioms Cdg.instEssSurjH0HomotopyCategoryIntUpH0Functor
+#print axioms Cdg.instFaithfulH0HomotopyCategoryIntUpH0Functor
+#print axioms Cdg.instFullH0HomotopyCategoryIntUpH0Functor
+#print axioms Cdg.instIsEquivalenceH0HomotopyCategoryIntUpH0Functor
+#print axioms Cdg.mem_coboundaries_iff'
+#print axioms Cdg.of
+#print axioms Cdg.ofCocycle
+#print axioms Cdg.ofCocycle_toCocycle
+#print axioms Cdg.ofCocycle_val
+#print axioms Cdg.postcompAddEquiv
+#print axioms Cdg.quotient_map_homOf_eq
+#print axioms Cdg.seam
+#print axioms Cdg.struct
+#print axioms Cdg.toCocycle
+#print axioms Cdg.toCocycle_ofCocycle
+#print axioms Cdg.toCocycle_val
