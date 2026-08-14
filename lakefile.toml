@@ -60,6 +60,10 @@ srcDir = "scripts"
 name = "BridgelandAudit"
 srcDir = "scripts"
 
+[[lean_lib]]
+name = "DGLeanAudit"
+srcDir = "scripts"
+
 [[lean_exe]]
 name = "emit"
 root = "Emit"

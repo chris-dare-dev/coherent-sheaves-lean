@@ -63,6 +63,14 @@ coh_audit() {
   return 0
 }
 
+dg_audit() {
+  lake env lean scripts/DGLeanAudit.lean > /tmp/dg-audit.txt 2>&1 || {
+    tail -20 /tmp/dg-audit.txt
+    return 1
+  }
+  python3 scripts/check_audit.py /tmp/dg-audit.txt scripts/DGLeanAudit.lean
+}
+
 bridgeland_audit() {
   lake env lean scripts/BridgelandAudit.lean > /tmp/bridgeland-audit.txt 2>&1 || {
     tail -20 /tmp/bridgeland-audit.txt
@@ -97,12 +105,14 @@ gate mathlib-style mathlib_style
 gate build lake build
 gate coh-audit coh_audit
 gate bridgeland-audit bridgeland_audit
+gate dg-audit dg_audit
 
 if [ "$MODE" != "fast" ]; then
   gate runLinter-foundation lake exe runLinter BridgelandStability
   gate runLinter-stability lake exe runLinter BridgelandStabLean
   gate runLinter-coh lake exe runLinter CohLean
   gate nolints-ratchet python3 scripts/check_nolints.py
+  gate runLinter-dg lake exe runLinter DGLean
   gate lint-style lake exe lint-style
   gate pin python3 scripts/check_pin.py
   gate anchor-free python3 scripts/check_anchor_free.py
