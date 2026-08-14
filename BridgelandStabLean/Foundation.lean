@@ -32,6 +32,7 @@ import BridgelandStabLean.Foundation.Deformation.LocalFiniteness
 import BridgelandStabLean.Foundation.Deformation.PhaseArithmetic
 import BridgelandStabLean.Foundation.Deformation.PhaseSum
 import BridgelandStabLean.Foundation.Deformation.SkewedStability
+import BridgelandStabLean.Foundation.Deformation.FirstStrictSES
 import BridgelandStabLean.Foundation.Deformation.StrictMDQ
 import BridgelandStabLean.Foundation.Deformation.ChargePerturbation
 import BridgelandStabLean.Foundation.Deformation.StabilitySeminorm
