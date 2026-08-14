@@ -197,10 +197,20 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms SmoothProperVariety.CanonicalSheafData.pointCanonicalSheafData_canonicalSheaf
 #print axioms SmoothProperVariety.CanonicalSheafData.pointDualizingComplexIso
 
--- Layer B stage 5: Serre duality remains an explicit geometric realization. The derived
--- statement uses Mathlib's derived category, while the cohomological comparison targets its
--- actual Ext groups. Euler symmetry is proved from perfect pairings and dimension vanishing.
+-- Layer B stage 5: algebraic linear duality is an exact contravariant functor and therefore has
+-- an actual derived lift. The comparison between the opposite derived category and the derived
+-- category of the opposite remains explicit, as do geometric RHom and Grothendieck duality.
+#print axioms ModuleCat.linearDualFunctor
+#print axioms ModuleCat.linearDualFunctor_map_shortExact
+#print axioms ModuleCat.linearDualFunctor_preservesFiniteLimits_and_colimits
+#print axioms ModuleCat.linearDualFunctor_preservesFiniteLimits
+#print axioms ModuleCat.linearDualFunctor_preservesFiniteColimits
+#print axioms ModuleCat.derivedLinearDualFunctor
+#print axioms ModuleCat.DerivedOppositeComparison
+#print axioms ModuleCat.DerivedOppositeComparison.derivedLinearDualFromOpposite
+#print axioms ModuleCat.DerivedOppositeComparison.derivedLinearDualShift
 #print axioms CohLean.Duality.Serre.DerivedStatement
+#print axioms CohLean.Duality.Serre.DerivedStatement.linearDualShift
 #print axioms CohLean.Duality.Serre.DerivedStatement.dualizingObject
 #print axioms CohLean.Duality.Serre.DerivedStatement.canonicalShiftIso
 #print axioms CohLean.Duality.Serre.Data
