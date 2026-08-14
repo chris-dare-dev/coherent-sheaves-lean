@@ -1,6 +1,6 @@
 /-
 Copyright (c) 2026 Chris Dare. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
+Released under the MIT license.
 -/
 import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
 import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
@@ -94,22 +94,37 @@ theorem linearDualFunctor_map_shortExact
     rw [LinearMap.dualMap_surjective_iff]
     exact hU.moduleCat_injective_f
 
-/-- Exactness of algebraic linear duality, expressed by preservation of finite limits and
-finite colimits.  This is the input used by Mathlib's derived-functor construction. -/
-theorem linearDualFunctor_preservesFinite :
+/-- Exactness of algebraic linear duality, in the form Mathlib's derived-functor
+construction consumes.
+
+`Functor.exact_tfae` is what does the work: preservation of short exact sequences, proved
+above by hand from the dual-annihilator lemmas, is one of its equivalent characterisations of
+exactness, and finite (co)limit preservation is another.  Both instances below project out of
+this one call, so the `tfae` is invoked once rather than per instance. -/
+theorem linearDualFunctor_preservesFiniteLimits_and_colimits :
     CategoryTheory.Limits.PreservesFiniteLimits (linearDualFunctor k) ∧
       CategoryTheory.Limits.PreservesFiniteColimits (linearDualFunctor k) :=
   (CategoryTheory.Functor.exact_tfae (linearDualFunctor k)).out 0 3 |>.mp
     fun (S : ShortComplex ((ModuleCat.{u + 1} k)ᵒᵖ)) hS ↦
       linearDualFunctor_map_shortExact k S hS
 
+/-- Linear duality preserves finite limits, being exact. -/
+theorem linearDualFunctor_preservesFiniteLimits :
+    CategoryTheory.Limits.PreservesFiniteLimits (linearDualFunctor k) :=
+  (linearDualFunctor_preservesFiniteLimits_and_colimits k).1
+
+/-- Linear duality preserves finite colimits, being exact. -/
+theorem linearDualFunctor_preservesFiniteColimits :
+    CategoryTheory.Limits.PreservesFiniteColimits (linearDualFunctor k) :=
+  (linearDualFunctor_preservesFiniteLimits_and_colimits k).2
+
 noncomputable instance :
     CategoryTheory.Limits.PreservesFiniteLimits (linearDualFunctor k) :=
-  (linearDualFunctor_preservesFinite k).1
+  linearDualFunctor_preservesFiniteLimits k
 
 noncomputable instance :
     CategoryTheory.Limits.PreservesFiniteColimits (linearDualFunctor k) :=
-  (linearDualFunctor_preservesFinite k).2
+  linearDualFunctor_preservesFiniteColimits k
 
 noncomputable local instance moduleHasDerivedCategory :
     HasDerivedCategory (ModuleCat.{u + 1} k) :=

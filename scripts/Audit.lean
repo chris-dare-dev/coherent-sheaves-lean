@@ -202,7 +202,9 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 -- category of the opposite remains explicit, as do geometric RHom and Grothendieck duality.
 #print axioms ModuleCat.linearDualFunctor
 #print axioms ModuleCat.linearDualFunctor_map_shortExact
-#print axioms ModuleCat.linearDualFunctor_preservesFinite
+#print axioms ModuleCat.linearDualFunctor_preservesFiniteLimits_and_colimits
+#print axioms ModuleCat.linearDualFunctor_preservesFiniteLimits
+#print axioms ModuleCat.linearDualFunctor_preservesFiniteColimits
 #print axioms ModuleCat.derivedLinearDualFunctor
 #print axioms ModuleCat.DerivedOppositeComparison
 #print axioms ModuleCat.DerivedOppositeComparison.derivedLinearDualFromOpposite
