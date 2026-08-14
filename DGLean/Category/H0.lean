@@ -157,16 +157,17 @@ lemma comp_sub_mem {X Y Z : C} {f₁ f₂ : (dgHom X Y).X 0} {g₁ g₂ : (dgHom
     (comp_coboundary_mem hf₂ hg)
 
 /-- Objects of `H⁰`. -/
-def H0 (C : Type u) [DGCategory.{v} C] : Type u := C
+def H0 (C : Type u) : Type u := C
 
 namespace H0
 
 /-- The underlying object of `C`. -/
-def of (C : Type u) [DGCategory.{v} C] (X : H0 C) : C := X
+def of (C : Type u) (X : H0 C) : C := X
 
 /-- `of` is the identity. **Not** a `simp` lemma: making it one changes how the
 quotient's membership goals normalise and breaks the descent proofs above. Pass
 it explicitly where objects need to be unfolded. -/
+omit [DGCategory C] in
 lemma of_self (X : H0 C) : of C X = X := rfl
 
 /-- The coboundaries, viewed inside the cocycles. -/
