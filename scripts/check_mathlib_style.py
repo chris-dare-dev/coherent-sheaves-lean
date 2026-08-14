@@ -15,7 +15,17 @@ Two severities:
 
 Usage:
     python3 scripts/check_mathlib_style.py FILE [FILE ...]
-    python3 scripts/check_mathlib_style.py --hook   # reads hook JSON on stdin
+    python3 scripts/check_mathlib_style.py --hook              # hook JSON on stdin
+    python3 scripts/check_mathlib_style.py --diff-only REF F.. # only changed lines
+
+`--diff-only` exists because a branch gate and an edit hook are answering
+different questions. The hook judges the line you just wrote, so it is strict.
+A branch gate that reported every pre-existing violation in a file the branch
+happens to touch would turn editing any legacy file into a mandatory refactor
+of it -- which `CONTRIBUTING.md` explicitly does not want ("avoid unrelated
+refactors in a feature change"), and which stalls an unattended run on debt
+that is not its business. Findings are therefore filtered to lines the diff
+actually adds or changes.
 
 Conventions enforced here are documented in `.claude/references/mathlib-style.md`.
 """
@@ -261,6 +271,32 @@ def restates_the_name(doc: str, name: str) -> bool:
     return hits >= max(2, len(parts) - 1)
 
 
+def changed_lines(ref: str, path: Path) -> set[int] | None:
+    """Line numbers this branch adds or changes in `path`, or None for a new file.
+
+    None means "every line is new", so no filtering is applied.
+    """
+    import subprocess
+
+    try:
+        out = subprocess.run(
+            ["git", "diff", "-U0", f"{ref}...HEAD", "--", str(path)],
+            capture_output=True, text=True, check=True,
+        ).stdout
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        return None
+
+    if "new file mode" in out:
+        return None
+
+    lines: set[int] = set()
+    for m in re.finditer(r"^@@ -\S+ \+(\d+)(?:,(\d+))? @@", out, re.MULTILINE):
+        start = int(m.group(1))
+        count = int(m.group(2) or 1)
+        lines.update(range(start, start + count))
+    return lines
+
+
 def report(path: Path, findings: list[Finding]) -> int:
     errors = [f for f in findings if f.severity == "ERROR"]
     warns = [f for f in findings if f.severity == "WARN"]
@@ -272,6 +308,14 @@ def report(path: Path, findings: list[Finding]) -> int:
 def main(argv: list[str]) -> int:
     paths: list[Path]
     hook_mode = "--hook" in argv
+    diff_ref: str | None = None
+    if "--diff-only" in argv:
+        i = argv.index("--diff-only")
+        if i + 1 >= len(argv):
+            print("--diff-only needs a git ref", file=sys.stderr)
+            return 1
+        diff_ref = argv[i + 1]
+        argv = argv[:i] + argv[i + 2:]
     if hook_mode:
         try:
             payload = json.load(sys.stdin)
@@ -294,6 +338,10 @@ def main(argv: list[str]) -> int:
         if not in_scope(p) or not p.exists():
             continue
         findings = check_text(p.read_text(encoding="utf-8"), p)
+        if diff_ref is not None:
+            touched = changed_lines(diff_ref, p)
+            if touched is not None:
+                findings = [f for f in findings if f.line in touched]
         if hook_mode:
             # An undocumented theorem is backlog, not a defect in this edit.
             # The per-PR review agent reports it; the per-edit hook would only
