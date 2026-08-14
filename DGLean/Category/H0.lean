@@ -3,6 +3,7 @@ Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under the MIT license.
 -/
 import DGLean.Category.Basic
+import DGLean.Category.Functor
 
 /-!
 # Cocycles, coboundaries, and `Z⁰` of a dg category
@@ -34,7 +35,7 @@ rather than rewriting the goal.
 set_option autoImplicit false
 set_option relaxedAutoImplicit false
 
-universe v u
+universe v u u'
 
 open CategoryTheory DGCategoryStruct DGCategory
 
@@ -229,3 +230,45 @@ instance preadditive : Preadditive (H0 C) where
             simp [AddSubgroup.coe_add, map_add]))
 
 end H0
+
+namespace DGFunctor
+
+variable {C : Type u} {D : Type u'} [DGCategory.{v} C] [DGCategory.{v} D]
+
+/-- A dg functor sends cocycles to cocycles: it commutes with the differential,
+and an additive map sends `0` to `0`. -/
+lemma map_mem_cocycles (F : DGFunctor C D) {X Y : C} {f : (dgHom X Y).X 0}
+    (hf : f ∈ cocycles X Y) : F.map 0 f ∈ cocycles (F.obj X) (F.obj Y) := by
+  have hf' : ((dgHom X Y).d 0 1).hom f = 0 := hf
+  rw [mem_cocycles_iff, ← F.map_d 0 1 f, hf', map_zero]
+
+/-- A dg functor sends coboundaries to coboundaries, for the same reason and
+with no closedness hypothesis: `map_d` already exhibits the primitive. -/
+lemma map_mem_coboundaries (F : DGFunctor C D) {X Y : C} {f : (dgHom X Y).X 0}
+    (hf : f ∈ coboundaries X Y) : F.map 0 f ∈ coboundaries (F.obj X) (F.obj Y) := by
+  obtain ⟨h, rfl⟩ := hf
+  exact ⟨F.map (-1) h, (F.map_d (-1) 0 h).symm⟩
+
+/-- The functor `H⁰(F)` induced by a dg functor. -/
+def h0 (F : DGFunctor C D) : H0 C ⥤ H0 D where
+  obj X := F.obj (H0.of C X)
+  map {X Y} := Quotient.map (fun f => ⟨F.map 0 f.1, F.map_mem_cocycles f.2⟩) (by
+    rintro ⟨f₁, hf₁⟩ ⟨f₂, hf₂⟩ hr
+    refine QuotientAddGroup.leftRel_apply.mpr ?_
+    have := QuotientAddGroup.leftRel_apply.mp hr
+    simp only [H0.coboundariesIn, AddSubgroup.mem_addSubgroupOf] at this ⊢
+    -- Additivity of `F.map` first, then `exact`: the subgroup coercion of a sum
+    -- is the sum of the coercions definitionally, which `exact` accepts and the
+    -- `coe_add` simp lemmas do not fire on.
+    have key : F.map 0 (-f₁ + f₂) ∈ coboundaries (F.obj X) (F.obj Y) :=
+      F.map_mem_coboundaries this
+    rw [map_add, map_neg] at key
+    exact key)
+  map_id X := congrArg _ (Subtype.ext (F.map_id _))
+  map_comp {X Y Z} f g := by
+    induction f using Quotient.ind with
+    | _ f =>
+      induction g using Quotient.ind with
+      | _ g => exact congrArg _ (Subtype.ext (F.map_comp 0 0 0 (by omega) f.1 g.1))
+
+end DGFunctor
