@@ -203,4 +203,29 @@ instance category : Category.{v} (H0 C) where
           exact congrArg _ (Subtype.ext
             (dgComp_assoc 0 0 0 0 0 0 rfl rfl rfl f.1 g.1 h.1))
 
+/-- `H⁰` is preadditive: its Hom-sets are quotients of abelian groups, and
+composition is biadditive because `dgComp` is. -/
+instance preadditive : Preadditive (H0 C) where
+  homGroup X Y := by
+    -- `X ⟶ Y` is the quotient only definitionally, so instance search needs the
+    -- type spelled out before it will look.
+    show AddCommGroup (cocycles (of C X) (of C Y) ⧸ coboundariesIn (of C X) (of C Y))
+    infer_instance
+  add_comp P Q R f f' g := by
+    induction f using Quotient.ind with
+    | _ f =>
+      induction f' using Quotient.ind with
+      | _ f' =>
+        induction g using Quotient.ind with
+        | _ g => exact congrArg _ (Subtype.ext (by
+            simp [AddSubgroup.coe_add, map_add, AddMonoidHom.add_apply]))
+  comp_add P Q R f g g' := by
+    induction f using Quotient.ind with
+    | _ f =>
+      induction g using Quotient.ind with
+      | _ g =>
+        induction g' using Quotient.ind with
+        | _ g' => exact congrArg _ (Subtype.ext (by
+            simp [AddSubgroup.coe_add, map_add]))
+
 end H0
