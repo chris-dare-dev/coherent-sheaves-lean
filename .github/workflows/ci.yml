@@ -27,8 +27,12 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/check_pin.py
-          python3 scripts/check_coverage_map.py
-          python3 scripts/check_coverage_map.py registry/coverage-2607.28411.json
+          # Every coverage record, not a hand-maintained list of two. This PR
+          # adds five, and under the old naming they would all have landed
+          # unvalidated -- as would every record added after it.
+          for f in registry/coverage-*.json; do
+            python3 scripts/check_coverage_map.py "$f"
+          done
 
       - name: Coherent-sheaf axiom audit
         run: |

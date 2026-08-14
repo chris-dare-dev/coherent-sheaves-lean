@@ -12,7 +12,7 @@
 - **Still open (Question 2):** the root name is provisionally `DGLean` and is
   not needed until `dg-enhancements-e4` creates the root; the DG4 dependency
   direction is not needed until DG4. Neither blocks DG1.
-- **Related:** ARCHITECTURE.md growth rule 1 and its taxonomy line *"Future
+- **Related:** ARCHITECTURE.md growth rule 1, and the CLAUDE.md taxonomy line *"Future
   derived-category and Fourier–Mukai libraries get dedicated roots with their
   first real theorem"*; `.claude/roadmap/dg-enhancements.yaml` (m0, e1)
 
