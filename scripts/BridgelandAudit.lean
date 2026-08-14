@@ -529,6 +529,7 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Foundation.Slicing.IntervalCat.isFiniteLength_of_isStrictFiniteLength
 #print axioms BridgelandStabLean.Foundation.Slicing.IsLocallyFinite.of_strictFiniteLength
 #print axioms BridgelandStabLean.Foundation.Slicing.IsLocallyFinite.of_finiteSubobjects
+#print axioms BridgelandStabLean.Foundation.Slicing.IntervalCat.strictShortExact_of_distinguished
 #print axioms BridgelandStabLean.ForMathlib.CategoryTheory.Triangulated.TStructure.exists_distinguished_triangle_of_heart_epi
 #print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.skewedPhase_mem_enveloped_branch
 #print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.skewedPhase_gt_of_geProp
