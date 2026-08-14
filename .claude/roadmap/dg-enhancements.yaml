@@ -20,8 +20,12 @@ brief: |
   (see dg-enhancements-m4 acceptance), not as a premise.
 
   What the pinned environment already supplies is unusually favourable and is
-  the reason this track is filed now rather than parked. At `mathlib_rev` in
-  `pins.json`, Mathlib has: the Hom cochain complex between cochain complexes
+  the reason this track is filed now rather than parked. One item on the list
+  below did not survive measurement: the monoidal structure on complexes does
+  NOT reach `CochainComplex (ModuleCat k) ℤ` at the pin, so the enriched
+  encoding is unavailable and ADR-0010 decided for a bespoke structure. See the
+  `assumptions` block and .claude/notes/2026-08-13-dg-surface-reconnaissance.md.
+  At `mathlib_rev` in `pins.json`, Mathlib has: the Hom cochain complex between cochain complexes
   (`Algebra/Homology/HomotopyCategory/HomComplex`, with its shift and
   cohomology files) — which is the dg structure on complexes, already built;
   the monoidal structure on homological complexes (`Algebra/Homology/Monoidal`);
