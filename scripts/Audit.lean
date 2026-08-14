@@ -80,7 +80,7 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms CohLean.AlgebraicGeometry.Proj.polynomialVariable_coversTop
 #print axioms CohLean.AlgebraicGeometry.Proj.polynomialVariable_isCechAcyclicFor
 #print axioms CohLean.AlgebraicGeometry.Proj.polynomialVariable_isCechAcyclicCover
-#print axioms CohLean.AlgebraicGeometry.Proj.degreeOneCharts_coversTop
+#print axioms CohLean.AlgebraicGeometry.Proj.polynomialVariable_adjoin_eq_top
 #print axioms CohLean.AlgebraicGeometry.Proj.natShiftQuasicoherentData
 #print axioms CohLean.AlgebraicGeometry.Proj.natShift_isQuasicoherent
 #print axioms CohLean.AlgebraicGeometry.Proj.polynomialNatShift_isQuasicoherent
