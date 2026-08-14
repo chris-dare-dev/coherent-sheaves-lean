@@ -432,6 +432,70 @@ theorem Slicing.IntervalCat.comp_strictMono (s : Slicing C)
     simpa using (show Mono (FR.map f ≫ FR.map g) by infer_instance)
   exact Slicing.IntervalCat.strictMono_of_mono_toRightHeart C s (f ≫ g)
 
+/-- The canonical arrow of an intrinsic admissible interval subobject is an
+owner strict monomorphism. -/
+theorem Slicing.IntervalCat.isStrictSubobject_of_isAdmissible
+    (s : Slicing C) {E : s.IntervalCat C a b} (A : Subobject E)
+    (hA : s.IsAdmissibleSubobject C A) : IsStrictSubobject A := by
+  rcases hA with ⟨X, Q, i, hi, q, hAi, δ, hT⟩
+  subst A
+  let t := (s.phaseShift C (b - 1)).toDualTStructure C
+  letI := t.hasHeartFullSubcategory
+  letI : Abelian t.heart.FullSubcategory := heartFullSubcategoryAbelian t
+  let FR := Slicing.IntervalCat.toRightHeart
+    (C := C) (s := s) a b (Fact.out : b - a ≤ 1)
+  have hshort :
+      (ShortComplex.mk (FR.map i) (FR.map q) (by
+        ext
+        exact comp_distTriang_mor_zero₁₂ _ hT)).ShortExact :=
+    heartFullSubcategory_shortExact_of_distTriang t hT
+  letI : Mono (FR.map i) := hshort.mono_f
+  have hiStrict : IsStrictMono i :=
+    Slicing.IntervalCat.strictMono_of_mono_toRightHeart C s i
+  let e := Subobject.underlyingIso i
+  have heStrict : IsStrictMono e.hom := isStrictMono_of_isIso
+  have hcomp : IsStrictMono (e.hom ≫ i) :=
+    Slicing.IntervalCat.comp_strictMono C s e.hom i heStrict hiStrict
+  simpa [IsStrictSubobject, e] using hcomp
+
+/-- Intrinsic admissible subobjects order-embed into owner strict
+subobjects. -/
+def Slicing.IntervalCat.admissibleToStrictSubobject (s : Slicing C)
+    (E : s.IntervalCat C a b) :
+    s.AdmissibleSubobject C E ↪o StrictSubobject E where
+  toFun A := ⟨A.1,
+    Slicing.IntervalCat.isStrictSubobject_of_isAdmissible C s A.1 A.2⟩
+  inj' := by
+    intro A B h
+    have hval : A.1 = B.1 :=
+      congrArg (fun Z : StrictSubobject E => Z.1) h
+    exact Subtype.ext hval
+  map_rel_iff' := Iff.rfl
+
+/-- A strict-Artinian interval object is intrinsically admissibly
+Artinian. -/
+theorem Slicing.IntervalCat.isAdmissiblyArtinian_of_isStrictArtinian
+    (s : Slicing C) {E : s.IntervalCat C a b}
+    [IsStrictArtinianObject E] : s.IsAdmissiblyArtinian C E :=
+  (Slicing.IntervalCat.admissibleToStrictSubobject C s E).strictMono.wellFoundedLT
+
+/-- A strict-Noetherian interval object is intrinsically admissibly
+Noetherian. -/
+theorem Slicing.IntervalCat.isAdmissiblyNoetherian_of_isStrictNoetherian
+    (s : Slicing C) {E : s.IntervalCat C a b}
+    [IsStrictNoetherianObject E] : s.IsAdmissiblyNoetherian C E :=
+  (Slicing.IntervalCat.admissibleToStrictSubobject C s E).strictMono.wellFoundedGT
+
+/-- Owner strict finite length implies the intrinsic finite-length condition
+used by owner local finiteness. -/
+theorem Slicing.IntervalCat.isFiniteLength_of_isStrictFiniteLength
+    (s : Slicing C) {E : s.IntervalCat C a b}
+    (hE : IsStrictFiniteLengthObject E) : s.IsFiniteLength C E := by
+  letI : IsStrictArtinianObject E := hE.1
+  letI : IsStrictNoetherianObject E := hE.2
+  exact ⟨Slicing.IntervalCat.isAdmissiblyArtinian_of_isStrictArtinian C s,
+    Slicing.IntervalCat.isAdmissiblyNoetherian_of_isStrictNoetherian C s⟩
+
 /-- The left adjacent-heart embedding preserves the canonical interval
 kernel. -/
 noncomputable instance Slicing.IntervalCat.toLeftHeart_preservesKernel
