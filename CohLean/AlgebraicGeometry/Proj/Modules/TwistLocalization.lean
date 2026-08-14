@@ -273,6 +273,94 @@ private theorem twistInverseOfMem_mul_forward (hfS : f ∈ S) :
   exact IsLocalization.mk'_mul_mk'_eq_one
     (S := Localization S) (1 : S) (twistPowerOfMem (f := f) d hfS)
 
+/-! ## Trivializing when `f` is only invertible, not a member
+
+`natShiftToSelfLinearMapOfMem` asks for `f ∈ S`, but its own statement only needs `f` to be
+invertible in `Localization S`.  The gap is not academic: on a Čech intersection the denominator
+submonoid is `.powers (∏ₐ gₐ)`, which for more than one factor contains no degree-one element at
+all, while every `gₐ` is invertible there.
+
+The hypothesis below records invertibility in the form the graded bookkeeping can use: a
+homogeneous cofactor `h` with `f * h ∈ S`.  Division by `f ^ d` is then performed as
+multiplication by `h ^ d / (f * h) ^ d`, which is the same element of the localization but keeps
+every denominator literally inside `S`.  Taking `h = 1` recovers the membership hypothesis.
+-/
+
+private def twistPowerOfMulMem {h : A} (hfh : f * h ∈ S) : S :=
+  ⟨(f * h) ^ d, S.pow_mem hfh d⟩
+
+private def twistInverseOfMulMem {h : A} (hfh : f * h ∈ S) : Localization S :=
+  Localization.mk (h ^ d) (twistPowerOfMulMem (f := f) d hfh)
+
+/-- Divide an `A(d)` fraction by `f ^ d` whenever a homogeneous cofactor carries `f` into the
+denominator submonoid. -/
+noncomputable def natShiftToSelfLinearMapOfMulMem {h : A} {e : ℕ} (h_deg : h ∈ 𝒜 e)
+    (hfh : f * h ∈ S) :
+    DegreeZeroLocalization 𝒜 (natShift 𝒜 d) S →ₗ[
+      HomogeneousLocalization 𝒜 S] DegreeZeroLocalization 𝒜 𝒜 S where
+  toFun z := by
+    refine ⟨twistInverseOfMulMem (f := f) d hfh • (z : LocalizedModule S A), ?_⟩
+    obtain ⟨c, hc⟩ := z.property
+    refine ⟨
+      { deg := c.deg + d * (1 + e)
+        num := ⟨(c.num : A) * h ^ d, ?_⟩
+        den := ⟨(c.den : A) * (f * h) ^ d, ?_⟩
+        den_mem := S.mul_mem c.den_mem (S.pow_mem hfh d) }, ?_⟩
+    · have hnum : (c.num : A) ∈ 𝒜 (c.deg + d) := c.num.2
+      simpa [Nat.mul_add, Nat.mul_comm, ← add_assoc] using
+        SetLike.mul_mem_graded hnum (SetLike.pow_mem_graded d h_deg)
+    · simpa using SetLike.mul_mem_graded c.den.2
+        (SetLike.pow_mem_graded d (SetLike.mul_mem_graded hf h_deg))
+    · rw [← hc]
+      change LocalizedModule.mk ((c.num : A) * h ^ d)
+        (⟨(c.den : A) * (f * h) ^ d, _⟩ : S) =
+          Localization.mk (h ^ d) (twistPowerOfMulMem (f := f) d hfh) •
+            LocalizedModule.mk (c.num : A) ⟨(c.den : A), c.den_mem⟩
+      rw [LocalizedModule.mk_smul_mk]
+      congr 1
+      · exact mul_comm _ _
+      · ext
+        exact mul_comm _ _
+  map_add' x y := by
+    apply ext
+    simp only [coe_add]
+    exact smul_add (twistInverseOfMulMem (f := f) d hfh)
+      (x : LocalizedModule S A) y
+  map_smul' a z := by
+    apply ext
+    simp only [coe_smul]
+    exact smul_comm (twistInverseOfMulMem (f := f) d hfh) a
+      (z : LocalizedModule S A)
+
+private theorem twistInverseOfMulMem_mul_forward {h : A} (hfh : f * h ∈ S) :
+    twistInverseOfMulMem (f := f) d hfh * twistForwardOfMem (S := S) (f := f) d = 1 := by
+  unfold twistInverseOfMulMem twistForwardOfMem twistPowerOfMulMem
+  rw [Localization.mk_mul]
+  have hnum : h ^ d * f ^ d = ((f * h) ^ d : A) := by
+    rw [mul_pow]; exact mul_comm _ _
+  rw [hnum]
+  simp
+
+/-- Multiplication and division by `f ^ d` are inverse whenever a homogeneous cofactor carries
+`f` into the denominator submonoid.  This is the form the Čech intersections need: there `f` is
+one variable and the cofactor is the product of the others. -/
+noncomputable def natShiftLinearEquivOfMulMem {h : A} {e : ℕ} (h_deg : h ∈ 𝒜 e)
+    (hfh : f * h ∈ S) :
+    DegreeZeroLocalization 𝒜 (natShift 𝒜 d) S ≃ₗ[
+      HomogeneousLocalization 𝒜 S] DegreeZeroLocalization 𝒜 𝒜 S where
+  toLinearMap := natShiftToSelfLinearMapOfMulMem 𝒜 hf d h_deg hfh
+  invFun := selfToNatShiftLinearMapOfMem (S := S) 𝒜 hf d
+  left_inv z := by
+    apply ext
+    change twistForwardOfMem (S := S) (f := f) d •
+      (twistInverseOfMulMem (f := f) d hfh • (z : LocalizedModule S A)) = z
+    rw [← mul_smul, mul_comm, twistInverseOfMulMem_mul_forward (f := f) d hfh, one_smul]
+  right_inv z := by
+    apply ext
+    change twistInverseOfMulMem (f := f) d hfh •
+      (twistForwardOfMem (S := S) (f := f) d • (z : LocalizedModule S A)) = z
+    rw [← mul_smul, twistInverseOfMulMem_mul_forward (f := f) d hfh, one_smul]
+
 /-- Multiplication and division by `f ^ d` give inverse degree-zero localization maps whenever
 `f` belongs to the denominator submonoid. -/
 noncomputable def natShiftLinearEquivOfMem (hfS : f ∈ S) :

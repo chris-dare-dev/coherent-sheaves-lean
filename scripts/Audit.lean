@@ -30,6 +30,12 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms CohLean.AlgebraicGeometry.Proj.DegreeZeroLocalization.selfLinearEquiv
 #print axioms CohLean.AlgebraicGeometry.Proj.DegreeZeroLocalization.natShiftSelfLinearEquiv
 #print axioms CohLean.AlgebraicGeometry.Proj.DegreeZeroLocalization.natShiftAwayLinearEquiv
+-- The trivialization needs f invertible in the localization, not a member of it. A
+-- homogeneous cofactor carrying f into S records that and keeps denominators inside S;
+-- h = 1 is the membership case. Required by the Cech intersections, where the denominator
+-- submonoid is .powers of a product and contains no degree-one element.
+#print axioms CohLean.AlgebraicGeometry.Proj.DegreeZeroLocalization.natShiftToSelfLinearMapOfMulMem
+#print axioms CohLean.AlgebraicGeometry.Proj.DegreeZeroLocalization.natShiftLinearEquivOfMulMem
 #print axioms CohLean.AlgebraicGeometry.Proj.DegreeZeroLocalization.natShiftLinearEquivOfMem
 #print axioms CohLean.AlgebraicGeometry.Proj.isLocallyFraction
 #print axioms CohLean.AlgebraicGeometry.Proj.associatedSheaf
