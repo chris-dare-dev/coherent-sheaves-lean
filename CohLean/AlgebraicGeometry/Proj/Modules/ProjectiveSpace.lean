@@ -268,6 +268,26 @@ theorem polynomialVariableFractionToGeneric_independent
   simp only [variableFractionToGeneric, polynomialVariableFraction,
     DegreeZeroLocalization.mapOfLE_mk]
 
+/-- The variables generate the polynomial ring over its degree-zero part.
+
+This is the hypothesis `degreeOneCharts_coversTop` takes, extracted from the cover proof below
+so that the twist results can consume it directly. -/
+theorem polynomialVariable_adjoin_eq_top (ι k : Type u) [Field k] :
+    Algebra.adjoin (polynomialGrading ι k 0)
+      (Set.range fun i => ((MvPolynomial.X i : MvPolynomial ι k))) = ⊤ := by
+  set S := Algebra.adjoin (polynomialGrading ι k 0)
+    (Set.range fun i => ((MvPolynomial.X i : MvPolynomial ι k))) with hS
+  apply top_unique
+  intro p hp
+  clear hp
+  induction p using MvPolynomial.induction_on with
+  | C r =>
+      exact S.algebraMap_mem
+        ⟨MvPolynomial.C r, MvPolynomial.isHomogeneous_C (σ := ι) r⟩
+  | add p q hp hq => exact S.add_mem hp hq
+  | mul_X p i hp =>
+      exact S.mul_mem hp (Algebra.subset_adjoin (Set.mem_range_self i))
+
 /-- The standard variable basic opens cover polynomial projective space. -/
 theorem polynomialVariableBasicOpen_cover (ι k : Type u) [Field k] :
     (⨆ i : ι, ProjectiveSpectrum.basicOpen (polynomialGrading ι k)
@@ -475,6 +495,17 @@ noncomputable def polynomialTwistingGlobalSectionsModuleIso
   let e := polynomialTwistingGlobalSectionsAddEquiv ι k d
   letI : Module k (polynomialTwistingGlobalSections ι k d) := e.symm.module k
   exact LinearEquiv.toModuleIso (e.symm.linearEquiv (A := k)).symm
+
+/-- Nonnegative twists on polynomial projective space are quasi-coherent.
+
+The variable charts have degree one and cover, which is exactly the hypothesis of
+`natShift_isQuasicoherent`.  No comparison on higher-degree charts is needed or available. -/
+theorem polynomialNatShift_isQuasicoherent (ι k : Type u) [Field k] (d : ℕ) :
+    (associatedSheaf (polynomialGrading ι k)
+      (natShift (polynomialGrading ι k) d)).IsQuasicoherent :=
+  natShift_isQuasicoherent (polynomialGrading ι k)
+    (fun i => ⟨MvPolynomial.X i, MvPolynomial.isHomogeneous_X k i⟩) d
+    (polynomialVariable_adjoin_eq_top ι k)
 
 /-! ## Degreewise algebra for the variable Čech cover -/
 

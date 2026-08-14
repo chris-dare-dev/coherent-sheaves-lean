@@ -30,6 +30,12 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms CohLean.AlgebraicGeometry.Proj.DegreeZeroLocalization.selfLinearEquiv
 #print axioms CohLean.AlgebraicGeometry.Proj.DegreeZeroLocalization.natShiftSelfLinearEquiv
 #print axioms CohLean.AlgebraicGeometry.Proj.DegreeZeroLocalization.natShiftAwayLinearEquiv
+-- The trivialization needs f invertible in the localization, not a member of it. A
+-- homogeneous cofactor carrying f into S records that and keeps denominators inside S;
+-- h = 1 is the membership case. Required by the Cech intersections, where the denominator
+-- submonoid is .powers of a product and contains no degree-one element.
+#print axioms CohLean.AlgebraicGeometry.Proj.DegreeZeroLocalization.natShiftToSelfLinearMapOfMulMem
+#print axioms CohLean.AlgebraicGeometry.Proj.DegreeZeroLocalization.natShiftLinearEquivOfMulMem
 #print axioms CohLean.AlgebraicGeometry.Proj.DegreeZeroLocalization.natShiftLinearEquivOfMem
 #print axioms CohLean.AlgebraicGeometry.Proj.isLocallyFraction
 #print axioms CohLean.AlgebraicGeometry.Proj.associatedSheaf
@@ -52,6 +58,32 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms CohLean.AlgebraicGeometry.Proj.localizedNatShiftDegreeOneIso
 #print axioms CohLean.AlgebraicGeometry.Proj.natShiftSectionLinearEquiv
 #print axioms CohLean.AlgebraicGeometry.Proj.moduleAwayToSection_natShift_degreeOne_bijective
+
+-- The degree-one chart trivialization holds over every open below D₊(f), not only over the
+-- chart itself: the underlying equivalence is pointwise and uses membership alone. The
+-- basic-open forms above are now the `le_rfl` case of these.
+#print axioms CohLean.AlgebraicGeometry.Proj.natShiftFiberLinearEquivOfMem
+#print axioms CohLean.AlgebraicGeometry.Proj.natShiftSectionToSelfOn
+#print axioms CohLean.AlgebraicGeometry.Proj.natShiftSectionFromSelfOn
+#print axioms CohLean.AlgebraicGeometry.Proj.natShiftSectionAddEquivOn
+#print axioms CohLean.AlgebraicGeometry.Proj.natShiftSectionLinearEquivOn
+-- The trivialization commutes with restriction, so it is a map of presheaves on the opens
+-- below the chart, not an unrelated family. This is what a sheaf-level chart isomorphism
+-- for O(d) will be assembled from.
+#print axioms CohLean.AlgebraicGeometry.Proj.natShiftSectionToSelfOn_map
+#print axioms CohLean.AlgebraicGeometry.Proj.natShiftSectionFromSelfOn_map
+#print axioms CohLean.AlgebraicGeometry.Proj.natShiftOverIso
+#print axioms CohLean.AlgebraicGeometry.Proj.standardAway_degreeOne_opensRange_le
+#print axioms CohLean.AlgebraicGeometry.Proj.natShiftLocalQuasicoherentData
+-- G1b: the variable cover of polynomial projective space is Cech-acyclic for every
+-- nonnegative twist, so the Cech-to-derived comparison applies to O(d).
+#print axioms CohLean.AlgebraicGeometry.Proj.polynomialVariable_coversTop
+#print axioms CohLean.AlgebraicGeometry.Proj.polynomialVariable_isCechAcyclicFor
+#print axioms CohLean.AlgebraicGeometry.Proj.polynomialVariable_isCechAcyclicCover
+#print axioms CohLean.AlgebraicGeometry.Proj.polynomialVariable_adjoin_eq_top
+#print axioms CohLean.AlgebraicGeometry.Proj.natShiftQuasicoherentData
+#print axioms CohLean.AlgebraicGeometry.Proj.natShift_isQuasicoherent
+#print axioms CohLean.AlgebraicGeometry.Proj.polynomialNatShift_isQuasicoherent
 #print axioms CohLean.AlgebraicGeometry.Proj.affineComparisonDataSelf
 #print axioms CohLean.AlgebraicGeometry.Proj.associatedSheaf_self_isQuasicoherent
 #print axioms CohLean.AlgebraicGeometry.Proj.AffineComparisonData.quasicoherentData
