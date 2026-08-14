@@ -3,6 +3,7 @@ Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under the MIT license.
 -/
 import BridgelandStabLean.Foundation.QuasiAbelian
+import BridgelandStabLean.Foundation.StabilityCondition
 import BridgelandStabLean.Foundation.Slicing.IntervalComparisons
 import Mathlib.CategoryTheory.ObjectProperty.FiniteProducts
 import Mathlib.CategoryTheory.Preadditive.LeftExact
@@ -495,6 +496,37 @@ theorem Slicing.IntervalCat.isFiniteLength_of_isStrictFiniteLength
   letI : IsStrictNoetherianObject E := hE.2
   exact ⟨Slicing.IntervalCat.isAdmissiblyArtinian_of_isStrictArtinian C s,
     Slicing.IntervalCat.isAdmissiblyNoetherian_of_isStrictNoetherian C s⟩
+
+/-- A uniform strict finite-length bound on normalized thin intervals gives
+owner local finiteness. -/
+theorem Slicing.IsLocallyFinite.of_strictFiniteLength (s : Slicing C)
+    {η : ℝ} (hη : 0 < η) (hη' : η < 1 / 2)
+    (hfinite : ∀ t : ℝ,
+      letI : Fact (t - η < t + η) := ⟨by linarith⟩
+      letI : Fact ((t + η) - (t - η) ≤ 1) := ⟨by linarith⟩
+      ∀ E : s.IntervalCat C (t - η) (t + η),
+        IsStrictFiniteLengthObject E) : s.IsLocallyFinite C := by
+  refine ⟨⟨η, hη, hη', fun t E ↦ ?_⟩⟩
+  letI : Fact (t - η < t + η) := ⟨by linarith⟩
+  letI : Fact ((t + η) - (t - η) ≤ 1) := ⟨by linarith⟩
+  exact Slicing.IntervalCat.isFiniteLength_of_isStrictFiniteLength
+    C s (hfinite t E)
+
+/-- Uniform finiteness of subobject lattices on normalized thin intervals
+gives owner local finiteness. -/
+theorem Slicing.IsLocallyFinite.of_finiteSubobjects (s : Slicing C)
+    {η : ℝ} (hη : 0 < η) (hη' : η < 1 / 2)
+    (hfinite : ∀ t : ℝ,
+      letI : Fact (t - η < t + η) := ⟨by linarith⟩
+      letI : Fact ((t + η) - (t - η) ≤ 1) := ⟨by linarith⟩
+      ∀ E : s.IntervalCat C (t - η) (t + η),
+        Finite (Subobject E)) : s.IsLocallyFinite C := by
+  apply Slicing.IsLocallyFinite.of_strictFiniteLength C s hη hη'
+  intro t
+  letI : Fact (t - η < t + η) := ⟨by linarith⟩
+  letI : Fact ((t + η) - (t - η) ≤ 1) := ⟨by linarith⟩
+  intro E
+  exact isStrictFiniteLengthObject_of_finite_subobjects (hfinite t E)
 
 /-- The left adjacent-heart embedding preserves the canonical interval
 kernel. -/
