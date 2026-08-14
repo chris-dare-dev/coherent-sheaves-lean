@@ -534,6 +534,7 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Foundation.Slicing.IntervalCat.exists_distinguished_of_strictShortExact
 #print axioms BridgelandStabLean.Foundation.Slicing.IntervalCat.strictShortExact_iff_exists_distinguished
 #print axioms BridgelandStabLean.Foundation.Slicing.IntervalCat.K₀_of_strictShortExact
+#print axioms BridgelandStabLean.Foundation.Slicing.IntervalCat.strictShortExact_inclusion
 #print axioms BridgelandStabLean.ForMathlib.CategoryTheory.Triangulated.TStructure.exists_distinguished_triangle_of_heart_epi
 #print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.skewedPhase_mem_enveloped_branch
 #print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.skewedPhase_gt_of_geProp
