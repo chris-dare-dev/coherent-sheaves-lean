@@ -55,9 +55,15 @@ Add new public theorems to the appropriate subsystem audit: `scripts/Audit.lean`
 for `CohLean` and `scripts/BridgelandAudit.lean` for `BridgelandStabLean`. Neither
 audit may report `sorryAx`; CI also re-elaborates tracked Lean files and emits the
 combined environment to catch declarations omitted from the hand-maintained audits.
-The environment linter is currently a gate for the vendored foundation and
-`BridgelandStabLean`. `CohLean` has a pre-existing documentation/naming linter
-backlog; do not blanket-suppress it as part of an unrelated contribution.
+The environment linter gates all three libraries. `CohLean`'s pre-existing
+backlog is enumerated per declaration in `scripts/nolints.json` rather than
+suppressed, so a new violation fails CI while the 203 known ones stay countable.
+Do not answer a linter failure with `lake exe runLinter --update`: it rewrites
+the file from the current run and would bless your violation along with the
+backlog. `scripts/check_nolints.py` fails if the list grows.
+
+Paying the backlog down is welcome as its own contribution — run
+`python3 scripts/check_nolints.py --relax` afterwards and lower the ceilings.
 
 The toolchain is pinned. When updating it, update the root and documentation package manifests
 and toolchain files together, then verify every shared dependency resolves to one revision.

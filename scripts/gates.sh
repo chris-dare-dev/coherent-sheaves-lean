@@ -71,6 +71,8 @@ gate bridgeland-audit bridgeland_audit
 if [ "$MODE" != "fast" ]; then
   gate runLinter-foundation lake exe runLinter BridgelandStability
   gate runLinter-stability lake exe runLinter BridgelandStabLean
+  gate runLinter-coh lake exe runLinter CohLean
+  gate nolints-ratchet python3 scripts/check_nolints.py
   gate lint-style lake exe lint-style
   gate pin python3 scripts/check_pin.py
   gate anchor-free python3 scripts/check_anchor_free.py

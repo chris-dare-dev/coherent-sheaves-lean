@@ -76,6 +76,14 @@ jobs:
           set -euo pipefail
           lake exe runLinter BridgelandStability
           lake exe runLinter BridgelandStabLean
+          # CohLean's pre-existing backlog is enumerated per declaration in
+          # scripts/nolints.json, so this gate rejects anything NEW while the
+          # 203 known violations stay visible and countable. Never silence a
+          # failure with `runLinter --update`: that rewrites the whole file
+          # from the current run and would bless the new violation along with
+          # everything else. Fix the declaration, or argue for the exception.
+          lake exe runLinter CohLean
+          python3 scripts/check_nolints.py
           lake exe lint-style
 
       - name: Anchor-free import boundary

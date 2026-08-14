@@ -78,9 +78,20 @@ lake build emit
 lake exe emit --out /tmp/derived-alg-geo-emission.json
 ```
 
-`CohLean` retains its build, axiom-audit, and source-elaboration gates. Its
-pre-existing documentation/naming linter backlog is not blanket-suppressed by
-the merge; treat that as separate maintenance work.
+`CohLean` is now under the environment linter too. Its pre-existing backlog is
+enumerated per declaration in `scripts/nolints.json` — 203 entries as of
+2026-08-14: 148 `docBlame`, 27 `unusedArguments`, 16 `defsWithUnderscore`,
+12 `simpNF` — so the gate rejects anything new while the backlog stays visible
+and countable.
+
+**Never resolve a linter failure with `lake exe runLinter --update`.** It
+rewrites the whole file from the current run and blesses the new violation
+along with everything else, turning the gate off without touching CI or any
+Lean file. `scripts/check_nolints.py` fails when the list grows, per linter and
+in total. Fix the declaration, or argue for the exception in review.
+
+When you do pay some of it down, run `python3 scripts/check_nolints.py --relax`
+and lower the ceilings it prints, so the ratchet holds the new ground.
 
 `scripts/gates.sh` runs that list in CI's order and prints one `GATE <name>:
 pass|FAIL` line per gate; `scripts/gates.sh fast` runs build, style, and the two
