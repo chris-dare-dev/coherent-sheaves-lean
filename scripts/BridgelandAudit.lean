@@ -332,6 +332,7 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Foundation.Slicing.zero_of_geProp_ltProp
 #print axioms BridgelandStabLean.Foundation.HNFiltration.zero
 #print axioms BridgelandStabLean.Foundation.HNFiltration.single
+#print axioms BridgelandStabLean.Foundation.HNFiltration.semistable_of_length_one
 #print axioms BridgelandStabLean.Foundation.HNFiltration.prefix
 #print axioms BridgelandStabLean.Foundation.HNFiltration.prefix_φ
 #print axioms BridgelandStabLean.Foundation.HNFiltration.appendFactor

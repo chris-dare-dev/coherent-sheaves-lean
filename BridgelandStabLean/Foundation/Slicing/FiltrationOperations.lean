@@ -61,6 +61,28 @@ def HNFiltration.single {P : ℝ → ObjectProperty C} (S : C) (φ : ℝ)
     subst hi
     exact hS
 
+/-- A one-factor HN filtration identifies its ambient object with its unique
+semistable factor. -/
+theorem HNFiltration.semistable_of_length_one
+    {P : ℝ → ObjectProperty C}
+    (hPiso : ∀ φ : ℝ, (P φ).IsClosedUnderIsomorphisms)
+    {Y : C} (G : HNFiltration C P Y) (hG : G.n = 1) :
+    P (G.φ ⟨0, by omega⟩) Y := by
+  let j : Fin G.n := ⟨0, by omega⟩
+  let T := G.triangle j
+  have hT₁ : IsZero T.obj₁ :=
+    IsZero.of_iso G.base_isZero (Classical.choice (G.triangle_obj₁ j))
+  haveI : IsIso T.mor₂ :=
+    (Triangle.isZero₁_iff_isIso₂ T (G.triangle_dist j)).mp hT₁
+  have htop : G.chain.obj' (0 + 1) (by omega) = G.chain.obj (Fin.last G.n) :=
+    congrArg G.chain.obj (Fin.ext (by simp [Fin.last, hG]))
+  let e : T.obj₂ ≅ Y :=
+    (Classical.choice (G.triangle_obj₂ j)).trans
+      ((eqToIso htop).trans (Classical.choice G.top_iso))
+  letI : (P (G.φ j)).IsClosedUnderIsomorphisms := hPiso (G.φ j)
+  exact (P (G.φ j)).prop_of_iso ((e.symm.trans (asIso T.mor₂)).symm)
+    (G.semistable j)
+
 /-- Keep the first `k` factors of an HN filtration. -/
 def HNFiltration.prefix {P : ℝ → ObjectProperty C} {E : C}
     (F : HNFiltration C P E) (k : ℕ) (hk : k ≤ F.n) (hk₀ : 0 < k) :
