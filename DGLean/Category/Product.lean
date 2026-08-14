@@ -13,9 +13,17 @@ product of the two Hom-complexes, with componentwise differential, identity and
 composition.
 
 Unlike the opposite, no sign enters: the product is a limit construction and
-every axiom holds componentwise. The work is entirely in exhibiting the product
-complex, because the ambient `ModuleCat` product has to be built rather than
-taken from an instance.
+every axiom holds componentwise. The work is entirely in getting Lean to see
+the Hom-objects as products. `AddCommGrpCat.of (_ × _)`'s carrier is opaque to
+instance search, so two techniques carry the file:
+
+* **Build at plain types.** `prodComp` is stated for arbitrary
+  `AddCommGroup`s and then applied to the carriers. Term elaboration unifies up
+  to defeq, so this works where instance search does not.
+* **Restate the projection lemmas where `simp` will match them.** `Prod.fst_add`
+  does not fire on `(dgHom X Y).X p`, because the operation carries the
+  carrier's instance rather than `Prod`'s. The `rfl` lemmas below say the same
+  thing at the type the goals actually have.
 -/
 
 set_option autoImplicit false
@@ -51,32 +59,129 @@ def prodComplex (K L : CochainComplex AddCommGrpCat.{v} ℤ) :
     apply Prod.ext <;>
       simp [prodD, ← AddCommGrpCat.comp_apply, K.d_comp_d p q r, L.d_comp_d p q r]
 
+/-!
+## Building the instance at plain types
+
+The obstacle the first attempt hit is that `((prodComplex K L).X p)` is
+`AddCommGrpCat.of (_ × _)`, whose carrier instance *search* will not see
+through. Term elaboration is a different matter: it unifies up to defeq, so a
+helper stated at plain types with `AddCommGroup` instances applies to those
+carriers without complaint.
+
+So the composition is built once, generically, and then applied. Nothing below
+asks instance search to recognise a carrier as a product.
+-/
+
+section Plain
+
+variable {A₁ A₂ B₁ B₂ M₁ M₂ : Type*} [AddCommGroup A₁] [AddCommGroup A₂]
+  [AddCommGroup B₁] [AddCommGroup B₂] [AddCommGroup M₁] [AddCommGroup M₂]
+
+/-- Componentwise biadditive composition on a pair of products. -/
+def prodComp (c₁ : A₁ →+ B₁ →+ M₁) (c₂ : A₂ →+ B₂ →+ M₂) :
+    (A₁ × A₂) →+ (B₁ × B₂) →+ (M₁ × M₂) :=
+  AddMonoidHom.mk' (fun a =>
+      AddMonoidHom.prod ((c₁ a.1).comp (AddMonoidHom.fst B₁ B₂))
+        ((c₂ a.2).comp (AddMonoidHom.snd B₁ B₂)))
+    (fun a a' => by ext b <;> simp)
+
+@[simp]
+lemma prodComp_apply (c₁ : A₁ →+ B₁ →+ M₁) (c₂ : A₂ →+ B₂ →+ M₂)
+    (a : A₁ × A₂) (b : B₁ × B₂) :
+    prodComp c₁ c₂ a b = (c₁ a.1 b.1, c₂ a.2 b.2) := rfl
+
+end Plain
+
 variable (C : Type u) (D : Type u') [DGCategory.{v} C] [DGCategory.{v} D]
 
-/-!
-## What is not here yet
+namespace DGCategory
 
-`prodComplex` is proved: it is a genuine cochain complex, with the differential
-and both obligations discharged. The `DGCategoryStruct` instance on `C × D` is
-**not** here, and no `sorry` stands in for it.
+/-- The product of two dg categories. -/
+instance prodStruct : DGCategoryStruct.{v} (C × D) where
+  dgHom X Y := prodComplex (dgHom X.1 Y.1) (dgHom X.2 Y.2)
+  dgId X := (dgId X.1, dgId X.2)
+  dgComp p q r h := prodComp (dgComp p q r h) (dgComp p q r h)
 
-The blocker is not the mathematics — every axiom of the product holds
-componentwise and no sign enters — but the same carrier opacity that
-`DGLean/Category/Instances.lean` documents, in a form the idiom there does not
-fix. `((prodComplex K L).X p)` is `AddCommGrpCat.of (_ × _)`, whose carrier
-instance search will not see through, so the four bilinearity obligations of
-`AddMonoidHom.mk'` cannot be discharged by `Prod.ext` and `simp`: the goal is not
-recognised as living in a product type at all. Pinning the type on the lemma
-works for a bare `exact` and pinning the binder works inside a field's lambda,
-but `mk₂`'s obligations are neither.
+variable {C D}
 
-The recommended fix is structural rather than tactical: build the product
-Hom-complex from Mathlib's biproduct API on `HomologicalComplex` instead of
-hand-rolling `AddCommGrpCat.of (_ × _)`, so that `.X p` arrives with the projection
-and injection API already attached. That is a construction change, so it is
-left for a deliberate decision rather than made here — and it is a third
-instance of the same underlying question the `dgHom` codomain raises on
-chris-dare-dev/derived-alg-geo-lean#337.
--/
+/-! `Prod.fst_add` and friends do not fire on `(prodComplex K L).X p`: the
+operations there carry the carrier's `AddCommGroup` instance, which is
+definitionally but not syntactically `Prod`'s. These `rfl` lemmas are stated at
+the carrier type so `simp` can match them. -/
+
+@[simp]
+lemma prod_fst_add {K L : CochainComplex AddCommGrpCat.{v} ℤ} {p : ℤ}
+    (a b : (prodComplex K L).X p) : (a + b).1 = a.1 + b.1 := rfl
+
+@[simp]
+lemma prod_snd_add {K L : CochainComplex AddCommGrpCat.{v} ℤ} {p : ℤ}
+    (a b : (prodComplex K L).X p) : (a + b).2 = a.2 + b.2 := rfl
+
+@[simp]
+lemma prod_fst_units_smul {K L : CochainComplex AddCommGrpCat.{v} ℤ} {p : ℤ}
+    (c : ℤˣ) (a : (prodComplex K L).X p) : (c • a).1 = c • a.1 := rfl
+
+@[simp]
+lemma prod_snd_units_smul {K L : CochainComplex AddCommGrpCat.{v} ℤ} {p : ℤ}
+    (c : ℤˣ) (a : (prodComplex K L).X p) : (c • a).2 = c • a.2 := rfl
+
+@[simp]
+lemma prod_d_apply {X Y : C × D} (p q : ℤ)
+    (f : ((dgHom X.1 Y.1).X p) × ((dgHom X.2 Y.2).X p)) :
+    ((dgHom (C := C × D) X Y).d p q).hom f =
+      ((((dgHom X.1 Y.1).d p q).hom f.1), (((dgHom X.2 Y.2).d p q).hom f.2)) := rfl
+
+/-! The same `rfl` lemmas again, stated at `(dgHom X Y).X p` for the product dg
+category. The `prodComplex`-level versions above do not fire here: the goal's
+type is `(dgHom X Y).X p` for the product instance, which is `prodComplex …`
+definitionally but not syntactically, and `simp` matches syntactically. -/
+
+@[simp]
+lemma dgProd_fst_add {X Y : C × D} {p : ℤ} (a b : (dgHom (C := C × D) X Y).X p) :
+    (a + b).1 = a.1 + b.1 := rfl
+
+@[simp]
+lemma dgProd_snd_add {X Y : C × D} {p : ℤ} (a b : (dgHom (C := C × D) X Y).X p) :
+    (a + b).2 = a.2 + b.2 := rfl
+
+@[simp]
+lemma dgProd_fst_units_smul {X Y : C × D} {p : ℤ} (c : ℤˣ)
+    (a : (dgHom (C := C × D) X Y).X p) : (c • a).1 = c • a.1 := rfl
+
+@[simp]
+lemma dgProd_snd_units_smul {X Y : C × D} {p : ℤ} (c : ℤˣ)
+    (a : (dgHom (C := C × D) X Y).X p) : (c • a).2 = c • a.2 := rfl
+
+@[simp]
+lemma prod_dgId (X : C × D) :
+    dgId (C := C × D) X = (dgId X.1, dgId X.2) := rfl
+
+@[simp]
+lemma prod_dgComp_apply {X Y Z : C × D} (p q r : ℤ) (h : p + q = r)
+    (f : ((dgHom X.1 Y.1).X p) × ((dgHom X.2 Y.2).X p))
+    (g : ((dgHom Y.1 Z.1).X q) × ((dgHom Y.2 Z.2).X q)) :
+    dgComp (C := C × D) p q r h f g =
+      (dgComp p q r h f.1 g.1, dgComp p q r h f.2 g.2) := rfl
+
+/-- The product dg category. Every axiom holds componentwise and no sign
+enters, so each proof is `Prod.ext` followed by the corresponding axiom in each
+factor. -/
+instance prod : DGCategory.{v} (C × D) where
+  dgComp_assoc p q r pq qr pqr hpq hqr hpqr f g h := by
+    subst hpq; subst hqr; subst hpqr
+    apply Prod.ext <;> simp [prod_dgComp_apply, dgComp_assoc]
+  dgId_comp p f := by
+    apply Prod.ext <;> simp [prod_dgComp_apply, prod_dgId, dgId_comp]
+  dgComp_id p f := by
+    apply Prod.ext <;> simp [prod_dgComp_apply, prod_dgId, dgComp_id]
+  dgId_cocycle X := by
+    simp only [prod_d_apply, prod_dgId, dgId_cocycle]
+    rfl
+  dgComp_leibniz p q r r' h hr f g := by
+    apply Prod.ext <;> simp [prod_d_apply, prod_dgComp_apply, dgComp_leibniz p q r r' h hr,
+      dgProd_fst_add, dgProd_snd_add, dgProd_fst_units_smul, dgProd_snd_units_smul]
+
+end DGCategory
+
 
 
