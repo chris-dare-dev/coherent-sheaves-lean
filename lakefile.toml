@@ -1,6 +1,6 @@
 name = "DerivedAlgGeoLean"
 version = "0.1.0"
-defaultTargets = ["DerivedAlgGeoLean"]
+defaultTargets = ["DerivedAlgGeoLean", "DGLean"]
 keywords = [
   "math", "algebraic-geometry", "derived-categories",
   "coherent-sheaves", "stability-conditions", "riemann-roch",
@@ -37,9 +37,12 @@ name = "CohLean"
 [[lean_lib]]
 name = "BridgelandStabLean"
 
-# Dg categories and enhancements. Built by CI from the moment it exists, but
-# deliberately not imported by DerivedAlgGeoLean.lean until the subsystem is
-# stable -- see DGLean.lean and ADR-0010.
+# Dg categories and enhancements. It is a default target so `lake build`
+# produces its oleans -- the "No declaration uses sorry" job runs
+# `lake env lean` over every tracked .lean file, and DGLean.lean cannot even
+# be read without them. Being a default target is separate from being imported
+# by DerivedAlgGeoLean.lean, which it deliberately is not until the subsystem
+# is stable; see DGLean.lean and ADR-0010.
 [[lean_lib]]
 name = "DGLean"
 
