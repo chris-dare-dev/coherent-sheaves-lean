@@ -84,7 +84,7 @@ lemma dgComp_units_smul_right {X Y Z : C} (p q r : ℤ) (h : p + q = r) (c : ℤ
     dgComp p q r h f (c • g) = c • dgComp p q r h f g := by
   simp [Units.smul_def, map_zsmul]
 
-/-- A morphism of `ModuleCat` commutes with the `ℤˣ` action, which factors
+/-- A morphism of `AddCommGrpCat` commutes with the `ℤˣ` action, which factors
 through `ℤ`. Stated so the sign bookkeeping below can stay in `ℤˣ` instead of
 dropping to `ℤ` and back. -/
 lemma hom_units_smul {M N : AddCommGrpCat.{v}} (φ : M ⟶ N) (c : ℤˣ) (x : M) :

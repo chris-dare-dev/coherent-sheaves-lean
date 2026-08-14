@@ -23,7 +23,8 @@ instance search, so two techniques carry the file:
 * **Restate the projection lemmas where `simp` will match them.** `Prod.fst_add`
   does not fire on `(dgHom X Y).X p`, because the operation carries the
   carrier's instance rather than `Prod`'s. The `rfl` lemmas below say the same
-  thing at the type the goals actually have.
+  thing at the type the goals actually have — and the type has to be exactly
+  that one, not the `prodComplex` it unfolds to.
 -/
 
 set_option autoImplicit false
@@ -104,37 +105,21 @@ instance prodStruct : DGCategoryStruct.{v} (C × D) where
 
 variable {C D}
 
-/-! `Prod.fst_add` and friends do not fire on `(prodComplex K L).X p`: the
-operations there carry the carrier's `AddCommGroup` instance, which is
-definitionally but not syntactically `Prod`'s. These `rfl` lemmas are stated at
-the carrier type so `simp` can match them. -/
-
-@[simp]
-lemma prod_fst_add {K L : CochainComplex AddCommGrpCat.{v} ℤ} {p : ℤ}
-    (a b : (prodComplex K L).X p) : (a + b).1 = a.1 + b.1 := rfl
-
-@[simp]
-lemma prod_snd_add {K L : CochainComplex AddCommGrpCat.{v} ℤ} {p : ℤ}
-    (a b : (prodComplex K L).X p) : (a + b).2 = a.2 + b.2 := rfl
-
-@[simp]
-lemma prod_fst_units_smul {K L : CochainComplex AddCommGrpCat.{v} ℤ} {p : ℤ}
-    (c : ℤˣ) (a : (prodComplex K L).X p) : (c • a).1 = c • a.1 := rfl
-
-@[simp]
-lemma prod_snd_units_smul {K L : CochainComplex AddCommGrpCat.{v} ℤ} {p : ℤ}
-    (c : ℤˣ) (a : (prodComplex K L).X p) : (c • a).2 = c • a.2 := rfl
-
 @[simp]
 lemma prod_d_apply {X Y : C × D} (p q : ℤ)
     (f : ((dgHom X.1 Y.1).X p) × ((dgHom X.2 Y.2).X p)) :
     ((dgHom (C := C × D) X Y).d p q).hom f =
       ((((dgHom X.1 Y.1).d p q).hom f.1), (((dgHom X.2 Y.2).d p q).hom f.2)) := rfl
 
-/-! The same `rfl` lemmas again, stated at `(dgHom X Y).X p` for the product dg
-category. The `prodComplex`-level versions above do not fire here: the goal's
-type is `(dgHom X Y).X p` for the product instance, which is `prodComplex …`
-definitionally but not syntactically, and `simp` matches syntactically. -/
+/-! `Prod.fst_add` and friends do not fire on these goals: the operations carry
+the carrier's `AddCommGroup` instance, which is definitionally but not
+syntactically `Prod`'s, and `simp` matches syntactically. These `rfl` lemmas say
+the same thing at the type the goals actually have.
+
+The type matters twice over. Stating them at `(prodComplex K L).X p` is not
+enough — the goals are about `(dgHom X Y).X p` for the product instance, which
+is `prodComplex …` definitionally and not syntactically, so those versions miss
+as well. They have to be stated exactly here. -/
 
 @[simp]
 lemma dgProd_fst_add {X Y : C × D} {p : ℤ} (a b : (dgHom (C := C × D) X Y).X p) :
@@ -182,6 +167,3 @@ instance prod : DGCategory.{v} (C × D) where
       dgProd_fst_add, dgProd_snd_add, dgProd_fst_units_smul, dgProd_snd_units_smul]
 
 end DGCategory
-
-
-

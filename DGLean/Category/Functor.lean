@@ -24,7 +24,7 @@ universe v u u' u''
 
 open CategoryTheory DGCategoryStruct
 
-/-- A dg functor between dg categories over `k`. -/
+/-- A dg functor between dg categories. -/
 structure DGFunctor (C : Type u) (D : Type u')
     [DGCategory.{v} C] [DGCategory.{v} D] where
   /-- The map on objects. -/
