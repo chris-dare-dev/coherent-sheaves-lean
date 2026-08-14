@@ -50,6 +50,12 @@ name = "DGLean"
 [[lean_lib]]
 name = "DerivedAlgGeoLean"
 
+# Sweep umbrella for `lake exe emit`. Separate from the stable umbrella because
+# the sorry gate must cover unstable and unimported code, which is exactly what
+# DerivedAlgGeoLean.lean is supposed to exclude. See DerivedAlgGeoSweep.lean.
+[[lean_lib]]
+name = "DerivedAlgGeoSweep"
+
 # The coherent-sheaf and stability-condition audits remain independent so
 # their historical declaration lists and truncation checks stay meaningful.
 [[lean_lib]]

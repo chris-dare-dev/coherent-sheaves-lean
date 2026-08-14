@@ -76,7 +76,16 @@ python3 scripts/check_anchor_free.py
 python3 scripts/check_coverage_map.py
 lake build emit
 lake exe emit --out /tmp/derived-alg-geo-emission.json
+python3 scripts/check_emission_coverage.py /tmp/derived-alg-geo-emission.json
 ```
+
+`lake exe emit` is the repository-wide `sorry` gate: it sweeps every constant of
+every module below `DerivedAlgGeoSweep.lean` and exits non-zero on `sorryAx`.
+Adding a library root to `lakefile.toml` does **not** gate it — the emitter
+imports `rootLib` and nothing else, so an unimported root contributes zero
+constants and passes vacuously. Import every new root into
+`DerivedAlgGeoSweep.lean`; `scripts/check_emission_coverage.py` fails when a
+tracked module is missing from the emission.
 
 `CohLean` is now under the environment linter too. Its pre-existing backlog is
 enumerated per declaration in `scripts/nolints.json` — 203 entries as of
