@@ -69,6 +69,11 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms CohLean.AlgebraicGeometry.Proj.natShiftOverIso
 #print axioms CohLean.AlgebraicGeometry.Proj.standardAway_degreeOne_opensRange_le
 #print axioms CohLean.AlgebraicGeometry.Proj.natShiftLocalQuasicoherentData
+-- G1b: the variable cover of polynomial projective space is Cech-acyclic for every
+-- nonnegative twist, so the Cech-to-derived comparison applies to O(d).
+#print axioms CohLean.AlgebraicGeometry.Proj.polynomialVariable_coversTop
+#print axioms CohLean.AlgebraicGeometry.Proj.polynomialVariable_isCechAcyclicFor
+#print axioms CohLean.AlgebraicGeometry.Proj.polynomialVariable_isCechAcyclicCover
 #print axioms CohLean.AlgebraicGeometry.Proj.degreeOneCharts_coversTop
 #print axioms CohLean.AlgebraicGeometry.Proj.natShiftQuasicoherentData
 #print axioms CohLean.AlgebraicGeometry.Proj.natShift_isQuasicoherent
