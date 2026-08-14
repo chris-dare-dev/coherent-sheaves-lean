@@ -82,5 +82,38 @@ lake exe emit --out /tmp/derived-alg-geo-emission.json
 pre-existing documentation/naming linter backlog is not blanket-suppressed by
 the merge; treat that as separate maintenance work.
 
+`scripts/gates.sh` runs that list in CI's order and prints one `GATE <name>:
+pass|FAIL` line per gate; `scripts/gates.sh fast` runs build, style, and the two
+axiom audits only.
+
 Review `git status` before staging. Keep transient `ROADMAP.md` and `HANDOFF.md`
 files outside Git.
+
+## Mathlib conventions
+
+`.claude/references/mathlib-style.md` is the standard: what CI already checks,
+what only a reviewer can check, and the deltas this repository keeps on purpose.
+Read it before writing Lean.
+
+`scripts/check_mathlib_style.py` runs after every `Write`/`Edit` of an
+owner-authored `.lean` file (see `.claude/settings.json`) and blocks on
+convention errors. It covers the gap CI leaves: `runLinter` is wired to
+`BridgelandStability` and `BridgelandStabLean` only, so `CohLean` and the
+umbrella are otherwise unlinted.
+
+The `mathlib-reviewer` agent reviews a branch diff for the conventions no script
+can check — names that do not transcribe their statement, and docstrings that
+restate the signature instead of explaining it.
+
+## Unattended runs
+
+Two skills, one iteration each, both halting before anything a human should
+decide. Pair either with `/loop` for repeats.
+
+- `land-pr` works the open PR queue, which is where the work is actually stuck.
+  `scripts/pr_queue.py` ranks it. The queue is a cumulative stack — every branch
+  is based on `main` but each slice contains its predecessors, so land the
+  smallest diff first and never the tip. It never merges.
+- `formalize-issue` claims an unclaimed issue and takes it to a PR. Check
+  `scripts/pr_queue.py` first: an issue with an open PR is not unclaimed, and
+  most of them have one.
