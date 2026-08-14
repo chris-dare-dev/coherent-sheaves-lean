@@ -200,6 +200,20 @@ def HNFiltration.appendFactor {P : ℝ → ObjectProperty C} {Y Z : C}
         · exact G.semistable ⟨i, h⟩
         · exact hψ }
 
+/-- Splice a one-factor quotient filtration onto an HN filtration across a
+distinguished triangle. -/
+def HNFiltration.appendLengthOne
+    {P : ℝ → ObjectProperty C}
+    (hPiso : ∀ φ : ℝ, (P φ).IsClosedUnderIsomorphisms)
+    {X E Y : C} (GX : HNFiltration C P X) (GY : HNFiltration C P Y)
+    (hGY : GY.n = 1)
+    (f : X ⟶ E) (g : E ⟶ Y) (h : Y ⟶ X⟦(1 : ℤ)⟧)
+    (hT : Triangle.mk f g h ∈ distTriang C)
+    (hsep : ∀ j : Fin GX.n, GY.φ ⟨0, by omega⟩ < GX.φ j) :
+    HNFiltration C P E :=
+  GX.appendFactor C (Triangle.mk f g h) hT (Iso.refl _) (Iso.refl _)
+    (GY.φ ⟨0, by omega⟩) (GY.semistable_of_length_one C hPiso hGY) hsep
+
 /-- Shift every stage and factor of an HN filtration. -/
 def HNFiltration.shift (s : Slicing C) {E : C}
     (F : HNFiltration C s.P E) (a : ℤ) : HNFiltration C s.P (E⟦a⟧) where
