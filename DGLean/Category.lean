@@ -6,6 +6,7 @@ import DGLean.Category.Basic
 import DGLean.Category.Functor
 import DGLean.Category.Instances
 import DGLean.Category.Opposite
+import DGLean.Category.Product
 
 /-!
 # The dg-category subsystem
