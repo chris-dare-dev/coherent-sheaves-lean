@@ -18,6 +18,8 @@ where state is one of:
     FIX        CI red. The failure is the work.
     CONFLICT   Behind main in a file another open PR also touches. Rebase first.
     SKIP       Draft with no commits, or explicitly parked.
+    DONE       A landing iteration already gated and reviewed this exact head.
+               Waiting on a human to merge; sorts last so the loop moves on.
 
 A PR that touches the loop's own machinery -- the gate scripts, the edit hook,
 the skills, this file -- is flagged BOOTSTRAP and sorts ahead of every state.
@@ -35,7 +37,27 @@ import sys
 from collections import Counter
 
 REPO = "chris-dare-dev/derived-alg-geo-lean"
-FIELDS = "number,title,headRefName,isDraft,mergeable,additions,files,statusCheckRollup,createdAt"
+FIELDS = (
+    "number,title,headRefName,isDraft,mergeable,additions,files,statusCheckRollup,"
+    "createdAt,headRefOid,comments"
+)
+
+# The landing loop halts before the merge, by design. Without a marker it would
+# therefore re-pick the same head PR on every wakeup and re-run a full build to
+# reach the same verdict. A loop verdict comment quotes the head commit it was
+# written against, so a PR counts as DONE only until someone pushes to it --
+# a new commit invalidates the marker and the PR returns to the queue.
+DONE_MARKER = "Run by the `land-pr` loop"
+
+
+def already_landed(pr: dict) -> bool:
+    head = (pr.get("headRefOid") or "")[:7]
+    if not head:
+        return False
+    return any(
+        DONE_MARKER in (c.get("body") or "") and head in (c.get("body") or "")
+        for c in (pr.get("comments") or [])
+    )
 
 # A PR that changes the machinery the landing loop itself runs on sorts ahead of
 # everything, whatever its size. Until it is on `main`, every later iteration is
@@ -76,6 +98,8 @@ def rollup(pr: dict) -> str:
 
 def classify(pr: dict, contested: set[str]) -> tuple[str, list[str]]:
     overlap = sorted({f for f in pr["_paths"] if f in contested})
+    if already_landed(pr):
+        return "DONE", overlap
     if pr.get("mergeable") == "CONFLICTING":
         return "CONFLICT", overlap
     if pr["additions"] == 0:
@@ -88,7 +112,7 @@ def classify(pr: dict, contested: set[str]) -> tuple[str, list[str]]:
     return state, overlap
 
 
-ORDER = {"READY": 0, "GATE": 1, "FIX": 2, "CONFLICT": 3, "SKIP": 4}
+ORDER = {"READY": 0, "GATE": 1, "FIX": 2, "CONFLICT": 3, "SKIP": 4, "DONE": 5}
 
 
 def main(argv: list[str]) -> int:
