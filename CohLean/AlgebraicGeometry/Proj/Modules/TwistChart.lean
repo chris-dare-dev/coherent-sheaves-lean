@@ -114,6 +114,34 @@ noncomputable def natShiftSectionFromSelf {f : A} (hf : f ∈ 𝒜 1) (d : ℕ)
       (op (ProjectiveSpectrum.basicOpen 𝒜 f)) :=
   natShiftSectionFromSelfOn 𝒜 hf d le_rfl s
 
+/-- Dividing by `f ^ d` commutes with restriction to a smaller open.
+
+This is what makes the pointwise trivialization a map of presheaves rather than a family of
+unrelated maps: restriction in `M̃` is precomposition of the underlying function, and the
+trivialization is applied pointwise, so the two operations do not interact. -/
+theorem natShiftSectionToSelfOn_map {f : A} (hf : f ∈ 𝒜 1) (d : ℕ)
+    {U U' : Opens X} (hU : U ≤ ProjectiveSpectrum.basicOpen 𝒜 f) (hU' : U' ≤ U)
+    (s : (associatedSheafInType 𝒜 (natShift 𝒜 d)).1.obj (op U)) :
+    (associatedSheafInType 𝒜 𝒜).1.map (homOfLE hU').op
+        (natShiftSectionToSelfOn 𝒜 hf d hU s) =
+      natShiftSectionToSelfOn 𝒜 hf d (hU'.trans hU)
+        ((associatedSheafInType 𝒜 (natShift 𝒜 d)).1.map (homOfLE hU').op s) := by
+  apply section_ext
+  funext x
+  rfl
+
+/-- Multiplying by `f ^ d` commutes with restriction to a smaller open. -/
+theorem natShiftSectionFromSelfOn_map {f : A} (hf : f ∈ 𝒜 1) (d : ℕ)
+    {U U' : Opens X} (hU : U ≤ ProjectiveSpectrum.basicOpen 𝒜 f) (hU' : U' ≤ U)
+    (s : (associatedSheafInType 𝒜 𝒜).1.obj (op U)) :
+    (associatedSheafInType 𝒜 (natShift 𝒜 d)).1.map (homOfLE hU').op
+        (natShiftSectionFromSelfOn 𝒜 hf d hU s) =
+      natShiftSectionFromSelfOn 𝒜 hf d (hU'.trans hU)
+        ((associatedSheafInType 𝒜 𝒜).1.map (homOfLE hU').op s) := by
+  apply section_ext
+  funext x
+  rfl
+
 /-- Over any open contained in `D₊(f)`, a nonnegative twist is additively equivalent to the
 structure module when `f` has degree one. -/
 noncomputable def natShiftSectionAddEquivOn {f : A} (hf : f ∈ 𝒜 1) (d : ℕ)

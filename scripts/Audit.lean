@@ -61,6 +61,11 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms CohLean.AlgebraicGeometry.Proj.natShiftSectionFromSelfOn
 #print axioms CohLean.AlgebraicGeometry.Proj.natShiftSectionAddEquivOn
 #print axioms CohLean.AlgebraicGeometry.Proj.natShiftSectionLinearEquivOn
+-- The trivialization commutes with restriction, so it is a map of presheaves on the opens
+-- below the chart, not an unrelated family. This is what a sheaf-level chart isomorphism
+-- for O(d) will be assembled from.
+#print axioms CohLean.AlgebraicGeometry.Proj.natShiftSectionToSelfOn_map
+#print axioms CohLean.AlgebraicGeometry.Proj.natShiftSectionFromSelfOn_map
 #print axioms CohLean.AlgebraicGeometry.Proj.affineComparisonDataSelf
 #print axioms CohLean.AlgebraicGeometry.Proj.associatedSheaf_self_isQuasicoherent
 #print axioms CohLean.AlgebraicGeometry.Proj.AffineComparisonData.quasicoherentData
