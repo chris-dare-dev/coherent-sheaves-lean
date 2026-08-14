@@ -27,6 +27,7 @@ MulAction (GLTilde × AutPairQuot v)
 ```
 -/
 
+open BridgelandStabLean.Foundation
 open CategoryTheory CategoryTheory.Limits CategoryTheory.Pretriangulated
 open CategoryTheory.Triangulated
 
@@ -85,7 +86,7 @@ noncomputable instance combinedMulAction :
 theorem prod_mk_smul_slicing (x : GLTilde) (a : AutPair v)
     (σ : StabilityCondition.WithClassMap C v) :
     ((x, AutPairQuot.mk a) • σ).slicing =
-      x • σ.slicing.mapEquiv a.Φ.e := rfl
+      x • BridgelandStabLean.Foundation.Slicing.mapEquiv σ.slicing a.Φ.e := rfl
 
 @[simp]
 theorem prod_mk_smul_Z (x : GLTilde) (a : AutPair v)

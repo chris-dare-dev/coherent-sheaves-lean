@@ -25,10 +25,11 @@ definition.  In the ordinary specialization `StabilityCondition C`, the class
 map is the identity and separation is unconditional.
 -/
 
+open BridgelandStabLean.Foundation
 open CategoryTheory CategoryTheory.Limits CategoryTheory.Pretriangulated Complex
 open scoped ENNReal ZeroObject
 
-namespace CategoryTheory.Triangulated
+namespace BridgelandStabLean.Foundation
 
 noncomputable section
 
@@ -39,6 +40,7 @@ variable {C : Type u} [Category.{w} C] [HasZeroObject C] [HasShift C ℤ]
   [IsTriangulated C]
 variable {Λ : Type u'} [AddCommGroup Λ] {v : K₀ C →+ Λ}
 
+omit [IsTriangulated C] in
 /-- Every objectwise term vanishes when the full distance vanishes. -/
 theorem stabilityDistTerm_eq_zero_of_eq_zero
     {σ τ : StabilityCondition.WithClassMap C v}
@@ -51,6 +53,7 @@ theorem stabilityDistTerm_eq_zero_of_eq_zero
   rw [hd] at hle
   exact le_antisymm hle zero_le
 
+omit [IsTriangulated C] in
 /-- Distance zero identifies the intrinsic highest phase of every nonzero
 object. -/
 theorem phiPlus_eq_of_stabilityDist_eq_zero
@@ -64,6 +67,7 @@ theorem phiPlus_eq_of_stabilityDist_eq_zero
   simpa only [phiPlusDist, ENNReal.ofReal_eq_zero, abs_nonpos_iff,
     sub_eq_zero] using hcoord
 
+omit [IsTriangulated C] in
 /-- Distance zero identifies the intrinsic lowest phase of every nonzero
 object. -/
 theorem phiMinus_eq_of_stabilityDist_eq_zero
@@ -101,6 +105,7 @@ theorem stabilityMass_toReal_eq_norm_charge
   rw [stabilityMass_eq_ofReal_norm_charge σ hP]
   exact ENNReal.toReal_ofReal (norm_nonneg _)
 
+omit [IsTriangulated C] in
 /-- Distance zero identifies the two slicings. -/
 theorem slicing_eq_of_stabilityDist_eq_zero
     {σ τ : StabilityCondition.WithClassMap C v}
@@ -111,7 +116,7 @@ theorem slicing_eq_of_stabilityDist_eq_zero
   constructor
   · intro hσ
     by_cases hE : IsZero E
-    · exact τ.slicing.zero_mem' C φ E hE
+    · exact τ.slicing.zero_mem_of_isZero C φ E hE
     have hp := phiPlus_eq_of_stabilityDist_eq_zero hd E hE
     have hm := phiMinus_eq_of_stabilityDist_eq_zero hd E hE
     have hσphase := σ.slicing.phiPlus_eq_phiMinus_of_semistable C hσ hE
@@ -121,7 +126,7 @@ theorem slicing_eq_of_stabilityDist_eq_zero
     simpa only [← hp, hσphase.1] using hτ
   · intro hτ
     by_cases hE : IsZero E
-    · exact σ.slicing.zero_mem' C φ E hE
+    · exact σ.slicing.zero_mem_of_isZero C φ E hE
     have hp := phiPlus_eq_of_stabilityDist_eq_zero hd E hE
     have hm := phiMinus_eq_of_stabilityDist_eq_zero hd E hE
     have hτphase := τ.slicing.phiPlus_eq_phiMinus_of_semistable C hτ hE
@@ -217,4 +222,4 @@ theorem stabilityConditionDist_eq_zero_iff
 
 end
 
-end CategoryTheory.Triangulated
+end BridgelandStabLean.Foundation

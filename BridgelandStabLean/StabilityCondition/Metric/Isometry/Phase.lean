@@ -3,7 +3,7 @@ Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under the MIT license.
 -/
 import BridgelandStabLean.StabilityCondition.Symmetry.Autoequivalence.Stability.ClassMap
-import BridgelandStability.StabilityCondition.Defs
+import BridgelandStabLean.Foundation
 import MathFormalContract
 
 /-!
@@ -62,10 +62,13 @@ supremum needs. `≤` sends `E` to `Φ⁻¹ E`; `≥` sends `E` to `Φ E` and th
 `phiPlus_congr` exists at all.
 -/
 
+open BridgelandStabLean.Foundation
 open CategoryTheory CategoryTheory.Limits CategoryTheory.Pretriangulated
 open scoped ENNReal
 
-namespace CategoryTheory.Triangulated
+namespace BridgelandStabLean.Foundation
+
+open BridgelandStabLean.Foundation
 
 universe w u
 
@@ -82,8 +85,10 @@ because the `≥` half of the isometry cannot be written without it. -/
 theorem Slicing.phiPlus_congr (s : Slicing C) {E E' : C} (e : E ≅ E')
     (hE : ¬IsZero E) (hE' : ¬IsZero E') :
     s.phiPlus C E hE = s.phiPlus C E' hE' := by
-  obtain ⟨F, hn, hfirst, _⟩ := HNFiltration.exists_both_nonzero C s hE
-  rw [s.phiPlus_eq C E hE F hn hfirst, s.phiPlus_eq C E' hE' (F.ofIso C e) hn hfirst]
+  obtain ⟨F, hn, hfirst, _⟩ := s.exists_hn_nonzero_boundaries C hE
+  rw [s.phiPlus_eq C E hE F hn hfirst,
+    s.phiPlus_eq C E' hE'
+      (BridgelandStabLean.Foundation.HNFiltration.ofIso C F e) hn hfirst]
   -- `ofIso` retargets `top_iso` and copies everything else, `φ` included.
   rfl
 
@@ -91,8 +96,10 @@ theorem Slicing.phiPlus_congr (s : Slicing C) {E E' : C} (e : E ≅ E')
 theorem Slicing.phiMinus_congr (s : Slicing C) {E E' : C} (e : E ≅ E')
     (hE : ¬IsZero E) (hE' : ¬IsZero E') :
     s.phiMinus C E hE = s.phiMinus C E' hE' := by
-  obtain ⟨F, hn, _, hlast⟩ := HNFiltration.exists_both_nonzero C s hE
-  rw [s.phiMinus_eq C E hE F hn hlast, s.phiMinus_eq C E' hE' (F.ofIso C e) hn hlast]
+  obtain ⟨F, hn, _, hlast⟩ := s.exists_hn_nonzero_boundaries C hE
+  rw [s.phiMinus_eq C E hE F hn hlast,
+    s.phiMinus_eq C E' hE'
+      (BridgelandStabLean.Foundation.HNFiltration.ofIso C F e) hn hlast]
   rfl
 
 section Aut
@@ -135,13 +142,15 @@ distance is not preserved at all. -/
 theorem mapEquiv_phiPlus (s : Slicing C) (E : C)
     (hE : ¬IsZero E) (hE' : ¬IsZero (Φ.inverse.obj E)) :
     (s.mapEquiv Φ).phiPlus C E hE = s.phiPlus C (Φ.inverse.obj E) hE' := by
-  obtain ⟨F, hn, hfirst, _⟩ := HNFiltration.exists_both_nonzero C s hE'
+  obtain ⟨F, hn, hfirst, _⟩ := s.exists_hn_nonzero_boundaries C hE'
   -- Push `F` forward through `Φ` and land it on `E` via the counit. This is the
   -- same filtration `mapEquiv.hn_exists` builds; `mapF` and `ofIso` both leave
   -- `n`, `φ` and the triangles alone, so its phases are literally `F.φ`.
-  set G := (F.mapF (P' := fun φ X => s.P φ (Φ.inverse.obj X)) Φ.functor
-      (fun _ X h => ObjectProperty.prop_of_iso _ (Φ.unitIso.app X) h)).ofIso C
-        (Φ.counitIso.app E) with hG
+  set G := BridgelandStabLean.Foundation.HNFiltration.ofIso C
+      (BridgelandStabLean.Foundation.HNFiltration.mapF F
+        (P' := fun φ X => s.P φ (Φ.inverse.obj X)) Φ.functor
+        (fun _ X h => ObjectProperty.prop_of_iso _ (Φ.unitIso.app X) h))
+      (Φ.counitIso.app E) with hG
   have hnG : 0 < G.n := hn
   have hneG : ¬IsZero (G.triangle ⟨0, hnG⟩).obj₃ := fun h =>
     hfirst ((isZero_functor_iff Φ _).mp h)
@@ -154,10 +163,12 @@ theorem mapEquiv_phiPlus (s : Slicing C) (E : C)
 theorem mapEquiv_phiMinus (s : Slicing C) (E : C)
     (hE : ¬IsZero E) (hE' : ¬IsZero (Φ.inverse.obj E)) :
     (s.mapEquiv Φ).phiMinus C E hE = s.phiMinus C (Φ.inverse.obj E) hE' := by
-  obtain ⟨F, hn, _, hlast⟩ := HNFiltration.exists_both_nonzero C s hE'
-  set G := (F.mapF (P' := fun φ X => s.P φ (Φ.inverse.obj X)) Φ.functor
-      (fun _ X h => ObjectProperty.prop_of_iso _ (Φ.unitIso.app X) h)).ofIso C
-        (Φ.counitIso.app E) with hG
+  obtain ⟨F, hn, _, hlast⟩ := s.exists_hn_nonzero_boundaries C hE'
+  set G := BridgelandStabLean.Foundation.HNFiltration.ofIso C
+      (BridgelandStabLean.Foundation.HNFiltration.mapF F
+        (P' := fun φ X => s.P φ (Φ.inverse.obj X)) Φ.functor
+        (fun _ X h => ObjectProperty.prop_of_iso _ (Φ.unitIso.app X) h))
+      (Φ.counitIso.app E) with hG
   have hnG : 0 < G.n := hn
   have hneG : ¬IsZero (G.triangle ⟨G.n - 1, by lia⟩).obj₃ := fun h =>
     hlast ((isZero_functor_iff Φ _).mp h)
@@ -262,4 +273,4 @@ theorem AutPairQuot_smul_slicingDist (g : BridgelandStabLean.GroupAction.AutPair
 
 end StabilityConditions
 
-end CategoryTheory.Triangulated
+end BridgelandStabLean.Foundation

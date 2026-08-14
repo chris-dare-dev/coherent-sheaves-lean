@@ -7,7 +7,7 @@ import BridgelandStabLean.StabilityCondition.Symmetry.GLTilde.ComplexRepresentat
 -- `.Basic`, not just `.Defs`: `PreStabilityCondition.WithClassMap.ext` is
 -- declared there, and the auto-generated structure `ext` will not do — it
 -- would demand equality of the `compat'` proofs.
-import BridgelandStability.StabilityCondition.Basic
+import BridgelandStabLean.Foundation
 
 /-!
 # The lifted linear action on prestability conditions
@@ -31,16 +31,16 @@ This synchronization is precisely the role of `Compatible`.
 ## Not yet a stability condition
 
 `StabilityCondition.WithClassMap` additionally carries `locallyFinite`, and
-preserving it is a genuine analysis argument, not bookkeeping — see
-`notes/dependencies/BridgelandStabilityAPI.md` §4 and the sibling stability-action module.
+preserving it is a genuine analysis argument, not bookkeeping; the sibling
+stability-action module supplies it.
 
-Note this file does **not** need `[IsTriangulated C]`: the foundational library declares it
-at file scope in `StabilityCondition/Defs.lean` but
+Note this file does **not** need `[IsTriangulated C]`:
 `PreStabilityCondition.WithClassMap` does not depend on it.
 -/
 
 namespace BridgelandStabLean.GroupAction
 
+open BridgelandStabLean.Foundation
 open CategoryTheory CategoryTheory.Limits CategoryTheory.Pretriangulated
 open CategoryTheory.Triangulated
 
@@ -58,10 +58,10 @@ def actPre (x : GLTilde) (σ : PreStabilityCondition.WithClassMap C v) :
     PreStabilityCondition.WithClassMap C v where
   slicing := x • σ.slicing
   Z := (actC x.mat).toAddMonoidHom.comp σ.Z
-  compat' φ E hP hE := by
+  compatible φ E hP hE := by
     -- `hP : (x • σ.slicing).P φ E` is *definitionally* `σ.slicing.P (f⁻¹ φ) E`,
     -- which is why it can be handed straight to the old `compat'`.
-    obtain ⟨m, hm, hZ⟩ := σ.compat' (x.shift⁻¹.toOrderIso φ) E hP hE
+    obtain ⟨m, hm, hZ⟩ := σ.compatible (x.shift⁻¹.toOrderIso φ) E hP hE
     obtain ⟨r, hr, hr'⟩ := actC_exp x.compat (x.shift⁻¹.toOrderIso φ)
     have hψ : x.shift.toOrderIso (x.shift⁻¹.toOrderIso φ) = φ := by
       rw [NormalizedShift.inv_apply, OrderIso.apply_symm_apply]

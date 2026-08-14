@@ -11,7 +11,7 @@ import BridgelandStabLean.Foundation.Slicing.FiltrationOperations
 Strict maximal destabilizing quotients have kernels whose proper strict
 quotients have larger phase.  Strict-Artinian induction on those kernels then
 constructs finite Harder--Narasimhan filtrations without importing the frozen
-`BridgelandStability` package.
+external implementation.
 -/
 
 noncomputable section
@@ -25,6 +25,7 @@ namespace BridgelandStabLean.Foundation.Deformation
 open BridgelandStabLean.Foundation
 open BridgelandStabLean.ForMathlib.CategoryTheory
 open BridgelandStabLean.ForMathlib.CategoryTheory.Triangulated.TStructure
+open CategoryTheory.Triangulated.TStructure
 
 variable (C : Type u) [Category.{v} C] [HasZeroObject C] [HasShift C ℤ]
   [Preadditive C] [∀ n : ℤ, (shiftFunctor C n).Additive]

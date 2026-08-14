@@ -17,7 +17,7 @@ Declarations use their natural mathematical namespaces. Put coherent-sheaf and
 numerical algebraic-geometry code below `CohLean`, and stability-condition code
 below `BridgelandStabLean`. Put future derived-category and Fourier–Mukai
 libraries below their dedicated roots once their first theorem lands. Never add
-owner-authored code below `vendor/`.
+an external stability source or bridge root; CI enforces literal source independence.
 
 One issue should normally own one leaf path. Avoid unrelated refactors in a feature change;
 open a separate issue when another subsystem needs work.
@@ -41,11 +41,10 @@ lake build
 lake env lean scripts/Audit.lean
 lake env lean scripts/BridgelandAudit.lean > /tmp/bridgeland-audit.txt 2>&1
 python3 scripts/check_audit.py /tmp/bridgeland-audit.txt
-lake exe runLinter BridgelandStability
 lake exe runLinter BridgelandStabLean
 lake exe lint-style
 python3 scripts/check_pin.py
-python3 scripts/check_anchor_free.py
+python3 scripts/check_source_independence.py
 python3 scripts/check_coverage_map.py
 lake build emit
 lake exe emit --out /tmp/derived-alg-geo-emission.json

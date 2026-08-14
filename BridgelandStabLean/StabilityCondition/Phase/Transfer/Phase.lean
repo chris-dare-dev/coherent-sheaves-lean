@@ -17,12 +17,13 @@ clause of Remark 3.14(3) of arXiv:2607.28411v1 at the categorical level.
 
 noncomputable section
 
+open BridgelandStabLean.Foundation
 open CategoryTheory CategoryTheory.Limits CategoryTheory.Pretriangulated
 open scoped ZeroObject
 
 universe v₁ u₁ v₂ u₂
 
-namespace CategoryTheory.Triangulated
+namespace BridgelandStabLean.Foundation
 
 variable {C : Type u₁} [Category.{v₁} C] [HasZeroObject C] [HasShift C ℤ]
   [Preadditive C] [∀ n : ℤ, (shiftFunctor C n).Additive] [Pretriangulated C]
@@ -70,7 +71,7 @@ the same phases in the target slicing. -/
 def HNFiltration.mapPreimage {E : C}
     (Fil : HNFiltration C (s.preimage F h).P E) :
     HNFiltration D s.P (F.obj E) :=
-  Fil.mapF F (fun _ _ hE => hE)
+  BridgelandStabLean.Foundation.HNFiltration.mapF Fil F (fun _ _ hE => hE)
 
 @[simp]
 theorem HNFiltration.mapPreimage_n {E : C}
@@ -88,7 +89,7 @@ theorem Slicing.preimage_phiPlus (hzero : ReflectsZeroObjects F)
     (s.preimage F h).phiPlus C E hE =
       s.phiPlus D (F.obj E) (fun hFE => hE (hzero E hFE)) := by
   obtain ⟨Fil, hn, hfirst, _⟩ :=
-    HNFiltration.exists_both_nonzero C (s.preimage F h) hE
+    (s.preimage F h).exists_hn_nonzero_boundaries C hE
   let Fil' := Fil.mapPreimage s F h
   have hfirst' : ¬IsZero (Fil'.triangle ⟨0, hn⟩).obj₃ := by
     intro hz
@@ -107,7 +108,7 @@ theorem Slicing.preimage_phiMinus (hzero : ReflectsZeroObjects F)
     (s.preimage F h).phiMinus C E hE =
       s.phiMinus D (F.obj E) (fun hFE => hE (hzero E hFE)) := by
   obtain ⟨Fil, hn, _, hlast⟩ :=
-    HNFiltration.exists_both_nonzero C (s.preimage F h) hE
+    (s.preimage F h).exists_hn_nonzero_boundaries C hE
   let Fil' := Fil.mapPreimage s F h
   have hlast' : ¬IsZero (Fil'.triangle ⟨Fil'.n - 1, by simpa [Fil'] using hn⟩).obj₃ := by
     change ¬IsZero (F.obj (Fil.triangle ⟨Fil.n - 1, by lia⟩).obj₃)
@@ -159,8 +160,8 @@ theorem Slicing.preimage_leProp_iff (hzero : ReflectsZeroObjects F)
 /-- Preimage transfer commutes with real phase translation.  The HN proofs on
 the two sides may differ, but slicings are determined by their phase slices. -/
 theorem Slicing.preimage_phaseShift (t : ℝ)
-    (ht : (s.phaseShift D t).PreimageData F) :
-    (s.phaseShift D t).preimage F ht =
+    (ht : Slicing.PreimageData (s.phaseShift D t) F) :
+    Slicing.preimage (s.phaseShift D t) F ht =
       (s.preimage F h).phaseShift C t := by
   apply Slicing.ext
   rfl
@@ -168,7 +169,7 @@ theorem Slicing.preimage_phaseShift (t : ℝ)
 /-- Canonical form of phase-shift compatibility, using the phase-shifted
 lifting data derived from `h`. -/
 theorem Slicing.preimage_phaseShift_self (t : ℝ) :
-    (s.phaseShift D t).preimage F (h.phaseShift t) =
+    Slicing.preimage (s.phaseShift D t) F (h.phaseShift t) =
       (s.preimage F h).phaseShift C t :=
   s.preimage_phaseShift F h t (h.phaseShift t)
 
@@ -200,4 +201,4 @@ theorem Slicing.PrecedesWeak.preimage (F : C ⥤ D) [F.Additive]
     (s.preimage F (H s)).PrecedesWeak C (t.preimage F (H t)) :=
   (Slicing.preimageOrderData F H hzero).precedesWeak hst
 
-end CategoryTheory.Triangulated
+end BridgelandStabLean.Foundation

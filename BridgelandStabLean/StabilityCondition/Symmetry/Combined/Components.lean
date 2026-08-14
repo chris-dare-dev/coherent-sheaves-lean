@@ -3,7 +3,7 @@ Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under the MIT license.
 -/
 import BridgelandStabLean.StabilityCondition.Symmetry.GLTilde.Action.JointContinuous
-import BridgelandStability.StabilityCondition.LocalHomeomorphism
+import BridgelandStabLean.Foundation
 import Mathlib.Topology.Connected.TotallyDisconnected
 
 /-!
@@ -24,6 +24,7 @@ component subtype carrying the translated label.  The stabilizer of a label
 therefore acts on the corresponding component itself.
 -/
 
+open BridgelandStabLean.Foundation
 open Set
 
 namespace BridgelandStabLean.GroupAction

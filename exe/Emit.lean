@@ -42,13 +42,12 @@ Deleting it required closing a real coverage gap first. `rootLib` is what
 `emitToFileForRootsImpl` **imports**; `additionalRoots` only widens the scope
 filter over what that import brought in. Pointed at `DerivedAlgGeoLean`, this
 emitter therefore covered 406 of 419 tracked modules, silently: `DGLean`,
-`CohLean.Development` and the vendor umbrella are outside the stable umbrella
-by design, so no import reached them. `rootLib` is now `DerivedAlgGeoSweep`,
+`CohLean.Development` and the former vendor umbrella were outside the stable
+umbrella, so no import reached them. `rootLib` is now `DerivedAlgGeoSweep`,
 whose only job is to import every tracked module, and
 `scripts/check_emission_coverage.py` fails the build if that ever stops being
-true. Coverage is 419 of 419 — one better than the loop, since a tracked module
-nothing imports now fails the coverage check instead of being swept in
-isolation.
+true. A tracked module that nothing imports now fails the coverage check
+instead of being swept in isolation.
 
 The one file no emission can cover is this one: an `lean_exe` root is not a
 library module and cannot appear in the environment built from its own
@@ -86,7 +85,7 @@ def main (args : List String) : IO UInt32 :=
   MathFormalContract.emitMainForRoots
     (rootLib := `DerivedAlgGeoSweep)
     (additionalRoots := [`DerivedAlgGeoLean, `CohLean, `BridgelandStabLean,
-                         `BridgelandStability, `DGLean])
+                         `DGLean])
     (leanOptions := [("autoImplicit", .bool false),
                      ("relaxedAutoImplicit", .bool false)])
     args

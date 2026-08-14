@@ -3,7 +3,8 @@ Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under the MIT license.
 -/
 import BridgelandStabLean.StabilityCondition.Symmetry.Autoequivalence.Foundations.GrothendieckGroup
-import BridgelandStability.QuasiAbelian.Basic
+import BridgelandStabLean.StabilityCondition.Symmetry.Autoequivalence.Slicing.Transport
+import BridgelandStabLean.Foundation
 
 /-!
 # Transporting strict finite length along functors
@@ -44,9 +45,12 @@ foundational library's `interval_thinFiniteLength_of_inclusion_strict` cannot be
 `Aut`: it compares two `intervalProp`s on the *same* object.
 -/
 
+open BridgelandStabLean.Foundation
 open CategoryTheory CategoryTheory.Limits CategoryTheory.Pretriangulated
 
-namespace CategoryTheory.Triangulated
+namespace BridgelandStabLean.Foundation
+
+open BridgelandStabLean.Foundation
 
 universe w u
 
@@ -133,6 +137,132 @@ theorem isStrictNoetherian_of_faithful_strict {E : A}
 
 end Transfer
 
+/-! ## Strict finite length along inclusions of thin interval categories -/
+
+section IntervalInclusion
+
+variable {C : Type u} [Category.{w} C] [HasZeroObject C] [HasShift C ℤ]
+  [Preadditive C] [∀ n : ℤ, (shiftFunctor C n).Additive] [Pretriangulated C]
+  [IsTriangulated C]
+
+/-- Strict Artinian and Noetherian conditions pull back from a containing
+thin interval. -/
+theorem interval_thinFiniteLength_of_inclusion_strict
+    {s₁ s₂ : Slicing C} {a₁ b₁ a₂ b₂ : ℝ}
+    [Fact (a₁ < b₁)] [Fact (b₁ - a₁ ≤ 1)]
+    [Fact (a₂ < b₂)] [Fact (b₂ - a₂ ≤ 1)]
+    (h : s₁.intervalProp C a₁ b₁ ≤ s₂.intervalProp C a₂ b₂)
+    (hFinite : ∀ Y : s₂.IntervalCat C a₂ b₂,
+      IsStrictArtinianObject Y ∧ IsStrictNoetherianObject Y) :
+    ∀ X : s₁.IntervalCat C a₁ b₁,
+      IsStrictArtinianObject X ∧ IsStrictNoetherianObject X := by
+  intro X
+  let I := ObjectProperty.ιOfLE h
+  have hBig := hFinite (I.obj X)
+  letI : IsStrictArtinianObject (I.obj X) := hBig.1
+  letI : IsStrictNoetherianObject (I.obj X) := hBig.2
+  have hmap : ∀ {A B : s₁.IntervalCat C a₁ b₁} (f : A ⟶ B),
+      IsStrictMono f → IsStrictMono (I.map f) := by
+    intro A B f hf
+    exact intervalInclusion_map_strictMono (C := C) h f hf
+  have harr : ∀ {A B : s₂.IntervalCat C a₂ b₂} (f : A ⟶ B) [Mono f],
+      IsStrictMono f → IsStrictMono (Subobject.mk f).arrow := by
+    intro A B f _ hf
+    exact intervalSubobject_arrow_strictMono (C := C) f hf
+  exact ⟨isStrictArtinian_of_faithful_strict I hmap harr,
+    isStrictNoetherian_of_faithful_strict I hmap harr⟩
+
+/-- An admissible subobject stays admissible when its thin interval is
+included in another thin interval. -/
+theorem intervalInclusion_isAdmissibleSubobject
+    {s₁ s₂ : Slicing C} {a₁ b₁ a₂ b₂ : ℝ}
+    [Fact (a₁ < b₁)] [Fact (b₁ - a₁ ≤ 1)]
+    [Fact (a₂ < b₂)] [Fact (b₂ - a₂ ≤ 1)]
+    (h : s₁.intervalProp C a₁ b₁ ≤ s₂.intervalProp C a₂ b₂)
+    {E : s₁.IntervalCat C a₁ b₁} (A : Subobject E)
+    (hA : s₁.IsAdmissibleSubobject C A) :
+    s₂.IsAdmissibleSubobject C
+      (strictSubobjectImageOfFullFaithful (ObjectProperty.ιOfLE h)
+        (fun f hf ↦ intervalInclusion_map_strictMono (C := C) h f hf)
+        ⟨A, Slicing.IntervalCat.isStrictSubobject_of_isAdmissible C s₁ A hA⟩) := by
+  rcases hA with ⟨Y, Q, i, hi, q, hAi, δ, hT⟩
+  let I := ObjectProperty.ιOfLE h
+  have hiStrict : IsStrictMono i := by
+    let S : ShortComplex (s₁.IntervalCat C a₁ b₁) :=
+      ShortComplex.mk i q (by
+        apply (s₁.intervalProp C a₁ b₁).ι.map_injective
+        exact comp_distTriang_mor_zero₁₂ _ hT)
+    have hS := Slicing.IntervalCat.strictShortExact_of_distinguished
+      (S := S) (δ := δ) C s₁ hT
+    exact ⟨hS.shortExact.mono_f, hS.strict_f⟩
+  have hImap : IsStrictMono (I.map i) :=
+    intervalInclusion_map_strictMono (C := C) h i hiStrict
+  letI : Mono (I.map i) := hImap.mono
+  refine ⟨I.obj Y, I.obj Q, I.map i, inferInstance, I.map q, ?_, δ, ?_⟩
+  · subst A
+    have hcanonical : IsStrictMono (Subobject.mk i).arrow :=
+      BridgelandStabLean.Foundation.Deformation.Slicing.IntervalCat.subobject_arrow_strictMono
+        C i hiStrict
+    have hcanonicalMap : IsStrictMono (I.map (Subobject.mk i).arrow) :=
+      intervalInclusion_map_strictMono (C := C) h _ hcanonical
+    letI : Mono (I.map (Subobject.mk i).arrow) := hcanonicalMap.mono
+    apply Subobject.mk_eq_mk_of_comm
+      (I.map i) (I.map (Subobject.mk i).arrow)
+      (I.mapIso (Subobject.underlyingIso i)).symm
+    simpa only [Functor.map_comp, Iso.symm_hom, Functor.mapIso_inv] using
+      congrArg I.map (Subobject.underlyingIso_arrow i)
+  · dsimp [I, ObjectProperty.ιOfLE]
+    exact hT
+
+/-- Intrinsic admissible finite length pulls back along an inclusion of thin
+interval categories. -/
+theorem interval_finiteLength_of_inclusion
+    {s₁ s₂ : Slicing C} {a₁ b₁ a₂ b₂ : ℝ}
+    [Fact (a₁ < b₁)] [Fact (b₁ - a₁ ≤ 1)]
+    [Fact (a₂ < b₂)] [Fact (b₂ - a₂ ≤ 1)]
+    (h : s₁.intervalProp C a₁ b₁ ≤ s₂.intervalProp C a₂ b₂)
+    (hFinite : ∀ Y : s₂.IntervalCat C a₂ b₂,
+      s₂.IsFiniteLength C Y) :
+    ∀ X : s₁.IntervalCat C a₁ b₁, s₁.IsFiniteLength C X := by
+  intro X
+  let I := ObjectProperty.ιOfLE h
+  let hmap : ∀ {A B : s₁.IntervalCat C a₁ b₁} (f : A ⟶ B),
+      IsStrictMono f → IsStrictMono (I.map f) := by
+    intro A B f hf
+    exact intervalInclusion_map_strictMono (C := C) h f hf
+  let AtoS := Slicing.IntervalCat.admissibleToStrictSubobject C s₁ X
+  let F : s₁.AdmissibleSubobject C X → s₂.AdmissibleSubobject C (I.obj X) :=
+    fun A ↦ ⟨strictSubobjectImageOfFullFaithful I hmap (AtoS A),
+      intervalInclusion_isAdmissibleSubobject (C := C) h A.1 A.2⟩
+  have hFmono : Monotone F := by
+    intro A B hAB
+    exact strictSubobjectImageOfFullFaithful_monotone I hmap
+      (AtoS.monotone hAB)
+  have hFinj : Function.Injective F := by
+    intro A B hAB
+    apply AtoS.injective
+    apply strictSubobjectImageOfFullFaithful_injective I hmap
+    exact congrArg Subtype.val hAB
+  have hFstrictLT : ∀ {A B : s₁.AdmissibleSubobject C X}, A < B → F A < F B := by
+    intro A B hAB
+    exact lt_of_le_of_ne (hFmono hAB.le)
+      (fun hEq ↦ hAB.ne (hFinj hEq))
+  have hFstrictGT : ∀ {A B : s₁.AdmissibleSubobject C X}, A > B → F A > F B := by
+    intro A B hAB
+    exact hFstrictLT hAB
+  have hBig := hFinite (I.obj X)
+  constructor
+  · letI : WellFoundedLT (s₂.AdmissibleSubobject C (I.obj X)) := hBig.1
+    exact ⟨Subrelation.wf hFstrictLT
+      (InvImage.wf F (show WellFounded ((· < ·) :
+        s₂.AdmissibleSubobject C (I.obj X) → _ → Prop) from IsWellFounded.wf))⟩
+  · letI : WellFoundedGT (s₂.AdmissibleSubobject C (I.obj X)) := hBig.2
+    exact ⟨Subrelation.wf hFstrictGT
+      (InvImage.wf F (show WellFounded ((· > ·) :
+        s₂.AdmissibleSubobject C (I.obj X) → _ → Prop) from IsWellFounded.wf))⟩
+
+end IntervalInclusion
+
 /-! ## Interval properties under the `Aut` action -/
 
 section Aut
@@ -157,13 +287,18 @@ theorem mapEquiv_intervalProp_iff (s : Slicing C) (a b : ℝ) (E : C) :
   constructor
   · rintro (hz | ⟨F, hF⟩)
     · exact Or.inl (Φ.inverse.map_isZero hz)
-    · exact Or.inr ⟨F.mapF (P' := s.P) Φ.inverse (fun _ _ h => h), hF⟩
+    · exact Or.inr
+        ⟨BridgelandStabLean.Foundation.HNFiltration.mapF F
+          (P' := s.P) Φ.inverse (fun _ _ h => h), hF⟩
   · rintro (hz | ⟨G, hG⟩)
     · exact Or.inl (IsZero.of_iso (Φ.functor.map_isZero hz) (Φ.counitIso.app E).symm)
-    · exact Or.inr ⟨(G.mapF (P' := fun φ X => s.P φ (Φ.inverse.obj X)) Φ.functor
-        (fun _ X h => ObjectProperty.prop_of_iso _ (Φ.unitIso.app X) h)).ofIso C
+    · exact Or.inr
+        ⟨BridgelandStabLean.Foundation.HNFiltration.ofIso C
+          (BridgelandStabLean.Foundation.HNFiltration.mapF G
+            (P' := fun φ X => s.P φ (Φ.inverse.obj X)) Φ.functor
+            (fun _ X h => ObjectProperty.prop_of_iso _ (Φ.unitIso.app X) h))
           (Φ.counitIso.app E), hG⟩
 
 end Aut
 
-end CategoryTheory.Triangulated
+end BridgelandStabLean.Foundation

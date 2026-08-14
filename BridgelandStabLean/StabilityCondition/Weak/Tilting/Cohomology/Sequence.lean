@@ -3,10 +3,9 @@ Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under the MIT license.
 -/
 import BridgelandStabLean.StabilityCondition.Weak.Tilting.Cohomology.Homological
--- `Sequence.lean` still needs the anchor's short-exact-sequence-to-triangle
--- bridge. The degree comparison itself is now supplied anchor-free by
--- `Cohomology.Shift`.
-import BridgelandStability.HeartEquivalence.H0Homological
+-- The owner heart bridge supplies the short-exact-sequence-to-triangle result;
+-- the degree comparison is supplied by `Cohomology.Shift`.
+import BridgelandStabLean.Foundation
 
 set_option backward.defeqAttrib.useBackward true
 set_option backward.isDefEq.respectTransparency false
@@ -33,6 +32,7 @@ epic, giving the expected zeroes at the two ends.
 
 namespace BridgelandStabLean.Tilting
 
+open BridgelandStabLean.Foundation
 open CategoryTheory Limits Pretriangulated CategoryTheory.Triangulated
 open scoped ZeroObject
 
@@ -42,6 +42,89 @@ variable {C : Type*} [Category C] [Preadditive C] [HasZeroObject C] [HasShift C 
 attribute [local instance] TStructure.heartFullSubcategoryAbelian
 
 /-! ## Degree comparison -/
+
+omit [IsTriangulated C] in
+/-- A distinguished triangle presenting an object with amplitude `[-1, 0]`
+is isomorphic, through the identity on its middle object, to the canonical
+truncation triangle. -/
+theorem TStructure.triangleLTGE_iso_of_amp_negOne_zero
+    (t : TStructure C)
+    {X K Q : C} (hK : t.heart K) (hQ : t.heart Q)
+    {α : K⟦(1 : ℤ)⟧ ⟶ X} {β : X ⟶ Q}
+    {γ : Q ⟶ (K⟦(1 : ℤ)⟧)⟦(1 : ℤ)⟧}
+    (hT : Triangle.mk α β γ ∈ distTriang C) :
+    ∃ e : Triangle.mk α β γ ≅ (t.triangleLTGE 0).obj X,
+      e.hom.hom₂ = 𝟙 X := by
+  obtain ⟨e, he⟩ := t.triangle_iso_exists hT
+    (t.triangleLTGE_distinguished 0 X) (Iso.refl X) (-1) 0
+    (by
+      have hK' := (t.mem_heart_iff K).mp hK
+      letI : t.IsLE K 0 := hK'.1
+      exact t.isLE_shift K 0 1 (-1))
+    (by exact ((t.mem_heart_iff Q).mp hQ).2)
+    (by
+      have : t.IsLE ((t.triangleLTGE 0).obj X).obj₁ (0 - 1) := by
+        infer_instance
+      simpa using this)
+    (by infer_instance)
+  exact ⟨e, he⟩
+
+/-- For an amplitude-`[-1,0]` presentation `K[1] ⟶ X ⟶ Q`, degree
+`-1` original-heart cohomology is `K`. -/
+noncomputable def originalHeartCohNegOneIsoOfAmplitude
+    (t : TStructure C)
+    {X K Q : C} (hK : t.heart K) (hQ : t.heart Q)
+    {α : K⟦(1 : ℤ)⟧ ⟶ X} {β : X ⟶ Q}
+    {γ : Q ⟶ (K⟦(1 : ℤ)⟧)⟦(1 : ℤ)⟧}
+    (hT : Triangle.mk α β γ ∈ distTriang C)
+    [t.IsGE X (-1)] :
+    originalHeartCoh t (-1) X ≅ ⟨K, hK⟩ := by
+  classical
+  let eT := Classical.choose
+    (BridgelandStabLean.Tilting.TStructure.triangleLTGE_iso_of_amp_negOne_zero
+      t hK hQ hT)
+  let e₁ :
+      ((t.truncGELE (-1) (-1)).obj X) ≅
+        ((t.truncGELT (-1) 0).obj X) :=
+    (t.truncGELEIsoTruncGELT (-1) (-1) 0 rfl).app X
+  let e₂ :
+      ((t.truncGELT (-1) 0).obj X) ≅ (t.truncLT 0).obj X := by
+    simpa [TStructure.truncGELT] using
+      ((@asIso _ _ _ _ ((t.truncGEπ (-1)).app ((t.truncLT 0).obj X))
+        (by infer_instance)).symm)
+  let e₃ : (t.truncLT 0).obj X ≅ K⟦(1 : ℤ)⟧ :=
+    (asIso eT.hom.hom₁).symm
+  let e : ((t.truncGELE (-1) (-1)).obj X) ≅ K⟦(1 : ℤ)⟧ :=
+    e₁ ≪≫ e₂ ≪≫ e₃
+  refine ObjectProperty.isoMk _ ?_
+  simpa [originalHeartCoh, originalHeartCohFunctor] using
+    ((shiftFunctor C (-1 : ℤ)).mapIso e ≪≫
+      shiftShiftNeg (X := K) (i := (1 : ℤ)))
+
+/-- For an amplitude-`[-1,0]` presentation `K[1] ⟶ X ⟶ Q`, degree
+zero original-heart cohomology is `Q`. -/
+noncomputable def originalHeartCohZeroIsoOfAmplitude
+    (t : TStructure C)
+    {X K Q : C} (hK : t.heart K) (hQ : t.heart Q)
+    {α : K⟦(1 : ℤ)⟧ ⟶ X} {β : X ⟶ Q}
+    {γ : Q ⟶ (K⟦(1 : ℤ)⟧)⟦(1 : ℤ)⟧}
+    (hT : Triangle.mk α β γ ∈ distTriang C)
+    [t.IsLE X 0] :
+    originalHeartCoh t 0 X ≅ ⟨Q, hQ⟩ := by
+  classical
+  let eT := Classical.choose
+    (BridgelandStabLean.Tilting.TStructure.triangleLTGE_iso_of_amp_negOne_zero
+      t hK hQ hT)
+  let e₁ : ((t.truncGELE 0 0).obj X) ≅ (t.truncGE 0).obj X := by
+    refine ((t.truncGELEIsoLEGE 0 0).app X) ≪≫ ?_
+    simpa [TStructure.truncLEGE] using
+      (@asIso _ _ _ _ ((t.truncLEι 0).app ((t.truncGE 0).obj X))
+        (by infer_instance))
+  let e₂ : (t.truncGE 0).obj X ≅ Q := (asIso eT.hom.hom₃).symm
+  let e : ((t.truncGELE 0 0).obj X) ≅ Q := e₁ ≪≫ e₂
+  refine ObjectProperty.isoMk _ ?_
+  simpa [originalHeartCoh, originalHeartCohFunctor] using
+    ((shiftFunctorZero C ℤ).app ((t.truncGELE 0 0).obj X) ≪≫ e)
 
 /-- The tautological shift sequence on degree-zero original-heart
 cohomology. -/
@@ -56,19 +139,8 @@ original-heart cohomology functor, evaluated at an object. -/
 noncomputable def originalHeartCohShiftIso
     (t : TStructure C) (n : ℤ) (X : C) :
     ((originalHeartCohFunctor t 0).shift n).obj X ≅ originalHeartCoh t n X := by
-  let e₂ :
-      (originalHeartCohFunctor t 0).obj (X⟦(n : ℤ)⟧) ≅
-        originalHeartCoh t n X := by
-    refine ObjectProperty.isoMk _ ?_
-    change
-      (shiftFunctor C 0).obj
-          ((t.truncGE 0).obj ((t.truncLE 0).obj (X⟦(n : ℤ)⟧))) ≅
-        (shiftFunctor C n).obj
-          ((t.truncGE n).obj ((t.truncLE n).obj X))
-    exact ((shiftFunctorZero C ℤ).app
-      ((t.truncGELE 0 0).obj (X⟦(n : ℤ)⟧))) ≪≫
-        (TStructure.truncGELEObjShiftIso (C := C) t n X).symm
-  exact ((Functor.isoShift (originalHeartCohFunctor t 0) n).app X).symm ≪≫ e₂
+  exact ((Functor.isoShift (originalHeartCohFunctor t 0) n).app X).symm ≪≫
+    ((originalHeartCohShiftNatIso t n).app X).symm
 
 /-- Cohomology below a known lower bound vanishes. -/
 theorem originalHeartCoh_isZero_of_isGE

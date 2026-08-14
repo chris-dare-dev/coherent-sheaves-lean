@@ -3,7 +3,7 @@ Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under the MIT license.
 -/
 import BridgelandStabLean.StabilityCondition.Symmetry.GLTilde.Basic
-import BridgelandStability.Slicing.Defs
+import BridgelandStabLean.Foundation
 import MathFormalContract
 
 /-!
@@ -26,8 +26,8 @@ defined for `NormalizedShift` and `GLTilde` inherits it through
 
 ## Why the axioms survive
 
-See `notes/dependencies/BridgelandStabilityAPI.md` §2 for the full table. The one with content is
-`shift_iff`, which needs `f⁻¹ (φ + 1) = f⁻¹ φ + 1` — i.e. exactly
+The axiom with content is `shift_iff`, which needs
+`f⁻¹ (φ + 1) = f⁻¹ φ + 1` — i.e. exactly
 `NormalizedShift.symm_map_add_one`, here reached through the group structure
 as `f⁻¹.map_add_one`.
 
@@ -38,6 +38,7 @@ the factor phases by `f`.
 
 namespace BridgelandStabLean.GroupAction
 
+open BridgelandStabLean.Foundation
 open CategoryTheory CategoryTheory.Limits CategoryTheory.Pretriangulated
 open CategoryTheory.Triangulated
 
@@ -79,11 +80,11 @@ theorem relabel_P (f : NormalizedShift) (s : Slicing C) (φ : ℝ) :
 -- reports no progress.
 instance slicingMulAction : MulAction NormalizedShift (Slicing C) where
   smul := relabel C
-  one_smul s := Slicing.ext C (by
+  one_smul s := BridgelandStabLean.Foundation.Slicing.ext C (by
     funext φ
     show (relabel C 1 s).P φ = s.P φ
     simp)
-  mul_smul f g s := Slicing.ext C (by
+  mul_smul f g s := BridgelandStabLean.Foundation.Slicing.ext C (by
     funext φ
     show (relabel C (f * g) s).P φ = (relabel C f (relabel C g s)).P φ
     simp [mul_inv_rev])
@@ -114,8 +115,7 @@ the objects lying in `(a, b)` for `f • s` are exactly those lying in
 
 The interval subcategories match up on the nose — no equivalence to chase and
 no structure to transport — so the remaining obstacle is the *shape* of the
-window, which is what
-`NormalizedShift.exists_radius` addresses. See `notes/dependencies/BridgelandStabilityAPI.md` §4.
+window, which is what `NormalizedShift.exists_radius` addresses.
 -/
 
 theorem relabel_intervalProp_iff (f : NormalizedShift) (s : Slicing C) (a b : ℝ)

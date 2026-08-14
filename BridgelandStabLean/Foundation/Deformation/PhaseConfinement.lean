@@ -42,15 +42,18 @@ theorem skewed_phiPlus_le
     (hthin : b - a + 2 * ε < 1)
     (hsin : stabilitySeminorm C σ (W - σ.Z) <
       ENNReal.ofReal (Real.sin (Real.pi * ε)))
-    (haψ : a + ε ≤ ψ) (_hψb : ψ ≤ b - ε) {E : C}
+    {E : C}
     (hSS : (skewedStabilityFunctionOfSeminormLtOne C σ W hr0 hr1 hW hab).IsSemistable
       E ψ) :
     σ.slicing.phiPlus C E hSS.nonzero ≤ ψ + ε := by
   let F := skewedStabilityFunctionOfSeminormLtOne C σ W hr0 hr1 hW hab
+  have hphase := σ.skewedPhase_mem_expanded_interval C W hr0 hr1 hW hab
+    hε hε2 hthin hsin hSS.interval hSS.nonzero
+  rw [hSS.phase_eq] at hphase
   by_contra hbound
   push Not at hbound
   obtain ⟨G, hG⟩ := hSS.interval.resolve_left hSS.nonzero
-  have hat : a ≤ ψ + ε := by linarith
+  have hat : a ≤ ψ + ε := by linarith [hphase.1]
   have htb : ψ + ε < b := hbound.trans
     (σ.slicing.phiPlus_lt_of_intervalProp C hSS.nonzero hSS.interval)
   obtain ⟨X, Y, hX, hY, hXI, hYI, f, g, δ, hT⟩ :=
@@ -110,16 +113,22 @@ theorem skewed_phiMinus_ge
     (hthin : b - a + 2 * ε < 1)
     (hsin : stabilitySeminorm C σ (W - σ.Z) <
       ENNReal.ofReal (Real.sin (Real.pi * ε)))
-    (haψ : a + ε ≤ ψ) (hψb : ψ ≤ b - ε) {E : C}
+    {E : C}
     (hSS : (skewedStabilityFunctionOfSeminormLtOne C σ W hr0 hr1 hW hab).IsSemistable
       E ψ) :
     ψ - ε ≤ σ.slicing.phiMinus C E hSS.nonzero := by
   let F := skewedStabilityFunctionOfSeminormLtOne C σ W hr0 hr1 hW hab
+  have hphase := σ.skewedPhase_mem_expanded_interval C W hr0 hr1 hW hab
+    hε hε2 hthin hsin hSS.interval hSS.nonzero
+  rw [hSS.phase_eq] at hphase
+  by_cases hlo : ψ - ε ≤ a
+  · exact hlo.trans (le_of_lt
+      (σ.slicing.phiMinus_gt_of_intervalProp C hSS.nonzero hSS.interval))
+  have hat : a ≤ ψ - ε := le_of_not_ge hlo
   by_contra hbound
   push Not at hbound
   obtain ⟨G, hG⟩ := hSS.interval.resolve_left hSS.nonzero
-  have hat : a ≤ ψ - ε := by linarith
-  have htb : ψ - ε < b := by linarith
+  have htb : ψ - ε < b := by linarith [hphase.2]
   obtain ⟨X, Y, hX, hY, hXI, hYI, f, g, δ, hT⟩ :=
     σ.slicing.exists_cutoff_truncation_in_interval C G hSS.interval hat htb
   have hYne : ¬IsZero Y := by
@@ -203,9 +212,9 @@ theorem deformedPred_intrinsic_bounds
   obtain ⟨a, b, hab, hthin, haψ, hψb, hSS⟩ :=
     σ.exists_deformedPred_witness C W hr0 hr1 hW h hE
   exact ⟨σ.skewed_phiMinus_ge C W hr0 hr1 hW hab hε hε2 hthin hsin
-      haψ hψb hSS,
+      hSS,
     σ.skewed_phiPlus_le C W hr0 hr1 hW hab hε hε2 hthin hsin
-      haψ hψb hSS⟩
+      hSS⟩
 
 /-- Every owner deformed-slice object lies above its weak old lower phase
 cut. -/

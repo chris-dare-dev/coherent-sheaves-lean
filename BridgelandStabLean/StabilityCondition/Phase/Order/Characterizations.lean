@@ -18,12 +18,13 @@ inequality with a strict one.
 
 noncomputable section
 
+open BridgelandStabLean.Foundation
 open CategoryTheory CategoryTheory.Limits CategoryTheory.Pretriangulated
 open scoped ZeroObject
 
 universe v u
 
-namespace CategoryTheory.Triangulated
+namespace BridgelandStabLean.Foundation
 
 variable (C : Type u) [Category.{v} C] [HasZeroObject C] [HasShift C ℤ]
   [Preadditive C] [∀ n : ℤ, (shiftFunctor C n).Additive] [Pretriangulated C]
@@ -36,7 +37,7 @@ theorem Slicing.precedes_iff_lt_phiMinus (s t : Slicing C) :
         phi < s.phiMinus C E hE0 := by
   constructor
   · intro h E phi hE hE0
-    obtain ⟨F, hn, _, hlast⟩ := HNFiltration.exists_both_nonzero C s hE0
+    obtain ⟨F, hn, _, hlast⟩ := s.exists_hn_nonzero_boundaries C hE0
     let j : Fin F.n := ⟨F.n - 1, by lia⟩
     have hlastPhase : s.phiMinus C E hE0 = F.phiMinus C hn :=
       s.phiMinus_eq C E hE0 F hn hlast
@@ -54,7 +55,7 @@ theorem Slicing.precedes_iff_lt_phiMinus (s t : Slicing C) :
   · intro h
     rw [s.precedes_iff_phiPlus_lt C t]
     intro E phi hE hE0
-    obtain ⟨F, hn, hfirst, _⟩ := HNFiltration.exists_both_nonzero C t hE0
+    obtain ⟨F, hn, hfirst, _⟩ := t.exists_hn_nonzero_boundaries C hE0
     let j : Fin F.n := ⟨0, hn⟩
     have hright : F.phiPlus C hn < s.phiMinus C (F.triangle j).obj₃ hfirst := by
       exact h (F.semistable j) hfirst
@@ -64,7 +65,7 @@ theorem Slicing.precedes_iff_lt_phiMinus (s t : Slicing C) :
       have hUgt : s.gtProp C phi (F.triangle j).obj₃ :=
         s.gtProp_of_phiMinus_gt C hfirst hphi
       have hEle : s.leProp C phi E :=
-        s.leProp_of_semistable C phi phi E hE le_rfl
+        s.leProp_of_semistable C hE le_rfl
       have hzero : ∀ f : (F.triangle j).obj₃ ⟶ E, f = 0 := fun f ↦
         s.zero_of_gtProp_leProp_general C phi hUgt hEle f
       exact hfirst (F.isZero_factor_zero_of_hom_eq_zero C t hn hzero)
@@ -79,7 +80,7 @@ theorem Slicing.precedesWeak_iff_le_phiMinus (s t : Slicing C) :
         phi ≤ s.phiMinus C E hE0 := by
   constructor
   · intro h E phi hE hE0
-    obtain ⟨F, hn, _, hlast⟩ := HNFiltration.exists_both_nonzero C s hE0
+    obtain ⟨F, hn, _, hlast⟩ := s.exists_hn_nonzero_boundaries C hE0
     let j : Fin F.n := ⟨F.n - 1, by lia⟩
     have hlastPhase : s.phiMinus C E hE0 = F.phiMinus C hn :=
       s.phiMinus_eq C E hE0 F hn hlast
@@ -97,7 +98,7 @@ theorem Slicing.precedesWeak_iff_le_phiMinus (s t : Slicing C) :
   · intro h
     rw [s.precedesWeak_iff_phiPlus_le C t]
     intro E phi hE hE0
-    obtain ⟨F, hn, hfirst, _⟩ := HNFiltration.exists_both_nonzero C t hE0
+    obtain ⟨F, hn, hfirst, _⟩ := t.exists_hn_nonzero_boundaries C hE0
     let j : Fin F.n := ⟨0, hn⟩
     have hright : F.phiPlus C hn ≤ s.phiMinus C (F.triangle j).obj₃ hfirst := by
       exact h (F.semistable j) hfirst
@@ -107,7 +108,7 @@ theorem Slicing.precedesWeak_iff_le_phiMinus (s t : Slicing C) :
       have hUgt : s.gtProp C phi (F.triangle j).obj₃ :=
         s.gtProp_of_phiMinus_gt C hfirst (hphi.trans_le hright)
       have hEle : s.leProp C phi E :=
-        s.leProp_of_semistable C phi phi E hE le_rfl
+        s.leProp_of_semistable C hE le_rfl
       have hzero : ∀ f : (F.triangle j).obj₃ ⟶ E, f = 0 := fun f ↦
         s.zero_of_gtProp_leProp_general C phi hUgt hEle f
       exact hfirst (F.isZero_factor_zero_of_hom_eq_zero C t hn hzero)
@@ -127,7 +128,7 @@ theorem Slicing.precedes_iff_extreme_phases_lt (s t : Slicing C) :
         ∀ hE0 : ¬IsZero E, phi < s.phiMinus C E hE0 :=
       (s.precedes_iff_lt_phiMinus C t).mp h
     constructor
-    · obtain ⟨F, hn, hfirst, _⟩ := HNFiltration.exists_both_nonzero C t hE0
+    · obtain ⟨F, hn, hfirst, _⟩ := t.exists_hn_nonzero_boundaries C hE0
       let j : Fin F.n := ⟨0, hn⟩
       have hU : F.phiPlus C hn < s.phiMinus C (F.triangle j).obj₃ hfirst :=
         hright (F.semistable j) hfirst
@@ -141,7 +142,7 @@ theorem Slicing.precedes_iff_extreme_phases_lt (s t : Slicing C) :
       have hzero : ∀ f : (F.triangle j).obj₃ ⟶ E, f = 0 := fun f ↦
         s.zero_of_gtProp_leProp_general C (s.phiPlus C E hE0) hUgt hEle f
       exact hfirst (F.isZero_factor_zero_of_hom_eq_zero C t hn hzero)
-    · obtain ⟨F, hn, _, hlast⟩ := HNFiltration.exists_both_nonzero C s hE0
+    · obtain ⟨F, hn, _, hlast⟩ := s.exists_hn_nonzero_boundaries C hE0
       let j : Fin F.n := ⟨F.n - 1, by lia⟩
       have hLlt : t.ltProp C (F.phiMinus C hn) (F.triangle j).obj₃ :=
         h (F.phiMinus C hn) (F.triangle j).obj₃ (F.semistable j)
@@ -172,7 +173,7 @@ theorem Slicing.precedesWeak_iff_extreme_phases_le (s t : Slicing C) :
         ∀ hE0 : ¬IsZero E, phi ≤ s.phiMinus C E hE0 :=
       (s.precedesWeak_iff_le_phiMinus C t).mp h
     constructor
-    · obtain ⟨F, hn, hfirst, _⟩ := HNFiltration.exists_both_nonzero C t hE0
+    · obtain ⟨F, hn, hfirst, _⟩ := t.exists_hn_nonzero_boundaries C hE0
       let j : Fin F.n := ⟨0, hn⟩
       have hU : F.phiPlus C hn ≤ s.phiMinus C (F.triangle j).obj₃ hfirst :=
         hright (F.semistable j) hfirst
@@ -186,7 +187,7 @@ theorem Slicing.precedesWeak_iff_extreme_phases_le (s t : Slicing C) :
       have hzero : ∀ f : (F.triangle j).obj₃ ⟶ E, f = 0 := fun f ↦
         s.zero_of_gtProp_leProp_general C (s.phiPlus C E hE0) hUgt hEle f
       exact hfirst (F.isZero_factor_zero_of_hom_eq_zero C t hn hzero)
-    · obtain ⟨F, hn, _, hlast⟩ := HNFiltration.exists_both_nonzero C s hE0
+    · obtain ⟨F, hn, _, hlast⟩ := s.exists_hn_nonzero_boundaries C hE0
       let j : Fin F.n := ⟨F.n - 1, by lia⟩
       have hLle : t.leProp C (F.phiMinus C hn) (F.triangle j).obj₃ :=
         h (F.phiMinus C hn) (F.triangle j).obj₃ (F.semistable j)
@@ -241,4 +242,4 @@ theorem Slicing.PrecedesWeak.trans_strict {s t u : Slicing C}
   have htu' := (t.precedes_iff_extreme_phases_lt C u).mp htu E hE0
   exact ⟨htu'.1.trans_le hst'.1, htu'.2.trans_le hst'.2⟩
 
-end CategoryTheory.Triangulated
+end BridgelandStabLean.Foundation

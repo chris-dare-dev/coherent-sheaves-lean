@@ -27,6 +27,7 @@ universe u v
 namespace BridgelandStabLean.Foundation
 
 open BridgelandStabLean.ForMathlib.CategoryTheory.Triangulated.TStructure
+open CategoryTheory.Triangulated.TStructure
 
 variable (C : Type u) [Category.{v} C] [HasZeroObject C] [HasShift C ℤ]
   [Preadditive C] [∀ n : ℤ, (shiftFunctor C n).Additive] [Pretriangulated C]

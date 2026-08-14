@@ -96,13 +96,41 @@ jobs:
             exit 0
           fi
           echo "scope=partial" >> "$GITHUB_OUTPUT"
-          for tree in CohLean BridgelandStabLean DGLean vendor; do
+          for tree in CohLean BridgelandStabLean DGLean; do
             if printf '%s\n' "$files" | grep -qE "^$tree/"; then
               echo "${tree}=true" >> "$GITHUB_OUTPUT"
             else
               echo "${tree}=false" >> "$GITHUB_OUTPUT"
             fi
           done
+
+      # Build-output cache, hosted lane only (2026-08-14).
+      #
+      # Measured on this workflow: `lean-action` takes 9 minutes on the
+      # self-hosted runner and 30 on ubuntu-latest. The difference is not the
+      # hardware, it is that the self-hosted runner keeps `.lake` between runs --
+      # 8.8 GB resident, of which mathlib's build is 7.1 GB and this repository's
+      # own output is 1.1 GB. The hosted lane starts cold every time.
+      #
+      # Only `.lake/build` is cached. mathlib's 7.1 GB must never go in here:
+      # GitHub's per-repository cache budget is 10 GB total, so one such entry
+      # would evict everything else on write. `lean-action`'s use-mathlib-cache
+      # already fetches mathlib's oleans from the Lean community cache, which is
+      # the right source for them.
+      #
+      # Restore is keyed exactly, then falls back by prefix to the newest cache
+      # for the same toolchain and manifest -- in practice the one `main` saved.
+      # A stale restore is safe rather than merely tolerable: lake's build is
+      # trace-hash based, so anything out of date is rebuilt. The failure mode is
+      # a slower run, never a wrong one.
+      - name: Restore build output
+        if: github.event_name == 'pull_request'
+        uses: actions/cache/restore@v4
+        with:
+          path: .lake/build
+          key: lake-build-${{ runner.os }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-${{ github.sha }}
+          restore-keys: |
+            lake-build-${{ runner.os }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-
 
       - uses: leanprover/lean-action@v1
         with:
@@ -141,7 +169,6 @@ jobs:
         if: >-
           steps.changed.outputs.scope == 'all'
           || steps.changed.outputs.BridgelandStabLean == 'true'
-          || steps.changed.outputs.vendor == 'true'
         run: |
           set -euo pipefail
           lake env lean scripts/BridgelandAudit.lean > bridgeland-audit.txt 2>&1 || {
@@ -162,6 +189,23 @@ jobs:
           }
           python3 scripts/check_audit.py dg-audit.txt scripts/DGLeanAudit.lean
 
+      - name: Audit completeness
+        run: |
+          set -euo pipefail
+          # check_audit.py catches an audit that lists a name the source no
+          # longer has. This catches the reverse -- a new public declaration
+          # nobody listed -- which is how PR #354 landed IsQuasiEquivalence
+          # outside the DG audit entirely. A ratchet, not a hard gate: CohLean
+          # and BridgelandStabLean carry large pre-existing gaps, recorded as
+          # ceilings in check_audit_complete.py, and only growth fails.
+          lake build DGLean
+          lake env lean scripts/EnumDecls.lean > enum-decls.txt 2>&1 || {
+            echo "::error::scripts/EnumDecls.lean failed to elaborate"
+            cat enum-decls.txt
+            exit 1
+          }
+          python3 scripts/check_audit_complete.py enum-decls.txt
+
       - name: Environment linters
         run: |
           set -euo pipefail
@@ -170,7 +214,6 @@ jobs:
             if [ "$scope" = "all" ] || [ "$1" = "true" ]; then shift; "$@";
             else shift; echo "skipped (tree untouched): $*"; fi
           }
-          run_if '${{ steps.changed.outputs.vendor }}' lake exe runLinter BridgelandStability
           run_if '${{ steps.changed.outputs.BridgelandStabLean }}' lake exe runLinter BridgelandStabLean
           # CohLean's pre-existing backlog is enumerated per declaration in
           # scripts/nolints.json, so this gate rejects anything NEW while the
@@ -190,8 +233,8 @@ jobs:
           # Style is per-file and cheap; it always runs.
           lake exe lint-style
 
-      - name: Anchor-free import boundary
-        run: python3 scripts/check_anchor_free.py
+      - name: Stability source independence
+        run: python3 scripts/check_source_independence.py
 
       - name: No declaration uses sorry
         run: |
@@ -241,6 +284,20 @@ jobs:
           print(f"ok: {n} constants, {d['counts']['in_scope']} in scope, "
                 f"{sum(1 for c in d['constants'] if c['cites'])} cited")
           PY
+
+
+      # Saved from `main` only. A cache written on a PR branch is visible to that
+      # PR alone, so saving there would fill the budget with entries nothing else
+      # can read; a cache written on `main` is visible to every PR branched from
+      # it, which is exactly the baseline a PR wants to restore. This step runs on
+      # the self-hosted lane, where the upload is the only cost -- that runner
+      # reads its own `.lake`, not this cache.
+      - name: Save build output
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/cache/save@v4
+        with:
+          path: .lake/build
+          key: lake-build-${{ runner.os }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-${{ github.sha }}
 
       - name: Upload trust artifacts
         if: always()

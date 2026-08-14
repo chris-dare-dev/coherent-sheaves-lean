@@ -2,7 +2,7 @@
 Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under the MIT license.
 -/
-import BridgelandStability.ForMathlib.Analysis.SpecialFunctions.Complex.ArgConvexity
+import BridgelandStabLean.Foundation
 import Mathlib.Algebra.BigOperators.Pi
 import Mathlib.Tactic
 
@@ -37,14 +37,14 @@ category existed.
 
 ## Relation to the foundational library
 
-`CategoryTheory.upperHalfPlaneUnion` and its closure under addition are the
+`CategoryTheory.semiClosedUpperHalfPlane` and its closure under addition are the
 foundational library's, in `ForMathlib/Analysis/SpecialFunctions/Complex/ArgConvexity.lean`.
 What the foundational library does **not** have, and what is added here, is closure under
 positive scaling and closure under a nonempty finite sum — the two facts a
 positive-integer combination of simple charges needs.
 
 Those two live in this repo's own namespace rather than being injected as
-`CategoryTheory.upperHalfPlaneUnion_*`. The repo already carries 21
+`CategoryTheory.semiClosedUpperHalfPlane_*`. The repo already carries 21
 dot-notation extensions on foundational library types, each of which is a name a future
 foundational library bump could collide with (CLAUDE.md §1); there is no reason to make that
 list longer for lemmas nothing else needs to find by dot notation.
@@ -60,21 +60,22 @@ list longer for lemmas nothing else needs to find by dot notation.
 
 namespace BridgelandStabLean.FiniteLength
 
+open BridgelandStabLean.Foundation
 open CategoryTheory Complex
 
 /-! ### Two closure properties the foundational library does not carry -/
 
 /-- The cone is closed under multiplication by a positive real. -/
 theorem mem_cone_smul {r : ℝ} (hr : 0 < r) {z : ℂ}
-    (hz : z ∈ upperHalfPlaneUnion) : (r : ℂ) * z ∈ upperHalfPlaneUnion := by
+    (hz : z ∈ semiClosedUpperHalfPlane) : (r : ℂ) * z ∈ semiClosedUpperHalfPlane := by
   rcases hz with him | ⟨him, hre⟩
   · exact Or.inl (by simpa using mul_pos hr him)
   · exact Or.inr ⟨by simp [him], by simpa using mul_neg_of_pos_of_neg hr hre⟩
 
 /-- The cone is closed under nonempty finite sums. -/
 theorem mem_cone_sum {ι : Type*} {s : Finset ι} (hs : s.Nonempty) {f : ι → ℂ}
-    (hf : ∀ i ∈ s, f i ∈ upperHalfPlaneUnion) :
-    (∑ i ∈ s, f i) ∈ upperHalfPlaneUnion := by
+    (hf : ∀ i ∈ s, f i ∈ semiClosedUpperHalfPlane) :
+    (∑ i ∈ s, f i) ∈ semiClosedUpperHalfPlane := by
   classical
   induction s using Finset.induction_on with
   | empty => exact absurd hs (by simp)
@@ -82,7 +83,8 @@ theorem mem_cone_sum {ι : Type*} {s : Finset ι} (hs : s.Nonempty) {f : ι → 
     rw [Finset.sum_insert ha]
     rcases t.eq_empty_or_nonempty with rfl | ht
     · simpa using hf a (by simp)
-    · exact mem_upperHalfPlaneUnion_of_add (hf a (by simp)) (ih ht fun i hi => hf i (by simp [hi]))
+    · exact add_mem_semiClosedUpperHalfPlane (hf a (by simp))
+        (ih ht fun i hi => hf i (by simp [hi]))
 
 /-! ### The lattice model
 
@@ -158,8 +160,8 @@ In the intended reading `m i` is the multiplicity of the `i`-th simple in a
 Jordan–Hölder filtration, so this says a nonzero object has charge in the
 half plane. That reading is *not* formalized — see the module docstring. -/
 theorem mem_cone_natCombination {w : Fin n → ℂ}
-    (hw : ∀ i, w i ∈ upperHalfPlaneUnion) {m : Fin n → ℕ} (hm : m ≠ 0) :
-    (∑ i, (m i : ℂ) * w i) ∈ upperHalfPlaneUnion := by
+    (hw : ∀ i, w i ∈ semiClosedUpperHalfPlane) {m : Fin n → ℕ} (hm : m ≠ 0) :
+    (∑ i, (m i : ℂ) * w i) ∈ semiClosedUpperHalfPlane := by
   classical
   set s : Finset (Fin n) := Finset.univ.filter fun i => m i ≠ 0 with hs
   have hsne : s.Nonempty := by
@@ -179,18 +181,18 @@ theorem mem_cone_natCombination {w : Fin n → ℂ}
   simpa using mem_cone_smul hpos (hw i)
 
 /-- The `ℕ`-combination statement in the form the parametrization produces. -/
-theorem chargeOf_mem_cone {w : Fin n → ℂ} (hw : ∀ i, w i ∈ upperHalfPlaneUnion)
+theorem chargeOf_mem_cone {w : Fin n → ℂ} (hw : ∀ i, w i ∈ semiClosedUpperHalfPlane)
     {m : Fin n → ℕ} (hm : m ≠ 0) :
-    chargeOf w (fun i => (m i : ℤ)) ∈ upperHalfPlaneUnion := by
+    chargeOf w (fun i => (m i : ℤ)) ∈ semiClosedUpperHalfPlane := by
   rw [chargeOf_apply]
   simpa using mem_cone_natCombination hw hm
 
 /-- A nonzero `ℕ`-combination of cone elements is nonzero. The lattice-model
 form of "a nonzero object has nonzero charge", which is what makes the phase
 well defined. -/
-theorem chargeOf_ne_zero {w : Fin n → ℂ} (hw : ∀ i, w i ∈ upperHalfPlaneUnion)
+theorem chargeOf_ne_zero {w : Fin n → ℂ} (hw : ∀ i, w i ∈ semiClosedUpperHalfPlane)
     {m : Fin n → ℕ} (hm : m ≠ 0) :
     chargeOf w (fun i => (m i : ℤ)) ≠ 0 :=
-  upperHalfPlaneUnion_ne_zero (chargeOf_mem_cone hw hm)
+  semiClosedUpperHalfPlane_ne_zero (chargeOf_mem_cone hw hm)
 
 end BridgelandStabLean.FiniteLength

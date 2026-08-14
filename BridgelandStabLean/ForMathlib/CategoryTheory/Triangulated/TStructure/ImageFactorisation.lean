@@ -3,7 +3,7 @@ Copyright (c) 2026 Mathlib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Formalization
 -/
-import BridgelandStabLean.ForMathlib.CategoryTheory.Triangulated.TStructure.HeartAbelian
+import BridgelandStabLean.TStructureHeartBridge
 import Mathlib.CategoryTheory.Abelian.Basic
 
 /-!
@@ -26,6 +26,7 @@ namespace BridgelandStabLean.ForMathlib
 namespace CategoryTheory.Triangulated.TStructure
 
 open _root_.CategoryTheory.Triangulated
+open _root_.CategoryTheory.Triangulated.TStructure
 
 variable {C : Type u} [Category.{v} C] [Preadditive C] [HasZeroObject C]
   [HasShift C ℤ] [∀ n : ℤ, (shiftFunctor C n).Additive] [Pretriangulated C]

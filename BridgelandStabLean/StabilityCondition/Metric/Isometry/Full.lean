@@ -3,6 +3,7 @@ Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under the MIT license.
 -/
 import BridgelandStabLean.StabilityCondition.Metric.Distance.Basic
+import BridgelandStabLean.StabilityCondition.Metric.Isometry.Phase
 import MathFormalContract
 
 /-!
@@ -21,6 +22,7 @@ for the paper's bare `Aut(D)`.  The trust annotation records that remaining
 group-level boundary rather than identifying this theorem with Lemma 8.2.
 -/
 
+open BridgelandStabLean.Foundation
 open CategoryTheory CategoryTheory.Limits CategoryTheory.Pretriangulated
 open CategoryTheory.Triangulated
 open scoped ENNReal
@@ -46,8 +48,8 @@ theorem act_phiPlusDist (σ τ : StabilityCondition.WithClassMap C v) (E : C)
       phiPlusDist σ τ (a.Φ.e.inverse.obj E) hE' := by
   unfold phiPlusDist
   change ENNReal.ofReal
-      |(σ.slicing.mapEquiv a.Φ.e).phiPlus C E hE -
-        (τ.slicing.mapEquiv a.Φ.e).phiPlus C E hE| = _
+      |(BridgelandStabLean.Foundation.Slicing.mapEquiv σ.slicing a.Φ.e).phiPlus C E hE -
+        (BridgelandStabLean.Foundation.Slicing.mapEquiv τ.slicing a.Φ.e).phiPlus C E hE| = _
   rw [mapEquiv_phiPlus a.Φ.e σ.slicing E hE hE',
     mapEquiv_phiPlus a.Φ.e τ.slicing E hE hE']
 
@@ -59,8 +61,8 @@ theorem act_phiMinusDist (σ τ : StabilityCondition.WithClassMap C v) (E : C)
       phiMinusDist σ τ (a.Φ.e.inverse.obj E) hE' := by
   unfold phiMinusDist
   change ENNReal.ofReal
-      |(σ.slicing.mapEquiv a.Φ.e).phiMinus C E hE -
-        (τ.slicing.mapEquiv a.Φ.e).phiMinus C E hE| = _
+      |(BridgelandStabLean.Foundation.Slicing.mapEquiv σ.slicing a.Φ.e).phiMinus C E hE -
+        (BridgelandStabLean.Foundation.Slicing.mapEquiv τ.slicing a.Φ.e).phiMinus C E hE| = _
   rw [mapEquiv_phiMinus a.Φ.e σ.slicing E hE hE',
     mapEquiv_phiMinus a.Φ.e τ.slicing E hE hE']
 
@@ -94,10 +96,14 @@ theorem act_stabilityDistTerm_functor_obj
     hFE ((isZero_inverse_iff a.Φ.e (a.Φ.e.functor.obj E)).mp h)
   rw [a.act_stabilityDistTerm σ τ (a.Φ.e.functor.obj E) hFE hIFE]
   unfold stabilityDistTerm phiPlusDist phiMinusDist massDist
-  have hpσ := σ.slicing.phiPlus_congr (a.Φ.e.unitIso.app E) hE hIFE
-  have hpτ := τ.slicing.phiPlus_congr (a.Φ.e.unitIso.app E) hE hIFE
-  have hmσ := σ.slicing.phiMinus_congr (a.Φ.e.unitIso.app E) hE hIFE
-  have hmτ := τ.slicing.phiMinus_congr (a.Φ.e.unitIso.app E) hE hIFE
+  have hpσ := BridgelandStabLean.Foundation.Slicing.phiPlus_congr σ.slicing
+    (a.Φ.e.unitIso.app E) hE hIFE
+  have hpτ := BridgelandStabLean.Foundation.Slicing.phiPlus_congr τ.slicing
+    (a.Φ.e.unitIso.app E) hE hIFE
+  have hmσ := BridgelandStabLean.Foundation.Slicing.phiMinus_congr σ.slicing
+    (a.Φ.e.unitIso.app E) hE hIFE
+  have hmτ := BridgelandStabLean.Foundation.Slicing.phiMinus_congr τ.slicing
+    (a.Φ.e.unitIso.app E) hE hIFE
   have hmassσ := stabilityMass_congr σ (a.Φ.e.unitIso.app E)
   have hmassτ := stabilityMass_congr τ (a.Φ.e.unitIso.app E)
   change σ.slicing.phiPlus C E hE =
@@ -142,7 +148,7 @@ end
 
 end BridgelandStabLean.GroupAction.AutPair
 
-namespace CategoryTheory.Triangulated
+namespace BridgelandStabLean.Foundation
 
 noncomputable section
 
@@ -165,4 +171,4 @@ theorem AutPairQuot_smul_stabilityDist
 
 end
 
-end CategoryTheory.Triangulated
+end BridgelandStabLean.Foundation

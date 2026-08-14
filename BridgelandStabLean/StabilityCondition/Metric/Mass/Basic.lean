@@ -28,10 +28,11 @@ lives naturally in `ℝ≥0∞`.
 is equal, identifying `stabilityMass` with the usual finite Bridgeland mass.
 -/
 
+open BridgelandStabLean.Foundation
 open CategoryTheory CategoryTheory.Limits CategoryTheory.Pretriangulated
 open scoped ENNReal BigOperators
 
-namespace CategoryTheory.Triangulated
+namespace BridgelandStabLean.Foundation
 
 noncomputable section
 
@@ -55,6 +56,7 @@ def HNFiltration.mass (σ : StabilityCondition.WithClassMap C v) {E : C}
     (F : HNFiltration C σ.slicing.P E) : ℝ≥0∞ :=
   ∑ i : Fin F.n, ENNReal.ofReal ‖σ.charge (F.factor i)‖
 
+omit [IsTriangulated C] in
 /-- A nonzero semistable object has nonzero charge. -/
 theorem StabilityCondition.WithClassMap.charge_ne_zero_of_semistable
     (σ : StabilityCondition.WithClassMap C v) (φ : ℝ) (E : C)
@@ -63,6 +65,7 @@ theorem StabilityCondition.WithClassMap.charge_ne_zero_of_semistable
   rw [hZ]
   exact mul_ne_zero (Complex.ofReal_ne_zero.mpr (ne_of_gt hm)) (Complex.exp_ne_zero _)
 
+omit [IsTriangulated C] in
 /-- Every HN filtration of a nonzero object has strictly positive finite-sum mass. -/
 theorem HNFiltration.mass_pos (σ : StabilityCondition.WithClassMap C v) {E : C}
     (F : HNFiltration C σ.slicing.P E) (hE : ¬IsZero E) : 0 < F.mass σ := by
@@ -77,10 +80,12 @@ theorem HNFiltration.mass_pos (σ : StabilityCondition.WithClassMap C v) {E : C}
       (f := fun j : Fin F.n ↦ ENNReal.ofReal ‖σ.charge (F.factor j)‖)
       (fun _ _ ↦ zero_le) (Finset.mem_univ i))
 
+omit [IsTriangulated C] in
 @[simp]
 theorem HNFiltration.mass_ofIso (σ : StabilityCondition.WithClassMap C v) {E E' : C}
     (F : HNFiltration C σ.slicing.P E) (e : E ≅ E') :
-    (F.ofIso C e).mass σ = F.mass σ :=
+    HNFiltration.mass σ
+      (BridgelandStabLean.Foundation.HNFiltration.ofIso C F e) = F.mass σ :=
   rfl
 
 /-- The choice-free HN mass envelope of an object.  Downstream,
@@ -88,25 +93,29 @@ theorem HNFiltration.mass_ofIso (σ : StabilityCondition.WithClassMap C v) {E E'
 def stabilityMass (σ : StabilityCondition.WithClassMap C v) (E : C) : ℝ≥0∞ :=
   ⨆ F : HNFiltration C σ.slicing.P E, F.mass σ
 
+omit [IsTriangulated C] in
 /-- The mass envelope is positive on every nonzero object. -/
 theorem stabilityMass_pos (σ : StabilityCondition.WithClassMap C v) {E : C}
     (hE : ¬IsZero E) : 0 < stabilityMass σ E := by
   obtain ⟨F⟩ := σ.slicing.hn_exists E
-  exact lt_of_lt_of_le (F.mass_pos σ hE)
+  exact lt_of_lt_of_le (BridgelandStabLean.Foundation.HNFiltration.mass_pos σ F hE)
     (le_iSup (fun G : HNFiltration C σ.slicing.P E ↦ G.mass σ) F)
 
+omit [IsTriangulated C] in
 /-- The mass envelope depends on an object only up to isomorphism. -/
 theorem stabilityMass_congr (σ : StabilityCondition.WithClassMap C v) {E E' : C}
     (e : E ≅ E') : stabilityMass σ E = stabilityMass σ E' := by
   apply le_antisymm
   · refine iSup_le fun F ↦ ?_
-    exact le_iSup_of_le (F.ofIso C e) (by simp)
+    exact le_iSup_of_le
+      (BridgelandStabLean.Foundation.HNFiltration.ofIso C F e) (by simp)
   · refine iSup_le fun F ↦ ?_
-    exact le_iSup_of_le (F.ofIso C e.symm) (by simp)
+    exact le_iSup_of_le
+      (BridgelandStabLean.Foundation.HNFiltration.ofIso C F e.symm) (by simp)
 
 end
 
-end CategoryTheory.Triangulated
+end BridgelandStabLean.Foundation
 
 namespace BridgelandStabLean.GroupAction.AutPair
 
@@ -127,9 +136,9 @@ variable (a : BridgelandStabLean.GroupAction.AutPair v)
 inverse-image object. -/
 theorem act_charge (σ : StabilityCondition.WithClassMap C v) (E : C) :
     (a.act σ).charge E = σ.charge (a.Φ.e.inverse.obj E) := by
-  have hcl : a.lam (cl C v E) = cl C v (a.Φ.e.inverse.obj E) := by
-    rw [cl, ← a.compat, K₀.mapF_of]
-  change σ.Z (a.lam (cl C v E)) = σ.Z (cl C v (a.Φ.e.inverse.obj E))
+  have hcl : a.lam (classOf C v E) = classOf C v (a.Φ.e.inverse.obj E) := by
+    rw [classOf, ← a.compat, K₀.mapF_of]
+  change σ.Z (a.lam (classOf C v E)) = σ.Z (classOf C v (a.Φ.e.inverse.obj E))
   rw [hcl]
 
 /-- Mapping an HN filtration backward through the equivalence preserves its
@@ -163,11 +172,11 @@ theorem mass_map_functor (σ : StabilityCondition.WithClassMap C v) {E : C}
   have hcharge :
       σ.charge (a.Φ.e.inverse.obj (a.Φ.e.functor.obj (F.factor i))) =
         σ.charge (F.factor i) := by
-    change σ.Z (cl C v (a.Φ.e.inverse.obj (a.Φ.e.functor.obj (F.factor i)))) =
-      σ.Z (cl C v (F.factor i))
-    have hcl := cl_iso C v (a.Φ.e.unitIso.app (F.factor i))
-    change cl C v (F.factor i) =
-      cl C v (a.Φ.e.inverse.obj (a.Φ.e.functor.obj (F.factor i))) at hcl
+    change σ.Z (classOf C v (a.Φ.e.inverse.obj (a.Φ.e.functor.obj (F.factor i)))) =
+      σ.Z (classOf C v (F.factor i))
+    have hcl := classOf_iso C v (a.Φ.e.unitIso.app (F.factor i))
+    change classOf C v (F.factor i) =
+      classOf C v (a.Φ.e.inverse.obj (a.Φ.e.functor.obj (F.factor i))) at hcl
     exact congrArg σ.Z hcl.symm
   rw [hcharge]
 
@@ -186,7 +195,8 @@ theorem act_stabilityMass (σ : StabilityCondition.WithClassMap C v) (E : C) :
       (P' := fun φ X ↦ σ.slicing.P φ (a.Φ.e.inverse.obj X))
       a.Φ.e.functor
       (fun _ X h ↦ ObjectProperty.prop_of_iso _ (a.Φ.e.unitIso.app X) h)
-    let G := G₀.ofIso C (a.Φ.e.counitIso.app E)
+    let G := BridgelandStabLean.Foundation.HNFiltration.ofIso C G₀
+      (a.Φ.e.counitIso.app E)
     rw [← a.mass_map_functor σ F, ← HNFiltration.mass_ofIso (a.act σ) G₀
       (a.Φ.e.counitIso.app E)]
     exact le_iSup (fun H : HNFiltration C (a.act σ).slicing.P E ↦

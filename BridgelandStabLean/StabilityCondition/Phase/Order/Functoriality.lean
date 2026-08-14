@@ -25,12 +25,13 @@ destination issue #211 (transferred from source issue #141).
 
 noncomputable section
 
+open BridgelandStabLean.Foundation
 open CategoryTheory CategoryTheory.Limits CategoryTheory.Pretriangulated
 open scoped ZeroObject
 
 universe v₁ u₁ v₂ u₂
 
-namespace CategoryTheory.Triangulated
+namespace BridgelandStabLean.Foundation
 
 variable {C : Type u₁} [Category.{v₁} C] [HasZeroObject C] [HasShift C ℤ]
   [Preadditive C] [∀ n : ℤ, (shiftFunctor C n).Additive] [Pretriangulated C]
@@ -107,4 +108,4 @@ theorem Slicing.PrecedesWeak.pullback_of_preimage
     (hst : s.PrecedesWeak C t) : (op s).PrecedesWeak D (op t) :=
   h.precedesWeak hst
 
-end CategoryTheory.Triangulated
+end BridgelandStabLean.Foundation

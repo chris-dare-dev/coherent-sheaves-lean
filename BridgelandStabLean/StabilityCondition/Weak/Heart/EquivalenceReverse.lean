@@ -3,8 +3,7 @@ Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under the MIT license.
 -/
 import BridgelandStabLean.StabilityCondition.Weak.HarderNarasimhan.Heart
-import BridgelandStability.Deformation.HNFiltrationAssembly
-import BridgelandStability.HeartEquivalence.Reverse
+import BridgelandStabLean.Foundation
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Arctan
 
 /-!
@@ -29,6 +28,7 @@ needed by the reverse construction.
 
 namespace BridgelandStabLean.WeakStability
 
+open BridgelandStabLean.Foundation
 open CategoryTheory Limits Pretriangulated CategoryTheory.Triangulated
 open scoped ZeroObject
 
@@ -152,6 +152,58 @@ instance WeakStabilityFunction.heartPhasePredicate_instClosedUnderIso
   W.heartPhasePredicate_closedUnderIso phi
 
 /-! ## Integer-normalized ambient phase predicates -/
+
+/-- The representative of a real phase in the standard interval `(0, 1]`. -/
+noncomputable def phaseBase (phi : ℝ) : ℝ :=
+  toIocMod zero_lt_one (0 : ℝ) phi
+
+/-- The integral translation carrying `phaseBase phi` back to `phi`. -/
+noncomputable def phaseIndex (phi : ℝ) : ℤ :=
+  toIocDiv zero_lt_one (0 : ℝ) phi
+
+theorem phaseBase_mem (phi : ℝ) : phaseBase phi ∈ Set.Ioc (0 : ℝ) 1 := by
+  simpa [phaseBase] using toIocMod_mem_Ioc zero_lt_one (0 : ℝ) phi
+
+theorem phaseBase_add_phaseIndex (phi : ℝ) :
+    phaseBase phi + phaseIndex phi = phi := by
+  simpa [phaseBase, phaseIndex] using
+    toIocMod_add_toIocDiv_mul zero_lt_one (0 : ℝ) phi
+
+theorem phaseBase_add_one (phi : ℝ) : phaseBase (phi + 1) = phaseBase phi := by
+  change toIocMod zero_lt_one (0 : ℝ) (phi + 1) =
+    toIocMod zero_lt_one (0 : ℝ) phi
+  convert toIocMod_add_intCast_mul zero_lt_one (0 : ℝ) phi 1 using 1 <;> ring
+
+theorem phaseIndex_add_one (phi : ℝ) : phaseIndex (phi + 1) = phaseIndex phi + 1 := by
+  change toIocDiv zero_lt_one (0 : ℝ) (phi + 1) =
+    toIocDiv zero_lt_one (0 : ℝ) phi + 1
+  convert toIocDiv_add_intCast_mul zero_lt_one (0 : ℝ) phi 1 using 1 <;> ring
+
+theorem phaseBase_eq_of_mem_Ioc {phi : ℝ} (hphi : phi ∈ Set.Ioc (0 : ℝ) 1) :
+    phaseBase phi = phi :=
+  (toIocMod_eq_self zero_lt_one).2 (by simpa using hphi)
+
+theorem phaseIndex_eq_zero_of_mem_Ioc {phi : ℝ}
+    (hphi : phi ∈ Set.Ioc (0 : ℝ) 1) : phaseIndex phi = 0 :=
+  toIocDiv_eq_of_sub_zsmul_mem_Ioc (hp := zero_lt_one) (a := (0 : ℝ))
+    (b := phi) (n := (0 : ℤ)) (by simpa using hphi)
+
+theorem phaseIndex_lt_phase (phi : ℝ) : (phaseIndex phi : ℝ) < phi := by
+  have hbase := (phaseBase_mem phi).1
+  nlinarith [phaseBase_add_phaseIndex phi]
+
+theorem phase_le_phaseIndex_add_one (phi : ℝ) :
+    phi ≤ (phaseIndex phi : ℝ) + 1 := by
+  have hbase := (phaseBase_mem phi).2
+  nlinarith [phaseBase_add_phaseIndex phi]
+
+theorem phaseIndex_le_of_lt {phi₁ phi₂ : ℝ} (h : phi₂ < phi₁) :
+    phaseIndex phi₂ ≤ phaseIndex phi₁ := by
+  by_contra hle
+  have hidx : phaseIndex phi₁ < phaseIndex phi₂ := lt_of_not_ge hle
+  have hstep : (phaseIndex phi₁ : ℝ) + 1 ≤ phaseIndex phi₂ := by
+    exact_mod_cast Int.add_one_le_iff.mpr hidx
+  linarith [phaseIndex_lt_phase phi₂, phase_le_phaseIndex_add_one phi₁]
 
 /-- A weak-semistable heart object of phase `psi`, shifted into cohomological
 degree `n`.  The phase normalization functions `phaseBase` and `phaseIndex`

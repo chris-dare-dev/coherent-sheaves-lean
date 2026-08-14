@@ -22,7 +22,7 @@ artifact:
   name: DerivedAlgGeoLean / BridgelandStabLean
   url: https://github.com/chris-dare-dev/derived-alg-geo-lean
   description: >
-    Extensions to mattrobball/BridgelandStability along seven lanes that
+    A repository-owned Bridgeland-stability library spanning seven lanes that
     require no algebraic-geometry substrate: rank-2 torsion-free lattice
     arithmetic; the Mukai extension Z + N + Z of a symmetric bilinear lattice
     together with rank-two subpair arithmetic; torsion pairs in an abelian
@@ -92,11 +92,6 @@ toolchain:
   system: Lean 4
   system_version: v4.32.1
   dependencies:
-    - name: BridgelandStability
-      rev: 5f771c77dd48c478c3a15f7b09eab37a1ac0c8e4
-      note: >
-        vendored v4.32.1 port of upstream revision
-        9e48f23a382ba117b63076a33e0e775389fef1ba
     - name: mathlib
       rev: 520045ab14e26149ee970e2e617ca04b09bde5d6
       note: pinned directly as Lean/Mathlib v4.32.1
@@ -678,7 +673,7 @@ fidelity:
     #100. `StabilityCondition/Metric/Mass/Subadditivity/CohomologyExactness.lean`
     adds 7 audited public
     declarations: 5 theorems and 2 constructions. It records the definitional
-    identification of the anchor's `HeartStabilityData.H0Functor` with
+    identification of the canonical `HeartStabilityData.H0Functor` with
     `originalHeartCohFunctor`, transports homologicality without installing a
     new global instance, and proves exactness at the middle term of the
     heart-source H-zero complex together with the equivalent monic cokernel
@@ -884,9 +879,22 @@ fidelity:
     projections. Audit issues 1830 commands, of which 1281 records are
     theorems, 60 are structures, and 484 are other non-theorems; no authored
     public declaration remains outside the hand audit. All 17 owner foundation
-    modules are import-level anchor-free. The direct vendor-import inventory
-    remains frozen at 28 until a downstream retained-type consumer can move
-    without a namespace alias or a hidden vendor dependency.
+    modules were already source-independent. The historical direct-import
+    inventory at that point was 28; the completed ownership cutover later
+    reduced it to zero.
+
+    COUNT UPDATE (literal Bridgeland source independence), 2026-08-14. The
+    vendor, compatibility, and anchor roots are deleted; every consumer imports
+    repository-owned declarations. The owner deformation chain now includes
+    global HN existence, the deformed slicing and stability condition,
+    seminorm comparison, local injectivity, connected-component control, and
+    the componentwise central-charge local-homeomorphism theorem. The census
+    reports 2718 authored declarations, 132 private declarations, and 251
+    structure-field projections. Audit issues 2340 commands and covers all
+    2335 authored public non-projection declarations: 1723 theorems, 68
+    structures, and 544 other constructions. The public audit gap is zero, and
+    every audited declaration remains within `propext`, `Classical.choice`,
+    and `Quot.sound` with no `sorryAx`.
 
     COUNT UPDATE (destination issue #236; owner deformation foundation),
     2026-08-13. The opening units of the sixth Mathlib-only foundation slice
@@ -941,10 +949,9 @@ fidelity:
     retained stability-condition conversion as well. Audit issues 1929
     commands, of which 1359 records are theorems, 62 are structures, and 503
     are other non-theorems; no authored public declaration remains outside the
-    hand audit. All 27
-    owner foundation modules are
-    import-level anchor-free. The direct vendor-import inventory remains
-    frozen at 28.
+    hand audit. All 27 owner foundation modules were source-independent. The
+    completed ownership cutover later reduced the historical direct-import
+    inventory to zero.
 
     COUNT UPDATE (Wall lane, the nested wall theorem), 2026-08-07. The 13
     additional records are the orthogonality identity minor_orth, the three
@@ -2150,8 +2157,9 @@ community:
   reviews: none
 
 acknowledgements: >
-  Structure, conventions, and this trust-record schema follow
-  mattrobball/BridgelandStability.
+  The initial comparison work, structure, conventions, and trust-record schema
+  were informed by mattrobball/BridgelandStability. No source from that project
+  is a current repository or build dependency.
 
 notes: >
   v0 skeleton. No mathematical claim in this repo has had human faithfulness

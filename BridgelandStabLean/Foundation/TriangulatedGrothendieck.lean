@@ -100,6 +100,44 @@ theorem K₀.of_shift_neg_one (X : C) : K₀.of C (X⟦(-1 : ℤ)⟧) = -K₀.of
   rw [hiso] at hshift
   exact (neg_eq_iff_eq_neg.mpr hshift).symm
 
+private theorem K₀.of_shift_nonneg (X : C) (n : ℕ) :
+    K₀.of C (X⟦(n : ℤ)⟧) = ((-1 : ℤ) ^ n) • K₀.of C X := by
+  induction n with
+  | zero => simpa using K₀.of_iso C ((shiftFunctorZero C ℤ).app X)
+  | succ n ih =>
+      calc
+        K₀.of C (X⟦((n + 1 : ℕ) : ℤ)⟧) =
+            K₀.of C ((X⟦(n : ℤ)⟧)⟦(1 : ℤ)⟧) := by
+          rw [Nat.cast_succ]
+          simpa only [Functor.comp_obj] using (K₀.of_iso C
+            (((shiftFunctorAdd' C (n : ℤ) 1 ((n : ℤ) + 1) (by lia)).app X).symm)).symm
+        _ = -K₀.of C (X⟦(n : ℤ)⟧) := K₀.of_shift_one C _
+        _ = -(((-1 : ℤ) ^ n) • K₀.of C X) := by rw [ih]
+        _ = ((-1 : ℤ) ^ (n + 1)) • K₀.of C X := by simp [pow_succ']
+
+private theorem K₀.of_shift_negative (X : C) (n : ℕ) :
+    K₀.of C (X⟦(Int.negSucc n : ℤ)⟧) =
+      ((-1 : ℤ) ^ (n + 1)) • K₀.of C X := by
+  induction n with
+  | zero => simpa using K₀.of_shift_neg_one C X
+  | succ n ih =>
+      calc
+        K₀.of C (X⟦(Int.negSucc (n + 1) : ℤ)⟧) =
+            K₀.of C ((X⟦(Int.negSucc n : ℤ)⟧)⟦(-1 : ℤ)⟧) := by
+          simpa only [Functor.comp_obj] using (K₀.of_iso C
+            (((shiftFunctorAdd' C (Int.negSucc n : ℤ) (-1 : ℤ)
+              (Int.negSucc (n + 1) : ℤ) (by lia)).app X).symm)).symm
+        _ = -K₀.of C (X⟦(Int.negSucc n : ℤ)⟧) := K₀.of_shift_neg_one C _
+        _ = -(((-1 : ℤ) ^ (n + 1)) • K₀.of C X) := by rw [ih]
+        _ = ((-1 : ℤ) ^ (n + 2)) • K₀.of C X := by simp [pow_succ']
+
+/-- An integral shift changes a Grothendieck class only by its parity sign. -/
+theorem K₀.of_shift_int (X : C) (n : ℤ) :
+    K₀.of C (X⟦n⟧) = ((-1 : ℤ) ^ Int.natAbs n) • K₀.of C X := by
+  cases n with
+  | ofNat n => simpa using K₀.of_shift_nonneg C X n
+  | negSucc n => simpa using K₀.of_shift_negative C X n
+
 variable {C} in
 /-- A function on objects is triangle-additive when it respects every
 distinguished-triangle relation. -/

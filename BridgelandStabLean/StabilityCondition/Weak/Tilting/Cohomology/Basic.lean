@@ -3,8 +3,7 @@ Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under the MIT license.
 -/
 import BridgelandStabLean.StabilityCondition.Weak.Tilting.TorsionPair.Heart
-import BridgelandStabLean.ForMathlib.CategoryTheory.ObjectProperty.FullSubcategory
-import BridgelandStabLean.ForMathlib.CategoryTheory.Triangulated.TStructure.HeartAbelian
+import BridgelandStabLean.TStructureHeartBridge
 import Mathlib.Algebra.Homology.ShortComplex.Exact
 import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 
@@ -309,7 +308,7 @@ noncomputable def HeartTorsionPair.originalCohomologyShortComplex
 theorem HeartTorsionPair.originalCohomologyShortComplex_shortExact
     [IsTriangulated C] {X : C} (hX : (P.tilt).heart X) :
     (P.originalCohomologyShortComplex hX).ShortExact := by
-  apply BridgelandStabLean.ForMathlib.CategoryTheory.Triangulated.TStructure.heartFullSubcategory_shortExact_of_distTriang
+  apply CategoryTheory.Triangulated.TStructure.heartFullSubcategory_shortExact_of_distTriang
     (C := C) (P.tilt)
   exact originalCohomologyTriangle_distinguished t X
 
@@ -320,7 +319,7 @@ theorem HeartTorsionPair.originalCohomologyShortComplex_f_isKernel
     Nonempty (IsLimit (KernelFork.ofι (P.originalCohomologyShortComplex hX).f
       (P.originalCohomologyShortComplex hX).zero)) := by
   letI : Abelian (P.tilt).heart.FullSubcategory :=
-    BridgelandStabLean.ForMathlib.CategoryTheory.Triangulated.TStructure.heartFullSubcategoryAbelian P.tilt
+    CategoryTheory.Triangulated.TStructure.heartFullSubcategoryAbelian P.tilt
   have hShort := P.originalCohomologyShortComplex_shortExact hX
   exact (ShortComplex.exact_and_mono_f_iff_f_is_kernel
     (P.originalCohomologyShortComplex hX)).mp ⟨hShort.exact, hShort.mono_f⟩
@@ -332,7 +331,7 @@ theorem HeartTorsionPair.originalCohomologyShortComplex_g_isCokernel
     Nonempty (IsColimit (CokernelCofork.ofπ (P.originalCohomologyShortComplex hX).g
       (P.originalCohomologyShortComplex hX).zero)) := by
   letI : Abelian (P.tilt).heart.FullSubcategory :=
-    BridgelandStabLean.ForMathlib.CategoryTheory.Triangulated.TStructure.heartFullSubcategoryAbelian P.tilt
+    CategoryTheory.Triangulated.TStructure.heartFullSubcategoryAbelian P.tilt
   have hShort := P.originalCohomologyShortComplex_shortExact hX
   exact (ShortComplex.exact_and_epi_g_iff_g_is_cokernel
     (P.originalCohomologyShortComplex hX)).mp ⟨hShort.exact, hShort.epi_g⟩
@@ -344,7 +343,7 @@ theorem HeartTorsionPair.originalHMinusOne_isZero_of_tors
     [IsTriangulated C] {T : C} (hT : P.tors T) :
     IsZero (P.originalHMinusOne (P.tors_mem_tilt_heart hT)) := by
   haveI : t.IsGE T 0 := P.tors_isGE T hT
-  refine BridgelandStabLean.ForMathlib.CategoryTheory.ObjectProperty.FullSubcategory.isZero_of_obj_isZero (C := C) ?_
+  refine CategoryTheory.ObjectProperty.FullSubcategory.isZero_of_obj_isZero (C := C) ?_
   exact (shiftFunctor C (-1 : ℤ)).map_isZero
     (t.isZero_truncLT_obj_of_isGE 0 T)
 
@@ -366,7 +365,7 @@ theorem HeartTorsionPair.originalHZero_isZero_of_free_shift
   haveI : t.IsLE F 0 := P.free_isLE F hF
   haveI : t.IsLE (F⟦(1 : ℤ)⟧) (-1) :=
     t.isLE_shift F 0 1 (-1) (by lia)
-  refine BridgelandStabLean.ForMathlib.CategoryTheory.ObjectProperty.FullSubcategory.isZero_of_obj_isZero (C := C) ?_
+  refine CategoryTheory.ObjectProperty.FullSubcategory.isZero_of_obj_isZero (C := C) ?_
   exact t.isZero_truncGE_obj_of_isLE (-1) 0 (by lia) (F⟦(1 : ℤ)⟧)
 
 /-- If the original `H⁰` of a tilted-heart object vanishes, its canonical
@@ -376,11 +375,11 @@ noncomputable def HeartTorsionPair.originalHMinusOneShiftIsoOfHZeroIsZero
     (hzero : IsZero (P.originalHZero hX)) :
     P.originalHMinusOneShiftInTiltHeart hX ≅ P.objectInTiltHeart hX := by
   letI : Abelian P.tilt.heart.FullSubcategory :=
-    BridgelandStabLean.ForMathlib.CategoryTheory.Triangulated.TStructure.heartFullSubcategoryAbelian P.tilt
+    CategoryTheory.Triangulated.TStructure.heartFullSubcategoryAbelian P.tilt
   let S := P.originalCohomologyShortComplex hX
   have hS : S.ShortExact := P.originalCohomologyShortComplex_shortExact hX
   have hzero' : IsZero S.X₃ := by
-    apply BridgelandStabLean.ForMathlib.CategoryTheory.ObjectProperty.FullSubcategory.isZero_of_obj_isZero (C := C)
+    apply CategoryTheory.ObjectProperty.FullSubcategory.isZero_of_obj_isZero (C := C)
     exact (t.heart).ι.map_isZero hzero
   exact @asIso _ _ _ _ S.f ((hS.isIso_f_iff).2 hzero')
 

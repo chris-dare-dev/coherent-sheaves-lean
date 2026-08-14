@@ -27,6 +27,7 @@ right-orthogonality hypothesis on the shifted last factor is required.
 
 namespace BridgelandStabLean.WeakStability
 
+open BridgelandStabLean.Foundation
 open CategoryTheory Limits Pretriangulated CategoryTheory.Triangulated
 open BridgelandStabLean.Tilting
 open scoped ZeroObject
@@ -295,7 +296,7 @@ theorem phaseTilt_existsHNWithLastSource_of_freeShift_zeroCharge_extension
             ¬IsZero L ∧
               G.μ ⟨G.n - 1, by have := G.hn; lia⟩ = W.slope (L⟦(1 : ℤ)⟧) by
     obtain ⟨FX, hnFX, hfirst, -⟩ :=
-      HNFiltration.exists_both_nonzero C sigma.slicing hF0
+      sigma.slicing.exists_hn_nonzero_boundaries C hF0
     obtain ⟨G, L, hPL, hL0, hlast⟩ :=
       hmain FX.n hF0 hFfree FX hnFX le_rfl hfirst
       hE hE0 hV hd
@@ -305,8 +306,8 @@ theorem phaseTilt_existsHNWithLastSource_of_freeShift_zeroCharge_extension
       · exact (sigma.slicing.phiMinus_le_phiPlus C F hF0).trans
           (sigma.slicing.phiPlus_le_of_leProp C hF0 hFfree.2)
     have hLfree : phaseFree sigma.slicing beta L := ⟨
-      sigma.slicing.gtProp_of_semistable C _ 0 L hPL hphaseL.1,
-      sigma.slicing.leProp_of_semistable C _ beta L hPL hphaseL.2⟩
+      sigma.slicing.gtProp_of_semistable C hPL hphaseL.1,
+      sigma.slicing.leProp_of_semistable C hPL hphaseL.2⟩
     exact ⟨G, Or.inr ⟨L, hLfree, hL0, hlast⟩⟩
   intro m
   induction m with
@@ -335,13 +336,14 @@ theorem phaseTilt_existsHNWithLastSource_of_freeShift_zeroCharge_extension
           rw [sigma.slicing.phiMinus_eq C X hX0 FX hnFX hlast]
           have hidx : (⟨FX.n - 1, by lia⟩ : Fin FX.n) = ⟨0, hnFX⟩ :=
             Fin.ext (by lia)
-          simp [phi, hidx]
+          simp [phi, hidx, BridgelandStabLean.Foundation.HNFiltration.phiMinus]
         have hphi : phi ∈ Set.Ioc (0 : ℝ) beta := by
           constructor
           · rw [← hphiMinus]
             exact sigma.slicing.phiMinus_gt_of_gtProp C hX0 hXfree.1
           · have hphiPlus : sigma.slicing.phiPlus C X hX0 = phi := by
-              simpa [phi] using sigma.slicing.phiPlus_eq C X hX0 FX hnFX hfirst
+              simpa [phi, BridgelandStabLean.Foundation.HNFiltration.phiPlus] using
+                sigma.slicing.phiPlus_eq C X hX0 FX hnFX hfirst
             rw [← hphiPlus]
             exact sigma.slicing.phiPlus_le_of_leProp C hX0 hXfree.2
         have hphi01 : phi ∈ Set.Ioc (0 : ℝ) 1 :=
@@ -441,13 +443,15 @@ theorem phaseTilt_existsHNWithLastSource_of_freeShift_zeroCharge_extension
           rw [hZcharge]
       · have htwo : 2 ≤ FX.n := by lia
         by_cases hlast : IsZero (FX.triangle ⟨FX.n - 1, by lia⟩).obj₃
-        · let FX' := FX.dropLast C (by lia) hlast
+        · let FX' := BridgelandStabLean.Foundation.HNFiltration.dropLast
+            C FX (by lia) hlast
           have hnFX' : 0 < FX'.n := FX'.n_pos C hX0
           have hFX'm : FX'.n ≤ m := by
             change FX.n - 1 ≤ m
             lia
           have hfirst' : ¬IsZero (FX'.triangle ⟨0, hnFX'⟩).obj₃ := by
-            simpa [FX', HNFiltration.dropLast, HNFiltration.prefix] using hfirst
+            simpa [FX', BridgelandStabLean.Foundation.HNFiltration.dropLast,
+              BridgelandStabLean.Foundation.HNFiltration.prefix] using hfirst
           exact ih hX0 hXfree FX' hnFX' hFX'm hfirst' hZ hZ0 hQ hXZQ
         · have hall : ∀ k : Fin FX.n, FX.φ k ∈ Set.Ioc (0 : ℝ) beta := by
             intro k
@@ -469,14 +473,17 @@ theorem phaseTilt_existsHNWithLastSource_of_freeShift_zeroCharge_extension
           let Gobj : C := FX.chain.obj ⟨FX.n - 1, by lia⟩
           let U : C := (FX.triangle jLast).obj₃
           let FG : HNFiltration C sigma.slicing.P Gobj :=
-            FX.prefix C (FX.n - 1) (by lia) (by lia)
+            BridgelandStabLean.Foundation.HNFiltration.prefix
+              C FX (FX.n - 1) (by lia) (by lia)
           have hnFG : 0 < FG.n := by change 0 < FX.n - 1; lia
           have hGfree : phaseFree sigma.slicing beta Gobj := by
             constructor
-            · exact HNFiltration.chain_obj_gtProp C sigma.slicing FX
+            · exact BridgelandStabLean.Foundation.HNFiltration.chain_obj_gtProp
+                C sigma.slicing FX
                 (FX.n - 1) (by lia) (by lia) 0
                 (fun k => (hall ⟨k, by lia⟩).1)
-            · exact HNFiltration.chain_obj_leProp C sigma.slicing FX
+            · exact BridgelandStabLean.Foundation.HNFiltration.chain_obj_leProp
+                C sigma.slicing FX
                 (FX.n - 1) (by lia) (by lia) beta
                 (fun k => (hall ⟨k, by lia⟩).2)
           have hG0 : ¬IsZero Gobj := by
@@ -485,14 +492,15 @@ theorem phaseTilt_existsHNWithLastSource_of_freeShift_zeroCharge_extension
                 ∀ f : (FG.triangle ⟨0, hnFG⟩).obj₃ ⟶ Gobj, f = 0 :=
               fun f => hzero.eq_of_tgt _ _
             exact hfirst <| by
-              simpa [FG, HNFiltration.prefix] using
-                HNFiltration.isZero_factor_zero_of_hom_eq_zero
+              simpa [FG, BridgelandStabLean.Foundation.HNFiltration.prefix,
+                BridgelandStabLean.Foundation.PostnikovTower.factor] using
+                BridgelandStabLean.Foundation.HNFiltration.isZero_factor_zero_of_hom_eq_zero
                   C sigma.slicing FG hnFG hzeroMap
           have hUfree : phaseFree sigma.slicing beta U := by
             exact ⟨
-              sigma.slicing.gtProp_of_semistable C (FX.φ jLast) 0 U
+              sigma.slicing.gtProp_of_semistable C
                 (FX.semistable jLast) (hall jLast).1,
-              sigma.slicing.leProp_of_semistable C (FX.φ jLast) beta U
+              sigma.slicing.leProp_of_semistable C
                 (FX.semistable jLast) (hall jLast).2⟩
           have hUheart : t.heart U :=
             mem_heart_of_bounds sigma.slicing hUfree.1
@@ -558,7 +566,7 @@ theorem phaseTilt_existsHNWithLastSource_of_freeShift_zeroCharge_extension
             exact (Functor.map_eq_zero_iff (shiftFunctor C (1 : ℤ))).mp
               (by simpa using hGshiftzero)
           have hfirstG : ¬IsZero (FG.triangle ⟨0, hnFG⟩).obj₃ := by
-            simpa [FG, HNFiltration.prefix] using hfirst
+            simpa [FG, BridgelandStabLean.Foundation.HNFiltration.prefix] using hfirst
           obtain ⟨GK, L, hPL, hL0, hGKlast⟩ :=
             ih hG0 hGfree FG hnFG (by change FX.n - 1 ≤ m; lia)
               hfirstG hK hK0 hA hGKA
@@ -570,22 +578,23 @@ theorem phaseTilt_existsHNWithLastSource_of_freeShift_zeroCharge_extension
                   ((sigma.slicing.phiPlus_le_of_leProp C hG0 hGfree.2).trans
                     hbeta1.le)
             exact mem_heart_of_bounds sigma.slicing
-              (sigma.slicing.gtProp_of_semistable C _ 0 L hPL hphaseL.1)
-              (sigma.slicing.leProp_of_semistable C _ 1 L hPL hphaseL.2)
+              (sigma.slicing.gtProp_of_semistable C hPL hphaseL.1)
+              (sigma.slicing.leProp_of_semistable C hPL hphaseL.2)
           have hLfree : phaseFree sigma.slicing beta L := by
             have hphaseLe : sigma.slicing.phiMinus C Gobj hG0 ≤ beta :=
               (sigma.slicing.phiMinus_le_phiPlus C Gobj hG0).trans
                 (sigma.slicing.phiPlus_le_of_leProp C hG0 hGfree.2)
             exact ⟨
-              sigma.slicing.gtProp_of_semistable C _ 0 L hPL
+              sigma.slicing.gtProp_of_semistable C hPL
                 (sigma.slicing.phiMinus_gt_of_gtProp C hG0 hGfree.1),
-              sigma.slicing.leProp_of_semistable C _ beta L hPL hphaseLe⟩
+              sigma.slicing.leProp_of_semistable C hPL hphaseLe⟩
           have hphaseSep : FX.φ jLast < sigma.slicing.phiMinus C Gobj hG0 := by
             have hGgt : sigma.slicing.gtProp C (FX.φ jLast) Gobj :=
-              HNFiltration.chain_obj_gtProp C sigma.slicing FX
+              BridgelandStabLean.Foundation.HNFiltration.chain_obj_gtProp
+                C sigma.slicing FX
                 (FX.n - 1) (by lia) (by lia) (FX.φ jLast) (fun a => by
                   exact FX.hφ (Fin.mk_lt_mk.mpr (by have := a.isLt; lia)))
-            exact gt_phases_of_gtProp C sigma.slicing hG0 hGgt
+            exact sigma.slicing.phiMinus_gt_of_gtProp C hG0 hGgt
           have hUplus : sigma.slicing.phiPlus C U hlast = FX.φ jLast :=
             (sigma.slicing.phiPlus_eq_phiMinus_of_semistable C
               (FX.semistable jLast) hlast).1
@@ -822,7 +831,7 @@ theorem phaseTilt_hasHNProperty_of_zeroChargeDecompositions
         beta hbeta0.le hbeta1 hdec hFfree hNnew E.property hEobj hdCoh
     exact ⟨G⟩
   obtain ⟨FN, hnFN, hfirst, -⟩ :=
-    HNFiltration.exists_both_nonzero C sigma.slicing hNzero
+    sigma.slicing.exists_hn_nonzero_boundaries C hNzero
   suffices hmain :
       ∀ (m : ℕ) {X Z : C} (hX0 : ¬IsZero X)
         (hXtors : phaseTors sigma.slicing beta X)
@@ -870,13 +879,14 @@ theorem phaseTilt_hasHNProperty_of_zeroChargeDecompositions
           rw [sigma.slicing.phiMinus_eq C X hX0 FX hnFX hlast]
           have hidx : (⟨FX.n - 1, by lia⟩ : Fin FX.n) = ⟨0, hnFX⟩ :=
             Fin.ext (by lia)
-          simp [phi, hidx]
+          simp [phi, hidx, BridgelandStabLean.Foundation.HNFiltration.phiMinus]
         have hphi : phi ∈ Set.Ioc beta 1 := by
           constructor
           · rw [← hphiMinus]
             exact sigma.slicing.phiMinus_gt_of_gtProp C hX0 hXtors.1
           · have hp : sigma.slicing.phiPlus C X hX0 = phi := by
-              simpa [phi] using sigma.slicing.phiPlus_eq C X hX0 FX hnFX hfirstX
+              simpa [phi, BridgelandStabLean.Foundation.HNFiltration.phiPlus] using
+                sigma.slicing.phiPlus_eq C X hX0 FX hnFX hfirstX
             rw [← hp]
             exact sigma.slicing.phiPlus_le_of_leProp C hX0 hXtors.2
         have hXss : W0.IsSemistable X :=
@@ -1017,10 +1027,12 @@ theorem phaseTilt_hasHNProperty_of_zeroChargeDecompositions
             rw [hBcharge]
       · have htwo : 2 ≤ FX.n := by lia
         by_cases hlast : IsZero (FX.triangle ⟨FX.n - 1, by lia⟩).obj₃
-        · let FX' := FX.dropLast C (by lia) hlast
+        · let FX' := BridgelandStabLean.Foundation.HNFiltration.dropLast
+            C FX (by lia) hlast
           have hnFX' : 0 < FX'.n := FX'.n_pos C hX0
           have hfirst' : ¬IsZero (FX'.triangle ⟨0, hnFX'⟩).obj₃ := by
-            simpa [FX', HNFiltration.dropLast, HNFiltration.prefix] using hfirstX
+            simpa [FX', BridgelandStabLean.Foundation.HNFiltration.dropLast,
+              BridgelandStabLean.Foundation.HNFiltration.prefix] using hfirstX
           exact ih hX0 hXtors FX' hnFX' (by change FX.n - 1 ≤ m; lia)
             hfirst' hZ hZ0 hFZX
         · have hall : ∀ k : Fin FX.n, FX.φ k ∈ Set.Ioc beta 1 := by
@@ -1043,25 +1055,29 @@ theorem phaseTilt_hasHNProperty_of_zeroChargeDecompositions
           let Gobj : C := FX.chain.obj ⟨FX.n - 1, by lia⟩
           let U : C := (FX.triangle jLast).obj₃
           let FG : HNFiltration C sigma.slicing.P Gobj :=
-            FX.prefix C (FX.n - 1) (by lia) (by lia)
+            BridgelandStabLean.Foundation.HNFiltration.prefix
+              C FX (FX.n - 1) (by lia) (by lia)
           have hnFG : 0 < FG.n := by change 0 < FX.n - 1; lia
           have hGtors : phaseTors sigma.slicing beta Gobj := ⟨
-            HNFiltration.chain_obj_gtProp C sigma.slicing FX
+            BridgelandStabLean.Foundation.HNFiltration.chain_obj_gtProp
+              C sigma.slicing FX
               (FX.n - 1) (by lia) (by lia) beta
                 (fun k => (hall ⟨k, by lia⟩).1),
-            HNFiltration.chain_obj_leProp C sigma.slicing FX
+            BridgelandStabLean.Foundation.HNFiltration.chain_obj_leProp
+              C sigma.slicing FX
               (FX.n - 1) (by lia) (by lia) 1
                 (fun k => (hall ⟨k, by lia⟩).2)⟩
           have hG0 : ¬IsZero Gobj := by
             intro hzero
             exact hfirstX <| by
-              simpa [FG, HNFiltration.prefix] using
-                HNFiltration.isZero_factor_zero_of_hom_eq_zero
+              simpa [FG, BridgelandStabLean.Foundation.HNFiltration.prefix,
+                BridgelandStabLean.Foundation.PostnikovTower.factor] using
+                BridgelandStabLean.Foundation.HNFiltration.isZero_factor_zero_of_hom_eq_zero
                   C sigma.slicing FG hnFG (fun f => hzero.eq_of_tgt _ _)
           have hUphase : phaseTors sigma.slicing beta U := ⟨
-            sigma.slicing.gtProp_of_semistable C (FX.φ jLast) beta U
+            sigma.slicing.gtProp_of_semistable C
               (FX.semistable jLast) (hall jLast).1,
-            sigma.slicing.leProp_of_semistable C (FX.φ jLast) 1 U
+            sigma.slicing.leProp_of_semistable C
               (FX.semistable jLast) (hall jLast).2⟩
           have hUheart : t.heart U :=
             mem_heart_of_bounds sigma.slicing
@@ -1084,8 +1100,8 @@ theorem phaseTilt_hasHNProperty_of_zeroChargeDecompositions
             intro A0 hA0 f
             exact sigma.slicing.zero_of_gtProp_leProp_general C (FX.φ jLast)
               (sigma.zeroCharge_phaseTors (FX.φ jLast) hUphiLt hA0).1
-              (sigma.slicing.leProp_of_semistable C (FX.φ jLast)
-                (FX.φ jLast) U (FX.semistable jLast) le_rfl) f
+              (sigma.slicing.leProp_of_semistable C
+                (FX.semistable jLast) le_rfl) f
           have hUtilt : P.tilt.heart U := P.tors_mem_tilt_heart hUphase
           have hUcharge : W.charge U ≠ 0 := by
             simpa [W, W0, WeakStabilityFunction.charge, phaseTiltRotation] using
@@ -1134,7 +1150,7 @@ theorem phaseTilt_hasHNProperty_of_zeroChargeDecompositions
             exact hG0 (P.tilt.heart.ι.map_isZero
               (IsZero.of_epi rH (ObjectProperty.FullSubcategory.isZero_of_obj_isZero hz)))
           have hfirstG : ¬IsZero (FG.triangle ⟨0, hnFG⟩).obj₃ := by
-            simpa [FG, HNFiltration.prefix] using hfirstX
+            simpa [FG, BridgelandStabLean.Foundation.HNFiltration.prefix] using hfirstX
           obtain ⟨GK, hsource⟩ := ih hG0 hGtors FG hnFG
             (by change FX.n - 1 ≤ m; lia) hfirstG hK hK0 hFKG
           let KH : H := ⟨K, hK⟩
@@ -1190,9 +1206,9 @@ theorem phaseTilt_hasHNProperty_of_zeroChargeDecompositions
                       (sigma.slicing.phiMinus_le_phiPlus C Gobj hG0).trans
                         (sigma.slicing.phiPlus_le_of_leProp C hG0 hGtors.2)⟩
                   exact mem_heart_of_bounds sigma.slicing
-                    (sigma.slicing.gtProp_of_semistable C _ 0 L hPL
+                    (sigma.slicing.gtProp_of_semistable C hPL
                       (hbeta0.trans hp.1))
-                    (sigma.slicing.leProp_of_semistable C _ 1 L hPL hp.2)
+                    (sigma.slicing.leProp_of_semistable C hPL hp.2)
                 have hsep : sigma.slicing.phiPlus C U hlast <
                     sigma.slicing.phiMinus C L hL0 := by
                   have hUplus :=
@@ -1203,8 +1219,9 @@ theorem phaseTilt_hasHNProperty_of_zeroChargeDecompositions
                   calc
                     sigma.slicing.phiPlus C U hlast = FX.φ jLast := hUplus
                     _ < sigma.slicing.phiMinus C Gobj hG0 := by
-                      exact gt_phases_of_gtProp C sigma.slicing hG0 <|
-                        HNFiltration.chain_obj_gtProp C sigma.slicing FX
+                      exact sigma.slicing.phiMinus_gt_of_gtProp C hG0 <|
+                        BridgelandStabLean.Foundation.HNFiltration.chain_obj_gtProp
+                          C sigma.slicing FX
                           (FX.n - 1) (by lia) (by lia) (FX.φ jLast)
                             (fun a => FX.hφ (Fin.mk_lt_mk.mpr (by
                               have := a.isLt; lia)))
@@ -1213,15 +1230,15 @@ theorem phaseTilt_hasHNProperty_of_zeroChargeDecompositions
                 have hWL : W.charge L = phaseTiltRotation beta (W0.charge L) := rfl
                 exact phaseTilt_slope_lt_of_phase_separated sigma W hUheart hLheart
                   hUtilt (P.tors_mem_tilt_heart (by
-                    exact ⟨sigma.slicing.gtProp_of_semistable C _ beta L hPL
+                    exact ⟨sigma.slicing.gtProp_of_semistable C hPL
                       (sigma.slicing.phiMinus_gt_of_gtProp C hG0 hGtors.1),
-                      sigma.slicing.leProp_of_semistable C _ 1 L hPL
+                      sigma.slicing.leProp_of_semistable C hPL
                         ((sigma.slicing.phiMinus_le_phiPlus C Gobj hG0).trans
                           (sigma.slicing.phiPlus_le_of_leProp C hG0 hGtors.2))⟩))
                   hWU hWL hlast hL0 hsep (by
                     calc
                       sigma.slicing.phiPlus C U hlast = FX.φ jLast := by
-                        simpa [U, PostnikovTower.factor] using
+                        simpa [U, BridgelandStabLean.Foundation.PostnikovTower.factor] using
                           (sigma.slicing.phiPlus_eq_phiMinus_of_semistable C
                             (FX.semistable jLast) hlast).1
                       _ < 1 := hUphiLt) hLcharge

@@ -59,59 +59,59 @@ to **488**. Both were right against the filter of the day, and both are
 superseded here -- the 821 in particular counted the 30 generated names
 described above. **Re-run the command; do not adjust the numbers.**
 
-**THE GAP IS NOW ZERO, re-measured while adding the issue #236 owner relative
-phase foundation on 2026-08-13.** Every
+**THE GAP IS NOW ZERO, re-measured after the literal source-independence
+cutover on 2026-08-14.** Every
 public declaration in this library that is not a structure field projection is
 named below. Be precise about what that does and does not mean -- three of the
 four qualifications in this comment are unaffected by it:
 
-* it does NOT cover the **126 private** declarations, which remain structurally
+* it does NOT cover the **132 private** declarations, which remain structurally
   unlistable;
-* it does NOT make this file a gate -- `#print axioms` still exits 0 on
-  `[sorryAx]`, and nothing here fails on a missing name;
-* it does NOT stay true on its own. The next declaration added anywhere lands
-  green without an entry here. Zero is a measurement taken at a commit, not a
-  property the build maintains.
+* it does NOT make this file a gate by itself -- `#print axioms` still exits 0
+  on `[sorryAx]`; CI's output checker and environment emitter supply the gate;
+* it does NOT make the zero figure self-explanatory. The broader completeness
+  ratchet now rejects an unlisted public declaration, but zero in the narrower
+  authored/non-projection census is still a measurement that must be rerun.
 
-* It issues **1844** audit commands. The environment holds **2189** authored
-  declarations under `BridgelandStabLean.*`, so **345 are outside this gate**,
-  all of them private or projections. ("Authored" excludes constructors,
+* It issues **2347** audit commands. The environment holds **2718** authored
+  declarations under `BridgelandStabLean.*`; the declarations outside the
+  substantive hand audit are precisely the private declarations and structure
+  projections. Seven projections are additionally listed because the newer
+  repository-wide completeness ratchet deliberately uses a broader census.
+  ("Authored" excludes constructors,
   recursors, `casesOn`, matchers, equation lemmas, internal names, and the six
   generated families named above -- none of which anybody writes or could
   list.)
-* **126 are `private`** -- 110 of them theorems -- and are *structurally*
+* **132 are `private`** -- 115 of them theorems -- and are *structurally*
   unlistable: Lean mangles a private name to `_private.<Module>.<n>.<Name>`,
   which cannot be written as a short name from an importing module. The
   instruction below cannot be followed for them, and no amount of diligence
   changes that.
-* **224 are structure field projections** emitted by the `structure` command.
+* **251 are structure field projections** emitted by the `structure` command.
   These are not a coverage gap in any useful sense; listing them would be noise.
-  They are called out because a census that does not separate them reports a
-  shortfall five times the real one.
-* That leaves **0**. The shortfall was closed in two steps on 2026-08-07:
-  **20** in `GLTildeSurj.lean` -- the largest single block, quoted in this
-  comment since 2026-08-06 without moving -- then the last **10**, spread over
-  `AutPairAction.lean` (5), `GLTildeFibre.lean` (3), `PolarDecomposition.lean`
-  (1) and `NumericalK.lean` (1).
+  Seven are nevertheless named below to keep the broader CI completeness
+  ratchet from worsening. They are called out because a census that does not
+  separate them reports a shortfall five times the real one.
+* That leaves **0**. The literal-independence audit found 194 public names that
+  had accumulated outside this list; all 194 were added on 2026-08-14.
 * **The residue was dominated by one syntactic shape.** Five of the first 20
   and **seven of the last 10** are `@[simp] theorem` on ONE line, which a regex
   anchored on `^theorem` cannot see. That is 12 of the 30, and it is why the
   count is taken from the environment rather than from source text: the names
   hardest to notice by eye were, systematically, the ones left out.
-* Nothing detects the shortfall *automatically*. `scripts/check_audit.py` reads
-  THIS file, but only to count its `#print axioms` lines against the output's
-  record count (its truncation check, added 2026-08-08) -- it never reads the
-  source tree, so it cannot see a name that should be listed and is not. This
-  file fails to build only when a name it ALREADY lists disappears -- never
-  when a name it *should* list appears. `scripts/Census.lean` is the thing that
-  reports it, but it is a script you run, not a CI gate; a name added without a
-  matching entry here still lands green.
-* **544 of the distinct gated declarations are not theorems** (60 `structure`, 484 other
+* `scripts/check_audit.py` still checks only that this file's commanded output
+  is complete and untruncated. The complementary CI gate
+  `scripts/check_audit_complete.py` now enumerates public declarations and
+  rejects growth beyond its recorded legacy ceiling. It is a ratchet rather
+  than a zero-gap assertion because its intentionally broader census includes
+  generated projections; `scripts/Census.lean` remains the precise measurement
+  for the authored, non-projection claim above.
+* **612 of the distinct gated declarations are not theorems** (68 `structure`, 544 other
   constructions).
   For a `def`, `#print axioms` reports the axiom closure of a CONSTRUCTION and
   asserts nothing about any proposition. In particular
   `CategoryTheory.Triangulated.StabilityMassTriangleInequality` appears below
-formatted identically to the **1281** real theorems, but it is a `def ... :
+formatted identically to the **1723** real theorems, but it is a `def ... :
   Prop` -- its clean line means the definition is axiom-clean, NOT that the
   proposition holds.
 
@@ -156,20 +156,6 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Foundation.Slicing.zero_mem_of_isZero
 #print axioms BridgelandStabLean.Foundation.Slicing.shift
 #print axioms BridgelandStabLean.Foundation.Slicing.unshift
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.PostnikovTower.toVendor
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.PostnikovTower.ofVendor
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.PostnikovTower.ofVendor_toVendor
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.PostnikovTower.toVendor_ofVendor
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.HNFiltration.toVendor
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.HNFiltration.ofVendor
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.HNFiltration.ofVendor_toVendor
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.HNFiltration.toVendor_ofVendor
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.Slicing.toVendor
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.Slicing.ofVendor
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.Slicing.toVendor_P
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.Slicing.ofVendor_P
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.Slicing.ofVendor_toVendor
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.Slicing.toVendor_ofVendor
 
 /-! ## Owner-controlled Grothendieck and pre-stability foundation (#228) -/
 
@@ -232,20 +218,6 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Foundation.PreStabilityCondition.WithClassMap.ext_iff
 #print axioms BridgelandStabLean.Foundation.PreStabilityCondition
 #print axioms BridgelandStabLean.Foundation.preStabilityCondition_compat_apply
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.GrothendieckGroup.vendorOf_isTriangleAdditive
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.GrothendieckGroup.toVendor
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.GrothendieckGroup.toVendor_of
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.GrothendieckGroup.ownerOf_isTriangleAdditive
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.GrothendieckGroup.ofVendor
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.GrothendieckGroup.ofVendor_of
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.GrothendieckGroup.ofVendor_toVendor
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.GrothendieckGroup.toVendor_ofVendor
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.GrothendieckGroup.equiv
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.PreStabilityCondition.toVendor
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.PreStabilityCondition.ofVendor
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.PreStabilityCondition.ofVendor_toVendor
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.PreStabilityCondition.toVendor_ofVendor
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.PreStabilityCondition.equiv
 
 /-! ## Owner-controlled local finiteness and stability conditions (#229) -/
 
@@ -268,22 +240,6 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.ext_iff
 #print axioms BridgelandStabLean.Foundation.StabilityCondition
 #print axioms BridgelandStabLean.Foundation.stabilityCondition_compat_apply
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.Slicing.toVendor_intervalProp_iff
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.Slicing.intervalEquiv
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.Slicing.intervalSubobjectOrderIso
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.Slicing.intervalSubobjectOrderIso_wellFoundedLT_iff
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.Slicing.intervalSubobjectOrderIso_wellFoundedGT_iff
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.Slicing.intervalSubobjectOrderIso_isStrict_of_isAdmissible
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.Slicing.isAdmissible_of_intervalSubobjectOrderIso_isStrict
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.Slicing.intervalSubobjectOrderIso_isAdmissible_iff_isStrict
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.Slicing.intervalAdmissibleSubobjectOrderIso
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.Slicing.isFiniteLength_iff
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.Slicing.isLocallyFinite_iff
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.StabilityCondition.toVendor
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.StabilityCondition.ofVendor
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.StabilityCondition.ofVendor_toVendor
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.StabilityCondition.toVendor_ofVendor
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.StabilityCondition.equiv
 
 /-! ## Owner slicing phase bounds and filtration operations (#231) -/
 
@@ -390,9 +346,6 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Foundation.Slicing.phiPlus_eq
 #print axioms BridgelandStabLean.Foundation.Slicing.phiMinus_eq
 #print axioms BridgelandStabLean.Foundation.Slicing.phiMinus_le_phiPlus
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.Slicing.toVendor_phiPlus
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.Slicing.toVendor_phiMinus
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.Slicing.toVendor_slicingDist
 #print axioms BridgelandStabLean.Foundation.Slicing.phiPlus_eq_of_semistable
 #print axioms BridgelandStabLean.Foundation.Slicing.phiMinus_eq_of_semistable
 #print axioms BridgelandStabLean.Foundation.Slicing.exists_hn_intrinsic_width
@@ -434,13 +387,6 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Foundation.Slicing.geProp_of_hn
 #print axioms BridgelandStabLean.Foundation.Slicing.leProp_of_semistable
 #print axioms BridgelandStabLean.Foundation.Slicing.gtProp_of_semistable
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.Slicing.toVendor_leProp_iff
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.Slicing.toVendor_gtProp_iff
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.Slicing.toVendor_ltProp_iff
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.Slicing.toVendor_geProp_iff
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.Slicing.toVendor_toTStructure_le_iff
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.Slicing.toVendor_toTStructure_ge_iff
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.Slicing.toVendor_toTStructure_heart_iff
 #print axioms BridgelandStabLean.Foundation.Slicing.HasPhaseTruncations
 #print axioms BridgelandStabLean.Foundation.Slicing.exists_phase_truncation
 #print axioms BridgelandStabLean.Foundation.Slicing.hasPhaseTruncations
@@ -764,9 +710,208 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Foundation.Deformation.self_mem_basisNhd
 #print axioms BridgelandStabLean.Foundation.Deformation.StabilityCondition.WithClassMap.topologicalSpace
 #print axioms BridgelandStabLean.Foundation.Deformation.basisNhd_isOpen_generator
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.Deformation.relativePhase_eq_wPhaseOf
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.StabilityCondition.toVendor_stabilitySeminorm
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.StabilityCondition.toVendor_mem_basisNhd_iff
+#print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.deformedHN_exists_in_cut_strip
+#print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.deformedHN_exists_of_bounded_cuts
+#print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.deformedHN_exists
+#print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.deformedSlicing
+#print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.deformedSlicing_isLocallyFinite
+#print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.deformed
+#print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.slicingDist_deformed_le
+#print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.exists_with_Z_mem_basisNhd
+#print axioms BridgelandStabLean.Foundation.K₀.of_shift_int
+#print axioms BridgelandStabLean.Foundation.instWellFoundedLTStrictSubobjectOfIsStrictArtinianObject
+#print axioms BridgelandStabLean.Foundation.instWellFoundedGTStrictSubobjectOfIsStrictNoetherianObject
+#print axioms BridgelandStabLean.Foundation.Slicing.zero_of_geProp_ltProp_at
+#print axioms BridgelandStabLean.Foundation.HNFiltration.chain_obj_gtProp
+#print axioms BridgelandStabLean.Foundation.HNFiltration.chain_obj_leProp
+#print axioms BridgelandStabLean.Foundation.Slicing.geProp_of_semistable
+#print axioms BridgelandStabLean.Foundation.HNFiltration.prefix_phiMinus
+#print axioms BridgelandStabLean.Foundation.Slicing.exists_split_at_cutoff
+#print axioms BridgelandStabLean.Foundation.HNFiltration.prefix_phiMinus_gt
+#print axioms BridgelandStabLean.Foundation.Slicing.phiMinus_iso
+#print axioms BridgelandStabLean.Foundation.Slicing.phiPlus_iso
+#print axioms BridgelandStabLean.Foundation.Slicing.semistable_of_HN_all_eq
+#print axioms BridgelandStabLean.Foundation.Slicing.intervalProp_of_postnikovTower
+#print axioms BridgelandStabLean.Foundation.Slicing.semistable_of_triangle
+#print axioms BridgelandStabLean.Foundation.Slicing.phiMinus_triangle_le
+#print axioms BridgelandStabLean.Foundation.Slicing.phiPlus_triangle_le
+#print axioms BridgelandStabLean.Foundation.Slicing.intervalProp_chain_of_postnikovTower
+#print axioms BridgelandStabLean.Foundation.Slicing.exists_split_at_cutoff_with_upper_bound
+#print axioms BridgelandStabLean.Foundation.HNFiltration.isZero_factor_zero_of_hom_eq_zero
+#print axioms BridgelandStabLean.Foundation.Slicing.semistable_of_phiPlus_eq_phiMinus
+#print axioms BridgelandStabLean.Foundation.Slicing.leProp_zero
+#print axioms BridgelandStabLean.Foundation.Slicing.phiPlus_eq_phiMinus_of_semistable
+#print axioms BridgelandStabLean.Foundation.Slicing.zero_of_geProp_ltProp_general
+#print axioms BridgelandStabLean.Foundation.HNFiltration.isZero_factor_last_of_hom_eq_zero
+#print axioms BridgelandStabLean.Foundation.Slicing.zero_of_gtProp_leProp_general
+#print axioms BridgelandStabLean.Foundation.Slicing.gtProp_zero
+#print axioms CategoryTheory.Triangulated.TStructure.heart_biprod
+#print axioms CategoryTheory.Triangulated.TStructure.truncGE_map_comp_descTruncGE_assoc
+#print axioms BridgelandStabLean.Foundation.Slicing.IntervalCat.toRightHeart_faithful
+#print axioms BridgelandStabLean.Foundation.Slicing.IntervalCat.toLeftHeart_full
+#print axioms BridgelandStabLean.Foundation.Slicing.IntervalCat.toLeftHeart_faithful
+#print axioms BridgelandStabLean.Foundation.Slicing.IntervalCat.toRightHeart_full
+#print axioms BridgelandStabLean.Foundation.Slicing.IntervalCat.inclusion
+#print axioms BridgelandStabLean.Foundation.Deformation.Slicing.IntervalCat.isStrictFiniteLength_of_isFiniteLength
+#print axioms BridgelandStabLean.Foundation.Deformation.Slicing.IntervalCat.isAdmissibleSubobject_of_isStrictSubobject
+#print axioms BridgelandStabLean.Foundation.Deformation.Slicing.IntervalCat.admissibleStrictSubobjectOrderIso
+#print axioms BridgelandStabLean.Foundation.Deformation.Slicing.IntervalCat.strictShortExact_pullback_left
+#print axioms BridgelandStabLean.Foundation.Deformation.Slicing.IntervalCat.strictShortExact_pullback_right
+#print axioms BridgelandStabLean.Foundation.Deformation.Slicing.IntervalCat.strictShortExact_of_kernel_strictEpi
+#print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.skewedPhase_gt_of_geProp_of_phase_range
+#print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.skewedSemistable_of_interval_inclusion
+#print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.skewedSemistable_of_target_subinterval
+#print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.skewedSemistable_of_target_envelope
+#print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.hom_eq_zero_of_deformedPred
+#print axioms BridgelandStabLean.Foundation.Slicing.IntervalCat.isLimitKernelForkOfDistinguished
+#print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.phase_seesaw_dual
+#print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.skewedSemistable_of_upper_inclusion
+#print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.skewedSemistable_of_lower_inclusion
+#print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.skewedSemistable_of_target_triangleTest
+#print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.phase_add_lt_of_le_of_lt
+#print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.phase_lt_upper_of_destabilizing_subobject
+#print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.comp_mdq_of_destabilizing_with_quotient_bound
+#print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.hom_eq_zero_of_enveloped_semistable
+#print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.exists_strictSubobject_of_phiPlus_gt
+#print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.exists_strictMDQ_with_quotient_bound
+#print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.skewedPhase_gt_of_strictQuotient_inner
+#print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.skewedPhase_lt_of_phiPlus_lt
+#print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.hn_exists_with_phiPlus_reduction
+#print axioms BridgelandStabLean.Foundation.HNFiltration.firstFactor_phiPlus_le_target
+#print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.semistable_has_deformedHN
+#print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.interior_has_enveloped_HN_skewed
+#print axioms BridgelandStabLean.Foundation.HNFiltration.target_phiMinus_le_lastFactor
+#print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.interior_has_enveloped_HN
+#print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.exists_deformedCut_triangle_of_hn
+#print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.semistable_mem_deformedLt
+#print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.semistable_has_tight_deformedHN
+#print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.semistable_mem_deformedGt
+#print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.exists_global_deformedCut_triangle
+#print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.isZero_of_deformedGtLe
+#print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.hom_eq_zero_of_deformedGtLe
+#print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.deformedHN_of_cut_window
+#print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.deformedSlicing_P
+#print axioms BridgelandStabLean.Foundation.interval_strictFiniteLength_of_inclusion
+#print axioms BridgelandStabLean.Foundation.intervalInclusion_map_strictMono
+#print axioms BridgelandStabLean.Foundation.intervalSubobject_arrow_strictMono
+#print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.deformed_intervalProp_subset_old_wide
+#print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.deformed_Z
+#print axioms BridgelandStabLean.Foundation.sector_bound'
+#print axioms BridgelandStabLean.Foundation.stabilitySeminorm_bound_real
+#print axioms BridgelandStabLean.Foundation.stabilitySeminorm_lt_top_of_near
+#print axioms BridgelandStabLean.Foundation.finiteSeminormSubgroup
+#print axioms BridgelandStabLean.Foundation.norm_Z_le_of_tau_semistable
+#print axioms BridgelandStabLean.Foundation.norm_sum_exp_ge_cos_mul_sum
+#print axioms BridgelandStabLean.Foundation.stabilitySeminorm_le_of_near
+#print axioms BridgelandStabLean.Foundation.finiteSeminormSubgroup_eq_of_basisNhd
+#print axioms BridgelandStabLean.Foundation.intrinsicPhaseBounds_of_semistable_slicingDist
+#print axioms BridgelandStabLean.Foundation.stabilitySeminorm_lt_top_of_same_Z
+#print axioms BridgelandStabLean.Foundation.finiteSeminormSubgroup_eq_of_same_Z
+#print axioms BridgelandStabLean.Foundation.sector_bound
+#print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.false_of_all_hn_phases_below
+#print axioms BridgelandStabLean.Foundation.gt_phases_of_gtProp
+#print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.phiMinus_le_le_phiPlus
+#print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.phase_eq_of_same_Z
+#print axioms BridgelandStabLean.Foundation.phiPlus_le_of_leProp
+#print axioms BridgelandStabLean.Foundation.im_divided_of_semistable
+#print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.P_of_Q_of_P_semistable
+#print axioms BridgelandStabLean.Foundation.eq_of_pos_mul_exp_eq
+#print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.false_of_all_hn_phases_above
+#print axioms BridgelandStabLean.Foundation.bridgeland_lemma_6_4
+#print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.false_of_gt_and_le_phases
+#print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.false_of_hn_phases_le_with_lt
+#print axioms BridgelandStabLean.Foundation.basisNhd_mono
+#print axioms BridgelandStabLean.Foundation.exists_basisNhd_subset_basisNhd
+#print axioms BridgelandStabLean.Foundation.linearInterpolationZ_zero
+#print axioms BridgelandStabLean.Foundation.basisNhd_self
+#print axioms BridgelandStabLean.Foundation.linearInterpolationZ_sub
+#print axioms BridgelandStabLean.Foundation.exists_local_lift_sameComponent_in_basisNhd
+#print axioms BridgelandStabLean.Foundation.wideSectorFiniteLength_mono
+#print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.exists_epsilon0_sixteenth
+#print axioms BridgelandStabLean.Foundation.linearInterpolationZ_one
+#print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.eq_of_same_Z_near
+#print axioms BridgelandStabLean.Foundation.linearInterpolationZ
+#print axioms BridgelandStabLean.Foundation.basisNhd_subset_connectedComponent_small
+#print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.deformation
+#print axioms BridgelandStabLean.Foundation.stabilitySeminorm_smul_complex
+#print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.eq_of_same_Z_of_mem_basisNhd
+#print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.exists_eq_Z_and_mem_basisNhd_of_stabilitySeminorm_lt_sin
+#print axioms BridgelandStabLean.Foundation.stabilitySeminorm_dominated_of_basisNhd
+#print axioms BridgelandStabLean.Foundation.linearInterpolationZ_sub_sub
+#print axioms BridgelandStabLean.Foundation.stabilitySeminorm_smul
+#print axioms BridgelandStabLean.Foundation.stabilitySeminorm_center_dominates_of_basisNhd
+#print axioms BridgelandStabLean.Foundation.Z_mem_finiteSeminormSubgroup
+#print axioms BridgelandStabLean.Foundation.exists_basisNhd_subset_connectedComponent
+#print axioms BridgelandStabLean.Foundation.basisNhdFamily
+#print axioms BridgelandStabLean.Foundation.stabilitySeminorm_dominated_of_connected
+#print axioms BridgelandStabLean.Foundation.eq_zero_of_stabilitySeminorm_toReal_eq_zero
+#print axioms BridgelandStabLean.Foundation.exists_basisNhd_subset_of_mem_nhds
+#print axioms BridgelandStabLean.Foundation.eq_zero_of_vanishes_on_cl
+#print axioms BridgelandStabLean.Foundation.finiteSeminormSubgroup_eq_of_connected
+#print axioms BridgelandStabLean.Foundation.stabilityCondition_isOpen_connectedComponent
+#print axioms BridgelandStabLean.Foundation.exists_basisNhd_subset_of_mem_open
+#print axioms BridgelandStabLean.Foundation.isTopologicalBasis_basisNhd
+#print axioms BridgelandStabLean.Foundation.ComponentTopologicalLinearLocalModel
+#print axioms BridgelandStabLean.Foundation.componentSeminormTopology_eq_normTopology
+#print axioms BridgelandStabLean.Foundation.componentSeminormBall
+#print axioms BridgelandStabLean.Foundation.componentSeminormTopology
+#print axioms BridgelandStabLean.Foundation.componentNorm_equivalent_of_mem_component
+#print axioms BridgelandStabLean.Foundation.componentSeminormSubgroup
+#print axioms BridgelandStabLean.Foundation.isTopologicalBasis_componentSeminormBasis
+#print axioms BridgelandStabLean.Foundation.componentZMap
+#print axioms BridgelandStabLean.Foundation.componentTopologicalLinearLocalModel
+#print axioms BridgelandStabLean.Foundation.componentSeminormBasis
+#print axioms BridgelandStabLean.Foundation.componentSeminorm_lt_top_of_mem_component
+#print axioms BridgelandStabLean.Foundation.componentRep
+#print axioms BridgelandStabLean.Foundation.componentSeminormBall_eq_ball
+#print axioms BridgelandStabLean.Foundation.componentNormedAddCommGroup
+#print axioms BridgelandStabLean.Foundation.componentNorm
+#print axioms BridgelandStabLean.Foundation.componentNormedSpace
+#print axioms BridgelandStabLean.Foundation.ComponentTopologicalLinearLocalModel.chargeMap
+#print axioms BridgelandStabLean.Foundation.componentStabilityCondition
+#print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.CentralChargeIsLocalHomeomorphOnConnectedComponents
+#print axioms BridgelandStabLean.Foundation.componentZ_mem
+#print axioms BridgelandStabLean.Foundation.mk_componentRep
+#print axioms BridgelandStabLean.Foundation.centralChargeIsLocalHomeomorphOnConnectedComponents
+#print axioms BridgelandStabLean.Foundation.componentAddGroupNorm
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.shortExact_of_mono
+#print axioms BridgelandStabLean.Foundation.mem_semiClosedUpperHalfPlane_of_arg_pos
+#print axioms BridgelandStabLean.Foundation.arg_le_of_cross_nonneg
+#print axioms BridgelandStabLean.Foundation.inf_le_arg_sum_of_semiClosedUpperHalfPlane
+#print axioms BridgelandStabLean.Foundation.cross_pos_of_arg_lt
+#print axioms BridgelandStabLean.Foundation.cross_nonneg_of_arg_le
+#print axioms BridgelandStabLean.Foundation.arg_sum_le_sup_of_semiClosedUpperHalfPlane
+#print axioms BridgelandStabLean.Foundation.sum_mem_semiClosedUpperHalfPlane
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.isSemistable_cokernel_mapMono_iff
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.Subobject.ofLE_map_comp_mapMonoIso_hom
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.Subobject.mapMonoIso
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.Subobject.map_eq_mk_mono
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.exists_hn_with_last_phase_of_semistable
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.append_hn_filtration_of_mono
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.Subobject.cokernelMapMonoIso
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.phase_cokernel_mapMono_eq
+#print axioms BridgelandStabLean.Foundation.interval_thinFiniteLength_of_inclusion_strict
+#print axioms BridgelandStabLean.Foundation.intervalInclusion_isAdmissibleSubobject
+#print axioms BridgelandStabLean.Foundation.interval_finiteLength_of_inclusion
+#print axioms BridgelandStabLean.Foundation.autFunctor_isAdmissibleSubobject
+#print axioms BridgelandStabLean.Foundation.chargeHom_norm_le_of_intrinsic_width
+#print axioms BridgelandStabLean.Tilting.TStructure.triangleLTGE_iso_of_amp_negOne_zero
+#print axioms BridgelandStabLean.Tilting.originalHeartCohNegOneIsoOfAmplitude
+#print axioms BridgelandStabLean.Tilting.originalHeartCohZeroIsoOfAmplitude
+#print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.observableStabilityFunctionOnHeart_phase_le_phiPlus
+#print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.observableStabilityFunctionOnHeart_phase_eq_of_mem_P
+#print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.observableStabilityFunctionOnHeart_isSemistable_of_mem_P
+#print axioms BridgelandStabLean.WeakStability.phaseIndex
+#print axioms BridgelandStabLean.WeakStability.phaseIndex_le_of_lt
+#print axioms BridgelandStabLean.WeakStability.phaseBase_add_one
+#print axioms BridgelandStabLean.WeakStability.phaseIndex_eq_zero_of_mem_Ioc
+#print axioms BridgelandStabLean.WeakStability.phaseBase_mem
+#print axioms BridgelandStabLean.WeakStability.phaseBase
+#print axioms BridgelandStabLean.WeakStability.phaseIndex_lt_phase
+#print axioms BridgelandStabLean.WeakStability.phaseBase_eq_of_mem_Ioc
+#print axioms BridgelandStabLean.WeakStability.phase_le_phaseIndex_add_one
+#print axioms BridgelandStabLean.WeakStability.phaseBase_add_phaseIndex
+#print axioms BridgelandStabLean.WeakStability.phaseIndex_add_one
 
 #print axioms BridgelandStabLean.Foundation.semiClosedUpperHalfPlane
 #print axioms BridgelandStabLean.Foundation.semiClosedUpperHalfPlane_ne_zero
@@ -784,40 +929,19 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Foundation.StabilityFunction.phase_eq_of_iso
 #print axioms BridgelandStabLean.Foundation.StabilityFunction.isSemistable_of_iso
 #print axioms BridgelandStabLean.Foundation.StabilityFunction.isSemistable_iff_of_iso
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.StabilityFunction.semiClosedUpperHalfPlane_eq
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.StabilityFunction.toVendor
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.StabilityFunction.ofVendor
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.StabilityFunction.toVendor_charge
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.StabilityFunction.ofVendor_charge
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.StabilityFunction.ofVendor_toVendor
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.StabilityFunction.toVendor_ofVendor
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.StabilityFunction.equiv
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.StabilityFunction.toVendor_phase
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.StabilityFunction.toVendor_isSemistable_iff
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.StabilityFunction.toVendor_isStable_iff
 #print axioms BridgelandStabLean.Foundation.AbelianHNFiltration
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.n
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.chain
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.chain_bot
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.chain_top
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.chain_strictMono
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.factor_semistable
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.factor_phase
 #print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.phiPlus
 #print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.phiMinus
 #print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.phase_mem_range
 #print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.phiMinus_le_phiPlus
 #print axioms BridgelandStabLean.Foundation.StabilityFunction.HasHNProperty
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.AbelianHNFiltration.toVendor
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.AbelianHNFiltration.ofVendor
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.AbelianHNFiltration.toVendor_n
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.AbelianHNFiltration.ofVendor_n
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.AbelianHNFiltration.toVendor_phase
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.AbelianHNFiltration.ofVendor_phase
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.AbelianHNFiltration.toVendor_phiPlus
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.AbelianHNFiltration.toVendor_phiMinus
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.AbelianHNFiltration.ofVendor_phiPlus
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.AbelianHNFiltration.ofVendor_phiMinus
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.AbelianHNFiltration.toVendor_n_eq_iff
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.AbelianHNFiltration.toVendor_n_eq_of_owner
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.AbelianHNFiltration.ofVendor_n_eq_of_owner
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.StabilityFunction.toVendor_hasHNProperty
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.StabilityFunction.ofVendor_hasHNProperty
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.StabilityFunction.toVendor_hasHNProperty_iff
-#print axioms BridgelandStabLean.Compatibility.BridgelandStability.StabilityFunction.ofVendor_hasHNProperty_iff
 #print axioms BridgelandStabLean.Foundation.StabilityFunction.subobject_isZero_iff_eq_bot
 #print axioms BridgelandStabLean.Foundation.StabilityFunction.subobject_ne_bot_of_not_isZero
 #print axioms BridgelandStabLean.Foundation.StabilityFunction.subobject_not_isZero_of_ne_bot
@@ -930,36 +1054,30 @@ open BridgelandStabLean
 #print axioms BridgelandStabLean.Functor.isLeftTExact_id
 #print axioms BridgelandStabLean.Functor.isTExact_id
 
-/-! ## Anchor — bridges to the foundational library (#146) -/
+/-! ## Repository-owned t-structure heart bridges -/
 
-#print axioms BridgelandStabLean.Anchor.isBounded_iff_anchor
-#print axioms BridgelandStabLean.Anchor.isBounded_of_anchor
-#print axioms BridgelandStabLean.Anchor.anchor_isBounded
-#print axioms BridgelandStabLean.Anchor.isNondegenerate_of_anchor_isBounded
 
 /-! ## ForMathlib — results Mathlib lacks at the pin -/
 
 #print axioms Matrix.polarFactor
 
--- Vendored from the anchor so that `Weak/Tilting/Cohomology/{Basic,Homological}.lean`
--- need not import `BridgelandStability`. Deletion conditions are in the file headers.
-#print axioms BridgelandStabLean.ForMathlib.CategoryTheory.ObjectProperty.FullSubcategory.isZero_of_obj_isZero
-#print axioms BridgelandStabLean.ForMathlib.CategoryTheory.Triangulated.TStructure.heart_hι
-#print axioms BridgelandStabLean.ForMathlib.CategoryTheory.Triangulated.TStructure.heart_containsZero
-#print axioms BridgelandStabLean.ForMathlib.CategoryTheory.Triangulated.TStructure.heart_closedUnderBinaryProducts
-#print axioms BridgelandStabLean.ForMathlib.CategoryTheory.Triangulated.TStructure.heart_closedUnderFiniteProducts
-#print axioms BridgelandStabLean.ForMathlib.CategoryTheory.Triangulated.TStructure.heart_hasFiniteProducts
-#print axioms BridgelandStabLean.ForMathlib.CategoryTheory.Triangulated.TStructure.heart_admissible
-#print axioms BridgelandStabLean.ForMathlib.CategoryTheory.Triangulated.TStructure.heartAbelian
-#print axioms BridgelandStabLean.ForMathlib.CategoryTheory.Triangulated.TStructure.heart_biprod
-#print axioms BridgelandStabLean.ForMathlib.CategoryTheory.Triangulated.TStructure.heartFullSubcategoryAbelian
+-- Repository-owned heart results used by weak-tilting cohomology.
+#print axioms CategoryTheory.ObjectProperty.FullSubcategory.isZero_of_obj_isZero
+#print axioms CategoryTheory.Triangulated.TStructure.heart_hι
+#print axioms CategoryTheory.Triangulated.TStructure.heart_containsZero
+#print axioms CategoryTheory.Triangulated.TStructure.heart_closedUnderBinaryProducts
+#print axioms CategoryTheory.Triangulated.TStructure.heart_closedUnderFiniteProducts
+#print axioms CategoryTheory.Triangulated.TStructure.heart_hasFiniteProducts
+#print axioms CategoryTheory.Triangulated.TStructure.heart_admissible
+#print axioms CategoryTheory.Triangulated.TStructure.heartAbelian
+#print axioms CategoryTheory.Triangulated.TStructure.heartFullSubcategoryAbelian
 #print axioms BridgelandStabLean.ForMathlib.CategoryTheory.Triangulated.TStructure.exists_image_factorisation_epi_triangle
 #print axioms BridgelandStabLean.ForMathlib.CategoryTheory.Triangulated.TStructure.exists_distinguished_triangle_of_heart_mono
 #print axioms BridgelandStabLean.ForMathlib.CategoryTheory.Triangulated.TStructure.exists_image_factorisation_triangles
-#print axioms BridgelandStabLean.ForMathlib.CategoryTheory.Triangulated.TStructure.heartFullSubcategory_shortExact_of_distTriang
-#print axioms BridgelandStabLean.ForMathlib.CategoryTheory.Triangulated.TStructure.truncGE_map_comp_descTruncGE
-#print axioms BridgelandStabLean.ForMathlib.CategoryTheory.Triangulated.TStructure.truncGE_map_comp_descTruncGE_assoc
-#print axioms BridgelandStabLean.ForMathlib.CategoryTheory.Triangulated.TStructure.exists_truncLT_octahedral_split
+#print axioms CategoryTheory.Triangulated.TStructure.heartFullSubcategory_shortExact_of_distTriang
+#print axioms CategoryTheory.Triangulated.TStructure.heartFullSubcategory_shortExact_triangle
+#print axioms CategoryTheory.Triangulated.TStructure.truncGE_map_comp_descTruncGE
+#print axioms CategoryTheory.Triangulated.TStructure.exists_truncLT_octahedral_split
 #print axioms Matrix.polarFactor_posSemidef
 #print axioms Matrix.polarFactor_mul_self
 #print axioms Matrix.polarFactor_isHermitian
@@ -1899,10 +2017,10 @@ rather than decorative. -/
 
 These extend the foundational library's own namespace, since they are API for its types. -/
 
-#print axioms CategoryTheory.Triangulated.PostnikovTower.mapF
-#print axioms CategoryTheory.Triangulated.HNFiltration.mapF
-#print axioms CategoryTheory.Triangulated.Slicing.mapEquiv
-#print axioms CategoryTheory.Triangulated.Slicing.mapEquiv_P
+#print axioms BridgelandStabLean.Foundation.PostnikovTower.mapF
+#print axioms BridgelandStabLean.Foundation.HNFiltration.mapF
+#print axioms BridgelandStabLean.Foundation.Slicing.mapEquiv
+#print axioms BridgelandStabLean.Foundation.Slicing.mapEquiv_P
 
 /-! ## StrictAutAction — a strict subgroup of autoequivalences -/
 
@@ -1940,31 +2058,31 @@ These extend the foundational library's own namespace, since they are API for it
 
 /-! ## K0Functor — K₀ is functorial in triangulated functors -/
 
-#print axioms CategoryTheory.Triangulated.isTriangleAdditive_of_isTriangulated
-#print axioms CategoryTheory.Triangulated.K₀.mapF
-#print axioms CategoryTheory.Triangulated.K₀.mapF_of
-#print axioms CategoryTheory.Triangulated.K₀.mapF_id
-#print axioms CategoryTheory.Triangulated.K₀.mapF_comp
-#print axioms CategoryTheory.Triangulated.K₀.mapF_congr
+#print axioms BridgelandStabLean.Foundation.isTriangleAdditive_of_isTriangulated
+#print axioms BridgelandStabLean.Foundation.K₀.mapF
+#print axioms BridgelandStabLean.Foundation.K₀.mapF_of
+#print axioms BridgelandStabLean.Foundation.K₀.mapF_id
+#print axioms BridgelandStabLean.Foundation.K₀.mapF_comp
+#print axioms BridgelandStabLean.Foundation.K₀.mapF_congr
 
 /-! ## StrictFiniteLength — general strict-hypothesis transfer -/
 
-#print axioms CategoryTheory.Triangulated.strictImage
-#print axioms CategoryTheory.Triangulated.strictImage_monotone
-#print axioms CategoryTheory.Triangulated.strictImage_injective
-#print axioms CategoryTheory.Triangulated.strictImage_strictMono
-#print axioms CategoryTheory.Triangulated.isStrictArtinian_of_faithful_strict
-#print axioms CategoryTheory.Triangulated.isStrictNoetherian_of_faithful_strict
-#print axioms CategoryTheory.Triangulated.mapEquiv_intervalProp_iff
+#print axioms BridgelandStabLean.Foundation.strictImage
+#print axioms BridgelandStabLean.Foundation.strictImage_monotone
+#print axioms BridgelandStabLean.Foundation.strictImage_injective
+#print axioms BridgelandStabLean.Foundation.strictImage_strictMono
+#print axioms BridgelandStabLean.Foundation.isStrictArtinian_of_faithful_strict
+#print axioms BridgelandStabLean.Foundation.isStrictNoetherian_of_faithful_strict
+#print axioms BridgelandStabLean.Foundation.mapEquiv_intervalProp_iff
 
 /-! ## AutStabilityAction — the Aut action on stability conditions -/
 
-#print axioms CategoryTheory.Triangulated.autIntervalFunctor
-#print axioms CategoryTheory.Triangulated.autFunctor_strictMono
-#print axioms CategoryTheory.Triangulated.mapEquiv_isLocallyFinite
-#print axioms CategoryTheory.Triangulated.actStabAut
-#print axioms CategoryTheory.Triangulated.actStabAut_slicing
-#print axioms CategoryTheory.Triangulated.actStabAut_Z
+#print axioms BridgelandStabLean.Foundation.autIntervalFunctor
+#print axioms BridgelandStabLean.Foundation.autFunctor_strictMono
+#print axioms BridgelandStabLean.Foundation.mapEquiv_isLocallyFinite
+#print axioms BridgelandStabLean.Foundation.actStabAut
+#print axioms BridgelandStabLean.Foundation.actStabAut_slicing
+#print axioms BridgelandStabLean.Foundation.actStabAut_Z
 
 /-! ## GLTildeFibre — the fibre of the projection is Z -/
 
@@ -2182,27 +2300,27 @@ this against the file by eye. -/
 
 /-! ## Phase lane — slicing orders, Bayer bounds, and cofiltrations -/
 
-#print axioms CategoryTheory.Triangulated.Slicing.Precedes
-#print axioms CategoryTheory.Triangulated.Slicing.PrecedesWeak
-#print axioms CategoryTheory.Triangulated.Slicing.LiPrecedes
-#print axioms CategoryTheory.Triangulated.Slicing.LiPrecedesWeak
-#print axioms CategoryTheory.Triangulated.Slicing.liPrecedes_iff_precedes
-#print axioms CategoryTheory.Triangulated.Slicing.liPrecedesWeak_iff_precedesWeak
-#print axioms CategoryTheory.Triangulated.Slicing.precedes_iff_phiPlus_lt
-#print axioms CategoryTheory.Triangulated.Slicing.precedesWeak_iff_phiPlus_le
-#print axioms CategoryTheory.Triangulated.Slicing.Precedes.weak
-#print axioms CategoryTheory.Triangulated.Slicing.precedesWeak_refl
-#print axioms CategoryTheory.Triangulated.Slicing.precedes_phaseShift_one
-#print axioms CategoryTheory.Triangulated.Slicing.precedes_iff_lt_phiMinus
-#print axioms CategoryTheory.Triangulated.Slicing.precedesWeak_iff_le_phiMinus
-#print axioms CategoryTheory.Triangulated.Slicing.precedes_iff_extreme_phases_lt
-#print axioms CategoryTheory.Triangulated.Slicing.precedesWeak_iff_extreme_phases_le
-#print axioms CategoryTheory.Triangulated.Slicing.Precedes.trans
-#print axioms CategoryTheory.Triangulated.Slicing.PrecedesWeak.trans
-#print axioms CategoryTheory.Triangulated.Slicing.Precedes.trans_weak
-#print axioms CategoryTheory.Triangulated.Slicing.PrecedesWeak.trans_strict
-#print axioms CategoryTheory.Triangulated.Slicing.mapEquiv_ltProp_iff
-#print axioms CategoryTheory.Triangulated.Slicing.mapEquiv_leProp_iff
+#print axioms BridgelandStabLean.Foundation.Slicing.Precedes
+#print axioms BridgelandStabLean.Foundation.Slicing.PrecedesWeak
+#print axioms BridgelandStabLean.Foundation.Slicing.LiPrecedes
+#print axioms BridgelandStabLean.Foundation.Slicing.LiPrecedesWeak
+#print axioms BridgelandStabLean.Foundation.Slicing.liPrecedes_iff_precedes
+#print axioms BridgelandStabLean.Foundation.Slicing.liPrecedesWeak_iff_precedesWeak
+#print axioms BridgelandStabLean.Foundation.Slicing.precedes_iff_phiPlus_lt
+#print axioms BridgelandStabLean.Foundation.Slicing.precedesWeak_iff_phiPlus_le
+#print axioms BridgelandStabLean.Foundation.Slicing.Precedes.weak
+#print axioms BridgelandStabLean.Foundation.Slicing.precedesWeak_refl
+#print axioms BridgelandStabLean.Foundation.Slicing.precedes_phaseShift_one
+#print axioms BridgelandStabLean.Foundation.Slicing.precedes_iff_lt_phiMinus
+#print axioms BridgelandStabLean.Foundation.Slicing.precedesWeak_iff_le_phiMinus
+#print axioms BridgelandStabLean.Foundation.Slicing.precedes_iff_extreme_phases_lt
+#print axioms BridgelandStabLean.Foundation.Slicing.precedesWeak_iff_extreme_phases_le
+#print axioms BridgelandStabLean.Foundation.Slicing.Precedes.trans
+#print axioms BridgelandStabLean.Foundation.Slicing.PrecedesWeak.trans
+#print axioms BridgelandStabLean.Foundation.Slicing.Precedes.trans_weak
+#print axioms BridgelandStabLean.Foundation.Slicing.PrecedesWeak.trans_strict
+#print axioms BridgelandStabLean.Foundation.Slicing.mapEquiv_ltProp_iff
+#print axioms BridgelandStabLean.Foundation.Slicing.mapEquiv_leProp_iff
 #print axioms BridgelandStabLean.GroupAction.TriEquiv.precedes_act_iff
 #print axioms BridgelandStabLean.GroupAction.TriEquiv.precedesWeak_act_iff
 #print axioms BridgelandStabLean.GroupAction.AutQuot.precedes_smul_iff
@@ -2218,20 +2336,20 @@ this against the file by eye. -/
 #print axioms BridgelandStabLean.GroupAction.BayerProperty
 #print axioms BridgelandStabLean.GroupAction.bayerProperty_iff
 #print axioms BridgelandStabLean.GroupAction.bayerProperty_one_zero
-#print axioms CategoryTheory.Triangulated.CofiltrationData
-#print axioms CategoryTheory.Triangulated.CofiltrationData.remainder
-#print axioms CategoryTheory.Triangulated.CofiltrationProperty
-#print axioms CategoryTheory.Triangulated.CofiltrationPropertyInfinity
-#print axioms CategoryTheory.Triangulated.CofiltrationPropertyInfinity.toCofiltrationProperty
-#print axioms CategoryTheory.Triangulated.Slicing.phaseShift_phiPlus
-#print axioms CategoryTheory.Triangulated.Slicing.phaseShift_phiMinus
-#print axioms CategoryTheory.Triangulated.SlicingOrderPreimageData
-#print axioms CategoryTheory.Triangulated.SlicingOrderPreimageData.precedes
-#print axioms CategoryTheory.Triangulated.SlicingOrderPreimageData.precedesWeak
-#print axioms CategoryTheory.Triangulated.Slicing.Precedes.pushforward_of_preimage
-#print axioms CategoryTheory.Triangulated.Slicing.PrecedesWeak.pushforward_of_preimage
-#print axioms CategoryTheory.Triangulated.Slicing.Precedes.pullback_of_preimage
-#print axioms CategoryTheory.Triangulated.Slicing.PrecedesWeak.pullback_of_preimage
+#print axioms BridgelandStabLean.Foundation.CofiltrationData
+#print axioms BridgelandStabLean.Foundation.CofiltrationData.remainder
+#print axioms BridgelandStabLean.Foundation.CofiltrationProperty
+#print axioms BridgelandStabLean.Foundation.CofiltrationPropertyInfinity
+#print axioms BridgelandStabLean.Foundation.CofiltrationPropertyInfinity.toCofiltrationProperty
+#print axioms BridgelandStabLean.Foundation.Slicing.phaseShift_phiPlus
+#print axioms BridgelandStabLean.Foundation.Slicing.phaseShift_phiMinus
+#print axioms BridgelandStabLean.Foundation.SlicingOrderPreimageData
+#print axioms BridgelandStabLean.Foundation.SlicingOrderPreimageData.precedes
+#print axioms BridgelandStabLean.Foundation.SlicingOrderPreimageData.precedesWeak
+#print axioms BridgelandStabLean.Foundation.Slicing.Precedes.pushforward_of_preimage
+#print axioms BridgelandStabLean.Foundation.Slicing.PrecedesWeak.pushforward_of_preimage
+#print axioms BridgelandStabLean.Foundation.Slicing.Precedes.pullback_of_preimage
+#print axioms BridgelandStabLean.Foundation.Slicing.PrecedesWeak.pullback_of_preimage
 #print axioms BridgelandStabLean.GroupAction.bayerProperty_iff_phiPlus_le
 #print axioms BridgelandStabLean.GroupAction.bayerProperty_iff_le_phiMinus
 #print axioms BridgelandStabLean.GroupAction.bayerProperty_mk_iff_inverse_phiPlus_le
@@ -2240,37 +2358,37 @@ this against the file by eye. -/
 
 /-! ## Phase lane — sound slicing-transfer boundary -/
 
-#print axioms CategoryTheory.Triangulated.PostnikovTower.mapF
-#print axioms CategoryTheory.Triangulated.HNFiltration.mapF
-#print axioms CategoryTheory.Triangulated.Slicing.preimagePhase
-#print axioms CategoryTheory.Triangulated.Slicing.pullbackPhaseCollection
-#print axioms CategoryTheory.Triangulated.Slicing.pushforwardPhaseCollection
-#print axioms CategoryTheory.Triangulated.Slicing.PreimageData
-#print axioms CategoryTheory.Triangulated.Slicing.preimage
-#print axioms CategoryTheory.Triangulated.Slicing.preimage_P
-#print axioms CategoryTheory.Triangulated.Slicing.PreimageData.ofFaithful
-#print axioms CategoryTheory.Triangulated.Slicing.PreimageData.phaseShift
-#print axioms CategoryTheory.Triangulated.Slicing.pullback
-#print axioms CategoryTheory.Triangulated.Slicing.pushforward
-#print axioms CategoryTheory.Triangulated.ReflectsZeroObjects
-#print axioms CategoryTheory.Triangulated.Functor.reflectsZeroObjects_of_faithful
-#print axioms CategoryTheory.Triangulated.Functor.reflectsZeroObjects_of_conservative
-#print axioms CategoryTheory.Triangulated.HNFiltration.mapPreimage
-#print axioms CategoryTheory.Triangulated.HNFiltration.mapPreimage_n
-#print axioms CategoryTheory.Triangulated.HNFiltration.mapPreimage_phi
-#print axioms CategoryTheory.Triangulated.Slicing.preimage_phiPlus
-#print axioms CategoryTheory.Triangulated.Slicing.preimage_phiMinus
-#print axioms CategoryTheory.Triangulated.Slicing.preimage_ltProp_iff
-#print axioms CategoryTheory.Triangulated.Slicing.preimage_leProp_iff
-#print axioms CategoryTheory.Triangulated.Slicing.preimage_phaseShift
-#print axioms CategoryTheory.Triangulated.Slicing.preimage_phaseShift_self
-#print axioms CategoryTheory.Triangulated.Slicing.preimageOrderData
-#print axioms CategoryTheory.Triangulated.Slicing.Precedes.preimage
-#print axioms CategoryTheory.Triangulated.Slicing.PrecedesWeak.preimage
-#print axioms CategoryTheory.Triangulated.Slicing.preimage_mapEquiv
+#print axioms BridgelandStabLean.Foundation.PostnikovTower.mapF
+#print axioms BridgelandStabLean.Foundation.HNFiltration.mapF
+#print axioms BridgelandStabLean.Foundation.Slicing.preimagePhase
+#print axioms BridgelandStabLean.Foundation.Slicing.pullbackPhaseCollection
+#print axioms BridgelandStabLean.Foundation.Slicing.pushforwardPhaseCollection
+#print axioms BridgelandStabLean.Foundation.Slicing.PreimageData
+#print axioms BridgelandStabLean.Foundation.Slicing.preimage
+#print axioms BridgelandStabLean.Foundation.Slicing.preimage_P
+#print axioms BridgelandStabLean.Foundation.Slicing.PreimageData.ofFaithful
+#print axioms BridgelandStabLean.Foundation.Slicing.PreimageData.phaseShift
+#print axioms BridgelandStabLean.Foundation.Slicing.pullback
+#print axioms BridgelandStabLean.Foundation.Slicing.pushforward
+#print axioms BridgelandStabLean.Foundation.ReflectsZeroObjects
+#print axioms BridgelandStabLean.Foundation.Functor.reflectsZeroObjects_of_faithful
+#print axioms BridgelandStabLean.Foundation.Functor.reflectsZeroObjects_of_conservative
+#print axioms BridgelandStabLean.Foundation.HNFiltration.mapPreimage
+#print axioms BridgelandStabLean.Foundation.HNFiltration.mapPreimage_n
+#print axioms BridgelandStabLean.Foundation.HNFiltration.mapPreimage_phi
+#print axioms BridgelandStabLean.Foundation.Slicing.preimage_phiPlus
+#print axioms BridgelandStabLean.Foundation.Slicing.preimage_phiMinus
+#print axioms BridgelandStabLean.Foundation.Slicing.preimage_ltProp_iff
+#print axioms BridgelandStabLean.Foundation.Slicing.preimage_leProp_iff
+#print axioms BridgelandStabLean.Foundation.Slicing.preimage_phaseShift
+#print axioms BridgelandStabLean.Foundation.Slicing.preimage_phaseShift_self
+#print axioms BridgelandStabLean.Foundation.Slicing.preimageOrderData
+#print axioms BridgelandStabLean.Foundation.Slicing.Precedes.preimage
+#print axioms BridgelandStabLean.Foundation.Slicing.PrecedesWeak.preimage
+#print axioms BridgelandStabLean.Foundation.Slicing.preimage_mapEquiv
 #print axioms BridgelandStabLean.GroupAction.AutPair.preimage_representatives
-#print axioms CategoryTheory.Triangulated.Slicing.LeftAdjointInducingPremise
-#print axioms CategoryTheory.Triangulated.HasLeftAdjointInducingTheorem
+#print axioms BridgelandStabLean.Foundation.Slicing.LeftAdjointInducingPremise
+#print axioms BridgelandStabLean.Foundation.HasLeftAdjointInducingTheorem
 
 /-! ## Normalized quotient, combined action, and topological action layer -/
 
@@ -2355,7 +2473,6 @@ this against the file by eye. -/
 #print axioms BridgelandStabLean.GroupAction.combinedCentralCharge_equivariant
 #print axioms BridgelandStabLean.GroupAction.combinedCentralCharge_equivariant_apply
 #print axioms BridgelandStabLean.GroupAction.componentCentralCharge_equivariant
-#print axioms BridgelandStabLean.GroupAction.componentLocalModel_chargeMap_equivariant
 
 #print axioms BridgelandStabLean.GroupAction.shiftFunctorCommShift
 #print axioms BridgelandStabLean.GroupAction.shiftTwoMapTriangleIso
@@ -2381,33 +2498,33 @@ this against the file by eye. -/
 
 /-! ## AutIsometry — the action preserves the foundational library's phase distance -/
 
-#print axioms CategoryTheory.Triangulated.Slicing.phiPlus_congr
-#print axioms CategoryTheory.Triangulated.Slicing.phiMinus_congr
-#print axioms CategoryTheory.Triangulated.isZero_inverse_iff
-#print axioms CategoryTheory.Triangulated.isZero_functor_iff
-#print axioms CategoryTheory.Triangulated.mapEquiv_phiPlus
-#print axioms CategoryTheory.Triangulated.mapEquiv_phiMinus
-#print axioms CategoryTheory.Triangulated.mapEquiv_slicingDist
-#print axioms CategoryTheory.Triangulated.actStabAut_slicingDist
-#print axioms CategoryTheory.Triangulated.AutPairQuot_smul_slicingDist
+#print axioms BridgelandStabLean.Foundation.Slicing.phiPlus_congr
+#print axioms BridgelandStabLean.Foundation.Slicing.phiMinus_congr
+#print axioms BridgelandStabLean.Foundation.isZero_inverse_iff
+#print axioms BridgelandStabLean.Foundation.isZero_functor_iff
+#print axioms BridgelandStabLean.Foundation.mapEquiv_phiPlus
+#print axioms BridgelandStabLean.Foundation.mapEquiv_phiMinus
+#print axioms BridgelandStabLean.Foundation.mapEquiv_slicingDist
+#print axioms BridgelandStabLean.Foundation.actStabAut_slicingDist
+#print axioms BridgelandStabLean.Foundation.AutPairQuot_smul_slicingDist
 
 /-! ## StabilityMass — choice-free HN mass envelope -/
 
-#print axioms CategoryTheory.Triangulated.HNFiltration.mass
-#print axioms CategoryTheory.Triangulated.StabilityCondition.WithClassMap.charge_ne_zero_of_semistable
-#print axioms CategoryTheory.Triangulated.HNFiltration.mass_pos
-#print axioms CategoryTheory.Triangulated.HNFiltration.mass_ofIso
-#print axioms CategoryTheory.Triangulated.stabilityMass
-#print axioms CategoryTheory.Triangulated.stabilityMass_pos
-#print axioms CategoryTheory.Triangulated.stabilityMass_congr
-#print axioms CategoryTheory.Triangulated.HNFiltration.mass_eq_zero_of_isZero
-#print axioms CategoryTheory.Triangulated.HNFiltration.mass_eq_mass
-#print axioms CategoryTheory.Triangulated.stabilityMass_eq_mass
-#print axioms CategoryTheory.Triangulated.stabilityMass_ne_top
-#print axioms CategoryTheory.Triangulated.stabilityMass_lt_top
-#print axioms CategoryTheory.Triangulated.stabilityMass_toReal_eq_sum
-#print axioms CategoryTheory.Triangulated.stabilityMass_eq_zero_iff
-#print axioms CategoryTheory.Triangulated.stabilityMass_toReal_pos
+#print axioms BridgelandStabLean.Foundation.HNFiltration.mass
+#print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.charge_ne_zero_of_semistable
+#print axioms BridgelandStabLean.Foundation.HNFiltration.mass_pos
+#print axioms BridgelandStabLean.Foundation.HNFiltration.mass_ofIso
+#print axioms BridgelandStabLean.Foundation.stabilityMass
+#print axioms BridgelandStabLean.Foundation.stabilityMass_pos
+#print axioms BridgelandStabLean.Foundation.stabilityMass_congr
+#print axioms BridgelandStabLean.Foundation.HNFiltration.mass_eq_zero_of_isZero
+#print axioms BridgelandStabLean.Foundation.HNFiltration.mass_eq_mass
+#print axioms BridgelandStabLean.Foundation.stabilityMass_eq_mass
+#print axioms BridgelandStabLean.Foundation.stabilityMass_ne_top
+#print axioms BridgelandStabLean.Foundation.stabilityMass_lt_top
+#print axioms BridgelandStabLean.Foundation.stabilityMass_toReal_eq_sum
+#print axioms BridgelandStabLean.Foundation.stabilityMass_eq_zero_iff
+#print axioms BridgelandStabLean.Foundation.stabilityMass_toReal_pos
 #print axioms BridgelandStabLean.GroupAction.AutPair.act_charge
 #print axioms BridgelandStabLean.GroupAction.AutPair.mass_map_inverse
 #print axioms BridgelandStabLean.GroupAction.AutPair.mass_map_functor
@@ -2416,286 +2533,250 @@ this against the file by eye. -/
 
 /-! ## HNPolygon — abelian HN paths and positive-angle support -/
 
-#print axioms CategoryTheory.AbelianHNFiltration.factorObj
-#print axioms CategoryTheory.AbelianHNFiltration.hnPolygon_le_of_polygonVertex_isMax
-#print axioms CategoryTheory.AbelianHNFiltration.last_le_phase
-#print axioms CategoryTheory.AbelianHNFiltration.last_prefix_le_quotient_phase
-#print axioms CategoryTheory.AbelianHNFiltration.mass
-#print axioms CategoryTheory.AbelianHNFiltration.norm_charge_le_mass
-#print axioms CategoryTheory.AbelianHNFiltration.norm_charge_le_polygonLength
-#print axioms CategoryTheory.AbelianHNFiltration.phase_last_prefix_le_of_ne_zero_to_semistable
-#print axioms CategoryTheory.AbelianHNFiltration.phase_le_first
-#print axioms CategoryTheory.AbelianHNFiltration.polygonEdge
-#print axioms CategoryTheory.AbelianHNFiltration.polygonEdge_arg
-#print axioms CategoryTheory.AbelianHNFiltration.polygonEdge_arg_strictAnti
-#print axioms CategoryTheory.AbelianHNFiltration.polygonEdge_mem_upperHalfPlaneUnion
-#print axioms CategoryTheory.AbelianHNFiltration.polygonLength
-#print axioms CategoryTheory.AbelianHNFiltration.polygonLength_eq_mass
-#print axioms CategoryTheory.AbelianHNFiltration.polygonVertex
-#print axioms CategoryTheory.AbelianHNFiltration.polygonVertex_exists_strict_support
-#print axioms CategoryTheory.AbelianHNFiltration.polygonVertex_exists_strict_support_hnPolygon
-#print axioms CategoryTheory.AbelianHNFiltration.polygonVertex_last
-#print axioms CategoryTheory.AbelianHNFiltration.polygonVertex_mem_hnPolygon
-#print axioms CategoryTheory.AbelianHNFiltration.polygonVertex_succ_sub
-#print axioms CategoryTheory.AbelianHNFiltration.polygonVertex_zero
-#print axioms CategoryTheory.AbelianHNFiltration.quotientHNFiltration
-#print axioms CategoryTheory.AbelianHNFiltration.quotientInfToCokernel
-#print axioms CategoryTheory.AbelianHNFiltration.quotientInfToCokernel_mono
-#print axioms CategoryTheory.AbelianHNFiltration.quotient_inf_phase_le
-#print axioms CategoryTheory.AbelianHNFiltration.semistable_le_chain_of_phase_gt
-#print axioms CategoryTheory.AbelianHNFiltration.semistable_phase_le_first
-#print axioms CategoryTheory.AbelianHNFiltration.subobjectCharge_exists_strict_support
-#print axioms CategoryTheory.AbelianHNFiltration.subobjectCharge_le_of_polygonVertex_isMax
-#print axioms CategoryTheory.AbelianHNFiltration.subobject_phase_le_first
-#print axioms CategoryTheory.ComplexPolygonalPath.arg_last_edge_le_arg_last_sub_zero
-#print axioms CategoryTheory.ComplexPolygonalPath.arg_last_sub_zero_le_arg_first
-#print axioms CategoryTheory.ComplexPolygonalPath.arg_unitRay
-#print axioms CategoryTheory.ComplexPolygonalPath.crossFunctional
-#print axioms CategoryTheory.ComplexPolygonalPath.crossFunctional_apply
-#print axioms CategoryTheory.ComplexPolygonalPath.crossFunctional_neg_of_arg_lt
-#print axioms CategoryTheory.ComplexPolygonalPath.crossFunctional_pos_of_arg_lt
-#print axioms CategoryTheory.ComplexPolygonalPath.exists_strict_support_at_interior
-#print axioms CategoryTheory.ComplexPolygonalPath.length
-#print axioms CategoryTheory.ComplexPolygonalPath.norm_last_sub_zero_le_length
-#print axioms CategoryTheory.ComplexPolygonalPath.sum_edges_eq_last_sub_zero
-#print axioms CategoryTheory.ComplexPolygonalPath.unitRay
-#print axioms CategoryTheory.ComplexPolygonalPath.unitRay_im
-#print axioms CategoryTheory.ComplexPolygonalPath.unitRay_mem_upperHalfPlaneUnion
-#print axioms CategoryTheory.ComplexPolygonalPath.unitRay_re
-#print axioms CategoryTheory.StabilityFunction.hnPolygon
-#print axioms CategoryTheory.StabilityFunction.hnPolygon_mono
-#print axioms CategoryTheory.StabilityFunction.subobjectCharge_mem_hnPolygon
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.factorObj
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.hnPolygon_le_of_polygonVertex_isMax
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.last_le_phase
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.last_prefix_le_quotient_phase
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.mass
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.norm_charge_le_mass
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.norm_charge_le_polygonLength
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.phase_last_prefix_le_of_ne_zero_to_semistable
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.phase_le_first
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.polygonEdge
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.polygonEdge_arg
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.polygonEdge_arg_strictAnti
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.polygonEdge_mem_semiClosedUpperHalfPlane
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.polygonLength
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.polygonLength_eq_mass
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.polygonVertex
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.polygonVertex_exists_strict_support
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.polygonVertex_exists_strict_support_hnPolygon
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.polygonVertex_last
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.polygonVertex_mem_hnPolygon
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.polygonVertex_succ_sub
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.polygonVertex_zero
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.quotientHNFiltration
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.quotientInfToCokernel
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.quotientInfToCokernel_mono
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.quotient_inf_phase_le
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.semistable_le_chain_of_phase_gt
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.semistable_phase_le_first
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.subobjectCharge_exists_strict_support
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.subobjectCharge_le_of_polygonVertex_isMax
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.subobject_phase_le_first
+#print axioms BridgelandStabLean.Foundation.ComplexPolygonalPath.arg_last_edge_le_arg_last_sub_zero
+#print axioms BridgelandStabLean.Foundation.ComplexPolygonalPath.arg_last_sub_zero_le_arg_first
+#print axioms BridgelandStabLean.Foundation.ComplexPolygonalPath.arg_unitRay
+#print axioms BridgelandStabLean.Foundation.ComplexPolygonalPath.crossFunctional
+#print axioms BridgelandStabLean.Foundation.ComplexPolygonalPath.crossFunctional_apply
+#print axioms BridgelandStabLean.Foundation.ComplexPolygonalPath.crossFunctional_neg_of_arg_lt
+#print axioms BridgelandStabLean.Foundation.ComplexPolygonalPath.crossFunctional_pos_of_arg_lt
+#print axioms BridgelandStabLean.Foundation.ComplexPolygonalPath.exists_strict_support_at_interior
+#print axioms BridgelandStabLean.Foundation.ComplexPolygonalPath.length
+#print axioms BridgelandStabLean.Foundation.ComplexPolygonalPath.norm_last_sub_zero_le_length
+#print axioms BridgelandStabLean.Foundation.ComplexPolygonalPath.sum_edges_eq_last_sub_zero
+#print axioms BridgelandStabLean.Foundation.ComplexPolygonalPath.unitRay
+#print axioms BridgelandStabLean.Foundation.ComplexPolygonalPath.unitRay_im
+#print axioms BridgelandStabLean.Foundation.ComplexPolygonalPath.unitRay_mem_semiClosedUpperHalfPlane
+#print axioms BridgelandStabLean.Foundation.ComplexPolygonalPath.unitRay_re
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.hnPolygon
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.hnPolygon_mono
+#print axioms BridgelandStabLean.Foundation.StabilityFunction.subobjectCharge_mem_hnPolygon
 
 /-! ## ConvexPolygonPerimeter — finite perimeter and short-exact mass bounds -/
 
-#print axioms CategoryTheory.AbelianHNFiltration.mass_eq_mass
-#print axioms CategoryTheory.AbelianHNFiltration.mass_le_add_norm_cokernel_of_mono
-#print axioms CategoryTheory.AbelianHNFiltration.mass_le_add_norm_of_shortExact
-#print axioms CategoryTheory.AbelianHNFiltration.polygonLength_le_add_norm_charge_sub_of_mono
-#print axioms CategoryTheory.AbelianHNFiltration.polygonLength_le_of_vertexHull_subset
-#print axioms CategoryTheory.ComplexPolygonalPath.chainLength
-#print axioms CategoryTheory.ComplexPolygonalPath.chainLength_comp_monotone_le
-#print axioms CategoryTheory.ComplexPolygonalPath.chainLength_cons_cons
-#print axioms CategoryTheory.ComplexPolygonalPath.chainLength_mono_sublist
-#print axioms CategoryTheory.ComplexPolygonalPath.chainLength_nil
-#print axioms CategoryTheory.ComplexPolygonalPath.chainLength_ofFn_eq_length
-#print axioms CategoryTheory.ComplexPolygonalPath.chainLength_singleton
-#print axioms CategoryTheory.ComplexPolygonalPath.closedEdge
-#print axioms CategoryTheory.ComplexPolygonalPath.closedLength
-#print axioms CategoryTheory.ComplexPolygonalPath.closedLength_comp_monotone_le
-#print axioms CategoryTheory.ComplexPolygonalPath.closedLength_eq_length_add_chord
-#print axioms CategoryTheory.ComplexPolygonalPath.closedLength_eq_sum_turning
-#print axioms CategoryTheory.ComplexPolygonalPath.closedLength_le_of_monotone_support
-#print axioms CategoryTheory.ComplexPolygonalPath.closedTangent
-#print axioms CategoryTheory.ComplexPolygonalPath.crossMaxIndex
-#print axioms CategoryTheory.ComplexPolygonalPath.crossMaxIndex_max
-#print axioms CategoryTheory.ComplexPolygonalPath.crossMaxIndex_mono_of_angle_gt
-#print axioms CategoryTheory.ComplexPolygonalPath.dotFunctional
-#print axioms CategoryTheory.ComplexPolygonalPath.dotFunctional_apply
-#print axioms CategoryTheory.ComplexPolygonalPath.dotFunctional_le_norm_mul
-#print axioms CategoryTheory.ComplexPolygonalPath.dotFunctional_sub_left
-#print axioms CategoryTheory.ComplexPolygonalPath.dotFunctional_sub_right
-#print axioms CategoryTheory.ComplexPolygonalPath.dotFunctional_unitDirection_self
-#print axioms CategoryTheory.ComplexPolygonalPath.dotFunctional_unitRay_sub
-#print axioms CategoryTheory.ComplexPolygonalPath.interiorBisector
-#print axioms CategoryTheory.ComplexPolygonalPath.interiorBisector_mem_Ioo
-#print axioms CategoryTheory.ComplexPolygonalPath.interiorBisector_strictAnti
-#print axioms CategoryTheory.ComplexPolygonalPath.interiorNextEdge
-#print axioms CategoryTheory.ComplexPolygonalPath.interiorPrevEdge
-#print axioms CategoryTheory.ComplexPolygonalPath.interiorTurnScale
-#print axioms CategoryTheory.ComplexPolygonalPath.interiorTurnScale_pos
-#print axioms CategoryTheory.ComplexPolygonalPath.last_sub_zero_mem_upperHalfPlaneUnion
-#print axioms CategoryTheory.ComplexPolygonalPath.length_le_of_convexHull_subset
-#print axioms CategoryTheory.ComplexPolygonalPath.length_snoc
-#print axioms CategoryTheory.ComplexPolygonalPath.norm_unitDirection_le_one
-#print axioms CategoryTheory.ComplexPolygonalPath.sub_mem_upperHalfPlaneUnion_of_lt
-#print axioms CategoryTheory.ComplexPolygonalPath.turningFunctional
-#print axioms CategoryTheory.ComplexPolygonalPath.turningFunctional_interior_eq_cross
-#print axioms CategoryTheory.ComplexPolygonalPath.unitDirection
-#print axioms CategoryTheory.ComplexPolygonalPath.unitDirection_eq_unitRay_arg
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.mass_eq_mass
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.mass_le_add_norm_cokernel_of_mono
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.mass_le_add_norm_of_shortExact
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.polygonLength_le_add_norm_charge_sub_of_mono
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.polygonLength_le_of_vertexHull_subset
+#print axioms BridgelandStabLean.Foundation.ComplexPolygonalPath.chainLength
+#print axioms BridgelandStabLean.Foundation.ComplexPolygonalPath.chainLength_comp_monotone_le
+#print axioms BridgelandStabLean.Foundation.ComplexPolygonalPath.chainLength_cons_cons
+#print axioms BridgelandStabLean.Foundation.ComplexPolygonalPath.chainLength_mono_sublist
+#print axioms BridgelandStabLean.Foundation.ComplexPolygonalPath.chainLength_nil
+#print axioms BridgelandStabLean.Foundation.ComplexPolygonalPath.chainLength_ofFn_eq_length
+#print axioms BridgelandStabLean.Foundation.ComplexPolygonalPath.chainLength_singleton
+#print axioms BridgelandStabLean.Foundation.ComplexPolygonalPath.closedEdge
+#print axioms BridgelandStabLean.Foundation.ComplexPolygonalPath.closedLength
+#print axioms BridgelandStabLean.Foundation.ComplexPolygonalPath.closedLength_comp_monotone_le
+#print axioms BridgelandStabLean.Foundation.ComplexPolygonalPath.closedLength_eq_length_add_chord
+#print axioms BridgelandStabLean.Foundation.ComplexPolygonalPath.closedLength_eq_sum_turning
+#print axioms BridgelandStabLean.Foundation.ComplexPolygonalPath.closedLength_le_of_monotone_support
+#print axioms BridgelandStabLean.Foundation.ComplexPolygonalPath.closedTangent
+#print axioms BridgelandStabLean.Foundation.ComplexPolygonalPath.crossMaxIndex
+#print axioms BridgelandStabLean.Foundation.ComplexPolygonalPath.crossMaxIndex_max
+#print axioms BridgelandStabLean.Foundation.ComplexPolygonalPath.crossMaxIndex_mono_of_angle_gt
+#print axioms BridgelandStabLean.Foundation.ComplexPolygonalPath.dotFunctional
+#print axioms BridgelandStabLean.Foundation.ComplexPolygonalPath.dotFunctional_apply
+#print axioms BridgelandStabLean.Foundation.ComplexPolygonalPath.dotFunctional_le_norm_mul
+#print axioms BridgelandStabLean.Foundation.ComplexPolygonalPath.dotFunctional_sub_left
+#print axioms BridgelandStabLean.Foundation.ComplexPolygonalPath.dotFunctional_sub_right
+#print axioms BridgelandStabLean.Foundation.ComplexPolygonalPath.dotFunctional_unitDirection_self
+#print axioms BridgelandStabLean.Foundation.ComplexPolygonalPath.dotFunctional_unitRay_sub
+#print axioms BridgelandStabLean.Foundation.ComplexPolygonalPath.interiorBisector
+#print axioms BridgelandStabLean.Foundation.ComplexPolygonalPath.interiorBisector_mem_Ioo
+#print axioms BridgelandStabLean.Foundation.ComplexPolygonalPath.interiorBisector_strictAnti
+#print axioms BridgelandStabLean.Foundation.ComplexPolygonalPath.interiorNextEdge
+#print axioms BridgelandStabLean.Foundation.ComplexPolygonalPath.interiorPrevEdge
+#print axioms BridgelandStabLean.Foundation.ComplexPolygonalPath.interiorTurnScale
+#print axioms BridgelandStabLean.Foundation.ComplexPolygonalPath.interiorTurnScale_pos
+#print axioms BridgelandStabLean.Foundation.ComplexPolygonalPath.last_sub_zero_mem_semiClosedUpperHalfPlane
+#print axioms BridgelandStabLean.Foundation.ComplexPolygonalPath.length_le_of_convexHull_subset
+#print axioms BridgelandStabLean.Foundation.ComplexPolygonalPath.length_snoc
+#print axioms BridgelandStabLean.Foundation.ComplexPolygonalPath.norm_unitDirection_le_one
+#print axioms BridgelandStabLean.Foundation.ComplexPolygonalPath.sub_mem_semiClosedUpperHalfPlane_of_lt
+#print axioms BridgelandStabLean.Foundation.ComplexPolygonalPath.turningFunctional
+#print axioms BridgelandStabLean.Foundation.ComplexPolygonalPath.turningFunctional_interior_eq_cross
+#print axioms BridgelandStabLean.Foundation.ComplexPolygonalPath.unitDirection
+#print axioms BridgelandStabLean.Foundation.ComplexPolygonalPath.unitDirection_eq_unitRay_arg
 
 /-! ## StabilityDistance — the three-coordinate extended pseudodistance -/
 
-#print axioms CategoryTheory.Triangulated.logMassDist
-#print axioms CategoryTheory.Triangulated.logMassDist_self
-#print axioms CategoryTheory.Triangulated.logMassDist_comm
-#print axioms CategoryTheory.Triangulated.logMassDist_triangle
-#print axioms CategoryTheory.Triangulated.logMassDist_eq_of_ne_top
-#print axioms CategoryTheory.Triangulated.phiPlusDist
-#print axioms CategoryTheory.Triangulated.phiMinusDist
-#print axioms CategoryTheory.Triangulated.massDist
-#print axioms CategoryTheory.Triangulated.stabilityDistTerm
-#print axioms CategoryTheory.Triangulated.stabilityDist
-#print axioms CategoryTheory.Triangulated.phiPlusDist_self
-#print axioms CategoryTheory.Triangulated.phiMinusDist_self
-#print axioms CategoryTheory.Triangulated.massDist_self
-#print axioms CategoryTheory.Triangulated.phiPlusDist_comm
-#print axioms CategoryTheory.Triangulated.phiMinusDist_comm
-#print axioms CategoryTheory.Triangulated.massDist_comm
-#print axioms CategoryTheory.Triangulated.phiPlusDist_triangle
-#print axioms CategoryTheory.Triangulated.phiMinusDist_triangle
-#print axioms CategoryTheory.Triangulated.massDist_triangle
-#print axioms CategoryTheory.Triangulated.massDist_eq_abs_log
-#print axioms CategoryTheory.Triangulated.massDist_eq_abs_log_ratio
-#print axioms CategoryTheory.Triangulated.stabilityDist_self
-#print axioms CategoryTheory.Triangulated.stabilityDist_comm
-#print axioms CategoryTheory.Triangulated.stabilityDist_triangle
-#print axioms CategoryTheory.Triangulated.slicingDist_le_stabilityDist
-#print axioms CategoryTheory.Triangulated.stabilityDistTerm_le_stabilityDist
-#print axioms CategoryTheory.Triangulated.phiPlusDist_le_stabilityDist
-#print axioms CategoryTheory.Triangulated.phiMinusDist_le_stabilityDist
-#print axioms CategoryTheory.Triangulated.massDist_le_stabilityDist
+#print axioms BridgelandStabLean.Foundation.logMassDist
+#print axioms BridgelandStabLean.Foundation.logMassDist_self
+#print axioms BridgelandStabLean.Foundation.logMassDist_comm
+#print axioms BridgelandStabLean.Foundation.logMassDist_triangle
+#print axioms BridgelandStabLean.Foundation.logMassDist_eq_of_ne_top
+#print axioms BridgelandStabLean.Foundation.phiPlusDist
+#print axioms BridgelandStabLean.Foundation.phiMinusDist
+#print axioms BridgelandStabLean.Foundation.massDist
+#print axioms BridgelandStabLean.Foundation.stabilityDistTerm
+#print axioms BridgelandStabLean.Foundation.stabilityDist
+#print axioms BridgelandStabLean.Foundation.phiPlusDist_self
+#print axioms BridgelandStabLean.Foundation.phiMinusDist_self
+#print axioms BridgelandStabLean.Foundation.massDist_self
+#print axioms BridgelandStabLean.Foundation.phiPlusDist_comm
+#print axioms BridgelandStabLean.Foundation.phiMinusDist_comm
+#print axioms BridgelandStabLean.Foundation.massDist_comm
+#print axioms BridgelandStabLean.Foundation.phiPlusDist_triangle
+#print axioms BridgelandStabLean.Foundation.phiMinusDist_triangle
+#print axioms BridgelandStabLean.Foundation.massDist_triangle
+#print axioms BridgelandStabLean.Foundation.massDist_eq_abs_log
+#print axioms BridgelandStabLean.Foundation.massDist_eq_abs_log_ratio
+#print axioms BridgelandStabLean.Foundation.stabilityDist_self
+#print axioms BridgelandStabLean.Foundation.stabilityDist_comm
+#print axioms BridgelandStabLean.Foundation.stabilityDist_triangle
+#print axioms BridgelandStabLean.Foundation.slicingDist_le_stabilityDist
+#print axioms BridgelandStabLean.Foundation.stabilityDistTerm_le_stabilityDist
+#print axioms BridgelandStabLean.Foundation.phiPlusDist_le_stabilityDist
+#print axioms BridgelandStabLean.Foundation.phiMinusDist_le_stabilityDist
+#print axioms BridgelandStabLean.Foundation.massDist_le_stabilityDist
 
 /-! ## StabilityDistanceSeparation — identity of indiscernibles -/
 
-#print axioms CategoryTheory.Triangulated.stabilityDistTerm_eq_zero_of_eq_zero
-#print axioms CategoryTheory.Triangulated.stabilityMass_toReal_eq_norm_charge
-#print axioms CategoryTheory.Triangulated.phiPlus_eq_of_stabilityDist_eq_zero
-#print axioms CategoryTheory.Triangulated.phiMinus_eq_of_stabilityDist_eq_zero
-#print axioms CategoryTheory.Triangulated.stabilityMass_toReal_eq_of_stabilityDist_eq_zero
-#print axioms CategoryTheory.Triangulated.slicing_eq_of_stabilityDist_eq_zero
-#print axioms CategoryTheory.Triangulated.charge_eq_of_stabilityDist_eq_zero
-#print axioms CategoryTheory.Triangulated.charge_comp_eq_of_stabilityDist_eq_zero
-#print axioms CategoryTheory.Triangulated.stabilityDist_eq_zero
-#print axioms CategoryTheory.Triangulated.stabilityDist_eq_zero_iff
-#print axioms CategoryTheory.Triangulated.stabilityConditionDist_eq_zero
-#print axioms CategoryTheory.Triangulated.stabilityConditionDist_eq_zero_iff
+#print axioms BridgelandStabLean.Foundation.stabilityDistTerm_eq_zero_of_eq_zero
+#print axioms BridgelandStabLean.Foundation.stabilityMass_toReal_eq_norm_charge
+#print axioms BridgelandStabLean.Foundation.phiPlus_eq_of_stabilityDist_eq_zero
+#print axioms BridgelandStabLean.Foundation.phiMinus_eq_of_stabilityDist_eq_zero
+#print axioms BridgelandStabLean.Foundation.stabilityMass_toReal_eq_of_stabilityDist_eq_zero
+#print axioms BridgelandStabLean.Foundation.slicing_eq_of_stabilityDist_eq_zero
+#print axioms BridgelandStabLean.Foundation.charge_eq_of_stabilityDist_eq_zero
+#print axioms BridgelandStabLean.Foundation.charge_comp_eq_of_stabilityDist_eq_zero
+#print axioms BridgelandStabLean.Foundation.stabilityDist_eq_zero
+#print axioms BridgelandStabLean.Foundation.stabilityDist_eq_zero_iff
+#print axioms BridgelandStabLean.Foundation.stabilityConditionDist_eq_zero
+#print axioms BridgelandStabLean.Foundation.stabilityConditionDist_eq_zero_iff
 
 /-! ## StabilityDistanceTopology — Proposition 8.1 topology comparison -/
 
-#print axioms CategoryTheory.Triangulated.abs_phiPlus_sub_lt_of_stabilityDist
-#print axioms CategoryTheory.Triangulated.abs_phiMinus_sub_lt_of_stabilityDist
-#print axioms CategoryTheory.Triangulated.abs_log_mass_ratio_lt_of_stabilityDist
-#print axioms CategoryTheory.Triangulated.exp_neg_lt_mass_ratio_and_lt_exp_of_stabilityDist
-#print axioms CategoryTheory.Triangulated.stabilityMass_toReal_lt_exp_mul_of_stabilityDist
-#print axioms CategoryTheory.Triangulated.stabilityMass_toReal_lt_exp_mul_of_stabilityDist'
-#print axioms CategoryTheory.Triangulated.norm_phaseExp_sub_phaseExp_le
-#print axioms CategoryTheory.Triangulated.norm_sum_phaseExp_sub_centralRay_le
-#print axioms CategoryTheory.Triangulated.charge_eq_stabilityMass_mul_phaseExp
-#print axioms CategoryTheory.Triangulated.norm_charge_sub_mass_phaseExp_le_of_stabilityDist
-#print axioms CategoryTheory.Triangulated.cos_mul_stabilityMass_le_norm_charge_of_width
-#print axioms CategoryTheory.Triangulated.stabilityMass_toReal_le_of_mem_basisNhd_of_semistable
-#print axioms CategoryTheory.Triangulated.stabilityMass_toReal_le_of_mem_basisNhd_of_semistable'
-#print axioms CategoryTheory.Triangulated.StabilityMassTriangleInequality
-#print axioms CategoryTheory.Triangulated.stabilityMass_toReal_congr
-#print axioms CategoryTheory.Triangulated.stabilityMass_chain_le_partial_sum
-#print axioms CategoryTheory.Triangulated.stabilityMass_le_sum_postnikov_factors
-#print axioms CategoryTheory.Triangulated.stabilityMass_toReal_le_of_mem_basisNhd
-#print axioms CategoryTheory.Triangulated.stabilityMass_toReal_le_of_mem_basisNhd'
-#print axioms CategoryTheory.Triangulated.basisForwardMassFactor
-#print axioms CategoryTheory.Triangulated.basisReverseMassFactor
-#print axioms CategoryTheory.Triangulated.basisMassControl
-#print axioms CategoryTheory.Triangulated.basisForwardMassFactor_zero
-#print axioms CategoryTheory.Triangulated.basisReverseMassFactor_zero
-#print axioms CategoryTheory.Triangulated.basisMassControl_zero
-#print axioms CategoryTheory.Triangulated.abs_log_mass_ratio_le_of_mem_basisNhd
-#print axioms CategoryTheory.Triangulated.exists_basisMassControl_lt
-#print axioms CategoryTheory.Triangulated.exists_basisNhd_subset_stabilityDist_ball
-#print axioms CategoryTheory.Triangulated.stabilityChargeControl
-#print axioms CategoryTheory.Triangulated.stabilityChargeControl_zero
-#print axioms CategoryTheory.Triangulated.norm_charge_sub_charge_lt_of_stabilityDist
-#print axioms CategoryTheory.Triangulated.stabSeminorm_le_of_stabilityDist_lt
-#print axioms CategoryTheory.Triangulated.exists_stabilityChargeControl_lt
-#print axioms CategoryTheory.Triangulated.exists_stabilityDist_ball_subset_basisNhd
-#print axioms CategoryTheory.Triangulated.nhds_hasBasis_basisNhd
-#print axioms CategoryTheory.Triangulated.StabilityDistanceTopologyCompatible
-#print axioms CategoryTheory.Triangulated.stabilityDistanceTopologyCompatible_of_mass_triangle
-#print axioms CategoryTheory.Triangulated.stabilityPseudoEMetricSpace
-#print axioms CategoryTheory.Triangulated.stabilityPseudoEMetricSpace_toTopologicalSpace
-#print axioms CategoryTheory.Triangulated.stabilityPseudoEMetricSpace_edist
-#print axioms CategoryTheory.Triangulated.stabilityEMetricSpace
-#print axioms CategoryTheory.Triangulated.stabilityEMetricSpace_toTopologicalSpace
-#print axioms CategoryTheory.Triangulated.stabilityPseudoEMetricSpaceOfMassTriangle
-#print axioms CategoryTheory.Triangulated.stabilityEMetricSpaceOfMassTriangle
-
-/-! ## H⁰ exactness bridge — current-main adapter for issue #89
-
-The generic Tilting cohomology functor is homological. This narrow adapter
-records its definitional identification with the anchor's
-`HeartStabilityData.H0Functor`, transports homologicality without adding a new
-global instance, and discharges exactness plus the monic cokernel comparison
-for heart-source triangles. `Exact`, not `ShortExact`, is the valid conclusion.
-No mass theorem or source-faithfulness claim is made here. -/
-
-#print axioms CategoryTheory.Triangulated.HeartStabilityData.H0FunctorIsoOriginalHeartCohFunctor
-#print axioms CategoryTheory.Triangulated.HeartStabilityData.H0Functor_isHomological_unconditional
-#print axioms CategoryTheory.Triangulated.HeartStabilityData.H0primeFunctor_isHomological_unconditional
-#print axioms CategoryTheory.Triangulated.HeartStabilityData.heartSourceH0Complex
-#print axioms CategoryTheory.Triangulated.HeartStabilityData.heartSourceH0Complex_exact_iff_mono_cokernelDesc
-#print axioms CategoryTheory.Triangulated.HeartStabilityData.heartSourceH0Complex_exact
-#print axioms CategoryTheory.Triangulated.HeartStabilityData.mono_heartSourceH0primeShortComplex_cokernelDesc_unconditional
-#print axioms CategoryTheory.Triangulated.HeartStabilityData.isIso_heartSourceH0primeShortComplex_cokernelDesc_unconditional
-#print axioms CategoryTheory.Triangulated.HeartStabilityData.mono_H0primeFunctor_map_mor₂_of_obj₁_isGE_one
-#print axioms CategoryTheory.Triangulated.HeartStabilityData.heartSourceH0Complex_exact_of_H0Functor_isHomological
-#print axioms CategoryTheory.Triangulated.HeartStabilityData.isIso_H0primeFunctor_map_truncLEι
-#print axioms CategoryTheory.Triangulated.HeartStabilityData.toH0primeHom_of_isLE_comp
-#print axioms CategoryTheory.Triangulated.HeartStabilityData.H0primeObjIsoTruncGEOfIsLE
-#print axioms CategoryTheory.Triangulated.HeartStabilityData.fromH0primeHom_of_isLE_zero
-#print axioms CategoryTheory.Triangulated.HeartStabilityData.H0primeFunctor_map_distinguished_exact_of_isLE
-#print axioms CategoryTheory.Triangulated.HeartStabilityData.toH0primeHom_of_isLE_comp_assoc
-#print axioms CategoryTheory.Triangulated.HeartStabilityData.heartSourceH0Complex_exact_of_isHomological
-#print axioms CategoryTheory.Triangulated.HeartStabilityData.fromH0primeHom_of_isLE_naturality_assoc
-#print axioms CategoryTheory.Triangulated.HeartStabilityData.toH0primeHom_of_isLE_fromH0primeHom_of_isLE
-#print axioms CategoryTheory.Triangulated.HeartStabilityData.mono_heartSourceH0primeShortComplex_cokernelDesc
-#print axioms CategoryTheory.Triangulated.HeartStabilityData.mono_heartSourceH0primeShortComplex_cokernelDesc_of_H0Functor
-#print axioms CategoryTheory.Triangulated.HeartStabilityData.fromH0primeHom_of_isLE
-#print axioms CategoryTheory.Triangulated.HeartStabilityData.H0primeFunctor_map_distinguished_exact_of_obj₁_isLE
-#print axioms CategoryTheory.Triangulated.HeartStabilityData.toH0primeHom_of_isLE
-#print axioms CategoryTheory.Triangulated.HeartStabilityData.fromH0primeHom_of_isLE_naturality
-#print axioms CategoryTheory.Triangulated.HeartStabilityData.fromH0primeHom_of_isLE_toH0primeHom_of_isLE
+#print axioms BridgelandStabLean.Foundation.abs_phiPlus_sub_lt_of_stabilityDist
+#print axioms BridgelandStabLean.Foundation.abs_phiMinus_sub_lt_of_stabilityDist
+#print axioms BridgelandStabLean.Foundation.abs_log_mass_ratio_lt_of_stabilityDist
+#print axioms BridgelandStabLean.Foundation.exp_neg_lt_mass_ratio_and_lt_exp_of_stabilityDist
+#print axioms BridgelandStabLean.Foundation.stabilityMass_toReal_lt_exp_mul_of_stabilityDist
+#print axioms BridgelandStabLean.Foundation.stabilityMass_toReal_lt_exp_mul_of_stabilityDist'
+#print axioms BridgelandStabLean.Foundation.norm_phaseExp_sub_phaseExp_le
+#print axioms BridgelandStabLean.Foundation.norm_sum_phaseExp_sub_centralRay_le
+#print axioms BridgelandStabLean.Foundation.charge_eq_stabilityMass_mul_phaseExp
+#print axioms BridgelandStabLean.Foundation.norm_charge_sub_mass_phaseExp_le_of_stabilityDist
+#print axioms BridgelandStabLean.Foundation.cos_mul_stabilityMass_le_norm_charge_of_width
+#print axioms BridgelandStabLean.Foundation.stabilityMass_toReal_le_of_mem_basisNhd_of_semistable
+#print axioms BridgelandStabLean.Foundation.stabilityMass_toReal_le_of_mem_basisNhd_of_semistable'
+#print axioms BridgelandStabLean.Foundation.StabilityMassTriangleInequality
+#print axioms BridgelandStabLean.Foundation.stabilityMass_toReal_congr
+#print axioms BridgelandStabLean.Foundation.stabilityMass_chain_le_partial_sum
+#print axioms BridgelandStabLean.Foundation.stabilityMass_le_sum_postnikov_factors
+#print axioms BridgelandStabLean.Foundation.stabilityMass_toReal_le_of_mem_basisNhd
+#print axioms BridgelandStabLean.Foundation.stabilityMass_toReal_le_of_mem_basisNhd'
+#print axioms BridgelandStabLean.Foundation.basisForwardMassFactor
+#print axioms BridgelandStabLean.Foundation.basisReverseMassFactor
+#print axioms BridgelandStabLean.Foundation.basisMassControl
+#print axioms BridgelandStabLean.Foundation.basisForwardMassFactor_zero
+#print axioms BridgelandStabLean.Foundation.basisReverseMassFactor_zero
+#print axioms BridgelandStabLean.Foundation.basisMassControl_zero
+#print axioms BridgelandStabLean.Foundation.abs_log_mass_ratio_le_of_mem_basisNhd
+#print axioms BridgelandStabLean.Foundation.exists_basisMassControl_lt
+#print axioms BridgelandStabLean.Foundation.exists_basisNhd_subset_stabilityDist_ball
+#print axioms BridgelandStabLean.Foundation.stabilityChargeControl
+#print axioms BridgelandStabLean.Foundation.stabilityChargeControl_zero
+#print axioms BridgelandStabLean.Foundation.norm_charge_sub_charge_lt_of_stabilityDist
+#print axioms BridgelandStabLean.Foundation.stabilitySeminorm_le_of_stabilityDist_lt
+#print axioms BridgelandStabLean.Foundation.exists_stabilityChargeControl_lt
+#print axioms BridgelandStabLean.Foundation.exists_stabilityDist_ball_subset_basisNhd
+#print axioms BridgelandStabLean.Foundation.nhds_hasBasis_basisNhd
+#print axioms BridgelandStabLean.Foundation.StabilityDistanceTopologyCompatible
+#print axioms BridgelandStabLean.Foundation.stabilityDistanceTopologyCompatible_of_mass_triangle
+#print axioms BridgelandStabLean.Foundation.stabilityPseudoEMetricSpace
+#print axioms BridgelandStabLean.Foundation.stabilityPseudoEMetricSpace_toTopologicalSpace
+#print axioms BridgelandStabLean.Foundation.stabilityPseudoEMetricSpace_edist
+#print axioms BridgelandStabLean.Foundation.stabilityEMetricSpace
+#print axioms BridgelandStabLean.Foundation.stabilityEMetricSpace_toTopologicalSpace
+#print axioms BridgelandStabLean.Foundation.stabilityPseudoEMetricSpaceOfMassTriangle
+#print axioms BridgelandStabLean.Foundation.stabilityEMetricSpaceOfMassTriangle
 
 /-! ## The octahedral reduction of the mass triangle inequality -/
 
-#print axioms CategoryTheory.Triangulated.stabilityMass_eq_ofReal_norm_charge
-#print axioms CategoryTheory.Triangulated.exists_headTail_stabilityMass
-#print axioms CategoryTheory.Triangulated.HNFiltration.exists_headTail_mass
-#print axioms CategoryTheory.Triangulated.StabilityMassSemistableLeftTriangleInequality
-#print axioms CategoryTheory.Triangulated.stabilityMassTriangleInequality_of_semistable_obj₁
-#print axioms CategoryTheory.Triangulated.stabilityMassSemistableLeftTriangleInequality
-#print axioms CategoryTheory.Triangulated.stabilityMassTriangleInequality
-#print axioms CategoryTheory.Triangulated.stabilityDistanceTopologyCompatible
-#print axioms CategoryTheory.Triangulated.stabilityMassBoundaryHeartInequality
-#print axioms CategoryTheory.Triangulated.stabilityMass_H0FunctorShift_negOne_zero_triangle_le_of_obj₁_phase_one
-#print axioms CategoryTheory.Triangulated.HNFiltration.mass_shift_one
-#print axioms CategoryTheory.Triangulated.HNFiltration.unrotateStability
-#print axioms CategoryTheory.Triangulated.stabilityMass_toReal_appendFactor
-#print axioms CategoryTheory.Triangulated.stabilityMass_toReal_triangle_eq_add_of_same_phase
-#print axioms CategoryTheory.Triangulated.StabilityCondition.WithClassMap.charge_triangle
-#print axioms CategoryTheory.Triangulated.StabilityMassBoundaryHeartInequality
-#print axioms CategoryTheory.Triangulated.stabilityMass_liftedRotation
-#print axioms CategoryTheory.Triangulated.StabilityCondition.WithClassMap.observable_charge
-#print axioms CategoryTheory.Triangulated.StabilityCondition.WithClassMap.observableStabilityFunctionOnHeart
-#print axioms CategoryTheory.Triangulated.phaseOne_endpoints_of_heart_shortExact
-#print axioms CategoryTheory.Triangulated.stabilityMass_shift_neg_one
-#print axioms CategoryTheory.Triangulated.HNFiltration.mass_rotateStability
-#print axioms CategoryTheory.Triangulated.HNFiltration.mass_unrotateStability
-#print axioms CategoryTheory.Triangulated.StabilityCondition.WithClassMap.observable
-#print axioms CategoryTheory.Triangulated.StabilityMassHeartShortExactInequality
-#print axioms CategoryTheory.Triangulated.StabilityCondition.WithClassMap.mem_slicing_of_heart_isSemistable
-#print axioms CategoryTheory.Triangulated.stabilityMass_triangle_le_of_obj₁_phase_one_of_amplitude
-#print axioms CategoryTheory.Triangulated.HNFiltration.rotateStability
-#print axioms CategoryTheory.Triangulated.stabilityMass_heart_shortExact_le_of_obj₂_semistable
-#print axioms CategoryTheory.Triangulated.StabilityCondition.WithClassMap.observableStabilityFunctionOnHeart_Zobj
-#print axioms CategoryTheory.Triangulated.heartShortExact_exists_distinguished_triangle
-#print axioms CategoryTheory.Triangulated.norm_charge_le_stabilityMass_toReal
-#print axioms CategoryTheory.Triangulated.HNFiltration.mass_shift_neg_one
-#print axioms CategoryTheory.Triangulated.norm_actC_rotationGLPos
-#print axioms CategoryTheory.Triangulated.HNFiltration.mass_appendFactor
-#print axioms CategoryTheory.Triangulated.actC_rotationGLPos
-#print axioms CategoryTheory.Triangulated.stabilityMassHeartShortExactInequality_of_triangle
-#print axioms CategoryTheory.Triangulated.stabilityMass_heartCoh_negOne_zero_triangle_le_of_obj₁_phase_one
-#print axioms CategoryTheory.Triangulated.stabilityMass_shift_one
-#print axioms CategoryTheory.Triangulated.stabilityMass_triangle_le_of_obj₂_semistable
-#print axioms CategoryTheory.Triangulated.stabilityMass_toReal_triangle_eq_add_of_gtProp_leProp
-#print axioms CategoryTheory.Triangulated.stabilityMass_toReal_eq_heartCoh_negOne_add_zero
-#print axioms CategoryTheory.Triangulated.stabilityMass_triangle_le_of_obj₁_phase_one
-#print axioms CategoryTheory.Triangulated.stabilityMass_toReal_triangle_eq_add_of_hn_separated
-#print axioms CategoryTheory.Triangulated.StabilityCondition.WithClassMap.observableStabilityFunctionOnHeart_hasHN
-#print axioms CategoryTheory.Triangulated.AbelianHNFiltration.mass_eq_stabilityMass_toReal
-#print axioms CategoryTheory.Triangulated.stabilityMass_triangle_le_of_obj₁_phase_one_of_obj₃_le_one
-#print axioms CategoryTheory.Triangulated.stabilityMass_triangle_le_of_same_phase
-#print axioms CategoryTheory.Triangulated.stabilityMass_heart_shortExact_le_of_same_phase
-#print axioms CategoryTheory.Triangulated.StabilityCondition.WithClassMap.observable_slicing
+#print axioms BridgelandStabLean.Foundation.stabilityMass_eq_ofReal_norm_charge
+#print axioms BridgelandStabLean.Foundation.exists_headTail_stabilityMass
+#print axioms BridgelandStabLean.Foundation.HNFiltration.exists_headTail_mass
+#print axioms BridgelandStabLean.Foundation.StabilityMassSemistableLeftTriangleInequality
+#print axioms BridgelandStabLean.Foundation.stabilityMassTriangleInequality_of_semistable_obj₁
+#print axioms BridgelandStabLean.Foundation.stabilityMassSemistableLeftTriangleInequality
+#print axioms BridgelandStabLean.Foundation.stabilityMassTriangleInequality
+#print axioms BridgelandStabLean.Foundation.stabilityDistanceTopologyCompatible
+#print axioms BridgelandStabLean.Foundation.stabilityMassBoundaryHeartInequality
+#print axioms BridgelandStabLean.Foundation.stabilityMass_H0FunctorShift_negOne_zero_triangle_le_of_obj₁_phase_one
+#print axioms BridgelandStabLean.Foundation.HNFiltration.mass_shift_one
+#print axioms BridgelandStabLean.Foundation.HNFiltration.unrotateStability
+#print axioms BridgelandStabLean.Foundation.stabilityMass_toReal_appendFactor
+#print axioms BridgelandStabLean.Foundation.stabilityMass_toReal_triangle_eq_add_of_same_phase
+#print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.charge_triangle
+#print axioms BridgelandStabLean.Foundation.StabilityMassBoundaryHeartInequality
+#print axioms BridgelandStabLean.Foundation.stabilityMass_liftedRotation
+#print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.observable_charge
+#print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.observableStabilityFunctionOnHeart
+#print axioms BridgelandStabLean.Foundation.phaseOne_endpoints_of_heart_shortExact
+#print axioms BridgelandStabLean.Foundation.stabilityMass_shift_neg_one
+#print axioms BridgelandStabLean.Foundation.HNFiltration.mass_rotateStability
+#print axioms BridgelandStabLean.Foundation.HNFiltration.mass_unrotateStability
+#print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.observable
+#print axioms BridgelandStabLean.Foundation.StabilityMassHeartShortExactInequality
+#print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.mem_slicing_of_heart_isSemistable
+#print axioms BridgelandStabLean.Foundation.stabilityMass_triangle_le_of_obj₁_phase_one_of_amplitude
+#print axioms BridgelandStabLean.Foundation.HNFiltration.rotateStability
+#print axioms BridgelandStabLean.Foundation.stabilityMass_heart_shortExact_le_of_obj₂_semistable
+#print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.observableStabilityFunctionOnHeart_charge
+#print axioms BridgelandStabLean.Foundation.heartShortExact_exists_distinguished_triangle
+#print axioms BridgelandStabLean.Foundation.norm_charge_le_stabilityMass_toReal
+#print axioms BridgelandStabLean.Foundation.HNFiltration.mass_shift_neg_one
+#print axioms BridgelandStabLean.Foundation.norm_actC_rotationGLPos
+#print axioms BridgelandStabLean.Foundation.HNFiltration.mass_appendFactor
+#print axioms BridgelandStabLean.Foundation.actC_rotationGLPos
+#print axioms BridgelandStabLean.Foundation.stabilityMassHeartShortExactInequality_of_triangle
+#print axioms BridgelandStabLean.Foundation.stabilityMass_heartCoh_negOne_zero_triangle_le_of_obj₁_phase_one
+#print axioms BridgelandStabLean.Foundation.stabilityMass_shift_one
+#print axioms BridgelandStabLean.Foundation.stabilityMass_triangle_le_of_obj₂_semistable
+#print axioms BridgelandStabLean.Foundation.stabilityMass_toReal_triangle_eq_add_of_gtProp_leProp
+#print axioms BridgelandStabLean.Foundation.stabilityMass_toReal_eq_heartCoh_negOne_add_zero
+#print axioms BridgelandStabLean.Foundation.stabilityMass_triangle_le_of_obj₁_phase_one
+#print axioms BridgelandStabLean.Foundation.stabilityMass_toReal_triangle_eq_add_of_hn_separated
+#print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.observableStabilityFunctionOnHeart_hasHN
+#print axioms BridgelandStabLean.Foundation.AbelianHNFiltration.mass_eq_stabilityMass_toReal
+#print axioms BridgelandStabLean.Foundation.stabilityMass_triangle_le_of_obj₁_phase_one_of_obj₃_le_one
+#print axioms BridgelandStabLean.Foundation.stabilityMass_triangle_le_of_same_phase
+#print axioms BridgelandStabLean.Foundation.stabilityMass_heart_shortExact_le_of_same_phase
+#print axioms BridgelandStabLean.Foundation.StabilityCondition.WithClassMap.observable_slicing
 
 /-! ## AutFullIsometry — invariance of all three coordinates -/
 
@@ -2705,7 +2786,7 @@ No mass theorem or source-faithfulness claim is made here. -/
 #print axioms BridgelandStabLean.GroupAction.AutPair.act_stabilityDistTerm
 #print axioms BridgelandStabLean.GroupAction.AutPair.act_stabilityDistTerm_functor_obj
 #print axioms BridgelandStabLean.GroupAction.AutPair.act_stabilityDist
-#print axioms CategoryTheory.Triangulated.AutPairQuot_smul_stabilityDist
+#print axioms BridgelandStabLean.Foundation.AutPairQuot_smul_stabilityDist
 
 /-! ## Group-law spot checks
 
@@ -2755,7 +2836,7 @@ guard; these `example`s pin the surface convention that goes with them.
 section SlicingChecks
 
 open CategoryTheory CategoryTheory.Limits CategoryTheory.Pretriangulated
-open CategoryTheory.Triangulated GroupAction
+open CategoryTheory.Triangulated BridgelandStabLean.Foundation GroupAction
 
 -- Declared explicitly. `lake env lean` does not apply the package's
 -- `[leanOptions]`, so under a bare `lean` invocation `u` and `v` were

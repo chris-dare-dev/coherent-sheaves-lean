@@ -2,7 +2,7 @@
 Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under the MIT license.
 -/
-import BridgelandStability.StabilityCondition.Defs
+import BridgelandStabLean.Foundation
 import Mathlib.CategoryTheory.Triangulated.TStructure.Heart
 import Mathlib.Tactic
 
@@ -45,6 +45,7 @@ properties under subobjects, quotients and extensions are proved here from
 
 namespace BridgelandStabLean.WeakStability
 
+open BridgelandStabLean.Foundation
 open CategoryTheory Limits Pretriangulated CategoryTheory.Triangulated Complex
 
 variable {C : Type*} [Category C] [Preadditive C] [HasZeroObject C] [HasShift C ℤ]
@@ -83,7 +84,7 @@ def ofPre {v : K₀ C →+ Λ} (σ : PreStabilityCondition.WithClassMap C v) :
   slicing := σ.slicing
   Z := σ.Z
   compat' φ E hP hE := by
-    obtain ⟨m, hm, heq⟩ := σ.compat' φ E hP hE
+    obtain ⟨m, hm, heq⟩ := σ.compatible φ E hP hE
     exact ⟨m, hm.le, fun _ => hm, heq⟩
 
 @[simp]

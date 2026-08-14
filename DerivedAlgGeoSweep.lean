@@ -6,7 +6,6 @@ Released under the MIT license.
 import DerivedAlgGeoLean
 import DGLean
 import CohLean.Development
-import BridgelandStability
 
 /-!
 # The sweep umbrella
@@ -33,7 +32,9 @@ the *scope filter*, not the *import*: a module named there but not reachable by
 import from `rootLib` contributes no constants, and the emitter reports a
 smaller sweep with exit code 0. Measured before this module existed, the
 emission covered 406 of 419 tracked modules — all of `DGLean`, all of
-`CohLean.Development`, and the vendor umbrella were absent, and nothing said so.
+`CohLean.Development`, and the former vendor umbrella were absent, and nothing
+said so. The vendor root has since been retired; its surviving maintained
+results are reachable through `BridgelandStabLean`.
 
 Adding a library root to `lakefile.toml` is therefore not enough to gate it.
 Import it here as well, and add it to `additionalRoots` in `exe/Emit.lean` if

@@ -41,7 +41,7 @@ variable {C : Type u} [Category.{v} C] [Preadditive C] [HasZeroObject C]
 -- rather than making it global: a global `Abelian` instance on every t-structure heart
 -- is exactly the kind of thing that creates diamonds later.
 attribute [local instance]
-  BridgelandStabLean.ForMathlib.CategoryTheory.Triangulated.TStructure.heartFullSubcategoryAbelian
+  CategoryTheory.Triangulated.TStructure.heartFullSubcategoryAbelian
 
 /-- A distinguished triangle maps to an exact short complex under degree-`n`
 heart cohomology. -/
@@ -56,7 +56,7 @@ theorem originalHeartCoh_isZero_of_isZero {X : C} (hX : IsZero X) :
   have : IsZero (((originalHeartCohFunctor t 0).obj X).obj) := by
     change IsZero ((shiftFunctor C 0).obj ((t.truncGELE 0 0).obj X))
     exact (t.truncGELE 0 0 ⋙ shiftFunctor C 0).map_isZero hX
-  exact BridgelandStabLean.ForMathlib.CategoryTheory.ObjectProperty.FullSubcategory.isZero_of_obj_isZero this
+  exact CategoryTheory.ObjectProperty.FullSubcategory.isZero_of_obj_isZero this
 
 section TExact
 

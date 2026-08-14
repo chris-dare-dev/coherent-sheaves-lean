@@ -25,6 +25,7 @@ the paper's classes `{muMinus > b}` and `{muPlus <= b}` are exactly
 
 namespace BridgelandStabLean.WeakStability
 
+open BridgelandStabLean.Foundation
 open CategoryTheory Limits Pretriangulated CategoryTheory.Triangulated Complex
 open BridgelandStabLean.Tilting
 
@@ -94,7 +95,7 @@ structure ExtremalHNData
 noncomputable def extremalHNData
     (sigma : WeakPreStabilityCondition v) (E : C) (hE : ¬IsZero E) :
     ExtremalHNData sigma E := by
-  let hex := HNFiltration.exists_both_nonzero C sigma.slicing hE
+  let hex := sigma.slicing.exists_hn_nonzero_boundaries C hE
   let F := Classical.choose hex
   let hn := Classical.choose (Classical.choose_spec hex)
   have hend := Classical.choose_spec (Classical.choose_spec hex)

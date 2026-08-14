@@ -1,0 +1,24 @@
+Bridgeland stability deformation and topology sources
+
+The following repository-maintained files contain source derived from:
+
+  https://github.com/mattrobball/BridgelandStability
+  upstream revision 9e48f23a382ba117b63076a33e0e775389fef1ba
+
+  BridgelandStabLean/Foundation/Deformation/SeminormComparison.lean
+  BridgelandStabLean/Foundation/Deformation/LocalInjectivity.lean
+  BridgelandStabLean/Foundation/Deformation/LocalComparison.lean
+  BridgelandStabLean/Foundation/Deformation/ConnectedComponent.lean
+  BridgelandStabLean/Foundation/Deformation/LocalHomeomorphism.lean
+
+The source files are Copyright (c) 2026 Mathlib Contributors and are licensed
+under the Apache License, Version 2.0. The complete licence text is retained at
+LICENSES/Apache-2.0.txt.
+
+Modifications made in this repository include porting to Lean and Mathlib
+v4.32.1, replacing external types and imports with repository-owned APIs,
+adapting the deformation construction to the owner HN and slicing chain, and
+integrating the componentwise local-homeomorphism theorem into the owner
+foundation umbrella.
+
+No Apache-2.0 copyright or licence header was removed from retained source.

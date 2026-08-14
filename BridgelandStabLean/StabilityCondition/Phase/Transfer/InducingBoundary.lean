@@ -23,11 +23,12 @@ of the future Ind/geometric theorem is exactly `Slicing.PreimageData`.
 
 noncomputable section
 
+open BridgelandStabLean.Foundation
 open CategoryTheory CategoryTheory.Limits CategoryTheory.Pretriangulated
 
 universe v₁ u₁ v₂ u₂
 
-namespace CategoryTheory.Triangulated
+namespace BridgelandStabLean.Foundation
 
 variable {C : Type u₁} [Category.{v₁} C] [HasZeroObject C] [HasShift C ℤ]
   [Preadditive C] [∀ n : ℤ, (shiftFunctor C n).Additive] [Pretriangulated C]
@@ -67,4 +68,4 @@ def HasLeftAdjointInducingTheorem : Prop :=
     (s : Slicing D) (F : C ⥤ D) (L : D ⥤ C),
     s.LeftAdjointInducingPremise F L → s.PreimageData F
 
-end CategoryTheory.Triangulated
+end BridgelandStabLean.Foundation
