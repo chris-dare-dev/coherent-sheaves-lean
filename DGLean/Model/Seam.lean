@@ -61,11 +61,13 @@ def ofCocycle (K L : Cdg A) : Cocycle (of A K) (of A L) 0 →+ ↥(cocycles K L)
   map_zero' := rfl
   map_add' _ _ := rfl
 
-@[simp]
+-- Not `@[simp]`: the left-hand side simplifies further, so it can never be in
+-- simp-normal form and the `simpNF` linter rejects it. It is used by name.
 lemma toCocycle_val (K L : Cdg A) (z : ↥(cocycles K L)) :
     (toCocycle K L z).1 = z.1 := rfl
 
-@[simp]
+-- Not `@[simp]`: the left-hand side simplifies further, so it can never be in
+-- simp-normal form and the `simpNF` linter rejects it. It is used by name.
 lemma ofCocycle_val (K L : Cdg A) (z : Cocycle (of A K) (of A L) 0) :
     (ofCocycle K L z).1 = z.1 := rfl
 

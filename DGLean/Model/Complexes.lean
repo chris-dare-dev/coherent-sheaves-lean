@@ -70,7 +70,8 @@ lemma dgHom_eq (K L : Cdg A) :
 lemma dgId_eq (K : Cdg A) :
     DGCategoryStruct.dgId K = Cochain.ofHom (𝟙 (of A K)) := rfl
 
-@[simp]
+-- Not `@[simp]`: the left-hand side simplifies further, so it can never be in
+-- simp-normal form and the `simpNF` linter rejects it. It is used by name.
 lemma dgComp_eq {K L M : Cdg A} (p q r : ℤ) (h : p + q = r)
     (f : (DGCategoryStruct.dgHom K L).X p) (g : (DGCategoryStruct.dgHom L M).X q) :
     DGCategoryStruct.dgComp p q r h f g = Cochain.comp f g h := rfl
