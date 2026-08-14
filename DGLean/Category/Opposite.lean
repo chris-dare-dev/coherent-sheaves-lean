@@ -56,7 +56,10 @@ instance opStruct : DGCategoryStruct.{v} Cᵒᵖ where
 
 variable {C}
 
-@[simp]
+-- Not `@[simp]`: `op_dgHom` rewrites the implicit `dgHom` types appearing in this
+-- left-hand side, so it can never be in simp-normal form while that lemma fires.
+-- Keeping the type-level rewrite as the simp lemma and this computation rule as a
+-- plain `rfl` is what makes `DGLean` lint clean; see the `simpNF` linter.
 lemma op_dgComp_apply {X Y Z : Cᵒᵖ} (p q r : ℤ) (h : p + q = r)
     (f : (dgHom Y.unop X.unop).X p)
     (g : (dgHom Z.unop Y.unop).X q) :
