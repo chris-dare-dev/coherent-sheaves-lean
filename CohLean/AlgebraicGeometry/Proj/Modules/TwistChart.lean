@@ -34,55 +34,119 @@ variable (𝒜 : ℕ → σ) [GradedRing 𝒜]
 local notation3 "X" => ProjectiveSpectrum.top 𝒜
 local notation3 "𝒪" => AlgebraicGeometry.ProjectiveSpectrum.Proj.structureSheaf 𝒜
 
+/-- The pointwise trivialization of `A(d)` at a point lying in `D₊(f)`.
+
+The membership proof is taken directly rather than through a bundled element of the chart, so
+that one equivalence serves every open contained in `D₊(f)`. -/
+noncomputable def natShiftFiberLinearEquivOfMem {f : A} (hf : f ∈ 𝒜 1) (d : ℕ)
+    {x : ProjectiveSpectrum 𝒜} (hx : x ∈ ProjectiveSpectrum.basicOpen 𝒜 f) :
+    Fiber 𝒜 (natShift 𝒜 d) x ≃ₗ[
+      HomogeneousLocalization 𝒜 x.asHomogeneousIdeal.toIdeal.primeCompl]
+        Fiber 𝒜 𝒜 x :=
+  DegreeZeroLocalization.natShiftLinearEquivOfMem 𝒜 hf d hx
+
 /-- The pointwise trivialization of `A(d)` at a point of `D₊(f)`. -/
 noncomputable def natShiftFiberLinearEquiv {f : A} (hf : f ∈ 𝒜 1) (d : ℕ)
     (x : ProjectiveSpectrum.basicOpen 𝒜 f) :
     Fiber 𝒜 (natShift 𝒜 d) x.1 ≃ₗ[
       HomogeneousLocalization 𝒜 x.1.asHomogeneousIdeal.toIdeal.primeCompl]
         Fiber 𝒜 𝒜 x.1 :=
-  DegreeZeroLocalization.natShiftLinearEquivOfMem 𝒜 hf d x.2
+  natShiftFiberLinearEquivOfMem 𝒜 hf d x.2
 
-/-- Divide a locally fractional section of `A(d)̃` by `f ^ d`. -/
-noncomputable def natShiftSectionToSelf {f : A} (hf : f ∈ 𝒜 1) (d : ℕ)
-    (s : (associatedSheafInType 𝒜 (natShift 𝒜 d)).1.obj
-      (op (ProjectiveSpectrum.basicOpen 𝒜 f))) :
-    (associatedSheafInType 𝒜 𝒜).1.obj
-      (op (ProjectiveSpectrum.basicOpen 𝒜 f)) := by
-  refine ⟨fun x => natShiftFiberLinearEquiv 𝒜 hf d x (s.1 x), ?_⟩
+/-- Divide a locally fractional section of `A(d)̃` by `f ^ d`, over any open contained in
+`D₊(f)`.
+
+The trivialization is pointwise, so nothing in the construction refers to the chart itself: only
+membership in `D₊(f)` is used, and `hU` supplies exactly that. -/
+noncomputable def natShiftSectionToSelfOn {f : A} (hf : f ∈ 𝒜 1) (d : ℕ)
+    {U : Opens X} (hU : U ≤ ProjectiveSpectrum.basicOpen 𝒜 f)
+    (s : (associatedSheafInType 𝒜 (natShift 𝒜 d)).1.obj (op U)) :
+    (associatedSheafInType 𝒜 𝒜).1.obj (op U) := by
+  refine ⟨fun x => natShiftFiberLinearEquivOfMem 𝒜 hf d (hU x.2) (s.1 x), ?_⟩
   intro x
   obtain ⟨V, hxV, i, e, r, t, ht, h⟩ := s.2 x
   refine ⟨V, hxV, i, e + d, r,
     ⟨(t : A) * f ^ d,
       by simpa using SetLike.mul_mem_graded t.2 (SetLike.pow_mem_graded d hf)⟩,
     (fun y => y.1.asHomogeneousIdeal.toIdeal.primeCompl.mul_mem
-      (ht y) (y.1.asHomogeneousIdeal.toIdeal.primeCompl.pow_mem (i y).2 d)),
+      (ht y) (y.1.asHomogeneousIdeal.toIdeal.primeCompl.pow_mem (hU (i y).2) d)),
     fun y => ?_⟩
-  · change natShiftFiberLinearEquiv 𝒜 hf d (i y) (s.1 (i y)) = _
+  · change natShiftFiberLinearEquivOfMem 𝒜 hf d (hU (i y).2) (s.1 (i y)) = _
     have hy := h y
     change s.1 (i y) = _ at hy
     rw [hy]
     exact DegreeZeroLocalization.natShiftLinearEquivOfMem_apply_mk
-      𝒜 hf d (i y).2 _
+      𝒜 hf d (hU (i y).2) _
 
-/-- Multiply a locally fractional section of `Ã` by `f ^ d`. -/
-noncomputable def natShiftSectionFromSelf {f : A} (hf : f ∈ 𝒜 1) (d : ℕ)
-    (s : (associatedSheafInType 𝒜 𝒜).1.obj
-      (op (ProjectiveSpectrum.basicOpen 𝒜 f))) :
-    (associatedSheafInType 𝒜 (natShift 𝒜 d)).1.obj
-      (op (ProjectiveSpectrum.basicOpen 𝒜 f)) := by
-  refine ⟨fun x => (natShiftFiberLinearEquiv 𝒜 hf d x).symm (s.1 x), ?_⟩
+/-- Multiply a locally fractional section of `Ã` by `f ^ d`, over any open contained in
+`D₊(f)`. -/
+noncomputable def natShiftSectionFromSelfOn {f : A} (hf : f ∈ 𝒜 1) (d : ℕ)
+    {U : Opens X} (hU : U ≤ ProjectiveSpectrum.basicOpen 𝒜 f)
+    (s : (associatedSheafInType 𝒜 𝒜).1.obj (op U)) :
+    (associatedSheafInType 𝒜 (natShift 𝒜 d)).1.obj (op U) := by
+  refine ⟨fun x => (natShiftFiberLinearEquivOfMem 𝒜 hf d (hU x.2)).symm (s.1 x), ?_⟩
   intro x
   obtain ⟨V, hxV, i, e, r, t, ht, h⟩ := s.2 x
   refine ⟨V, hxV, i, e,
     ⟨(r : A) * f ^ d,
       by simpa using SetLike.mul_mem_graded r.2 (SetLike.pow_mem_graded d hf)⟩,
     t, ht, fun y => ?_⟩
-  change (natShiftFiberLinearEquiv 𝒜 hf d (i y)).symm (s.1 (i y)) = _
+  change (natShiftFiberLinearEquivOfMem 𝒜 hf d (hU (i y).2)).symm (s.1 (i y)) = _
   have hy := h y
   change s.1 (i y) = _ at hy
   rw [hy]
   exact DegreeZeroLocalization.natShiftLinearEquivOfMem_symm_apply_mk
-    𝒜 hf d (i y).2 _
+    𝒜 hf d (hU (i y).2) _
+
+/-- Divide a locally fractional section of `A(d)̃` by `f ^ d`. -/
+noncomputable def natShiftSectionToSelf {f : A} (hf : f ∈ 𝒜 1) (d : ℕ)
+    (s : (associatedSheafInType 𝒜 (natShift 𝒜 d)).1.obj
+      (op (ProjectiveSpectrum.basicOpen 𝒜 f))) :
+    (associatedSheafInType 𝒜 𝒜).1.obj
+      (op (ProjectiveSpectrum.basicOpen 𝒜 f)) :=
+  natShiftSectionToSelfOn 𝒜 hf d le_rfl s
+
+/-- Multiply a locally fractional section of `Ã` by `f ^ d`. -/
+noncomputable def natShiftSectionFromSelf {f : A} (hf : f ∈ 𝒜 1) (d : ℕ)
+    (s : (associatedSheafInType 𝒜 𝒜).1.obj
+      (op (ProjectiveSpectrum.basicOpen 𝒜 f))) :
+    (associatedSheafInType 𝒜 (natShift 𝒜 d)).1.obj
+      (op (ProjectiveSpectrum.basicOpen 𝒜 f)) :=
+  natShiftSectionFromSelfOn 𝒜 hf d le_rfl s
+
+/-- Over any open contained in `D₊(f)`, a nonnegative twist is additively equivalent to the
+structure module when `f` has degree one. -/
+noncomputable def natShiftSectionAddEquivOn {f : A} (hf : f ∈ 𝒜 1) (d : ℕ)
+    {U : Opens X} (hU : U ≤ ProjectiveSpectrum.basicOpen 𝒜 f) :
+    (associatedSheafInType 𝒜 (natShift 𝒜 d)).1.obj (op U) ≃+
+      (associatedSheafInType 𝒜 𝒜).1.obj (op U) where
+  toFun := natShiftSectionToSelfOn 𝒜 hf d hU
+  invFun := natShiftSectionFromSelfOn 𝒜 hf d hU
+  left_inv s := by
+    apply section_ext
+    funext x
+    exact (natShiftFiberLinearEquivOfMem 𝒜 hf d (hU x.2)).symm_apply_apply (s.1 x)
+  right_inv s := by
+    apply section_ext
+    funext x
+    exact (natShiftFiberLinearEquivOfMem 𝒜 hf d (hU x.2)).apply_symm_apply (s.1 x)
+  map_add' s t := by
+    apply section_ext
+    funext x
+    exact (natShiftFiberLinearEquivOfMem 𝒜 hf d (hU x.2)).map_add (s.1 x) (t.1 x)
+
+/-- Over any open contained in `D₊(f)`, the chart trivialization is linear over the
+structure-sheaf sections of that open. -/
+noncomputable def natShiftSectionLinearEquivOn {f : A} (hf : f ∈ 𝒜 1) (d : ℕ)
+    {U : Opens X} (hU : U ≤ ProjectiveSpectrum.basicOpen 𝒜 f) :
+    (associatedSheafInType 𝒜 (natShift 𝒜 d)).1.obj (op U) ≃ₗ[𝒪.1.obj (op U)]
+      (associatedSheafInType 𝒜 𝒜).1.obj (op U) :=
+  { natShiftSectionAddEquivOn 𝒜 hf d hU with
+    map_smul' := fun r s => by
+      apply section_ext
+      funext x
+      exact (natShiftFiberLinearEquivOfMem 𝒜 hf d (hU x.2)).map_smul
+        (AlgebraicGeometry.openToLocalization 𝒜 U x.1 x.2 r) (s.1 x) }
 
 /-- Over `D₊(f)`, a nonnegative twist is additively equivalent to the structure module when
 `f` has degree one. -/
@@ -90,21 +154,8 @@ noncomputable def natShiftSectionAddEquiv {f : A} (hf : f ∈ 𝒜 1) (d : ℕ) 
     (associatedSheafInType 𝒜 (natShift 𝒜 d)).1.obj
         (op (ProjectiveSpectrum.basicOpen 𝒜 f)) ≃+
       (associatedSheafInType 𝒜 𝒜).1.obj
-        (op (ProjectiveSpectrum.basicOpen 𝒜 f)) where
-  toFun := natShiftSectionToSelf 𝒜 hf d
-  invFun := natShiftSectionFromSelf 𝒜 hf d
-  left_inv s := by
-    apply section_ext
-    funext x
-    exact (natShiftFiberLinearEquiv 𝒜 hf d x).symm_apply_apply (s.1 x)
-  right_inv s := by
-    apply section_ext
-    funext x
-    exact (natShiftFiberLinearEquiv 𝒜 hf d x).apply_symm_apply (s.1 x)
-  map_add' s t := by
-    apply section_ext
-    funext x
-    exact (natShiftFiberLinearEquiv 𝒜 hf d x).map_add (s.1 x) (t.1 x)
+        (op (ProjectiveSpectrum.basicOpen 𝒜 f)) :=
+  natShiftSectionAddEquivOn 𝒜 hf d le_rfl
 
 /-- The chart trivialization is linear over the structure-sheaf sections on `D₊(f)`. -/
 noncomputable def natShiftSectionLinearEquiv {f : A} (hf : f ∈ 𝒜 1) (d : ℕ) :
@@ -113,13 +164,7 @@ noncomputable def natShiftSectionLinearEquiv {f : A} (hf : f ∈ 𝒜 1) (d : �
       𝒪.1.obj (op (ProjectiveSpectrum.basicOpen 𝒜 f))]
       (associatedSheafInType 𝒜 𝒜).1.obj
         (op (ProjectiveSpectrum.basicOpen 𝒜 f)) :=
-  { natShiftSectionAddEquiv 𝒜 hf d with
-    map_smul' := fun r s => by
-      apply section_ext
-      funext x
-      exact (natShiftFiberLinearEquiv 𝒜 hf d x).map_smul
-        (AlgebraicGeometry.openToLocalization 𝒜
-          (ProjectiveSpectrum.basicOpen 𝒜 f) x.1 x.2 r) (s.1 x) }
+  natShiftSectionLinearEquivOn 𝒜 hf d le_rfl
 
 /-! ## The canonical basic-open map -/
 

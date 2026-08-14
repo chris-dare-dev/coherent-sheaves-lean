@@ -52,6 +52,15 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms CohLean.AlgebraicGeometry.Proj.localizedNatShiftDegreeOneIso
 #print axioms CohLean.AlgebraicGeometry.Proj.natShiftSectionLinearEquiv
 #print axioms CohLean.AlgebraicGeometry.Proj.moduleAwayToSection_natShift_degreeOne_bijective
+
+-- The degree-one chart trivialization holds over every open below D₊(f), not only over the
+-- chart itself: the underlying equivalence is pointwise and uses membership alone. The
+-- basic-open forms above are now the `le_rfl` case of these.
+#print axioms CohLean.AlgebraicGeometry.Proj.natShiftFiberLinearEquivOfMem
+#print axioms CohLean.AlgebraicGeometry.Proj.natShiftSectionToSelfOn
+#print axioms CohLean.AlgebraicGeometry.Proj.natShiftSectionFromSelfOn
+#print axioms CohLean.AlgebraicGeometry.Proj.natShiftSectionAddEquivOn
+#print axioms CohLean.AlgebraicGeometry.Proj.natShiftSectionLinearEquivOn
 #print axioms CohLean.AlgebraicGeometry.Proj.affineComparisonDataSelf
 #print axioms CohLean.AlgebraicGeometry.Proj.associatedSheaf_self_isQuasicoherent
 #print axioms CohLean.AlgebraicGeometry.Proj.AffineComparisonData.quasicoherentData
