@@ -84,32 +84,38 @@ lemma dgComp_units_smul_right {X Y Z : C} (p q r : ℤ) (h : p + q = r) (c : ℤ
     dgComp (k := k) p q r h f (c • g) = c • dgComp (k := k) p q r h f g := by
   simp [Units.smul_def, map_zsmul]
 
-/-!
-## What is not here yet
+/-- A morphism of `ModuleCat` commutes with the `ℤˣ` action, which factors
+through `ℤ`. Stated so the sign bookkeeping below can stay in `ℤˣ` instead of
+dropping to `ℤ` and back. -/
+lemma hom_units_smul {M N : ModuleCat.{v} k} (φ : M ⟶ N) (c : ℤˣ) (x : M) :
+    φ.hom (c • x) = c • φ.hom x := by
+  simp [Units.smul_def, map_zsmul]
 
-The `DGCategory` instance on `Cᵒᵖ` — the four axioms — is **not** proved. The
-data above is complete and the sign convention is fixed, but the axiom proofs
-need index bookkeeping that is not yet done, and this repository does not
-accept a `sorry` to stand in for it. Two residual obligations, both with the
-goal already reduced to the right shape:
-
-* **Associativity.** After `simp only [op_dgComp_apply, dgComp_units_smul_left,
-  dgComp_units_smul_right, smul_smul, ← Int.negOnePow_add]` the two sides agree
-  up to rewriting by the underlying `dgComp_assoc` at `(r, q, p)` and an
-  equality of sign exponents, `(p + q) * r + p * q = p * (q + r) + q * r`. The
-  rewrite lands; closing the sign congruence needs an `Int.negOnePow`
-  congruence step rather than `ring`, because the coefficients live in `ℤˣ`.
-
-* **Leibniz.** The underlying axiom instantiated at `(q, p)` with the argument
-  pair swapped is the right key, but `simp only [op_dgHom]` normalizes the
-  goal's `dgComp` before `op_dgComp_apply` can fire, so the rewrite misses. The
-  fix is to apply `op_dgComp_apply` first and keep `op_dgHom` out of that simp
-  set.
-
-Neither is a mathematical gap: both identities are verified by hand in the
-header above. They are Lean bookkeeping, and they are recorded here rather than
-papered over so the next reader starts from the residual goal instead of from
-the beginning.
--/
+/-- The opposite dg category. -/
+instance op : DGCategory.{v} k Cᵒᵖ where
+  dgComp_assoc p q r pq qr pqr hpq hqr hpqr f g h := by
+    subst hpq; subst hqr; subst hpqr
+    simp only [op_dgComp_apply, dgComp_units_smul_left, dgComp_units_smul_right, smul_smul,
+      ← Int.negOnePow_add]
+    rw [show (p + q) * r + p * q = p * (q + r) + q * r by ring,
+      dgComp_assoc (k := k) r q p (q + r) (p + q) (p + q + r) (by ring) (by ring) (by ring)]
+  dgId_comp p f := by
+    simp only [op_dgComp_apply, zero_mul, Int.negOnePow_zero, one_smul]
+    exact dgComp_id (k := k) p f
+  dgComp_id p f := by
+    simp only [op_dgComp_apply, mul_zero, Int.negOnePow_zero, one_smul]
+    exact dgId_comp (k := k) p f
+  dgId_cocycle X := dgId_cocycle (k := k) X.unop
+  dgComp_leibniz p q r r' h hr f g := by
+    subst h
+    have key := dgComp_leibniz (k := k) q p (p + q) r' (by ring) (by omega) g f
+    simp only [op_dgComp_apply]
+    rw [hom_units_smul]
+    simp only [op_dgHom]
+    rw [key, smul_add, smul_smul, smul_smul, ← Int.negOnePow_add, ← Int.negOnePow_add,
+      show p + p * (q + 1) = p * q + 2 * p by ring,
+      show ((p * q + 2 * p).negOnePow) = (p * q).negOnePow by
+        rw [Int.negOnePow_add, Int.negOnePow_two_mul, mul_one],
+      show (p + 1) * q = p * q + q by ring, add_comm]
 
 end DGCategory
