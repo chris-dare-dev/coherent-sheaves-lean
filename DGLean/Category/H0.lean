@@ -37,7 +37,7 @@ rather than rewriting the goal.
 set_option autoImplicit false
 set_option relaxedAutoImplicit false
 
-universe v u u'
+universe v u u' u''
 
 open CategoryTheory DGCategoryStruct DGCategory
 
@@ -296,5 +296,41 @@ structure IsQuasiEquivalence (F : DGFunctor C D) : Prop where
   quasiIso : ∀ X Y : C, QuasiIso (F.mapComplex X Y)
   /-- `H⁰ F` hits every object up to isomorphism. -/
   essSurj : F.h0.EssSurj
+
+end DGFunctor
+
+/-- The quotient functor from cocycles to cohomology classes. -/
+def Z0.toH0 (C : Type u) [DGCategory.{v} C] : Z0 C ⥤ H0 C where
+  obj X := X
+  map f := QuotientAddGroup.mk f
+  map_id _ := rfl
+  map_comp _ _ := rfl
+
+namespace DGFunctor
+
+variable {C : Type u} {D : Type u'} {E : Type u''} [DGCategory.{v} C] [DGCategory.{v} D]
+  [DGCategory.{v} E]
+
+/-- How `H⁰ F` acts on a class: this is the computation rule `simp` needs
+before any naturality square involving `h0` will close. -/
+@[simp]
+lemma h0_map_mk (F : DGFunctor C D) {X Y : H0 C} (f : cocycles (H0.of C X) (H0.of C Y)) :
+    F.h0.map (QuotientAddGroup.mk f) =
+      QuotientAddGroup.mk ⟨F.map 0 f.1, F.map_mem_cocycles f.2⟩ := rfl
+
+/-!
+## Not here: the coherence isomorphisms
+
+`H⁰ (𝟭) ≅ 𝟭` and `H⁰ (F ⋙ G) ≅ H⁰ F ⋙ H⁰ G` are **not** proved, and no `sorry`
+stands in for them. With `h0_map_mk` above, the naturality square reduces to
+`↑f ≫ 𝟙 = 𝟙 ≫ ↑f` and then stalls: the `≫` and `𝟙` are the quotient category's,
+whose unit laws are proved by `Quotient.ind` rather than by `rfl`, so neither
+`simp` nor `aesop_cat` closes it and the remaining step is a coercion mismatch
+on `↑f`. The fix is a computation rule for the quotient's composition against
+identities, in the same style as `h0_map_mk`; it is a short lemma and it is not
+written yet.
+
+They are the last item of `dg-enhancements-e3`'s second acceptance criterion.
+-/
 
 end DGFunctor
