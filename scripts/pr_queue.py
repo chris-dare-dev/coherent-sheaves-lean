@@ -26,6 +26,12 @@ the skills, this file -- is flagged BOOTSTRAP and sorts ahead of every state.
 It is not a bigger version of READY: it is the PR that decides whether anything
 after it is gated correctly at all.
 
+Exit codes: 0 when work is queued, 2 when no iteration can make progress. The
+two reasons for 2 are printed and are not interchangeable -- `BLOCKED ON YOU`
+(everything is gated, reviewed, and waiting on a merge) versus `QUEUE DRAINED`
+(there is genuinely nothing open). A loop that reports "nothing to do" for the
+first of those has failed silently.
+
 Usage:  python3 scripts/pr_queue.py [--json]
 """
 
@@ -174,8 +180,33 @@ def main(argv: list[str]) -> int:
         print(f"{r['number']:>5}  {r['state']:<8} +{r['additions']:<5} {r['title'][:56]}{flag}")
     if any(r["bootstrap"] for r in rows):
         print("\nBootstrap PRs first: until they land, later iterations run on stale gates.")
-    print("\nLand top-down. Each merge shrinks the diff of everything below it.")
-    return 0
+
+    waiting = [r for r in rows if r["state"] == "DONE"]
+    actionable = [r for r in rows if r["state"] not in ("DONE", "SKIP")]
+
+    if actionable:
+        print("\nLand top-down. Each merge shrinks the diff of everything below it.")
+        if waiting:
+            print(f"Separately, {len(waiting)} PR(s) are gated and reviewed, waiting on a merge: "
+                  + ", ".join(f"#{r['number']}" for r in waiting))
+        return 0
+
+    # Nothing left to work on. Say which of the two very different reasons it is,
+    # because a loop that reports "nothing to do" when the real answer is "27 PRs
+    # need you" has failed silently -- it looks identical to a drained queue.
+    print()
+    if waiting:
+        print(f"BLOCKED ON YOU: {len(waiting)} PR(s) are gated, reviewed, and waiting on a merge.")
+        for r in waiting:
+            print(f"  #{r['number']}  +{r['additions']:<5} {r['title'][:56]}")
+        print("\nNo iteration can make progress until some of these merge: the loop does not "
+              "merge, and re-reviewing an unchanged head would only repeat a posted verdict.")
+    else:
+        print("QUEUE DRAINED: no open PR needs a landing iteration.")
+
+    # Exit 2 distinguishes "stop the loop, and here is why" from a clean run
+    # with work still queued (0) and from a tool failure (1).
+    return 2
 
 
 if __name__ == "__main__":
