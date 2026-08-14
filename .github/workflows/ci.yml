@@ -71,6 +71,16 @@ jobs:
           }
           python3 scripts/check_audit.py bridgeland-audit.txt
 
+      - name: DG axiom audit
+        run: |
+          set -euo pipefail
+          lake env lean scripts/DGLeanAudit.lean > dg-audit.txt 2>&1 || {
+            echo "::error::scripts/DGLeanAudit.lean failed to elaborate"
+            cat dg-audit.txt
+            exit 1
+          }
+          python3 scripts/check_audit.py dg-audit.txt scripts/DGLeanAudit.lean
+
       - name: Environment linters
         run: |
           set -euo pipefail
@@ -84,6 +94,10 @@ jobs:
           # everything else. Fix the declaration, or argue for the exception.
           lake exe runLinter CohLean
           python3 scripts/check_nolints.py
+          # DGLean is gated from its first commit and has no nolints entries.
+          # Keep it that way: it is clean at 62 declarations, and CohLean shows
+          # what retrofitting costs once a backlog exists.
+          lake exe runLinter DGLean
           lake exe lint-style
 
       - name: Anchor-free import boundary
