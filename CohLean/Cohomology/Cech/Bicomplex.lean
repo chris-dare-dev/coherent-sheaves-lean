@@ -21,9 +21,12 @@ The Cech direction is the first direction and the resolution direction is the se
 retain the augmentation induced by `F ⟶ I⁰`, and instantiate the column-filtered total-complex
 spectral sequence constructed in `CohLean.Cohomology.SpectralSequence.FilteredTotalComplex`.
 
-At the Mathlib revision pinned by this project, the sheaf category is not equipped with an
-`EnoughInjectives` instance.  Accordingly, the construction takes an explicit
-`InjectiveResolution F`; it does not install its existence as an axiom or typeclass.
+The site here is a general `C : Type u` with `Category.{v} C`, and at the pinned Mathlib revision
+abelian sheaves over such a site carry no `EnoughInjectives` instance.  Accordingly, the
+construction takes an explicit `InjectiveResolution F`; it does not install its existence as an
+axiom or typeclass.  The obstruction is smallness alone: over a small site Mathlib does derive
+enough injectives, and `CohLean.Cohomology.Cech.SmallSiteResolution` discharges the resolution
+argument there.
 -/
 
 universe w vA uA a v u

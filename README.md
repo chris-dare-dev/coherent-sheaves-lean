@@ -112,9 +112,11 @@ further projective-geometry work represented in the issue tracker.
 The Čech-to-derived comparison is complete for open covers of topological spaces. An explicit
 injective resolution maps from its global-sections complex to the injective Čech total; the map
 is a quasi-isomorphism because injective Čech rows are exact. Consequently every Čech-acyclic
-cover computes `Sheaf.H` in all degrees. The resolution and Mathlib's `HasExt` witness remain
-explicit inputs because the current library does not install enough injectives for abelian
-sheaves globally.
+cover computes `Sheaf.H` in all degrees. On the small site of opens the resolution is no longer an
+input: the pinned Mathlib makes abelian sheaves over a small site a Grothendieck abelian category,
+hence one with enough injectives, so `canonicalInjectiveResolution` chooses one. Mathlib's
+`HasExt` witness is still an explicit argument in that form, and the resolution-carrying form is
+retained for a general site, where enough injectives is genuinely unavailable.
 
 For affine quasi-coherent sheaves, the library proves the non-circular compact-basis criterion of
 Stacks Project, Tag 01EW, specializes it to the distinguished-open basis, and derives unconditional
