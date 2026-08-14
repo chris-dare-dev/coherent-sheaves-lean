@@ -2,41 +2,41 @@
 Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under the MIT license.
 -/
-import Mathlib.Algebra.Category.ModuleCat.Basic
+import Mathlib.Algebra.Category.Grp.Basic
 import Mathlib.Algebra.Homology.HomotopyCategory.HomComplex
 
 /-!
 # DG categories
 
-A dg category over a commutative ring `k` is a category whose hom-objects are
-cochain complexes of `k`-modules, with a composition that is `k`-bilinear,
-associative, unital, and satisfies the Leibniz rule.
+A dg category is a category whose hom-objects are cochain complexes of abelian
+groups, with a composition that is biadditive, associative, unital, and
+satisfies the Leibniz rule. `k`-linearity is a refinement, `DGLinear`, rather
+than part of the definition.
 
 ## The encoding, and why it is this one
 
-`ADR-0010` decides for a bespoke structure rather than
-`EnrichedOrdinaryCategory` over `CochainComplex (ModuleCat k) ℤ`. The reason is
-measured, not stylistic: at the pinned Mathlib revision
+`ADR-0010` decides against `EnrichedOrdinaryCategory` over
+`CochainComplex (ModuleCat k) ℤ`: at the pinned Mathlib revision
 `HomologicalComplex.HasTensor` does not synthesize for the `ℤ`-indexed shape,
-because the degree-`n` component of a tensor product is a coproduct over the
-infinite set `{(i, j) | i + j = n}` and only the finite-fibre instances exist.
-There is therefore no monoidal category available to enrich over. See
+so there is no monoidal category available to enrich over. See
 `.claude/notes/2026-08-13-dg-surface-reconnaissance.md`.
 
-Composition is consequently given as a family of `k`-bilinear maps on the
-graded pieces rather than as a chain map out of a tensor product. Only
-`TensorProduct`-free data is used, so nothing here depends on the missing
-instances.
+`ADR-0011` decides the remaining question — what the Hom-complexes are
+complexes *of*. They are complexes of abelian groups, matching
+`CochainComplex.HomComplex`, with `k`-linearity layered on top. The first draft
+of this file used `ModuleCat k` and collided with that choice three times; the
+ADR records all three.
+
+Composition is a family of biadditive maps on the graded pieces rather than a
+chain map out of a tensor product, because the tensor product of `ℤ`-indexed
+complexes is exactly what the pin does not have.
 
 ## Sign convention
 
-The Leibniz rule is
-`δ (f ∘ g) = (δ f) ∘ g + (-1) ^ p • f ∘ (δ g)` for `f` of degree `p`,
-which is the convention `CochainComplex.HomComplex.δ_comp` uses in Mathlib at
-the pin. Any divergence from Mathlib's convention must be documented as a
-divergence here rather than absorbed silently: a sign convention that is only
-implicit is the most common source of silent disagreement between two dg
-developments.
+`δ (f ∘ g) = (δ f) ∘ g + (-1) ^ p • f ∘ (δ g)` for `f` of degree `p`, matching
+`CochainComplex.HomComplex` at the pin. A divergence must be documented as a
+divergence rather than absorbed silently: an implicit sign convention is the
+usual way two dg developments come to disagree without either noticing.
 -/
 
 set_option autoImplicit false
@@ -46,27 +46,21 @@ universe v u w
 
 open CategoryTheory
 
-variable (k : Type w) [CommRing k]
-
-/-- The data of a dg category over `k` on a type of objects `C`: a
-cochain complex of `k`-modules for each pair of objects, a degree-zero
-identity, and a `k`-bilinear graded composition. -/
+/-- The data of a dg category on a type of objects `C`: a cochain complex of
+abelian groups for each pair of objects, a degree-zero identity, and a
+biadditive graded composition. -/
 class DGCategoryStruct (C : Type u) where
   /-- The hom-complex between two objects. -/
-  dgHom : C → C → CochainComplex (ModuleCat.{v} k) ℤ
+  dgHom : C → C → CochainComplex AddCommGrpCat.{v} ℤ
   /-- The identity, a degree-zero element of the endomorphism complex. -/
   dgId (X : C) : (dgHom X X).X 0
-  /-- Graded composition, `k`-bilinear in each variable. -/
+  /-- Graded composition, additive in each variable. -/
   dgComp {X Y Z : C} (p q r : ℤ) (h : p + q = r) :
-    (dgHom X Y).X p →ₗ[k] (dgHom Y Z).X q →ₗ[k] (dgHom X Z).X r
+    (dgHom X Y).X p →+ (dgHom Y Z).X q →+ (dgHom X Z).X r
 
-/-- A dg category over `k`: the data of `DGCategoryStruct` subject to
-associativity, unitality, the identity being a cocycle, and the Leibniz rule.
-
-The differential is written `((dgHom X Y).d p q).hom` rather than through an
-abbreviation: the instance is determined by the enclosing class, and an
-abbreviation outside it has no instance to pin `k` down. -/
-class DGCategory (C : Type u) extends DGCategoryStruct.{v} k C where
+/-- A dg category: the data of `DGCategoryStruct` subject to associativity,
+unitality, the identity being a cocycle, and the Leibniz rule. -/
+class DGCategory (C : Type u) extends DGCategoryStruct.{v} C where
   dgComp_assoc {W X Y Z : C} (p q r pq qr pqr : ℤ)
       (hpq : p + q = pq) (hqr : q + r = qr) (hpqr : pq + r = pqr)
       (f : (dgHom W X).X p) (g : (dgHom X Y).X q) (h : (dgHom Y Z).X r) :

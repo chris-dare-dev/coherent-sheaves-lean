@@ -2,60 +2,46 @@
 Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under the MIT license.
 -/
-import Mathlib.Algebra.Algebra.Bilinear
+import Mathlib.Algebra.Ring.Basic
 import DGLean.Category.Basic
 
 /-!
 # A non-vacuous dg category
 
 `DGCategory` is a structure with five axioms, and a structure with five axioms
-is worth exactly nothing until something satisfies them. This file exhibits an
-instance on an arbitrary object type, so the axiom set is proved consistent
-before anything is built on top of it.
+is worth nothing until something satisfies them. This file exhibits an instance
+on an arbitrary object type, so the axiom set is proved consistent before
+anything is built on top of it.
 
-## The example
-
-`Const k X` has `X` as its objects and, between any two of them, the cochain
-complex that is `k` in every degree with zero differential. Composition is
-multiplication in `k` and the identity is `1`.
-
-This is a real dg category, not a degenerate one: its Hom-complexes are the
-graded algebra with `k` in every degree, and every axiom has content —
-associativity is `mul_assoc`, the unit laws are `one_mul` and `mul_one`. The
+`Const X` has `X` as its objects and, between any two of them, the cochain
+complex that is `ℤ` in every degree with zero differential. Composition is
+multiplication and the identity is `1`. Associativity is `mul_assoc` and the
+unit laws are `one_mul` and `mul_one`, so those three axioms have content. The
 differential is zero, so the Leibniz rule and the cocycle condition hold for
-the uninteresting reason, which is the honest thing to say about them.
+the uninteresting reason — which is the honest thing to say about them. A
+non-zero differential waits for `C^dg` in `dg-enhancements-e4`.
 
 ## An idiom this file establishes
 
-`ModuleCat.of k k`'s carrier is not transparent to instance search, so a goal
-stated on `↑((constComplex k).X p)` cannot use `mul_assoc` or `zero_mul`: the
-`Semigroup` and `MulZeroClass` instances are not found. Two things work, and
-both are used below. For a term proof, pin the type on the lemma —
-`mul_assoc (G := k) f g h`. For a tactic proof, bind the arguments at type `k`
-in the field's lambda — `fun p _ _ _ _ _ (f : k) (g : k) => ...` — after which
-the whole goal is about `k` and ordinary `simp` works. Rewriting the carrier in
-place with `ModuleCat.coe_of` does **not** work: it breaks type-correctness of
-the surrounding term.
-
-What this example does **not** do is exercise the Leibniz rule against a
-non-zero differential. That has to wait for `C^dg` in `dg-enhancements-e4`,
-where the differential is the one on the Hom complex. Until then, treat the
-Leibniz axiom as untested by any instance.
+`AddCommGrpCat.of ℤ`'s carrier is not transparent to instance search, so a goal
+stated on `↑((constComplex).X p)` cannot use `mul_assoc`: the `Semigroup`
+instance is not found. Two things work. For a term proof, pin the type on the
+lemma — `mul_assoc (G := ℤ) f g h`. For a tactic proof, bind the arguments at
+type `ℤ` in the field's lambda — `fun p _ _ _ _ _ (f : ℤ) (g : ℤ) => ...` —
+after which the goal is about `ℤ` and ordinary `simp` works.
 -/
 
 set_option autoImplicit false
 set_option relaxedAutoImplicit false
 
-universe u w
+universe u
 
 open CategoryTheory
 
-variable (k : Type w) [CommRing k]
-
-/-- The cochain complex that is `k` in every degree, with zero differential. -/
+/-- The cochain complex that is `ℤ` in every degree, with zero differential. -/
 @[simps]
-def constComplex : CochainComplex (ModuleCat.{w} k) ℤ where
-  X _ := ModuleCat.of k k
+def constComplex : CochainComplex AddCommGrpCat.{0} ℤ where
+  X _ := AddCommGrpCat.of ℤ
   d _ _ := 0
   shape _ _ _ := rfl
   d_comp_d' _ _ _ _ _ := by simp
@@ -66,16 +52,16 @@ def Const (X : Type u) : Type u := X
 
 namespace Const
 
-instance dgCategory (X : Type u) : DGCategory.{w} k (Const X) where
-  dgHom _ _ := constComplex k
-  dgId _ := (1 : k)
-  dgComp _ _ _ _ := LinearMap.mul k k
-  dgComp_assoc _ _ _ _ _ _ _ _ _ f g h := mul_assoc (G := k) f g h
-  dgId_comp _ f := one_mul (M := k) f
-  dgComp_id _ f := mul_one (M := k) f
+instance dgCategory (X : Type u) : DGCategory.{0} (Const X) where
+  dgHom _ _ := constComplex
+  dgId _ := (1 : ℤ)
+  dgComp _ _ _ _ := AddMonoidHom.mul (R := ℤ)
+  dgComp_assoc _ _ _ _ _ _ _ _ _ f g h := mul_assoc (G := ℤ) f g h
+  dgId_comp _ f := one_mul (M := ℤ) f
+  dgComp_id _ f := mul_one (M := ℤ) f
   dgId_cocycle _ := rfl
-  dgComp_leibniz := fun p _ _ _ _ _ (f : k) (g : k) => by
-    show (0 : k) = (0 : k) * g + p.negOnePow • (f * (0 : k))
+  dgComp_leibniz := fun p _ _ _ _ _ (f : ℤ) (g : ℤ) => by
+    show (0 : ℤ) = (0 : ℤ) * g + p.negOnePow • (f * (0 : ℤ))
     simp
 
 end Const
