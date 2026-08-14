@@ -93,6 +93,7 @@ generations:
   - { rev: 2, at: "2026-08-13", note: "Partially materialized: eight labels created, milestones #19-#24 created, and the two DG0 epics filed as #328 and #329. DG1-DG5 epics remain unfiled by design. Project views and fields are still pending the project scope on the gh token." }
   - { rev: 3, at: "2026-08-13", note: "Source pins landed: five zero-claim coverage maps (1312.5619v3, 1507.05509v5, 2101.04404v1, 2402.04605v1, 2407.05946v2), each hashed against the PDF as served on 2026-08-13 and with section titles read from that PDF. registry/README.md documents all five. formalization.yaml and registry/bridgeland2007.json untouched." }
   - { rev: 4, at: "2026-08-13", note: "ADR-0010 Question 1 decided: Option B, a bespoke DGCategory structure, after the pinned-Mathlib measurement refuted the enriched route's enriching category. Assumption 1 marked refuted, assumption 2 confirmed and strengthened, e2 resized up and e4 down. DG1 is unblocked." }
+  - { rev: 5, at: "2026-08-13", note: "DG1 epics filed as #335 (e2), #336 (e3), #337 (e4). e2 is agent-ready; implementation started on branch agent/dg-e2-dgcategory." }
 retired: []
 
 # GitHub milestones are roadmap phases. Epic issues live inside them, and
@@ -159,7 +160,7 @@ items:
       - "Zero sorries; lake build, both audits, both linters, lint-style, check_pin, check_anchor_free, check_coverage_map, and the emitter gate are green."
 
   - id: dg-enhancements-e2
-    gh_issue: null
+    gh_issue: 335
     gh_sub_issues: []
     kind: epic
     parent: dg-enhancements-m1
@@ -172,7 +173,7 @@ items:
     labels: [area:dg, type:feature, source:1507.05509]
 
   - id: dg-enhancements-e3
-    gh_issue: null
+    gh_issue: 336
     gh_sub_issues: []
     kind: epic
     parent: dg-enhancements-m1
@@ -185,7 +186,7 @@ items:
     labels: [area:dg, bridge:h0-seam, type:feature, source:1507.05509]
 
   - id: dg-enhancements-e4
-    gh_issue: null
+    gh_issue: 337
     gh_sub_issues: []
     kind: epic
     parent: dg-enhancements-m1
