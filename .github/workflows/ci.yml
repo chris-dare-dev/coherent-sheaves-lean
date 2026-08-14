@@ -104,6 +104,34 @@ jobs:
             fi
           done
 
+      # Build-output cache, hosted lane only (2026-08-14).
+      #
+      # Measured on this workflow: `lean-action` takes 9 minutes on the
+      # self-hosted runner and 30 on ubuntu-latest. The difference is not the
+      # hardware, it is that the self-hosted runner keeps `.lake` between runs --
+      # 8.8 GB resident, of which mathlib's build is 7.1 GB and this repository's
+      # own output is 1.1 GB. The hosted lane starts cold every time.
+      #
+      # Only `.lake/build` is cached. mathlib's 7.1 GB must never go in here:
+      # GitHub's per-repository cache budget is 10 GB total, so one such entry
+      # would evict everything else on write. `lean-action`'s use-mathlib-cache
+      # already fetches mathlib's oleans from the Lean community cache, which is
+      # the right source for them.
+      #
+      # Restore is keyed exactly, then falls back by prefix to the newest cache
+      # for the same toolchain and manifest -- in practice the one `main` saved.
+      # A stale restore is safe rather than merely tolerable: lake's build is
+      # trace-hash based, so anything out of date is rebuilt. The failure mode is
+      # a slower run, never a wrong one.
+      - name: Restore build output
+        if: github.event_name == 'pull_request'
+        uses: actions/cache/restore@v4
+        with:
+          path: .lake/build
+          key: lake-build-${{ runner.os }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-${{ github.sha }}
+          restore-keys: |
+            lake-build-${{ runner.os }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-
+
       - uses: leanprover/lean-action@v1
         with:
           build: true
@@ -241,6 +269,20 @@ jobs:
           print(f"ok: {n} constants, {d['counts']['in_scope']} in scope, "
                 f"{sum(1 for c in d['constants'] if c['cites'])} cited")
           PY
+
+
+      # Saved from `main` only. A cache written on a PR branch is visible to that
+      # PR alone, so saving there would fill the budget with entries nothing else
+      # can read; a cache written on `main` is visible to every PR branched from
+      # it, which is exactly the baseline a PR wants to restore. This step runs on
+      # the self-hosted lane, where the upload is the only cost -- that runner
+      # reads its own `.lake`, not this cache.
+      - name: Save build output
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/cache/save@v4
+        with:
+          path: .lake/build
+          key: lake-build-${{ runner.os }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-${{ github.sha }}
 
       - name: Upload trust artifacts
         if: always()
