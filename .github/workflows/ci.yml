@@ -12,7 +12,19 @@ concurrency:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    # self-hosted-fast-lane 2026-08-13: this repo is public, so ubuntu-latest is
+    # free regardless of run volume -- self-hosted here is purely for SPEED
+    # (persistent local .lake/build + mathlib cache instead of a cold checkout
+    # every run), not cost avoidance. Routed to the owner's own machine only for
+    # events an outside contributor cannot produce: push (only chris-dare-dev has
+    # write access to this repo), workflow_dispatch (same write-access
+    # requirement), and pull_request from a branch IN this repo (head.repo.fork
+    # == false -- also only possible with write access, i.e. still the owner's
+    # own agent/* branches). A pull_request from an external fork always falls
+    # through to ubuntu-latest: never point a self-hosted runner at untrusted
+    # fork PRs -- a malicious PR can edit this very workflow file to redirect
+    # itself onto the runner and execute arbitrary code on it.
+    runs-on: ${{ (github.event_name == 'push' || github.event_name == 'workflow_dispatch' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork == false)) && fromJSON('["self-hosted", "owner-mac"]') || 'ubuntu-latest' }}
     timeout-minutes: 90
     steps:
       - uses: actions/checkout@v4
