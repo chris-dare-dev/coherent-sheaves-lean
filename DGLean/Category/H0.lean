@@ -3,6 +3,8 @@ Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under the MIT license.
 -/
 import DGLean.Category.Basic
+import Mathlib.Algebra.Category.Grp.Abelian
+import Mathlib.Algebra.Homology.QuasiIso
 import DGLean.Category.Functor
 
 /-!
@@ -270,5 +272,29 @@ def h0 (F : DGFunctor C D) : H0 C ⥤ H0 D where
     | _ f =>
       induction g using Quotient.ind with
       | _ g => exact congrArg _ (Subtype.ext (F.map_comp 0 0 0 (by omega) f.1 g.1))
+
+
+/-- A dg functor's action on a single Hom-complex, packaged as a morphism of
+cochain complexes. `map_d` is exactly the commutation square. -/
+def mapComplex (F : DGFunctor C D) (X Y : C) :
+    dgHom X Y ⟶ dgHom (F.obj X) (F.obj Y) where
+  f p := AddCommGrpCat.ofHom (F.map p)
+  comm' p q _ := by
+    apply AddCommGrpCat.hom_ext
+    apply AddMonoidHom.ext
+    intro x
+    simpa using (F.map_d p q x).symm
+
+/-- A quasi-equivalence of dg categories: the action on every Hom-complex is a
+quasi-isomorphism, and `H⁰` of it is essentially surjective.
+
+This is a definition and nothing more. No theorem in this repository relates it
+to anything — in particular there is no claim here that a quasi-equivalence
+induces an equivalence on `H⁰`, which is `dg-enhancements-e10`. -/
+structure IsQuasiEquivalence (F : DGFunctor C D) : Prop where
+  /-- Every Hom-complex map is a quasi-isomorphism. -/
+  quasiIso : ∀ X Y : C, QuasiIso (F.mapComplex X Y)
+  /-- `H⁰ F` hits every object up to isomorphism. -/
+  essSurj : F.h0.EssSurj
 
 end DGFunctor
