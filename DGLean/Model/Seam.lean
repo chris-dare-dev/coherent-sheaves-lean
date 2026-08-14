@@ -160,28 +160,53 @@ lemma quotient_map_homOf_eq {K L : CochainComplex A ℤ}
   refine HomotopyCategory.eq_of_homotopy _ _ ((Cochain.equivHomotopy _ _).symm ⟨β, ?_⟩)
   simpa using hβ
 
-/-!
-## What remains: the functor
+/-- `homOf_comp`, restated with `dgComp` in place of `Cochain.comp`. The two are
+the same by `dgComp_eq`, but the functor's goal is built from `dgComp`, and `rw`
+matches syntactically. -/
+lemma homOf_dgComp {K L M : Cdg A} (z : ↥(cocycles K L)) (w : ↥(cocycles L M))
+    (hzw : (DGCategoryStruct.dgComp 0 0 0 (by omega) z.1 w.1) ∈ cocycles K M) :
+    Cocycle.homOf (toCocycle K M ⟨_, hzw⟩) =
+      Cocycle.homOf (toCocycle K L z) ≫ Cocycle.homOf (toCocycle L M w) :=
+  homOf_comp _ _ _
 
-`h0Functor : H⁰(C^dg A) ⥤ K(A)` is **not** built, and no `sorry` stands in for
-it. Its two mathematical ingredients are proved above — `quotient_map_homOf_eq`
-for well-definedness on classes, `homOf_comp` for compatibility with
-composition — and `homSeam` already gives the Hom-group isomorphism it would be
-fully faithful by. What is missing is the assembly, which stalled on three
-mechanical points rather than on content:
+/-- **The seam functor.** `H⁰(C^dg A) ⥤ K(A)`: the identity on objects, sending
+a cohomology class to the morphism its representative names. -/
+noncomputable def h0Functor : H0 (Cdg A) ⥤ HomotopyCategory A (ComplexShape.up ℤ) where
+  obj K := (HomotopyCategory.quotient A (ComplexShape.up ℤ)).obj (of A (H0.of (Cdg A) K))
+  map {K L} f :=
+    Quotient.liftOn' f
+      (fun z => (HomotopyCategory.quotient A (ComplexShape.up ℤ)).map
+        (Cocycle.homOf (toCocycle _ _ z)))
+      (by
+        rintro z w hzw
+        obtain ⟨β, hβ⟩ := QuotientAddGroup.leftRel_apply.mp hzw
+        -- Everything below stays in the carrier type `((dgHom K L).X _)`, where
+        -- `.hom` is an honest `AddMonoidHom` and `map_neg` applies. Mixing that
+        -- type with `Cochain` in one expression is what `+` refuses, even
+        -- though they are defeq; `exact` crosses the boundary at the end.
+        refine quotient_map_homOf_eq (toCocycle _ _ z) (toCocycle _ _ w) (-β) ?_
+        have key :
+            z.1 = ((DGCategoryStruct.dgHom (H0.of (Cdg A) K) (H0.of (Cdg A) L)).d (-1) 0).hom (-β)
+              + w.1 := by
+          rw [map_neg, hβ]
+          simp
+        exact key)
 
-* `δ (-1) 0 (-β) = -(δ (-1) 0 β)` is not closed by `simp`; the additivity of `δ`
-  has to come from `δ_hom`'s `map_neg`, not from `δ` itself;
-* the `show` that states well-definedness mixes `Cochain K L 0` with the carrier
-  `((dgHom K L).X 0)`, which are defeq but which `+` will not accept together —
-  the same instance-path problem `cocycleAddEquiv` routes around, and it needs
-  routing around here too;
-* `map_id` does not close by `rfl` once `toCocycle` sits between `dgId` and
-  `Cocycle.ofHom`.
+  map_id K := by
+    show (HomotopyCategory.quotient A (ComplexShape.up ℤ)).map _ = _
+    rw [show Cocycle.homOf (toCocycle _ _ ⟨DGCategoryStruct.dgId (H0.of (Cdg A) K),
+        DGCategory.dgId_cocycle _⟩) = 𝟙 (of A (H0.of (Cdg A) K)) from
+      Cocycle.homOf_ofHom_eq_self _]
+    exact (HomotopyCategory.quotient A (ComplexShape.up ℤ)).map_id _
+  map_comp {K L M} f g := by
+    induction f using Quotient.ind with
+    | _ z =>
+      induction g using Quotient.ind with
+      | _ w =>
+        show (HomotopyCategory.quotient A (ComplexShape.up ℤ)).map _ =
+          (HomotopyCategory.quotient A (ComplexShape.up ℤ)).map _ ≫
+            (HomotopyCategory.quotient A (ComplexShape.up ℤ)).map _
+        rw [homOf_dgComp z w, Functor.map_comp]
 
-None of the three is deep. All three are the kind of thing this track has hit
-five times before, and the fix in every previous case was to write the map
-explicitly rather than to make elaboration find it.
--/
 
 end Cdg
