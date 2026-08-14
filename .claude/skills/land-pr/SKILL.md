@@ -61,7 +61,23 @@ Never take a row out of order to find easier work — the stack means a later PR
 diff is a lie until its predecessors land.
 
 If the first row is `CONFLICT`, that is the iteration: rebase it, resolve, gate,
-push, and halt. If every row is `SKIP`, stop and say the queue is drained.
+push, and halt.
+
+**Exit code 2 means stop the loop, and it means two different things.** The
+script prints which:
+
+- `BLOCKED ON YOU` — every open PR is already gated and reviewed at its current
+  head, and is waiting on a human to merge. **Stop the loop** and say so, naming
+  the PRs and the count. Do not re-review an unchanged head: the verdict is
+  already posted and repeating it costs a full build to say nothing. This is the
+  failure mode worth naming out loud, because a loop that reports "nothing to
+  do" when the real answer is "eleven PRs need you" has failed silently — the
+  two look identical from the outside.
+- `QUEUE DRAINED` — there are genuinely no open PRs needing an iteration. Stop
+  the loop and say that instead.
+
+Either way the loop ends. It restarts the moment a merge or a new push changes
+the queue, and that is the human's cue, not a reason to keep waking up.
 
 ## 2. Check out and rebase
 
