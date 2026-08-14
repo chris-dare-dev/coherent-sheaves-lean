@@ -3,13 +3,14 @@ Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under the MIT license.
 -/
 import BridgelandStabLean.Foundation.StabilityFunction.HarderNarasimhan
+import Mathlib.CategoryTheory.Abelian.Exact
 import Mathlib.CategoryTheory.Subobject.Limits
 
 /-!
 # Subobject lemmas for owner stability functions
 
 These are the categorical primitives needed by the owner HN existence and
-uniqueness arguments.  They are independent of the retained implementation.
+uniqueness arguments in the repository-owned stability-function API.
 -/
 
 noncomputable section
@@ -23,6 +24,12 @@ namespace BridgelandStabLean.Foundation
 variable {A : Type u} [Category.{v} A] [Abelian A]
 
 namespace StabilityFunction
+
+/-- The canonical cokernel sequence of a monomorphism is short exact. -/
+theorem shortExact_of_mono {X Y : A} (f : X ⟶ Y) [Mono f] :
+    (ShortComplex.mk f (cokernel.π f) (by simp)).ShortExact :=
+  ShortComplex.ShortExact.mk' (ShortComplex.exact_cokernel f)
+    inferInstance inferInstance
 
 /-- A subobject has zero underlying object exactly when it is bottom. -/
 @[simp]

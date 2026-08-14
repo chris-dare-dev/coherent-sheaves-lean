@@ -22,6 +22,7 @@ unit rotation.
 
 namespace BridgelandStabLean.WeakStability
 
+open BridgelandStabLean.Foundation
 open CategoryTheory Limits Pretriangulated CategoryTheory.Triangulated Complex
 
 noncomputable section

@@ -12,7 +12,5 @@ import BridgelandStabLean
 This module imports the two owner-authored libraries in the repository:
 coherent-sheaf and numerical algebraic geometry from `CohLean`, and
 Bridgeland stability-condition infrastructure from `BridgelandStabLean`.
-
-The latter uses the separately licensed Apache-2.0 implementation vendored as
-`BridgelandStability`; see `vendor/BridgelandStability/NOTICE`.
+Both libraries are maintained directly in this repository.
 -/

@@ -15,8 +15,8 @@ scope filter, not the import. So a library root that no import reaches is not
 "partially covered" or "reported missing": it contributes zero constants, the
 emitter finds zero sorries in it, and the run is green. Measured on 2026-08-14
 before #361, the emission covered 406 of 419 tracked modules -- all of `DGLean`,
-all of `CohLean.Development`, and the vendor umbrella were absent, with nothing
-in CI saying so.
+all of `CohLean.Development`, and the former vendor umbrella were absent, with
+nothing in CI saying so. The vendor root has since been retired.
 
 A gate that can shrink to nothing while still passing is the vacuous pass this
 repository's attestation design exists to make impossible. This script is the
@@ -47,10 +47,10 @@ DEFAULT_EMISSION = Path("attest/lean-emission.json")
 # the code you are removing.
 EXCLUDED_PREFIXES = (".claude/", "scripts/", "exe/")
 
-# `srcDir` values from lakefile.toml, longest first. A module name is its path
-# below its library's source directory, so vendored paths must have the vendor
-# root stripped before they can be compared with what the emitter reports.
-SRC_DIRS = ("vendor/BridgelandStability/",)
+# Non-root `srcDir` values from lakefile.toml, longest first. There are no gated
+# library sources outside the repository root at present; keeping the mechanism
+# explicit makes a future non-root source directory fail until it is registered.
+SRC_DIRS: tuple[str, ...] = ()
 
 
 def module_of(path: str) -> str:

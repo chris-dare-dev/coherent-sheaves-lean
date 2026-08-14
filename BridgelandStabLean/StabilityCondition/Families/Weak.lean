@@ -32,6 +32,7 @@ supply.
 
 namespace BridgelandStabLean.StabilityFamilies
 
+open BridgelandStabLean.Foundation
 open CategoryTheory Limits Pretriangulated CategoryTheory.Triangulated
 open BridgelandStabLean.Support
 open BridgelandStabLean.WeakStability

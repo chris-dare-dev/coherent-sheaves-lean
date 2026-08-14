@@ -7,9 +7,8 @@ import BridgelandStabLean.StabilityCondition.Metric.Mass.Subadditivity.PolygonPe
 import BridgelandStabLean.StabilityCondition.Metric.Mass.Subadditivity.CohomologyExactness
 import BridgelandStabLean.StabilityCondition.Symmetry.GLTilde.Covering.SourceTopology
 import BridgelandStabLean.StabilityCondition.Symmetry.GLTilde.Action.Stability
-import BridgelandStability.Deformation.HNFiltrationAssembly
-import BridgelandStability.HeartEquivalence.AmplitudeFormulas
-import BridgelandStability.HeartEquivalence.Reverse
+import BridgelandStabLean.StabilityCondition.Weak.Heart.Equivalence
+import BridgelandStabLean.Foundation
 
 set_option backward.defeqAttrib.useBackward true
 set_option backward.isDefEq.respectTransparency false
@@ -47,11 +46,15 @@ two exact HN cutoffs to reduce to the two-cohomology window `(0, 2]`.  No open
 premise is assumed as an instance or axiom.
 -/
 
-open CategoryTheory CategoryTheory.Limits CategoryTheory.Pretriangulated Complex
+open BridgelandStabLean.Foundation
+open CategoryTheory CategoryTheory.Limits CategoryTheory.Pretriangulated
+  CategoryTheory.Triangulated Complex
 open BridgelandStabLean.GroupAction Matrix
+open BridgelandStabLean.Foundation
+open BridgelandStabLean.WeakStability
 open scoped ENNReal BigOperators ZeroObject
 
-namespace CategoryTheory.Triangulated
+namespace BridgelandStabLean.Foundation
 
 noncomputable section
 
@@ -70,16 +73,18 @@ def StabilityCondition.WithClassMap.observable
     (σ : StabilityCondition.WithClassMap C v) : StabilityCondition C where
   slicing := σ.slicing
   Z := σ.Z.comp v
-  compat' := by
+  compatible := by
     intro φ E hP hE
-    simpa using σ.compat' φ E hP hE
+    simpa using σ.compat φ E hP hE
   locallyFinite := σ.locallyFinite
 
+omit [IsTriangulated C] in
 @[simp]
 theorem StabilityCondition.WithClassMap.observable_slicing
     (σ : StabilityCondition.WithClassMap C v) :
     σ.observable.slicing = σ.slicing := rfl
 
+omit [IsTriangulated C] in
 @[simp]
 theorem StabilityCondition.WithClassMap.observable_charge
     (σ : StabilityCondition.WithClassMap C v) (E : C) :
@@ -90,16 +95,241 @@ condition, obtained from its observable ordinary stability condition. -/
 def StabilityCondition.WithClassMap.observableStabilityFunctionOnHeart
     (σ : StabilityCondition.WithClassMap C v) :
     @StabilityFunction (σ.slicing.toTStructure.heart.FullSubcategory) _
-      ((σ.slicing.toTStructure).heartFullSubcategoryAbelian) :=
-  σ.observable.stabilityFunctionOnHeart C
+      ((σ.slicing.toTStructure).heartFullSubcategoryAbelian) := by
+  let t := σ.slicing.toTStructure
+  letI := t.hasHeartFullSubcategory
+  letI : Abelian t.heart.FullSubcategory := t.heartFullSubcategoryAbelian
+  refine
+    { charge := fun E ↦ σ.charge E.obj
+      map_zero := fun E hE ↦ σ.charge_isZero ((t.heart).ι.map_isZero hE)
+      map_iso := fun {E F} e ↦ by
+        exact congrArg σ.Z
+          (classOf_iso C v ((t.heart).ι.mapIso e))
+      additive := fun S hS ↦ by
+        letI := hS.mono_f
+        letI := hS.epi_g
+        obtain ⟨δ, hT⟩ :=
+          TStructure.heartFullSubcategory_shortExact_triangle (C := C) t
+            S.f S.g S.zero (fun {W} α hα ↦ by
+              have hker : IsLimit (KernelFork.ofι S.f S.zero) := hS.fIsKernel
+              exact ⟨hker.lift (KernelFork.ofι α hα),
+                hker.fac _ WalkingParallelPair.zero⟩)
+        simpa [PreStabilityCondition.WithClassMap.charge_def] using
+          congrArg σ.Z (classOf_triangle C v (Triangle.mk S.f.hom S.g.hom δ) hT)
+      nonzero_mem := fun E hE ↦ by
+        classical
+        have hEobj : ¬IsZero E.obj := fun h ↦
+          hE (ObjectProperty.FullSubcategory.isZero_of_obj_isZero h)
+        have hheart := (σ.slicing.toTStructure_heart_iff C E.obj).mp E.property
+        obtain ⟨F, hn, hfirst, hlast⟩ :=
+          σ.slicing.exists_hn_nonzero_boundaries C hEobj
+        let P := F.toPostnikovTower
+        let s : Finset (Fin F.n) :=
+          Finset.univ.filter (fun i ↦ ¬IsZero (P.factor i))
+        have hs : s.Nonempty := by
+          obtain ⟨i, hi⟩ := F.exists_nonzero_factor C hEobj
+          exact ⟨i, Finset.mem_filter.mpr ⟨Finset.mem_univ _, hi⟩⟩
+        have hminus : 0 < σ.slicing.phiMinus C E.obj hEobj :=
+          σ.slicing.phiMinus_gt_of_gtProp C hEobj hheart.1
+        have hplus : σ.slicing.phiPlus C E.obj hEobj ≤ 1 :=
+          σ.slicing.phiPlus_le_of_leProp C hEobj hheart.2
+        have hphase : ∀ i ∈ s, F.φ i ∈ Set.Ioc (0 : ℝ) 1 := by
+          intro i hi
+          constructor
+          · calc
+              0 < σ.slicing.phiMinus C E.obj hEobj := hminus
+              _ = F.φ ⟨F.n - 1, by lia⟩ := by
+                simpa [BridgelandStabLean.Foundation.HNFiltration.phiMinus] using
+                  σ.slicing.phiMinus_eq C E.obj hEobj F hn hlast
+              _ ≤ F.φ i := F.hφ.antitone (Fin.mk_le_mk.mpr (by lia))
+          · calc
+              F.φ i ≤ F.φ ⟨0, hn⟩ :=
+                F.hφ.antitone (Fin.mk_le_mk.mpr (Nat.zero_le _))
+              _ = σ.slicing.phiPlus C E.obj hEobj := by
+                simpa [BridgelandStabLean.Foundation.HNFiltration.phiPlus] using
+                  (σ.slicing.phiPlus_eq C E.obj hEobj F hn hfirst).symm
+              _ ≤ 1 := hplus
+        let f : Fin F.n → ℂ := fun i ↦ σ.charge (P.factor i)
+        have hterm : ∀ i ∈ s, f i ∈ semiClosedUpperHalfPlane := by
+          intro i hi
+          have hne : ¬IsZero (P.factor i) := by simpa [s] using hi
+          obtain ⟨m, hm, hZ⟩ := σ.compat (F.φ i) (P.factor i)
+            (F.semistable i) hne
+          by_cases hone : F.φ i = 1
+          · right
+            rw [show f i = (m : ℂ) *
+                Complex.exp ((Real.pi * (1 : ℝ) : ℂ) * Complex.I) by
+              simpa [f, hone] using hZ]
+            constructor
+            · simp [Complex.exp_mul_I]
+            · simp [Complex.exp_mul_I, hm]
+          · left
+            have hlt : F.φ i < 1 := lt_of_le_of_ne (hphase i hi).2 hone
+            rw [show f i = (m : ℂ) *
+                Complex.exp ((Real.pi * F.φ i : ℝ) * Complex.I) by
+              simpa [f] using hZ]
+            rw [Complex.exp_ofReal_mul_I]
+            change 0 < ((m : ℂ) *
+              ((Real.cos (Real.pi * F.φ i) : ℂ) +
+                (Real.sin (Real.pi * F.φ i) : ℂ) * Complex.I)).im
+            simp only [Complex.mul_im, Complex.add_im, Complex.ofReal_re,
+              Complex.ofReal_im, Complex.I_im, Complex.I_re, zero_mul, mul_zero,
+              mul_one, add_zero]
+            simp only [zero_add]
+            exact mul_pos hm (Real.sin_pos_of_pos_of_lt_pi
+              (mul_pos Real.pi_pos (hphase i hi).1)
+              (by nlinarith [Real.pi_pos]))
+        have hsum : σ.charge E.obj = ∑ i ∈ s, f i := by
+          have hall := σ.charge_postnikovTower_eq_sum P
+          rw [hall]
+          let z : Finset (Fin F.n) :=
+            Finset.univ.filter (fun i ↦ IsZero (P.factor i))
+          have hz : ∑ i ∈ z, f i = 0 := by
+            apply Finset.sum_eq_zero
+            intro i hi
+            simp only [z, Finset.mem_filter, Finset.mem_univ, true_and] at hi
+            exact σ.charge_isZero hi
+          calc
+            ∑ i, f i = (∑ i ∈ s, f i) + ∑ i ∈ z, f i := by
+              simpa [s, z, f] using
+                (Finset.sum_filter_add_sum_filter_not (s := Finset.univ)
+                  (p := fun i : Fin F.n ↦ ¬IsZero (P.factor i)) (f := f)).symm
+            _ = ∑ i ∈ s, f i := by rw [hz, add_zero]
+        rw [hsum]
+        exact sum_mem_semiClosedUpperHalfPlane hs hterm }
 
 @[simp]
-theorem StabilityCondition.WithClassMap.observableStabilityFunctionOnHeart_Zobj
+theorem StabilityCondition.WithClassMap.observableStabilityFunctionOnHeart_charge
     (σ : StabilityCondition.WithClassMap C v)
     (E : σ.slicing.toTStructure.heart.FullSubcategory) :
-    @StabilityFunction.Zobj _ _
+    @StabilityFunction.charge _ _
       ((σ.slicing.toTStructure).heartFullSubcategoryAbelian)
       σ.observableStabilityFunctionOnHeart E = σ.charge E.obj := rfl
+
+/-- On a nonzero heart object already lying in a slice, the phase of the
+restricted owner stability function is that slice parameter. -/
+theorem StabilityCondition.WithClassMap.observableStabilityFunctionOnHeart_phase_eq_of_mem_P
+    (σ : StabilityCondition.WithClassMap C v) {φ : ℝ}
+    (hφ : φ ∈ Set.Ioc (0 : ℝ) 1)
+    (E : σ.slicing.toTStructure.heart.FullSubcategory)
+    (hP : σ.slicing.P φ E.obj) (hE : ¬IsZero E) :
+    @StabilityFunction.phase _ _
+      ((σ.slicing.toTStructure).heartFullSubcategoryAbelian)
+      σ.observableStabilityFunctionOnHeart E = φ := by
+  let t := σ.slicing.toTStructure
+  letI := t.hasHeartFullSubcategory
+  letI : Abelian t.heart.FullSubcategory := t.heartFullSubcategoryAbelian
+  have hEobj : ¬IsZero E.obj := fun hZ ↦ hE <|
+    ObjectProperty.FullSubcategory.isZero_of_obj_isZero
+      (C := C) (P := t.heart) (X := E) hZ
+  obtain ⟨m, hm, hZ⟩ := σ.compat φ E.obj hP hEobj
+  have harg : Complex.arg
+      ((m : ℂ) * Complex.exp ((Real.pi * φ : ℝ) * Complex.I)) =
+      Real.pi * φ := by
+    rw [Complex.arg_real_mul _ hm, Complex.arg_exp_mul_I, toIocMod_eq_self]
+    constructor
+    · nlinarith [Real.pi_pos, hφ.1]
+    · nlinarith [Real.pi_pos, hφ.2]
+  change Complex.arg (σ.charge E.obj) / Real.pi = φ
+  rw [hZ, harg]
+  field_simp [Real.pi_ne_zero]
+
+/-- The heart phase is bounded by the highest ambient HN phase.  The
+non-boundary case is the owner weak-charge argument bound; at phase one the
+claim follows from the intrinsic range of an abelian stability phase. -/
+theorem StabilityCondition.WithClassMap.observableStabilityFunctionOnHeart_phase_le_phiPlus
+    (σ : StabilityCondition.WithClassMap C v)
+    (E : σ.slicing.toTStructure.heart.FullSubcategory) (hE : ¬IsZero E) :
+    @StabilityFunction.phase _ _
+      ((σ.slicing.toTStructure).heartFullSubcategoryAbelian)
+      σ.observableStabilityFunctionOnHeart E ≤
+      σ.slicing.phiPlus C E.obj (fun hZ ↦ hE <|
+        ObjectProperty.FullSubcategory.isZero_of_obj_isZero
+          (C := C) (P := σ.slicing.toTStructure.heart) (X := E) hZ) := by
+  let t := σ.slicing.toTStructure
+  letI := t.hasHeartFullSubcategory
+  letI : Abelian t.heart.FullSubcategory := t.heartFullSubcategoryAbelian
+  have hEobj : ¬IsZero E.obj := fun hZ ↦ hE <|
+    ObjectProperty.FullSubcategory.isZero_of_obj_isZero
+      (C := C) (P := t.heart) (X := E) hZ
+  by_cases hplus : σ.slicing.phiPlus C E.obj hEobj < 1
+  · let τ := BridgelandStabLean.WeakStability.WeakPreStabilityCondition.ofPre
+      σ.observable.toWithClassMap
+    have hbound := τ.charge_mem_upperHalfPlane_and_arg_le_phiPlus
+      E.obj E.property hEobj hplus
+    have harg : Complex.arg (σ.charge E.obj) ≤
+        Real.pi * σ.slicing.phiPlus C E.obj hEobj := by
+      simpa [τ,
+        WeakPreStabilityCondition.weakStabilityFunctionOnHeart_charge,
+        StabilityCondition.WithClassMap.observable,
+        PreStabilityCondition.WithClassMap.charge_def] using hbound.2
+    change Complex.arg (σ.charge E.obj) / Real.pi ≤ _
+    exact (div_le_iff₀ Real.pi_pos).2 (by simpa [mul_comm] using harg)
+  · have hheart := (σ.slicing.toTStructure_heart_iff C E.obj).mp E.property
+    have hle : σ.slicing.phiPlus C E.obj hEobj ≤ 1 :=
+      σ.slicing.phiPlus_le_of_leProp C hEobj hheart.2
+    have heq : σ.slicing.phiPlus C E.obj hEobj = 1 :=
+      le_antisymm hle (le_of_not_gt hplus)
+    rw [heq]
+    exact σ.observableStabilityFunctionOnHeart.phase_le_one E
+
+/-- Ambient slice semistability implies semistability for the restricted
+owner stability function on the canonical heart. -/
+theorem StabilityCondition.WithClassMap.observableStabilityFunctionOnHeart_isSemistable_of_mem_P
+    (σ : StabilityCondition.WithClassMap C v) {φ : ℝ}
+    (hφ : φ ∈ Set.Ioc (0 : ℝ) 1)
+    (E : σ.slicing.toTStructure.heart.FullSubcategory)
+    (hP : σ.slicing.P φ E.obj) (hE : ¬IsZero E) :
+    @StabilityFunction.IsSemistable _ _
+      ((σ.slicing.toTStructure).heartFullSubcategoryAbelian)
+      σ.observableStabilityFunctionOnHeart E := by
+  let t := σ.slicing.toTStructure
+  letI := t.hasHeartFullSubcategory
+  letI : Abelian t.heart.FullSubcategory := t.heartFullSubcategoryAbelian
+  refine ⟨hE, ?_⟩
+  intro B hB
+  let B' : t.heart.FullSubcategory := (B : t.heart.FullSubcategory)
+  have hBobj : ¬IsZero B'.obj := fun hZ ↦ hB <|
+    ObjectProperty.FullSubcategory.isZero_of_obj_isZero
+      (C := C) (P := t.heart) (X := B') hZ
+  have hphiPlus_le : σ.slicing.phiPlus C B'.obj hBobj ≤ φ := by
+    by_contra hle
+    have hgt : φ < σ.slicing.phiPlus C B'.obj hBobj := lt_of_not_ge hle
+    have hBheart := (σ.slicing.toTStructure_heart_iff C B'.obj).mp B'.property
+    obtain ⟨F, hn, hfirst⟩ := σ.slicing.exists_hn_nonzero_first C hBobj
+    have htop : σ.slicing.phiPlus C B'.obj hBobj = F.φ ⟨0, hn⟩ := by
+      simpa only [BridgelandStabLean.Foundation.HNFiltration.phiPlus] using
+        σ.slicing.phiPlus_eq C B'.obj hBobj F hn hfirst
+    have hphase_gt : φ < F.φ ⟨0, hn⟩ := by simpa [htop] using hgt
+    have hphase_mem : F.φ ⟨0, hn⟩ ∈ Set.Ioc (0 : ℝ) 1 := by
+      exact ⟨hφ.1.trans hphase_gt,
+        (by rw [← htop]; exact σ.slicing.phiPlus_le_of_leProp C hBobj hBheart.2)⟩
+    have hAheart : t.heart (F.factor ⟨0, hn⟩) := by
+      rw [σ.slicing.toTStructure_heart_iff C]
+      exact ⟨σ.slicing.gtProp_of_semistable C (F.semistable ⟨0, hn⟩)
+          hphase_mem.1,
+        σ.slicing.leProp_of_semistable C (F.semistable ⟨0, hn⟩)
+          hphase_mem.2⟩
+    obtain ⟨α, hα⟩ : ∃ α : F.factor ⟨0, hn⟩ ⟶ B'.obj, α ≠ 0 := by
+      by_contra hzero
+      push Not at hzero
+      exact hfirst (F.firstFactor_isZero_of_hom_eq_zero C σ.slicing hn hzero)
+    let A : t.heart.FullSubcategory := ⟨F.factor ⟨0, hn⟩, hAheart⟩
+    let αH : A ⟶ B' := ObjectProperty.homMk α
+    have hcomp : α ≫ B.arrow.hom ≠ 0 := by
+      intro hzero
+      have hz : αH ≫ B.arrow = 0 := by ext; exact hzero
+      have : αH = 0 := (cancel_mono B.arrow).mp (by simpa using hz)
+      exact hα (by simpa [αH] using congrArg (fun f ↦ f.hom) this)
+    exact hcomp <| σ.slicing.hom_vanishing _ _ _ _ hphase_gt
+      (F.semistable ⟨0, hn⟩) hP (α ≫ B.arrow.hom)
+  calc
+    σ.observableStabilityFunctionOnHeart.phase B' ≤
+        σ.slicing.phiPlus C B'.obj hBobj :=
+      σ.observableStabilityFunctionOnHeart_phase_le_phiPlus B' hB
+    _ ≤ φ := hphiPlus_le
+    _ = σ.observableStabilityFunctionOnHeart.phase E :=
+      (σ.observableStabilityFunctionOnHeart_phase_eq_of_mem_P hφ E hP hE).symm
 
 /-- The observable heart stability function has Harder--Narasimhan
 filtrations. -/
@@ -108,8 +338,206 @@ theorem StabilityCondition.WithClassMap.observableStabilityFunctionOnHeart_hasHN
     @StabilityFunction.HasHNProperty
       (σ.slicing.toTStructure.heart.FullSubcategory) _
       ((σ.slicing.toTStructure).heartFullSubcategoryAbelian)
-      σ.observableStabilityFunctionOnHeart :=
-  σ.observable.stabilityFunctionOnHeart_hasHN_local C
+      σ.observableStabilityFunctionOnHeart := by
+  let t := σ.slicing.toTStructure
+  letI := t.hasHeartFullSubcategory
+  letI : Abelian t.heart.FullSubcategory := t.heartFullSubcategoryAbelian
+  let Z := σ.observableStabilityFunctionOnHeart
+  intro E hE
+  have hEobj : ¬IsZero E.obj := fun hZ ↦ hE <|
+    ObjectProperty.FullSubcategory.isZero_of_obj_isZero
+      (C := C) (P := t.heart) (X := E) hZ
+  suffices hmain :
+      ∀ (m : ℕ) {X : t.heart.FullSubcategory} (hXobj : ¬IsZero X.obj)
+        (F : HNFiltration C σ.slicing.P X.obj) (hnF : 0 < F.n)
+        (hFm : F.n ≤ m) (hfirst : ¬IsZero (F.factor ⟨0, hnF⟩)),
+        ∃ G : AbelianHNFiltration Z X,
+          G.phase ⟨G.n - 1, by have := G.nonempty; omega⟩ =
+            σ.slicing.phiMinus C X.obj hXobj by
+    obtain ⟨F, hnF, hfirst, -⟩ :=
+      σ.slicing.exists_hn_nonzero_boundaries C hEobj
+    exact ⟨(hmain F.n hEobj F hnF le_rfl hfirst).choose⟩
+  intro m
+  induction m with
+  | zero =>
+      intro X hXobj F hnF hFm
+      omega
+  | succ m ih =>
+      intro X hXobj F hnF hFm hfirst
+      have hX : ¬IsZero X := fun hZ ↦ hXobj ((t.heart).ι.map_isZero hZ)
+      have hXheart := (σ.slicing.toTStructure_heart_iff C X.obj).mp X.property
+      by_cases h1 : F.n = 1
+      · let φ := F.φ ⟨0, hnF⟩
+        have hlast : ¬IsZero (F.factor ⟨F.n - 1, by omega⟩) := by
+          have hidx : (⟨F.n - 1, by omega⟩ : Fin F.n) = ⟨0, hnF⟩ :=
+            Fin.ext (by omega)
+          simpa [hidx] using hfirst
+        have hall : ∀ i : Fin F.n, F.φ i = φ := by
+          intro i
+          have hi : i = ⟨0, hnF⟩ := Fin.ext (by omega)
+          subst i
+          rfl
+        have hP : σ.slicing.P φ X.obj :=
+          σ.slicing.semistable_of_HN_all_eq C F hall
+        have hφm : σ.slicing.phiMinus C X.obj hXobj = φ := by
+          rw [σ.slicing.phiMinus_eq C X.obj hXobj F hnF hlast]
+          simp only [BridgelandStabLean.Foundation.HNFiltration.phiMinus]
+          congr 1
+          exact Fin.ext (by omega)
+        have hφp : σ.slicing.phiPlus C X.obj hXobj = φ := by
+          simpa only [BridgelandStabLean.Foundation.HNFiltration.phiPlus] using
+            σ.slicing.phiPlus_eq C X.obj hXobj F hnF hfirst
+        have hφ : φ ∈ Set.Ioc (0 : ℝ) 1 := by
+          constructor
+          · exact (by
+              have := σ.slicing.phiMinus_gt_of_gtProp C hXobj hXheart.1
+              linarith)
+          · exact (by
+              have := σ.slicing.phiPlus_le_of_leProp C hXobj hXheart.2
+              linarith)
+        have hss : @StabilityFunction.IsSemistable _ _
+            t.heartFullSubcategoryAbelian Z X :=
+          σ.observableStabilityFunctionOnHeart_isSemistable_of_mem_P
+            hφ X hP hX
+        obtain ⟨G, hG⟩ :=
+          BridgelandStabLean.Foundation.StabilityFunction.exists_hn_with_last_phase_of_semistable
+            Z hss
+        refine ⟨G, ?_⟩
+        calc
+          G.phase ⟨G.n - 1, by have := G.nonempty; omega⟩ = Z.phase X := hG
+          _ = φ :=
+            σ.observableStabilityFunctionOnHeart_phase_eq_of_mem_P hφ X hP hX
+          _ = σ.slicing.phiMinus C X.obj hXobj := hφm.symm
+      · have htwo : 2 ≤ F.n := by omega
+        by_cases hlast : IsZero (F.factor ⟨F.n - 1, by omega⟩)
+        · let F' := F.dropLast C (by omega) hlast
+          have hnF' : 0 < F'.n := F'.n_pos C hXobj
+          have hF'm : F'.n ≤ m := by
+            change F.n - 1 ≤ m
+            omega
+          have hfirst' : ¬IsZero (F'.factor ⟨0, hnF'⟩) := by
+            change ¬IsZero (F.factor ⟨0, by omega⟩)
+            simpa using hfirst
+          exact ih hXobj F' hnF' hF'm hfirst'
+        · have hall_mem : ∀ i : Fin F.n, F.φ i ∈ Set.Ioc (0 : ℝ) 1 := by
+            intro i
+            constructor
+            · calc
+                0 < σ.slicing.phiMinus C X.obj hXobj :=
+                  σ.slicing.phiMinus_gt_of_gtProp C hXobj hXheart.1
+                _ = F.φ ⟨F.n - 1, by omega⟩ := by
+                  simpa only [BridgelandStabLean.Foundation.HNFiltration.phiMinus]
+                    using σ.slicing.phiMinus_eq C X.obj hXobj F hnF hlast
+                _ ≤ F.φ i := F.hφ.antitone (Fin.mk_le_mk.mpr (by omega))
+            · calc
+                F.φ i ≤ F.φ ⟨0, hnF⟩ :=
+                  F.hφ.antitone (Fin.mk_le_mk.mpr (Nat.zero_le i.val))
+                _ = σ.slicing.phiPlus C X.obj hXobj := by
+                  simpa only [BridgelandStabLean.Foundation.HNFiltration.phiPlus]
+                    using (σ.slicing.phiPlus_eq C X.obj hXobj F hnF hfirst).symm
+                _ ≤ 1 := σ.slicing.phiPlus_le_of_leProp C hXobj hXheart.2
+          let FX : HNFiltration C σ.slicing.P
+              (F.chain.obj ⟨F.n - 1, by omega⟩) :=
+            F.prefix C (F.n - 1) (by omega) (by omega)
+          have hFXn : 0 < FX.n := by change 0 < F.n - 1; omega
+          have hFXheart : t.heart (F.chain.obj ⟨F.n - 1, by omega⟩) := by
+            rw [σ.slicing.toTStructure_heart_iff C]
+            exact ⟨
+              BridgelandStabLean.Foundation.HNFiltration.chain_obj_gtProp
+                C σ.slicing F (F.n - 1) (by omega) (by omega) 0
+                (fun j ↦ (hall_mem ⟨j, by omega⟩).1),
+              BridgelandStabLean.Foundation.HNFiltration.chain_obj_leProp
+                C σ.slicing F (F.n - 1) (by omega) (by omega) 1
+                (fun j ↦ (hall_mem ⟨j, by omega⟩).2)⟩
+          let X' : t.heart.FullSubcategory :=
+            ⟨F.chain.obj ⟨F.n - 1, by omega⟩, hFXheart⟩
+          have hfirstFX : ¬IsZero (FX.factor ⟨0, hFXn⟩) := by
+            change ¬IsZero (F.factor ⟨0, by omega⟩)
+            simpa using hfirst
+          have hX'obj : ¬IsZero X'.obj := by
+            intro hZ
+            have hz : ∀ f : FX.factor ⟨0, hFXn⟩ ⟶ X'.obj, f = 0 :=
+              fun f ↦ hZ.eq_of_tgt _ _
+            exact hfirstFX <| FX.firstFactor_isZero_of_hom_eq_zero
+              C σ.slicing hFXn hz
+          obtain ⟨GX, hGX⟩ := ih hX'obj FX hFXn (by
+            change F.n - 1 ≤ m
+            omega) hfirstFX
+          let jLast : Fin F.n := ⟨F.n - 1, by omega⟩
+          have hBheart : t.heart (F.factor jLast) := by
+            rw [σ.slicing.toTStructure_heart_iff C]
+            exact ⟨σ.slicing.gtProp_of_semistable C (F.semistable jLast)
+                (hall_mem jLast).1,
+              σ.slicing.leProp_of_semistable C (F.semistable jLast)
+                (hall_mem jLast).2⟩
+          let B : t.heart.FullSubcategory := ⟨F.factor jLast, hBheart⟩
+          have hB : ¬IsZero B := fun hZ ↦ hlast ((t.heart).ι.map_isZero hZ)
+          have hBss : @StabilityFunction.IsSemistable _ _
+              t.heartFullSubcategoryAbelian Z B :=
+            σ.observableStabilityFunctionOnHeart_isSemistable_of_mem_P
+              (hall_mem jLast) B (F.semistable jLast) hB
+          have hBphase : Z.phase B = F.φ jLast :=
+            σ.observableStabilityFunctionOnHeart_phase_eq_of_mem_P
+              (hall_mem jLast) B (F.semistable jLast) hB
+          have hX'gt : σ.slicing.gtProp C (F.φ jLast) X'.obj :=
+            BridgelandStabLean.Foundation.HNFiltration.chain_obj_gtProp
+              C σ.slicing F (F.n - 1) (by omega) (by omega) (F.φ jLast) <|
+                fun j ↦ F.hφ (Fin.mk_lt_mk.mpr (by omega))
+          have hphase_lt : Z.phase B < GX.phase ⟨GX.n - 1, by
+              have := GX.nonempty; omega⟩ := by
+            calc
+              Z.phase B = F.φ jLast := hBphase
+              _ < σ.slicing.phiMinus C X'.obj hX'obj :=
+                σ.slicing.phiMinus_gt_of_gtProp C hX'obj hX'gt
+              _ = GX.phase ⟨GX.n - 1, by have := GX.nonempty; omega⟩ := hGX.symm
+          let Tlast := F.triangle jLast
+          let e₁ := Classical.choice (F.triangle_obj₁ jLast)
+          let e₂ := Classical.choice (F.triangle_obj₂ jLast)
+          have hobj₂_eq : F.chain.obj' (F.n - 1 + 1) (by omega) =
+              F.chain.right := by
+            simp only [ComposableArrows.obj']
+            congr 1
+            ext
+            simp
+            omega
+          let e₂X : Tlast.obj₂ ≅ X.obj :=
+            e₂.trans ((eqToIso hobj₂_eq).trans (Classical.choice F.top_iso))
+          let i : X' ⟶ X :=
+            ObjectProperty.homMk (e₁.inv ≫ Tlast.mor₁ ≫ e₂X.hom)
+          let q : X ⟶ B := ObjectProperty.homMk (e₂X.inv ≫ Tlast.mor₂)
+          let δ : B.obj ⟶ X'.obj⟦(1 : ℤ)⟧ := Tlast.mor₃ ≫ e₁.hom⟦(1 : ℤ)⟧'
+          have hTlast : Triangle.mk i.hom q.hom δ ∈ distTriang C := by
+            refine isomorphic_distinguished _ (F.triangle_dist jLast) _ ?_
+            exact Triangle.isoMk _ _ e₁.symm e₂X.symm (Iso.refl _)
+              (by simp [Tlast, i, e₂X]) (by simp [Tlast, q, e₂X])
+              (by simp [Tlast, δ])
+          have hiq : i ≫ q = 0 := by
+            ext
+            simpa using comp_distTriang_mor_zero₁₂ _ hTlast
+          have hKer : IsLimit (KernelFork.ofι i hiq) := by
+            simpa [hiq] using
+              Triangulated.AbelianSubcategory.isLimitKernelForkOfDistTriang
+                (CategoryTheory.Triangulated.TStructure.heart_hι t)
+                i q δ hTlast
+          have hCok : IsColimit (CokernelCofork.ofπ q hiq) := by
+            simpa [hiq] using
+              Triangulated.AbelianSubcategory.isColimitCokernelCoforkOfDistTriang
+                (CategoryTheory.Triangulated.TStructure.heart_hι t)
+                i q δ hTlast
+          let eB : cokernel i ≅ B :=
+            IsColimit.coconePointUniqueUpToIso (cokernelIsCokernel i) hCok
+          haveI : Mono i := Fork.IsLimit.mono hKer
+          obtain ⟨G, hG⟩ :=
+            BridgelandStabLean.Foundation.StabilityFunction.append_hn_filtration_of_mono
+              Z i GX eB hBss hphase_lt
+          refine ⟨G, ?_⟩
+          calc
+            G.phase ⟨G.n - 1, by have := G.nonempty; omega⟩ = Z.phase B := hG
+            _ = F.φ jLast := hBphase
+            _ = σ.slicing.phiMinus C X.obj hXobj := by
+              symm
+              simpa only [BridgelandStabLean.Foundation.HNFiltration.phiMinus]
+                using σ.slicing.phiMinus_eq C X.obj hXobj F hnF hlast
 
 /-- The converse half of the heart/slicing semistability comparison.  A
 nonzero object that is semistable for the stability function on the canonical
@@ -133,13 +561,13 @@ theorem StabilityCondition.WithClassMap.mem_slicing_of_heart_isSemistable
       (C := C) (P := t.heart) (X := E) hZ
   have hEheart := (σ.slicing.toTStructure_heart_iff C E.obj).mp E.property
   obtain ⟨F, hn, hfirst, hlast⟩ :=
-    HNFiltration.exists_both_nonzero C σ.slicing hEobj
+    σ.slicing.exists_hn_nonzero_boundaries C hEobj
   have hall_mem : ∀ i : Fin F.n, F.φ i ∈ Set.Ioc (0 : ℝ) 1 := by
     intro i
     constructor
     · calc
         0 < σ.slicing.phiMinus C E.obj hEobj :=
-          gt_phases_of_gtProp C σ.slicing hEobj hEheart.1
+          σ.slicing.phiMinus_gt_of_gtProp C hEobj hEheart.1
         _ = F.φ ⟨F.n - 1, by lia⟩ :=
           σ.slicing.phiMinus_eq C E.obj hEobj F hn hlast
         _ ≤ F.φ i := F.hφ.antitone (Fin.mk_le_mk.mpr (by lia))
@@ -153,18 +581,18 @@ theorem StabilityCondition.WithClassMap.mem_slicing_of_heart_isSemistable
   let iFirst : Fin F.n := ⟨0, hn⟩
   have hAheart : t.heart (F.triangle iFirst).obj₃ := by
     rw [σ.slicing.toTStructure_heart_iff C]
-    exact ⟨σ.slicing.gtProp_of_semistable C (F.φ iFirst) 0 _
+    exact ⟨σ.slicing.gtProp_of_semistable C
         (F.semistable iFirst) (hall_mem iFirst).1,
-      σ.slicing.leProp_of_semistable C (F.φ iFirst) 1 _
+      σ.slicing.leProp_of_semistable C
         (F.semistable iFirst) (hall_mem iFirst).2⟩
   let A : t.heart.FullSubcategory := ⟨(F.triangle iFirst).obj₃, hAheart⟩
   have hAnz : ¬IsZero A := fun hZ ↦ hfirst ((t.heart).ι.map_isZero hZ)
   have hAss : @StabilityFunction.IsSemistable _ _
       t.heartFullSubcategoryAbelian Z A :=
-    σ.observable.stabilityFunctionOnHeart_isSemistable_of_mem_P_phi C
+    σ.observableStabilityFunctionOnHeart_isSemistable_of_mem_P
       (hall_mem iFirst) A (F.semistable iFirst) hAnz
   have hAphase : Z.phase A = F.φ iFirst :=
-    σ.observable.stabilityFunctionOnHeart_phase_eq_of_mem_P_phi C
+    σ.observableStabilityFunctionOnHeart_phase_eq_of_mem_P
       (hall_mem iFirst) A (F.semistable iFirst) hAnz
   have hα : ∃ α : A.obj ⟶ E.obj, α ≠ 0 := by
     by_contra hzero
@@ -186,7 +614,7 @@ theorem StabilityCondition.WithClassMap.mem_slicing_of_heart_isSemistable
     rw [← hAphase]
     calc
       Z.phase A ≤ Z.phase (Limits.image αH) :=
-        phase_le_of_epi Z (factorThruImage αH) hAss hIm
+        Z.phase_le_of_epi (factorThruImage αH) hAss hIm
       _ = Z.phase (imageSubobject αH : t.heart.FullSubcategory) :=
         Z.phase_eq_of_iso (imageSubobjectIso αH).symm
       _ ≤ Z.phase E := hE.2 (imageSubobject αH) hImSub
@@ -206,24 +634,26 @@ theorem StabilityCondition.WithClassMap.mem_slicing_of_heart_isSemistable
       exact ⟨Or.inl hzero, Or.inl hzero⟩
     · rw [σ.slicing.toTStructure_heart_iff C]
       constructor
-      · exact HNFiltration.chain_obj_gtProp C σ.slicing F (F.n - 1)
+      · exact BridgelandStabLean.Foundation.HNFiltration.chain_obj_gtProp
+          C σ.slicing F (F.n - 1)
           (by lia) (Nat.pos_of_ne_zero hk) 0
           (fun j ↦ (hall_mem ⟨j, by lia⟩).1)
-      · exact HNFiltration.chain_obj_leProp C σ.slicing F (F.n - 1)
+      · exact BridgelandStabLean.Foundation.HNFiltration.chain_obj_leProp
+          C σ.slicing F (F.n - 1)
           (by lia) (Nat.pos_of_ne_zero hk) 1
           (fun j ↦ (hall_mem ⟨j, by lia⟩).2)
   let X : t.heart.FullSubcategory :=
     ⟨F.chain.obj ⟨F.n - 1, by lia⟩, hXheart⟩
   have hBheart : t.heart (F.triangle jLast).obj₃ := by
     rw [σ.slicing.toTStructure_heart_iff C]
-    exact ⟨σ.slicing.gtProp_of_semistable C (F.φ jLast) 0 _
+    exact ⟨σ.slicing.gtProp_of_semistable C
         (F.semistable jLast) (hall_mem jLast).1,
-      σ.slicing.leProp_of_semistable C (F.φ jLast) 1 _
+      σ.slicing.leProp_of_semistable C
         (F.semistable jLast) (hall_mem jLast).2⟩
   let B : t.heart.FullSubcategory := ⟨(F.triangle jLast).obj₃, hBheart⟩
   have hBnz : ¬IsZero B := fun hZ ↦ hlast ((t.heart).ι.map_isZero hZ)
   have hBphase : Z.phase B = F.φ jLast :=
-    σ.observable.stabilityFunctionOnHeart_phase_eq_of_mem_P_phi C
+    σ.observableStabilityFunctionOnHeart_phase_eq_of_mem_P
       (hall_mem jLast) B (F.semistable jLast) hBnz
   let Tlast := F.triangle jLast
   let e₁ := Classical.choice (F.triangle_obj₁ jLast)
@@ -253,11 +683,12 @@ theorem StabilityCondition.WithClassMap.mem_slicing_of_heart_isSemistable
   have hCok : IsColimit (CokernelCofork.ofπ q hiq) := by
     simpa [hiq] using
       Triangulated.AbelianSubcategory.isColimitCokernelCoforkOfDistTriang
-        (TStructure.heart_hι t) i q δ hTlast
+        (CategoryTheory.Triangulated.TStructure.heart_hι t)
+        i q δ hTlast
   letI : Epi q := Cofork.IsColimit.epi hCok
   have hlast_ge : Z.phase E ≤ F.φ jLast := by
     rw [← hBphase]
-    exact phase_le_of_epi Z q hE hBnz
+    exact Z.phase_le_of_epi q hE hBnz
   have hminus_ge : Z.phase E ≤ σ.slicing.phiMinus C E.obj hEobj := by
     rw [σ.slicing.phiMinus_eq C E.obj hEobj F hn hlast]
     exact hlast_ge
@@ -269,7 +700,7 @@ theorem StabilityCondition.WithClassMap.mem_slicing_of_heart_isSemistable
   have hP := σ.slicing.semistable_of_phiPlus_eq_phiMinus (C := C) hEobj hextreme
   rwa [show σ.slicing.phiPlus C E.obj hEobj = Z.phase E from
     le_antisymm hplus_le
-      ((σ.observable.stabilityFunctionOnHeart_phase_le_phiPlus C E hEnz))] at hP
+      (σ.observableStabilityFunctionOnHeart_phase_le_phiPlus E hEnz)] at hP
 
 /-- The norm of the total charge is at most the sum of the norms of the
 Harder--Narasimhan factor charges. -/
@@ -281,19 +712,20 @@ theorem norm_charge_le_stabilityMass_toReal
     stabilityMass_toReal_eq_sum σ F]
   exact norm_sum_le _ _
 
+omit [IsTriangulated C] in
 /-- Shifting an HN filtration by one does not change its mass. -/
 theorem HNFiltration.mass_shift_one
     (σ : StabilityCondition.WithClassMap C v) {E : C}
     (F : HNFiltration C σ.slicing.P E) :
-    (F.shiftHN C σ.slicing 1).mass σ = F.mass σ := by
+    (F.shift C σ.slicing 1).mass σ = F.mass σ := by
   unfold HNFiltration.mass
   apply Finset.sum_congr rfl
   intro i _
-  simp only [HNFiltration.shiftHN]
+  simp only [BridgelandStabLean.Foundation.HNFiltration.shift]
   change ENNReal.ofReal ‖σ.charge ((F.triangle i).obj₃⟦(1 : ℤ)⟧)‖ =
     ENNReal.ofReal ‖σ.charge (F.triangle i).obj₃‖
   simp only [PreStabilityCondition.WithClassMap.charge_def,
-    cl_shift_one, map_neg, norm_neg]
+    classOf_shift_one, map_neg, norm_neg]
 
 /-- Shifting an object by one does not change its HN mass. -/
 @[simp]
@@ -301,22 +733,24 @@ theorem stabilityMass_shift_one
     (σ : StabilityCondition.WithClassMap C v) (E : C) :
     stabilityMass σ (E⟦(1 : ℤ)⟧) = stabilityMass σ E := by
   obtain ⟨F⟩ := σ.slicing.hn_exists E
-  rw [stabilityMass_eq_mass σ (F.shiftHN C σ.slicing 1),
-    stabilityMass_eq_mass σ F, F.mass_shift_one σ]
+  rw [stabilityMass_eq_mass σ (F.shift C σ.slicing 1),
+    stabilityMass_eq_mass σ F]
+  exact BridgelandStabLean.Foundation.HNFiltration.mass_shift_one σ F
 
+omit [IsTriangulated C] in
 /-- Shifting an HN filtration by minus one does not change its mass. -/
 theorem HNFiltration.mass_shift_neg_one
     (σ : StabilityCondition.WithClassMap C v) {E : C}
     (F : HNFiltration C σ.slicing.P E) :
-    (F.shiftHN C σ.slicing (-1)).mass σ = F.mass σ := by
+    (F.shift C σ.slicing (-1)).mass σ = F.mass σ := by
   unfold HNFiltration.mass
   apply Finset.sum_congr rfl
   intro i _
-  simp only [HNFiltration.shiftHN]
+  simp only [BridgelandStabLean.Foundation.HNFiltration.shift]
   change ENNReal.ofReal ‖σ.charge ((F.triangle i).obj₃⟦(-1 : ℤ)⟧)‖ =
     ENNReal.ofReal ‖σ.charge (F.triangle i).obj₃‖
   simp only [PreStabilityCondition.WithClassMap.charge_def,
-    cl_shift_neg_one, map_neg, norm_neg]
+    classOf_shift_neg_one, map_neg, norm_neg]
 
 /-- Shifting an object by minus one does not change its HN mass. -/
 @[simp]
@@ -324,8 +758,9 @@ theorem stabilityMass_shift_neg_one
     (σ : StabilityCondition.WithClassMap C v) (E : C) :
     stabilityMass σ (E⟦(-1 : ℤ)⟧) = stabilityMass σ E := by
   obtain ⟨F⟩ := σ.slicing.hn_exists E
-  rw [stabilityMass_eq_mass σ (F.shiftHN C σ.slicing (-1)),
-    stabilityMass_eq_mass σ F, F.mass_shift_neg_one σ]
+  rw [stabilityMass_eq_mass σ (F.shift C σ.slicing (-1)),
+    stabilityMass_eq_mass σ F]
+  exact BridgelandStabLean.Foundation.HNFiltration.mass_shift_neg_one σ F
 
 /-! ### Invariance under lifted rotations -/
 
@@ -440,6 +875,7 @@ theorem stabilityMass_liftedRotation
 
 /-! ### Exact mass splitting across a phase cutoff -/
 
+omit [IsTriangulated C] in
 /-- Appending one strictly lower semistable factor to an HN filtration adds
 exactly the norm of that factor's charge to the finite mass. -/
 theorem HNFiltration.mass_appendFactor
@@ -474,12 +910,28 @@ theorem stabilityMass_toReal_appendFactor
       (stabilityMass σ X).toReal + ‖σ.charge T.obj₃‖ := by
   let G := GX.appendFactor C T hT eT₁ eT₂ ψ hψ hψ_lt
   rw [stabilityMass_eq_mass σ G, stabilityMass_eq_mass σ GX]
-  rw [HNFiltration.mass_appendFactor]
-  rw [ENNReal.toReal_add]
-  · simp
-  · rw [← stabilityMass_eq_mass σ GX]
-    exact stabilityMass_ne_top σ X
-  · exact ENNReal.ofReal_ne_top
+  dsimp [G]
+  change (BridgelandStabLean.Foundation.HNFiltration.mass σ
+      (BridgelandStabLean.Foundation.HNFiltration.appendFactor
+        C GX T hT eT₁ eT₂ ψ hψ hψ_lt)).toReal =
+    (BridgelandStabLean.Foundation.HNFiltration.mass σ GX).toReal +
+      ‖σ.charge T.obj₃‖
+  have hm := BridgelandStabLean.Foundation.HNFiltration.mass_appendFactor
+    σ GX T hT eT₁ eT₂ ψ hψ hψ_lt
+  calc
+    (BridgelandStabLean.Foundation.HNFiltration.mass σ
+        (BridgelandStabLean.Foundation.HNFiltration.appendFactor
+          C GX T hT eT₁ eT₂ ψ hψ hψ_lt)).toReal =
+        (BridgelandStabLean.Foundation.HNFiltration.mass σ GX +
+          ENNReal.ofReal ‖σ.charge T.obj₃‖).toReal :=
+      congrArg ENNReal.toReal hm
+    _ = (BridgelandStabLean.Foundation.HNFiltration.mass σ GX).toReal +
+        ‖σ.charge T.obj₃‖ := by
+      rw [ENNReal.toReal_add]
+      · simp
+      · simp [BridgelandStabLean.Foundation.HNFiltration.mass,
+          BridgelandStabLean.Foundation.HNFiltration.mass]
+      · exact ENNReal.ofReal_ne_top
 
 /-- HN mass is exactly additive across a distinguished triangle when every
 phase of the right-hand HN filtration is strictly below every phase of the
@@ -595,9 +1047,10 @@ theorem stabilityMass_toReal_triangle_eq_add_of_gtProp_leProp
       calc
         GY.φ i ≤ GY.φ ⟨0, hGY⟩ :=
           GY.hφ.antitone (Fin.mk_le_mk.mpr (Nat.zero_le i.val))
-        _ ≤ t := by simpa only [HNFiltration.phiPlus] using hYle
+        _ ≤ t := by
+          simpa only [BridgelandStabLean.Foundation.HNFiltration.phiPlus] using hYle
         _ < GX.φ ⟨GX.n - 1, by lia⟩ := by
-          simpa only [HNFiltration.phiMinus] using hXgt
+          simpa only [BridgelandStabLean.Foundation.HNFiltration.phiMinus] using hXgt
         _ ≤ GX.φ j :=
           GX.hφ.antitone (Fin.mk_le_mk.mpr (by lia))
 
@@ -608,22 +1061,19 @@ theorem stabilityMass_toReal_eq_heartCoh_negOne_add_zero
     (hgt : σ.slicing.gtProp C 0 X) (hle : σ.slicing.leProp C 2 X) :
     (stabilityMass σ X).toReal =
       (stabilityMass σ
-        ((σ.observable.toHeartStabilityData C).heartCoh
-          (C := C) (-1) X).obj).toReal +
+        (BridgelandStabLean.Tilting.originalHeartCoh
+          σ.slicing.toTStructure (-1) X).obj).toReal +
       (stabilityMass σ
-        ((σ.observable.toHeartStabilityData C).heartCoh
-          (C := C) 0 X).obj).toReal := by
-  let hd := σ.observable.toHeartStabilityData C
-  let t := hd.t
+        (BridgelandStabLean.Tilting.originalHeartCoh
+          σ.slicing.toTStructure 0 X).obj).toReal := by
+  let t := σ.slicing.toTStructure
   letI hXLE : t.IsLE X 0 := by
     refine ⟨?_⟩
-    dsimp [t, hd, StabilityCondition.toHeartStabilityData,
-      StabilityCondition.WithClassMap.observable, Slicing.toTStructure]
+    dsimp [t, Slicing.toTStructure]
     simpa using hgt
   letI hXGE : t.IsGE X (-1) := by
     refine ⟨?_⟩
-    dsimp [t, hd, StabilityCondition.toHeartStabilityData,
-      StabilityCondition.WithClassMap.observable, Slicing.toTStructure]
+    dsimp [t, Slicing.toTStructure]
     norm_num
     exact hle
   let T := (t.triangleLTGE 0).obj X
@@ -670,23 +1120,26 @@ theorem stabilityMass_toReal_eq_heartCoh_negOne_add_zero
     (σ.slicing.toTStructure_heart_iff C Q.obj).mp Q.property |>.2
   have hmass := stabilityMass_toReal_triangle_eq_add_of_gtProp_leProp
     σ TK.mor₁ TK.mor₂ TK.mor₃ hTK 1 hKgt hQle
-  have eNeg := hd.heartCoh_negOne_iso_of_amp_negOne_zero
-    (C := C) K.property Q.property hTK
-  have eZero := hd.heartCoh_zero_iso_of_amp_negOne_zero
-    (C := C) K.property Q.property hTK
+  have eNeg := BridgelandStabLean.Tilting.originalHeartCohNegOneIsoOfAmplitude
+    t K.property Q.property hTK
+  have eZero := BridgelandStabLean.Tilting.originalHeartCohZeroIsoOfAmplitude
+    t K.property Q.property hTK
   change (stabilityMass σ X).toReal =
     (stabilityMass σ (K.obj⟦(1 : ℤ)⟧)).toReal +
       (stabilityMass σ Q.obj).toReal at hmass
   rw [stabilityMass_shift_one] at hmass
   have hNegMass := stabilityMass_congr σ ((t.heart).ι.mapIso eNeg)
   have hZeroMass := stabilityMass_congr σ ((t.heart).ι.mapIso eZero)
-  change stabilityMass σ (hd.heartCoh (C := C) (-1) X).obj =
+  change stabilityMass σ
+      (BridgelandStabLean.Tilting.originalHeartCoh t (-1) X).obj =
     stabilityMass σ K.obj at hNegMass
-  change stabilityMass σ (hd.heartCoh (C := C) 0 X).obj =
+  change stabilityMass σ
+      (BridgelandStabLean.Tilting.originalHeartCoh t 0 X).obj =
     stabilityMass σ Q.obj at hZeroMass
   rw [hNegMass, hZeroMass]
   exact hmass
 
+omit [IsTriangulated C] in
 /-- The charge of the middle object in a distinguished triangle is the sum
 of the endpoint charges. -/
 theorem StabilityCondition.WithClassMap.charge_triangle
@@ -694,7 +1147,7 @@ theorem StabilityCondition.WithClassMap.charge_triangle
     (hT : T ∈ distTriang C) :
     σ.charge T.obj₂ = σ.charge T.obj₁ + σ.charge T.obj₃ := by
   simp only [PreStabilityCondition.WithClassMap.charge_def,
-    cl_triangle C v T hT, map_add]
+    classOf_triangle C v T hT, map_add]
 
 /-- Mass is subadditive along a distinguished triangle whose middle object is
 semistable. -/
@@ -786,10 +1239,10 @@ theorem stabilityMass_triangle_le_of_obj₁_phase_one_of_obj₃_le_one
     simp
   · let iHead : Fin GY.n := ⟨0, hGYpos⟩
     have htop_le : GY.φ iHead ≤ 1 := by
-      simpa only [HNFiltration.phiPlus] using hGYle
+      simpa only [BridgelandStabLean.Foundation.HNFiltration.phiPlus] using hGYle
     by_cases htop : GY.φ iHead = 1
     · obtain ⟨Ytail, Gtail, a, b, c, hHead, hmassY, hnTail, hφTail⟩ :=
-        GY.exists_headTail_mass σ hGYpos
+        BridgelandStabLean.Foundation.HNFiltration.exists_headTail_mass σ GY hGYpos
       obtain ⟨Z, fZE, hYZ, hZE⟩ :=
         distinguished_cocone_triangle₁ (T.mor₂ ≫ b)
       let oct := Triangulated.someOctahedron'
@@ -813,7 +1266,7 @@ theorem stabilityMass_triangle_le_of_obj₁_phase_one_of_obj₃_le_one
           apply Fin.mk_lt_mk.mpr
           omega
         rw [hkφ]
-        rw [show GZ.φ j = 1 by simp [GZ, HNFiltration.single], ← htop]
+        rw [show GZ.φ j = 1 by rfl, ← htop]
         exact GY.hφ hkpos
       have hmassE := stabilityMass_toReal_triangle_eq_add_of_hn_separated
         σ GZ Gtail fZE (T.mor₂ ≫ b) hYZ hZE hsep
@@ -832,7 +1285,8 @@ theorem stabilityMass_triangle_le_of_obj₁_phase_one_of_obj₃_le_one
         intro i j
         have hi : GY.φ i ≤ GY.φ iHead :=
           GY.hφ.antitone (Fin.mk_le_mk.mpr (Nat.zero_le i.val))
-        simpa [GX, HNFiltration.single] using hi.trans_lt htop_lt
+        change GY.φ i < 1
+        exact hi.trans_lt htop_lt
       exact le_of_eq (stabilityMass_toReal_triangle_eq_add_of_hn_separated
         σ GX GY T.mor₁ T.mor₂ T.mor₃ hT hsep)
 
@@ -967,44 +1421,84 @@ theorem phaseOne_endpoints_of_heart_shortExact
     (hS : S.ShortExact) (h₂ : σ.slicing.P 1 S.X₂.obj) :
     σ.slicing.P 1 S.X₁.obj ∧ σ.slicing.P 1 S.X₃.obj := by
   let t := σ.slicing.toTStructure
-  obtain ⟨δ, hT⟩ := heartShortExact_exists_distinguished_triangle σ S hS
-  let T : Triangle C := Triangle.mk S.f.hom S.g.hom δ
-  by_cases h₁z : IsZero S.X₁.obj
-  · have h₁P : σ.slicing.P 1 S.X₁.obj :=
-      σ.slicing.zero_mem' C 1 S.X₁.obj h₁z
-    haveI : IsIso S.g.hom :=
-      (Triangle.isZero₁_iff_isIso₂ (Triangle.mk S.f.hom S.g.hom δ) hT).mp h₁z
-    have h₃P : σ.slicing.P 1 S.X₃.obj :=
-      (σ.slicing.P 1).prop_of_iso (asIso S.g.hom) h₂
-    exact ⟨h₁P, h₃P⟩
-  · by_cases h₃z : IsZero S.X₃.obj
-    · have h₃P : σ.slicing.P 1 S.X₃.obj :=
-        σ.slicing.zero_mem' C 1 S.X₃.obj h₃z
-      haveI : IsIso S.f.hom :=
-        (Triangle.isZero₃_iff_isIso₁ (Triangle.mk S.f.hom S.g.hom δ) hT).mp h₃z
-      have h₁P : σ.slicing.P 1 S.X₁.obj :=
-        (σ.slicing.P 1).prop_of_iso (asIso S.f.hom).symm h₂
-      exact ⟨h₁P, h₃P⟩
-    · have h₂nz : ¬IsZero S.X₂.obj := by
-        intro h₂z
-        have h₂zH : IsZero S.X₂ :=
-          ObjectProperty.FullSubcategory.isZero_of_obj_isZero
-            (C := C) (P := t.heart) (X := S.X₂) h₂z
-        haveI : Mono S.f := hS.mono_f
-        have h₁zH : IsZero S.X₁ := IsZero.of_mono S.f h₂zH
-        exact h₁z ((t.heart).ι.map_isZero h₁zH)
-      have h₁bounds :=
-        (σ.slicing.toTStructure_heart_iff C S.X₁.obj).mp S.X₁.property
-      have h₃bounds :=
-        (σ.slicing.toTStructure_heart_iff C S.X₃.obj).mp S.X₃.property
-      exact P_phi_of_heart_triangle C σ hT h₂ h₂nz h₁z
-        (σ.slicing.phiPlus_le_of_leProp C h₁z h₁bounds.2)
-        (by simpa using
-          σ.slicing.phiMinus_gt_of_gtProp C h₁z h₁bounds.1)
-        h₃z
-        (σ.slicing.phiPlus_le_of_leProp C h₃z h₃bounds.2)
-        (by simpa using
-          σ.slicing.phiMinus_gt_of_gtProp C h₃z h₃bounds.1)
+  let Z := σ.observableStabilityFunctionOnHeart
+  letI := t.hasHeartFullSubcategory
+  letI : Abelian t.heart.FullSubcategory := t.heartFullSubcategoryAbelian
+  by_cases h₁ : IsZero S.X₁
+  · have h₁obj := (t.heart).ι.map_isZero h₁
+    haveI : IsIso S.g := hS.isIso_g_iff.mpr h₁
+    exact ⟨σ.slicing.zero_mem_of_isZero C 1 _ h₁obj,
+      (σ.slicing.P 1).prop_of_iso ((t.heart).ι.mapIso (asIso S.g)) h₂⟩
+  · by_cases h₃ : IsZero S.X₃
+    · have h₃obj := (t.heart).ι.map_isZero h₃
+      haveI : IsIso S.f := hS.isIso_f_iff.mpr h₃
+      exact ⟨(σ.slicing.P 1).prop_of_iso
+          ((t.heart).ι.mapIso (asIso S.f)).symm h₂,
+        σ.slicing.zero_mem_of_isZero C 1 _ h₃obj⟩
+    · have h₁obj : ¬IsZero S.X₁.obj := fun hz ↦ h₁ <|
+        ObjectProperty.FullSubcategory.isZero_of_obj_isZero
+          (C := C) (P := t.heart) (X := S.X₁) hz
+      have h₃obj : ¬IsZero S.X₃.obj := fun hz ↦ h₃ <|
+        ObjectProperty.FullSubcategory.isZero_of_obj_isZero
+          (C := C) (P := t.heart) (X := S.X₃) hz
+      have h₂obj : ¬IsZero S.X₂.obj := by
+        intro hz
+        have hz' := ObjectProperty.FullSubcategory.isZero_of_obj_isZero
+          (C := C) (P := t.heart) (X := S.X₂) hz
+        haveI := hS.mono_f
+        exact h₁ (IsZero.of_mono S.f hz')
+      obtain ⟨m, hm, hcharge⟩ := σ.compat 1 S.X₂.obj h₂ h₂obj
+      have him₂ : (Z.charge S.X₂).im = 0 := by
+        change (σ.charge S.X₂.obj).im = 0
+        rw [hcharge]
+        simp [Complex.exp_mul_I]
+      have hadd := Z.additive S hS
+      have himadd : (Z.charge S.X₂).im =
+          (Z.charge S.X₁).im + (Z.charge S.X₃).im := by
+        simpa using congrArg Complex.im hadd
+      have him₁_nonneg : 0 ≤ (Z.charge S.X₁).im := by
+        rcases Z.nonzero_mem S.X₁ h₁ with h | ⟨h, -⟩
+        · exact h.le
+        · exact h.ge
+      have him₃_nonneg : 0 ≤ (Z.charge S.X₃).im := by
+        rcases Z.nonzero_mem S.X₃ h₃ with h | ⟨h, -⟩
+        · exact h.le
+        · exact h.ge
+      have him₁ : (Z.charge S.X₁).im = 0 := by linarith
+      have him₃ : (Z.charge S.X₃).im = 0 := by linarith
+      have hre₁ : (Z.charge S.X₁).re < 0 := by
+        rcases Z.nonzero_mem S.X₁ h₁ with h | h
+        · exfalso
+          simpa [him₁] using h
+        · exact h.2
+      have hre₃ : (Z.charge S.X₃).re < 0 := by
+        rcases Z.nonzero_mem S.X₃ h₃ with h | h
+        · exfalso
+          simpa [him₃] using h
+        · exact h.2
+      have hphase₁ : Z.phase S.X₁ = 1 := by
+        rw [StabilityFunction.phase]
+        have hz : Z.charge S.X₁ = ((Z.charge S.X₁).re : ℂ) :=
+          Complex.ext rfl (by simpa using him₁)
+        rw [hz, Complex.arg_ofReal_of_neg hre₁]
+        field_simp [Real.pi_ne_zero]
+      have hphase₃ : Z.phase S.X₃ = 1 := by
+        rw [StabilityFunction.phase]
+        have hz : Z.charge S.X₃ = ((Z.charge S.X₃).re : ℂ) :=
+          Complex.ext rfl (by simpa using him₃)
+        rw [hz, Complex.arg_ofReal_of_neg hre₃]
+        field_simp [Real.pi_ne_zero]
+      have hss₁ : Z.IsSemistable S.X₁ := ⟨h₁, fun B _ ↦ by
+        rw [hphase₁]
+        exact Z.phase_le_one B⟩
+      have hss₃ : Z.IsSemistable S.X₃ := ⟨h₃, fun B _ ↦ by
+        rw [hphase₃]
+        exact Z.phase_le_one B⟩
+      have hP₁ := σ.mem_slicing_of_heart_isSemistable S.X₁ hss₁
+      have hP₃ := σ.mem_slicing_of_heart_isSemistable S.X₃ hss₃
+      rw [hphase₁] at hP₁
+      rw [hphase₃] at hP₃
+      exact ⟨hP₁, hP₃⟩
 
 /-- An abelian HN filtration in the canonical heart is also an ambient HN
 filtration after replacing each short exact successive quotient by its
@@ -1075,13 +1569,13 @@ theorem AbelianHNFiltration.mass_eq_stabilityMass_toReal
         let eTop : (F.chain (Fin.last F.n) : t.heart.FullSubcategory) ≅ E :=
           eEq.trans (asIso (⊤ : Subobject E).arrow)
         exact ⟨(t.heart).ι.mapIso eTop⟩
-      zero_isZero := fun h ↦ absurd h (Nat.ne_of_gt F.hn)
-      φ := F.φ
-      hφ := F.φ_anti
+      zero_isZero := fun h ↦ absurd h (Nat.ne_of_gt F.nonempty)
+      φ := F.phase
+      hφ := F.phase_strictAnti
       semistable := fun i ↦ by
         have hP := σ.mem_slicing_of_heart_isSemistable
           (cokernel (fH i)) (by simpa [Z, fH] using F.factor_semistable i)
-        rw [show Z.phase (cokernel (fH i)) = F.φ i by
+        rw [show Z.phase (cokernel (fH i)) = F.phase i by
           simpa [Z, fH] using F.factor_phase i] at hP
         exact hP }
   rw [stabilityMass_toReal_eq_sum σ G]
@@ -1112,12 +1606,17 @@ theorem stabilityMassBoundaryHeartInequality :
       exact h₁ (IsZero.of_mono S.f h₂)
     obtain ⟨F⟩ := σ.observableStabilityFunctionOnHeart_hasHN S.X₁ h₁
     obtain ⟨G⟩ := σ.observableStabilityFunctionOnHeart_hasHN S.X₂ h₂
-    have hmass := F.mass_le_add_norm_of_shortExact S hS G
-      σ.observableStabilityFunctionOnHeart_hasHN
+    have hmass := AbelianHNFiltration.mass_le_add_norm_of_shortExact
+      S hS F G σ.observableStabilityFunctionOnHeart_hasHN
     calc
-      (stabilityMass σ S.X₁.obj).toReal = F.mass :=
+      (stabilityMass σ S.X₁.obj).toReal =
+          @AbelianHNFiltration.mass _ _
+            ((σ.slicing.toTStructure).heartFullSubcategoryAbelian)
+            σ.observableStabilityFunctionOnHeart S.X₁ F :=
         (AbelianHNFiltration.mass_eq_stabilityMass_toReal σ F).symm
-      _ ≤ G.mass + ‖Z.Zobj S.X₃‖ := hmass
+      _ ≤ @AbelianHNFiltration.mass _ _
+            ((σ.slicing.toTStructure).heartFullSubcategoryAbelian)
+            σ.observableStabilityFunctionOnHeart S.X₂ G + ‖Z.charge S.X₃‖ := hmass
       _ = (stabilityMass σ S.X₂.obj).toReal +
           (stabilityMass σ S.X₃.obj).toReal := by
         rw [AbelianHNFiltration.mass_eq_stabilityMass_toReal σ G,
@@ -1134,31 +1633,30 @@ theorem stabilityMass_H0FunctorShift_negOne_zero_triangle_le_of_obj₁_phase_one
     (hT : T ∈ distTriang C)
     (h₁ : σ.slicing.P 1 T.obj₁) :
     (stabilityMass σ
-      ((((σ.observable.toHeartStabilityData C).H0Functor
-        (C := C)).shift (-1)).obj T.obj₂).obj).toReal +
+      (((BridgelandStabLean.Tilting.originalHeartCohFunctor
+        σ.slicing.toTStructure 0).shift (-1)).obj T.obj₂).obj).toReal +
       (stabilityMass σ
-        ((((σ.observable.toHeartStabilityData C).H0Functor
-          (C := C)).shift (0 : ℤ)).obj T.obj₂).obj).toReal ≤
+        (((BridgelandStabLean.Tilting.originalHeartCohFunctor
+          σ.slicing.toTStructure 0).shift (0 : ℤ)).obj T.obj₂).obj).toReal ≤
       (stabilityMass σ T.obj₁).toReal +
         ((stabilityMass σ
-          ((((σ.observable.toHeartStabilityData C).H0Functor
-            (C := C)).shift (-1)).obj T.obj₃).obj).toReal +
+          (((BridgelandStabLean.Tilting.originalHeartCohFunctor
+            σ.slicing.toTStructure 0).shift (-1)).obj T.obj₃).obj).toReal +
           (stabilityMass σ
-            ((((σ.observable.toHeartStabilityData C).H0Functor
-              (C := C)).shift (0 : ℤ)).obj T.obj₃).obj).toReal) := by
-  let hd := σ.observable.toHeartStabilityData C
-  let t := hd.t
-  let H := hd.H0Functor (C := C)
+            (((BridgelandStabLean.Tilting.originalHeartCohFunctor
+              σ.slicing.toTStructure 0).shift (0 : ℤ)).obj T.obj₃).obj).toReal) := by
+  let t := σ.slicing.toTStructure
+  let H := BridgelandStabLean.Tilting.originalHeartCohFunctor t 0
   letI := t.hasHeartFullSubcategory
   letI : Abelian t.heart.FullSubcategory := t.heartFullSubcategoryAbelian
-  letI : Functor.IsHomological H :=
-    hd.H0Functor_isHomological_unconditional (C := C)
+  letI : Functor.IsHomological H := by
+    dsimp [H]
+    infer_instance
   have hAheart : t.heart T.obj₁ := by
-    dsimp [t, hd, StabilityCondition.toHeartStabilityData,
-      StabilityCondition.WithClassMap.observable]
+    dsimp [t]
     rw [σ.slicing.toTStructure_heart_iff C]
-    exact ⟨σ.slicing.gtProp_of_semistable C 1 0 T.obj₁ h₁ (by norm_num),
-      σ.slicing.leProp_of_semistable C 1 1 T.obj₁ h₁ le_rfl⟩
+    exact ⟨σ.slicing.gtProp_of_semistable C h₁ (by norm_num),
+      σ.slicing.leProp_of_semistable C h₁ le_rfl⟩
   let AH : t.heart.FullSubcategory := ⟨T.obj₁, hAheart⟩
   let Em : t.heart.FullSubcategory := (H.shift (-1)).obj T.obj₂
   let Fm : t.heart.FullSubcategory := (H.shift (-1)).obj T.obj₃
@@ -1170,21 +1668,15 @@ theorem stabilityMass_H0FunctorShift_negOne_zero_triangle_le_of_obj₁_phase_one
   let f0 : A0 ⟶ E0 := (H.shift (0 : ℤ)).map T.mor₁
   let g0 : E0 ⟶ F0 := (H.shift (0 : ℤ)).map T.mor₂
 
-  let eA0hc := hd.H0FunctorShiftObjIsoHeartCoh (C := C) (0 : ℤ) T.obj₁
-  let eHcShift := (hd.heartCohFunctor (C := C) 0).mapIso
-    ((shiftFunctorZero C ℤ).symm.app T.obj₁)
-  let eShiftA := hd.heartCohObjIsoOfHeartShift (C := C) AH (0 : ℤ)
-  let eShiftAH :
-      (hd.heartCohFunctor (C := C) 0).obj
-        ((shiftFunctor C (0 : ℤ)).obj T.obj₁) ≅ AH :=
-    ObjectProperty.isoMk _ eShiftA
-  let eA0 : A0 ≅ AH := eA0hc.trans (eHcShift.trans eShiftAH)
+  let eA0 : A0 ≅ AH :=
+    BridgelandStabLean.Tilting.originalHeartCohShiftIso t 0 T.obj₁ ≪≫
+      BridgelandStabLean.Tilting.originalHeartCohIsoOfHeart t AH
   have hA0P : σ.slicing.P 1 A0.obj :=
     (σ.slicing.P 1).prop_of_iso ((t.heart).ι.mapIso eA0).symm h₁
 
   have hAminusZero : IsZero ((H.shift (-1)).obj T.obj₁) := by
-    exact hd.isZero_H0Functor_shift_obj_of_lt_bound (C := C)
-      (m := -1) (n := 0) (by omega) ⟨hAheart.2⟩
+    exact BridgelandStabLean.Tilting.originalHeartCohFunctor_shift_isZero_of_isGE
+      t ⟨hAheart.2⟩ (by omega)
   have hfNegZero : (H.shift (-1)).map T.mor₁ = 0 :=
     hAminusZero.eq_of_src _ 0
   letI : Mono gNeg :=
@@ -1247,8 +1739,8 @@ theorem stabilityMass_H0FunctorShift_negOne_zero_triangle_le_of_obj₁_phase_one
     simpa [S0, S0wide, i0] using
       (S0wide.exact_iff_exact_image_ι).mp hS0wide
   have hAoneZero : IsZero ((H.shift (1 : ℤ)).obj T.obj₁) := by
-    exact hd.isZero_H0Functor_shift_obj_of_gt_bound (C := C)
-      (m := 1) (n := 0) (by omega) ⟨hAheart.1⟩
+    exact BridgelandStabLean.Tilting.originalHeartCohFunctor_shift_isZero_of_isLE
+      t ⟨hAheart.1⟩ (by omega)
   have hδ0Zero : H.homologySequenceδ T (0 : ℤ) (1 : ℤ) (by omega) = 0 :=
     hAoneZero.eq_of_tgt _ 0
   letI : Epi g0 :=
@@ -1341,40 +1833,43 @@ theorem stabilityMass_heartCoh_negOne_zero_triangle_le_of_obj₁_phase_one
     (hT : T ∈ distTriang C)
     (h₁ : σ.slicing.P 1 T.obj₁) :
     (stabilityMass σ
-      ((σ.observable.toHeartStabilityData C).heartCoh
-        (C := C) (-1) T.obj₂).obj).toReal +
+      (BridgelandStabLean.Tilting.originalHeartCoh
+        σ.slicing.toTStructure (-1) T.obj₂).obj).toReal +
       (stabilityMass σ
-        ((σ.observable.toHeartStabilityData C).heartCoh
-          (C := C) 0 T.obj₂).obj).toReal ≤
+        (BridgelandStabLean.Tilting.originalHeartCoh
+          σ.slicing.toTStructure 0 T.obj₂).obj).toReal ≤
       (stabilityMass σ T.obj₁).toReal +
         ((stabilityMass σ
-          ((σ.observable.toHeartStabilityData C).heartCoh
-            (C := C) (-1) T.obj₃).obj).toReal +
+          (BridgelandStabLean.Tilting.originalHeartCoh
+            σ.slicing.toTStructure (-1) T.obj₃).obj).toReal +
           (stabilityMass σ
-            ((σ.observable.toHeartStabilityData C).heartCoh
-              (C := C) 0 T.obj₃).obj).toReal) := by
-  let hd := σ.observable.toHeartStabilityData C
-  let t := hd.t
-  let H := hd.H0Functor (C := C)
+            (BridgelandStabLean.Tilting.originalHeartCoh
+              σ.slicing.toTStructure 0 T.obj₃).obj).toReal) := by
+  let t := σ.slicing.toTStructure
+  let H := BridgelandStabLean.Tilting.originalHeartCohFunctor t 0
   have hshift :=
     stabilityMass_H0FunctorShift_negOne_zero_triangle_le_of_obj₁_phase_one
       σ T hT h₁
-  let eEm := hd.H0FunctorShiftObjIsoHeartCoh (C := C) (-1) T.obj₂
-  let eE0 := hd.H0FunctorShiftObjIsoHeartCoh (C := C) 0 T.obj₂
-  let eFm := hd.H0FunctorShiftObjIsoHeartCoh (C := C) (-1) T.obj₃
-  let eF0 := hd.H0FunctorShiftObjIsoHeartCoh (C := C) 0 T.obj₃
+  let eEm := BridgelandStabLean.Tilting.originalHeartCohShiftIso t (-1) T.obj₂
+  let eE0 := BridgelandStabLean.Tilting.originalHeartCohShiftIso t 0 T.obj₂
+  let eFm := BridgelandStabLean.Tilting.originalHeartCohShiftIso t (-1) T.obj₃
+  let eF0 := BridgelandStabLean.Tilting.originalHeartCohShiftIso t 0 T.obj₃
   have hEmMass := stabilityMass_congr σ ((t.heart).ι.mapIso eEm)
   have hE0Mass := stabilityMass_congr σ ((t.heart).ι.mapIso eE0)
   have hFmMass := stabilityMass_congr σ ((t.heart).ι.mapIso eFm)
   have hF0Mass := stabilityMass_congr σ ((t.heart).ι.mapIso eF0)
   change stabilityMass σ (H.shift (-1) |>.obj T.obj₂).obj =
-    stabilityMass σ (hd.heartCoh (C := C) (-1) T.obj₂).obj at hEmMass
+    stabilityMass σ
+      (BridgelandStabLean.Tilting.originalHeartCoh t (-1) T.obj₂).obj at hEmMass
   change stabilityMass σ (H.shift (0 : ℤ) |>.obj T.obj₂).obj =
-    stabilityMass σ (hd.heartCoh (C := C) 0 T.obj₂).obj at hE0Mass
+    stabilityMass σ
+      (BridgelandStabLean.Tilting.originalHeartCoh t 0 T.obj₂).obj at hE0Mass
   change stabilityMass σ (H.shift (-1) |>.obj T.obj₃).obj =
-    stabilityMass σ (hd.heartCoh (C := C) (-1) T.obj₃).obj at hFmMass
+    stabilityMass σ
+      (BridgelandStabLean.Tilting.originalHeartCoh t (-1) T.obj₃).obj at hFmMass
   change stabilityMass σ (H.shift (0 : ℤ) |>.obj T.obj₃).obj =
-    stabilityMass σ (hd.heartCoh (C := C) 0 T.obj₃).obj at hF0Mass
+    stabilityMass σ
+      (BridgelandStabLean.Tilting.originalHeartCoh t 0 T.obj₃).obj at hF0Mass
   rw [hEmMass, hE0Mass, hFmMass, hF0Mass] at hshift
   exact hshift
 
@@ -1422,21 +1917,21 @@ theorem stabilityMass_triangle_le_of_obj₁_phase_one
       (stabilityMass σ T.obj₁).toReal +
         (stabilityMass σ T.obj₃).toReal := by
   have hAgt0 : σ.slicing.gtProp C 0 T.obj₁ :=
-    σ.slicing.gtProp_of_semistable C 1 0 T.obj₁ h₁ (by norm_num)
+    σ.slicing.gtProp_of_semistable C h₁ (by norm_num)
   have hAle2 : σ.slicing.leProp C 2 T.obj₁ :=
-    σ.slicing.leProp_of_semistable C 1 2 T.obj₁ h₁ (by norm_num)
+    σ.slicing.leProp_of_semistable C h₁ (by norm_num)
   have hAshiftP : σ.slicing.P 2 (T.obj₁⟦(1 : ℤ)⟧) := by
     convert (σ.slicing.shift_int C 1 T.obj₁ 1).mp h₁ using 1
     all_goals norm_num
   have hAshiftgt0 : σ.slicing.gtProp C 0 (T.obj₁⟦(1 : ℤ)⟧) :=
-    σ.slicing.gtProp_of_semistable C 2 0 _ hAshiftP (by norm_num)
+    σ.slicing.gtProp_of_semistable C hAshiftP (by norm_num)
   have hAshiftle2 : σ.slicing.leProp C 2 (T.obj₁⟦(1 : ℤ)⟧) :=
-    σ.slicing.leProp_of_semistable C 2 2 _ hAshiftP le_rfl
+    σ.slicing.leProp_of_semistable C hAshiftP le_rfl
 
   obtain ⟨FE⟩ := σ.slicing.hn_exists T.obj₂
   obtain ⟨Epos, Elow, GEpos, GElow, iE, qE, dE,
       hTE, hEposgt, hElowle, _hElowBound, _hEposContain⟩ :=
-    split_hn_filtration_at_cutoff (C := C) FE 0
+    BridgelandStabLean.Foundation.HNFiltration.exists_split_at_cutoff C FE 0
   have hEposgtP : σ.slicing.gtProp C 0 Epos := by
     by_cases hn : GEpos.n = 0
     · exact Or.inl (GEpos.zero_isZero hn)
@@ -1470,7 +1965,7 @@ theorem stabilityMass_triangle_le_of_obj₁_phase_one
   obtain ⟨FF⟩ := σ.slicing.hn_exists Fpos
   obtain ⟨Fhigh, Flow, GFhigh, GFlow, iF, qF, dF,
       hTF, hFhighgt, hFlowle, _hFlowBound, _hFhighContain⟩ :=
-    split_hn_filtration_at_cutoff (C := C) FF 2
+    BridgelandStabLean.Foundation.HNFiltration.exists_split_at_cutoff C FF 2
   have hFhighgtP : σ.slicing.gtProp C 2 Fhigh := by
     by_cases hn : GFhigh.n = 0
     · exact Or.inl (GFhigh.zero_isZero hn)
@@ -1598,4 +2093,4 @@ theorem stabilityMass_heart_shortExact_le_of_same_phase
 
 end
 
-end CategoryTheory.Triangulated
+end BridgelandStabLean.Foundation

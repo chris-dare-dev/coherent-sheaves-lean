@@ -8,11 +8,9 @@ import Mathlib.CategoryTheory.Triangulated.Pretriangulated
 /-!
 # Owner-authored Postnikov towers
 
-This file begins the owner-authored foundation for Bridgeland stability. A
+This file begins the repository-owned foundation for Bridgeland stability. A
 `PostnikovTower C E` packages a finite filtration of `E` by distinguished
-triangles. It intentionally depends only on Mathlib; compatibility with the
-temporarily retained Apache-2.0 implementation lives in
-`BridgelandStabLean.Compatibility.BridgelandStability`.
+triangles and depends only on Mathlib.
 -/
 
 noncomputable section

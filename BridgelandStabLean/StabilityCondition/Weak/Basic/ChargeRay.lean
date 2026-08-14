@@ -24,6 +24,7 @@ constructed from any weak stability function, independently of tilting.
 
 namespace BridgelandStabLean.WeakStability
 
+open BridgelandStabLean.Foundation
 open CategoryTheory Limits Pretriangulated CategoryTheory.Triangulated Complex
 
 noncomputable section
@@ -166,7 +167,7 @@ theorem WeakStabilityFunction.ambientPhasePredicate_charge_ray
         calc
           K₀.of C E = K₀.of C (H⟦n⟧) := (K₀.of_iso C e).symm
           _ = ((-1 : ℤ) ^ Int.natAbs n) • K₀.of C H :=
-            K₀.of_shift_int C H n
+            BridgelandStabLean.Foundation.K₀.of_shift_int C H n
       have hEcharge : W.charge E =
           ((((-1 : ℤ) ^ Int.natAbs n : ℤ) : ℂ) * W.charge H) := by
         rw [WeakStabilityFunction.charge, hclass, map_zsmul]

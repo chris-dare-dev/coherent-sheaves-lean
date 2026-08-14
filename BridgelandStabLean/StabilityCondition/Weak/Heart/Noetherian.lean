@@ -4,7 +4,7 @@ Released under the MIT license.
 -/
 import BridgelandStabLean.StabilityCondition.Weak.Basic.Definitions
 import BridgelandStabLean.StabilityCondition.Weak.Tilting.TorsionPair.Heart
-import BridgelandStability.HeartEquivalence.Basic
+import BridgelandStabLean.Foundation
 import Mathlib.CategoryTheory.Abelian.SerreClass.Basic
 import Mathlib.CategoryTheory.Abelian.CommSq
 import Mathlib.CategoryTheory.Abelian.DiagramLemmas.KernelCokernelComp
@@ -64,6 +64,7 @@ definitions and the boundary.
 
 namespace BridgelandStabLean.WeakStability
 
+open BridgelandStabLean.Foundation
 open CategoryTheory Limits Pretriangulated CategoryTheory.Triangulated ZeroObject
 open BridgelandStabLean.Tilting
 

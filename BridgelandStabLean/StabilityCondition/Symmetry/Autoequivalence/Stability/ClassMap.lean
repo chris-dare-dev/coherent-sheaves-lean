@@ -7,7 +7,7 @@ import BridgelandStabLean.StabilityCondition.Symmetry.Autoequivalence.Slicing.Qu
 -- For `StabilityCondition.WithClassMap.ext`, which lives in `Basic.lean` and
 -- is NOT reachable through `Defs.lean` — the structure and its usable
 -- extensionality lemma are in different files. See CLAUDE.md §5.
-import BridgelandStability.StabilityCondition.Basic
+import BridgelandStabLean.Foundation
 
 /-!
 # The class-map-compatible autoequivalence action
@@ -66,6 +66,7 @@ isomorphism of the forward functors. Natural isomorphism of the chosen
 inverses follows from uniqueness of right adjoints.
 -/
 
+open BridgelandStabLean.Foundation
 open CategoryTheory CategoryTheory.Limits CategoryTheory.Pretriangulated
 open CategoryTheory.Triangulated
 
@@ -163,7 +164,8 @@ noncomputable def act (a : AutPair v) (σ : StabilityCondition.WithClassMap C v)
   actStabAut a.Φ.e v a.lam.toAddMonoidHom a.compat σ
 
 @[simp] theorem act_slicing (a : AutPair v) (σ : StabilityCondition.WithClassMap C v) :
-    (a.act σ).slicing = σ.slicing.mapEquiv a.Φ.e := rfl
+    (a.act σ).slicing =
+      BridgelandStabLean.Foundation.Slicing.mapEquiv σ.slicing a.Φ.e := rfl
 
 @[simp] theorem act_Z (a : AutPair v) (σ : StabilityCondition.WithClassMap C v) (x : Λ) :
     (a.act σ).Z x = σ.Z (a.lam x) := rfl
@@ -247,7 +249,8 @@ noncomputable instance mulAction :
     exact AutPair.act_mul a b σ
 
 @[simp] theorem mk_smul_slicing (a : AutPair v) (σ : StabilityCondition.WithClassMap C v) :
-    (mk a • σ).slicing = σ.slicing.mapEquiv a.Φ.e := rfl
+    (mk a • σ).slicing =
+      BridgelandStabLean.Foundation.Slicing.mapEquiv σ.slicing a.Φ.e := rfl
 
 @[simp] theorem mk_smul_Z (a : AutPair v) (σ : StabilityCondition.WithClassMap C v) (x : Λ) :
     (mk a • σ).Z x = σ.Z (a.lam x) := rfl

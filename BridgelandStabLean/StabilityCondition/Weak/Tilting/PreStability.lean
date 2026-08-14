@@ -25,6 +25,7 @@ adapter and source-normalized theorem are exposed separately by
 
 namespace BridgelandStabLean.WeakStability
 
+open BridgelandStabLean.Foundation
 open CategoryTheory Limits Pretriangulated CategoryTheory.Triangulated
 
 noncomputable section

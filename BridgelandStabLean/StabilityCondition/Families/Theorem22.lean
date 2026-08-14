@@ -24,6 +24,7 @@ not axioms or claimed results of this library.
 
 namespace BridgelandStabLean.StabilityFamilies
 
+open BridgelandStabLean.Foundation
 open BridgelandStabLean.Support
 
 noncomputable section

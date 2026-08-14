@@ -3,8 +3,9 @@ Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under the MIT license.
 -/
 import BridgelandStabLean.StabilityCondition.Symmetry.GLTilde.Action.PreStability
+import BridgelandStabLean.StabilityCondition.Symmetry.Autoequivalence.Foundations.FiniteLength
 import BridgelandStabLean.StabilityCondition.Phase.UniformContinuity
-import BridgelandStability.Deformation.IntervalSelection
+import BridgelandStabLean.Foundation
 import MathFormalContract
 
 /-!
@@ -35,6 +36,7 @@ into a uniform witness for the relabelled slicing.
 
 namespace BridgelandStabLean.GroupAction
 
+open BridgelandStabLean.Foundation
 open CategoryTheory CategoryTheory.Limits CategoryTheory.Pretriangulated
 open CategoryTheory.Triangulated
 
@@ -73,8 +75,8 @@ theorem relabel_isLocallyFinite (f : NormalizedShift) (s : Slicing C)
       ≤ s.intervalProp C (u - η) (u + η) := by
     intro E hE
     rw [relabel_intervalProp] at hE
-    exact s.intervalProp_mono C ha2 hb2 hE
-  exact fun E => interval_thinFiniteLength_of_inclusion_strict (C := C)
+    exact s.intervalProp_mono C ha2 hb2 E hE
+  exact fun E => interval_finiteLength_of_inclusion (C := C)
     (s₁ := relabel C f s) (s₂ := s) hle (hlf u) E
 
 variable {Λ : Type u'} [AddCommGroup Λ] (v : K₀ C →+ Λ)

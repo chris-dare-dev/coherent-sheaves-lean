@@ -39,10 +39,10 @@ extra choice of inverse isomorphism is part of the relation.
 
 Slicings only. The action on stability conditions additionally needs `K₀`
 functoriality, a class-map compatibility datum, and invariance of strict finite
-length under an equivalence of interval categories — see
-`notes/dependencies/BridgelandStabilityAPI.md` §7.
+length under an equivalence of interval categories.
 -/
 
+open BridgelandStabLean.Foundation
 open CategoryTheory CategoryTheory.Limits CategoryTheory.Pretriangulated
 open CategoryTheory.Triangulated
 

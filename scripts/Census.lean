@@ -56,7 +56,7 @@ def isGenerated (env : Environment) (n : Name) (ci : ConstantInfo) : Bool :=
                "ctorIdx", "congr_simp", "ext_iff", "ext'_iff"]
           || "match_".isPrefixOf s || "proof_".isPrefixOf s
           -- Heterogeneous congruence companions generated for dependent defs.
-          -- `rg 'hcongr_' BridgelandStabLean vendor/BridgelandStability` is empty.
+          -- `rg 'hcongr_' BridgelandStabLean` is empty.
           || "hcongr_".isPrefixOf s
         | _ => true)
 

@@ -29,6 +29,7 @@ repository's current abstract categorical substrate.
 
 namespace BridgelandStabLean.WeakStability
 
+open BridgelandStabLean.Foundation
 open CategoryTheory Limits Pretriangulated CategoryTheory.Triangulated
 open BridgelandStabLean.Support
 

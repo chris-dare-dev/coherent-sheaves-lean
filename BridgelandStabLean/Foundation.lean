@@ -17,6 +17,7 @@ import BridgelandStabLean.Foundation.Slicing.FiltrationOperations
 import BridgelandStabLean.Foundation.Slicing.BoundaryFactors
 import BridgelandStabLean.Foundation.Slicing.IntrinsicPhases
 import BridgelandStabLean.Foundation.Slicing.IntrinsicPhaseBounds
+import BridgelandStabLean.Foundation.Slicing.CoreConsequences
 import BridgelandStabLean.Foundation.Slicing.PhaseCutClosure
 import BridgelandStabLean.Foundation.Slicing.PhaseShift
 import BridgelandStabLean.Foundation.Slicing.PhaseTruncation
@@ -52,10 +53,19 @@ import BridgelandStabLean.Foundation.Deformation.HeartImage
 import BridgelandStabLean.Foundation.Deformation.DeformedHom
 import BridgelandStabLean.Foundation.Deformation.SlicingDistance
 import BridgelandStabLean.Foundation.Deformation.StabilityTopology
+import BridgelandStabLean.Foundation.Deformation.Theorem
+import BridgelandStabLean.Foundation.Deformation.LocalSurjectivity
+import BridgelandStabLean.Foundation.Deformation.SeminormComparison
+import BridgelandStabLean.Foundation.Deformation.LocalInjectivity
+import BridgelandStabLean.Foundation.Deformation.LocalComparison
+import BridgelandStabLean.Foundation.Deformation.ConnectedComponent
+import BridgelandStabLean.Foundation.Deformation.LocalHomeomorphism
+import BridgelandStabLean.Foundation.Slicing.IntervalFiniteTransfer
 import BridgelandStabLean.Foundation.StabilityFunction.Basic
 import BridgelandStabLean.Foundation.StabilityFunction.HarderNarasimhan
 import BridgelandStabLean.Foundation.StabilityFunction.Subobject
 import BridgelandStabLean.Foundation.StabilityFunction.PhaseGeometry
+import BridgelandStabLean.Foundation.StabilityFunction.FiniteSums
 import BridgelandStabLean.Foundation.StabilityFunction.Uniqueness
 import BridgelandStabLean.ForMathlib.CategoryTheory.Triangulated.TStructure.ImageFactorisation
 

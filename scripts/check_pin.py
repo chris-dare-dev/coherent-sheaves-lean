@@ -3,7 +3,7 @@
 
 HARD GATE (exit 1): lean_toolchain and mathlib_rev/mathlib_input_rev in pins.json
 must equal lean-toolchain and the mathlib entry of lake-manifest.json. Also checks
-anchor_rev and mfc_rev when pins.json records them.
+mfc_rev when pins.json records it.
 
 ADVISORY (exit 0, prints WARN): cross_repo.status. `ALIGNED` and `MERGED` both
 satisfy the single-pin premise. A DIVERGED peer blocks that premise but does
@@ -50,7 +50,7 @@ else:
     check("mathlib_rev", pins["mathlib_rev"], mathlib.get("rev"))
     check("mathlib_input_rev", pins["mathlib_input_rev"], mathlib.get("inputRev"))
 
-for key, pkg in (("anchor_rev", "BridgelandStability"), ("mfc_rev", "MathFormalContract")):
+for key, pkg in (("mfc_rev", "MathFormalContract"),):
     expected = pins.get(key)
     if expected is None:
         if pkg in packages:

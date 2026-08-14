@@ -10,7 +10,7 @@ import BridgelandStabLean.StabilityCondition.Symmetry.Combined.Components
 The symmetry action on a stability condition has a corresponding action on
 its central charge.  This file packages that charge action as additive
 equivalences of `Λ →+ ℂ` and proves the equivariance square both on the full
-stability space and on each connected-component local-homeomorphism chart.
+stability space and on each connected component.
 
 The `GLTilde` factor postcomposes by its real-linear action on `ℂ`; the
 autoequivalence factor precomposes by its compatible lattice automorphism.
@@ -18,6 +18,7 @@ These operations are additive equivalences even though the first one need not
 be complex-linear.
 -/
 
+open BridgelandStabLean.Foundation
 open CategoryTheory CategoryTheory.Limits CategoryTheory.Pretriangulated
 open CategoryTheory.Triangulated
 
@@ -135,36 +136,17 @@ theorem combinedCentralCharge_equivariant_apply
     (((x, AutPairQuot.mk a) • σ).Z y) = actC x.mat (σ.Z (a.lam y)) :=
   prod_mk_smul_Z x a σ y
 
-/-! ## The component local-homeomorphism square -/
+/-! ## The connected-component square -/
 
 /-- On component subtypes, symmetry transport and the central-charge map form
 the expected equivariant square. -/
 theorem componentCentralCharge_equivariant
     (p : GLTilde × AutPairQuot v)
     (cc : ConnectedComponents (StabilityCondition.WithClassMap C v))
-    (σ : StabilityCondition.WithClassMap.Component C v cc) :
+    (σ : {τ : StabilityCondition.WithClassMap C v //
+      ConnectedComponents.mk τ = cc}) :
     (componentHomeomorph p cc σ).1.Z =
       combinedChargeAddEquiv p σ.1.Z := by
-  exact combinedCentralCharge_equivariant p σ.1
-
-variable [Fact (Function.Surjective v)]
-
-/-- Equivariance stated directly for the canonical componentwise
-local-homeomorphism charts.  Coercing the target chart coordinate back to the
-ambient charge group gives precisely the combined charge transform of the
-source coordinate. -/
-theorem componentLocalModel_chargeMap_equivariant
-    (p : GLTilde × AutPairQuot v)
-    (cc : ConnectedComponents (StabilityCondition.WithClassMap C v))
-    (σ : StabilityCondition.WithClassMap.Component C v cc) :
-    ((ComponentTopologicalLinearLocalModel.chargeMap C
-      (componentTopologicalLinearLocalModel C (componentSmul p cc))
-      (componentHomeomorph p cc σ) :
-        componentSeminormSubgroup C (componentSmul p cc)) : Λ →+ ℂ) =
-      combinedChargeAddEquiv p
-        ((ComponentTopologicalLinearLocalModel.chargeMap C
-          (componentTopologicalLinearLocalModel C cc) σ :
-          componentSeminormSubgroup C cc) : Λ →+ ℂ) := by
   exact combinedCentralCharge_equivariant p σ.1
 
 end

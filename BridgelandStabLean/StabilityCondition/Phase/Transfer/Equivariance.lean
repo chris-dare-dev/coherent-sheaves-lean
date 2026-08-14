@@ -20,12 +20,13 @@ representative-level interface it needs before descending to quotients.
 
 noncomputable section
 
+open BridgelandStabLean.Foundation
 open CategoryTheory CategoryTheory.Limits CategoryTheory.Pretriangulated
 open BridgelandStabLean.GroupAction
 
 universe v₁ u₁ v₂ u₂ u₃ u₄
 
-namespace CategoryTheory.Triangulated
+namespace BridgelandStabLean.Foundation
 
 variable {C : Type u₁} [Category.{v₁} C] [HasZeroObject C] [HasShift C ℤ]
   [Preadditive C] [∀ n : ℤ, (shiftFunctor C n).Additive] [Pretriangulated C]
@@ -65,7 +66,7 @@ theorem Slicing.preimage_mapEquiv (PhiC : C ≌ C) (PhiD : D ≌ D)
 variable [IsTriangulated C] [IsTriangulated D]
 open BridgelandStabLean.GroupAction
 
-end CategoryTheory.Triangulated
+end BridgelandStabLean.Foundation
 
 namespace BridgelandStabLean.GroupAction
 
@@ -96,7 +97,7 @@ theorem AutPair.preimage_representatives
     (hmap : (s.mapEquiv aD.Φ.e).PreimageData F) :
     (s.mapEquiv aD.Φ.e).preimage F hmap =
       (s.preimage F h).mapEquiv aC.Φ.e :=
-  CategoryTheory.Triangulated.Slicing.preimage_mapEquiv
+  BridgelandStabLean.Foundation.Slicing.preimage_mapEquiv
     s F h aC.Φ.e aD.Φ.e alpha hmap
 
 end BridgelandStabLean.GroupAction

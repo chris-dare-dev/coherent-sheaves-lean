@@ -4,6 +4,7 @@ Released under the MIT license.
 -/
 import BridgelandStabLean.StabilityCondition.Weak.Tilting.TorsionPair.Heart
 import BridgelandStabLean.StabilityCondition.Weak.Heart.HomVanishing
+import BridgelandStabLean.TStructure.Exactness
 
 /-!
 # Ambient weak Harder--Narasimhan filtrations from a bounded heart
@@ -22,6 +23,7 @@ triangle.
 
 namespace BridgelandStabLean.WeakStability
 
+open BridgelandStabLean.Foundation
 open CategoryTheory Limits Pretriangulated CategoryTheory.Triangulated
 open scoped ZeroObject
 
@@ -106,17 +108,18 @@ theorem ambientHN_exists_of_pure
   let e : H.obj⟦(-a : ℤ)⟧ ≅ E :=
     ((shiftFunctorAdd' C a (-a : ℤ) 0 (by lia)).app E).symm.trans
       ((shiftFunctorZero C ℤ).app E)
-  let F : HNFiltration C W.ambientPhasePredicate E := FS.ofIso C e
+  let F : HNFiltration C W.ambientPhasePredicate E :=
+    BridgelandStabLean.Foundation.HNFiltration.ofIso C FS e
   refine ⟨F, fun j ↦ ?_, fun j ↦ ?_⟩
   · dsimp [F, FS,
       BridgelandStabLean.WeakStability.HNFiltration.shiftWeakAmbient,
-      HNFiltration.ofIso] at j ⊢
+      BridgelandStabLean.Foundation.HNFiltration.ofIso] at j ⊢
     have hj := hFH j
     push_cast
     linarith [hj.1]
   · dsimp [F, FS,
       BridgelandStabLean.WeakStability.HNFiltration.shiftWeakAmbient,
-      HNFiltration.ofIso] at j ⊢
+      BridgelandStabLean.Foundation.HNFiltration.ofIso] at j ⊢
     have hj := hFH j
     push_cast
     linarith [hj.2]
@@ -169,7 +172,8 @@ theorem ambientHN_exists_of_width
         intro j
         have hn0 : (0 : ℝ) ≤ (n : ℝ) := Nat.cast_nonneg n
         linarith [hGYhi j]
-      obtain ⟨G, hGlo, hGhi⟩ := append_hn_filtration_of_triangle_le
+      obtain ⟨G, hGlo, hGhi⟩ :=
+        BridgelandStabLean.Foundation.HNFiltration.exists_of_distinguished_triangle_phase_bounds
         (C := C) (fun phi ↦ W.ambientPhasePredicate_closedUnderIso phi)
         GX GY ((t.truncLTι a).app E) ((t.truncGEπ a).app E)
         ((t.truncGEδLT a).app E) (t.triangleLTGE_distinguished a E)
@@ -185,12 +189,13 @@ theorem ambientHN_exists_of_width
 filtrations for the integer-normalized ambient weak phase family on every
 object. -/
 theorem ambientHN_exists_of_bounded
-    (hbounded : t.IsBounded) (hHN : W.HasHNProperty) (E : C) :
+    (hbounded : BridgelandStabLean.TStructure.IsBounded t)
+    (hHN : W.HasHNProperty) (E : C) :
     Nonempty (HNFiltration C W.ambientPhasePredicate E) := by
-  obtain ⟨a, b, hLE, hGE⟩ := hbounded E
+  obtain ⟨⟨b, hGE⟩, ⟨a, hLE⟩⟩ := hbounded E
   let b' : ℤ := min b a
   have hb'a : b' ≤ a := min_le_right _ _
-  letI : t.IsGE E b := ⟨hGE⟩
+  letI : t.IsGE E b := hGE
   have hGE' : t.IsGE E b' :=
     t.isGE_of_ge E b' b (min_le_left _ _)
   let n : ℕ := Int.toNat (a - b')
@@ -204,7 +209,8 @@ theorem ambientHN_exists_of_bounded
 
 /-- Global form of `ambientHN_exists_of_bounded`. -/
 theorem ambientHN_of_bounded
-    (hbounded : t.IsBounded) (hHN : W.HasHNProperty) :
+    (hbounded : BridgelandStabLean.TStructure.IsBounded t)
+    (hHN : W.HasHNProperty) :
     ∀ E : C, Nonempty (HNFiltration C W.ambientPhasePredicate E) :=
   fun E ↦ W.ambientHN_exists_of_bounded hbounded hHN E
 
@@ -218,12 +224,13 @@ open BridgelandStabLean.Tilting
 aisle convention used by `HeartTorsionPair.tilt`, an original amplitude
 interval `[b, a]` becomes the tilted interval `[b, a+1]`. -/
 theorem heartTorsionPair_tilt_isBounded {t : TStructure C}
-    (P : HeartTorsionPair t) (hbounded : t.IsBounded) :
-    P.tilt.IsBounded := by
+    (P : HeartTorsionPair t)
+    (hbounded : BridgelandStabLean.TStructure.IsBounded t) :
+    BridgelandStabLean.TStructure.IsBounded P.tilt := by
   intro E
-  obtain ⟨a, b, hLE, hGE⟩ := hbounded E
-  letI : t.IsLE E a := ⟨hLE⟩
-  letI : t.IsGE E b := ⟨hGE⟩
+  obtain ⟨⟨b, hGE⟩, ⟨a, hLE⟩⟩ := hbounded E
+  letI : t.IsLE E a := hLE
+  letI : t.IsGE E b := hGE
   have hTiltLE : P.tilt.IsLE E (a + 1) := by
     refine ⟨?_⟩
     rw [P.tilt_le]
@@ -240,7 +247,7 @@ theorem heartTorsionPair_tilt_isBounded {t : TStructure C}
     exact t.zero_of_isLE_of_isGE f 0 1 (by lia)
       (P.tors_isLE T hT)
       (t.isGE_shift E b (b - 1) 1 (by lia))
-  exact ⟨a + 1, b, hTiltLE.le, hTiltGE.ge⟩
+  exact ⟨⟨b, hTiltGE⟩, ⟨a + 1, hTiltLE⟩⟩
 
 end
 

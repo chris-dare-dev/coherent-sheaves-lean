@@ -293,4 +293,16 @@ theorem Slicing.zero_of_geProp_ltProp (s : Slicing C) {X Y : C}
       (FY.phase_mem_range C hFY j).2
       (hFYlt.trans_le (hFXge.trans (FX.phase_mem_range C hFX i).1))) f
 
+/-- The hom-vanishing statement for an arbitrary `(≥ t, < t)` phase cut. -/
+theorem Slicing.zero_of_geProp_ltProp_at (s : Slicing C) (t : ℝ) {X Y : C}
+    (hX : s.geProp C t X) (hY : s.ltProp C t Y) (f : X ⟶ Y) : f = 0 := by
+  rcases hX with hX | ⟨FX, hFX, hFXge⟩
+  · exact hX.eq_of_src f 0
+  rcases hY with hY | ⟨FY, hFY, hFYlt⟩
+  · exact hY.eq_of_tgt f 0
+  exact s.hom_eq_zero_of_phase_gap C FX FY
+    (fun i j => lt_of_le_of_lt
+      (FY.phase_mem_range C hFY j).2
+      (hFYlt.trans_le (hFXge.trans (FX.phase_mem_range C hFX i).1))) f
+
 end BridgelandStabLean.Foundation

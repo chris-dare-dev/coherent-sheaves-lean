@@ -3,7 +3,7 @@ Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under the MIT license.
 -/
 import BridgelandStabLean.StabilityCondition.Metric.Distance.Separation
-import BridgelandStability.StabilityCondition.ConnectedComponent
+import BridgelandStabLean.Foundation
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Bounds
 import Mathlib.Topology.EMetricSpace.Defs
 import MathFormalContract
@@ -34,10 +34,12 @@ distance bound.  They feed the **easy** direction only —
 and touches none of them.
 -/
 
+open BridgelandStabLean.Foundation
 open CategoryTheory CategoryTheory.Limits CategoryTheory.Pretriangulated
+open BridgelandStabLean.Foundation BridgelandStabLean.Foundation.Deformation
 open scoped ENNReal Topology
 
-namespace CategoryTheory.Triangulated
+namespace BridgelandStabLean.Foundation
 
 noncomputable section
 
@@ -48,6 +50,7 @@ variable {C : Type u} [Category.{w} C] [HasZeroObject C] [HasShift C ℤ]
   [IsTriangulated C]
 variable {Λ : Type u'} [AddCommGroup Λ] {v : K₀ C →+ Λ}
 
+omit [IsTriangulated C] in
 /-- A strict full-distance bound controls the positive intrinsic phase of
 every nonzero object. -/
 theorem abs_phiPlus_sub_lt_of_stabilityDist
@@ -60,6 +63,7 @@ theorem abs_phiPlus_sub_lt_of_stabilityDist
   exact (ENNReal.ofReal_lt_ofReal_iff hε).mp (by
     simpa [phiPlusDist] using hcoord)
 
+omit [IsTriangulated C] in
 /-- A strict full-distance bound controls the negative intrinsic phase of
 every nonzero object. -/
 theorem abs_phiMinus_sub_lt_of_stabilityDist
@@ -238,7 +242,12 @@ theorem norm_charge_sub_mass_phaseExp_le_of_stabilityDist
         Complex.exp (↑(Real.pi * φ) * Complex.I)‖ ≤
       Real.pi * ε * (stabilityMass τ E).toReal := by
   obtain ⟨F, hn, hfirst, hlast⟩ :=
-    τ.slicing.exists_HN_intrinsic_width C hE
+    τ.slicing.exists_hn_intrinsic_width C hE
+  have hfirst' : F.φ ⟨0, hn⟩ = τ.slicing.phiPlus C E hE := by
+    simpa [BridgelandStabLean.Foundation.HNFiltration.phiPlus] using hfirst
+  have hlast' : F.φ ⟨F.n - 1, by lia⟩ =
+      τ.slicing.phiMinus C E hE := by
+    simpa [BridgelandStabLean.Foundation.HNFiltration.phiMinus] using hlast
   have hσphase := σ.slicing.phiPlus_eq_phiMinus_of_semistable C hP hE
   have hplus := abs_phiPlus_sub_lt_of_stabilityDist σ τ hE hε hd
   have hminus := abs_phiMinus_sub_lt_of_stabilityDist σ τ hE hε hd
@@ -251,12 +260,12 @@ theorem norm_charge_sub_mass_phaseExp_le_of_stabilityDist
     constructor
     · have hi : F.φ ⟨F.n - 1, by lia⟩ ≤ F.φ i :=
         F.hφ.antitone (Fin.mk_le_mk.mpr (by lia))
-      rw [hlast] at hi
+      rw [hlast'] at hi
       rw [abs_lt] at hminus
       linarith
     · have hi : F.φ i ≤ F.φ ⟨0, hn⟩ :=
         F.hφ.antitone (Fin.mk_le_mk.mpr (Nat.zero_le i.val))
-      rw [hfirst] at hi
+      rw [hfirst'] at hi
       rw [abs_lt] at hplus
       linarith
   have hZi : ∀ i : Fin F.n,
@@ -291,6 +300,61 @@ theorem norm_charge_sub_mass_phaseExp_le_of_stabilityDist
         (fun _ ↦ norm_nonneg _) hphase
     _ = Real.pi * ε * (stabilityMass τ E).toReal := by rw [hmass]
 
+/-- Projecting a finite collection of rays onto the bisector of a sector
+bounds their total length by the norm of their sum. -/
+private theorem norm_sum_phaseExp_ge_cos_mul_sum
+    {ι : Type*} {s : Finset ι} {m θ : ι → ℝ}
+    (hm : ∀ i ∈ s, 0 ≤ m i) {α w : ℝ} (hw0 : 0 ≤ w)
+    (hwπ : w < Real.pi)
+    (hθ : ∀ i ∈ s, θ i ∈ Set.Icc α (α + w)) :
+    Real.cos (w / 2) * ∑ i ∈ s, m i ≤
+      ‖∑ i ∈ s, (m i : ℂ) *
+        Complex.exp ((θ i : ℂ) * Complex.I)‖ := by
+  let β := α + w / 2
+  have hpoint : ∀ i ∈ s, Real.cos (w / 2) * m i ≤
+      (((m i : ℂ) * Complex.exp ((θ i : ℂ) * Complex.I)) *
+        Complex.exp (-((β : ℂ) * Complex.I))).re := by
+    intro i hi
+    rw [mul_assoc, ← Complex.exp_add]
+    have hexp : (θ i : ℂ) * Complex.I + -((β : ℂ) * Complex.I) =
+        ((θ i - β : ℝ) : ℂ) * Complex.I := by
+      push_cast
+      ring
+    rw [hexp, Complex.re_ofReal_mul, Complex.exp_ofReal_mul_I_re]
+    have hdist : |θ i - β| ≤ w / 2 := by
+      rw [abs_le]
+      constructor <;> [have hlo := (hθ i hi).1; have hhi := (hθ i hi).2] <;>
+        dsimp [β] <;> linarith
+    calc
+      Real.cos (w / 2) * m i ≤ Real.cos (θ i - β) * m i := by
+        apply mul_le_mul_of_nonneg_right _ (hm i hi)
+        rw [← Real.cos_abs (θ i - β)]
+        exact Real.cos_le_cos_of_nonneg_of_le_pi (abs_nonneg _)
+          (by linarith) hdist
+      _ = m i * Real.cos (θ i - β) := mul_comm _ _
+  calc
+    Real.cos (w / 2) * ∑ i ∈ s, m i =
+        ∑ i ∈ s, Real.cos (w / 2) * m i := Finset.mul_sum _ _ _
+    _ ≤ ∑ i ∈ s,
+        ((((m i : ℂ) * Complex.exp ((θ i : ℂ) * Complex.I)) *
+          Complex.exp (-((β : ℂ) * Complex.I))).re) :=
+      Finset.sum_le_sum hpoint
+    _ = ((∑ i ∈ s, (m i : ℂ) *
+          Complex.exp ((θ i : ℂ) * Complex.I)) *
+        Complex.exp (-((β : ℂ) * Complex.I))).re := by
+      rw [Finset.sum_mul, Complex.re_sum]
+    _ ≤ ‖(∑ i ∈ s, (m i : ℂ) *
+          Complex.exp ((θ i : ℂ) * Complex.I)) *
+        Complex.exp (-((β : ℂ) * Complex.I))‖ := Complex.re_le_norm _
+    _ = ‖∑ i ∈ s, (m i : ℂ) *
+        Complex.exp ((θ i : ℂ) * Complex.I)‖ := by
+      rw [norm_mul]
+      have hrewrite : -((β : ℂ) * Complex.I) =
+          ((-β : ℝ) : ℂ) * Complex.I := by
+        push_cast
+        ring
+      rw [hrewrite, Complex.norm_exp_ofReal_mul_I, mul_one]
+
 /-- A narrow HN sector bounds mass by the norm of the total charge.  This is
 the mass-specialized lower-sector estimate, used by the **hard** direction of
 the topology comparison (`exists_basisNhd_subset_stabilityDist_ball`) only. -/
@@ -302,7 +366,12 @@ theorem cos_mul_stabilityMass_le_norm_charge_of_width
     Real.cos (Real.pi * η / 2) * (stabilityMass σ E).toReal ≤
       ‖σ.charge E‖ := by
   obtain ⟨F, hn, hfirst, hlast⟩ :=
-    σ.slicing.exists_HN_intrinsic_width C hE
+    σ.slicing.exists_hn_intrinsic_width C hE
+  have hfirst' : F.φ ⟨0, hn⟩ = σ.slicing.phiPlus C E hE := by
+    simpa [BridgelandStabLean.Foundation.HNFiltration.phiPlus] using hfirst
+  have hlast' : F.φ ⟨F.n - 1, by lia⟩ =
+      σ.slicing.phiMinus C E hE := by
+    simpa [BridgelandStabLean.Foundation.HNFiltration.phiMinus] using hlast
   have hZi : ∀ i : Fin F.n,
       σ.charge (F.factor i) =
         (‖σ.charge (F.factor i)‖ : ℂ) *
@@ -330,7 +399,7 @@ theorem cos_mul_stabilityMass_le_norm_charge_of_width
     · have hi : F.φ i ≤ F.φ ⟨0, hn⟩ :=
         F.hφ.antitone (Fin.mk_le_mk.mpr (Nat.zero_le i.val))
       have hextreme : F.φ ⟨0, hn⟩ - F.φ ⟨F.n - 1, by lia⟩ ≤ η := by
-        rw [hfirst, hlast]
+        rw [hfirst', hlast']
         exact hwidth
       dsimp [α, w]
       nlinarith [Real.pi_pos]
@@ -341,7 +410,7 @@ theorem cos_mul_stabilityMass_le_norm_charge_of_width
       Real.cos (w / 2) * ∑ i : Fin F.n, ‖σ.charge (F.factor i)‖ ≤
           ‖∑ i : Fin F.n, (‖σ.charge (F.factor i)‖ : ℂ) *
             Complex.exp (↑(Real.pi * F.φ i) * Complex.I)‖ :=
-        norm_sum_exp_ge_cos_mul_sum (fun i _ ↦ norm_nonneg _) hw0 hwπ
+        norm_sum_phaseExp_ge_cos_mul_sum (fun i _ ↦ norm_nonneg _) hw0 hwπ
           (fun i _ ↦ hθ i)
       _ = ‖∑ i : Fin F.n, σ.charge (F.factor i)‖ := by
         congr 1
@@ -350,6 +419,50 @@ theorem cos_mul_stabilityMass_le_norm_charge_of_width
         rw [← σ.charge_postnikovTower_eq_sum F.toPostnikovTower]
   rw [stabilityMass_toReal_eq_sum σ F]
   simpa [w] using hsector
+
+/-- A pointwise bound on a charge homomorphism over semistable factors extends
+to every object whose HN phases lie in a sector of width less than one. -/
+theorem chargeHom_norm_le_of_intrinsic_width
+    (σ : StabilityCondition.WithClassMap C v) (U : Λ →+ ℂ)
+    {E : C} (hE : ¬IsZero E) {η M : ℝ} (hη : 0 ≤ η)
+    (hη1 : η < 1)
+    (hwidth : σ.slicing.phiPlus C E hE -
+      σ.slicing.phiMinus C E hE ≤ η)
+    (hM0 : 0 ≤ M)
+    (hM : ∀ (A : C) (φ : ℝ), σ.slicing.P φ A → ¬IsZero A →
+      ‖U (classOf C v A)‖ ≤ M * ‖σ.charge A‖) :
+    ‖U (classOf C v E)‖ ≤
+      M / Real.cos (Real.pi * η / 2) * ‖σ.charge E‖ := by
+  obtain ⟨F⟩ := σ.slicing.hn_exists E
+  have hclass : U (classOf C v E) =
+      ∑ i : Fin F.n, U (classOf C v (F.factor i)) := by
+    rw [classOf_postnikovTower_eq_sum C v F.toPostnikovTower, map_sum]
+  have hfactor : ∀ i : Fin F.n,
+      ‖U (classOf C v (F.factor i))‖ ≤
+        M * ‖σ.charge (F.factor i)‖ := by
+    intro i
+    by_cases hi : IsZero (F.factor i)
+    · simp [classOf_isZero C v hi, σ.charge_isZero hi]
+    · exact hM _ _ (F.semistable i) hi
+  have hcos : 0 < Real.cos (Real.pi * η / 2) := by
+    apply Real.cos_pos_of_mem_Ioo
+    constructor <;> nlinarith [Real.pi_pos]
+  have hmass : (stabilityMass σ E).toReal ≤
+      ‖σ.charge E‖ / Real.cos (Real.pi * η / 2) := by
+    apply (le_div_iff₀ hcos).2
+    simpa [mul_comm] using
+      cos_mul_stabilityMass_le_norm_charge_of_width σ hE hη hη1 hwidth
+  calc
+    ‖U (classOf C v E)‖ =
+        ‖∑ i : Fin F.n, U (classOf C v (F.factor i))‖ := by rw [hclass]
+    _ ≤ ∑ i : Fin F.n, ‖U (classOf C v (F.factor i))‖ := norm_sum_le _ _
+    _ ≤ ∑ i : Fin F.n, M * ‖σ.charge (F.factor i)‖ :=
+      Finset.sum_le_sum (fun i _ ↦ hfactor i)
+    _ = M * (stabilityMass σ E).toReal := by
+      rw [stabilityMass_toReal_eq_sum σ F, Finset.mul_sum]
+    _ ≤ M * (‖σ.charge E‖ / Real.cos (Real.pi * η / 2)) :=
+      mul_le_mul_of_nonneg_left hmass hM0
+    _ = M / Real.cos (Real.pi * η / 2) * ‖σ.charge E‖ := by ring
 
 /-- A Section 6 basis bound controls the mass of a `σ`-semistable object in
 the nearby stability condition. -/
@@ -364,11 +477,11 @@ theorem stabilityMass_toReal_le_of_mem_basisNhd_of_semistable
     rw [slicingDist_symm]
     exact hτ.2
   have hbounds := intervalProp_of_semistable_slicingDist C τ.slicing σ.slicing
-    hE hP hslice
+    hE hP hε hslice
   have hwidth : τ.slicing.phiPlus C E hE -
       τ.slicing.phiMinus C E hE ≤ 2 * ε := by
-    rcases hbounds with ⟨hp, hm⟩
-    rw [Set.mem_Ioo] at hp hm
+    have hp := τ.slicing.phiPlus_lt_of_intervalProp C hE hbounds
+    have hm := τ.slicing.phiMinus_gt_of_intervalProp C hE hbounds
     linarith
   have hsector := cos_mul_stabilityMass_le_norm_charge_of_width τ hE
     (η := 2 * ε) (by linarith) (by linarith) hwidth
@@ -379,12 +492,12 @@ theorem stabilityMass_toReal_le_of_mem_basisNhd_of_semistable
       (stabilityMass τ E).toReal ≤ ‖τ.charge E‖ := by
     convert hsector using 1
     all_goals ring_nf
-  have hsemi := stabSeminorm_bound_real C σ (τ.Z - σ.Z)
-    (ne_top_of_lt (lt_trans hτ.1 ENNReal.ofReal_lt_top)) hP hE
+  have hsemi := semistableChargeBound_toReal C σ τ.Z
+    (ne_top_of_lt (lt_trans hτ.1 ENNReal.ofReal_lt_top)) φ E hP hE
   have hsin : 0 < Real.sin (Real.pi * ε) :=
     Real.sin_pos_of_pos_of_lt_pi (mul_pos Real.pi_pos hε)
       (by nlinarith [Real.pi_pos])
-  have hseminorm : (stabSeminorm C σ (τ.Z - σ.Z)).toReal <
+  have hseminorm : (stabilitySeminorm C σ (τ.Z - σ.Z)).toReal <
       Real.sin (Real.pi * ε) :=
     ENNReal.toReal_lt_of_lt_ofReal hτ.1
   have hchargeDiff : ‖τ.charge E - σ.charge E‖ <
@@ -425,9 +538,9 @@ theorem stabilityMass_toReal_le_of_mem_basisNhd_of_semistable'
   have hwidth : σ.slicing.phiPlus C E hE -
       σ.slicing.phiMinus C E hE ≤ 2 * ε := by
     have hbounds := intervalProp_of_semistable_slicingDist C σ.slicing τ.slicing
-      hE hP hτ.2
-    rcases hbounds with ⟨hp, hm⟩
-    rw [Set.mem_Ioo] at hp hm
+      hE hP hε hτ.2
+    have hp := σ.slicing.phiPlus_lt_of_intervalProp C hE hbounds
+    have hm := σ.slicing.phiMinus_gt_of_intervalProp C hE hbounds
     linarith
   have hsector := cos_mul_stabilityMass_le_norm_charge_of_width σ hE
     (η := 2 * ε) (by linarith) (by linarith) hwidth
@@ -447,23 +560,23 @@ theorem stabilityMass_toReal_le_of_mem_basisNhd_of_semistable'
     · nlinarith [Real.pi_pos]
     · nlinarith [Real.pi_pos]
     · nlinarith [Real.pi_pos]
-  have hsemiFin : stabSeminorm C σ (τ.Z - σ.Z) ≠ ⊤ :=
+  have hsemiFin : stabilitySeminorm C σ (τ.Z - σ.Z) ≠ ⊤ :=
     ne_top_of_lt (lt_trans hτ.1 ENNReal.ofReal_lt_top)
-  have hseminorm : (stabSeminorm C σ (τ.Z - σ.Z)).toReal <
+  have hseminorm : (stabilitySeminorm C σ (τ.Z - σ.Z)).toReal <
       Real.sin (Real.pi * ε) := ENNReal.toReal_lt_of_lt_ofReal hτ.1
   have hσsem : ∀ {A : C} {ψ : ℝ}, σ.slicing.P ψ A → ¬IsZero A →
       ‖τ.charge A - σ.charge A‖ <
         Real.sin (Real.pi * ε) * ‖σ.charge A‖ := by
     intro A ψ hPA hA
-    have hbound := stabSeminorm_bound_real C σ (τ.Z - σ.Z)
-      hsemiFin hPA hA
+    have hbound := semistableChargeBound_toReal C σ τ.Z
+      hsemiFin ψ A hPA hA
     refine lt_of_le_of_lt ?_ (mul_lt_mul_of_pos_right hseminorm ?_)
     · simpa only [AddMonoidHom.sub_apply] using hbound
     · exact norm_pos_iff.mpr (σ.charge_ne_zero_of_semistable ψ A hPA hA)
   have hdiff : ‖τ.charge E - σ.charge E‖ ≤
       (Real.sin (Real.pi * ε) / Real.cos (Real.pi * ε)) *
         ‖σ.charge E‖ := by
-    have hbound := sector_bound' C σ (τ.Z - σ.Z) hE
+    have hbound := chargeHom_norm_le_of_intrinsic_width σ (τ.Z - σ.Z) hE
       (η := 2 * ε) (by linarith) (by linarith) hwidth hsin0.le
       (fun A ψ hPA hA ↦ (hσsem hPA hA).le)
     have harg : Real.pi * (2 * ε) / 2 = Real.pi * ε := by ring
@@ -521,6 +634,7 @@ def StabilityMassTriangleInequality : Prop :=
         (stabilityMass σ T.obj₁).toReal +
           (stabilityMass σ T.obj₃).toReal
 
+omit [IsTriangulated C] in
 /-- Real mass is invariant under object isomorphism. -/
 theorem stabilityMass_toReal_congr
     (σ : StabilityCondition.WithClassMap C v) {E E' : C} (e : E ≅ E') :
@@ -794,8 +908,8 @@ theorem exists_basisNhd_subset_stabilityDist_ball
   refine lt_of_le_of_lt ?_ ((ENNReal.ofReal_lt_ofReal_iff ha).2 hb)
   unfold stabilityDist
   refine iSup₂_le fun E hE ↦ ?_
-  have hp := phiPlus_sub_lt_of_slicingDist C σ.slicing τ.slicing hE hτ.2
-  have hm := phiMinus_sub_lt_of_slicingDist C σ.slicing τ.slicing hE hτ.2
+  have hp := abs_phiPlus_sub_lt_of_slicingDist C σ.slicing τ.slicing hE hε hτ.2
+  have hm := abs_phiMinus_sub_lt_of_slicingDist C σ.slicing τ.slicing hE hε hτ.2
   have hmassE := abs_log_mass_ratio_le_of_mem_basisNhd
     htriangle σ τ hε hε8 hτ hE
   unfold stabilityDistTerm
@@ -882,12 +996,12 @@ theorem norm_charge_sub_charge_lt_of_stabilityDist
 
 /-- A full-distance ball gives a uniform bound in the Section 6 charge
 seminorm. -/
-theorem stabSeminorm_le_of_stabilityDist_lt
+theorem stabilitySeminorm_le_of_stabilityDist_lt
     (σ τ : StabilityCondition.WithClassMap C v) {ε : ℝ} (hε : 0 < ε)
     (hd : stabilityDist σ τ < ENNReal.ofReal ε) :
-    stabSeminorm C σ (τ.Z - σ.Z) ≤
+    stabilitySeminorm C σ (τ.Z - σ.Z) ≤
       ENNReal.ofReal (stabilityChargeControl ε) := by
-  unfold stabSeminorm
+  unfold stabilitySeminorm
   refine iSup_le fun E ↦ iSup_le fun φ ↦ iSup_le fun hP ↦ iSup_le fun hE ↦ ?_
   apply ENNReal.ofReal_le_ofReal
   have hZpos : 0 < ‖σ.charge E‖ :=
@@ -939,11 +1053,12 @@ theorem exists_stabilityDist_ball_subset_basisNhd
   refine ⟨δ, hδ, ?_⟩
   intro τ hτ
   constructor
-  · exact lt_of_le_of_lt (stabSeminorm_le_of_stabilityDist_lt σ τ hδ hτ)
+  · exact lt_of_le_of_lt (stabilitySeminorm_le_of_stabilityDist_lt σ τ hδ hτ)
       ((ENNReal.ofReal_lt_ofReal_iff hsin).2 hcontrol)
   · exact lt_of_le_of_lt (slicingDist_le_stabilityDist σ τ)
       (lt_trans hτ ((ENNReal.ofReal_lt_ofReal_iff hε).2 hδε))
 
+omit [IsTriangulated C] in
 /-- The centered Section 6 neighborhoods are a neighborhood basis for the
 already installed topology. -/
 theorem nhds_hasBasis_basisNhd
@@ -960,7 +1075,7 @@ theorem nhds_hasBasis_basisNhd
     have hopen : IsOpen (basisNhd C σ ε) :=
       TopologicalSpace.isOpen_generateFrom_of_mem ⟨σ, ε, hε, hε8, rfl⟩
     exact Filter.mem_of_superset
-      (hopen.mem_nhds (basisNhd_self C σ hε hε8)) hsub
+      (hopen.mem_nhds (self_mem_basisNhd C σ hε (by linarith))) hsub
 
 /-- The exact compatibility statement needed to turn `stabilityDist` into
 Mathlib's extended metric without changing the already installed Section 6
@@ -1009,6 +1124,7 @@ proved. -/
   PseudoEMetricSpace.ofEDistOfTopology stabilityDist stabilityDist_self
     stabilityDist_comm stabilityDist_triangle hcompat
 
+omit [IsTriangulated C] in
 /-- Regression check for the instance-diamond issue: the topology inherited
 from the compatible pseudo-extended metric is definitionally the Section 6
 topology that was already present on stability conditions. -/
@@ -1018,6 +1134,7 @@ theorem stabilityPseudoEMetricSpace_toTopologicalSpace
       (inferInstance : TopologicalSpace (StabilityCondition.WithClassMap C v)) :=
   rfl
 
+omit [IsTriangulated C] in
 /-- The extended distance field of the compatible structure is literally
 `stabilityDist`; no coercion or replacement distance is introduced. -/
 theorem stabilityPseudoEMetricSpace_edist
@@ -1067,4 +1184,4 @@ premise; no global instance is installed. -/
 
 end
 
-end CategoryTheory.Triangulated
+end BridgelandStabLean.Foundation

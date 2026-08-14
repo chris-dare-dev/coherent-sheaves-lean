@@ -4,7 +4,7 @@ Released under the MIT license.
 -/
 import BridgelandStabLean.Foundation.Deformation.SkewedStability
 import BridgelandStabLean.Foundation.Slicing.IntervalStrictness
-import BridgelandStabLean.ForMathlib.CategoryTheory.ObjectProperty.FullSubcategory
+import BridgelandStabLean.TStructureHeartBridge
 
 /-!
 # First strict short exact sequence in an owner thin interval
@@ -26,6 +26,7 @@ namespace BridgelandStabLean.Foundation.Deformation
 open BridgelandStabLean.Foundation
 open BridgelandStabLean.ForMathlib.CategoryTheory
 open BridgelandStabLean.ForMathlib.CategoryTheory.Triangulated.TStructure
+open CategoryTheory.Triangulated.TStructure
 
 variable (C : Type u) [Category.{v} C] [HasZeroObject C] [HasShift C ℤ]
   [Preadditive C] [∀ n : ℤ, (shiftFunctor C n).Additive] [Pretriangulated C]
@@ -107,6 +108,52 @@ theorem strictShortExact_cokernel {X Y : s.IntervalCat C a b}
     Slicing.IntervalCat.exists_distinguished_of_shortExact_toLeftHeart
       C s hShortExact
   exact Slicing.IntervalCat.strictShortExact_of_distinguished C s hT
+
+/-- Every owner strict subobject of a thin slicing interval is intrinsically
+admissible. Together with
+`Slicing.IntervalCat.isStrictSubobject_of_isAdmissible`, this identifies the
+two subobject orders used by local finiteness and strict HN recursion. -/
+theorem isAdmissibleSubobject_of_isStrictSubobject
+    {E : s.IntervalCat C a b} (A : Subobject E)
+    (hA : IsStrictSubobject A) : s.IsAdmissibleSubobject C A := by
+  letI : Mono A.arrow := hA.mono
+  let S : ShortComplex (s.IntervalCat C a b) :=
+    ShortComplex.mk A.arrow (cokernel.π A.arrow)
+      (cokernel.condition A.arrow)
+  have hS : StrictShortExact S :=
+    Slicing.IntervalCat.strictShortExact_cokernel C A.arrow hA
+  obtain ⟨δ, hδ⟩ :=
+    Slicing.IntervalCat.exists_distinguished_of_strictShortExact C s hS
+  exact ⟨(A : s.IntervalCat C a b), cokernel A.arrow, A.arrow,
+    inferInstance, cokernel.π A.arrow, Subobject.mk_arrow A, δ, hδ⟩
+
+/-- Intrinsic admissible subobjects and owner strict subobjects are the same
+ordered type in a thin slicing interval. -/
+def admissibleStrictSubobjectOrderIso (E : s.IntervalCat C a b) :
+    s.AdmissibleSubobject C E ≃o StrictSubobject E where
+  toFun A := ⟨A.1,
+    Slicing.IntervalCat.isStrictSubobject_of_isAdmissible C s A.1 A.2⟩
+  invFun A := ⟨A.1,
+    Slicing.IntervalCat.isAdmissibleSubobject_of_isStrictSubobject C A.1 A.2⟩
+  left_inv A := rfl
+  right_inv A := rfl
+  map_rel_iff' := Iff.rfl
+
+/-- Intrinsic local finite length supplies the strict finite length required
+by owner HN recursion. -/
+theorem isStrictFiniteLength_of_isFiniteLength
+    {E : s.IntervalCat C a b} (hE : s.IsFiniteLength C E) :
+    IsStrictFiniteLengthObject E := by
+  let e := Slicing.IntervalCat.admissibleStrictSubobjectOrderIso
+    (C := C) (s := s) E
+  have hArt : WellFoundedLT (StrictSubobject E) := by
+    letI : WellFoundedLT (s.AdmissibleSubobject C E) := hE.1
+    exact e.symm.toOrderEmbedding.wellFoundedLT
+  have hNoeth : WellFoundedGT (StrictSubobject E) := by
+    letI : WellFoundedGT (s.AdmissibleSubobject C E) := hE.2
+    exact e.symm.toOrderEmbedding.wellFoundedGT
+  exact ⟨ObjectProperty.is_of_prop _ hArt,
+    ObjectProperty.is_of_prop _ hNoeth⟩
 
 /-- Lift a subobject of an interval subobject back to the ambient interval
 object by composing the two canonical arrows. -/

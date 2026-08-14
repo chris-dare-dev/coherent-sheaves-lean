@@ -26,6 +26,7 @@ bridge proved here.
 
 namespace BridgelandStabLean.WeakStability
 
+open BridgelandStabLean.Foundation
 open CategoryTheory Limits Pretriangulated CategoryTheory.Triangulated Complex
 open scoped ZeroObject
 
@@ -168,7 +169,9 @@ theorem heartSlope_cokernel_mapMono_eq
           ((Subobject.map f).obj T) ((Subobject.map f).monotone h))) =
       W.heartSlope (cokernel (Subobject.ofLE S T h)) :=
   W.slope_eq_of_iso <|
-    (t.heart).ι.mapIso (Subobject.cokernelMapMonoIso_local f h)
+    (t.heart).ι.mapIso
+      (BridgelandStabLean.Foundation.StabilityFunction.Subobject.cokernelMapMonoIso
+        f h)
 
 theorem heartSemistable_cokernel_mapMono_iff
     (W : WeakStabilityFunction t) {X Y : t.heart.FullSubcategory}
@@ -177,7 +180,9 @@ theorem heartSemistable_cokernel_mapMono_iff
         (cokernel (Subobject.ofLE ((Subobject.map f).obj S)
           ((Subobject.map f).obj T) ((Subobject.map f).monotone h))) ↔
       W.HeartSemistable (cokernel (Subobject.ofLE S T h)) := by
-  let e := (t.heart).ι.mapIso (Subobject.cokernelMapMonoIso_local f h)
+  let e := (t.heart).ι.mapIso
+    (BridgelandStabLean.Foundation.StabilityFunction.Subobject.cokernelMapMonoIso
+      f h)
   exact W.isSemistable_iff_of_iso e
 
 /-- A nonzero weak-semistable heart object has the one-factor weak HN
@@ -189,7 +194,7 @@ theorem WeakStabilityFunction.exists_hn_with_last_slope_of_semistable
       F.μ ⟨F.n - 1, by have := F.hn; lia⟩ = W.heartSlope E := by
   let eFactor :
       cokernel (Subobject.ofLE (⊥ : Subobject E) ⊤ bot_le) ≅ E :=
-    StabilityFunction.Subobject.cokernelBotIso ⊤ bot_le ≪≫
+    StabilityFunction.subobjectCokernelBotIso ⊤ bot_le ≪≫
       asIso (⊤ : Subobject E).arrow
   refine ⟨{
     n := 1
@@ -587,7 +592,7 @@ theorem weakStabilityFunctionOnHeart_hasHN
             ¬IsZero L ∧
               G.μ ⟨G.n - 1, by have := G.hn; lia⟩ = W.slope L by
     obtain ⟨F, hnF, hfirst, _⟩ :=
-      HNFiltration.exists_both_nonzero C σ.slicing hEobj
+      σ.slicing.exists_hn_nonzero_boundaries C hEobj
     obtain ⟨G, -, -, -, -⟩ := hmain F.n hEobj F hnF le_rfl hfirst
     exact ⟨G⟩
   intro m
@@ -611,18 +616,22 @@ theorem weakStabilityFunctionOnHeart_hasHN
           subst hidx
           rfl
         have hP : σ.slicing.P phi X.obj :=
-          σ.slicing.semistable_of_HN_all_eq C F hall
+          BridgelandStabLean.Foundation.Slicing.semistable_of_HN_all_eq
+            (C := C) σ.slicing F hall
         have hphiMinus : σ.slicing.phiMinus C X.obj hXobj = phi := by
           rw [σ.slicing.phiMinus_eq C X.obj hXobj F hnF hlast]
           have hidx : (⟨F.n - 1, by lia⟩ : Fin F.n) = ⟨0, hnF⟩ :=
             Fin.ext (by lia)
-          simp [phi, hidx]
+          simpa only [BridgelandStabLean.Foundation.HNFiltration.phiMinus,
+            hidx, phi]
         have hphiPlus : σ.slicing.phiPlus C X.obj hXobj = phi := by
-          simpa [phi] using
+          simpa only [phi,
+            BridgelandStabLean.Foundation.HNFiltration.phiPlus] using
             (σ.slicing.phiPlus_eq C X.obj hXobj F hnF hfirst)
         have hphi : phi ∈ Set.Ioc (0 : ℝ) 1 := by
           constructor
-          · linarith [gt_phases_of_gtProp C σ.slicing hXobj hXheart.1, hphiMinus]
+          · linarith [σ.slicing.phiMinus_gt_of_gtProp C hXobj hXheart.1,
+              hphiMinus]
           · linarith [σ.slicing.phiPlus_le_of_leProp C hXobj hXheart.2, hphiPlus]
         have hss : W.HeartSemistable X :=
           σ.weakStabilityFunctionOnHeart_isSemistable_of_mem_P_phi
@@ -633,20 +642,22 @@ theorem weakStabilityFunctionOnHeart_hasHN
         exact hP
       · have htwo : 2 ≤ F.n := by lia
         by_cases hlast : IsZero (F.triangle ⟨F.n - 1, by lia⟩).obj₃
-        · let F' := F.dropLast C (by lia) hlast
+        · let F' := BridgelandStabLean.Foundation.HNFiltration.dropLast
+            C F (by lia) hlast
           have hnF' : 0 < F'.n := F'.n_pos C hXobj
           have hF'm : F'.n ≤ m := by
             change F.n - 1 ≤ m
             lia
           have hfirst' : ¬IsZero (F'.triangle ⟨0, hnF'⟩).obj₃ := by
-            simpa [F', HNFiltration.dropLast, HNFiltration.prefix] using hfirst
+            simpa [F', BridgelandStabLean.Foundation.HNFiltration.dropLast,
+              BridgelandStabLean.Foundation.HNFiltration.prefix] using hfirst
           exact ih hXobj F' hnF' hF'm hfirst'
         · have hall_mem : ∀ i : Fin F.n, F.φ i ∈ Set.Ioc (0 : ℝ) 1 := by
             intro i
             constructor
             · calc
                 0 < σ.slicing.phiMinus C X.obj hXobj :=
-                  gt_phases_of_gtProp C σ.slicing hXobj hXheart.1
+                  σ.slicing.phiMinus_gt_of_gtProp C hXobj hXheart.1
                 _ = F.φ ⟨F.n - 1, by lia⟩ :=
                   σ.slicing.phiMinus_eq C X.obj hXobj F hnF hlast
                 _ ≤ F.φ i := F.hφ.antitone (Fin.mk_le_mk.mpr (by lia))
@@ -659,23 +670,26 @@ theorem weakStabilityFunctionOnHeart_hasHN
                 _ ≤ 1 := σ.slicing.phiPlus_le_of_leProp C hXobj hXheart.2
           let FX : HNFiltration C σ.slicing.P
               (F.chain.obj ⟨F.n - 1, by lia⟩) :=
-            F.prefix C (F.n - 1) (by lia) (by lia)
+            BridgelandStabLean.Foundation.HNFiltration.prefix
+              C F (F.n - 1) (by lia) (by lia)
           have hFXn : 0 < FX.n := by
             change 0 < F.n - 1
             lia
           have hFXheart : t.heart (F.chain.obj ⟨F.n - 1, by lia⟩) := by
             rw [σ.slicing.toTStructure_heart_iff C]
             constructor
-            · exact HNFiltration.chain_obj_gtProp C σ.slicing F
+            · exact BridgelandStabLean.Foundation.HNFiltration.chain_obj_gtProp
+                C σ.slicing F
                 (F.n - 1) (by lia) (by lia) 0
                 (fun j ↦ (hall_mem ⟨j, by lia⟩).1)
-            · exact HNFiltration.chain_obj_leProp C σ.slicing F
+            · exact BridgelandStabLean.Foundation.HNFiltration.chain_obj_leProp
+                C σ.slicing F
                 (F.n - 1) (by lia) (by lia) 1
                 (fun j ↦ (hall_mem ⟨j, by lia⟩).2)
           let X' : t.heart.FullSubcategory :=
             ⟨F.chain.obj ⟨F.n - 1, by lia⟩, hFXheart⟩
           have hfirstFX : ¬IsZero (FX.triangle ⟨0, hFXn⟩).obj₃ := by
-            simpa [FX, HNFiltration.prefix] using hfirst
+            simpa [FX, BridgelandStabLean.Foundation.HNFiltration.prefix] using hfirst
           have hX'obj : ¬IsZero X'.obj := by
             intro hZ
             have hzero :
@@ -683,8 +697,8 @@ theorem weakStabilityFunctionOnHeart_hasHN
                   F.chain.obj ⟨F.n - 1, by lia⟩, f = 0 :=
               fun f ↦ hZ.eq_of_tgt _ _
             exact hfirstFX <|
-              HNFiltration.isZero_factor_zero_of_hom_eq_zero
-                C σ.slicing FX hFXn hzero
+              BridgelandStabLean.Foundation.HNFiltration.firstFactor_isZero_of_hom_eq_zero
+                (C := C) σ.slicing FX hFXn hzero
           obtain ⟨GX, L, hPL, hL, hGX⟩ := ih hX'obj FX hFXn (by
             change F.n - 1 ≤ m
             lia) hfirstFX
@@ -692,9 +706,9 @@ theorem weakStabilityFunctionOnHeart_hasHN
           have hBheart : t.heart (F.triangle jLast).obj₃ := by
             rw [σ.slicing.toTStructure_heart_iff C]
             exact ⟨
-              σ.slicing.gtProp_of_semistable C (F.φ jLast) 0 _
+              σ.slicing.gtProp_of_semistable C
                 (F.semistable jLast) (hall_mem jLast).1,
-              σ.slicing.leProp_of_semistable C (F.φ jLast) 1 _
+              σ.slicing.leProp_of_semistable C
                 (F.semistable jLast) (hall_mem jLast).2⟩
           let B : t.heart.FullSubcategory :=
             ⟨(F.triangle jLast).obj₃, hBheart⟩
@@ -703,7 +717,7 @@ theorem weakStabilityFunctionOnHeart_hasHN
             σ.weakStabilityFunctionOnHeart_isSemistable_of_mem_P_phi
               (hall_mem jLast) B.obj (F.semistable jLast) hlast
           have hX'gt : σ.slicing.gtProp C (F.φ jLast) X'.obj :=
-            HNFiltration.chain_obj_gtProp C σ.slicing F
+            BridgelandStabLean.Foundation.HNFiltration.chain_obj_gtProp C σ.slicing F
               (F.n - 1) (by lia) (by lia) (F.φ jLast) <|
                 fun j ↦ by
                   have hjlt : (⟨j.val, by grind⟩ : Fin F.n) < jLast :=
@@ -711,7 +725,7 @@ theorem weakStabilityFunctionOnHeart_hasHN
                   exact F.hφ hjlt
           have hphase_lt :
               F.φ jLast < σ.slicing.phiMinus C X'.obj hX'obj :=
-            gt_phases_of_gtProp C σ.slicing hX'obj hX'gt
+            σ.slicing.phiMinus_gt_of_gtProp C hX'obj hX'gt
           have hX'bounds :=
             (σ.slicing.toTStructure_heart_iff C X'.obj).mp X'.property
           have hLphase :
@@ -760,11 +774,13 @@ theorem weakStabilityFunctionOnHeart_hasHN
           have hKer : IsLimit (KernelFork.ofι i hiq) := by
             simpa [hiq] using
               Triangulated.AbelianSubcategory.isLimitKernelForkOfDistTriang
-                (TStructure.heart_hι t) i q δ hTlast
+                (CategoryTheory.Triangulated.TStructure.heart_hι t)
+                i q δ hTlast
           have hCok : IsColimit (CokernelCofork.ofπ q hiq) := by
             simpa [hiq] using
               Triangulated.AbelianSubcategory.isColimitCokernelCoforkOfDistTriang
-                (TStructure.heart_hι t) i q δ hTlast
+                (CategoryTheory.Triangulated.TStructure.heart_hι t)
+                i q δ hTlast
           let eB : cokernel i ≅ B :=
             IsColimit.coconePointUniqueUpToIso (cokernelIsCokernel i) hCok
           haveI : Mono i := Fork.IsLimit.mono hKer

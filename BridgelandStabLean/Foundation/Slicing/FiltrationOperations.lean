@@ -109,6 +109,38 @@ theorem HNFiltration.prefix_φ {P : ℝ → ObjectProperty C} {E : C}
     (F : HNFiltration C P E) (k : ℕ) (hk : k ≤ F.n) (hk₀ : 0 < k)
     (i : Fin k) : (F.prefix C k hk hk₀).φ i = F.φ ⟨i, by omega⟩ := rfl
 
+/-- The lowest phase of a nonempty prefix is its last retained phase. -/
+theorem HNFiltration.prefix_phiMinus {P : ℝ → ObjectProperty C} {E : C}
+    (F : HNFiltration C P E) (k : ℕ) (hk : k ≤ F.n) (hk₀ : 0 < k) :
+    (F.prefix C k hk hk₀).phiMinus C hk₀ = F.φ ⟨k - 1, by omega⟩ := by
+  rfl
+
+/-- A filtration prefix whose factors all lie strictly above a cutoff has its
+lowest phase strictly above that cutoff. -/
+theorem HNFiltration.prefix_phiMinus_gt {P : ℝ → ObjectProperty C} {E : C}
+    (F : HNFiltration C P E) (k : ℕ) (hk : k ≤ F.n) (hk₀ : 0 < k)
+    (t : ℝ) (ht : ∀ j : Fin k, t < F.φ ⟨j.val, by omega⟩) :
+    t < (F.prefix C k hk hk₀).phiMinus C hk₀ := by
+  rw [F.prefix_phiMinus C k hk hk₀]
+  exact ht ⟨k - 1, by omega⟩
+
+/-- A chain object inherits a strict lower phase bound from all factors in
+the prefix ending at that object. -/
+theorem HNFiltration.chain_obj_gtProp (s : Slicing C) {E : C}
+    (F : HNFiltration C s.P E) (k : ℕ) (hk : k ≤ F.n) (hk₀ : 0 < k)
+    (t : ℝ) (ht : ∀ j : Fin k, t < F.φ ⟨j.val, by omega⟩) :
+    s.gtProp C t (F.chain.obj ⟨k, by omega⟩) :=
+  Or.inr ⟨F.prefix C k hk hk₀, hk₀, F.prefix_phiMinus_gt C k hk hk₀ t ht⟩
+
+/-- A chain object inherits a weak upper phase bound from all factors in the
+prefix ending at that object. -/
+theorem HNFiltration.chain_obj_leProp (s : Slicing C) {E : C}
+    (F : HNFiltration C s.P E) (k : ℕ) (hk : k ≤ F.n) (hk₀ : 0 < k)
+    (t : ℝ) (ht : ∀ j : Fin k, F.φ ⟨j.val, by omega⟩ ≤ t) :
+    s.leProp C t (F.chain.obj ⟨k, by omega⟩) := by
+  refine Or.inr ⟨F.prefix C k hk hk₀, hk₀, ?_⟩
+  exact ht ⟨0, hk₀⟩
+
 /-- Append one lower-phase semistable factor along a distinguished triangle. -/
 def HNFiltration.appendFactor {P : ℝ → ObjectProperty C} {Y Z : C}
     (G : HNFiltration C P Y) (T : Triangle C) (hT : T ∈ distTriang C)
@@ -732,5 +764,42 @@ theorem Slicing.gtProp_of_semistable (s : Slicing C) {S : C} {φ t : ℝ}
     (hS : s.P φ S) (h : t < φ) : s.gtProp C t S :=
   s.gtProp_of_hn C (HNFiltration.single C S φ hS) t
     (fun _ => by simpa [HNFiltration.single] using h) (by change 0 < 1; omega)
+
+/-- A semistable object lies in the weak lower phase cut at its own phase. -/
+theorem Slicing.geProp_of_semistable (s : Slicing C) {S : C} {φ : ℝ}
+    (hS : s.P φ S) : s.geProp C φ S :=
+  s.geProp_of_hn C (HNFiltration.single C S φ hS) φ
+    (fun _ => by simp [HNFiltration.single]) (by change 0 < 1; omega)
+
+/-- Split an HN-filtered interval object at a cutoff, exposing the phase-cut
+properties and the inherited strict upper bound needed by deformation HN
+recursion. -/
+theorem Slicing.exists_split_at_cutoff (s : Slicing C) [IsTriangulated C]
+    {a b t : ℝ} {E : C} (F : HNFiltration C s.P E)
+    (hF : ∀ i : Fin F.n, a < F.φ i ∧ F.φ i < b) :
+    ∃ (X Y : C) (f : X ⟶ E) (g : E ⟶ Y)
+      (h : Y ⟶ X⟦(1 : ℤ)⟧),
+      Triangle.mk f g h ∈ distTriang C ∧
+      s.gtProp C t X ∧ s.leProp C t Y ∧
+      s.ltProp C b X := by
+  obtain ⟨X, Y, GX, GY, f, g, h, hT, hGX, hGY, _, hGXorig⟩ :=
+    F.exists_split_at_cutoff C t
+  have hXgt : s.gtProp C t X := by
+    by_cases hn : 0 < GX.n
+    · exact s.gtProp_of_hn C GX t hGX hn
+    · exact Or.inl (GX.zero_isZero (by omega))
+  have hYle : s.leProp C t Y := by
+    by_cases hn : 0 < GY.n
+    · exact s.leProp_of_hn C GY t hGY hn
+    · exact Or.inl (GY.zero_isZero (by omega))
+  have hXlt : s.ltProp C b X := by
+    by_cases hn : 0 < GX.n
+    · apply s.ltProp_of_hn C GX b _ hn
+      intro j
+      obtain ⟨i, hi⟩ := hGXorig j
+      rw [hi]
+      exact (hF i).2
+    · exact Or.inl (GX.zero_isZero (by omega))
+  exact ⟨X, Y, f, g, h, hT, hXgt, hYle, hXlt⟩
 
 end BridgelandStabLean.Foundation

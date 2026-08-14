@@ -35,6 +35,7 @@ and the strict `IsStable` predicate gives the boundary case.
 
 namespace BridgelandStabLean.WeakStability
 
+open BridgelandStabLean.Foundation
 open CategoryTheory Limits Pretriangulated CategoryTheory.Triangulated Complex
 open BridgelandStabLean.Tilting
 open scoped BigOperators ZeroObject
@@ -353,8 +354,8 @@ theorem phaseTilt_slope_lt_of_phase_separated
         mul_lt_mul_of_pos_left hsep Real.pi_pos
       _ ≤ Complex.arg (W0.charge B) := hBarg
   have hAcrossB : 0 < cross (W0.charge A) (W0.charge B) :=
-    cross_pos_of_arg_lt (arg_pos_of_mem_upperHalfPlaneUnion hAupper)
-      (upperHalfPlaneUnion_ne_zero hAupper) hBcharge harglt
+    cross_pos_of_arg_lt (arg_pos_of_mem_semiClosedUpperHalfPlane hAupper)
+      (semiClosedUpperHalfPlane_ne_zero hAupper) hBcharge harglt
   have hcross : 0 < cross (W.charge A) (W.charge B) := by
     rw [hWA, hWB]
     rw [cross_phaseTiltRotation]
@@ -392,8 +393,8 @@ theorem phaseTilt_slope_shift_lt_shift_of_phase_separated
         mul_lt_mul_of_pos_left hsep Real.pi_pos
       _ ≤ Complex.arg (W0.charge B) := hBarg
   have hAcrossB : 0 < cross (W0.charge A) (W0.charge B) :=
-    cross_pos_of_arg_lt (arg_pos_of_mem_upperHalfPlaneUnion hAupper)
-      (upperHalfPlaneUnion_ne_zero hAupper) hBcharge harglt
+    cross_pos_of_arg_lt (arg_pos_of_mem_semiClosedUpperHalfPlane hAupper)
+      (semiClosedUpperHalfPlane_ne_zero hAupper) hBcharge harglt
   have hcross : 0 < cross (W.charge (A⟦(1 : ℤ)⟧)) (W.charge (B⟦(1 : ℤ)⟧)) := by
     rw [hWA, hWB]
     rw [cross_phaseTiltRotation]
@@ -439,8 +440,8 @@ theorem phaseTilt_slope_unshifted_lt_shifted_of_phase_separated
         mul_lt_mul_of_pos_left hsep Real.pi_pos
       _ ≤ Complex.arg (W0.charge V) := hVarg
   have hUcrossV : 0 < cross (W0.charge U) (W0.charge V) :=
-    cross_pos_of_arg_lt (arg_pos_of_mem_upperHalfPlaneUnion hUupper)
-      (upperHalfPlaneUnion_ne_zero hUupper) hVcharge harglt
+    cross_pos_of_arg_lt (arg_pos_of_mem_semiClosedUpperHalfPlane hUupper)
+      (semiClosedUpperHalfPlane_ne_zero hUupper) hVcharge harglt
   have hcross : 0 < cross (W.charge V) (W.charge (U⟦(1 : ℤ)⟧)) := by
     rw [hWV, hWU]
     rw [cross_phaseTiltRotation_neg_right]
@@ -480,13 +481,13 @@ private theorem rotatedCharge_weakUpperClosed_of_interval
     (hgt : sigma.slicing.gtProp C beta E)
     (hle : sigma.slicing.leProp C (beta + 1) E) :
     WeakUpperClosed
-      (sigma.Z (v (K₀.of C E)) *
+      (sigma.Z (v (BridgelandStabLean.Foundation.K₀.of C E)) *
         Complex.exp (-(Real.pi * beta : ℂ) * Complex.I)) := by
   classical
   by_cases hE : IsZero E
-  · simpa [K₀.of_isZero C hE] using weakUpperClosed_zero
+  · simpa [BridgelandStabLean.Foundation.K₀.of_isZero C hE] using weakUpperClosed_zero
   obtain ⟨F, hn, hfirst, hlast⟩ :=
-    HNFiltration.exists_both_nonzero C sigma.slicing hE
+    sigma.slicing.exists_hn_nonzero_boundaries C hE
   let P := F.toPostnikovTower
   have hphase : ∀ i : Fin F.n, F.φ i ∈ Set.Ioc beta (beta + 1) := by
     intro i
@@ -495,26 +496,29 @@ private theorem rotatedCharge_weakUpperClosed_of_interval
         beta < sigma.slicing.phiMinus C E hE :=
           sigma.slicing.phiMinus_gt_of_gtProp C hE hgt
         _ = F.φ ⟨F.n - 1, by lia⟩ := by
-          rw [sigma.slicing.phiMinus_eq C E hE F hn hlast]
+          simpa [BridgelandStabLean.Foundation.HNFiltration.phiMinus] using
+            sigma.slicing.phiMinus_eq C E hE F hn hlast
         _ ≤ F.φ i := F.hφ.antitone (Fin.mk_le_mk.mpr (by lia))
     · calc
         F.φ i ≤ F.φ ⟨0, hn⟩ :=
           F.hφ.antitone (Fin.mk_le_mk.mpr (Nat.zero_le _))
         _ = sigma.slicing.phiPlus C E hE := by
-          rw [sigma.slicing.phiPlus_eq C E hE F hn hfirst]
+          simpa [BridgelandStabLean.Foundation.HNFiltration.phiPlus] using
+            (sigma.slicing.phiPlus_eq C E hE F hn hfirst).symm
         _ ≤ beta + 1 := sigma.slicing.phiPlus_le_of_leProp C hE hle
   have hsum :
-      sigma.Z (v (K₀.of C E)) *
+      sigma.Z (v (BridgelandStabLean.Foundation.K₀.of C E)) *
           Complex.exp (-(Real.pi * beta : ℂ) * Complex.I) =
         ∑ i : Fin F.n,
-          sigma.Z (v (K₀.of C (P.factor i))) *
+          sigma.Z (v (BridgelandStabLean.Foundation.K₀.of C (P.factor i))) *
             Complex.exp (-(Real.pi * beta : ℂ) * Complex.I) := by
-    rw [K₀.of_postnikovTower_eq_sum C P, map_sum, map_sum, Finset.sum_mul]
+    rw [BridgelandStabLean.Foundation.K₀.of_postnikovTower_eq_sum C P,
+      map_sum, map_sum, Finset.sum_mul]
   rw [hsum]
   apply weakUpperClosed_sum
   intro i
   by_cases hi : IsZero (P.factor i)
-  · simpa [K₀.of_isZero C hi] using weakUpperClosed_zero
+  · simpa [BridgelandStabLean.Foundation.K₀.of_isZero C hi] using weakUpperClosed_zero
   obtain ⟨m, hm, -, hmZ⟩ :=
     sigma.compat' (F.φ i) (P.factor i) (F.semistable i) hi
   rw [hmZ]
@@ -527,20 +531,20 @@ private theorem rotatedCharge_cross_ray_nonneg_of_bounds
     (hgt : sigma.slicing.gtProp C beta A)
     (hle : sigma.slicing.leProp C (beta + theta) A) :
     0 ≤ cross
-      (sigma.Z (v (K₀.of C A)) *
+      (sigma.Z (v (BridgelandStabLean.Foundation.K₀.of C A)) *
         Complex.exp (-(Real.pi * beta : ℂ) * Complex.I))
       ((n : ℂ) *
         Complex.exp (((Real.pi * theta : ℝ) : ℂ) * Complex.I)) := by
   classical
   by_cases hA : IsZero A
-  · simp [K₀.of_isZero C hA, cross]
+  · simp [BridgelandStabLean.Foundation.K₀.of_isZero C hA, cross]
   obtain ⟨F, hFn, hfirst, hlast⟩ :=
-    HNFiltration.exists_both_nonzero C sigma.slicing hA
+    sigma.slicing.exists_hn_nonzero_boundaries C hA
   let P := F.toPostnikovTower
   let z : ℂ := (n : ℂ) *
     Complex.exp (((Real.pi * theta : ℝ) : ℂ) * Complex.I)
   let f : Fin F.n → ℂ := fun i =>
-    sigma.Z (v (K₀.of C (P.factor i))) *
+    sigma.Z (v (BridgelandStabLean.Foundation.K₀.of C (P.factor i))) *
       Complex.exp (-(Real.pi * beta : ℂ) * Complex.I)
   have hphase : ∀ i : Fin F.n,
       0 < F.φ i - beta ∧ F.φ i - beta ≤ theta := by
@@ -550,7 +554,9 @@ private theorem rotatedCharge_cross_ray_nonneg_of_bounds
         0 < sigma.slicing.phiMinus C A hA - beta := by
           linarith [sigma.slicing.phiMinus_gt_of_gtProp C hA hgt]
         _ = F.φ ⟨F.n - 1, by lia⟩ - beta := by
-          rw [sigma.slicing.phiMinus_eq C A hA F hFn hlast]
+          simpa [BridgelandStabLean.Foundation.HNFiltration.phiMinus] using
+            congrArg (fun x : ℝ => x - beta)
+              (sigma.slicing.phiMinus_eq C A hA F hFn hlast)
         _ ≤ F.φ i - beta := by
           have hi : i ≤ (⟨F.n - 1, by lia⟩ : Fin F.n) :=
             Fin.mk_le_mk.mpr (by lia)
@@ -561,14 +567,17 @@ private theorem rotatedCharge_cross_ray_nonneg_of_bounds
             Fin.mk_le_mk.mpr (Nat.zero_le _)
           linarith [F.hφ.antitone hi]
         _ = sigma.slicing.phiPlus C A hA - beta := by
-          rw [sigma.slicing.phiPlus_eq C A hA F hFn hfirst]
+          simpa [BridgelandStabLean.Foundation.HNFiltration.phiPlus] using
+            congrArg (fun x : ℝ => x - beta)
+              (sigma.slicing.phiPlus_eq C A hA F hFn hfirst).symm
         _ ≤ theta := by
           linarith [sigma.slicing.phiPlus_le_of_leProp C hA hle]
   have hsum :
-      sigma.Z (v (K₀.of C A)) *
+      sigma.Z (v (BridgelandStabLean.Foundation.K₀.of C A)) *
           Complex.exp (-(Real.pi * beta : ℂ) * Complex.I) =
         ∑ i, f i := by
-    rw [K₀.of_postnikovTower_eq_sum C P, map_sum, map_sum, Finset.sum_mul]
+    rw [BridgelandStabLean.Foundation.K₀.of_postnikovTower_eq_sum C P,
+      map_sum, map_sum, Finset.sum_mul]
   rw [hsum]
   change 0 ≤ cross (∑ i, f i) z
   rw [show cross (∑ i, f i) z = ∑ i, cross (f i) z by
@@ -576,7 +585,7 @@ private theorem rotatedCharge_cross_ray_nonneg_of_bounds
   apply Finset.sum_nonneg
   intro i _
   by_cases hi : IsZero (P.factor i)
-  · simp [f, K₀.of_isZero C hi, cross]
+  · simp [f, BridgelandStabLean.Foundation.K₀.of_isZero C hi, cross]
   obtain ⟨m, hm, -, hmZ⟩ :=
     sigma.compat' (F.φ i) (P.factor i) (F.semistable i) hi
   have hrot : f i =
@@ -641,7 +650,7 @@ theorem phaseTiltHeart_iff_phaseShiftHeart
     · exact ObjectProperty.prop_of_iso (P.tilt).heart hzero.isoZero.symm
         (P.tors_mem_tilt_heart P.tors_zero)
     obtain ⟨F, hn, hfirst, hlast⟩ :=
-      HNFiltration.exists_both_nonzero C sigma.slicing hzero
+      sigma.slicing.exists_hn_nonzero_boundaries C hzero
     have hphase : ∀ i : Fin F.n,
         beta < F.φ i ∧ F.φ i < beta + 2 := by
       intro i
@@ -650,17 +659,19 @@ theorem phaseTiltHeart_iff_phaseShiftHeart
           beta < sigma.slicing.phiMinus C E hzero :=
             sigma.slicing.phiMinus_gt_of_gtProp C hzero hgt
           _ = F.φ ⟨F.n - 1, by lia⟩ := by
-            rw [sigma.slicing.phiMinus_eq C E hzero F hn hlast]
+            simpa [BridgelandStabLean.Foundation.HNFiltration.phiMinus] using
+              sigma.slicing.phiMinus_eq C E hzero F hn hlast
           _ ≤ F.φ i := F.hφ.antitone (Fin.mk_le_mk.mpr (by lia))
       · calc
           F.φ i ≤ F.φ ⟨0, hn⟩ :=
             F.hφ.antitone (Fin.mk_le_mk.mpr (Nat.zero_le _))
           _ = sigma.slicing.phiPlus C E hzero := by
-            rw [sigma.slicing.phiPlus_eq C E hzero F hn hfirst]
+            simpa [BridgelandStabLean.Foundation.HNFiltration.phiPlus] using
+              (sigma.slicing.phiPlus_eq C E hzero F hn hfirst).symm
           _ ≤ beta + 1 := sigma.slicing.phiPlus_le_of_leProp C hzero hle
           _ < beta + 2 := by linarith
     obtain ⟨X, Y, f, g, d, hdist, hXgt, hYle, -⟩ :=
-      sigma.slicing.exists_split_at_cutoff C F hphase hn (t := 1)
+      sigma.slicing.exists_split_at_cutoff_with_upper_bound C F hphase hn (t := 1)
     have hXle : sigma.slicing.leProp C (beta + 1) X := by
       have hYshift : sigma.slicing.leProp C (beta + 1) (Y⟦(-1 : ℤ)⟧) := by
         have hshift := sigma.slicing.leProp_shift C 1 Y (-1) hYle
@@ -782,8 +793,8 @@ theorem phaseTiltWeakStabilityFunction_zeroCharge_iff
   let W := sigma.phaseTiltWeakStabilityFunction beta hbeta0 hbeta1
   constructor
   · rintro ⟨hEtilt, hcharge⟩
-    have hZ : sigma.Z (v (K₀.of C E)) = 0 := by
-      have hmul : sigma.Z (v (K₀.of C E)) *
+    have hZ : sigma.Z (v (BridgelandStabLean.Foundation.K₀.of C E)) = 0 := by
+      have hmul : sigma.Z (v (BridgelandStabLean.Foundation.K₀.of C E)) *
           Complex.exp (-(Real.pi * beta : ℂ) * Complex.I) = 0 := by
         simpa [W] using hcharge
       exact (mul_eq_zero.mp hmul).resolve_right (Complex.exp_ne_zero _)
@@ -794,10 +805,10 @@ theorem phaseTiltWeakStabilityFunction_zeroCharge_iff
             (sigma.slicing.gtProp_zero C 0) (sigma.slicing.leProp_zero C 1)),
         hZ⟩
     obtain ⟨F, hn, hfirst, hlast⟩ :=
-      HNFiltration.exists_both_nonzero C sigma.slicing hzero
+      sigma.slicing.exists_hn_nonzero_boundaries C hzero
     let P := F.toPostnikovTower
     let f : Fin F.n → ℂ := fun i =>
-      sigma.Z (v (K₀.of C (P.factor i))) *
+      sigma.Z (v (BridgelandStabLean.Foundation.K₀.of C (P.factor i))) *
         Complex.exp (-(Real.pi * beta : ℂ) * Complex.I)
     have hbounds := sigma.phaseTiltHeart_interval hbeta0 hbeta1 hEtilt
     have hphase : ∀ i : Fin F.n, F.φ i ∈ Set.Ioc beta (beta + 1) := by
@@ -807,33 +818,37 @@ theorem phaseTiltWeakStabilityFunction_zeroCharge_iff
           beta < sigma.slicing.phiMinus C E hzero :=
             sigma.slicing.phiMinus_gt_of_gtProp C hzero hbounds.1
           _ = F.φ ⟨F.n - 1, by lia⟩ := by
-            rw [sigma.slicing.phiMinus_eq C E hzero F hn hlast]
+            simpa [BridgelandStabLean.Foundation.HNFiltration.phiMinus] using
+              sigma.slicing.phiMinus_eq C E hzero F hn hlast
           _ ≤ F.φ i := F.hφ.antitone (Fin.mk_le_mk.mpr (by lia))
       · calc
           F.φ i ≤ F.φ ⟨0, hn⟩ :=
             F.hφ.antitone (Fin.mk_le_mk.mpr (Nat.zero_le _))
           _ = sigma.slicing.phiPlus C E hzero := by
-            rw [sigma.slicing.phiPlus_eq C E hzero F hn hfirst]
+            simpa [BridgelandStabLean.Foundation.HNFiltration.phiPlus] using
+              (sigma.slicing.phiPlus_eq C E hzero F hn hfirst).symm
           _ ≤ beta + 1 :=
             sigma.slicing.phiPlus_le_of_leProp C hzero hbounds.2
     have hsum : ∑ i, f i = 0 := by
       have hdecomp :
-          sigma.Z (v (K₀.of C E)) *
+          sigma.Z (v (BridgelandStabLean.Foundation.K₀.of C E)) *
               Complex.exp (-(Real.pi * beta : ℂ) * Complex.I) =
             ∑ i, f i := by
-        rw [K₀.of_postnikovTower_eq_sum C P, map_sum, map_sum, Finset.sum_mul]
+        rw [BridgelandStabLean.Foundation.K₀.of_postnikovTower_eq_sum C P,
+          map_sum, map_sum, Finset.sum_mul]
       rw [hZ, zero_mul] at hdecomp
       exact hdecomp.symm
     have hfclosed : ∀ i, WeakUpperClosed (f i) := by
       intro i
       by_cases hi : IsZero (P.factor i)
-      · simpa [f, K₀.of_isZero C hi] using weakUpperClosed_zero
+      · simpa [f, BridgelandStabLean.Foundation.K₀.of_isZero C hi] using weakUpperClosed_zero
       obtain ⟨m, hm, -, hmZ⟩ :=
         sigma.compat' (F.φ i) (P.factor i) (F.semistable i) hi
       dsimp [f]
       rw [hmZ]
       exact rotatedRay_weakUpperClosed hm (hphase i)
-    have hfactorZ : ∀ i, sigma.Z (v (K₀.of C (P.factor i))) = 0 := by
+    have hfactorZ : ∀ i,
+        sigma.Z (v (BridgelandStabLean.Foundation.K₀.of C (P.factor i))) = 0 := by
       intro i
       have hfi := weakUpperClosed_eq_zero_of_sum_eq_zero f hfclosed hsum i
       dsimp [f] at hfi
@@ -865,23 +880,25 @@ theorem phaseTiltWeakStabilityFunction_zeroCharge_iff
     have hlast_phase : F.φ ⟨F.n - 1, by lia⟩ = 1 :=
       hphase_one_of_nonzero ⟨F.n - 1, by lia⟩ hlast
     have hP : sigma.slicing.P 1 E := by
+      have hplus : sigma.slicing.phiPlus C E hzero = 1 :=
+        (sigma.slicing.phiPlus_eq C E hzero F hn hfirst).trans <| by
+          simpa [BridgelandStabLean.Foundation.HNFiltration.phiPlus] using hfirst_phase
+      have hminus : sigma.slicing.phiMinus C E hzero = 1 :=
+        (sigma.slicing.phiMinus_eq C E hzero F hn hlast).trans <| by
+          simpa [BridgelandStabLean.Foundation.HNFiltration.phiMinus] using hlast_phase
       have heq : sigma.slicing.phiPlus C E hzero =
-          sigma.slicing.phiMinus C E hzero := by
-        rw [sigma.slicing.phiPlus_eq C E hzero F hn hfirst,
-          sigma.slicing.phiMinus_eq C E hzero F hn hlast,
-          hfirst_phase, hlast_phase]
+          sigma.slicing.phiMinus C E hzero := hplus.trans hminus.symm
       have hPplus := sigma.slicing.semistable_of_phiPlus_eq_phiMinus C hzero heq
-      rw [sigma.slicing.phiPlus_eq C E hzero F hn hfirst, hfirst_phase] at hPplus
-      exact hPplus
+      rwa [hplus] at hPplus
     exact ⟨mem_heart_of_bounds sigma.slicing
-        (sigma.slicing.gtProp_of_semistable C 1 0 E hP (by norm_num))
-        (sigma.slicing.leProp_of_semistable C 1 1 E hP le_rfl), hZ⟩
+        (sigma.slicing.gtProp_of_semistable C hP (by norm_num))
+        (sigma.slicing.leProp_of_semistable C hP le_rfl), hZ⟩
   · rintro ⟨hEheart, hZ⟩
     have hP := sigma.zeroCharge_mem_P_one hEheart hZ
     have hgt : sigma.slicing.gtProp C beta E :=
-      sigma.slicing.gtProp_of_semistable C 1 beta E hP hbeta1
+      sigma.slicing.gtProp_of_semistable C hP hbeta1
     have hle : sigma.slicing.leProp C (beta + 1) E :=
-      sigma.slicing.leProp_of_semistable C 1 (beta + 1) E hP (by linarith)
+      sigma.slicing.leProp_of_semistable C hP (by linarith)
     have hshiftHeart :
         ((sigma.slicing.phaseShift C beta).toTStructure).heart E := by
       rw [(sigma.slicing.phaseShift C beta).toTStructure_heart_iff]
@@ -1104,7 +1121,7 @@ theorem weakStabilityFunctionOnHeart_isSemistable_of_phaseTors_phaseTiltSemistab
       sigma.slicing.phiPlus_le_of_leProp C hE0 hEtors.2
     have hcut_one : cut < 1 := hcut_plus.trans_le hplus_one
     obtain ⟨F, hn, hfirst, hlast⟩ :=
-      HNFiltration.exists_both_nonzero C sigma.slicing hE0
+      sigma.slicing.exists_hn_nonzero_boundaries C hE0
     have hphase : ∀ j : Fin F.n, beta < F.φ j ∧ F.φ j < 2 := by
       intro j
       constructor
@@ -1112,16 +1129,18 @@ theorem weakStabilityFunctionOnHeart_isSemistable_of_phaseTors_phaseTiltSemistab
           beta < sigma.slicing.phiMinus C E hE0 :=
             sigma.slicing.phiMinus_gt_of_gtProp C hE0 hEtors.1
           _ = F.φ ⟨F.n - 1, by lia⟩ := by
-            rw [sigma.slicing.phiMinus_eq C E hE0 F hn hlast]
+            simpa [BridgelandStabLean.Foundation.HNFiltration.phiMinus] using
+              sigma.slicing.phiMinus_eq C E hE0 F hn hlast
           _ ≤ F.φ j := F.hφ.antitone (Fin.mk_le_mk.mpr (by lia))
       · calc
           F.φ j ≤ F.φ ⟨0, hn⟩ := F.hφ.antitone (Fin.mk_le_mk.mpr (Nat.zero_le _))
           _ = sigma.slicing.phiPlus C E hE0 := by
-            rw [sigma.slicing.phiPlus_eq C E hE0 F hn hfirst]
+            simpa [BridgelandStabLean.Foundation.HNFiltration.phiPlus] using
+              (sigma.slicing.phiPlus_eq C E hE0 F hn hfirst).symm
           _ ≤ 1 := hplus_one
           _ < 2 := by norm_num
     obtain ⟨X, Y, f, g, d, hdist, hXgt, hYle, -⟩ :=
-      sigma.slicing.exists_split_at_cutoff C F hphase hn (t := cut)
+      sigma.slicing.exists_split_at_cutoff_with_upper_bound C F hphase hn (t := cut)
     have hXle : sigma.slicing.leProp C 1 X := by
       have hYshift : sigma.slicing.leProp C 1 (Y⟦(-1 : ℤ)⟧) := by
         have hs := sigma.slicing.leProp_shift C cut Y (-1) hYle
@@ -1232,7 +1251,7 @@ theorem weakStabilityFunctionOnHeart_isSemistable_of_phaseFree_shiftSemistable
     have hcut_beta : cut < beta := hcut_plus.trans_le hplus_beta
     have hcut_one : cut < 1 := hcut_beta.trans hbeta1
     obtain ⟨F, hn, hfirst, hlast⟩ :=
-      HNFiltration.exists_both_nonzero C sigma.slicing hU0
+      sigma.slicing.exists_hn_nonzero_boundaries C hU0
     have hphase : ∀ j : Fin F.n, (0 : ℝ) < F.φ j ∧ F.φ j < 2 := by
       intro j
       constructor
@@ -1240,17 +1259,19 @@ theorem weakStabilityFunctionOnHeart_isSemistable_of_phaseFree_shiftSemistable
           0 < sigma.slicing.phiMinus C U hU0 :=
             sigma.slicing.phiMinus_gt_of_gtProp C hU0 hUfree.1
           _ = F.φ ⟨F.n - 1, by lia⟩ := by
-            rw [sigma.slicing.phiMinus_eq C U hU0 F hn hlast]
+            simpa [BridgelandStabLean.Foundation.HNFiltration.phiMinus] using
+              sigma.slicing.phiMinus_eq C U hU0 F hn hlast
           _ ≤ F.φ j := F.hφ.antitone (Fin.mk_le_mk.mpr (by lia))
       · calc
           F.φ j ≤ F.φ ⟨0, hn⟩ := F.hφ.antitone (Fin.mk_le_mk.mpr (Nat.zero_le _))
           _ = sigma.slicing.phiPlus C U hU0 := by
-            rw [sigma.slicing.phiPlus_eq C U hU0 F hn hfirst]
+            simpa [BridgelandStabLean.Foundation.HNFiltration.phiPlus] using
+              (sigma.slicing.phiPlus_eq C U hU0 F hn hfirst).symm
           _ ≤ beta := hplus_beta
           _ < 1 := hbeta1
           _ < 2 := by norm_num
     obtain ⟨X, Y, f, g, d, hdist, hXgt, hYle, -⟩ :=
-      sigma.slicing.exists_split_at_cutoff C F hphase hn (t := cut)
+      sigma.slicing.exists_split_at_cutoff_with_upper_bound C F hphase hn (t := cut)
     have hXle : sigma.slicing.leProp C beta X := by
       have hYshift : sigma.slicing.leProp C beta (Y⟦(-1 : ℤ)⟧) := by
         have hs := sigma.slicing.leProp_shift C cut Y (-1) hYle
@@ -1293,7 +1314,7 @@ theorem weakStabilityFunctionOnHeart_isSemistable_of_phaseFree_shiftSemistable
       sigma.slicing.phiPlus_le_of_leProp C hX0 hXfree.2
     obtain ⟨hXupper, -⟩ := sigma.charge_mem_upperHalfPlane_and_arg_le_phiPlus
       X hXheart hX0 (hXplus.trans_lt hbeta1)
-    have hXcharge : W0.charge X ≠ 0 := upperHalfPlaneUnion_ne_zero hXupper
+    have hXcharge : W0.charge X ≠ 0 := semiClosedUpperHalfPlane_ne_zero hXupper
     have hYplus : sigma.slicing.phiPlus C Y hY0 ≤ cut :=
       sigma.slicing.phiPlus_le_of_leProp C hY0 hYle
     have hXminus : cut < sigma.slicing.phiMinus C X hX0 :=
@@ -1515,7 +1536,7 @@ theorem isSemistable_of_isPhaseTiltTypeOne
     ring
   have hle : sigma.slicing.leProp C (beta + theta) E := by
     have : sigma.slicing.leProp C phi E :=
-      sigma.slicing.leProp_of_semistable C phi phi E hP le_rfl
+      sigma.slicing.leProp_of_semistable C hP le_rfl
     convert this using 1
     all_goals dsimp [theta]
     all_goals ring
@@ -1579,9 +1600,9 @@ theorem isSemistable_of_isPhaseTiltTypeTwo
       (m : ℂ) *
         Complex.exp (((Real.pi * theta : ℝ) : ℂ) * Complex.I) := by
     rw [← hUshiftCharge]
-    change sigma.Z (v (K₀.of C (U⟦(1 : ℤ)⟧))) *
+    change sigma.Z (v (BridgelandStabLean.Foundation.K₀.of C (U⟦(1 : ℤ)⟧))) *
         Complex.exp (-(Real.pi * beta : ℂ) * Complex.I) = _
-    rw [K₀.of_shift_one, map_neg, map_neg, hmZ]
+    rw [BridgelandStabLean.Foundation.K₀.of_shift_one C U, map_neg, map_neg, hmZ]
     rw [show -((m : ℂ) * Complex.exp (((Real.pi * phi : ℝ) : ℂ) * Complex.I)) =
         (m : ℂ) *
           Complex.exp (((Real.pi * (phi + 1) : ℝ) : ℂ) * Complex.I) by
@@ -1596,10 +1617,10 @@ theorem isSemistable_of_isPhaseTiltTypeTwo
   have hUshiftLe : sigma.slicing.leProp C (phi + 1) (U⟦(1 : ℤ)⟧) := by
     simpa only [Int.cast_one] using
       sigma.slicing.leProp_shift C phi U 1
-        (sigma.slicing.leProp_of_semistable C phi phi U hUP le_rfl)
+        (sigma.slicing.leProp_of_semistable C hUP le_rfl)
   have hVP := sigma.zeroCharge_mem_P_one hVzero.1 hVzero.2
   have hVle : sigma.slicing.leProp C (phi + 1) V :=
-    sigma.slicing.leProp_of_semistable C 1 (phi + 1) V hVP (by linarith)
+    sigma.slicing.leProp_of_semistable C hVP (by linarith)
   have hle : sigma.slicing.leProp C (beta + theta) E := by
     have := sigma.slicing.leProp_of_triangle C (phi + 1) hUshiftLe hVle hdist
     convert this using 1

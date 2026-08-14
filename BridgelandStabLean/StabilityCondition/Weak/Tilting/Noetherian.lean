@@ -28,6 +28,7 @@ subobjects in the remaining torsion-pair assembly.
 
 namespace BridgelandStabLean.WeakStability
 
+open BridgelandStabLean.Foundation
 open CategoryTheory Limits Pretriangulated CategoryTheory.Triangulated
 open BridgelandStabLean.Tilting
 open scoped ZeroObject
@@ -116,7 +117,9 @@ theorem mono_in_originalHeart_of_mono_in_phaseTilt
   let kt : Kt ⟶ At := ObjectProperty.homMk k.hom
   have hktf : kt ≫ ft = 0 := by
     ext
-    simp [kt, ft, k]
+    have hc := congrArg (fun u : kernel f ⟶ N => u.hom) (kernel.condition f)
+    change (kernel.ι f).hom ≫ f.hom = 0 at hc
+    exact hc
   have hkt : kt = 0 := (cancel_mono ft).mp (by simpa using hktf)
   apply Abelian.mono_of_kernel_ι_eq_zero
   ext
@@ -131,8 +134,8 @@ theorem zeroCharge_phaseTors
     {E : C} (hE : sigma.zeroCharge E) :
     phaseTors sigma.slicing beta E := by
   have hP := sigma.zeroCharge_mem_P_one hE.1 hE.2
-  exact ⟨sigma.slicing.gtProp_of_semistable C 1 beta E hP hbeta1,
-    sigma.slicing.leProp_of_semistable C 1 1 E hP le_rfl⟩
+  exact ⟨sigma.slicing.gtProp_of_semistable C hP hbeta1,
+    sigma.slicing.leProp_of_semistable C hP le_rfl⟩
 
 /-- A phase-compatible tilting envelope rotates to a zero-charge subobject of
 `F[1]` in the tilted heart whose quotient is right-orthogonal to all

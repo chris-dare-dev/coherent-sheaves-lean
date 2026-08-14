@@ -9,7 +9,7 @@ import BridgelandStabLean.Foundation.Deformation.RelativePhase
 
 This module develops the rotated imaginary-part calculations behind the
 phase see-saw argument.  It is purely analytic: later categorical deformation
-modules can use these results without importing the retained implementation.
+modules can use these results through the repository-owned foundation.
 -/
 
 noncomputable section

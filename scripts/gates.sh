@@ -139,14 +139,13 @@ gate bridgeland-audit bridgeland_audit
 gate dg-audit dg_audit
 
 if [ "$MODE" != "fast" ]; then
-  gate runLinter-foundation lake exe runLinter BridgelandStability
   gate runLinter-stability lake exe runLinter BridgelandStabLean
   gate runLinter-coh lake exe runLinter CohLean
   gate nolints-ratchet python3 scripts/check_nolints.py
   gate runLinter-dg lake exe runLinter DGLean
   gate lint-style lake exe lint-style
   gate pin python3 scripts/check_pin.py
-  gate anchor-free python3 scripts/check_anchor_free.py
+  gate source-independence python3 scripts/check_source_independence.py
   gate coverage-map python3 scripts/check_coverage_map.py
   gate audit-complete audit_complete
   gate emit-build lake build emit

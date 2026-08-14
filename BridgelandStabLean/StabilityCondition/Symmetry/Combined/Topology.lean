@@ -3,7 +3,9 @@ Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under the MIT license.
 -/
 import BridgelandStabLean.StabilityCondition.Symmetry.Combined.Action
-import BridgelandStability.StabilityCondition.ConnectedComponent
+import BridgelandStabLean.StabilityCondition.Metric.Distance.Topology
+import BridgelandStabLean.StabilityCondition.Metric.Isometry.Phase
+import BridgelandStabLean.Foundation
 import Mathlib.Topology.Algebra.ConstMulAction
 
 set_option backward.defeqAttrib.useBackward true
@@ -21,8 +23,10 @@ Only a one-sided estimate is needed for continuity.  The inverse group element
 supplies the opposite direction automatically through `Homeomorph.smul`.
 -/
 
+open BridgelandStabLean.Foundation
 open CategoryTheory CategoryTheory.Limits CategoryTheory.Pretriangulated
 open CategoryTheory.Triangulated
+open BridgelandStabLean.Foundation.Deformation
 
 namespace BridgelandStabLean.GroupAction
 
@@ -49,46 +53,24 @@ only replaces the object by its inverse image. -/
 theorem mapEquiv_phiPlus :
     (s.mapEquiv a.Φ.e).phiPlus C E hE =
       s.phiPlus C (a.Φ.e.inverse.obj E) (inverse_obj_nonzero a E hE) := by
-  let hE' := inverse_obj_nonzero a E hE
-  obtain ⟨G, hn, hfirst, hlast⟩ := HNFiltration.exists_both_nonzero C s hE'
-  let F₀ := G.mapF (P' := fun φ X ↦ s.P φ (a.Φ.e.inverse.obj X)) a.Φ.e.functor
-    (fun _ X h ↦ ObjectProperty.prop_of_iso _ (a.Φ.e.unitIso.app X) h)
-  let F := F₀.ofIso C (a.Φ.e.counitIso.app E)
-  have hfirst' : ¬IsZero (F.triangle ⟨0, hn⟩).obj₃ := by
-    intro h
-    apply hfirst
-    exact IsZero.of_iso (a.Φ.e.inverse.map_isZero h) (a.Φ.e.unitIso.app _)
-  rw [(s.mapEquiv a.Φ.e).phiPlus_eq C E hE F hn hfirst',
-    s.phiPlus_eq C (a.Φ.e.inverse.obj E) hE' G hn hfirst]
-  rfl
+  exact BridgelandStabLean.Foundation.mapEquiv_phiPlus a.Φ.e s E hE
+    (inverse_obj_nonzero a E hE)
 
 /-- Transport by an autoequivalence does not change the smallest HN phase; it
 only replaces the object by its inverse image. -/
 theorem mapEquiv_phiMinus :
     (s.mapEquiv a.Φ.e).phiMinus C E hE =
       s.phiMinus C (a.Φ.e.inverse.obj E) (inverse_obj_nonzero a E hE) := by
-  let hE' := inverse_obj_nonzero a E hE
-  obtain ⟨G, hn, hfirst, hlast⟩ := HNFiltration.exists_both_nonzero C s hE'
-  let F₀ := G.mapF (P' := fun φ X ↦ s.P φ (a.Φ.e.inverse.obj X)) a.Φ.e.functor
-    (fun _ X h ↦ ObjectProperty.prop_of_iso _ (a.Φ.e.unitIso.app X) h)
-  let F := F₀.ofIso C (a.Φ.e.counitIso.app E)
-  have hlast' : ¬IsZero (F.triangle ⟨F.n - 1, by
-      simpa [F, F₀, HNFiltration.ofIso, HNFiltration.mapF, PostnikovTower.mapF] using
-        Nat.sub_one_lt (Nat.ne_of_gt hn)⟩).obj₃ := by
-    change ¬IsZero (a.Φ.e.functor.obj (G.triangle ⟨G.n - 1, by lia⟩).obj₃)
-    intro h
-    apply hlast
-    exact IsZero.of_iso (a.Φ.e.inverse.map_isZero h) (a.Φ.e.unitIso.app _)
-  rw [(s.mapEquiv a.Φ.e).phiMinus_eq C E hE F hn hlast',
-    s.phiMinus_eq C (a.Φ.e.inverse.obj E) hE' G hn hlast]
-  rfl
+  exact BridgelandStabLean.Foundation.mapEquiv_phiMinus a.Φ.e s E hE
+    (inverse_obj_nonzero a E hE)
 
 end Slicing
 
 /-- An autoequivalence does not increase the generalized slicing distance. -/
 theorem slicingDist_mapEquiv_le (a : AutPair v) (s₁ s₂ : Slicing C) :
-    slicingDist C (s₁.mapEquiv a.Φ.e) (s₂.mapEquiv a.Φ.e) ≤
-      slicingDist C s₁ s₂ := by
+    BridgelandStabLean.Foundation.slicingDist C
+        (s₁.mapEquiv a.Φ.e) (s₂.mapEquiv a.Φ.e) ≤
+      BridgelandStabLean.Foundation.slicingDist C s₁ s₂ := by
   apply iSup_le
   intro E
   apply iSup_le
@@ -104,8 +86,8 @@ variable [IsTriangulated C]
 original seminorm. -/
 theorem stabSeminorm_aut_le (a : AutPair v)
     (σ τ : StabilityCondition.WithClassMap C v) :
-    stabSeminorm C (a.act σ) ((a.act τ).Z - (a.act σ).Z) ≤
-      stabSeminorm C σ (τ.Z - σ.Z) := by
+    stabilitySeminorm C (a.act σ) ((a.act τ).Z - (a.act σ).Z) ≤
+      stabilitySeminorm C σ (τ.Z - σ.Z) := by
   apply iSup_le
   intro E
   apply iSup_le
@@ -115,16 +97,16 @@ theorem stabSeminorm_aut_le (a : AutPair v)
   apply iSup_le
   intro hE
   let hE' := Slicing.inverse_obj_nonzero a E hE
-  have hcl : a.lam (cl C v E) = cl C v (a.Φ.e.inverse.obj E) := by
-    rw [cl, ← a.compat, K₀.mapF_of]
+  have hcl : a.lam (classOf C v E) = classOf C v (a.Φ.e.inverse.obj E) := by
+    rw [classOf, ← a.compat, K₀.mapF_of]
   have hcharge : (a.act σ).charge E = σ.charge (a.Φ.e.inverse.obj E) := by
-    change σ.Z (a.lam (cl C v E)) = _
+    change σ.Z (a.lam (classOf C v E)) = _
     rw [hcl]
-  have hnum : ((a.act τ).Z - (a.act σ).Z) (cl C v E) =
-      (τ.Z - σ.Z) (cl C v (a.Φ.e.inverse.obj E)) := by
-    change τ.Z (a.lam (cl C v E)) - σ.Z (a.lam (cl C v E)) =
-      τ.Z (cl C v (a.Φ.e.inverse.obj E)) -
-        σ.Z (cl C v (a.Φ.e.inverse.obj E))
+  have hnum : ((a.act τ).Z - (a.act σ).Z) (classOf C v E) =
+      (τ.Z - σ.Z) (classOf C v (a.Φ.e.inverse.obj E)) := by
+    change τ.Z (a.lam (classOf C v E)) - σ.Z (a.lam (classOf C v E)) =
+      τ.Z (classOf C v (a.Φ.e.inverse.obj E)) -
+        σ.Z (classOf C v (a.Φ.e.inverse.obj E))
     rw [hcl]
   rw [hnum, hcharge]
   exact le_iSup_of_le (a.Φ.e.inverse.obj E)
@@ -148,8 +130,10 @@ theorem AutPair.continuous_act (a : AutPair v) : Continuous a.act := by
   rw [isOpen_iff_mem_nhds]
   intro τ hτ
   change a.act τ ∈ basisNhd C ξ ε at hτ
-  obtain ⟨δ, hδ, hδ8, hsub⟩ := exists_basisNhd_subset_basisNhd C ξ (a.act τ) hε hε8 hτ
-  refine mem_nhds_iff.mpr ⟨basisNhd C τ δ, ?_, ?_, basisNhd_self C τ hδ hδ8⟩
+  obtain ⟨δ, hδ, hδ8, hsub⟩ :=
+    exists_basisNhd_subset_basisNhd C ξ (a.act τ) hε hε8 hτ
+  refine mem_nhds_iff.mpr ⟨basisNhd C τ δ, ?_, ?_,
+    self_mem_basisNhd C τ hδ (by linarith)⟩
   · exact fun ρ hρ ↦ hsub (a.mapsTo_basisNhd τ δ hρ)
   · exact TopologicalSpace.isOpen_generateFrom_of_mem ⟨τ, δ, hδ, hδ8, rfl⟩
 

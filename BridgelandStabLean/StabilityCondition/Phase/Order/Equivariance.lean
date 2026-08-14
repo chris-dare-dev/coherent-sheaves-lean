@@ -17,12 +17,13 @@ triangulated autoequivalence.  The result is first proved for a representative
 
 noncomputable section
 
+open BridgelandStabLean.Foundation
 open CategoryTheory CategoryTheory.Limits CategoryTheory.Pretriangulated
 open CategoryTheory.Triangulated
 
 universe v u
 
-namespace CategoryTheory.Triangulated
+namespace BridgelandStabLean.Foundation
 
 variable {C : Type u} [Category.{v} C] [HasZeroObject C] [HasShift C ℤ]
   [Preadditive C] [∀ n : ℤ, (shiftFunctor C n).Additive] [Pretriangulated C]
@@ -40,13 +41,15 @@ theorem Slicing.mapEquiv_ltProp_iff (Phi : C ≌ C)
   constructor
   · rintro (hzero | ⟨F, hn, hlt⟩)
     · exact Or.inl (Phi.inverse.map_isZero hzero)
-    · exact Or.inr ⟨F.mapF (P' := s.P) Phi.inverse (fun _ _ h ↦ h), hn, hlt⟩
+    · exact Or.inr ⟨BridgelandStabLean.Foundation.HNFiltration.mapF
+        (P' := s.P) F Phi.inverse (fun _ _ h ↦ h), hn, hlt⟩
   · rintro (hzero | ⟨F, hn, hlt⟩)
     · exact Or.inl (IsZero.of_iso (Phi.functor.map_isZero hzero)
         (Phi.counitIso.app E).symm)
-    · exact Or.inr ⟨(F.mapF
+    · exact Or.inr ⟨BridgelandStabLean.Foundation.HNFiltration.ofIso C
+        (BridgelandStabLean.Foundation.HNFiltration.mapF F
         (P' := fun psi X ↦ s.P psi (Phi.inverse.obj X)) Phi.functor
-        (fun _ X h ↦ ObjectProperty.prop_of_iso _ (Phi.unitIso.app X) h)).ofIso C
+        (fun _ X h ↦ ObjectProperty.prop_of_iso _ (Phi.unitIso.app X) h))
           (Phi.counitIso.app E), hn, hlt⟩
 
 /-- Transport by an equivalence relabels objects but leaves the weak upper
@@ -60,16 +63,18 @@ theorem Slicing.mapEquiv_leProp_iff (Phi : C ≌ C)
   constructor
   · rintro (hzero | ⟨F, hn, hle⟩)
     · exact Or.inl (Phi.inverse.map_isZero hzero)
-    · exact Or.inr ⟨F.mapF (P' := s.P) Phi.inverse (fun _ _ h ↦ h), hn, hle⟩
+    · exact Or.inr ⟨BridgelandStabLean.Foundation.HNFiltration.mapF
+        (P' := s.P) F Phi.inverse (fun _ _ h ↦ h), hn, hle⟩
   · rintro (hzero | ⟨F, hn, hle⟩)
     · exact Or.inl (IsZero.of_iso (Phi.functor.map_isZero hzero)
         (Phi.counitIso.app E).symm)
-    · exact Or.inr ⟨(F.mapF
+    · exact Or.inr ⟨BridgelandStabLean.Foundation.HNFiltration.ofIso C
+        (BridgelandStabLean.Foundation.HNFiltration.mapF F
         (P' := fun psi X ↦ s.P psi (Phi.inverse.obj X)) Phi.functor
-        (fun _ X h ↦ ObjectProperty.prop_of_iso _ (Phi.unitIso.app X) h)).ofIso C
+        (fun _ X h ↦ ObjectProperty.prop_of_iso _ (Phi.unitIso.app X) h))
           (Phi.counitIso.app E), hn, hle⟩
 
-end CategoryTheory.Triangulated
+end BridgelandStabLean.Foundation
 
 namespace BridgelandStabLean.GroupAction
 
@@ -139,8 +144,10 @@ slicing order.  The compatible class-lattice datum affects the charge but not
 this comparison of the underlying slicings. -/
 theorem AutPairQuot.precedes_smul_stability_iff (q : AutPairQuot v)
     (sigma tau : StabilityCondition.WithClassMap C v) :
-    (q • sigma).slicing.Precedes C (q • tau).slicing ↔
-      sigma.slicing.Precedes C tau.slicing := by
+    BridgelandStabLean.Foundation.Slicing.Precedes
+      C (q • sigma).slicing (q • tau).slicing ↔
+      BridgelandStabLean.Foundation.Slicing.Precedes
+        C sigma.slicing tau.slicing := by
   induction q using Quotient.inductionOn with
   | _ a => exact a.Φ.precedes_act_iff sigma.slicing tau.slicing
 
@@ -148,8 +155,10 @@ theorem AutPairQuot.precedes_smul_stability_iff (q : AutPairQuot v)
 slicing order. -/
 theorem AutPairQuot.precedesWeak_smul_stability_iff (q : AutPairQuot v)
     (sigma tau : StabilityCondition.WithClassMap C v) :
-    (q • sigma).slicing.PrecedesWeak C (q • tau).slicing ↔
-      sigma.slicing.PrecedesWeak C tau.slicing := by
+    BridgelandStabLean.Foundation.Slicing.PrecedesWeak
+      C (q • sigma).slicing (q • tau).slicing ↔
+      BridgelandStabLean.Foundation.Slicing.PrecedesWeak
+        C sigma.slicing tau.slicing := by
   induction q using Quotient.inductionOn with
   | _ a => exact a.Φ.precedesWeak_act_iff sigma.slicing tau.slicing
 

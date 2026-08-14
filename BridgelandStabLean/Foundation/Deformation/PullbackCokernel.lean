@@ -24,6 +24,7 @@ namespace BridgelandStabLean.Foundation.Deformation
 
 open BridgelandStabLean.Foundation
 open BridgelandStabLean.ForMathlib.CategoryTheory
+open CategoryTheory.Triangulated.TStructure
 
 variable (C : Type u) [Category.{v} C] [HasZeroObject C] [HasShift C ℤ]
   [Preadditive C] [∀ n : ℤ, (shiftFunctor C n).Additive]
@@ -63,6 +64,149 @@ theorem pullbackProjection_strictEpi {X Y : s.IntervalCat C a b}
     BridgelandStabLean.Foundation.Slicing.IntervalCat.comp_strictEpi C s
       e.hom (pullback.fst B.arrow p) isStrictEpi_of_isIso hpb
   simpa [he] using hcomp
+
+/-- A kernel followed by a strict epimorphism is an owner strict short exact
+sequence in a thin interval. -/
+theorem strictShortExact_of_kernel_strictEpi
+    (S : ShortComplex (s.IntervalCat C a b))
+    (hKer : IsLimit (KernelFork.ofι S.f S.zero))
+    (hg : IsStrictEpi S.g) :
+    StrictShortExact S := by
+  let t := (s.phaseShift C a).toTStructure C
+  letI := t.hasHeartFullSubcategory
+  letI : Abelian t.heart.FullSubcategory := heartFullSubcategoryAbelian t
+  letI : CategoryWithHomology t.heart.FullSubcategory :=
+    categoryWithHomology_of_abelian
+  let FL := Slicing.IntervalCat.toLeftHeart (C := C) (s := s) a b
+    (Fact.out : b - a ≤ 1)
+  have hKerL : IsLimit
+      (KernelFork.ofι ((S.map FL).f) (S.map FL).zero) :=
+    isLimitForkMapOfIsLimit' FL S.zero hKer
+  have hEpiL : Epi ((S.map FL).g) := by
+    exact Slicing.IntervalCat.epi_toLeftHeart_of_strictEpi C s S.g hg
+  letI : (S.map FL).HasHomology :=
+    ShortComplex.HasHomology.mk'
+      (ShortComplex.HomologyData.ofAbelian (S := S.map FL))
+  have hExactL : (S.map FL).Exact :=
+    ShortComplex.exact_of_f_is_kernel (S := S.map FL) hKerL
+  have hShortExactL : (S.map FL).ShortExact :=
+    ShortComplex.ShortExact.mk' hExactL (Fork.IsLimit.mono hKerL) hEpiL
+  obtain ⟨δ, hT⟩ :=
+    Slicing.IntervalCat.exists_distinguished_of_shortExact_toLeftHeart
+      C s hShortExactL
+  exact Slicing.IntervalCat.strictShortExact_of_distinguished C s hT
+
+/-- Pulling a kernel--strict-epimorphism sequence back along an interval
+subobject preserves owner strict short exactness. -/
+theorem strictShortExact_pullback_left
+    {K E Q : s.IntervalCat C a b}
+    {i : K ⟶ E} {q : E ⟶ Q}
+    (hiq : i ≫ q = 0)
+    (hKer : IsLimit (KernelFork.ofι i hiq))
+    (hq : IsStrictEpi q)
+    (B : Subobject Q) :
+    let pb := (Subobject.pullback q).obj B
+    let m : K ⟶ pb := by
+      let hiB : B.Factors (i ≫ q) := by
+        simpa [hiq] using (Subobject.factors_zero : B.Factors (0 : K ⟶ Q))
+      exact pb.factorThru i (Limits.pullback_factors q B i hiB)
+    StrictShortExact
+      (ShortComplex.mk m (Subobject.pullbackπ q B) (by
+        apply (cancel_mono B.arrow).1
+        calc
+          (m ≫ Subobject.pullbackπ q B) ≫ B.arrow =
+              m ≫ (Subobject.pullbackπ q B ≫ B.arrow) := by simp
+          _ = m ≫ (((Subobject.pullback q).obj B).arrow ≫ q) := by
+              rw [(Subobject.isPullback q B).w]
+          _ = (m ≫ ((Subobject.pullback q).obj B).arrow) ≫ q := by simp
+          _ = i ≫ q := by
+              let hiB : B.Factors (i ≫ q) := by
+                simpa [hiq] using (Subobject.factors_zero : B.Factors (0 : K ⟶ Q))
+              rw [Subobject.factorThru_arrow]
+          _ = 0 := hiq
+          _ = 0 ≫ B.arrow := by simp)) := by
+  let pb := (Subobject.pullback q).obj B
+  let hiB : B.Factors (i ≫ q) := by
+    simpa [hiq] using (Subobject.factors_zero : B.Factors (0 : K ⟶ Q))
+  let hpb : pb.Factors i := Limits.pullback_factors q B i hiB
+  let m : K ⟶ pb := pb.factorThru i hpb
+  have hm : m ≫ pb.arrow = i := Subobject.factorThru_arrow pb i hpb
+  let hcomp : m ≫ Subobject.pullbackπ q B = 0 := by
+    apply (cancel_mono B.arrow).1
+    calc
+      (m ≫ Subobject.pullbackπ q B) ≫ B.arrow =
+          m ≫ (Subobject.pullbackπ q B ≫ B.arrow) := by simp
+      _ = m ≫ (pb.arrow ≫ q) := by rw [(Subobject.isPullback q B).w]
+      _ = (m ≫ pb.arrow) ≫ q := by simp
+      _ = i ≫ q := congrArg (fun t ↦ t ≫ q) hm
+      _ = 0 := hiq
+      _ = 0 ≫ B.arrow := by simp
+  haveI : Mono i := Fork.IsLimit.mono hKer
+  haveI : Mono m := mono_of_mono_fac hm
+  have hKer' : IsLimit (KernelFork.ofι m hcomp) := by
+    refine KernelFork.IsLimit.ofι' m hcomp (fun {W} g hg ↦ ?_)
+    let u : W ⟶ K :=
+      hKer.lift (KernelFork.ofι (g ≫ pb.arrow) (by
+        calc
+          (g ≫ pb.arrow) ≫ q = g ≫ (pb.arrow ≫ q) := by simp
+          _ = g ≫ (Subobject.pullbackπ q B ≫ B.arrow) := by
+              rw [(Subobject.isPullback q B).w]
+          _ = (g ≫ Subobject.pullbackπ q B) ≫ B.arrow := by simp
+          _ = 0 := by simp [hg]))
+    have hu : u ≫ i = g ≫ pb.arrow :=
+      hKer.fac _ WalkingParallelPair.zero
+    refine ⟨u, ?_⟩
+    apply (cancel_mono pb.arrow).1
+    calc
+      (u ≫ m) ≫ pb.arrow = u ≫ i := by simp [Category.assoc, hm]
+      _ = g ≫ pb.arrow := hu
+  have hπ : IsStrictEpi (Subobject.pullbackπ q B) :=
+    pullbackProjection_strictEpi C q hq B
+  exact strictShortExact_of_kernel_strictEpi C
+    (ShortComplex.mk m (Subobject.pullbackπ q B) hcomp) hKer' hπ
+
+/-- The complementary pullback sequence associated to two composable strict
+epimorphisms is owner strict short exact. -/
+theorem strictShortExact_pullback_right
+    {E Q Y : s.IntervalCat C a b}
+    (q : E ⟶ Q) (hq : IsStrictEpi q)
+    (B : Subobject Q)
+    (g : Q ⟶ Y) (hBg : B.arrow ≫ g = 0)
+    (hBKer : IsLimit (KernelFork.ofι B.arrow hBg))
+    (hg : IsStrictEpi g) :
+    let pb := (Subobject.pullback q).obj B
+    let p : E ⟶ Y := q ≫ g
+    StrictShortExact
+      (ShortComplex.mk pb.arrow p (by
+        calc
+          pb.arrow ≫ p = pb.arrow ≫ q ≫ g := by simp [p]
+          _ = (pb.arrow ≫ q) ≫ g := by rw [Category.assoc]
+          _ = (Subobject.pullbackπ q B ≫ B.arrow) ≫ g := by
+              rw [(Subobject.isPullback q B).w]
+          _ = 0 := by simp [hBg])) := by
+  let pb := (Subobject.pullback q).obj B
+  let p : E ⟶ Y := q ≫ g
+  let hcomp : pb.arrow ≫ p = 0 := by
+    calc
+      pb.arrow ≫ p = pb.arrow ≫ q ≫ g := by simp [p]
+      _ = (pb.arrow ≫ q) ≫ g := by rw [Category.assoc]
+      _ = (Subobject.pullbackπ q B ≫ B.arrow) ≫ g := by
+          rw [(Subobject.isPullback q B).w]
+      _ = 0 := by simp [hBg]
+  have hKer : IsLimit (KernelFork.ofι pb.arrow hcomp) := by
+    refine KernelFork.IsLimit.ofι' pb.arrow hcomp (fun {W} k hk ↦ ?_)
+    let u : W ⟶ (B : s.IntervalCat C a b) :=
+      hBKer.lift (KernelFork.ofι (k ≫ q) (by
+        simpa [p, Category.assoc] using hk))
+    have hu : u ≫ B.arrow = k ≫ q :=
+      hBKer.fac _ WalkingParallelPair.zero
+    exact ⟨(Subobject.isPullback q B).lift u k hu,
+      (Subobject.isPullback q B).lift_snd u k hu⟩
+  have hp : IsStrictEpi p :=
+    BridgelandStabLean.Foundation.Slicing.IntervalCat.comp_strictEpi
+      C s q g hq hg
+  exact strictShortExact_of_kernel_strictEpi C
+    (ShortComplex.mk pb.arrow p hcomp) hKer hp
 
 /-- Pulling back a strict interval subobject preserves strictness of its
 canonical arrow. -/

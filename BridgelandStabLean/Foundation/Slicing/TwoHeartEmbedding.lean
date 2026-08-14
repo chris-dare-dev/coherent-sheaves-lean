@@ -28,6 +28,7 @@ variable (C : Type u) [Category.{v} C] [HasZeroObject C] [HasShift C ℤ]
   [IsTriangulated C]
 
 open BridgelandStabLean.ForMathlib.CategoryTheory.Triangulated.TStructure
+open CategoryTheory.Triangulated.TStructure
 
 /-- Owner interval objects lie in the left adjacent slicing heart
 `P((a,a+1])`. -/

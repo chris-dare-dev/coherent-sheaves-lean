@@ -28,6 +28,7 @@ instantiation `q = - ⊗ L` remains outside this repository.
 
 noncomputable section
 
+open BridgelandStabLean.Foundation
 open CategoryTheory CategoryTheory.Limits CategoryTheory.Pretriangulated
 open CategoryTheory.Triangulated
 
@@ -95,7 +96,8 @@ chosen compatible autoequivalence.  The lattice component of `q` moves the
 charge; its underlying autoequivalence moves the slicing. -/
 def BayerProperty (sigma : StabilityCondition.WithClassMap C v)
     (q : AutPairQuot v) (l : ℤ) : Prop :=
-  sigma.slicing.PrecedesWeak C ((q • sigma).slicing.phaseShift C (l : ℝ))
+  BridgelandStabLean.Foundation.Slicing.PrecedesWeak C sigma.slicing
+    ((q • sigma).slicing.phaseShift C (l : ℝ))
 
 /-- Express the paper-facing Bayer property through the reusable
 slicing-level predicate and the forgetful homomorphism to `AutQuot`. -/
@@ -115,8 +117,8 @@ theorem bayerProperty_iff_phiPlus_le
         (hE0 : ¬IsZero E),
         ((q • sigma).slicing.phaseShift C (l : ℝ)).phiPlus C E hE0 ≤ phi := by
   unfold BayerProperty
-  exact sigma.slicing.precedesWeak_iff_phiPlus_le C
-    ((q • sigma).slicing.phaseShift C (l : ℝ))
+  exact BridgelandStabLean.Foundation.Slicing.precedesWeak_iff_phiPlus_le C
+    sigma.slicing ((q • sigma).slicing.phaseShift C (l : ℝ))
 
 /-- Lower-phase formulation of the paper-facing Bayer property.  For an
 object semistable in the acted and shifted slicing, its lowest phase in the
@@ -128,8 +130,8 @@ theorem bayerProperty_iff_le_phiMinus
         (_hE : ((q • sigma).slicing.phaseShift C (l : ℝ)).P phi E)
         (hE0 : ¬IsZero E), phi ≤ sigma.slicing.phiMinus C E hE0 := by
   unfold BayerProperty
-  exact sigma.slicing.precedesWeak_iff_le_phiMinus C
-    ((q • sigma).slicing.phaseShift C (l : ℝ))
+  exact BridgelandStabLean.Foundation.Slicing.precedesWeak_iff_le_phiMinus C
+    sigma.slicing ((q • sigma).slicing.phaseShift C (l : ℝ))
 
 /-- Lemma 3.17(2) at the representative level.  The inverse object map appears
 explicitly because `a.Φ` is a chosen autoequivalence rather than only its
@@ -147,11 +149,13 @@ theorem bayerProperty_mk_iff_inverse_phiPlus_le
     have hE0 : ¬IsZero E := fun hZ ↦
       hInv0 (a.Φ.e.inverse.map_isZero hZ)
     have hBound := h hE hE0
-    change ((sigma.slicing.mapEquiv a.Φ.e).phaseShift C (l : ℝ)).phiPlus
+    change ((BridgelandStabLean.Foundation.Slicing.mapEquiv sigma.slicing a.Φ.e).phaseShift
+      C (l : ℝ)).phiPlus
       C E hE0 ≤ phi at hBound
-    rw [Slicing.phaseShift_phiPlus C (sigma.slicing.mapEquiv a.Φ.e)
+    rw [Slicing.phaseShift_phiPlus C
+        (BridgelandStabLean.Foundation.Slicing.mapEquiv sigma.slicing a.Φ.e)
         (l : ℝ) E hE0,
-      CategoryTheory.Triangulated.mapEquiv_phiPlus a.Φ.e sigma.slicing E
+      BridgelandStabLean.Foundation.mapEquiv_phiPlus a.Φ.e sigma.slicing E
         hE0 hInv0] at hBound
     exact (sub_le_iff_le_add.mp hBound)
   · intro h E phi hE hE0
@@ -159,11 +163,13 @@ theorem bayerProperty_mk_iff_inverse_phiPlus_le
       hE0 (IsZero.of_iso (a.Φ.e.functor.map_isZero hZ)
         (a.Φ.e.counitIso.app E).symm)
     have hBound := h hE hInv0
-    change ((sigma.slicing.mapEquiv a.Φ.e).phaseShift C (l : ℝ)).phiPlus
+    change ((BridgelandStabLean.Foundation.Slicing.mapEquiv sigma.slicing a.Φ.e).phaseShift
+      C (l : ℝ)).phiPlus
       C E hE0 ≤ phi
-    rw [Slicing.phaseShift_phiPlus C (sigma.slicing.mapEquiv a.Φ.e)
+    rw [Slicing.phaseShift_phiPlus C
+        (BridgelandStabLean.Foundation.Slicing.mapEquiv sigma.slicing a.Φ.e)
         (l : ℝ) E hE0,
-      CategoryTheory.Triangulated.mapEquiv_phiPlus a.Φ.e sigma.slicing E
+      BridgelandStabLean.Foundation.mapEquiv_phiPlus a.Φ.e sigma.slicing E
         hE0 hInv0]
     exact (sub_le_iff_le_add.mpr hBound)
 
@@ -207,8 +213,8 @@ theorem bayerProperty_mk_iff_sub_le_functor_phiMinus
     have hPhase : sigma.slicing.phiMinus C
         (a.Φ.e.functor.obj (a.Φ.e.inverse.obj E)) hMap0 =
         sigma.slicing.phiMinus C E hE0 := by
-      simpa using sigma.slicing.phiMinus_congr (a.Φ.e.counitIso.app E)
-        hMap0 hE0
+      simpa using BridgelandStabLean.Foundation.Slicing.phiMinus_congr
+        sigma.slicing (a.Φ.e.counitIso.app E) hMap0 hE0
     rw [hPhase] at hBound
     simpa only [add_sub_cancel_right] using hBound
 

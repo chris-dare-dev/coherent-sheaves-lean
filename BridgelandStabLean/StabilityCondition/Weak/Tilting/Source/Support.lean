@@ -17,6 +17,7 @@ in Proposition 14.16.
 
 namespace BridgelandStabLean.WeakStability
 
+open BridgelandStabLean.Foundation
 open CategoryTheory Limits Pretriangulated CategoryTheory.Triangulated
 
 noncomputable section

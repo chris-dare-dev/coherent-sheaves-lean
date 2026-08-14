@@ -27,9 +27,10 @@ equivalently the absolute log-ratio used by Bridgeland.
 -/
 
 open CategoryTheory CategoryTheory.Limits CategoryTheory.Pretriangulated
+open BridgelandStabLean.Foundation
 open scoped ENNReal
 
-namespace CategoryTheory.Triangulated
+namespace BridgelandStabLean.Foundation
 
 noncomputable section
 
@@ -121,33 +122,40 @@ def stabilityDistTerm (σ τ : StabilityCondition.WithClassMap C v) (E : C)
 def stabilityDist (σ τ : StabilityCondition.WithClassMap C v) : ℝ≥0∞ :=
   ⨆ (E : C) (hE : ¬IsZero E), stabilityDistTerm σ τ E hE
 
+omit [IsTriangulated C] in
 @[simp]
 theorem phiPlusDist_self (σ : StabilityCondition.WithClassMap C v) (E : C)
     (hE : ¬IsZero E) : phiPlusDist σ σ E hE = 0 := by
   simp [phiPlusDist]
 
+omit [IsTriangulated C] in
 @[simp]
 theorem phiMinusDist_self (σ : StabilityCondition.WithClassMap C v) (E : C)
     (hE : ¬IsZero E) : phiMinusDist σ σ E hE = 0 := by
   simp [phiMinusDist]
 
+omit [IsTriangulated C] in
 @[simp]
 theorem massDist_self (σ : StabilityCondition.WithClassMap C v) (E : C) :
     massDist σ σ E = 0 := by
   simp [massDist]
 
+omit [IsTriangulated C] in
 theorem phiPlusDist_comm (σ τ : StabilityCondition.WithClassMap C v) (E : C)
     (hE : ¬IsZero E) : phiPlusDist σ τ E hE = phiPlusDist τ σ E hE := by
   simp [phiPlusDist, abs_sub_comm]
 
+omit [IsTriangulated C] in
 theorem phiMinusDist_comm (σ τ : StabilityCondition.WithClassMap C v) (E : C)
     (hE : ¬IsZero E) : phiMinusDist σ τ E hE = phiMinusDist τ σ E hE := by
   simp [phiMinusDist, abs_sub_comm]
 
+omit [IsTriangulated C] in
 theorem massDist_comm (σ τ : StabilityCondition.WithClassMap C v) (E : C) :
     massDist σ τ E = massDist τ σ E := by
   exact logMassDist_comm _ _
 
+omit [IsTriangulated C] in
 theorem phiPlusDist_triangle (σ τ υ : StabilityCondition.WithClassMap C v) (E : C)
     (hE : ¬IsZero E) :
     phiPlusDist σ υ E hE ≤ phiPlusDist σ τ E hE + phiPlusDist τ υ E hE := by
@@ -159,6 +167,7 @@ theorem phiPlusDist_triangle (σ τ υ : StabilityCondition.WithClassMap C v) (E
     (σ.slicing.phiPlus C E hE) (τ.slicing.phiPlus C E hE)
     (υ.slicing.phiPlus C E hE))
 
+omit [IsTriangulated C] in
 theorem phiMinusDist_triangle (σ τ υ : StabilityCondition.WithClassMap C v) (E : C)
     (hE : ¬IsZero E) :
     phiMinusDist σ υ E hE ≤ phiMinusDist σ τ E hE + phiMinusDist τ υ E hE := by
@@ -170,6 +179,7 @@ theorem phiMinusDist_triangle (σ τ υ : StabilityCondition.WithClassMap C v) (
     (σ.slicing.phiMinus C E hE) (τ.slicing.phiMinus C E hE)
     (υ.slicing.phiMinus C E hE))
 
+omit [IsTriangulated C] in
 theorem massDist_triangle (σ τ υ : StabilityCondition.WithClassMap C v) (E : C) :
     massDist σ υ E ≤ massDist σ τ E + massDist τ υ E :=
   logMassDist_triangle _ _ _
@@ -200,11 +210,13 @@ theorem massDist_eq_abs_log_ratio
       -(Real.log (stabilityMass τ E).toReal -
         Real.log (stabilityMass σ E).toReal) by ring, abs_neg]
 
+omit [IsTriangulated C] in
 @[simp]
 theorem stabilityDist_self (σ : StabilityCondition.WithClassMap C v) :
     stabilityDist σ σ = 0 := by
   simp [stabilityDist, stabilityDistTerm]
 
+omit [IsTriangulated C] in
 theorem stabilityDist_comm (σ τ : StabilityCondition.WithClassMap C v) :
     stabilityDist σ τ = stabilityDist τ σ := by
   unfold stabilityDist
@@ -215,6 +227,7 @@ theorem stabilityDist_comm (σ τ : StabilityCondition.WithClassMap C v) :
   simp only [stabilityDistTerm, phiPlusDist_comm σ τ E hE,
     phiMinusDist_comm σ τ E hE, massDist_comm σ τ E]
 
+omit [IsTriangulated C] in
 /-- The full stability distance satisfies the triangle inequality. -/
 theorem stabilityDist_triangle (σ τ υ : StabilityCondition.WithClassMap C v) :
     stabilityDist σ υ ≤ stabilityDist σ τ + stabilityDist τ υ := by
@@ -259,6 +272,7 @@ theorem stabilityDist_triangle (σ τ υ : StabilityCondition.WithClassMap C v) 
     _ ≤ stabilityDist σ τ + stabilityDist τ υ :=
       add_le_add hστ hτυ
 
+omit [IsTriangulated C] in
 /-- Every objectwise three-coordinate term is bounded by the full stability
 distance.  This is the basic elimination rule for the supremum defining
 `stabilityDist`. -/
@@ -269,6 +283,7 @@ theorem stabilityDistTerm_le_stabilityDist
   exact le_iSup₂ (f := fun (X : C) (hX : ¬IsZero X) ↦
     stabilityDistTerm σ τ X hX) E hE
 
+omit [IsTriangulated C] in
 /-- The positive-phase coordinate of an object is bounded by the full
 stability distance. -/
 theorem phiPlusDist_le_stabilityDist
@@ -276,6 +291,7 @@ theorem phiPlusDist_le_stabilityDist
     phiPlusDist σ τ E hE ≤ stabilityDist σ τ :=
   (le_max_left _ _).trans (stabilityDistTerm_le_stabilityDist σ τ E hE)
 
+omit [IsTriangulated C] in
 /-- The negative-phase coordinate of an object is bounded by the full
 stability distance. -/
 theorem phiMinusDist_le_stabilityDist
@@ -284,6 +300,7 @@ theorem phiMinusDist_le_stabilityDist
   (le_max_left _ _).trans (le_max_right _ _ |>.trans
     (stabilityDistTerm_le_stabilityDist σ τ E hE))
 
+omit [IsTriangulated C] in
 /-- The mass coordinate of an object is bounded by the full stability
 distance. -/
 theorem massDist_le_stabilityDist
@@ -292,6 +309,7 @@ theorem massDist_le_stabilityDist
   (le_max_right _ _).trans (le_max_right _ _ |>.trans
     (stabilityDistTerm_le_stabilityDist σ τ E hE))
 
+omit [IsTriangulated C] in
 /-- The foundational library's phase-only distance is bounded by the full three-coordinate
 distance. -/
 theorem slicingDist_le_stabilityDist (σ τ : StabilityCondition.WithClassMap C v) :
@@ -310,4 +328,4 @@ theorem slicingDist_le_stabilityDist (σ τ : StabilityCondition.WithClassMap C 
 
 end
 
-end CategoryTheory.Triangulated
+end BridgelandStabLean.Foundation

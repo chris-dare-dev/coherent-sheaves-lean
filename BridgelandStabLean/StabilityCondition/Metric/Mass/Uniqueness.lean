@@ -3,7 +3,7 @@ Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under the MIT license.
 -/
 import BridgelandStabLean.StabilityCondition.Metric.Mass.Basic
-import BridgelandStability.Slicing.TStructureConstruction
+import BridgelandStabLean.Foundation
 
 set_option backward.defeqAttrib.useBackward true
 set_option backward.isDefEq.respectTransparency false
@@ -28,10 +28,11 @@ on the total filtration length, deleting zero first factors when necessary,
 proves equality of all finite mass sums.
 -/
 
+open BridgelandStabLean.Foundation
 open CategoryTheory CategoryTheory.Limits CategoryTheory.Pretriangulated
 open scoped ENNReal BigOperators ZeroObject
 
-namespace CategoryTheory.Triangulated
+namespace BridgelandStabLean.Foundation
 
 noncomputable section
 
@@ -96,7 +97,7 @@ private lemma factorMass_congr
     (σ : StabilityCondition.WithClassMap C v) {E E' : C} (e : E ≅ E') :
     factorMass σ E = factorMass σ E' := by
   simp only [factorMass]
-  rw [show σ.charge E = σ.charge E' from congrArg σ.Z (cl_iso C v e)]
+  rw [show σ.charge E = σ.charge E' from congrArg σ.Z (classOf_iso C v e)]
 
 private lemma HNFiltration.mass_appendFactor
     (σ : StabilityCondition.WithClassMap C v) {Y Z : C}
@@ -280,7 +281,10 @@ private theorem HNFiltration.exists_headTail
             F.mass σ = P.mass σ + factorMass σ (F.factor ilast) :=
               (F.mass_prefix_last σ hn2).symm
             _ = (factorMass σ (P.factor ⟨0, hPn⟩) + G'.mass σ) +
-                factorMass σ (F.factor ilast) := by rw [hmass']
+                factorMass σ (F.factor ilast) := by
+              rw [show BridgelandStabLean.Foundation.HNFiltration.mass σ P =
+                  factorMass σ (P.factor ⟨0, hPn⟩) + G'.mass σ by
+                simpa using hmass']
             _ = factorMass σ (F.factor ⟨0, hn⟩) +
                 (G'.mass σ + factorMass σ T.obj₃) := by
                   rw [hphead]
@@ -401,7 +405,8 @@ theorem HNFiltration.mass_eq_mass
         rw [← G.mass_dropFirst σ hnG2 hzG]
         exact ih F G' (by change F.n + (G.n - 1) ≤ m; omega)
       have hphase : F.φ ⟨0, hnF⟩ = G.φ ⟨0, hnG⟩ :=
-        F.phiPlus_eq_of_nonzero_factors C σ.slicing G hnF hnG hzF hzG
+        BridgelandStabLean.Foundation.HNFiltration.phiPlus_eq_of_firstFactors_nonzero
+          C σ.slicing F G hnF hnG hzF hzG
       obtain ⟨YF, TF, fF, gF, dF, htriF, hmassF, hnTF, hφTF⟩ :=
         F.exists_headTail σ hnF
       obtain ⟨YG, TG, fG, gG, dG, htriG, hmassG, hnTG, hφTG⟩ :=
@@ -412,7 +417,8 @@ theorem HNFiltration.mass_eq_mass
           (HNFiltration.single C (F.factor ⟨0, hnF⟩) φ (F.semistable ⟨0, hnF⟩)) φ
         · intro j
           exact le_rfl
-        · norm_num [HNFiltration.single]
+        · change 0 < 1
+          omega
       have hheadG : σ.slicing.geProp C φ (G.factor ⟨0, hnG⟩) := by
         have hs : σ.slicing.P φ (G.factor ⟨0, hnG⟩) := by
           dsimp only [φ]
@@ -422,7 +428,8 @@ theorem HNFiltration.mass_eq_mass
           (HNFiltration.single C (G.factor ⟨0, hnG⟩) φ hs) φ
         · intro j
           exact le_rfl
-        · norm_num [HNFiltration.single]
+        · change 0 < 1
+          omega
       have htailF : σ.slicing.ltProp C φ YF := by
         by_cases hzero : TF.n = 0
         · exact Or.inl (TF.zero_isZero hzero)
@@ -444,30 +451,30 @@ theorem HNFiltration.mass_eq_mass
               _ = φ := hphase.symm
           · exact Nat.pos_of_ne_zero hzero
       let sφ := σ.slicing.phaseShift C φ
-      let t := sφ.toTStructureGE C
+      let t := sφ.toDualTStructure C
       have hheadFLE : t.IsLE (F.factor ⟨0, hnF⟩) 0 := by
         have hs : sφ.geProp C 0 (F.factor ⟨0, hnF⟩) :=
           (σ.slicing.phaseShift_geProp_zero C φ _).mpr hheadF
         refine ⟨?_⟩
-        dsimp only [t, Slicing.toTStructureGE]
+        dsimp only [t, BridgelandStabLean.Foundation.Slicing.toDualTStructure]
         simpa only [Int.cast_zero, neg_zero] using hs
       have hheadGLE : t.IsLE (G.factor ⟨0, hnG⟩) 0 := by
         have hs : sφ.geProp C 0 (G.factor ⟨0, hnG⟩) :=
           (σ.slicing.phaseShift_geProp_zero C φ _).mpr hheadG
         refine ⟨?_⟩
-        dsimp only [t, Slicing.toTStructureGE]
+        dsimp only [t, BridgelandStabLean.Foundation.Slicing.toDualTStructure]
         simpa only [Int.cast_zero, neg_zero] using hs
       have htailFGE : t.IsGE YF 1 := by
         have hs : sφ.ltProp C 0 YF :=
           (σ.slicing.phaseShift_ltProp_zero C φ _).mpr htailF
         refine ⟨?_⟩
-        dsimp only [t, Slicing.toTStructureGE]
+        dsimp only [t, BridgelandStabLean.Foundation.Slicing.toDualTStructure]
         simpa only [Int.cast_one, sub_self] using hs
       have htailGGE : t.IsGE YG 1 := by
         have hs : sφ.ltProp C 0 YG :=
           (σ.slicing.phaseShift_ltProp_zero C φ _).mpr htailG
         refine ⟨?_⟩
-        dsimp only [t, Slicing.toTStructureGE]
+        dsimp only [t, BridgelandStabLean.Foundation.Slicing.toDualTStructure]
         simpa only [Int.cast_one, sub_self] using hs
       obtain ⟨eT, _⟩ := t.triangle_iso_exists htriF htriG (Iso.refl E)
         0 1 hheadFLE htailFGE hheadGLE htailGGE
@@ -485,7 +492,8 @@ theorem HNFiltration.mass_eq_mass
           factorMass σ (G.factor ⟨0, hnG⟩) :=
         factorMass_congr σ eHead
       have htailMass : TF.mass σ = TG.mass σ := by
-        have hrec := ih (TF.ofIso C eTail) TG (by
+        have hrec := ih
+          (BridgelandStabLean.Foundation.HNFiltration.ofIso C TF eTail) TG (by
           change TF.n + TG.n ≤ m
           rw [hnTF, hnTG]
           omega)
@@ -548,7 +556,8 @@ theorem stabilityMass_eq_zero_iff
     exact (ne_of_gt (stabilityMass_pos σ hE)) hmass
   · intro hE
     obtain ⟨F⟩ := σ.slicing.hn_exists E
-    rw [stabilityMass_eq_mass σ F, F.mass_eq_zero_of_isZero σ hE]
+    rw [stabilityMass_eq_mass σ F,
+      BridgelandStabLean.Foundation.HNFiltration.mass_eq_zero_of_isZero σ F hE]
 
 /-- The real-valued mass coordinate is strictly positive on nonzero objects. -/
 theorem stabilityMass_toReal_pos
@@ -565,7 +574,8 @@ theorem stabilityMass_eq_ofReal_norm_charge
     (hP : σ.slicing.P φ E) :
     stabilityMass σ E = ENNReal.ofReal ‖σ.charge E‖ := by
   rw [stabilityMass_eq_mass σ (HNFiltration.single C E φ hP)]
-  simp [HNFiltration.mass, HNFiltration.single, PostnikovTower.factor]
+  change (∑ _ : Fin 1, ENNReal.ofReal ‖σ.charge E‖) = _
+  simp
 
 /-- Public head/tail split of the mass, stated entirely in `stabilityMass`.
 
@@ -621,4 +631,4 @@ theorem HNFiltration.exists_headTail_mass
 
 end
 
-end CategoryTheory.Triangulated
+end BridgelandStabLean.Foundation
