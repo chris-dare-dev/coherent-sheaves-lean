@@ -6,6 +6,7 @@ import CohLean.AlgebraicGeometry
 import CohLean.Coh
 import CohLean.Cohomology
 import CohLean.Duality
+import CohLean.ForMathlib
 import CohLean.Intersection
 import CohLean.Numerical
 import CohLean.RiemannRoch

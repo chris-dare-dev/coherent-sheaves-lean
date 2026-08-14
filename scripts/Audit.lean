@@ -88,6 +88,11 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms CohLean.AlgebraicGeometry.Proj.associatedSheaf_self_isQuasicoherent
 #print axioms CohLean.AlgebraicGeometry.Proj.AffineComparisonData.quasicoherentData
 #print axioms CohLean.AlgebraicGeometry.Proj.AffineComparisonData.associatedSheaf_isQuasicoherent
+#print axioms AddCommGrpCat.productCone
+#print axioms AddCommGrpCat.productConeIsLimit
+#print axioms AddCommGrpCat.piIsoPi
+#print axioms AddCommGrpCat.piIsoPi_inv_π
+#print axioms AddCommGrpCat.piIsoPi_hom_eval
 #print axioms CohLean.AlgebraicGeometry.Proj.AffineComparisonDataOn
 #print axioms CohLean.AlgebraicGeometry.Proj.AffineComparisonDataOn.localQuasicoherentData
 #print axioms CohLean.AlgebraicGeometry.Proj.AffineComparisonDataOn.associatedSheaf_isQuasicoherent
