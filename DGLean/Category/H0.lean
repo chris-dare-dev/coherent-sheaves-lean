@@ -164,10 +164,10 @@ namespace H0
 /-- The underlying object of `C`. -/
 def of (C : Type u) (X : H0 C) : C := X
 
+omit [DGCategory C] in
 /-- `of` is the identity. **Not** a `simp` lemma: making it one changes how the
 quotient's membership goals normalise and breaks the descent proofs above. Pass
 it explicitly where objects need to be unfolded. -/
-omit [DGCategory C] in
 lemma of_self (X : H0 C) : of C X = X := rfl
 
 /-- The coboundaries, viewed inside the cocycles. -/
