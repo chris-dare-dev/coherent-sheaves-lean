@@ -2,29 +2,55 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, 'agent/**']
   pull_request:
   workflow_dispatch:
 
 concurrency:
+  # Deliberately still keyed on github.ref, so a push to agent/x and the
+  # pull_request run for that branch stay in SEPARATE groups and both run. They
+  # are not redundant: the push run is the fast one, the pull_request run is the
+  # one that reports the status check the merge button reads. Collapsing them
+  # under cancel-in-progress: true would make the two lanes race and cancel the
+  # loser, which can be the PR check. The extra ubuntu-latest run is free on a
+  # public repo. (Note also that the obvious collapse key does not collapse:
+  # github.event.pull_request.head.ref is `agent/x` while github.ref is
+  # `refs/heads/agent/x`; it would take github.head_ref || github.ref_name.)
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
   build:
-    # self-hosted-fast-lane 2026-08-13: this repo is public, so ubuntu-latest is
-    # free regardless of run volume -- self-hosted here is purely for SPEED
-    # (persistent local .lake/build + mathlib cache instead of a cold checkout
-    # every run), not cost avoidance. Routed to the owner's own machine only for
-    # events an outside contributor cannot produce: push (only chris-dare-dev has
-    # write access to this repo), workflow_dispatch (same write-access
-    # requirement), and pull_request from a branch IN this repo (head.repo.fork
-    # == false -- also only possible with write access, i.e. still the owner's
-    # own agent/* branches). A pull_request from an external fork always falls
-    # through to ubuntu-latest: never point a self-hosted runner at untrusted
-    # fork PRs -- a malicious PR can edit this very workflow file to redirect
-    # itself onto the runner and execute arbitrary code on it.
-    runs-on: ${{ (github.event_name == 'push' || github.event_name == 'workflow_dispatch' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork == false)) && fromJSON('["self-hosted", "owner-mac"]') || 'ubuntu-latest' }}
+    # self-hosted-fast-lane 2026-08-14 (issue #358): this repo is public, so
+    # ubuntu-latest is free regardless of run volume -- self-hosted here is
+    # purely for SPEED (persistent local .lake/build + mathlib cache instead of
+    # a cold checkout every run), not cost avoidance.
+    #
+    # The fast lane rides on `push` and `workflow_dispatch` ONLY, and it is safe
+    # because both events REQUIRE WRITE ACCESS TO PRODUCE AT ALL, and because the
+    # workflow file a `push` event runs is the one on the pushed branch -- put
+    # there by that same write-access holder. There is no attacker-controlled
+    # copy of this expression anywhere in the path, so the routing is
+    # structurally true rather than merely asserted.
+    #
+    # `pull_request` goes to ubuntu-latest unconditionally, with no fork check.
+    # A fork check here cannot work: for `pull_request`, GitHub evaluates the
+    # workflow from the PR's merge commit, i.e. from the contributor's copy of
+    # this file, so any guard written here is the guard the contributor can
+    # rewrite. The previous `head.repo.fork == false` condition read as a
+    # protection but a PR editing this line to a bare self-hosted label would
+    # have routed itself onto the owner's daily-driver Mac and executed there.
+    # Never make self-hosted routing depend on anything a pull_request can edit.
+    #
+    # The fast lane also has a cost that is not speed: one machine means one
+    # shared .lake/build. Concurrent CI runs -- and the owner building locally
+    # at the same time -- contend for it and for memory. That contention is the
+    # condition behind the 2026-08-07 truncated-audit incident recorded in
+    # scripts/check_audit.py's docstring, where two audit runs died
+    # mid-elaboration and left 661 and 558 of 677 commanded records, each
+    # indistinguishable from a complete, smaller audit. Restricting the fast
+    # lane to push/workflow_dispatch also reduces how many runs share it.
+    runs-on: ${{ (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && fromJSON('["self-hosted", "owner-mac"]') || 'ubuntu-latest' }}
     timeout-minutes: 90
     steps:
       - uses: actions/checkout@v4
