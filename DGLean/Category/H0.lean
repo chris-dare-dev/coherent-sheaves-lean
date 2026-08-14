@@ -164,6 +164,11 @@ namespace H0
 /-- The underlying object of `C`. -/
 def of (C : Type u) [DGCategory.{v} C] (X : H0 C) : C := X
 
+/-- `of` is the identity. **Not** a `simp` lemma: making it one changes how the
+quotient's membership goals normalise and breaks the descent proofs above. Pass
+it explicitly where objects need to be unfolded. -/
+lemma of_self (X : H0 C) : of C X = X := rfl
+
 /-- The coboundaries, viewed inside the cocycles. -/
 def coboundariesIn (X Y : C) : AddSubgroup (cocycles X Y) :=
   (coboundaries X Y).addSubgroupOf (cocycles X Y)
@@ -311,6 +316,12 @@ namespace DGFunctor
 variable {C : Type u} {D : Type u'} {E : Type u''} [DGCategory.{v} C] [DGCategory.{v} D]
   [DGCategory.{v} E]
 
+/-- The object part of `H⁰ F`. A `simp` lemma because otherwise the objects in
+a naturality square stay in the `h0.obj` form and `Category.comp_id` — whose
+statement mentions the codomain — cannot match. -/
+@[simp]
+lemma h0_obj (F : DGFunctor C D) (X : H0 C) : F.h0.obj X = F.obj (H0.of C X) := rfl
+
 /-- How `H⁰ F` acts on a class: this is the computation rule `simp` needs
 before any naturality square involving `h0` will close. -/
 @[simp]
@@ -318,19 +329,25 @@ lemma h0_map_mk (F : DGFunctor C D) {X Y : H0 C} (f : cocycles (H0.of C X) (H0.o
     F.h0.map (QuotientAddGroup.mk f) =
       QuotientAddGroup.mk ⟨F.map 0 f.1, F.map_mem_cocycles f.2⟩ := rfl
 
-/-!
-## Not here: the coherence isomorphisms
+/-- `H⁰` of the identity dg functor is the identity. -/
+def h0IdIso : (DGFunctor.id C).h0 ≅ 𝟭 (H0 C) :=
+  NatIso.ofComponents (fun _ => Iso.refl _) (by
+    intro X Y f
+    induction f using Quotient.ind with
+    | _ f =>
+      simp [DGFunctor.id, H0.of_self]
+      rfl)
 
-`H⁰ (𝟭) ≅ 𝟭` and `H⁰ (F ⋙ G) ≅ H⁰ F ⋙ H⁰ G` are **not** proved, and no `sorry`
-stands in for them. With `h0_map_mk` above, the naturality square reduces to
-`↑f ≫ 𝟙 = 𝟙 ≫ ↑f` and then stalls: the `≫` and `𝟙` are the quotient category's,
-whose unit laws are proved by `Quotient.ind` rather than by `rfl`, so neither
-`simp` nor `aesop_cat` closes it and the remaining step is a coercion mismatch
-on `↑f`. The fix is a computation rule for the quotient's composition against
-identities, in the same style as `h0_map_mk`; it is a short lemma and it is not
-written yet.
+/-- `H⁰` takes composition of dg functors to composition of functors. -/
+def h0CompIso (F : DGFunctor C D) (G : DGFunctor D E) :
+    (F.comp G).h0 ≅ F.h0 ⋙ G.h0 :=
+  NatIso.ofComponents (fun _ => Iso.refl _) (by
+    intro X Y f
+    induction f using Quotient.ind with
+    | _ f =>
+      show _ ≫ 𝟙 _ = 𝟙 _ ≫ _
+      rw [Category.comp_id, Category.id_comp]
+      rfl)
 
-They are the last item of `dg-enhancements-e3`'s second acceptance criterion.
--/
 
 end DGFunctor
