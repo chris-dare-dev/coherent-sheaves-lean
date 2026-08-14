@@ -28,7 +28,15 @@ gate() {
   else
     echo "GATE $name: FAIL"
     echo "--- last 40 lines of $name ---"
-    tail -40 "$log"
+    if [ -s "$log" ]; then
+      tail -40 "$log"
+    else
+      # A gate whose body redirects its own output leaves this empty. An
+      # unattended run then reports a failure with no reason, which is worse
+      # than the failure: say so rather than printing nothing.
+      echo "(no output captured -- this gate redirects internally;"
+      echo " check /tmp/${name%%-*}-*.txt or run the command directly)"
+    fi
     echo "--- end $name ---"
     FAILED+=("$name")
   fi
@@ -36,12 +44,30 @@ gate() {
 }
 
 coh_audit() {
-  lake env lean scripts/Audit.lean > /tmp/coh-audit.txt 2>&1 || return 1
-  ! grep -q 'sorryAx' /tmp/coh-audit.txt
+  # scripts/Audit.lean imports CohLean.Development.* and the dimension
+  # specializations, none of which the default target reaches -- `lake build`
+  # builds DerivedAlgGeoLean, and the umbrella does not import them. CI builds
+  # them explicitly before the audit; so must this, or the gate fails with a
+  # missing-olean error in any tree where they were not already built by hand.
+  lake build CohLean.Development \
+    CohLean.Numerical.Specializations.Surface \
+    CohLean.Numerical.Specializations.Threefold \
+    CohLean.Numerical.Specializations.Fourfold || return 1
+  lake env lean scripts/Audit.lean > /tmp/coh-audit.txt 2>&1 || {
+    # Show the reason: this function redirects its own output, so without this
+    # the wrapper's log is empty and the gate fails silently.
+    tail -20 /tmp/coh-audit.txt
+    return 1
+  }
+  grep -q 'sorryAx' /tmp/coh-audit.txt && { echo "sorryAx reached the audit"; return 1; }
+  return 0
 }
 
 bridgeland_audit() {
-  lake env lean scripts/BridgelandAudit.lean > /tmp/bridgeland-audit.txt 2>&1 || return 1
+  lake env lean scripts/BridgelandAudit.lean > /tmp/bridgeland-audit.txt 2>&1 || {
+    tail -20 /tmp/bridgeland-audit.txt
+    return 1
+  }
   python3 scripts/check_audit.py /tmp/bridgeland-audit.txt
 }
 
