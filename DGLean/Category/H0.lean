@@ -72,7 +72,8 @@ lemma comp_coboundary_mem {X Y Z : C} {f : (dgHom X Y).X 0} (hf : f ∈ cocycles
   refine ⟨dgComp 0 (-1) (-1) (by omega) f h, ?_⟩
   have hf' : ((dgHom X Y).d 0 (0 + 1)).hom f = 0 := hf
   have key := dgComp_leibniz (C := C) 0 (-1) (-1) 0 (by omega) (by omega) f h
-  rw [key, hf', map_zero, AddMonoidHom.zero_apply, zero_add, Int.negOnePow_zero, one_smul]
+  rw [key]
+  simp only [hf', map_zero, AddMonoidHom.zero_apply, smul_zero, add_zero]
   -- only `-1 + 1` versus `0` in dependent positions remains; they are defeq
   rfl
 
@@ -85,7 +86,8 @@ lemma coboundary_comp_mem {X Y Z : C} {b : (dgHom X Y).X 0} (hb : b ∈ cobounda
   refine ⟨dgComp (-1) 0 (-1) (by omega) h g, ?_⟩
   have hg' : ((dgHom Y Z).d 0 (0 + 1)).hom g = 0 := hg
   have key := dgComp_leibniz (C := C) (-1) 0 (-1) 0 (by omega) (by omega) h g
-  rw [key, hg', map_zero, smul_zero, add_zero]
+  rw [key]
+  simp only [hg', map_zero, zero_add, Int.negOnePow_zero, one_smul]
   rfl
 
 variable (C)
@@ -109,7 +111,9 @@ lemma comp_mem {X Y Z : C} {f : (dgHom X Y).X 0} (hf : f ∈ cocycles X Y)
   have hf' : ((dgHom X Y).d 0 (0 + 1)).hom f = 0 := hf
   have hg' : ((dgHom Y Z).d 0 (0 + 1)).hom g = 0 := hg
   have key := dgComp_leibniz (C := C) 0 0 0 1 (by omega) (by omega) f g
-  rw [mem_cocycles_iff, key, hf', hg', map_zero, AddMonoidHom.zero_apply, map_zero,
+  -- No `simp` before the rewrites: it normalises `0 + 1` to `1` in the goal, and
+  -- the hypotheses are stated at `0 + 1` because that is the shape the axiom has.
+  rw [mem_cocycles_iff, key, hf', hg', map_zero, map_zero, AddMonoidHom.zero_apply,
     smul_zero, add_zero]
 
 instance category : Category.{v} (Z0 C) where

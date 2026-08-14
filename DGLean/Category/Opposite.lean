@@ -26,10 +26,13 @@ to disagree without either noticing.
 
 and `(p + q) * r + p * q = p * (q + r) + q * r`.
 
-**Leibniz.** `δ (f ∘ᵒᵖ g) = (-1) ^ (p * q) • (δg ∘ f + (-1) ^ q • g ∘ δf)`,
-while `(δf) ∘ᵒᵖ g + (-1) ^ p • f ∘ᵒᵖ (δg)` carries `(-1) ^ ((p+1) * q)` on
-`g ∘ δf` and `(-1) ^ (p + p * (q+1))` on `δg ∘ f`. Those reduce to
-`(-1) ^ (p * q + q)` and `(-1) ^ (p * q)`, matching term by term.
+**Leibniz.** Under the convention of `DGLean/Category/Basic.lean` — Mathlib's,
+`δ (f · g) = f · (δg) + (-1) ^ q • (δf) · g` — the two sides carry
+`(-1) ^ (p * q)` on `g · (δf)` and `(-1) ^ (p * q + p)` on `(δg) · f`, on both
+sides, once `p * (q + 1) = p * q + p` and `q + (p + 1) * q = p * q + 2 * q` are
+used and `(-1) ^ (2 * q) = 1` is discharged. The Koszul sign is unchanged from
+the earlier draft, which used the mirror convention: only the term-matching
+moved.
 
 The units live in `ℤˣ` via `Int.negOnePow`, matching Mathlib's convention in
 `CochainComplex.HomComplex` rather than introducing a second one.
@@ -116,9 +119,10 @@ instance op : DGCategory.{v} Cᵒᵖ where
     rw [hom_units_smul]
     simp only [op_dgHom]
     rw [key, smul_add, smul_smul, smul_smul, ← Int.negOnePow_add, ← Int.negOnePow_add,
-      show p + p * (q + 1) = p * q + 2 * p by ring,
-      show ((p * q + 2 * p).negOnePow) = (p * q).negOnePow by
+      show p * (q + 1) = p * q + p by ring,
+      show q + (p + 1) * q = p * q + 2 * q by ring,
+      show ((p * q + 2 * q).negOnePow) = (p * q).negOnePow by
         rw [Int.negOnePow_add, Int.negOnePow_two_mul, mul_one],
-      show (p + 1) * q = p * q + q by ring, add_comm]
+      add_comm]
 
 end DGCategory

@@ -33,10 +33,24 @@ complexes is exactly what the pin does not have.
 
 ## Sign convention
 
-`δ (f ∘ g) = (δ f) ∘ g + (-1) ^ p • f ∘ (δ g)` for `f` of degree `p`, matching
-`CochainComplex.HomComplex` at the pin. A divergence must be documented as a
-divergence rather than absorbed silently: an implicit sign convention is the
-usual way two dg developments come to disagree without either noticing.
+Composition is **diagrammatic**: `dgComp p q r h f g` is `f` then `g`, matching
+`CochainComplex.HomComplex.Cochain.comp`. The Leibniz rule is
+
+`δ (f · g) = f · (δ g) + (-1) ^ q • (δ f) · g`  for `g` of degree `q`,
+
+which is `CochainComplex.HomComplex.δ_comp` at the pin, verbatim.
+
+**There is a second, equally consistent convention** — `(δf) · g + (-1)^p · f · (δg)`,
+the textbook graded anti-derivation — and it is *not* the one used here. The two
+differ whenever `p` and `q` have different parities; at `p = q = 0` they agree,
+which is exactly why the disagreement can hide. An earlier draft of this file
+stated the textbook form while claiming to match Mathlib, and the claim survived
+review until `dg-enhancements-e4` tried to build `C^dg` on it and could not.
+
+Mathlib's form is adopted so that `HomComplex` instantiates this class directly,
+which is the whole point of the `AddCommGrpCat`-valued `dgHom` (ADR-0011). A
+divergence from it must be documented as a divergence rather than absorbed
+silently.
 -/
 
 set_option autoImplicit false
@@ -74,6 +88,6 @@ class DGCategory (C : Type u) extends DGCategoryStruct.{v} C where
   dgComp_leibniz {X Y Z : C} (p q r r' : ℤ) (h : p + q = r) (hr : r + 1 = r')
       (f : (dgHom X Y).X p) (g : (dgHom Y Z).X q) :
     ((dgHom X Z).d r r').hom (dgComp p q r h f g) =
-      dgComp (p + 1) q r' (by omega) (((dgHom X Y).d p (p + 1)).hom f) g +
-        p.negOnePow • dgComp p (q + 1) r' (by omega) f
-          (((dgHom Y Z).d q (q + 1)).hom g)
+      dgComp p (q + 1) r' (by omega) f (((dgHom Y Z).d q (q + 1)).hom g) +
+        q.negOnePow • dgComp (p + 1) q r' (by omega)
+          (((dgHom X Y).d p (p + 1)).hom f) g
