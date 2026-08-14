@@ -66,9 +66,47 @@ push, and halt. If every row is `SKIP`, stop and say the queue is drained.
 ## 2. Check out and rebase
 
 ```bash
-gh pr checkout <N> -R chris-dare-dev/derived-alg-geo-lean
+gh pr checkout <N> -R chris-dare-dev/derived-alg-geo-lean || exit 1
 git rebase origin/main
 ```
+
+**The `|| exit 1` is load-bearing.** If the checkout fails, `git rebase
+origin/main` rebases whatever branch you happen to be standing on — which is
+not the PR, and may be unmerged work. Never run the two as separate steps that
+both execute regardless.
+
+**This repository uses ~22 git worktrees**, and `gh pr checkout` fails outright
+when the PR's branch is checked out in one of them:
+
+> fatal: 'agent/…' is already used by worktree at '…'
+
+That is not a reason to skip the PR. Find the worktree and run the whole
+iteration there instead:
+
+```bash
+git worktree list | grep '\[agent/<branch>\]'
+```
+
+Two things to check before working in someone else's worktree:
+
+- **It must be clean.** A dirty worktree is unfinished human work — halt and
+  report, exactly as in step 0. Never stash it.
+- **Its `.lake/packages` is often a symlink to a sibling worktree**, and those
+  siblings get deleted. A dangling symlink shows up as a baffling
+  `mkdir: .lake/packages: No such file or directory` from `lake build` even
+  though `.lake` plainly exists. Check with `ls -la .lake`, and repoint it at
+  the main checkout's packages when it dangles:
+
+  ```bash
+  ls -d "$(readlink .lake/packages)" 2>/dev/null || {
+    rm .lake/packages
+    ln -s /Users/chris.dare/Personal/SourceCode/coherent-sheaves-lean/.lake/packages .lake/packages
+  }
+  ```
+
+  Only do this once `lean-toolchain` and `lakefile.toml` are identical to
+  `origin/main`, which after step 2's rebase they are. Sharing a package set
+  across differing pins would be silent corruption, not a repair.
 
 A conflict here is normal for a stacked queue and is your work to resolve. Resolve
 it in favour of `origin/main` for anything outside this slice's own leaf path —
@@ -124,7 +162,9 @@ gh pr ready <N> -R chris-dare-dev/derived-alg-geo-lean
 
 ## 6. Halt
 
-Return to a detached-free clean state on `origin/main`. Report three lines: the
+Return to a detached-free clean state on `origin/main`. If the iteration ran in
+another worktree, leave that worktree on its own branch and clean — do not
+switch it to `main`, since a human may be using it. Report three lines: the
 PR touched, its new state, and the one thing a human must decide.
 
 **Do not merge. Do not start the next PR.** The next iteration re-reads the
