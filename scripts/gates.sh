@@ -57,8 +57,12 @@ mathlib_style() {
   local files
   files="$(changed_lean_files | sort -u)"
   [ -z "$files" ] && return 0
+  # --diff-only: judge the lines this branch wrote, not the pre-existing debt in
+  # a file it happens to touch. The edit hook stays strict on what you just
+  # typed; a branch gate that demanded you also refactor everything around it
+  # would make touching any legacy file an unbounded task.
   # shellcheck disable=SC2086
-  python3 scripts/check_mathlib_style.py $files
+  python3 scripts/check_mathlib_style.py --diff-only origin/main $files
 }
 
 echo "== gates ($MODE) =="
