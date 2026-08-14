@@ -323,6 +323,40 @@ noncomputable def natShiftLocalQuasicoherentData (f : 𝒜 1) (d : ℕ) :
     (AffineComparisonData.localQuasicoherentData 𝒜 𝒜 (affineComparisonDataSelf 𝒜)
       (degreeOneStandardChart 𝒜 f))
 
+/-- Degree-one elements whose basic opens exhaust `Proj 𝒜` give a covering family of standard
+charts.  This is the hypothesis that replaces `standardCharts_coversTop` for twists: it asks only
+for a cover by charts on which the twist is trivial. -/
+theorem degreeOneCharts_coversTop {I : Type u} (g : I → 𝒜 1)
+    (hg : (⨆ i, ProjectiveSpectrum.basicOpen 𝒜 (g i : A)) = ⊤) :
+    (Opens.grothendieckTopology (AlgebraicGeometry.Proj 𝒜)).CoversTop
+      (fun i => (standardAway 𝒜 (degreeOneStandardChart 𝒜 (g i))).opensRange) := by
+  apply TopCat.Opens.grothendieckTopology_coversTop
+  rw [show (fun i => (standardAway 𝒜 (degreeOneStandardChart 𝒜 (g i))).opensRange) =
+      (fun i => ProjectiveSpectrum.basicOpen 𝒜 (g i : A)) from
+    funext fun i => AlgebraicGeometry.Proj.opensRange_awayι 𝒜 _ (g i).2 Nat.zero_lt_one]
+  exact hg
+
+/-- Quasi-coherent data for a nonnegative twist, glued from the degree-one charts alone. -/
+noncomputable def natShiftQuasicoherentData {I : Type u} (g : I → 𝒜 1) (d : ℕ)
+    (hg : (⨆ i, ProjectiveSpectrum.basicOpen 𝒜 (g i : A)) = ⊤) :
+    (associatedSheaf 𝒜 (natShift 𝒜 d)).QuasicoherentData.{u, u, u, u} :=
+  SheafOfModules.QuasicoherentData.bind (associatedSheaf 𝒜 (natShift 𝒜 d))
+    (fun i => (standardAway 𝒜 (degreeOneStandardChart 𝒜 (g i))).opensRange)
+    (degreeOneCharts_coversTop 𝒜 g hg)
+    (fun i => natShiftLocalQuasicoherentData 𝒜 (g i) d)
+
+set_option maxHeartbeats 1600000 in
+set_option synthInstance.maxHeartbeats 400000 in
+/-- A nonnegative twist is quasi-coherent as soon as degree-one basic opens cover `Proj 𝒜`.
+
+The hypothesis is exactly what the degree-one trivialization needs, and it is strictly weaker
+than an `AffineComparisonData` for `natShift 𝒜 d`, which would demand a comparison on charts of
+every positive degree — charts on which `A(d)` need not be trivial at all. -/
+theorem natShift_isQuasicoherent {I : Type u} (g : I → 𝒜 1) (d : ℕ)
+    (hg : (⨆ i, ProjectiveSpectrum.basicOpen 𝒜 (g i : A)) = ⊤) :
+    (associatedSheaf 𝒜 (natShift 𝒜 d)).IsQuasicoherent :=
+  (natShiftQuasicoherentData 𝒜 g d hg).isQuasicoherent
+
 /-! ## Coherence -/
 
 /-- Explicit finite-presentation hypotheses for all degree-zero localized modules.  No

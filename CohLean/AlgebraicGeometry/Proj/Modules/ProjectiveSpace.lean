@@ -476,6 +476,17 @@ noncomputable def polynomialTwistingGlobalSectionsModuleIso
   letI : Module k (polynomialTwistingGlobalSections ι k d) := e.symm.module k
   exact LinearEquiv.toModuleIso (e.symm.linearEquiv (A := k)).symm
 
+/-- Nonnegative twists on polynomial projective space are quasi-coherent.
+
+The variable charts have degree one and cover, which is exactly the hypothesis of
+`natShift_isQuasicoherent`.  No comparison on higher-degree charts is needed or available. -/
+theorem polynomialNatShift_isQuasicoherent (ι k : Type u) [Field k] (d : ℕ) :
+    (associatedSheaf (polynomialGrading ι k)
+      (natShift (polynomialGrading ι k) d)).IsQuasicoherent :=
+  natShift_isQuasicoherent (polynomialGrading ι k)
+    (fun i => ⟨MvPolynomial.X i, MvPolynomial.isHomogeneous_X k i⟩) d
+    (polynomialVariableBasicOpen_cover ι k)
+
 /-! ## Degreewise algebra for the variable Čech cover -/
 
 /-- The product of the variables indexing one `(n + 1)`-fold Čech intersection. -/

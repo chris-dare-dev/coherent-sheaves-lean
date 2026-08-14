@@ -69,6 +69,10 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms CohLean.AlgebraicGeometry.Proj.natShiftOverIso
 #print axioms CohLean.AlgebraicGeometry.Proj.standardAway_degreeOne_opensRange_le
 #print axioms CohLean.AlgebraicGeometry.Proj.natShiftLocalQuasicoherentData
+#print axioms CohLean.AlgebraicGeometry.Proj.degreeOneCharts_coversTop
+#print axioms CohLean.AlgebraicGeometry.Proj.natShiftQuasicoherentData
+#print axioms CohLean.AlgebraicGeometry.Proj.natShift_isQuasicoherent
+#print axioms CohLean.AlgebraicGeometry.Proj.polynomialNatShift_isQuasicoherent
 #print axioms CohLean.AlgebraicGeometry.Proj.affineComparisonDataSelf
 #print axioms CohLean.AlgebraicGeometry.Proj.associatedSheaf_self_isQuasicoherent
 #print axioms CohLean.AlgebraicGeometry.Proj.AffineComparisonData.quasicoherentData
