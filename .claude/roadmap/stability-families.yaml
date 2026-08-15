@@ -70,6 +70,7 @@ generations:
   - { rev: 8, at: "2026-08-15", note: "Native child #389 removes the one-fixed-category restriction from the ordinary numerical adapter: actual slicings in varying fiber categories map to one common class space with one charge and quadratic form. Geometric base change remains separate." }
   - { rev: 9, at: "2026-08-15", note: "Native child #391 under epic #194 binds the five-clause ordinary families package and the Theorem 22.2 source-clause projection to actual slicing-defined loci on varying abstract fiber categories. The geometric probes remain explicit premises." }
   - { rev: 10, at: "2026-08-15", note: "Native child #393 under epic #194 replaces the discrete collection of unrelated fibers with a contravariant category-valued family, triangulated pullbacks, functorial K₀ maps, and compatible common class maps. It remains an abstract categorical base, not a scheme-derived family." }
+  - { rev: 11, at: "2026-08-15", note: "Native child #395 under epic #194 binds actual fiber pre-stability conditions to the categorical pullbacks: explicit preimage-slicing witnesses give phase transport, while common class maps and central charges give class, charge, and semistable-locus transport. Construction of those witnesses from geometry remains outside the abstract package." }
 retired: []
 
 # GitHub milestones are roadmap phases. Epic issues live inside them, and
@@ -168,12 +169,12 @@ items:
 
   - id: stability-families-e5
     gh_issue: 194
-    gh_sub_issues: [391, 393]
+    gh_sub_issues: [391, 393, 395]
     kind: epic
     parent: stability-families-m2
     title: "Define nonvacuous stability-in-families interfaces (§§20–23)"
     status: in_progress
-    summary: "Child #391 binds the five-clause ordinary package and its Theorem 22.2 source-clause projection to actual slicing-defined loci on varying fiber categories. Child #393 adds an abstract contravariant category-valued family, triangulated pullback functors, and K₀-compatible common class maps. Scheme-derived pullback, slicing transport, geometric openness, relative HN structures, and bounded moduli remain explicit follow-ons."
+    summary: "Child #391 binds the five-clause ordinary package and its Theorem 22.2 source-clause projection to actual slicing-defined loci on varying fiber categories. Child #393 adds an abstract contravariant category-valued family, triangulated pullback functors, and K₀-compatible common class maps. Child #395 packages actual fiber pre-stability conditions with explicit preimage-slicing witnesses and proves phase, class, charge, and nonzero semistable-locus transport. Scheme-derived pullback, geometric construction of the preimage/HN witnesses, geometric openness, relative HN structures, and bounded moduli remain explicit follow-ons."
     priority: should
     size: XL
     tags: [families, relative-hn]

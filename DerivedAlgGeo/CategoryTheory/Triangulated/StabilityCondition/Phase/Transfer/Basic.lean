@@ -68,6 +68,13 @@ structure Slicing.PreimageData (s : Slicing D) (F : C ⥤ D) : Prop where
   /-- HN filtrations in the source with factors detected by `F`. -/
   hn_exists : ∀ E : C, Nonempty (HNFiltration C (s.preimagePhase F) E)
 
+/-- The identity functor satisfies the two non-formal preimage axioms. -/
+theorem Slicing.preimageData_id (s : Slicing C) :
+    s.PreimageData (Functor.id C) where
+  hom_vanishing phi₁ phi₂ A B hphi hA hB g :=
+    s.hom_vanishing phi₁ phi₂ A B hphi hA hB g
+  hn_exists E := s.hn_exists E
+
 /-- Construct the genuine inverse-image slicing once the two non-formal axioms
 have been supplied. -/
 @[nolint unusedArguments]
@@ -95,6 +102,12 @@ theorem Slicing.preimage_P (s : Slicing D) (F : C ⥤ D) [F.Additive]
     [F.CommShift ℤ] [F.IsTriangulated] (h : s.PreimageData F)
     (phi : ℝ) (E : C) :
     (s.preimage F h).P phi E ↔ s.P phi (F.obj E) := by
+  rfl
+
+@[simp]
+theorem Slicing.preimage_id (s : Slicing C) :
+    s.preimage (Functor.id C) s.preimageData_id = s := by
+  apply Slicing.ext
   rfl
 
 /-- For a faithful functor, target Hom-vanishing supplies the Hom component of

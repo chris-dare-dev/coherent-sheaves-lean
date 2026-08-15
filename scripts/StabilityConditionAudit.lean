@@ -2389,8 +2389,10 @@ this against the file by eye. -/
 #print axioms CategoryTheory.Triangulated.Slicing.pullbackPhaseCollection
 #print axioms CategoryTheory.Triangulated.Slicing.pushforwardPhaseCollection
 #print axioms CategoryTheory.Triangulated.Slicing.PreimageData
+#print axioms CategoryTheory.Triangulated.Slicing.preimageData_id
 #print axioms CategoryTheory.Triangulated.Slicing.preimage
 #print axioms CategoryTheory.Triangulated.Slicing.preimage_P
+#print axioms CategoryTheory.Triangulated.Slicing.preimage_id
 #print axioms CategoryTheory.Triangulated.Slicing.PreimageData.ofFaithful
 #print axioms CategoryTheory.Triangulated.Slicing.PreimageData.phaseShift
 #print axioms CategoryTheory.Triangulated.Slicing.pullback
@@ -2998,6 +3000,16 @@ end SlicingChecks
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.TriangulatedFiberFamily.CompatibleClassMaps.pull_compatible
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.TriangulatedFiberFamily.CompatibleClassMaps.class_pull
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.TriangulatedFiberFamily.CompatibleClassMaps.constant
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.FiberPreStabilityBaseChangeData
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.FiberPreStabilityBaseChangeData.classMap_compatible
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.FiberPreStabilityBaseChangeData.charge_compatible
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.FiberPreStabilityBaseChangeData.preimageData
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.FiberPreStabilityBaseChangeData.slicing_compatible
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.FiberPreStabilityBaseChangeData.phase_iff
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.FiberPreStabilityBaseChangeData.class_pull
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.FiberPreStabilityBaseChangeData.charge_pull
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.FiberPreStabilityBaseChangeData.constant
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.FiberPreStabilityBaseChangeData.class_mem_semistableClasses_pull
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.ChargeProbe
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.ChargeProbe.IsLocallyConstant
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.UniversallyLocallyConstantCharge
