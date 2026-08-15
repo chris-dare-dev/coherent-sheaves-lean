@@ -51,7 +51,16 @@ AUDITS = {
         ["CategoryTheory.Triangulated.",
          "CategoryTheory.Triangulated.StabilityCondition."],
     ),
-    "DGCategory": ("scripts/DGCategoryAudit.lean", ["DGCategory."]),
+    # `DGCategory.` until 2026-08-15. #374 moved every declaration into
+    # `CategoryTheory`, which left that prefix naming a namespace that no longer
+    # exists. It never failed a build, because the resolver tries the bare name
+    # first and every record in this audit is fully qualified -- so the prefixes
+    # are dead weight until someone writes an unqualified record, which is normal
+    # practice in the other two audits and would then silently fail to resolve.
+    "DGCategory": (
+        "scripts/DGCategoryAudit.lean",
+        ["CategoryTheory.", "CategoryTheory.DGCategory."],
+    ),
 }
 
 # Public declarations absent from each audit, as measured 2026-08-14. Lower these
@@ -106,6 +115,19 @@ def main(argv: list[str]) -> int:
 
     for lib, (audit_path, prefixes) in AUDITS.items():
         declared = env.get(lib, set())
+        if not declared:
+            # The same vacuous pass the global check above rejects, one level
+            # down: with no declarations for this library, `missing` is empty and
+            # the ceiling is met no matter what the audit says. It means the sweep
+            # did not reach the library, or `EnumDecls.libraryOf` stopped
+            # classifying its modules -- a new source root under an existing one
+            # is the way that happens. Either way this gate is not measuring it.
+            print(f"::error::{lib} contributed no declarations to the sweep; the "
+                  "ceiling below would be met vacuously. Check that "
+                  "EnumDecls.lean imports it and that libraryOf classifies its "
+                  "modules.")
+            failed = True
+            continue
         raw = listed_names(Path(audit_path))
 
         resolved: set[str] = set()

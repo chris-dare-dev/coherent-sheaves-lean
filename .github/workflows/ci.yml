@@ -297,7 +297,17 @@ jobs:
           # imports the sweep umbrella, which is not a default target, so build
           # it here rather than depending on what an earlier step happened to
           # leave behind.
-          lake build emit
+          #
+          # The LIBRARY, not the executable. This used to be `lake build emit`,
+          # and linking an executable requires every transitively imported module
+          # compiled to a native object -- 4173 Mathlib `:c.o` targets, plus ~300
+          # more, on every hosted run. Measured on PR #421 that was 337s of a
+          # 660s job, and it survived the build cache because those objects live
+          # under .lake/packages, which the `.lake/build` cache does not cover.
+          # Nothing in this step needs the executable: `lake env lean` reads
+          # oleans. See the "Emit combined environment" step for the same change
+          # where it matters more.
+          lake build DerivedAlgGeoSweep
           : > lean-source-check.txt
           for f in exe/*.lean; do
             lake env lean "$f" 2>&1 | tee -a lean-source-check.txt
@@ -310,10 +320,35 @@ jobs:
       - name: Emit combined environment
         run: |
           set -euo pipefail
-          lake build emit
+          # INTERPRETED, not compiled, and this is the single biggest saving left
+          # in this workflow. `lake exe emit` needs the executable linked, and
+          # linking one compiles every transitively imported module to a native
+          # object: 4173 Mathlib `:c.o` targets plus ~300 others, then a 278 MB
+          # link. None of it is cached -- those objects live under
+          # .lake/packages/*/.lake/build/ir, and the `.lake/build` cache covers
+          # only the root package -- so it recurred on every single hosted run.
+          #
+          # The interpreter needs none of it: it reads the oleans the build cache
+          # already restored. Measured on a warm tree, interpreted is also
+          # FASTER than compiled end to end (134s vs 158s), because the compiled
+          # path pays to load a 278 MB binary that the interpreter never
+          # produces.
+          #
+          # Verified equivalent before switching: both paths emit 11945
+          # constants, identical names, identical `counts`, identical `cites`
+          # totals; the only differing byte in the whole artifact is
+          # `emitted_at`. And exit codes propagate through `--run` (3 -> 3,
+          # 0 -> 0, a thrown IO error -> 1), which is load-bearing, because the
+          # non-zero exit BELOW IS the repository-wide sorry gate. If that ever
+          # stopped propagating, this gate would pass vacuously forever.
+          #
+          # `lake build emit` still runs in the cache-warm workflow, so the
+          # executable is still proved to link on Linux once per merge to main;
+          # it is only off the per-pull-request path.
+          lake build DerivedAlgGeoSweep
           # Non-zero when any constant's axiom closure contains sorryAx. This is
           # the repository-wide sorry gate; the artifact is written either way.
-          lake exe emit --out attest/lean-emission.json
+          lake env lean --run exe/Emit.lean --out attest/lean-emission.json
           # ...and this is what keeps that gate from silently shrinking to a
           # scope where the claim is vacuously true. See the script's docstring.
           python3 scripts/check_emission_coverage.py attest/lean-emission.json

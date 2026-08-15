@@ -3,8 +3,12 @@
 #
 # An unattended formalization loop needs a single exit code to branch on, and it
 # needs the gates in cheapest-first order so a failure is reported in two minutes
-# rather than forty. Nothing here is new policy: every gate already runs in
-# `.github/workflows/ci.yml`.
+# rather than forty. Every gate below also runs in `.github/workflows/ci.yml`,
+# with ONE deliberate exception: `workflows`. That one cannot be a CI gate,
+# because a workflow file too invalid to parse is also too invalid to run the
+# job that would have checked it -- GitHub just fails a run named after the file
+# and reports no checks at all. It has to fire before the file reaches GitHub,
+# which means here. See scripts/check_workflows.sh.
 #
 #   scripts/gates.sh fast   build + style + axiom audits          (~minutes)
 #   scripts/gates.sh        everything CI runs, in CI's order
@@ -132,6 +136,11 @@ mathlib_style() {
 
 echo "== gates ($MODE) =="
 
+# First because it is the cheapest gate here by three orders of magnitude
+# (~100ms against minutes) and because it is the one whose failure is otherwise
+# invisible: an invalid workflow does not produce a red check, it produces no
+# checks. In `fast` mode too, for the same reason.
+gate workflows scripts/check_workflows.sh
 gate mathlib-style mathlib_style
 gate build lake build
 gate algebraic-geometry-audit algebraic_geometry_audit
@@ -146,8 +155,19 @@ if [ "$MODE" != "fast" ]; then
   gate source-independence python3 scripts/check_source_independence.py
   gate coverage-map python3 scripts/check_coverage_map.py
   gate audit-complete audit_complete
+  # emit-build keeps proving the executable still LINKS -- linking is the only
+  # thing that exercises the native-object path at all, and exe/Emit.lean notes
+  # it cannot be linked on Windows. It is the expensive gate on a cold tree
+  # (4173 Mathlib `:c.o` targets) and cheap on a warm one, which is why CI runs
+  # it only in the cache-warm workflow and not per pull request.
   gate emit-build lake build emit
-  gate emit lake exe emit --out /tmp/derived-alg-geo-emission.json
+  # ...but the emission itself runs INTERPRETED, matching CI. It needs no native
+  # objects, and on a warm tree it is faster than the compiled path (134s vs
+  # 158s) because it never loads the 278 MB binary. Verified equivalent: same
+  # 11945 constants, same names, same counts; `emitted_at` is the only byte that
+  # differs. Exit codes propagate through `--run`, which matters because this
+  # non-zero exit IS the repository-wide sorry gate.
+  gate emit lake env lean --run exe/Emit.lean --out /tmp/derived-alg-geo-emission.json
   # The emit gate above is the repository-wide sorry gate. This one checks that
   # it swept everything -- without it, a library root nobody imported into
   # DerivedAlgGeoSweep.lean drops out of coverage with every gate still green.
