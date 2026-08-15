@@ -155,8 +155,19 @@ if [ "$MODE" != "fast" ]; then
   gate source-independence python3 scripts/check_source_independence.py
   gate coverage-map python3 scripts/check_coverage_map.py
   gate audit-complete audit_complete
+  # emit-build keeps proving the executable still LINKS -- linking is the only
+  # thing that exercises the native-object path at all, and exe/Emit.lean notes
+  # it cannot be linked on Windows. It is the expensive gate on a cold tree
+  # (4173 Mathlib `:c.o` targets) and cheap on a warm one, which is why CI runs
+  # it only in the cache-warm workflow and not per pull request.
   gate emit-build lake build emit
-  gate emit lake exe emit --out /tmp/derived-alg-geo-emission.json
+  # ...but the emission itself runs INTERPRETED, matching CI. It needs no native
+  # objects, and on a warm tree it is faster than the compiled path (134s vs
+  # 158s) because it never loads the 278 MB binary. Verified equivalent: same
+  # 11945 constants, same names, same counts; `emitted_at` is the only byte that
+  # differs. Exit codes propagate through `--run`, which matters because this
+  # non-zero exit IS the repository-wide sorry gate.
+  gate emit lake env lean --run exe/Emit.lean --out /tmp/derived-alg-geo-emission.json
   # The emit gate above is the repository-wide sorry gate. This one checks that
   # it swept everything -- without it, a library root nobody imported into
   # DerivedAlgGeoSweep.lean drops out of coverage with every gate still green.
