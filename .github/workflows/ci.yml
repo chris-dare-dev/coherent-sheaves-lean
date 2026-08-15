@@ -373,6 +373,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Every required job succeeded
+        # Through `env`, not interpolated into the script. Two reasons, and the
+        # second one is why the first attempt at this file was rejected outright:
+        # workflow expressions may only quote strings with SINGLE quotes, so the
+        # obvious `join(needs.*.result, " ")` is a syntax error -- and GitHub
+        # answers an invalid workflow by failing a run named after the file with
+        # no annotation and no checks at all, which reads exactly like CI never
+        # triggered. Keeping expressions out of the script body sidesteps the
+        # nested-quoting that caused it, and is the standard way to avoid script
+        # injection from expression output besides.
+        env:
+          RESULTS: ${{ join(needs.*.result, ' ') }}
         run: |
           set -euo pipefail
           # Enumerate rather than pattern-match. `contains(needs.*.result,
@@ -380,10 +391,9 @@ jobs:
           # passes a cancelled job, and it passes a SKIPPED one. A job that
           # never ran has not proved anything, so anything other than `success`
           # fails here.
-          results='${{ join(needs.*.result, " ") }}'
-          echo "upstream results: ${results}"
+          echo "upstream results: ${RESULTS}"
           rc=0
-          for r in ${results}; do
+          for r in ${RESULTS}; do
             if [ "$r" != "success" ]; then
               echo "::error::a required job did not succeed (result: ${r})"
               rc=1
