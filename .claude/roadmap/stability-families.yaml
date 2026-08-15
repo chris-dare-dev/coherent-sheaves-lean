@@ -45,7 +45,7 @@ goal:
       validation: "The parked cross-repo epic must select an upstream or separate-package owner before implementation begins."
   wont:
     - "No wholesale merge of origin/agent/hn-mass-triangle-chain; only reviewed current-main slices."
-    - "No implementation may bypass the monorepo's CohLean/DerivedAlgGeoLean/BridgelandStabLean package boundaries or introduce a hidden trust assumption."
+    - "No implementation may bypass the monorepo's subject boundaries under DerivedAlgGeo or introduce a hidden trust assumption."
     - "No placeholder axiom, sorry-backed instance, or vacuous structure to make a paper definition typecheck."
     - "No claim that ingestion in arXMCP establishes paper coverage or source-version identity."
     - "No claim of Theorems 22.2, 24.1, or 29.2 until their geometric, boundedness, and moduli prerequisites are formalized."
@@ -55,7 +55,7 @@ goal:
     - "PR #97 — both Hom-orthogonal aisles connected to the textbook truncation formulation; issue #94 closed."
     - "Destination PRs #218–#223 — v4.32.1 ports of the remaining source PR stacks, with source PR/head provenance and fresh validation recorded in each PR."
     - "PR #101 — 1902.08184v4 source pin and zero-claim coverage map; all theorem promotions remain review-gated."
-    - "The CohLean package and destination B1–B5 milestones — geometric substrate and explicit HRR trust boundary."
+    - "The AlgebraicGeometry subject and destination B1–B5 milestones — geometric substrate and explicit HRR trust boundary."
     - "arXMCP bridgeland-stability notebook — paper present with 548 chunks; ingestion alone is not a source-binding claim."
 
 generated_by: { agent: codex, at: "2026-08-08" }
@@ -178,7 +178,7 @@ items:
     status: planned
     lane: later
     acceptance:
-      - "The CohLean package has crossed the required B1–B5 gates with linked evidence."
+      - "The AlgebraicGeometry subject has crossed the required B1–B5 gates with linked evidence."
       - "Ownership and reusable APIs are chosen for Quot, stacks, boundedness, semistable reduction, and good moduli."
       - "Only then are Theorems 22.2, 24.1, and the Part VI applications decomposed into implementation milestones."
 

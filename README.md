@@ -1,236 +1,103 @@
-# DerivedAlgGeoLean
+# DerivedAlgGeo
 
-DerivedAlgGeoLean is a Lean 4 monorepo for coherent sheaves, derived-category
-infrastructure, numerical algebraic geometry, Bridgeland stability conditions,
-and future Fourier–Mukai transforms. Its coherent-sheaf library is
-dimension-general: surfaces, threefolds, and fourfolds are specializations of
-shared definitions rather than separate foundations.
+`DerivedAlgGeo` is a Lean 4 library for derived algebraic geometry. It develops
+coherent sheaves and their cohomology, derived and dg categories, Bridgeland
+stability conditions, Fourier--Mukai prerequisites, duality, intersection
+theory, and Riemann--Roch.
 
-The project aims to connect scheme-theoretic constructions to the numerical data used in
-Riemann–Roch and stability theory while keeping every hypothesis and trust boundary explicit.
+The repository follows Mathlib's layout: one public source root, organized by
+mathematical subject rather than by the history of the repositories that were
+merged into it.
 
-## What is formalized
-
-- A dimension-general numerical intersection ring and numerical variety interface.
-- Universal Chern-character and Todd-class formulas through codimension four.
-- Numerical Riemann–Roch, discriminants, duality formulas, Euler pairings, and the
-  nondegenerate numerical Grothendieck quotient with its explicit finite-free lattice boundary.
-- Concrete numerical models in dimension zero and for several classes of surfaces.
-- Coherent sheaves on locally noetherian schemes, including locality and abelian-category
-  structure.
-- Affine comparison and finiteness results for sheaves of modules.
-- Degree-zero localization of graded modules, associated sheaves and twisting sheaves on
-  projective spectra, including the canonical identification of the structure module with the
-  structure sheaf, its standard-chart comparisons, and degree-one-chart trivializations of
-  nonnegative twists through the canonical basic-open section maps. For polynomial projective
-  space, degree-`d` homogeneous polynomials are identified concretely with global sections of
-  `O(d)`, and variable-cover Čech terms are explicit homogeneous localizations.
-- Cartier and effective divisors, associated invertible sheaves, Picard-group structure,
-  determinants, and first Chern classes.
-- Čech, derived-functor, and spectral-sequence infrastructure for sheaf cohomology.
-- Euler characteristics and their additivity under explicit finiteness data.
-- Numerical polynomials, Snapper-style certificates, surface intersection numbers, and
-  Chern-character reconstruction.
-- Exact contravariant linear duality on module categories, its derived-category lift, explicit
-  derived/cohomological Serre-duality interfaces, perfect coherent pairings, and the proved Euler
-  symmetry for locally free sheaves.
-- Geometric Riemann--Roch on smooth proper surfaces from Serre symmetry and Snapper
-  intersections: line bundles and effective divisors, reconstructed Todd data, finite locally
-  free dévissage, and coherent sheaves carrying explicit two-term perfect resolutions.
-- The surface assembly boundary: additive geometric invariants descend through `K₀(Coh X)`,
-  geometric HRR discharges the Layer A `NumericalVariety` field, and the Euler-radical quotient
-  and K3 specialization reuse the audited Layer A conventions.
-- Scheme-derived numerical HRR in every positive dimension through four, including explicit
-  threefold and fourfold `NumericalVariety` bridges reconstructed from Picard Euler polynomials.
-- Abstract numerical and Mukai lattices, support properties, weak stability conditions,
-  HRS tilting, stability metrics, and symmetry actions on stability conditions.
-- An owner-controlled, Mathlib-only Bridgeland foundation for slicings,
-  stability conditions, abelian stability functions, HN filtrations, phase
-  truncations, and their canonical t-structures.
-- Repository-owned deformation theory, heart equivalences, and t-structure
-  bridges, with CI enforcing zero imports from the retired external source.
-
-Incomplete theorems are described in module documentation and tracked as GitHub issues; the
-library contains no `sorry` declarations.
-
-## Repository map
-
-The owner-maintained source trees retain their established module names and histories.
-There is no external or vendored stability-condition library root.
+## Source layout
 
 ```text
-DerivedAlgGeoLean.lean               # combined stable umbrella
-CohLean/
+DerivedAlgGeo.lean
+DerivedAlgGeo/
+├── Algebra/
+│   └── Category/Grp/              # generic algebra infrastructure
 ├── AlgebraicGeometry/
-│   ├── Divisors/                 # Cartier, effective, Picard, determinant
+│   ├── CoherentSheaf/
+│   ├── Cohomology/
+│   ├── Divisors/
+│   ├── Duality/
+│   ├── IntersectionTheory/
 │   ├── Modules/
-│   │   ├── Affine/               # comparison, gluing, finiteness, exactness
-│   │   ├── Presentation/         # finite presentations and transport
-│   │   └── Restriction/          # open-immersion restriction
-│   ├── Proj/Modules/              # localization, twists, projective sections, Čech terms
-│   └── Variety/                  # geometric varieties and numerical descent
-├── Coh/
-│   ├── Basic/                    # definitions and isomorphism invariance
-│   ├── Descent/                  # locality
-│   ├── Affine/                   # affine comparison
-│   └── Abelian/                  # kernels, extensions, abelian structure
-├── Cohomology/
-│   ├── Cech/
-│   ├── Derived/
-│   ├── EulerCharacteristic/
-│   ├── Finiteness/               # finite-dimensionality boundary and cohomological bounds
-│   ├── Simplicial/
-│   └── SpectralSequence/
-├── Duality/
-│   ├── Canonical/                # canonical sheaf, class, and canonical complex
-│   └── Serre/                    # derived linear dual, perfect pairings, Euler symmetry
-├── Intersection/
-│   ├── ChernCharacter/
-│   ├── NumericalPolynomial/
-│   └── Surface/
-├── Numerical/
-│   ├── Core/
-│   ├── GrothendieckGroup/
+│   ├── Numerical/
+│   ├── Proj/
 │   ├── RiemannRoch/
-│   ├── Specializations/
-│   └── Examples/
-├── RiemannRoch/
-│   ├── Grothendieck.lean         # dimension-independent additive-invariant descent through K₀
-│   ├── HigherDimension/          # reconstructed HRR and dimension-three/four bridges
-│   └── Surface/                  # divisors, Todd data, dévissage, and geometric-to-numerical assembly
-├── Topology/Opens/
-└── Development/                  # compile-only API audits and probes
-BridgelandStabLean/
-├── Foundation/                   # owned slicings, HN theory, deformation, and stability conditions
-├── Lattice/                      # arithmetic, numerical, and Mukai lattices
-└── StabilityCondition/           # metric, support, symmetry, walls, weak stability
+│   └── Variety/
+├── CategoryTheory/
+│   ├── DGCategory/
+│   └── Triangulated/
+│       ├── TStructure/
+│       └── StabilityCondition/
+├── LinearAlgebra/
+│   ├── Lattice/
+│   └── Matrix/
+├── Topology/
+└── Development/                   # exploratory code, outside the public root
 ```
 
-This layout reserves natural growth points for duality, higher-dimensional Riemann–Roch, and
-further projective-geometry work represented in the issue tracker.
+The old `CohLean`, `DGLean`, and `BridgelandStabLean` roots have been retired.
+Their content now lives in this subject hierarchy and uses canonical
+mathematical namespaces such as `AlgebraicGeometry`, `CategoryTheory`,
+`CategoryTheory.Triangulated`, `IntegralLattice`, and `Mukai`.
 
-The Čech-to-derived comparison is complete for open covers of topological spaces. An explicit
-injective resolution maps from its global-sections complex to the injective Čech total; the map
-is a quasi-isomorphism because injective Čech rows are exact. Consequently every Čech-acyclic
-cover computes `Sheaf.H` in all degrees. On the small site of opens the resolution is no longer an
-input: the pinned Mathlib makes abelian sheaves over a small site a Grothendieck abelian category,
-hence one with enough injectives, so `canonicalInjectiveResolution` chooses one. Mathlib's
-`HasExt` witness is still an explicit argument in that form, and the resolution-carrying form is
-retained for a general site, where enough injectives is genuinely unavailable.
+## Imports
 
-For affine quasi-coherent sheaves, the library proves the non-circular compact-basis criterion of
-Stacks Project, Tag 01EW, specializes it to the distinguished-open basis, and derives unconditional
-positive-degree vanishing in Mathlib's `Sheaf.H`. The result applies to every quasi-coherent module
-sheaf on `Spec R` through the affine module/sheaf comparison, without a noetherian hypothesis.
+For the complete stable library:
 
-For quasi-compact schemes with affine diagonal, a fixed finite affine cover now gives an explicit
-bound above which the actual derived cohomology of every quasi-coherent module vanishes. The proof
-uses local affine `H'`-vanishing on all finite intersections and Mayer--Vietoris induction. This
-boundedness is packaged separately from degreewise finite-dimensionality, with a constructor that
-combines both inputs into `FiniteCohomology`.
+```lean
+import DerivedAlgGeo
+```
 
-For varieties over a field, the base field now acts canonically and centrally on every coherent
-sheaf through the structure morphism. Applying derived cohomology constructs a functorial
-`ModuleCat k` lift whose underlying additive groups are definitionally the existing `Sheaf.H`
-groups. The remaining projective-finiteness work is therefore geometric Serre finiteness, not a
-choice of scalar structures.
+Prefer the narrowest useful umbrella in library code, for example:
 
-For varieties over a field, `Duality/Canonical` constructs the relative cotangent module sheaf by
-sheafifying the objectwise Kähler differential presheaf and proves its universal property for
-derivations into module sheaves, together with the free rank calculation on standard-smooth
-charts. For smooth proper varieties of a fixed relative dimension, it packages the canonical
-sheaf as the determinant of that cotangent sheaf, proves the canonical line is coherent, exposes
-its Picard class and Cartier representatives, and constructs the derived object `ω_X[n]`. The
-degree-zero convention is checked on the smooth proper point. An explicit rank-`n` sheaf
-trivialization is now constructed directly from each standard-smooth affine chart and globalized
-to fixed-rank locally-free cotangent data. The top exterior power is descended to an invertible
-sheaf with an explicit tensor-dual inverse, yielding canonical-sheaf data automatically from the
-smooth pure-dimension certificate. The general relative-differentials construction for arbitrary
-morphisms of ringed spaces remains a visible upstream boundary.
+```lean
+import DerivedAlgGeo.AlgebraicGeometry.CoherentSheaf
+import DerivedAlgGeo.AlgebraicGeometry.Cohomology.Cech
+import DerivedAlgGeo.CategoryTheory.DGCategory
+import DerivedAlgGeo.CategoryTheory.Triangulated.TStructure
+import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition
+```
 
-`Duality/Serre` uses the constructed canonical complex and packages a linear realization of
-Mathlib's actual `Abelian.Ext` groups. From explicit perfect-pairing data it proves complementary
-cohomology dimensions and the sign `χ(F)=(-1)^nχ(Fᵛ⊗ω_X)`; the displayed pairing is now certified
-against Mathlib's `LinearMap.IsPerfPair`, and coherent and locally-free duality equivalences are
-exported separately. Algebraic linear duality is now an exact contravariant functor on
-`ModuleCat k`, with its induced functor on derived categories; the comparison
-`(DerivedCategory C)ᵒᵖ ≃ DerivedCategory (Cᵒᵖ)` is the explicit remaining bridge needed to use it
-from the opposite derived category. On surfaces, the resulting Picard symmetry and the geometric
-Snapper pairing prove the divisor Riemann--Roch formula. The effective case also factors through
-the genuine fundamental coherent sequence, with its remaining quotient/intersection comparison
-explicit. Derived global sections, coherent `RHom`, the opposite-derived comparison, and the
-Grothendieck-duality equivalence remain visible inputs rather than axioms.
+`DerivedAlgGeo.Development` is intentionally not imported by
+`DerivedAlgGeo.lean`; its probes may change while an API is being designed.
 
-For surfaces, `RiemannRoch/Surface/NumericalVariety` turns compatible reconstructed Chern data,
-geometric Todd components, and a coherent-sheaf HRR theorem into a concrete
-`NumericalVariety 2 A K₀(Coh X)`. The HRR statement for virtual classes is proved by additive
-descent rather than postulated. Its numerical class map then uses the Euler-radical quotient
-from the numerical lattice API, and geometric K3 Todd identities produce the existing Layer A
-`K3.IsK3` specialization. `RiemannRoch/Surface/Assembly` supplies the required coherent-sheaf
-HRR theorem directly from twist-polynomial reconstruction and installs the resulting geometric
-numerical surface.
+## Build and verification
 
-`RiemannRoch/Surface` now reconstructs `td₀`, `td₁=-K_X/2`, and the top Todd representative
-from the structure-sheaf twist polynomial, proving `∫td₂=χ(O_X)` and the K3 normalization.
-The same package proves the classical rank/`c₁`/`c₂` formula for determinant-equipped finite
-locally free sheaves and extends it to coherent sheaves only through a visible two-term perfect
-resolution. Its exact-sequence, Grothendieck-group, and Layer A comparisons are term-by-term;
-no global resolution property is assumed. The final assembly proves HRR for every coherent sheaf
-without that resolution hypothesis, then uses explicit perfect data only to recover the classical
-rank/`c₁`/`c₂` interpretation.
-
-`RiemannRoch/HigherDimension/Hirzebruch` extends the reconstruction argument to every positive
-dimension at most four. For each coherent sheaf, the top represented coefficient has degree its
-Euler characteristic; the triangular identities identify it with the top component of
-`ch(F)·td(X)`, and additivity descends the theorem through `K₀(Coh X)`. This constructs genuine
-threefold and fourfold `NumericalVariety` bridges and activates the existing Layer A display
-formulas. The scope is deliberately numerical: representability and separation by divisor
-products remain explicit, and no claim is made that the reconstructed Todd representatives are
-cycle-valued tangent-bundle Chern polynomials. Extending beyond dimension four requires extending
-the universal Chern-character recursion currently implemented only through codimension four.
-
-## Building
-
-The repository pins its Lean and Mathlib revisions.
+The repository is pinned to Lean/Mathlib v4.32.1.
 
 ```bash
 lake build
-lake env lean scripts/Audit.lean
-lake env lean scripts/BridgelandAudit.lean > /tmp/bridgeland-audit.txt 2>&1
-python3 scripts/check_audit.py /tmp/bridgeland-audit.txt
-lake exe runLinter BridgelandStabLean
-python3 scripts/check_source_independence.py
+scripts/gates.sh fast
+scripts/gates.sh
 ```
 
-The two audits retain their subsystem-specific declaration lists. The emitter
-(`lake exe emit --out attest/lean-emission.json`) sweeps the combined environment
-and fails if any declaration depends on `sorryAx`. `CohLean` retains its
-pre-merge build, audit, and source-elaboration gates; making its historical
-documentation and naming linter backlog clean is separate maintenance work.
+The full gate runs the unified environment linter, source-independence and
+coverage checks, the subsystem axiom audits, and the repository-wide
+declaration emitter. In particular, it rejects declarations depending on
+`sorryAx`.
 
-## Using the libraries
+The maintained audit sources are:
 
-Import the complete stable environment with:
+- `scripts/AlgebraicGeometryAudit.lean`
+- `scripts/StabilityConditionAudit.lean`
+- `scripts/DGCategoryAudit.lean`
 
-```lean
-import DerivedAlgGeoLean
+Documentation is built from the nested package so `doc-gen4` does not become a
+runtime dependency:
+
+```bash
+cd docbuild
+lake build DerivedAlgGeo:docs
 ```
 
-Or use a narrower umbrella such as `CohLean`,
-`CohLean.Cohomology.Cech`, or `BridgelandStabLean.StabilityCondition`.
-
-To combine this package with Mathlib in another Lake package, add it as a dependency and keep
-the consuming package on the Lean/Mathlib revisions recorded by this repository's
-`lean-toolchain` and `lake-manifest.json`.
-
-## Contributing
-
-See [CONTRIBUTING.md](CONTRIBUTING.md). GitHub milestones and issues are the source of truth for
-planned work, dependencies, and acceptance criteria. New leaves should be placed beneath the
-smallest existing mathematical subsystem and exported through its nearest umbrella module.
+See `ARCHITECTURE.md` for ownership and dependency rules and
+`CONTRIBUTING.md` for the contribution workflow.
 
 ## License
 
-The owner-authored trunk is MIT; see [LICENSE](LICENSE). Repository-maintained
-files derived from Mathlib and the former comparison source retain their
-Apache-2.0 headers and notices in [LICENSES/README.md](LICENSES/README.md).
+Repository-authored code is released under the MIT license. Files derived from
+external sources retain the notices described in `LICENSES/`.

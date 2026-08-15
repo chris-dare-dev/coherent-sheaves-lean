@@ -14,15 +14,17 @@ because *which* environment it sweeps is a property of one import line.
 scope filter, not the import. So a library root that no import reaches is not
 "partially covered" or "reported missing": it contributes zero constants, the
 emitter finds zero sorries in it, and the run is green. Measured on 2026-08-14
-before #361, the emission covered 406 of 419 tracked modules -- all of `DGLean`,
-all of `CohLean.Development`, and the former vendor umbrella were absent, with
+before #361, the emission covered 406 of 419 tracked modules -- the dg-category
+subsystem, development probes, and the former vendor umbrella were absent, with
 nothing in CI saying so. The vendor root has since been retired.
 
 A gate that can shrink to nothing while still passing is the vacuous pass this
 repository's attestation design exists to make impossible. This script is the
-guard: it recomputes the obligation from `git ls-files` on every run, so adding a
-library root without importing it into `DerivedAlgGeoSweep.lean` fails loudly
-rather than quietly reducing what is gated.
+guard: it recomputes the obligation from the tracked files still present in the
+working tree on every run, so adding a library root without importing it into
+`DerivedAlgGeoSweep.lean` fails loudly rather than quietly reducing what is
+gated. Filtering deleted paths matters for structural changes: `git ls-files`
+continues to report an indexed file until the deletion is committed.
 
 Exclusions are deliberate, and each is justified below in EXCLUDED_PREFIXES.
 
@@ -71,7 +73,7 @@ def tracked_modules() -> dict[str, str]:
     return {
         module_of(p): p
         for p in out
-        if not p.startswith(EXCLUDED_PREFIXES)
+        if not p.startswith(EXCLUDED_PREFIXES) and Path(p).is_file()
     }
 
 

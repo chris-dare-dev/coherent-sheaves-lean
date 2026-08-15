@@ -15,12 +15,11 @@ because the environment is where the information lives: `.casesOn`, `.recOn`,
 `.noConfusion`, `.injEq`, and the `match_`/`proof_` internals are produced by
 declaring an inductive or by tactic elaboration, and no audit should list them.
 -/
-import DerivedAlgGeoLean
-import DGLean
-import CohLean.Development.AlgebraicGeometry.Divisors.API
-import CohLean.Numerical.Specializations.Surface
-import CohLean.Numerical.Specializations.Threefold
-import CohLean.Numerical.Specializations.Fourfold
+import DerivedAlgGeo
+import DerivedAlgGeo.Development.AlgebraicGeometry.Divisors.API
+import DerivedAlgGeo.AlgebraicGeometry.Numerical.Specializations.Surface
+import DerivedAlgGeo.AlgebraicGeometry.Numerical.Specializations.Threefold
+import DerivedAlgGeo.AlgebraicGeometry.Numerical.Specializations.Fourfold
 
 open Lean
 
@@ -39,17 +38,28 @@ private def isAuthored (n : Name) : Bool := Id.run do
   if (s.splitOn "proof_").length > 1 then return false
   if (s.splitOn "match_").length > 1 then return false
   -- Equation lemmas: `prodD.eq_1`, `foo.eq_2`, … Missing these was what made a
-  -- complete `DGLean` audit look like it was one declaration short.
+  -- complete dg-category audit look like it was one declaration short.
   if (s.splitOn ".eq_").length > 1 then return false
   return true
 
-/-- The owning library of a module, i.e. its first name component. -/
+/-- The mathematical subsystem owning a module under the unified source root. -/
 private def libraryOf (m : Name) : Option String :=
-  match m.components with
-  | root :: _ =>
-    let r := root.toString
-    if r == "CohLean" || r == "BridgelandStabLean" || r == "DGLean" then some r else none
-  | _ => none
+  let dg := `DerivedAlgGeo.CategoryTheory.DGCategory
+  let triangulated := `DerivedAlgGeo.CategoryTheory.Triangulated
+  let linearAlgebra := `DerivedAlgGeo.LinearAlgebra
+  let algebraicGeometry := `DerivedAlgGeo.AlgebraicGeometry
+  let algebra := `DerivedAlgGeo.Algebra
+  let topology := `DerivedAlgGeo.Topology
+  let development := `DerivedAlgGeo.Development
+  if m == dg || dg.isPrefixOf m then some "DGCategory"
+  else if m == triangulated || triangulated.isPrefixOf m ||
+      m == linearAlgebra || linearAlgebra.isPrefixOf m then
+    some "StabilityCondition"
+  else if m == algebraicGeometry || algebraicGeometry.isPrefixOf m ||
+      m == algebra || algebra.isPrefixOf m || m == topology || topology.isPrefixOf m ||
+      m == development || development.isPrefixOf m then
+    some "AlgebraicGeometry"
+  else none
 
 run_cmd do
   let env ← Lean.getEnv

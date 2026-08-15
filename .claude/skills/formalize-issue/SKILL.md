@@ -86,11 +86,10 @@ The rules that bite most often in unattended runs:
   that is a step-5 outcome, not something to paper over.
 - One issue owns one leaf path. Do not refactor an unrelated subsystem because
   you noticed something; note it for step 6 instead.
-- `Foundation/` is Mathlib-only and anchor-free. New vendor-API references go in
-  `Compatibility/` or nowhere.
+- Foundational subject modules must remain independent of specialized consumers.
 - Export the new leaf through its nearest subsystem umbrella.
-- Add every new public theorem to `scripts/Audit.lean` (`CohLean`) or
-  `scripts/BridgelandAudit.lean` (`BridgelandStabLean`). CI fails otherwise.
+- Add every new public theorem to `scripts/AlgebraicGeometryAudit.lean`,
+  `scripts/StabilityConditionAudit.lean`, or `scripts/DGCategoryAudit.lean`.
 - Write the module docstring and declaration docstrings **as you go**, to the
   standard in the style reference: say why the hypothesis is needed and what the
   proof idea is, not what the signature already says.

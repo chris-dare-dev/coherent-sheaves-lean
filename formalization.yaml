@@ -1,4 +1,4 @@
-# Trust record for the BridgelandStabLean subsystem of DerivedAlgGeoLean.
+# Trust record for the stability-condition subsystem of DerivedAlgGeo.
 #
 # Schema FOLLOWS mattrobball/BridgelandStability's formalization.yaml: same
 # top-level blocks, same key names, same intent. It is NOT a key-for-key
@@ -19,7 +19,7 @@
 # "none" or "pending" -- never a flattering guess.
 
 artifact:
-  name: DerivedAlgGeoLean / BridgelandStabLean
+  name: DerivedAlgGeo / StabilityCondition
   url: https://github.com/chris-dare-dev/derived-alg-geo-lean
   description: >
     A repository-owned Bridgeland-stability library spanning seven lanes that
@@ -307,7 +307,7 @@ fidelity:
   axiom_details: >
     No axiom declarations. Transitive closure enumerated 2026-08-08 on the
     #110 branch (parent 7524f06) via `scripts/check_audit.py` over the 757
-    declarations named in scripts/BridgelandAudit.lean: every one depends on a subset of
+    declarations named in scripts/StabilityConditionAudit.lean: every one depends on a subset of
     [propext, Classical.choice, Quot.sound] and nothing else. No sorryAx.
     Allowlist verdict: pass, with check_audit's truncation cross-check (PR
     #102) confirming the record count against Audit.lean's own commands.
@@ -323,7 +323,7 @@ fidelity:
     WHAT THIS COUNT IS AND IS NOT, corrected 2026-08-06 and RE-MEASURED
     2026-08-08 on the #110 branch off 7524f06. The figures below are no longer a source-text
     estimate and are no longer maintained by arithmetic; they come from a sweep
-    of the built environment via `lake env lean scripts/Census.lean`, which
+    of the built environment via `lake env lean scripts/StabilityConditionCensus.lean`, which
     counts what Lean actually has rather than what a regex finds at column 0.
     Re-run that command; do not adjust the numbers.
 
@@ -347,7 +347,7 @@ fidelity:
 
     It is 757 NAMED declarations, not "every declaration this project
     introduces". The environment holds 860 AUTHORED declarations under
-    BridgelandStabLean.* -- authored excluding constructors, recursors,
+    the stability-condition modules under DerivedAlgGeo -- authored excluding constructors, recursors,
     casesOn, matchers, equation lemmas, internal names, and the four
     generated families #105's census correction filters -- so 103 are
     outside the gate.
@@ -355,7 +355,7 @@ fidelity:
     44 of those are `private` (42 of them theorems) and are STRUCTURALLY
     unlistable: Lean mangles a private name to `_private.<Module>.<n>.<Name>`,
     so it cannot be written as a short name from an importing module, and
-    `scripts/BridgelandAudit.lean`'s instruction "adding a declaration to the library
+    `scripts/StabilityConditionAudit.lean`'s instruction "adding a declaration to the library
     means adding it here" cannot be followed for them. The earlier figure 42
     was counting private THEOREMS; there are 44 private DECLARATIONS.
 
@@ -369,7 +369,7 @@ fidelity:
     check_audit.py cross-checks output count against Audit.lean's commands
     (the #102 truncation fix) but never reads the source tree, and Audit.lean
     fails to build only when a name it ALREADY lists disappears, never when a
-    name it should list appears. scripts/Census.lean reports it, but it is a
+    name it should list appears. scripts/StabilityConditionCensus.lean reports it, but it is a
     script someone runs, not a CI gate; a name added without a matching entry
     still lands green.
 
@@ -845,7 +845,7 @@ fidelity:
     declarations, and 197 structure-field projections. Audit issues 1531
     commands (1529 distinct names), of which 1064 records are theorems, 51 are
     structures, and 414 are other non-theorems; no authored public declaration
-    remains outside the hand audit. `scripts/Census.lean` now also excludes the
+    remains outside the hand audit. `scripts/StabilityConditionCensus.lean` now also excludes the
     generated `hcongr_*` family after confirming that no source file writes such
     a name. This is an ownership and compatibility milestone, not a claim that
     the vendor can yet be removed: the frozen direct-import inventory still
@@ -966,7 +966,7 @@ fidelity:
     THAT COUNT IS 655 AND NOT 659, and the four-record difference is a defect
     of the session that added it, recorded because the mechanism will recur.
     The first commit of this work, aefda82, took the count to 659 by staging
-    scripts/BridgelandAudit.lean WHOLE in a working tree a second session was editing at
+    scripts/StabilityConditionAudit.lean WHOLE in a working tree a second session was editing at
     the same time. Four of the seventeen records it added --
     Tilting.HeartTorsionPair.tiltLE_of_triangle, tiltGE_of_triangle, and their
     At-level twins -- belonged to that other session's UNCOMMITTED work, so
@@ -990,7 +990,7 @@ fidelity:
     the parse hazard scripts/check_audit.py carries a regression test for.
 
     COUNT UPDATE (Tilting lane, heart increment), 2026-08-06. The 9 additional
-    records are BridgelandStabLean/StabilityCondition/Weak/Tilting/TorsionPair/Heart.lean: the
+    records are DerivedAlgGeo/CategoryTheory/Triangulated/StabilityCondition/Weak/Tilting/TorsionPair/Heart.lean: the
     HeartTorsionPair datum, the two tilted aisles with their isomorphism-closure
     instances, the factorisation lemma and its uniqueness counterpart, the
     orthogonality characterisation of the torsion class, and the Hom-vanishing
@@ -1000,7 +1000,7 @@ fidelity:
     tiltGE are `def ... : ObjectProperty C`).
 
     COUNT UPDATE (Wall lane), 2026-08-06. The 21 additional records are the
-    whole of BridgelandStabLean/StabilityCondition/Walls/Numerical/Basic.lean: the class abbreviation and
+    whole of DerivedAlgGeo/CategoryTheory/Triangulated/StabilityCondition/Walls/Numerical/Basic.lean: the class abbreviation and
     its three accessors, the two charge components, the three minors, the wall
     expression, the collapse identity, the circle and line forms, the shift and
     its four invariance lemmas, the charge-degeneracy criterion, and the
@@ -1009,14 +1009,14 @@ fidelity:
     constructions (9 def, 1 abbrev).
 
     COUNT UPDATE (FiniteLength lane), 2026-08-06. The 10 additional records are
-    the whole of BridgelandStabLean/StabilityCondition/Weak/Foundations/SimpleCharge.lean: the two
+    the whole of DerivedAlgGeo/CategoryTheory/Triangulated/StabilityCondition/Weak/Foundations/SimpleCharge.lean: the two
     cone-closure lemmas the foundational library lacks, the charge construction and its two
     computation lemmas, the freeness/uniqueness pair, and the three half-plane
     consequences. Audit count 585 -> 595. Coverage complete: 10 top-level
     declarations, 0 private, 10 named. 9 are theorems; 1 is a construction.
 
     COUNT UPDATE (Support lane), 2026-08-06. The 11 additional records are the
-    whole of BridgelandStabLean/StabilityCondition/Support/Basic.lean: the support
+    whole of DerivedAlgGeo/CategoryTheory/Triangulated/StabilityCondition/Support/Basic.lean: the support
     property, the two hypothesis structures, the compact slice and its
     compactness, the normalisation lemma, both directions of the equivalence,
     the equivalence itself, and two elementary consequences. Audit count
@@ -1026,7 +1026,7 @@ fidelity:
     nothing about the property holding of anything.
 
     COUNT UPDATE (Tilting lane), 2026-08-06. The 11 additional records are the
-    whole of BridgelandStabLean/StabilityCondition/Weak/Tilting/TorsionPair/Basic.lean: the TorsionPair
+    whole of DerivedAlgGeo/CategoryTheory/Triangulated/StabilityCondition/Weak/Tilting/TorsionPair/Basic.lean: the TorsionPair
     structure, the zero-intersection lemma, the two orthogonality
     characterisations, closure of the torsion-free class under subobjects and
     of the torsion class under quotients, closure of both under extensions, the
@@ -1039,7 +1039,7 @@ fidelity:
     known_divergences.
 
     COUNT UPDATE (Mukai lane), 2026-08-06. The 66 additional records are the
-    whole of BridgelandStabLean/Lattice/Mukai/: 39 from Lattice.lean (the pairing, its
+    whole of DerivedAlgGeo/LinearAlgebra/Lattice/Mukai/: 39 from Lattice.lean (the pairing, its
     bilinearity, symmetry, the quadratic refinement, evenness, the
     spherical/isotropic conditions, the expectedDim bookkeeping, the outer
     hyperbolic plane, and the bundled bilinear map) and 27 from RankTwo.lean
@@ -1049,8 +1049,8 @@ fidelity:
 
     THIS LANE'S COVERAGE IS COMPLETE, which is NOT true of the record above and
     is stated separately for that reason. A direct census of
-    BridgelandStabLean/Lattice/Mukai/ finds exactly 66 top-level declarations and ZERO
-    `private` ones, and scripts/BridgelandAudit.lean names all 66. There is no shortfall
+    DerivedAlgGeo/LinearAlgebra/Lattice/Mukai/ finds exactly 66 top-level declarations and ZERO
+    `private` ones, and scripts/StabilityConditionAudit.lean names all 66. There is no shortfall
     here of the kind the preceding paragraphs describe for GLTildeSurj.lean.
 
     The second qualification above still applies in proportion: 51 of the 66
@@ -1091,7 +1091,7 @@ fidelity:
     things were wrong: 43 never occurred, the span does not end at 111, and
     5b40d5a is dated 2026-08-04 rather than 08-03. The chain above was
     remeasured directly with
-    `git show <commit>:scripts/BridgelandAudit.lean | grep -c '^#print axioms '`. A
+    `git show <commit>:scripts/StabilityConditionAudit.lean | grep -c '^#print axioms '`. A
     paragraph whose whole point is "do not quote a stale number" had quoted
     three of them.
   builds_clean: true
@@ -1107,7 +1107,7 @@ fidelity:
     linter clean, audit 625 records. With the indexed families added: 3785 jobs, linter
     clean, audit 638 records. With the tilt completed, on main at a3bfb8a:
     `lake build` at 3786 jobs exit 0, `runLinter` printed "Linting passed" with
-    no findings, and `lake env lean scripts/BridgelandAudit.lean | python
+    no findings, and `lake env lean scripts/StabilityConditionAudit.lean | python
     scripts/check_audit.py` accepted 667 records, all within
     [propext, Classical.choice, Quot.sound], with no sorryAx. The no-sorry
     build-log grep also passed.
@@ -1116,7 +1116,7 @@ fidelity:
     3ca176b" for the 667-record observation. 3ca176b carries 659 records, not
     667; 667 first appears at a3bfb8a, the merge of PR #76, which is the commit
     the observation actually belongs to. Remeasured across the whole chain with
-    the file's own command, `git show <commit>:scripts/BridgelandAudit.lean | grep -c
+    the file's own command, `git show <commit>:scripts/StabilityConditionAudit.lean | grep -c
     '^#print axioms '`: 2ab9a9b 655, aefda82 659, 3ca176b 659, 6941c85 659,
     a3bfb8a 667, 7bf9c8a 667, 418d423 670. This is the SECOND time a count in
     this file has been quoted against the wrong commit -- the note at the end of
@@ -1148,7 +1148,7 @@ fidelity:
     linked on Windows and that has not been worked around. But the SWEEP it
     performs is not blocked by the link failure: `lake env lean` runs the same
     module-data walk through the interpreter and links nothing, which is what
-    scripts/Census.lean does and why the coverage figures above could be
+    scripts/StabilityConditionCensus.lean does and why the coverage figures above could be
     measured on this workstation at all. Do not read this as the emitter gate
     being available on Windows -- Census reports, it does not gate, and it does
     not check axiom closures.
@@ -1187,14 +1187,14 @@ fidelity:
     runner, 29m03s, conclusion success. All five CI gates passed. The three
     that had also been run locally agree exactly: the axiom audit reported
     "638 declarations, all within [propext, Classical.choice, Quot.sound], no
-    sorryAx"; runLinter reported "Linting passed for BridgelandStabLean"; the
+    sorryAx"; runLinter reported "Linting passed for DerivedAlgGeo"; the
     build-log grep reported "ok: no sorry warnings".
 
     THE FOURTH IS THE ONE THAT COULD NOT RUN ON THE OWNER'S WORKSTATION AT ALL.
     `lake exe emit` linked and ran: "mfc-emit: wrote attest/lean-emission.json",
     then "ok: 1331 constants, 809 in scope, 12 cited". That gate sweeps
     Environment.constants rather than a hand-maintained list, so it sees the
-    private and unlisted names scripts/BridgelandAudit.lean structurally cannot, and it
+    private and unlisted names scripts/StabilityConditionAudit.lean structurally cannot, and it
     exits non-zero on sorryAx anywhere in the environment. It exited zero.
 
     WHAT THAT STRENGTHENS, PRECISELY. "No sorryAx" was previously a claim about
@@ -1253,7 +1253,7 @@ fidelity:
     output file, which check_audit at that date could not distinguish from a
     smaller audit, so the note said to check the file ends cleanly -- or
     trust CI, which runs alone. CLOSED 2026-08-08: check_audit.py now counts
-    the `#print axioms` commands in scripts/BridgelandAudit.lean and fails when the
+    the `#print axioms` commands in scripts/StabilityConditionAudit.lean and fails when the
     output's record count disagrees, so both truncations above would now
     fail loudly instead of printing "ok: 661 declarations". At the time this note was written CI runs 31235096164 (on
     04aea18, the merge that took the audit to 677) and 31235112715 (on
@@ -1319,13 +1319,13 @@ fidelity:
     human_review stays none.
 
     CI, since 2026-08-04: .github/workflows/ci.yml, the first in this repo's
-    history. lean-action build with the Mathlib cache, then scripts/BridgelandAudit.lean
+    history. lean-action build with the Mathlib cache, then scripts/StabilityConditionAudit.lean
     re-run and GATED by scripts/check_audit.py, then the environment linters,
     then a no-sorry check over the build log. builds_clean and axiom_count are
     therefore observed on a machine nobody owns rather than asserted about a
     workstation.
 
-    ADDED 2026-08-05: `lake exe runLinter BridgelandStabLean`, the 16
+    ADDED 2026-08-05: `lake exe runLinter DerivedAlgGeo`, the 16
     environment linters, as a fourth step. They had never been run against this
     library at all before that date. CLAUDE.md had carried the lesson since
     mathlib4#42449 was rejected by Mathlib CI over a simpNF failure that
@@ -1385,7 +1385,7 @@ fidelity:
 
     Earlier: lake build at commit 5b40d5a (3547 jobs, exit 0). Since 2026-08-03
     the #print axioms pass is
-    a BUILD TARGET, not a separate manual step: scripts/BridgelandAudit.lean is covered
+    a BUILD TARGET, not a separate manual step: scripts/StabilityConditionAudit.lean is covered
     by `[[lean_lib]] name = "Audit"` (srcDir = "scripts"), so it cannot fall
     behind the source tree. Its 124 audit records at 5b40d5a are build output.
     The foundational library itself was also built from source for the first
@@ -1400,9 +1400,9 @@ fidelity:
     CORRECTED 2026-08-06, two ways. (1) This paragraph gave three different
     counts for one commit -- "111 audit records", "All 118 records", "across
     all 111". The measured count at 5b40d5a is 124, by
-    `git show 5b40d5a:scripts/BridgelandAudit.lean | grep -c '^#print axioms '`. (2)
+    `git show 5b40d5a:scripts/StabilityConditionAudit.lean | grep -c '^#print axioms '`. (2)
     Audit was REMOVED from defaultTargets at this commit, because
-    scripts/BridgelandAudit.lean does `import BridgelandStabLean` and so sat downstream
+    scripts/StabilityConditionAudit.lean imports the stability-condition umbrella and so sat downstream
     of every module, making every edit anywhere re-elaborate all 497
     `#print axioms` before `lake build` returned. It is still a lean_lib and
     CI's axiom gate still runs it directly, so nothing it guarded is lost.
@@ -1776,7 +1776,7 @@ fidelity:
     What this is NOT is in known_divergences and must be read before citing it.
   known_divergences: >
     MASS-TRIANGLE MATHEMATICS CLOSED, GOVERNANCE REVIEW OPEN, 2026-08-11.
-    BridgelandStabLean/StabilityCondition/Metric/Mass/Subadditivity/Triangle.lean proves
+    DerivedAlgGeo/CategoryTheory/Triangulated/StabilityCondition/Metric/Mass/Subadditivity/Triangle.lean proves
     arbitrary-phase semistable-left subadditivity, assembles it through the HN
     filtration to inhabit `StabilityMassTriangleInequality`, and applies that
     theorem to the topology-comparison substrate in
@@ -1826,7 +1826,7 @@ fidelity:
 
     (4) The local attest/*.json attested 20 of 36 modules. Quarantined.
 
-    (5) scripts/BridgelandAudit.lean claimed to cover "every declaration this project
+    (5) scripts/StabilityConditionAudit.lean claimed to cover "every declaration this project
     introduces". It covers 497 of 569; 42 of the remainder are `private` and
     structurally unlistable, and 167 of the 497 are definitions rather than
     theorems. Qualified in place.

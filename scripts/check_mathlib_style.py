@@ -4,8 +4,7 @@
 This runs on every agent edit, so it must stay under ~50ms and must never need
 Lake, Lean, or the network. It deliberately does *not* re-check anything
 `lake exe lint-style` or `lake exe runLinter` already catch in CI; it covers the
-gap between an edit landing and CI running, plus the `CohLean` /
-`DerivedAlgGeoLean` libraries that `runLinter` is not wired to.
+gap between an edit landing and CI running for the `DerivedAlgGeo` library.
 
 Two severities:
 
@@ -32,6 +31,7 @@ Conventions enforced here are documented in `.claude/references/mathlib-style.md
 
 from __future__ import annotations
 
+import functools
 import json
 import re
 import sys
@@ -42,8 +42,8 @@ MAX_LINE = 100
 # Only owner-authored library source. Vendored Apache source keeps upstream
 # style, audit scripts are not library modules, and `.claude/` holds review
 # fixtures that were deliberately frozen.
-INCLUDED_PREFIXES = ("CohLean/", "BridgelandStabLean/")
-INCLUDED_FILES = ("CohLean.lean", "BridgelandStabLean.lean", "DerivedAlgGeoLean.lean")
+INCLUDED_PREFIXES = ("DerivedAlgGeo/",)
+INCLUDED_FILES = ("DerivedAlgGeo.lean",)
 EXCLUDED_PARTS = (".lake", "vendor", "scripts", ".claude", "docbuild")
 
 DECL_RE = re.compile(
@@ -155,7 +155,12 @@ def check_text(raw: str, path: Path) -> list[Finding]:
             line = line[:-1]
         if line != line.rstrip():
             out.append(Finding("ERROR", idx, "TWS", "Trailing whitespace."))
-        if len(line) > MAX_LINE:
+        # Lean import commands cannot be continued onto another line. Mathlib's
+        # own long-line linter therefore permits long imports; a deep subject
+        # hierarchy such as `CategoryTheory.Triangulated.StabilityCondition`
+        # needs the same exception.
+        is_import = re.match(r"^\s*(?:(?:public|meta)\s+)?import\s+", c) is not None
+        if len(line) > MAX_LINE and not is_import:
             out.append(Finding("ERROR", idx, "LONG", f"Line is {len(line)} chars; Mathlib's limit is {MAX_LINE}."))
 
         if " ;" in c:
@@ -271,6 +276,27 @@ def restates_the_name(doc: str, name: str) -> bool:
     return hits >= max(2, len(parts) - 1)
 
 
+@functools.lru_cache(maxsize=None)
+def renamed_paths(ref: str) -> dict[str, str]:
+    """Map each renamed destination to its source path relative to `ref`."""
+    import subprocess
+
+    try:
+        out = subprocess.run(
+            ["git", "diff", "--name-status", "--find-renames=20%", f"{ref}...HEAD"],
+            capture_output=True, text=True, check=True,
+        ).stdout
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        return {}
+
+    renames: dict[str, str] = {}
+    for line in out.splitlines():
+        fields = line.split("\t")
+        if len(fields) == 3 and fields[0].startswith("R"):
+            renames[fields[2]] = fields[1]
+    return renames
+
+
 def changed_lines(ref: str, path: Path) -> set[int] | None:
     """Line numbers this branch adds or changes in `path`, or None for a new file.
 
@@ -279,8 +305,11 @@ def changed_lines(ref: str, path: Path) -> set[int] | None:
     import subprocess
 
     try:
+        paths = [str(path)]
+        if source := renamed_paths(ref).get(str(path)):
+            paths.insert(0, source)
         out = subprocess.run(
-            ["git", "diff", "-U0", f"{ref}...HEAD", "--", str(path)],
+            ["git", "diff", "--find-renames=20%", "-U0", f"{ref}...HEAD", "--", *paths],
             capture_output=True, text=True, check=True,
         ).stdout
     except (subprocess.CalledProcessError, FileNotFoundError):

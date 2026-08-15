@@ -1,7 +1,7 @@
 name: Docs
 
 # Nightly rather than per-push. The build takes ~40 minutes because doc-gen4 documents
-# everything reachable from CohLean, which is a large part of Mathlib; on a repo where
+# everything reachable from DerivedAlgGeo, which is a large part of Mathlib; on a repo where
 # several sessions push to main in a day that is most of a runner-day for output that is
 # usually identical. Docs are at most a day behind main, and `workflow_dispatch` is there
 # when that is not good enough.
@@ -56,7 +56,7 @@ jobs:
     if: needs.check.outputs.should-build == 'true'
     runs-on: ubuntu-latest
     # doc-gen4 documents every file reachable from the target, which here means a large part
-    # of Mathlib as well as CohLean. Expect this to be slow. The cap is a runaway guard, not
+    # of Mathlib as well as DerivedAlgGeo. Expect this to be slow. The cap is a runaway guard, not
     # an expectation.
     timeout-minutes: 180
     steps:
@@ -66,15 +66,15 @@ jobs:
       # `lake build`. Two reasons this comes first: doc-gen4 can only document a library that
       # already builds, and the docs package shares this package directory, so the oleans
       # fetched here are the ones it reuses.
-      - name: Build CohLean
+      - name: Build DerivedAlgGeo
         uses: leanprover/lean-action@v1
 
       # doc-gen4 is required from `docbuild/`, a nested package, so that neither `lake build`
-      # here nor any downstream package that requires CohLean has to fetch it. See
+      # here nor any downstream package that requires DerivedAlgGeo has to fetch it. See
       # docbuild/lakefile.toml.
       - name: Build documentation
         working-directory: docbuild
-        run: lake build CohLean:docs
+        run: lake build DerivedAlgGeo:docs
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3

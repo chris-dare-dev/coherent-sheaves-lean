@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Turn `scripts/BridgelandAudit.lean` into a gate.
+"""Turn `scripts/StabilityConditionAudit.lean` into a gate.
 
 `Audit.lean` is a build target, so it cannot rot — but it is **not a gate**:
 `#print axioms` prints `[sorryAx]` and exits 0, so a sorry-backed declaration
@@ -7,7 +7,7 @@ builds green. This script is what makes the audit fail.
 
 Usage:
 
-    lake env lean scripts/BridgelandAudit.lean > audit.txt 2>&1
+    lake env lean scripts/StabilityConditionAudit.lean > audit.txt 2>&1
     python3 scripts/check_audit.py audit.txt
 
 An optional second argument overrides the path to `Audit.lean` (default: the
@@ -79,7 +79,7 @@ PRINT_AXIOMS = re.compile(r"^#print axioms ", re.MULTILINE)
 
 def main(path: str, audit_lean: str | None = None) -> int:
     source = (Path(audit_lean) if audit_lean
-              else Path(__file__).resolve().parent / "BridgelandAudit.lean")
+              else Path(__file__).resolve().parent / "StabilityConditionAudit.lean")
     try:
         commanded = len(PRINT_AXIOMS.findall(source.read_text(encoding="utf-8")))
     except OSError as e:

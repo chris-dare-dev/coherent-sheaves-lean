@@ -1,7 +1,7 @@
 # ADR-0010 — How a dg category is encoded, and where the H⁰ seam lives
 
-- **Status:** accepted — Question 1 on 2026-08-13, Question 2's root and
-  namespace on 2026-08-14. The DG4 dependency direction remains open.
+- **Status:** partially superseded by ADR-0012. The bespoke `DGCategory`
+  encoding remains accepted; the separate `DGLean` root and namespace do not.
 - **Date:** 2026-08-13 (UTC) · **Amended:** 2026-08-14 (UTC)
 - **Decider:** Chris Dare
 - **Decision (Question 1, 2026-08-13):** **Option B — a bespoke `DGCategory`
@@ -10,11 +10,10 @@
   enriching category of Option A does not exist at the pin. Option A′ stays
   live as a separate `upstream-candidate` slice and is not a prerequisite of
   anything in DG1.
-- **Decision (Question 2, root and namespace, 2026-08-14):** the root is
-  `DGLean`, the namespace is `DGLean`, and the root was created at
-  `dg-enhancements-e2` (#343), not e4. **Read "Amendment, 2026-08-14" at the
-  foot of this file** — the text of Question 2 below is preserved as written
-  and its trigger and its citation are both superseded there.
+- **Decision (Question 2, root and namespace, 2026-08-14):** historical and
+  superseded. ADR-0012 places this work in
+  `DerivedAlgGeo/CategoryTheory/DGCategory` and namespace
+  `CategoryTheory.DGCategory`.
 - **Still open:** the DG4 dependency direction is not needed until DG4 and does
   not block DG1.
 - **Related:** the CLAUDE.md taxonomy line *"Future derived-category and

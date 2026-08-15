@@ -156,9 +156,9 @@ items:
       - "Z⁰ and H⁰ are defined; H⁰ is a functor on dg categories and is proved additive."
       - "Quasi-equivalence is defined (fully faithful on H⁰ up to quasi-isomorphism of Hom-complexes, essentially surjective on H⁰). It is a definition in this milestone; no comparison theorem is claimed."
       - "C^dg(A) is constructed from Mathlib's HomComplex for an abelian (or preadditive, if the reconnaissance permits) category A, without re-deriving the Hom complex."
-      - "H⁰(C^dg A) ≌ HomotopyCategory A (ComplexShape.up ℤ) is proved. This is the milestone's first real theorem. It is NOT the trigger that creates the library root: `DGLean` was created at e2 (#343), gated from its first commit, under ARCHITECTURE.md growth rule 6. See ADR-0010's 2026-08-14 amendment."
-      - "The root builds, is anchor-free under scripts/check_anchor_free.py, exports through its own umbrella, and is added to DerivedAlgGeoLean.lean only once it is stable — which the seam theorem above is what establishes."
-      - "Every DGLean declaration lives in the `DGLean` namespace. e2 landed the directory without the namespace; ADR-0010's amendment closes that half of Question 2 and the rename is done before this milestone completes."
+      - "H⁰(C^dg A) ≌ HomotopyCategory A (ComplexShape.up ℤ) is proved and exported from `DerivedAlgGeo.CategoryTheory.DGCategory`."
+      - "The subject root builds, is source-independent, and exports through its own umbrella and `DerivedAlgGeo.CategoryTheory`."
+      - "Every dg-category declaration lives in the `CategoryTheory.DGCategory` namespace or an established Mathlib namespace when extending its API."
       - "Zero sorries; lake build, both audits, both linters, lint-style, check_pin, check_anchor_free, check_coverage_map, and the emitter gate are green."
 
   - id: dg-enhancements-e2
@@ -194,7 +194,7 @@ items:
     parent: dg-enhancements-m1
     title: "C^dg(A) from HomComplex, and H⁰(C^dg A) ≌ HomotopyCategory A"
     status: planned
-    summary: "The first bridge to an object the repository already uses. Build the dg category of cochain complexes on Mathlib's HomComplex, then prove its H⁰ is the homotopy category. The library root already exists — e2 created it — so what this epic earns is the root's promotion into DerivedAlgGeoLean.lean, not its creation."
+    summary: "The first bridge to an object the repository already uses. Build the dg category of cochain complexes on Mathlib's HomComplex, then prove its H⁰ is the homotopy category and export it through `DerivedAlgGeo.CategoryTheory.DGCategory`."
     priority: must
     size: L
     tags: [lean, model, seam, first-theorem]
@@ -328,7 +328,7 @@ items:
     lane: later
     acceptance:
       - "A t-structure transports across an enhancement equivalence in both directions, with the round trip proved to be the identity."
-      - "A slicing and a pre-stability condition from BridgelandStabLean.Foundation transport the same way, with heart, phase, and Harder–Narasimhan data proved to correspond."
+      - "A slicing and a pre-stability condition from `CategoryTheory.Triangulated` transport the same way, with heart, phase, and Harder–Narasimhan data proved to correspond."
       - "The transported slicing is proved natural with respect to H⁰ of a dg functor, and that statement is connected to the pullback/pushforward interfaces of the stability-families track rather than restated independently."
       - "The programme's central claim is tested, not assumed: at least one naturality obligation is proved on both sides of the seam and the two proofs are compared in the epic. If the dg proof is not cheaper, the negative result is recorded in this roadmap and in formalization.yaml prose, and the m4 rationale is revised."
       - "No stability-condition result acquires a geometric hypothesis it did not have before; realization hypotheses stay explicit, per CLAUDE.md."

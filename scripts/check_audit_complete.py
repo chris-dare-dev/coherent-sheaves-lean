@@ -3,7 +3,7 @@
 
 `check_audit.py` compares the records a run printed against the commands in the
 audit file. So a listed name that disappears breaks the build loudly, and a new
-public declaration that nobody listed is invisible. `BridgelandAudit.lean`
+public declaration that nobody listed is invisible. `StabilityConditionAudit.lean`
 documents that asymmetry about itself; this script is the missing half.
 
 PR #354 is what it would have caught: 32 new public declarations, none
@@ -17,17 +17,18 @@ Usage:
 
 ## Why this is a ratchet and not a hard gate
 
-Measured 2026-08-14, `CohLean` lists 1024 of its 2118 public declarations and
-`BridgelandStabLean` 2253 of 2634. Those gaps predate this script by a long way
+Measured 2026-08-14, the algebraic-geometry audit listed 1024 of its 2118
+public declarations and the stability-condition audit 2253 of 2634. Those gaps
+predate this script by a long way
 and cannot be closed in the change that introduces it, so the ceilings below
 record where things stand and the gate fails only when a library gets *worse*.
-`DGLean` sits at zero because it was gated from its first commit, and its
+The dg-category audit sits at zero because it was gated from its first commit, and its
 ceiling of 0 is the one that matters: it keeps a complete audit complete.
 
 ## Why the counts are close rather than exact
 
 Audit files `open` their own namespace, so a record may be written unqualified
-(`Lattice.NumLattice` for `BridgelandStabLean.Lattice.NumLattice`). Resolving
+(`Lattice.NumLattice` for a declaration in the integral-lattice namespace). Resolving
 that properly means resolving names the way Lean would; this script instead
 tries a small list of prefixes per library. A handful of records still fail to
 resolve — they are reported, not silently dropped, and they are the reason a
@@ -41,12 +42,16 @@ from pathlib import Path
 
 # Prefixes an audit file's `open` lines make available, per library.
 AUDITS = {
-    "CohLean": (
-        "scripts/Audit.lean",
-        ["CohLean.", "AlgebraicGeometry.", "AlgebraicGeometry.Numerical."],
+    "AlgebraicGeometry": (
+        "scripts/AlgebraicGeometryAudit.lean",
+        ["AlgebraicGeometry.", "AlgebraicGeometry.Numerical."],
     ),
-    "BridgelandStabLean": ("scripts/BridgelandAudit.lean", ["BridgelandStabLean."]),
-    "DGLean": ("scripts/DGLeanAudit.lean", ["DGLean."]),
+    "StabilityCondition": (
+        "scripts/StabilityConditionAudit.lean",
+        ["CategoryTheory.Triangulated.",
+         "CategoryTheory.Triangulated.StabilityCondition."],
+    ),
+    "DGCategory": ("scripts/DGCategoryAudit.lean", ["DGCategory."]),
 }
 
 # Public declarations absent from each audit, as measured 2026-08-14. Lower these
@@ -54,9 +59,9 @@ AUDITS = {
 # one: a change that leaves more declarations unaudited than it found is the
 # thing this gate exists to stop.
 CEILINGS = {
-    "CohLean": 1103,
-    "BridgelandStabLean": 392,
-    "DGLean": 0,
+    "AlgebraicGeometry": 1103,
+    "StabilityCondition": 392,
+    "DGCategory": 0,
 }
 
 

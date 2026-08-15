@@ -43,42 +43,42 @@ gate() {
   rm -f "$log"
 }
 
-coh_audit() {
-  # scripts/Audit.lean imports CohLean.Development.* and the dimension
+algebraic_geometry_audit() {
+  # The algebraic-geometry audit imports development probes and dimension
   # specializations, none of which the default target reaches -- `lake build`
-  # builds DerivedAlgGeoLean, and the umbrella does not import them. CI builds
+  # builds DerivedAlgGeo, and the umbrella does not import the probes. CI builds
   # them explicitly before the audit; so must this, or the gate fails with a
   # missing-olean error in any tree where they were not already built by hand.
-  lake build CohLean.Development \
-    CohLean.Numerical.Specializations.Surface \
-    CohLean.Numerical.Specializations.Threefold \
-    CohLean.Numerical.Specializations.Fourfold || return 1
-  lake env lean scripts/Audit.lean > /tmp/coh-audit.txt 2>&1 || {
+  lake build DerivedAlgGeo.Development \
+    DerivedAlgGeo.AlgebraicGeometry.Numerical.Specializations.Surface \
+    DerivedAlgGeo.AlgebraicGeometry.Numerical.Specializations.Threefold \
+    DerivedAlgGeo.AlgebraicGeometry.Numerical.Specializations.Fourfold || return 1
+  lake env lean scripts/AlgebraicGeometryAudit.lean > /tmp/algebraic-geometry-audit.txt 2>&1 || {
     # Show the reason: this function redirects its own output, so without this
     # the wrapper's log is empty and the gate fails silently.
-    tail -20 /tmp/coh-audit.txt
+    tail -20 /tmp/algebraic-geometry-audit.txt
     return 1
   }
-  grep -q 'sorryAx' /tmp/coh-audit.txt && { echo "sorryAx reached the audit"; return 1; }
+  grep -q 'sorryAx' /tmp/algebraic-geometry-audit.txt && { echo "sorryAx reached the audit"; return 1; }
   return 0
 }
 
 dg_audit() {
-  lake env lean scripts/DGLeanAudit.lean > /tmp/dg-audit.txt 2>&1 || {
+  lake env lean scripts/DGCategoryAudit.lean > /tmp/dg-audit.txt 2>&1 || {
     tail -20 /tmp/dg-audit.txt
     return 1
   }
-  python3 scripts/check_audit.py /tmp/dg-audit.txt scripts/DGLeanAudit.lean
+  python3 scripts/check_audit.py /tmp/dg-audit.txt scripts/DGCategoryAudit.lean
 }
 
 audit_complete() {
   # The other direction from check_audit.py: a new public declaration nobody
   # listed. Needs the same prerequisite build as coh_audit, because the sweep
   # imports Development and the dimension specializations.
-  lake build CohLean.Development \
-    CohLean.Numerical.Specializations.Surface \
-    CohLean.Numerical.Specializations.Threefold \
-    CohLean.Numerical.Specializations.Fourfold DGLean || return 1
+  lake build DerivedAlgGeo.Development \
+    DerivedAlgGeo.AlgebraicGeometry.Numerical.Specializations.Surface \
+    DerivedAlgGeo.AlgebraicGeometry.Numerical.Specializations.Threefold \
+    DerivedAlgGeo.AlgebraicGeometry.Numerical.Specializations.Fourfold || return 1
   lake env lean scripts/EnumDecls.lean > /tmp/enum-decls.txt 2>&1 || {
     tail -20 /tmp/enum-decls.txt
     return 1
@@ -86,12 +86,12 @@ audit_complete() {
   python3 scripts/check_audit_complete.py /tmp/enum-decls.txt
 }
 
-bridgeland_audit() {
-  lake env lean scripts/BridgelandAudit.lean > /tmp/bridgeland-audit.txt 2>&1 || {
-    tail -20 /tmp/bridgeland-audit.txt
+stability_condition_audit() {
+  lake env lean scripts/StabilityConditionAudit.lean > /tmp/stability-condition-audit.txt 2>&1 || {
+    tail -20 /tmp/stability-condition-audit.txt
     return 1
   }
-  python3 scripts/check_audit.py /tmp/bridgeland-audit.txt
+  python3 scripts/check_audit.py /tmp/stability-condition-audit.txt
 }
 
 exe_sorry() {
@@ -134,15 +134,13 @@ echo "== gates ($MODE) =="
 
 gate mathlib-style mathlib_style
 gate build lake build
-gate coh-audit coh_audit
-gate bridgeland-audit bridgeland_audit
+gate algebraic-geometry-audit algebraic_geometry_audit
+gate stability-condition-audit stability_condition_audit
 gate dg-audit dg_audit
 
 if [ "$MODE" != "fast" ]; then
-  gate runLinter-stability lake exe runLinter BridgelandStabLean
-  gate runLinter-coh lake exe runLinter CohLean
+  gate runLinter lake exe runLinter DerivedAlgGeo
   gate nolints-ratchet python3 scripts/check_nolints.py
-  gate runLinter-dg lake exe runLinter DGLean
   gate lint-style lake exe lint-style
   gate pin python3 scripts/check_pin.py
   gate source-independence python3 scripts/check_source_independence.py

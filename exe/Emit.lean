@@ -15,12 +15,13 @@ structurally unable to hide rather than merely caught — there is no text for i
 to hide in. The contract package ships a compiled fixture for exactly that
 (`testdata/lean/set-option-evasion.lean`).
 
-This complements `scripts/Audit.lean` and `scripts/BridgelandAudit.lean` rather
+This complements `scripts/AlgebraicGeometryAudit.lean` and
+`scripts/StabilityConditionAudit.lean` rather
 than replacing them. Each audit prints `#print axioms` for a hand-maintained
 list of names, so it fails to *build* when a name it lists disappears — useful,
 and orthogonal. A raw `#print axioms` run is not itself a gate because it prints
 `[sorryAx]` and exits 0; the coherent audit is checked directly in CI and the
-Bridgeland audit is checked by `scripts/check_audit.py`. The emitter is the
+stability-condition audit is checked by `scripts/check_audit.py`. The emitter is the
 combined gate: `emitMain` returns non-zero when any constant's axiom closure
 contains `sorryAx`, and it writes the artifact either way, because the record
 is most useful exactly when the build is not clean.
@@ -40,10 +41,10 @@ which is what the `set_option` evasion above hides in.
 
 Deleting it required closing a real coverage gap first. `rootLib` is what
 `emitToFileForRootsImpl` **imports**; `additionalRoots` only widens the scope
-filter over what that import brought in. Pointed at `DerivedAlgGeoLean`, this
-emitter therefore covered 406 of 419 tracked modules, silently: `DGLean`,
-`CohLean.Development` and the former vendor umbrella were outside the stable
-umbrella, so no import reached them. `rootLib` is now `DerivedAlgGeoSweep`,
+filter over what that import brought in. Pointed at the former stable umbrella,
+this emitter therefore covered 406 of 419 tracked modules silently: the
+dg-category subsystem, development probes, and the former vendor umbrella were
+outside it, so no import reached them. `rootLib` is now `DerivedAlgGeoSweep`,
 whose only job is to import every tracked module, and
 `scripts/check_emission_coverage.py` fails the build if that ever stops being
 true. A tracked module that nothing imports now fails the coverage check
@@ -84,8 +85,7 @@ change the other in the same commit.
 def main (args : List String) : IO UInt32 :=
   MathFormalContract.emitMainForRoots
     (rootLib := `DerivedAlgGeoSweep)
-    (additionalRoots := [`DerivedAlgGeoLean, `CohLean, `BridgelandStabLean,
-                         `DGLean])
+    (additionalRoots := [`DerivedAlgGeo])
     (leanOptions := [("autoImplicit", .bool false),
                      ("relaxedAutoImplicit", .bool false)])
     args

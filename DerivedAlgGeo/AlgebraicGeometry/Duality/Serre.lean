@@ -1,0 +1,2 @@
+import DerivedAlgGeo.AlgebraicGeometry.Duality.Serre.LinearDual
+import DerivedAlgGeo.AlgebraicGeometry.Duality.Serre.Cohomology
