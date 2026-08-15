@@ -2,7 +2,10 @@
 Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under the MIT license.
 -/
-import DerivedAlgGeo.AlgebraicGeometry.Divisors.Determinant
+-- Narrowed from `Divisors.Determinant` (2026-08-15). Everything below needs only
+-- `Divisors.Tensor`; the single declaration that needed `Determinant` moved to
+-- `Divisors.LineBundleDual`, which took `Dual` off `ExteriorPower`'s critical path.
+import DerivedAlgGeo.AlgebraicGeometry.Divisors.Tensor
 
 /-!
 # Duals of invertible module sheaves
@@ -12,8 +15,9 @@ API for sheaves. On an open `U`, the dual presheaf consists of morphisms from th
 the line sheaf to `U` into the restricted structure sheaf. Evaluation is locally the ordinary
 rank-one evaluation isomorphism, so sheafification supplies an explicit tensor inverse.
 
-The main public declarations are `dualPresheaf`, `dualLine`, `tensorDualIso`,
-`dualLine_isInvertible`, and `LineBundleData.ofIsInvertible`.
+The main public declarations are `dualPresheaf`, `dualLine`, `tensorDualIso`, and
+`dualLine_isInvertible`. `LineBundleData.ofIsInvertible`, which bridges these to the
+`LineBundleData` of `Divisors.Determinant`, lives in `Divisors.LineBundleDual`.
 -/
 
 universe u
@@ -726,17 +730,6 @@ lemma dualLine_isInvertible (L : X.Modules)
   intro i
   exact tensorCancelTrivialization L (dualLine L) (q.X i)
     (q.rankOneTrivialization hrank i) (tensorDualIso L)
-
-/-- Upgrade an intrinsically invertible sheaf to line-bundle data with an
-explicit sheafified-dual tensor inverse. -/
-noncomputable def LineBundleData.ofIsInvertible (L : X.Modules)
-    [hL : SheafOfModules.IsInvertible.{u, u, u}
-      (show SheafOfModules X.ringCatSheaf from L)] : LineBundleData X where
-  line := L
-  inverse := dualLine L
-  lineIsInvertible := hL
-  inverseIsInvertible := dualLine_isInvertible L
-  tensorInverseIso := tensorDualIso L
 
 end
 
