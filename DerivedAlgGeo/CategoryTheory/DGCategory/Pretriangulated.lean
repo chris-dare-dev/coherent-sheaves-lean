@@ -131,6 +131,83 @@ def self (X : C) : IsShiftBy X 0 X where
     · exact (dgComp_id q a).symm.trans (hab.trans (dgComp_id q b))
     · exact dgComp_id q c
 
+section Inverse
+
+variable {X Y Y' : C} {n : ℤ}
+
+/-- The element inverse to `s.hom`. It exists because right composition with
+`s.hom` is surjective onto `(dgHom Y Y).X 0`, which contains `dgId Y`. -/
+noncomputable def inv (s : IsShiftBy X n Y) : (dgHom Y X).X n :=
+  ((s.bijective Y n 0 (by omega)).surjective (dgId Y)).choose
+
+/-- The defining property of `s.inv`: composing it with `s.hom` is the identity
+of `Y`. -/
+lemma inv_hom (s : IsShiftBy X n Y) :
+    dgComp n (-n) 0 (by omega) s.inv s.hom = dgId Y :=
+  ((s.bijective Y n 0 (by omega)).surjective (dgId Y)).choose_spec
+
+/-- And the other way round. `s.hom` is not assumed invertible; this is forced,
+because right composition with it is injective on `(dgHom X X).X 0` and both
+sides go to `s.hom`. -/
+lemma hom_inv (s : IsShiftBy X n Y) :
+    dgComp (-n) n 0 (by omega) s.hom s.inv = dgId X := by
+  refine (s.bijective X 0 (-n) (by omega)).injective ?_
+  show dgComp 0 (-n) (-n) _ (dgComp (-n) n 0 (by omega) s.hom s.inv) s.hom =
+    dgComp 0 (-n) (-n) _ (dgId X) s.hom
+  rw [dgComp_assoc (-n) n (-n) 0 0 (-n) (by omega) (by omega) (by omega),
+    inv_hom, dgComp_id, dgId_comp]
+
+/-- `s.inv` is closed. The Leibniz rule at `(n, -n)` has its first term killed
+by `s.hom` being closed and its second scaled by a unit, so the differential of
+`s.inv` composes to zero with `s.hom` -- and right composition with `s.hom` is
+injective. -/
+lemma inv_closed (s : IsShiftBy X n Y) :
+    ((dgHom Y X).d n (n + 1)).hom s.inv = 0 := by
+  have key := dgComp_leibniz (C := C) n (-n) 0 1 (by omega) (by omega) s.inv s.hom
+  rw [inv_hom, dgId_cocycle, s.hom_closed] at key
+  -- `key` is now `0 = 0 + (-n).negOnePow • ((δ s.inv) ∘ s.hom)`. The sign is a
+  -- unit, so the composite itself vanishes.
+  have key2 : dgComp (n + 1) (-n) 1 (by omega)
+      (((dgHom Y X).d n (n + 1)).hom s.inv) s.hom = 0 := by
+    simpa [smul_eq_zero_iff_eq] using key.symm
+  refine (s.bijective Y (n + 1) 1 (by omega)).injective ?_
+  show dgComp (n + 1) (-n) 1 _ (((dgHom Y X).d n (n + 1)).hom s.inv) s.hom =
+    dgComp (n + 1) (-n) 1 _ 0 s.hom
+  rw [key2, map_zero, AddMonoidHom.zero_apply]
+
+end Inverse
+
+section Uniqueness
+
+variable {X Y Y' : C} {n : ℤ}
+
+/-- The comparison between two shifts of `X` by `n`: go back along one and out
+along the other. -/
+noncomputable def compare (s : IsShiftBy X n Y) (s' : IsShiftBy X n Y') :
+    (dgHom Y Y').X 0 :=
+  dgComp n (-n) 0 (by omega) s.inv s'.hom
+
+/-- The comparison is closed, so it is a morphism of `Z⁰`. Both factors are
+closed, so both Leibniz terms vanish. -/
+lemma compare_mem_cocycles (s : IsShiftBy X n Y) (s' : IsShiftBy X n Y') :
+    compare s s' ∈ cocycles Y Y' := by
+  have key := dgComp_leibniz (C := C) n (-n) 0 1 (by omega) (by omega) s.inv s'.hom
+  rw [mem_cocycles_iff, compare, key, s'.hom_closed, s.inv_closed]
+  simp
+
+/-- The two comparisons are mutually inverse, so any two shifts of `X` by `n`
+are isomorphic in `Z⁰` -- and therefore in `H⁰`. This is what lets a shift
+*functor* be built from the existential `IsPretriangulated.exists_shift`
+without the choice mattering. -/
+lemma compare_comp_compare (s : IsShiftBy X n Y) (s' : IsShiftBy X n Y') :
+    dgComp 0 0 0 (by omega) (compare s s') (compare s' s) = dgId Y := by
+  rw [compare, compare,
+    dgComp_assoc n (-n) 0 0 (-n) 0 (by omega) (by omega) (by omega),
+    ← dgComp_assoc (-n) n (-n) 0 0 (-n) (by omega) (by omega) (by omega),
+    hom_inv, dgId_comp, inv_hom]
+
+end Uniqueness
+
 end IsShiftBy
 
 namespace IsConeOf
