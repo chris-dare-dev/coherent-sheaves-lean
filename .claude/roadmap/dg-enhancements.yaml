@@ -96,6 +96,7 @@ generations:
   - { rev: 5, at: "2026-08-13", note: "DG1 epics filed as #335 (e2), #336 (e3), #337 (e4). e2 is agent-ready; implementation started on branch agent/dg-e2-dgcategory." }
   - { rev: 6, at: "2026-08-14", note: "Root trigger corrected to match what happened. #343 (e2) created DGLean/ with fifteen proved lemmas and full gate wiring, two epics ahead of the e4 trigger this file named. ADR-0010's Question 2 is amended rather than this file being the primary move: its trigger was a prediction, and its citation of ARCHITECTURE.md growth rule 1 was wrong twice over -- that rule is about module placement, and the 'first real theorem' sentence is CLAUDE.md's. ARCHITECTURE.md gains growth rule 6 and a DGLean row. m1 acceptance gains a namespace clause: e2 landed the directory but not the DGLean namespace, and every declaration is still at the root." }
   - { rev: 7, at: "2026-08-14", note: "DG0 and DG1 completed. Issues #328, #329, #335, #336, and #337 are closed; milestones #19 and #20 are closed. ADR-0012 supersedes the temporary DGLean root and the implementation now lives under DerivedAlgGeo/CategoryTheory/DGCategory with namespace CategoryTheory.DGCategory." }
+  - { rev: 8, at: "2026-08-14", note: "Landing evidence recorded per epic, in the summaries, matching how stability-families.yaml records a closed epic: e0 and e1 in #330, e2 in #343, e3 in #354, e4 in #370. One correction to rev 7. It marked m1 done citing ADR-0012's namespace, but #372 moved the files without renaming the declarations, so every dg declaration was still at the root when that was written; the clause is satisfied by #374, which wraps the nine dg files in namespace CategoryTheory. ADR-0012 asks for established mathematical namespaces rather than a repository prefix, so the classes sit at CategoryTheory.DGCategory, CategoryTheory.DGFunctor and so on, with the DGCategory-specific lemmas nesting under CategoryTheory.DGCategory." }
 retired: []
 
 # GitHub milestones are roadmap phases. Epic issues live inside them, and
@@ -127,7 +128,7 @@ items:
     parent: dg-enhancements-m0
     title: "Materialize the DG track: labels, milestones, views, and the source pins"
     status: done
-    summary: "Create the eight new labels, the six milestones, the project views and fields, and the five zero-claim coverage maps. Mechanical, but it is the gate that makes every later epic filable with correct provenance."
+    summary: "Create the eight new labels, the six milestones, the project views and fields, and the five zero-claim coverage maps. Mechanical, but it is the gate that makes every later epic filable with correct provenance. Landed in #330: labels, milestones #19-#24, project 8, registry/README.md, and the five maps. Issue #328 is closed."
     priority: must
     size: S
     tags: [governance, tracker, source-pin]
@@ -140,7 +141,7 @@ items:
     parent: dg-enhancements-m0
     title: "Measure the pinned Mathlib dg surface and decide the encoding"
     status: done
-    summary: "Reconnaissance plus ADR-0010. Establish whether EnrichedOrdinaryCategory over CochainComplex (ModuleCat k) ℤ elaborates at the pin with the monoidal instance Mathlib actually ships, and choose between that and a bespoke DGCategory structure. Output is a note and an ADR, not a library."
+    summary: "Reconnaissance plus ADR-0010. Establish whether EnrichedOrdinaryCategory over CochainComplex (ModuleCat k) ℤ elaborates at the pin with the monoidal instance Mathlib actually ships, and choose between that and a bespoke DGCategory structure. Output is a note and an ADR, not a library. Landed in #330: the reconnaissance note and ADR-0010, which chose Option B because HomologicalComplex.HasTensor does not synthesize for the ℤ-indexed shape at the pin. Issue #329 is closed."
     priority: must
     size: M
     tags: [research, adr, mathlib-surface]
@@ -169,7 +170,7 @@ items:
     parent: dg-enhancements-m1
     title: "DG categories, dg functors, and the Hom-complex shift"
     status: done
-    summary: "The definitional core: a bespoke `DGCategory` structure over a commutative ring k (ADR-0010 Question 1, Option B), dg functors, the opposite and product dg categories, and the shift on Hom-complexes with its sign conventions fixed once and documented where a reader will find them. Composition is written directly on `Cochain.comp`; no monoidal structure is required or assumed."
+    summary: "The definitional core: a bespoke `DGCategory` structure over a commutative ring k (ADR-0010 Question 1, Option B), dg functors, the opposite and product dg categories, and the shift on Hom-complexes with its sign conventions fixed once and documented where a reader will find them. Composition is written directly on `Cochain.comp`; no monoidal structure is required or assumed. Landed in #343, with ADR-0011 settling the Hom-complexes over AddCommGrpCat and k-linearity as the refinement `DGLinear`. Issue #335 is closed."
     priority: must
     size: XL
     tags: [lean, definitions, dg-core]
@@ -182,7 +183,7 @@ items:
     parent: dg-enhancements-m1
     title: "Z⁰, H⁰, and the definition of a quasi-equivalence"
     status: done
-    summary: "The passage functors. Z⁰ and H⁰ from a dg category to an ordinary category, additivity of H⁰, functoriality on dg functors, and quasi-equivalence as a definition with no comparison theorem attached to it yet."
+    summary: "The passage functors. Z⁰ and H⁰ from a dg category to an ordinary category, additivity of H⁰, functoriality on dg functors, and quasi-equivalence as a definition with no comparison theorem attached to it yet. Landed in #354. Issue #336 is closed."
     priority: must
     size: M
     tags: [lean, h0, seam]
@@ -195,7 +196,7 @@ items:
     parent: dg-enhancements-m1
     title: "C^dg(A) from HomComplex, and H⁰(C^dg A) ≌ HomotopyCategory A"
     status: done
-    summary: "The first bridge to an object the repository already uses. Build the dg category of cochain complexes on Mathlib's HomComplex, then prove its H⁰ is the homotopy category and export it through `DerivedAlgGeo.CategoryTheory.DGCategory`."
+    summary: "The first bridge to an object the repository already uses. Build the dg category of cochain complexes on Mathlib's HomComplex, then prove its H⁰ is the homotopy category and export it through `DerivedAlgGeo.CategoryTheory.DGCategory`. Landed in #370 as `Cdg.seam : H0 (Cdg A) ≌ HomotopyCategory A (ComplexShape.up ℤ)`, the track's first theorem, on propext, Classical.choice and Quot.sound alone. Issue #337 is closed."
     priority: must
     tags: [lean, model, seam, first-theorem]
     size: M
