@@ -133,6 +133,7 @@ on a name that no longer exists is a hard error, but a name never added is
 invisible.
 -/
 import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition
+import DerivedAlgGeo.CategoryTheory.Triangulated.FourierMukai
 import DerivedAlgGeo.LinearAlgebra
 
 open CategoryTheory.Triangulated
@@ -3221,3 +3222,29 @@ end SlicingChecks
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.Theorem22_2SourceClauses
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.Theorem22_2DependencyContract
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.Theorem22_2DependencyContract.hasSourceClauses
+
+/-! ## Fourier--Mukai lane -- the abstract kernel-functor interface
+
+Every record here is hypothesis-only. `Correspondence` asks for three functors
+and assumes nothing about them, so a clean axiom list for these declarations
+says that the interface is consistent, not that any functor is of kernel type.
+-/
+
+#print axioms CategoryTheory.Triangulated.FourierMukai.Correspondence
+#print axioms CategoryTheory.Triangulated.FourierMukai.Correspondence.mk.inj
+#print axioms CategoryTheory.Triangulated.FourierMukai.Correspondence.mk.sizeOf_spec
+#print axioms CategoryTheory.Triangulated.FourierMukai.Correspondence.pull
+#print axioms CategoryTheory.Triangulated.FourierMukai.Correspondence.tensor
+#print axioms CategoryTheory.Triangulated.FourierMukai.Correspondence.push
+#print axioms CategoryTheory.Triangulated.FourierMukai.Correspondence.transform
+#print axioms CategoryTheory.Triangulated.FourierMukai.Correspondence.transform_obj
+#print axioms CategoryTheory.Triangulated.FourierMukai.Correspondence.transform_map
+#print axioms CategoryTheory.Triangulated.FourierMukai.Correspondence.transformMapIso
+#print axioms CategoryTheory.Triangulated.FourierMukai.Correspondence.transformMapIso_refl
+#print axioms CategoryTheory.Triangulated.FourierMukai.Correspondence.IsKernelFunctor
+#print axioms CategoryTheory.Triangulated.FourierMukai.Correspondence.isKernelFunctor_transform
+#print axioms CategoryTheory.Triangulated.FourierMukai.Correspondence.IsKernelFunctor.of_natIso
+#print axioms CategoryTheory.Triangulated.FourierMukai.Correspondence.IsKernelFunctor.kernel
+#print axioms CategoryTheory.Triangulated.FourierMukai.Correspondence.IsKernelFunctor.iso
+#print axioms CategoryTheory.Triangulated.FourierMukai.transform_isTriangulated
+#print axioms CategoryTheory.Triangulated.FourierMukai.transform_additive
