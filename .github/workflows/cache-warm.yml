@@ -79,10 +79,16 @@ jobs:
           nanoda: false
 
       # `lake build` above covers `defaultTargets`, which is `DerivedAlgGeo`
-      # alone. The gates in `ci.yml` need three things beyond it, and a cache
-      # that omits them leaves the hosted lane paying for them from cold every
-      # time -- `lake build emit` alone is around 420 s there. Keep this list in
-      # step with the `lake build` invocations in `ci.yml`'s `build` job.
+      # alone. The gates in `ci.yml` need more than that, and a cache that omits
+      # them leaves the hosted lane paying for them from cold every time.
+      #
+      # `emit` is in this list although `ci.yml` no longer builds it. Linking the
+      # executable compiles every transitively imported module to a native object
+      # -- 4173 Mathlib `:c.o` targets -- which is why the per-pull-request path
+      # now runs the emitter interpreted instead. Keeping it HERE, off the
+      # critical path where nothing waits on it, is what still proves once per
+      # merge that the executable links on Linux at all. exe/Emit.lean records
+      # that it cannot be linked on Windows, so this is the only check there is.
       - name: Build the targets the gates add
         run: |
           set -euo pipefail
