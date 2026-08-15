@@ -10,6 +10,7 @@ import DerivedAlgGeo.CategoryTheory.DGCategory.Instances
 import DerivedAlgGeo.CategoryTheory.DGCategory.Opposite
 import DerivedAlgGeo.CategoryTheory.DGCategory.Product
 import DerivedAlgGeo.CategoryTheory.DGCategory.Shift
+import DerivedAlgGeo.CategoryTheory.DGCategory.Cone
 import DerivedAlgGeo.CategoryTheory.DGCategory.Model
 
 /-!

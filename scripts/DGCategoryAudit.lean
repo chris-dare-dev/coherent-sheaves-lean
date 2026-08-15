@@ -56,6 +56,8 @@ import DerivedAlgGeo.CategoryTheory.DGCategory
 #print axioms CategoryTheory.Const
 #print axioms CategoryTheory.Const.dgCategory
 #print axioms CategoryTheory.DGCategory
+#print axioms CategoryTheory.DGCategory.coneHom
+#print axioms CategoryTheory.DGCategory.coneHomXIso
 #print axioms CategoryTheory.DGCategory.dgComp_assoc
 #print axioms CategoryTheory.DGCategory.dgComp_id
 #print axioms CategoryTheory.DGCategory.dgComp_leibniz
@@ -73,6 +75,16 @@ import DerivedAlgGeo.CategoryTheory.DGCategory
 #print axioms CategoryTheory.DGCategory.op_dgComp_apply
 #print axioms CategoryTheory.DGCategory.op_dgHom
 #print axioms CategoryTheory.DGCategory.op_dgId
+#print axioms CategoryTheory.DGCategory.postcomp
+#print axioms CategoryTheory.DGCategory.postcompHom
+#print axioms CategoryTheory.DGCategory.postcompHom_apply
+#print axioms CategoryTheory.DGCategory.postcompHom_comm
+#print axioms CategoryTheory.DGCategory.postcomp_f
+#print axioms CategoryTheory.DGCategory.precomp
+#print axioms CategoryTheory.DGCategory.precompHom
+#print axioms CategoryTheory.DGCategory.precompHom_apply
+#print axioms CategoryTheory.DGCategory.precompHom_comm
+#print axioms CategoryTheory.DGCategory.precomp_f
 #print axioms CategoryTheory.DGCategory.prod
 #print axioms CategoryTheory.DGCategory.prodStruct
 #print axioms CategoryTheory.DGCategory.prod_d_apply
