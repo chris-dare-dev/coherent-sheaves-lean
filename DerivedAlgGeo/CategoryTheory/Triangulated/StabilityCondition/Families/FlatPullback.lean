@@ -5,6 +5,7 @@ Released under the MIT license.
 import Mathlib.Algebra.Category.ModuleCat.Descent
 import Mathlib.Algebra.Category.ModuleCat.Presheaf.ColimitFunctor
 import Mathlib.AlgebraicGeometry.Morphisms.Flat
+import Mathlib.CategoryTheory.Functor.ReflectsIso.Limits
 import Mathlib.Topology.Sheaves.Abelian
 import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Families.ExactPullback
 
@@ -95,6 +96,51 @@ theorem moduleStalkFunctor_preservesFiniteLimits
   exact preservesFiniteLimits_of_reflects_of_preserves
     (moduleStalkFunctor X x) forgetModule
 
+/-- The family of module-stalk functors over all points detects
+isomorphisms of sheaves of modules. -/
+theorem moduleStalkFunctors_jointlyReflectIsomorphisms (X : Scheme.{u}) :
+    JointlyReflectIsomorphisms (moduleStalkFunctor X) where
+  isIso {M N} f := by
+    intro
+    let M' : TopCat.Sheaf AddCommGrpCat.{u} X :=
+      ⟨M.presheaf, M.isSheaf⟩
+    let N' : TopCat.Sheaf AddCommGrpCat.{u} X :=
+      ⟨N.presheaf, N.isSheaf⟩
+    let g : M' ⟶ N' := { hom := f.mapPresheaf }
+    haveI : IsIso g := by
+      rw [TopCat.Presheaf.isIso_iff_stalkFunctor_map_iso]
+      intro x
+      have : IsIso
+          ((forget₂ (ModuleCat.{u} (X.presheaf.stalk x))
+            AddCommGrpCat.{u}).map ((moduleStalkFunctor X x).map f)) :=
+        inferInstance
+      exact this
+    rw [Scheme.Modules.Hom.isIso_iff_isIso_app]
+    intro U
+    change IsIso
+      (((TopCat.Sheaf.forget AddCommGrpCat.{u} X).map g).app (op U))
+    infer_instance
+
+/-- A functor between categories of module sheaves preserves finite limits
+as soon as all of its composites with module-stalk functors do. -/
+theorem preservesFiniteLimits_of_stalkwise
+    {X Y : Scheme.{u}} (F : Y.Modules ⥤ X.Modules)
+    (hF : ∀ x : X,
+      PreservesFiniteLimits (F ⋙ moduleStalkFunctor X x)) :
+    PreservesFiniteLimits F where
+  preservesFiniteLimits J _ _ := by
+    letI (x : X) : PreservesFiniteLimits (moduleStalkFunctor X x) :=
+      moduleStalkFunctor_preservesFiniteLimits X x
+    letI (x : X) : PreservesFiniteLimits
+        (F ⋙ moduleStalkFunctor X x) :=
+      hF x
+    refine { preservesLimit := fun {K} ↦
+      { preserves := fun {c} hc ↦ ⟨?_⟩ } }
+    exact (moduleStalkFunctors_jointlyReflectIsomorphisms X).jointlyReflectsLimit
+      (fun x ↦ by
+        change IsLimit ((F ⋙ moduleStalkFunctor X x).mapCone c)
+        exact isLimitOfPreserves (F ⋙ moduleStalkFunctor X x) hc)
+
 /-- At every point of a flat scheme morphism, extension of scalars along the
 induced local-ring map preserves finite limits. -/
 theorem flatStalkMap_preservesFiniteLimits
@@ -119,6 +165,41 @@ theorem flatPullbackStalkModel_preservesFiniteLimits
       (ModuleCat.extendScalars.{u, u, u} (f.left.stalkMap x).hom) :=
     flatStalkMap_preservesFiniteLimits f x
   exact @comp_preservesFiniteLimits _ _ _ _ _ _ _ _ hStalk hScalars
+
+/-- The precise comparison datum still needed from the module-sheaf
+pullback API: actual pullback followed by the stalk at `x` agrees with
+stalk followed by extension of scalars along the local-ring map. -/
+structure PullbackStalkComparison
+    {T U : SchemeBaseChange S} (f : T ⟶ U) where
+  /-- At each source point, actual module pullback followed by the stalk is
+  naturally isomorphic to stalk followed by extension of scalars. -/
+  iso (x : T.left) :
+    modulePullback f ⋙ moduleStalkFunctor T.left x ≅
+      moduleStalkFunctor U.left (f.left x) ⋙
+        ModuleCat.extendScalars.{u, u, u} (f.left.stalkMap x).hom
+
+/-- Flat pullback preserves finite limits once the explicit
+pullback-to-stalk comparison is supplied. -/
+theorem modulePullback_preservesFiniteLimits_of_flat_of_stalkComparison
+    {T U : SchemeBaseChange S} (f : T ⟶ U) [Flat f.left]
+    (h : PullbackStalkComparison f) :
+    PreservesFiniteLimits (modulePullback f) :=
+  preservesFiniteLimits_of_stalkwise (modulePullback f) fun x ↦ by
+    have hTarget : PreservesFiniteLimits
+        (moduleStalkFunctor U.left (f.left x) ⋙
+          ModuleCat.extendScalars.{u, u, u} (f.left.stalkMap x).hom) :=
+      flatPullbackStalkModel_preservesFiniteLimits f x
+    exact @preservesFiniteLimits_of_natIso _ _ _ _ _ _
+      (h.iso x).symm hTarget
+
+/-- A flat scheme morphism has exact module-sheaf pullback once its actual
+pullback functor is identified with the stalkwise scalar-extension model. -/
+theorem isExactPullback_of_flat_of_stalkComparison
+    {T U : SchemeBaseChange S} (f : T ⟶ U) [Flat f.left]
+    (h : PullbackStalkComparison f) : IsExactPullback f := by
+  letI : PreservesFiniteLimits (modulePullback f) :=
+    modulePullback_preservesFiniteLimits_of_flat_of_stalkComparison f h
+  exact IsExactPullback.of_preservesFiniteLimits f
 
 end SchemeBaseChange
 
