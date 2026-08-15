@@ -4,6 +4,12 @@ on:
   push:
     branches: [main, 'agent/**']
   pull_request:
+  # A merge queue entry is a synthetic branch GitHub builds from `main` plus the
+  # queued PR(s), and it reports its own checks. Without this trigger the queue
+  # would sit forever waiting for a check that never runs, so this line and the
+  # "Require merge queue" setting have to be turned on in that order: this first,
+  # the setting second. Removing it later re-creates the same deadlock.
+  merge_group:
   workflow_dispatch:
 
 concurrency:
@@ -41,6 +47,16 @@ jobs:
     # protection but a PR editing this line to a bare self-hosted label would
     # have routed itself onto the owner's daily-driver Mac and executed there.
     # Never make self-hosted routing depend on anything a pull_request can edit.
+    #
+    # `merge_group` lands on ubuntu-latest for exactly the same reason, and it is
+    # worth saying out loud because the event LOOKS trustworthy in a way
+    # `pull_request` does not: only a maintainer can queue a PR. But the queue
+    # branch is `main` plus the PR's commits, so the workflow file GitHub
+    # evaluates there is still the contributor's copy of this file -- queuing a
+    # PR is not a review of the routing expression inside it. The condition above
+    # names `push` and `workflow_dispatch` positively and sends everything else
+    # hosted, so merge_group is already handled; do not "tidy" that into a
+    # negative test against `pull_request`, which would hand the Mac to the queue.
     #
     # The fast lane also has a cost that is not speed: one machine means one
     # shared .lake/build. Concurrent CI runs -- and the owner building locally
@@ -80,6 +96,13 @@ jobs:
           case "${{ github.event_name }}" in
             pull_request) base="${{ github.event.pull_request.base.sha }}" ;;
             push) base="${{ github.event.before }}" ;;
+            # merge_group is deliberately absent. `github.event.merge_group.base_sha`
+            # exists and would let this step scope a queue entry too -- and it
+            # should not. The queue is the last thing that runs before `main`
+            # moves, and it is the one place where two independently-green
+            # branches meet for the first time; scoping there would reintroduce
+            # exactly the hole the queue was added to close. Falling through
+            # leaves `base` empty, which the check below turns into `scope=all`.
           esac
           if [ -z "$base" ] || [ "$base" = "0000000000000000000000000000000000000000" ] \
              || ! git cat-file -e "$base^{commit}" 2>/dev/null; then
@@ -321,6 +344,51 @@ jobs:
             coh-audit.txt
             bridgeland-audit.txt
           if-no-files-found: warn
+
+  # ---------------------------------------------------------------------------
+  # The single required status check (2026-08-15).
+  #
+  # Branch protection can only require a check by NAME, and a rule that names a
+  # check nothing produces does not fail -- it waits, or is bypassed. So the
+  # moment `build` is split into several jobs, a rule requiring `build` silently
+  # stops protecting anything. This job exists so the required check is a name
+  # that survives every future change to the job graph: split `build` in two,
+  # add a job, rename one, and the only edit needed is the `needs` list here.
+  #
+  # It must therefore be the ONLY required context, and `build` must be removed
+  # from the required list when this lands -- otherwise the split it was added
+  # to survive still breaks protection.
+  #
+  # `cache-warm` is deliberately NOT in `needs`. It is skipped on every event
+  # except a push to `main`, and a skip here has to read as a failure (see
+  # below), so depending on it would fail every pull request. It gates nothing
+  # by design; `build` on the same commit makes the correctness claim.
+  ci:
+    needs: [build]
+    # `always()` so this job still runs when an upstream job failed -- without
+    # it, a failed `build` would leave `ci` skipped, and a skipped required
+    # check does not block a merge. This is the whole mechanism.
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Every required job succeeded
+        run: |
+          set -euo pipefail
+          # Enumerate rather than pattern-match. `contains(needs.*.result,
+          # 'failure')` is the common form and it is wrong by omission: it
+          # passes a cancelled job, and it passes a SKIPPED one. A job that
+          # never ran has not proved anything, so anything other than `success`
+          # fails here.
+          results='${{ join(needs.*.result, " ") }}'
+          echo "upstream results: ${results}"
+          rc=0
+          for r in ${results}; do
+            if [ "$r" != "success" ]; then
+              echo "::error::a required job did not succeed (result: ${r})"
+              rc=1
+            fi
+          done
+          exit "$rc"
 
   # ---------------------------------------------------------------------------
   # The writer for the `.lake/build` cache the hosted lane restores (2026-08-15).
