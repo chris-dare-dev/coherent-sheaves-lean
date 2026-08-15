@@ -199,7 +199,14 @@ private def twistInverseOfMem (hfS : f ∈ S) : Localization S :=
 private def twistForwardOfMem : Localization S :=
   Localization.mk (f ^ d) 1
 
-/-- Divide an `A(d)` fraction by `f ^ d` in any localization in which `f` is invertible. -/
+/-- Divide an `A(d)` fraction by `f ^ d`, given that `f` itself lies in `S`.
+
+Membership is genuinely the hypothesis consumed, not merely invertibility of `f` in
+`Localization S`: the graded representative below keeps every denominator inside `S` by
+multiplying `c.den` by `f ^ d`, which needs `f ^ d ∈ S`.  When `f` is only invertible — the
+Čech-intersection case, where the denominator submonoid contains no degree-one element at
+all — use `natShiftLinearEquivOfMulMem`, which asks instead for a homogeneous cofactor `h`
+with `f * h ∈ S`; taking `h = 1` recovers the membership hypothesis. -/
 noncomputable def natShiftToSelfLinearMapOfMem (hfS : f ∈ S) :
     DegreeZeroLocalization 𝒜 (natShift 𝒜 d) S →ₗ[
       HomogeneousLocalization 𝒜 S] DegreeZeroLocalization 𝒜 𝒜 S where
