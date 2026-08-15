@@ -112,6 +112,17 @@ structure IsConeOf {X Y : C} (f : (dgHom X Y).X 0) (Z : C) where
     Function.Bijective (fun ab : (dgHom W X).X q × (dgHom W Y).X p =>
       dgComp q (-1) p (by omega) ab.1 inl + dgComp p 0 p (by omega) ab.2 inr)
 
+/-- A composite of closed elements is closed. Both Leibniz terms carry a factor
+that vanishes, so the sign never has to be computed. Stated once here because
+every construction below composes two or three closed elements. -/
+lemma dgComp_closed {X Y Z : C} {p q r r' : ℤ} (h : p + q = r) (hr : r + 1 = r')
+    {f : (dgHom X Y).X p} {g : (dgHom Y Z).X q}
+    (hf : ((dgHom X Y).d p (p + 1)).hom f = 0)
+    (hg : ((dgHom Y Z).d q (q + 1)).hom g = 0) :
+    ((dgHom X Z).d r r').hom (dgComp p q r h f g) = 0 := by
+  rw [dgComp_leibniz p q r r' h hr f g, hf, hg]
+  simp
+
 namespace IsShiftBy
 
 /-- Every object is its own shift by zero, witnessed by the identity. The
@@ -207,6 +218,92 @@ lemma compare_comp_compare (s : IsShiftBy X n Y) (s' : IsShiftBy X n Y') :
     hom_inv, dgId_comp, inv_hom]
 
 end Uniqueness
+
+section Comp
+
+variable {X Y Z : C} {n m : ℤ}
+
+/-- Shifts compose: a shift by `m` of a shift by `n` is a shift by `n + m`.
+
+The degree works out because `-n + -m` and `-(n + m)` are the same integer, and
+`dgComp` is given the target degree explicitly rather than being asked to
+normalise one into the other in a dependent position. -/
+noncomputable def comp (s : IsShiftBy X n Y) (t : IsShiftBy Y m Z) :
+    IsShiftBy X (n + m) Z where
+  hom := dgComp (-n) (-m) (-(n + m)) (by omega) s.hom t.hom
+  hom_closed := by
+    have key := dgComp_leibniz (C := C) (-n) (-m) (-(n + m)) (-(n + m) + 1)
+      (by omega) (by omega) s.hom t.hom
+    rw [key, s.hom_closed, t.hom_closed]
+    simp
+  bijective W p q h := by
+    -- Right composition with the composite is the composite of the two right
+    -- compositions, by associativity.
+    have factor : ∀ f : (dgHom W X).X p,
+        compRight W (dgComp (-n) (-m) (-(n + m)) (by omega) s.hom t.hom) p q h f =
+          compRight W t.hom (p + -n) q (by omega)
+            (compRight W s.hom p (p + -n) (by omega) f) := fun f => by
+      simpa using
+        (dgComp_assoc p (-n) (-m) (p + -n) (-(n + m)) q (by omega) (by omega) (by omega)
+          f s.hom t.hom).symm
+    have : ⇑(compRight W (dgComp (-n) (-m) (-(n + m)) (by omega) s.hom t.hom) p q h) =
+        ⇑(compRight W t.hom (p + -n) q (by omega)) ∘
+          ⇑(compRight W s.hom p (p + -n) (by omega)) := funext factor
+    rw [this]
+    exact (t.bijective W (p + -n) q (by omega)).comp (s.bijective W p (p + -n) (by omega))
+
+end Comp
+
+section Map
+
+variable {X X' X'' Y Y' Y'' : C} {n : ℤ}
+
+/-- The map induced on shifts: go back along the source's shift, across, and out
+along the target's. `compare` is the case `f = dgId`.
+
+This is the action on morphisms that a shift *functor* on `H⁰` would have, and
+the three lemmas below are its functoriality. The functor itself is not built
+here: `IsPretriangulated.exists_shift` gives an existential rather than a
+choice, and `HasShift` additionally wants `shiftFunctorZero` and
+`shiftFunctorAdd` coherence. -/
+noncomputable def mapShift (s : IsShiftBy X n Y) (s' : IsShiftBy X' n Y')
+    (f : (dgHom X X').X 0) : (dgHom Y Y').X 0 :=
+  dgComp n (-n) 0 (by omega) (dgComp n 0 n (by omega) s.inv f) s'.hom
+
+/-- `mapShift` sends closed elements to closed elements, so it descends to `Z⁰`.
+All three factors are closed. -/
+lemma mapShift_mem_cocycles (s : IsShiftBy X n Y) (s' : IsShiftBy X' n Y')
+    {f : (dgHom X X').X 0} (hf : f ∈ cocycles X X') :
+    mapShift s s' f ∈ cocycles Y Y' :=
+  dgComp_closed (by omega) (by omega)
+    (dgComp_closed (by omega) (by omega) s.inv_closed hf) s'.hom_closed
+
+/-- The identity is sent to the identity. -/
+lemma mapShift_id (s : IsShiftBy X n Y) : mapShift s s (dgId X) = dgId Y := by
+  rw [mapShift, dgComp_id, inv_hom]
+
+/-- `mapShift` is compatible with composition. The middle `s'.hom` and `s'.inv`
+annihilate by `hom_inv`, which is the only place the shift's invertibility is
+used. -/
+lemma mapShift_comp (s : IsShiftBy X n Y) (s' : IsShiftBy X' n Y')
+    (s'' : IsShiftBy X'' n Y'') (f : (dgHom X X').X 0) (g : (dgHom X' X'').X 0) :
+    dgComp 0 0 0 (by omega) (mapShift s s' f) (mapShift s' s'' g) =
+      mapShift s s'' (dgComp 0 0 0 (by omega) f g) := by
+  rw [mapShift, mapShift, mapShift,
+    dgComp_assoc n (-n) 0 0 (-n) 0 (by omega) (by omega) (by omega),
+    ← dgComp_assoc (-n) n (-n) 0 0 (-n) (by omega) (by omega) (by omega),
+    ← dgComp_assoc (-n) n 0 0 n 0 (by omega) (by omega) (by omega),
+    hom_inv, dgId_comp,
+    ← dgComp_assoc n 0 (-n) n (-n) 0 (by omega) (by omega) (by omega),
+    dgComp_assoc n 0 0 n 0 n (by omega) (by omega) (by omega)]
+
+/-- `compare` is `mapShift` at the identity. Recorded so the two names cannot
+drift apart. -/
+lemma compare_eq_mapShift (s : IsShiftBy X n Y) (s' : IsShiftBy X n Y') :
+    compare s s' = mapShift s s' (dgId X) := by
+  rw [compare, mapShift, dgComp_id]
+
+end Map
 
 end IsShiftBy
 

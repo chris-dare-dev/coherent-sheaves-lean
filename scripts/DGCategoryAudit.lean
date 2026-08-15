@@ -201,3 +201,14 @@ import DerivedAlgGeo.CategoryTheory.DGCategory
 #print axioms CategoryTheory.Enhancement.mk.sizeOf_spec
 #print axioms CategoryTheory.Enhancement.hasZeroObject
 #print axioms CategoryTheory.Cdg.enhancement
+
+-- dg-enhancements-e6: composition of shifts, and the action on morphisms a
+-- shift functor on H0 would have.
+#print axioms CategoryTheory.compRight.congr_simp
+#print axioms CategoryTheory.dgComp_closed
+#print axioms CategoryTheory.IsShiftBy.comp
+#print axioms CategoryTheory.IsShiftBy.mapShift
+#print axioms CategoryTheory.IsShiftBy.mapShift_mem_cocycles
+#print axioms CategoryTheory.IsShiftBy.mapShift_id
+#print axioms CategoryTheory.IsShiftBy.mapShift_comp
+#print axioms CategoryTheory.IsShiftBy.compare_eq_mapShift
