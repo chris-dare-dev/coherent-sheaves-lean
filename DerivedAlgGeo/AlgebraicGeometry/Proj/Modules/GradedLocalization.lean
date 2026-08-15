@@ -257,6 +257,54 @@ theorem mapOfLE_mk {T : Submonoid A} (h : S ≤ T) (c : NumDenSameDeg 𝒜 𝓜 
       (LocalizedModule.mkLinearMap S M) (LocalizedModule.mkLinearMap T M)
         (c.num : M) (⟨c.den, c.den_mem⟩ : S)
 
+/-! ### Inverting an element that is not a power of the new denominator
+
+`mapOfLE` covers enlarging the denominator submonoid along an inclusion `S ≤ T`. The Čech
+differential needs a case it does not reach: along a face the denominators are
+`.powers g₁` and `.powers g₂` with `g₁ * h = g₂`, and `Submonoid.powers g₁ ≤ Submonoid.powers g₂`
+is false — `powers a ≤ powers b` needs `a` to be a *power* of `b`, and divisibility is weaker.
+
+The map still exists, because `g₁` is already invertible once `g₂` is. These two lemmas supply
+exactly that, in the form `LocalizedModule.lift` consumes, and are what a face map must be built
+from. They are stated for a bare module because nothing about them is graded. -/
+
+/-- If `g₁ * h` is a power of `g₂`, then `g₁` is already invertible after inverting `g₂`.
+
+`g₁ * h` is invertible there, and in a commutative ring a factor of a unit is a unit. -/
+theorem isUnit_algebraMap_localization_of_mul_mem {g₁ g₂ h : A}
+    (hgh : g₁ * h ∈ Submonoid.powers g₂) :
+    IsUnit (algebraMap A (Localization (Submonoid.powers g₂)) g₁) := by
+  have h1 : IsUnit (algebraMap A (Localization (Submonoid.powers g₂)) (g₁ * h)) :=
+    IsLocalization.map_units _ ⟨g₁ * h, hgh⟩
+  rw [map_mul] at h1
+  exact isUnit_of_mul_isUnit_left h1
+
+/-- Every power of `g₁` therefore acts invertibly on the module localized at `g₂`.
+
+This is the hypothesis of `LocalizedModule.lift`, so it is what turns the previous lemma into an
+actual map out of the localization at `g₁`. The scalar action factors through
+`Localization (Submonoid.powers g₂)`, where the inverse is available. -/
+theorem isUnit_algebraMap_end_of_mul_mem {g₁ g₂ h : A}
+    (hgh : g₁ * h ∈ Submonoid.powers g₂) (s : Submonoid.powers g₁) :
+    IsUnit (algebraMap A
+      (Module.End A (LocalizedModule (Submonoid.powers g₂) M)) (s : A)) := by
+  obtain ⟨N, hN⟩ := s.2
+  obtain ⟨u, hu⟩ := (isUnit_algebraMap_localization_of_mul_mem (A := A) hgh).pow N
+  have hu' : (u : Localization (Submonoid.powers g₂)) =
+      algebraMap A (Localization (Submonoid.powers g₂)) (s : A) := by
+    rw [hu, ← hN, map_pow]
+  rw [Module.End.isUnit_iff]
+  have key : ∀ x : LocalizedModule (Submonoid.powers g₂) M,
+      (algebraMap A (Module.End A (LocalizedModule (Submonoid.powers g₂) M)) (s : A)) x =
+        (u : Localization (Submonoid.powers g₂)) • x := fun x => by
+    rw [hu', Module.algebraMap_end_apply, algebraMap_smul]
+  constructor
+  · intro x y hxy
+    have h2 := congrArg (fun z => (↑u⁻¹ : Localization (Submonoid.powers g₂)) • z) hxy
+    simpa [key, smul_smul] using h2
+  · intro y
+    exact ⟨(↑u⁻¹ : Localization (Submonoid.powers g₂)) • y, by simp [key, smul_smul]⟩
+
 /-! ### Localization away from one homogeneous element -/
 
 /-- The degree-zero fraction `m / fⁿ` when `f` has degree `d` and `m` has degree `n • d`. -/
