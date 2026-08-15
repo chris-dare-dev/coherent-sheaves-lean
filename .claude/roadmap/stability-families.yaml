@@ -66,6 +66,7 @@ generations:
   - { rev: 4, at: "2026-08-14", note: "Unified source layout recorded. SF0 is complete and milestone #14 is closed; current modules live under DerivedAlgGeo/CategoryTheory/Triangulated/StabilityCondition. Active geometry links now point to the in-repository AlgebraicGeometry subject, while the reusable stacks/moduli boundary remains an owner decision in #214." }
   - { rev: 5, at: "2026-08-14", note: "SF1 source-faithfulness closeout kept milestone #17 open and reopened #208: the current Lemma 14.17 biconditional stores an extra Hom-vanishing implication in its type-two branch. The strengthened candidate remains mapped but is not literal source coverage." }
   - { rev: 6, at: "2026-08-15", note: "SF2 implementation started with native child #380 under epic #193: bind ordinary slicing semistability to genuine and indexed-uniform quadratic support before tackling the Definition 21.9 quotient and geometric fibers." }
+  - { rev: 7, at: "2026-08-15", note: "Native child #387 under epic #193 now connects the saturated integral quotient to the real support quotient and its scalar extension. Bijectivity is an explicit model-specific premise, not an automatic consequence of saturation." }
 retired: []
 
 # GitHub milestones are roadmap phases. Epic issues live inside them, and
@@ -152,12 +153,12 @@ items:
 
   - id: stability-families-e4
     gh_issue: 193
-    gh_sub_issues: [380]
+    gh_sub_issues: [380, 387]
     kind: epic
     parent: stability-families-m2
     title: "Upgrade to uniform quadratic support (§§18, 21)"
     status: in_progress
-    summary: "The genuine quadratic and indexed-uniform layers are in place for abstract loci and weak heart semistability. Native child #380 adds the missing ordinary slicing-defined semistable locus and fixed-category uniform adapter; the Definition 21.9 quotient and genuinely varying geometric fibers remain follow-ons."
+    summary: "The genuine quadratic and indexed-uniform layers are in place for abstract loci, weak heart semistability, and ordinary slicing-defined semistability (#380). Child #387 supplies the canonical Definition 21.9 integral-to-real quotient comparison and makes the equivalence criterion explicit. Genuinely varying geometric fibers remain a follow-on."
     priority: must
     size: L
     tags: [support, quadratic-form, uniformity]
