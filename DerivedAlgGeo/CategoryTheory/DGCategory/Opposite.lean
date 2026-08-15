@@ -44,7 +44,9 @@ set_option relaxedAutoImplicit false
 
 universe v u
 
-open CategoryTheory DGCategoryStruct
+namespace CategoryTheory
+
+open DGCategoryStruct
 
 variable (C : Type u) [DGCategory.{v} C]
 
@@ -127,3 +129,5 @@ instance op : DGCategory.{v} Cᵒᵖ where
       add_comm]
 
 end DGCategory
+
+end CategoryTheory
