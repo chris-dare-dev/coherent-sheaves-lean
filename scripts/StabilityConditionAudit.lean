@@ -3265,3 +3265,19 @@ its consequences follow from it -- not that any convolution exists.
 #print axioms CategoryTheory.Triangulated.FourierMukai.ConvolutionData.isKernelFunctor_comp
 #print axioms CategoryTheory.Triangulated.FourierMukai.ConvolutionData.transformMapConvIso
 #print axioms CategoryTheory.Triangulated.FourierMukai.ConvolutionData.transformMapConvIso_refl
+
+/-! ## Fourier--Mukai lane -- the induced maps on K₀
+
+The only FourierMukai module that reaches into this subsystem's own
+`Foundation`, for `Triangulated.K₀`. `transformK₀_conv` turns the supplied
+Prop. 5.10 isomorphism into an equality of homomorphisms, so its axiom list is
+the one to read if the supplied-data interface is ever suspected of hiding a
+proof hole.
+-/
+
+#print axioms CategoryTheory.Triangulated.FourierMukai.Correspondence.transformK₀
+#print axioms CategoryTheory.Triangulated.FourierMukai.Correspondence.transformK₀_eq
+#print axioms CategoryTheory.Triangulated.FourierMukai.Correspondence.transformK₀_of
+#print axioms CategoryTheory.Triangulated.FourierMukai.Correspondence.K₀_map_eq_transformK₀
+#print axioms CategoryTheory.Triangulated.FourierMukai.Correspondence.K₀_map_eq_transformK₀_kernel
+#print axioms CategoryTheory.Triangulated.FourierMukai.ConvolutionData.transformK₀_conv
