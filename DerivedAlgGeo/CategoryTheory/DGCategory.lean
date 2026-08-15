@@ -10,6 +10,8 @@ import DerivedAlgGeo.CategoryTheory.DGCategory.Functor
 import DerivedAlgGeo.CategoryTheory.DGCategory.Instances
 import DerivedAlgGeo.CategoryTheory.DGCategory.Opposite
 import DerivedAlgGeo.CategoryTheory.DGCategory.Pretriangulated
+import DerivedAlgGeo.CategoryTheory.DGCategory.Shift
+import DerivedAlgGeo.CategoryTheory.DGCategory.ShiftIso
 import DerivedAlgGeo.CategoryTheory.DGCategory.Product
 import DerivedAlgGeo.CategoryTheory.DGCategory.Model
 
