@@ -102,7 +102,7 @@ jobs:
             echo "library=false" >> "$GITHUB_OUTPUT"
           fi
 
-      # Build-output cache, hosted lane only (2026-08-14).
+      # Build-output cache, hosted lane only (2026-08-14, corrected 2026-08-15).
       #
       # Measured on this workflow: `lean-action` takes 9 minutes on the
       # self-hosted runner and 30 on ubuntu-latest. The difference is not the
@@ -116,24 +116,61 @@ jobs:
       # already fetches mathlib's oleans from the Lean community cache, which is
       # the right source for them.
       #
+      # THE PLATFORM SEGMENT IS A LITERAL, NOT `runner.os`, AND THAT IS THE WHOLE
+      # POINT. It used to be `runner.os`, and the cache consequently never hit
+      # once. Saves happened on `push` to main, which routes to the self-hosted
+      # Mac, so they were written as `lake-build-macOS-...`; restores happen on
+      # `pull_request`, which routes to ubuntu-latest, so they looked up
+      # `lake-build-Linux-...`. The two key spaces are disjoint by construction
+      # and the restore-key prefix cannot bridge them either -- it carries the
+      # same segment. An `.lake/build` produced on macOS-ARM64 is not usable on
+      # linux-x86_64 in any case, so the fix is not to make the two lanes agree
+      # on a variable: it is to state the platform this cache is FOR, and to have
+      # a runner of that platform be the thing that writes it. That is the
+      # `cache-warm` job at the bottom of this file.
+      #
       # Restore is keyed exactly, then falls back by prefix to the newest cache
-      # for the same toolchain and manifest -- in practice the one `main` saved.
+      # for the same toolchain and manifest -- in practice the one `cache-warm`
+      # saved on `main`, found via GitHub's default-branch fallback.
       # A stale restore is safe rather than merely tolerable: lake's build is
       # trace-hash based, so anything out of date is rebuilt. The failure mode is
       # a slower run, never a wrong one.
+      #
+      # Keyed on `runner.os == 'Linux'` rather than on the event, so the
+      # condition tracks the thing it is actually about. The self-hosted Mac
+      # skips this step because its own `.lake` is already warm, not because of
+      # which event got it here.
       - name: Restore build output
-        if: github.event_name == 'pull_request'
+        if: runner.os == 'Linux'
         uses: actions/cache/restore@v4
         with:
           path: .lake/build
-          key: lake-build-${{ runner.os }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-${{ github.sha }}
+          key: lake-build-linux-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-${{ github.sha }}
           restore-keys: |
-            lake-build-${{ runner.os }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-
+            lake-build-linux-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-
 
+      # use-github-cache is OFF (2026-08-15). Left at its default of `true` it
+      # writes all of `.lake` -- 2.4 GB per entry -- and every one of those
+      # entries was unreadable:
+      #
+      #   * on the self-hosted lane it writes `lake-macOS-ARM64-...`, which no
+      #     hosted job can use, while that runner already keeps its own 8.3 GB
+      #     `.lake` between runs and needs none of it;
+      #   * on the `pull_request` lane GitHub scopes the entry to
+      #     `refs/pull/N/merge`, readable only by re-runs of that same PR, and
+      #     this workflow builds a given PR once.
+      #
+      # Four such entries were holding 9.6 GB of the 10 GB repository budget at
+      # a measured hit rate of zero, which meant every write LRU-evicted
+      # something that might otherwise have been useful -- including the
+      # `.lake/build` entry above. `use-mathlib-cache` stays on: mathlib's
+      # oleans come from the Lean community cache, which is the right source and
+      # costs no repository budget at all.
       - uses: leanprover/lean-action@v1
         with:
           build: true
           use-mathlib-cache: true
+          use-github-cache: false
           nanoda: false
 
       - name: Pin and coverage records
@@ -268,18 +305,11 @@ jobs:
           PY
 
 
-      # Saved from `main` only. A cache written on a PR branch is visible to that
-      # PR alone, so saving there would fill the budget with entries nothing else
-      # can read; a cache written on `main` is visible to every PR branched from
-      # it, which is exactly the baseline a PR wants to restore. This step runs on
-      # the self-hosted lane, where the upload is the only cost -- that runner
-      # reads its own `.lake`, not this cache.
-      - name: Save build output
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        uses: actions/cache/save@v4
-        with:
-          path: .lake/build
-          key: lake-build-${{ runner.os }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-${{ github.sha }}
+      # The save half of this cache is NOT here. It used to be, guarded on
+      # `push` to `main` -- but `push` routes to the self-hosted Mac, so this
+      # job wrote a macOS entry that the lane needing it could never read. The
+      # writer has to be a runner of the platform the cache is for; see the
+      # `cache-warm` job below.
 
       - name: Upload trust artifacts
         if: always()
@@ -291,3 +321,85 @@ jobs:
             coh-audit.txt
             bridgeland-audit.txt
           if-no-files-found: warn
+
+  # ---------------------------------------------------------------------------
+  # The writer for the `.lake/build` cache the hosted lane restores (2026-08-15).
+  #
+  # WHY THIS IS A SEPARATE JOB AND NOT A STEP IN `build`. The cache is a
+  # linux-x86_64 artifact, so a linux-x86_64 runner has to produce it. `build`
+  # on a `push` runs on the self-hosted Mac, which is the fast lane precisely
+  # because it never needs this cache -- it keeps its own 8.3 GB `.lake` between
+  # runs. Asking that job to also emit a Linux cache is asking it to emit an
+  # artifact for a machine it is not. So: `main` moves, a hosted runner rebuilds
+  # from the previous hosted state and publishes the result, and every PR
+  # branched from `main` restores it through GitHub's default-branch fallback.
+  # Free on a public repository.
+  #
+  # NOT a required check and it gates nothing: `build` on the same commit has
+  # already made the correctness claim, and this job repeats none of it. It is
+  # deliberately NOT `continue-on-error` either -- a warm cache that quietly
+  # stopped being produced is exactly the "gate that silently does not run"
+  # failure this repository keeps writing comments about, and a visible red mark
+  # on a job nothing depends on is the cheapest possible way to notice.
+  cache-warm:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      # Prefix-only restore: the exact key carries this commit's sha and by
+      # definition does not exist yet. This is what makes the warm job itself
+      # incremental -- it rebuilds the merge's downstream cone, not all 377
+      # modules.
+      - name: Restore previous build output
+        uses: actions/cache/restore@v4
+        with:
+          path: .lake/build
+          key: lake-build-linux-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-${{ github.sha }}
+          restore-keys: |
+            lake-build-linux-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-
+
+      - uses: leanprover/lean-action@v1
+        with:
+          build: true
+          use-mathlib-cache: true
+          use-github-cache: false
+          nanoda: false
+
+      # `lake build` above covers `defaultTargets`, which is `DerivedAlgGeo`
+      # alone. The gates in `build` need three things beyond it, and a cache
+      # that omits them leaves the hosted lane paying for them from cold every
+      # time -- `lake build emit` alone is around 420 s there. Keep this list in
+      # step with the `lake build` invocations in the `build` job above.
+      - name: Build the targets the gates add
+        run: |
+          set -euo pipefail
+          lake build \
+            DerivedAlgGeo.Development \
+            DerivedAlgGeo.AlgebraicGeometry.Numerical.Specializations.Surface \
+            DerivedAlgGeo.AlgebraicGeometry.Numerical.Specializations.Threefold \
+            DerivedAlgGeo.AlgebraicGeometry.Numerical.Specializations.Fourfold \
+            DerivedAlgGeoSweep \
+            emit
+
+      # Refuse to publish a partial cache. `--no-build` exits non-zero the
+      # moment a listed target is not already up to date, so this fails if the
+      # build above silently produced less than it claimed -- which is the only
+      # way this job can hurt anything downstream.
+      - name: Verify the tree is fully built
+        run: |
+          set -euo pipefail
+          lake build --no-build \
+            DerivedAlgGeo \
+            DerivedAlgGeo.Development \
+            DerivedAlgGeoSweep \
+            emit
+
+      - name: Save build output
+        uses: actions/cache/save@v4
+        with:
+          path: .lake/build
+          key: lake-build-linux-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-${{ github.sha }}
