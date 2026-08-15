@@ -24,6 +24,11 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.mk_surjective
 #print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.mk_eq_mk_iff
 #print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.mapOfLE
+-- mapOfLE needs S <= T, which a Cech face does not give: the denominators are .powers g1 and
+-- .powers g2 with g1 * h = g2, and divisibility does not nest powers submonoids. These two
+-- supply the universal-property route instead -- g1 is already invertible once g2 is.
+#print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.isUnit_algebraMap_localization_of_mul_mem
+#print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.isUnit_algebraMap_end_of_mul_mem
 #print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.awayMk
 #print axioms AlgebraicGeometry.Proj.GradedLinearMap
 #print axioms AlgebraicGeometry.Proj.GradedLinearMap.map
