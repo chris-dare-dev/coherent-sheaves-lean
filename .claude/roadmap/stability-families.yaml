@@ -64,6 +64,7 @@ generations:
   - { rev: 2, at: "2026-08-08", note: "Refreshed after #85–#87 and #94 completed, the #88–#90 recovery stack reached reviewed green drafts, and SF1 children #106–#111 were materialized." }
   - { rev: 3, at: "2026-08-12", note: "Migrated to derived-alg-geo-lean: remapped milestones and issues, updated monorepo ownership boundaries, and linked destination migration PRs #218–#223." }
   - { rev: 4, at: "2026-08-14", note: "Unified source layout recorded. SF0 is complete and milestone #14 is closed; current modules live under DerivedAlgGeo/CategoryTheory/Triangulated/StabilityCondition. Active geometry links now point to the in-repository AlgebraicGeometry subject, while the reusable stacks/moduli boundary remains an owner decision in #214." }
+  - { rev: 5, at: "2026-08-14", note: "SF1 source-faithfulness closeout kept milestone #17 open and reopened #208: the current Lemma 14.17 biconditional stores an extra Hom-vanishing implication in its type-two branch. The strengthened candidate remains mapped but is not literal source coverage." }
 retired: []
 
 # GitHub milestones are roadmap phases. Epic issues live inside them, and
@@ -129,7 +130,7 @@ items:
     parent: stability-families-m1
     title: "Formalize weak stability and HRS tilting from §14"
     status: in_progress
-    summary: "The §14 program is decomposed into destination issues #204–#209. All six children are closed and linked natively to destination epic #192."
+    summary: "The §14 program is decomposed into destination issues #204–#209. Five children are closed. Issue #208 is open after the 2026-08-14 source-faithfulness audit identified an extra Hom-vanishing implication in the current Lemma 14.17 type-two predicate."
     priority: must
     size: XL
     tags: [stability, tilting, paper-spine]

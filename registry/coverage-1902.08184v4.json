@@ -1,16 +1,16 @@
 {
   "_readme": [
     "Coverage map for arXiv:1902.08184v4 -- 'Stability conditions in families',",
-    "Bayer, Lahoz, Macri, Nuer, Perry, Stellari. Created for issue #87 under",
-    "epic #79 (stability-families).",
+    "Bayer, Lahoz, Macri, Nuer, Perry, Stellari. Created for destination issue",
+    "#198 under epic #190 (stability-families).",
     "",
     "THIS IS NOT A TRUST RECORD AND NOT A MINT SURFACE. It is a zero-claim map",
     "of the paper's structure onto statuses. formalization.yaml's `source`",
     "remains the Bridgeland 2007 record, and registry/bridgeland2007.json",
     "remains the only mint surface; nothing in this file changes either, and",
     "nothing in this file may be cited as theorem coverage. The only status",
-    "that ever counts as coverage is 'formalized', and every entry below is",
-    "'target'.",
+    "that ever counts as coverage is 'formalized'. A 'mapped' entry remains a",
+    "candidate correspondence and makes no coverage claim.",
     "",
     "Validation: python scripts/check_coverage_map.py",
     "Run it before and after every edit to this file. It fails on any status",
@@ -31,10 +31,10 @@
   ],
   "schema": "coverage-map/1",
   "created": "2026-08-08",
-  "issue": "https://github.com/chris-dare-dev/bridgeland-stab-lean/issues/87",
+  "issue": "https://github.com/chris-dare-dev/derived-alg-geo-lean/issues/198",
   "related_infrastructure": {
-    "registry": "https://github.com/chris-dare-dev/bridgeland-stab-lean/issues/6",
-    "corpus_version_backfill": "https://github.com/chris-dare-dev/bridgeland-stab-lean/issues/44"
+    "registry": "https://github.com/chris-dare-dev/derived-alg-geo-lean/issues/133",
+    "corpus_version_backfill": "https://github.com/chris-dare-dev/derived-alg-geo-lean/issues/171"
   },
   "source": {
     "title": "Stability conditions in families",
@@ -285,13 +285,13 @@
       ],
       "part": "III",
       "status": "mapped",
-      "tracking": "https://github.com/chris-dare-dev/bridgeland-stab-lean/issues/81",
-      "note": "Weak stability conditions and HRS tilting. The repository holds abstract HRS-tilt machinery (Tilting/HeartTorsionPair.lean, reviewed under #86 with agreement theorems from #94), but that machinery binds to NO statement of this paper and its review explicitly disclaimed any such connection. Promotion past 'target' starts from a specific v4 statement, not from the existence of related machinery. PROMOTED target -> mapped 2026-08-08 with the #109 landing: slicingTorsionPair and its heart identification are the named candidates for display (14.1), with the slope-phase translation recorded as the open gap in the evidence. Definitions 14.1-14.3 candidates (#107), the Def 14.6 chain layer (#108), and the phase-language TiltingProperty candidate for Definition 14.12 (#110) are named in their COUNT UPDATE entries; they remain part of this same mapped hypothesis, not separate claims. UPDATE 2026-08-09: TiltSemistable.lean proves both directions of the phase-language semistable classification corresponding to Lemma 14.17 and its positive-imaginary/stable Hom-vanishing refinement, using the canonical original-cohomology sequence and tilted-heart images. TiltNoetherian.lean constructs the zero-charge torsion pair and noetherian data from the relative tilted-chain condition and also assembles it from phase-compatible envelopes. HarderNarasimhan.lean supplies the generic rank-decreasing quotient recursion; Support.lean proves support-property transport. UPDATE 2026-08-10: HeartCohomologySequence.lean identifies quotients of pure shifted objects by original torsion subobjects; TiltNoetherian.lean uses this bridge to saturate boundary-phase factors without a last-factor right-orthogonality premise; TiltHarderNarasimhan.lean iterates the reduction through both original H-minus-one and H-zero HN filtrations; and TiltAssembly.lean packages HN, noetherian, and support obligations from phase-compatible envelopes without an external rank or quotient-induction premise. A later 2026-08-10 landing derives the required shifted phase-compatible decompositions directly from the raw Definition 14.12 envelope clause: Ext-vanishing factors tilted zero-charge subobjects through the raw zero-charge quotient, the original noetherian condition terminates the resulting pullback chain, and maximal subobjects feed the HN/noetherian assembly. TiltAssembly.lean now packages all three heart-level obligations directly from TiltingProperty. A final 2026-08-10 landing proves the normalized weak slope--phase charge-ray identity in ChargeRay.lean, transports it through arbitrary integer shifts, and packages the phase-language weak upper tilt as a new WeakPreStabilityCondition in TiltPreStability.lean without an external compatibility premise. UPDATE 2026-08-11: SourceSlope.lean formalizes the finite slope cutoff, muPlus/muMinus endpoint comparison, the exact display (14.1) torsion pair, and the tilted-heart description. Tilting/Source proves the analytic identity between division by i-beta and positive rescaling of the phase rotation, constructs the exact charge Z/(i-beta), states a sign-separated Lemma 14.17 candidate and stable refinement, and packages Proposition 14.16's weak-prestability, support, and noetherian zero-charge conclusions as sourceTiltConclusion. The type-two candidate still stores phaseFree and the positive-imaginary Hom implication; the dated adversarial review must decide whether these are automatic from the printed v4 hypotheses. The coordinate stays mapped and requires owner signoff before any reviewed/formalized promotion.",
+      "tracking": "https://github.com/chris-dare-dev/derived-alg-geo-lean/issues/192",
+      "note": "Weak stability conditions and HRS tilting. The repository holds abstract HRS-tilt machinery and source-facing candidates for Definitions 14.1--14.12, display (14.1), Proposition 14.16, and Lemma 14.17. The exact charge Z/(i-beta), support transport, noetherian zero-charge torsion conclusion, and the separate Hom-vanishing refinement are implemented. CLOSEOUT REVIEW 2026-08-14: the type-two classification predicate stores phase-cut membership and the positive-new-imaginary Hom implication, whereas the printed Lemma 14.17 states Hom vanishing as a subsequent moreover conclusion. The current biconditional is therefore a strengthened candidate, not a literal source binding. Issue #208 and epic #192 remain open; this coordinate stays mapped and must not be promoted.",
       "evidence": {
-        "review_doc": "PR closing issue #109 (branch agent/issue-109-slope-torsion-pair), which supplied the target-to-mapped evidence; the #110 candidate named in the note does not promote the status",
-        "reviewer": "claude-fable-5 (Claude Code), the #81 epic implementation session",
-        "reviewed_at": "2026-08-08",
-        "v4_check": "Display (14.1) and its surrounding text read from the pinned v4 PDF (sha256 in source.pdf_sha256), page 73: T^beta and F^beta are defined by slope bounds mu^- > beta / mu^+ <= beta on the heart of a weak stability condition, and A^sharp-beta = <F^beta[1], T^beta> is the tilted heart. SourceSlope.lean now formalizes the finite weak-slope to normalized-phase map, identifies muPlus/muMinus with the slicing endpoints, proves the two source inequalities equivalent to the phase bounds, and exposes slopeTorsionPair with slopeTilt_heart_iff. Tilting/Source further constructs Z/(i-beta), Proposition 14.16's conclusion package, and the exact sign-separated Lemma 14.17 statement. The mapped status records candidate bindings only; it is not a reviewed coverage claim."
+        "review_doc": ".claude/reviews/2026-08-14-sf1-source-closeout.md",
+        "reviewer": "Codex source-faithfulness audit",
+        "reviewed_at": "2026-08-14",
+        "v4_check": "Pages 71--74 were checked directly against the pinned v4 PDF. The display (14.1) cutoff conventions, Definition 14.12 envelope, and Proposition 14.16 charge normalization match the source-facing adapters. Lemma 14.17 does not yet have a literal biconditional because the Lean type-two predicate includes an additional Hom-vanishing implication. The mapped status records this candidate and explicit mismatch; it is not a reviewed coverage claim."
       }
     },
     {
@@ -302,7 +302,7 @@
       ],
       "part": "III/IV",
       "status": "mapped",
-      "tracking": "https://github.com/chris-dare-dev/bridgeland-stab-lean/issues/82",
+      "tracking": "https://github.com/chris-dare-dev/derived-alg-geo-lean/issues/193",
       "note": "Uniform quadratic support across a family. PROMOTED target -> mapped 2026-08-11: Support/Quadratic.lean supplies a genuine bundled QuadraticForm and its implication to the norm support predicate; Support/Uniform.lean forces one form across an indexed family and supplies constant-family, reindexing, union-locus, and linear-equivalence transport; Support/ZeroChargeLattice.lean constructs the saturated subgroup generated by zero classes and proves its finite quotient free abelian; Support/Quotient.lean puts the descended charge and one uniform form on the real quotient; Weak/Support/Quadratic.lean binds these predicates to actual nonzero weak-semistable heart classes and stores charge compatibility. This is a numerical candidate mapping only. The indexed weak adapter currently uses one abstract category and heart, not varying geometric fibers; it does not define HN structures, boundedness/moduli functors, or the scalar-extension comparison from the integral quotient lattice to the real quotient space. Those are explicit boundaries, so the coordinate is not reviewed or formalized.",
       "evidence": {
         "review_doc": ".claude/reviews/2026-08-11-issue82-uniform-quadratic-support-adversarial-handoff.md",
@@ -321,7 +321,7 @@
       ],
       "part": "IV",
       "status": "target",
-      "tracking": "https://github.com/chris-dare-dev/bridgeland-stab-lean/issues/83",
+      "tracking": "https://github.com/chris-dare-dev/derived-alg-geo-lean/issues/194",
       "note": "TARGET UPDATED 2026-08-11: Families/Basic.lean isolates candidate interfaces for universally locally constant charge, universal openness, weak generic openness, ordinary and weak HN integration after caller-designated Dedekind base changes, and boundedness. Families/Ordinary.lean combines Definition 20.5(1)-(3) with Definition 21.15(4)-(5), using the genuine quotient-uniform support predicate, and supplies a fully inhabited PUnit constant-family witness. Families/Weak.lean binds clause (0), charges, semistability loci, and quotient support to actual indexed weak stability functions on one fixed category and heart, again with an inhabited PUnit witness. Families/Theorem22.lean records the four source clauses used by Theorem 22.2 and every currently missing geometric dependency. Candidate declaration/source-coordinate links now exist, but governance keeps this coordinate at target pending adversarial review and owner acceptance; a later mapped status would still be only a candidate mapping, not a source-faithfulness verdict. The repository still has no schemes, varying fiber categories, base-change functors, relative hearts, moduli spaces, bounded-family constructions, complex-manifold structures, proof of Theorem 22.2, or implementation of the later Section 23 results."
     }
   ]
