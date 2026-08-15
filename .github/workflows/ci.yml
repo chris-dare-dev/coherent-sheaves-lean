@@ -4,6 +4,12 @@ on:
   push:
     branches: [main, 'agent/**']
   pull_request:
+  # A merge queue entry is a synthetic branch GitHub builds from `main` plus the
+  # queued PR(s), and it reports its own checks. Without this trigger the queue
+  # would sit forever waiting for a check that never runs, so this line and the
+  # "Require merge queue" setting have to be turned on in that order: this first,
+  # the setting second. Removing it later re-creates the same deadlock.
+  merge_group:
   workflow_dispatch:
 
 concurrency:
@@ -41,6 +47,16 @@ jobs:
     # protection but a PR editing this line to a bare self-hosted label would
     # have routed itself onto the owner's daily-driver Mac and executed there.
     # Never make self-hosted routing depend on anything a pull_request can edit.
+    #
+    # `merge_group` lands on ubuntu-latest for exactly the same reason, and it is
+    # worth saying out loud because the event LOOKS trustworthy in a way
+    # `pull_request` does not: only a maintainer can queue a PR. But the queue
+    # branch is `main` plus the PR's commits, so the workflow file GitHub
+    # evaluates there is still the contributor's copy of this file -- queuing a
+    # PR is not a review of the routing expression inside it. The condition above
+    # names `push` and `workflow_dispatch` positively and sends everything else
+    # hosted, so merge_group is already handled; do not "tidy" that into a
+    # negative test against `pull_request`, which would hand the Mac to the queue.
     #
     # The fast lane also has a cost that is not speed: one machine means one
     # shared .lake/build. Concurrent CI runs -- and the owner building locally
@@ -80,6 +96,13 @@ jobs:
           case "${{ github.event_name }}" in
             pull_request) base="${{ github.event.pull_request.base.sha }}" ;;
             push) base="${{ github.event.before }}" ;;
+            # merge_group is deliberately absent. `github.event.merge_group.base_sha`
+            # exists and would let this step scope a queue entry too -- and it
+            # should not. The queue is the last thing that runs before `main`
+            # moves, and it is the one place where two independently-green
+            # branches meet for the first time; scoping there would reintroduce
+            # exactly the hole the queue was added to close. Falling through
+            # leaves `base` empty, which the check below turns into `scope=all`.
           esac
           if [ -z "$base" ] || [ "$base" = "0000000000000000000000000000000000000000" ] \
              || ! git cat-file -e "$base^{commit}" 2>/dev/null; then
@@ -102,7 +125,7 @@ jobs:
             echo "library=false" >> "$GITHUB_OUTPUT"
           fi
 
-      # Build-output cache, hosted lane only (2026-08-14).
+      # Build-output cache, hosted lane only (2026-08-14, corrected 2026-08-15).
       #
       # Measured on this workflow: `lean-action` takes 9 minutes on the
       # self-hosted runner and 30 on ubuntu-latest. The difference is not the
@@ -116,24 +139,61 @@ jobs:
       # already fetches mathlib's oleans from the Lean community cache, which is
       # the right source for them.
       #
+      # THE PLATFORM SEGMENT IS A LITERAL, NOT `runner.os`, AND THAT IS THE WHOLE
+      # POINT. It used to be `runner.os`, and the cache consequently never hit
+      # once. Saves happened on `push` to main, which routes to the self-hosted
+      # Mac, so they were written as `lake-build-macOS-...`; restores happen on
+      # `pull_request`, which routes to ubuntu-latest, so they looked up
+      # `lake-build-Linux-...`. The two key spaces are disjoint by construction
+      # and the restore-key prefix cannot bridge them either -- it carries the
+      # same segment. An `.lake/build` produced on macOS-ARM64 is not usable on
+      # linux-x86_64 in any case, so the fix is not to make the two lanes agree
+      # on a variable: it is to state the platform this cache is FOR, and to have
+      # a runner of that platform be the thing that writes it. That is the
+      # `Cache warm` workflow, in .github/workflows/cache-warm.yml.
+      #
       # Restore is keyed exactly, then falls back by prefix to the newest cache
-      # for the same toolchain and manifest -- in practice the one `main` saved.
+      # for the same toolchain and manifest -- in practice the one `Cache warm`
+      # saved on `main`, found via GitHub's default-branch fallback.
       # A stale restore is safe rather than merely tolerable: lake's build is
       # trace-hash based, so anything out of date is rebuilt. The failure mode is
       # a slower run, never a wrong one.
+      #
+      # Keyed on `runner.os == 'Linux'` rather than on the event, so the
+      # condition tracks the thing it is actually about. The self-hosted Mac
+      # skips this step because its own `.lake` is already warm, not because of
+      # which event got it here.
       - name: Restore build output
-        if: github.event_name == 'pull_request'
+        if: runner.os == 'Linux'
         uses: actions/cache/restore@v4
         with:
           path: .lake/build
-          key: lake-build-${{ runner.os }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-${{ github.sha }}
+          key: lake-build-linux-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-${{ github.sha }}
           restore-keys: |
-            lake-build-${{ runner.os }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-
+            lake-build-linux-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-
 
+      # use-github-cache is OFF (2026-08-15). Left at its default of `true` it
+      # writes all of `.lake` -- 2.4 GB per entry -- and every one of those
+      # entries was unreadable:
+      #
+      #   * on the self-hosted lane it writes `lake-macOS-ARM64-...`, which no
+      #     hosted job can use, while that runner already keeps its own 8.3 GB
+      #     `.lake` between runs and needs none of it;
+      #   * on the `pull_request` lane GitHub scopes the entry to
+      #     `refs/pull/N/merge`, readable only by re-runs of that same PR, and
+      #     this workflow builds a given PR once.
+      #
+      # Four such entries were holding 9.6 GB of the 10 GB repository budget at
+      # a measured hit rate of zero, which meant every write LRU-evicted
+      # something that might otherwise have been useful -- including the
+      # `.lake/build` entry above. `use-mathlib-cache` stays on: mathlib's
+      # oleans come from the Lean community cache, which is the right source and
+      # costs no repository budget at all.
       - uses: leanprover/lean-action@v1
         with:
           build: true
           use-mathlib-cache: true
+          use-github-cache: false
           nanoda: false
 
       - name: Pin and coverage records
@@ -268,18 +328,11 @@ jobs:
           PY
 
 
-      # Saved from `main` only. A cache written on a PR branch is visible to that
-      # PR alone, so saving there would fill the budget with entries nothing else
-      # can read; a cache written on `main` is visible to every PR branched from
-      # it, which is exactly the baseline a PR wants to restore. This step runs on
-      # the self-hosted lane, where the upload is the only cost -- that runner
-      # reads its own `.lake`, not this cache.
-      - name: Save build output
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        uses: actions/cache/save@v4
-        with:
-          path: .lake/build
-          key: lake-build-${{ runner.os }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-${{ github.sha }}
+      # The save half of this cache is NOT here. It used to be, guarded on
+      # `push` to `main` -- but `push` routes to the self-hosted Mac, so this
+      # job wrote a macOS entry that the lane needing it could never read. The
+      # writer has to be a runner of the platform the cache is for; see the
+      # `Cache warm` workflow, in .github/workflows/cache-warm.yml.
 
       - name: Upload trust artifacts
         if: always()
@@ -291,3 +344,59 @@ jobs:
             coh-audit.txt
             bridgeland-audit.txt
           if-no-files-found: warn
+
+  # ---------------------------------------------------------------------------
+  # The single required status check (2026-08-15).
+  #
+  # Branch protection can only require a check by NAME, and a rule that names a
+  # check nothing produces does not fail -- it waits, or is bypassed. So the
+  # moment `build` is split into several jobs, a rule requiring `build` silently
+  # stops protecting anything. This job exists so the required check is a name
+  # that survives every future change to the job graph: split `build` in two,
+  # add a job, rename one, and the only edit needed is the `needs` list here.
+  #
+  # It must therefore be the ONLY required context, and `build` must be removed
+  # from the required list when this lands -- otherwise the split it was added
+  # to survive still breaks protection.
+  #
+  # Only jobs that must pass belong in `needs`. Cache warming is a separate
+  # workflow (.github/workflows/cache-warm.yml) precisely so it cannot appear
+  # here: it is skipped on every event except a push to `main`, a skip has to
+  # read as a failure below, and it gates nothing by design -- `build` on the
+  # same commit makes the correctness claim.
+  ci:
+    needs: [build]
+    # `always()` so this job still runs when an upstream job failed -- without
+    # it, a failed `build` would leave `ci` skipped, and a skipped required
+    # check does not block a merge. This is the whole mechanism.
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Every required job succeeded
+        # Through `env`, not interpolated into the script. Two reasons, and the
+        # second one is why the first attempt at this file was rejected outright:
+        # workflow expressions may only quote strings with SINGLE quotes, so the
+        # obvious `join(needs.*.result, " ")` is a syntax error -- and GitHub
+        # answers an invalid workflow by failing a run named after the file with
+        # no annotation and no checks at all, which reads exactly like CI never
+        # triggered. Keeping expressions out of the script body sidesteps the
+        # nested-quoting that caused it, and is the standard way to avoid script
+        # injection from expression output besides.
+        env:
+          RESULTS: ${{ join(needs.*.result, ' ') }}
+        run: |
+          set -euo pipefail
+          # Enumerate rather than pattern-match. `contains(needs.*.result,
+          # 'failure')` is the common form and it is wrong by omission: it
+          # passes a cancelled job, and it passes a SKIPPED one. A job that
+          # never ran has not proved anything, so anything other than `success`
+          # fails here.
+          echo "upstream results: ${RESULTS}"
+          rc=0
+          for r in ${RESULTS}; do
+            if [ "$r" != "success" ]; then
+              echo "::error::a required job did not succeed (result: ${r})"
+              rc=1
+            fi
+          done
+          exit "$rc"
