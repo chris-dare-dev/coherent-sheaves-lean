@@ -142,6 +142,38 @@ theorem natShiftSectionFromSelfOn_map {f : A} (hf : f ∈ 𝒜 1) (d : ℕ)
   funext x
   rfl
 
+/-- Pointwise value of the chart trivialization on sections.
+
+Stated here, in the generic grading, rather than unfolded at each use. A caller working over a
+concrete grading — the polynomial one, say — has types large enough that asking `change` to see
+through `natShiftSectionFromSelfOn` exhausts the `isDefEq` budget, while rewriting with this
+costs nothing. -/
+@[simp]
+theorem natShiftSectionFromSelfOn_apply {f : A} (hf : f ∈ 𝒜 1) (d : ℕ)
+    {U : Opens X} (hU : U ≤ ProjectiveSpectrum.basicOpen 𝒜 f)
+    (s : (associatedSheafInType 𝒜 𝒜).1.obj (op U)) (x : U) :
+    (natShiftSectionFromSelfOn 𝒜 hf d hU s).1 x =
+      (natShiftFiberLinearEquivOfMem 𝒜 hf d (hU x.2)).symm (s.1 x) :=
+  rfl
+
+/-- Value of the inverse pointwise trivialization on a homogeneous fraction.
+
+`natShiftFiberLinearEquivOfMem` is `natShiftLinearEquivOfMem` at the prime complement, so this is
+that lemma transported; it exists so callers can rewrite without unfolding the fiber
+abbreviation. -/
+@[simp]
+theorem natShiftFiberLinearEquivOfMem_symm_apply_mk {f : A} (hf : f ∈ 𝒜 1) (d : ℕ)
+    {x : ProjectiveSpectrum 𝒜} (hx : x ∈ ProjectiveSpectrum.basicOpen 𝒜 f)
+    (c : NumDenSameDeg 𝒜 𝒜 x.asHomogeneousIdeal.toIdeal.primeCompl) :
+    (natShiftFiberLinearEquivOfMem 𝒜 hf d hx).symm (DegreeZeroLocalization.mk c) =
+      DegreeZeroLocalization.mk
+        { deg := c.deg
+          num := ⟨(c.num : A) * f ^ d, by
+            simpa using SetLike.mul_mem_graded c.num.2 (SetLike.pow_mem_graded d hf)⟩
+          den := c.den
+          den_mem := c.den_mem } :=
+  DegreeZeroLocalization.natShiftLinearEquivOfMem_symm_apply_mk 𝒜 hf d hx c
+
 /-- Over any open contained in `D₊(f)`, a nonnegative twist is additively equivalent to the
 structure module when `f` has degree one. -/
 noncomputable def natShiftSectionAddEquivOn {f : A} (hf : f ∈ 𝒜 1) (d : ℕ)
@@ -175,6 +207,35 @@ noncomputable def natShiftSectionLinearEquivOn {f : A} (hf : f ∈ 𝒜 1) (d : 
       funext x
       exact (natShiftFiberLinearEquivOfMem 𝒜 hf d (hU x.2)).map_smul
         (AlgebraicGeometry.openToLocalization 𝒜 U x.1 x.2 r) (s.1 x) }
+
+/-- Untwisting a canonical structure-module section is the canonical twisted section.
+
+This is the pointwise heart of every "the constructed comparison is the canonical one" argument
+for a nonnegative twist, isolated in the generic grading on purpose. Stated here the types stay
+small and the proof is a chain of rewrites; instantiated at a concrete grading — the polynomial
+one, where a Čech denominator is a product of variables — the same reasoning done inline
+exhausts the `isDefEq` budget. Callers should rewrite with this rather than unfold.
+
+`g` cuts out the open and needs positive degree; `f` is the degree-one element doing the
+trivializing, and only has to be invertible there, which `hle` records. -/
+theorem natShiftSectionFromSelfOn_selfBasicOpenSectionAddEquiv_mk
+    {f g : A} (hf : f ∈ 𝒜 1) {m : ℕ} (hg : g ∈ 𝒜 m) (hm : 0 < m) (d : ℕ)
+    (hle : ProjectiveSpectrum.basicOpen 𝒜 g ≤ ProjectiveSpectrum.basicOpen 𝒜 f)
+    (c : NumDenSameDeg 𝒜 𝒜 (.powers g)) :
+    natShiftSectionFromSelfOn 𝒜 hf d hle
+        (selfBasicOpenSectionAddEquiv 𝒜 hg hm (DegreeZeroLocalization.mk c)) =
+      moduleAwayToSection 𝒜 (natShift 𝒜 d) g (DegreeZeroLocalization.mk
+        { deg := c.deg
+          num := ⟨(c.num : A) * f ^ d, by
+            simpa using SetLike.mul_mem_graded c.num.2 (SetLike.pow_mem_graded d hf)⟩
+          den := c.den
+          den_mem := c.den_mem }) := by
+  apply section_ext
+  funext y
+  rw [natShiftSectionFromSelfOn_apply, selfBasicOpenSectionAddEquiv_apply_mk,
+    moduleAwayToSection_apply, moduleAwayToSection_apply,
+    DegreeZeroLocalization.mapOfLE_mk, DegreeZeroLocalization.mapOfLE_mk,
+    natShiftFiberLinearEquivOfMem_symm_apply_mk]
 
 /-- Over `D₊(f)`, a nonnegative twist is additively equivalent to the structure module when
 `f` has degree one. -/

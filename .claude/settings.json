@@ -8,6 +8,11 @@
             "type": "command",
             "command": "python3 \"$CLAUDE_PROJECT_DIR/scripts/check_mathlib_style.py\" --hook",
             "timeout": 15
+          },
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/check_workflows.sh\" --hook",
+            "timeout": 20
           }
         ]
       }
