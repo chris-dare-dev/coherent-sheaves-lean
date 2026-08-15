@@ -25,12 +25,12 @@ Writing `td₂(X) = (K_X² + c₂(X))/12`, which on a Calabi–Yau threefold is 
 `CalabiYauThreefold.chi_eq` into the classical `χ(E) = ∫ch₃(E) + (1/12)∫c₁(E)·c₂(X)`. That
 substitution needs `K_X` and `c₂`, which are Layer B objects, so it is not asserted here.
 
-## Not proved here
+## Models
 
-That the Calabi–Yau axioms have a *model*. `Numerical/Examples/` currently carries a point,
-a K3 and `ℙ²`; the rank-one threefold `ℚ[t]/(t⁴)` with `∫t³ = d` is the obvious analogue of
-`Examples/RankOneSurface.lean` and does not exist yet, so `CalabiYauThreefold.chi_eq` is
-conditional on a `NumericalVariety 3 A N` satisfying `IsCalabiYau` existing at all.
+`Numerical/Examples/Threefold/` carries two: `ℙ³`, whose Todd class has no vanishing
+component and so exercises every term of `chi_eq`, and the quintic hypersurface in `ℙ⁴`,
+which discharges `CalabiYauThreefold.IsCalabiYau`. Both are built from the dimension-general
+ring `ℚ[t]/(t⁴)` of `Numerical/Examples/RankOne.lean`.
 -/
 
 universe u v
