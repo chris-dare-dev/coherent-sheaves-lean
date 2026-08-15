@@ -97,6 +97,7 @@ generations:
   - { rev: 6, at: "2026-08-14", note: "Root trigger corrected to match what happened. #343 (e2) created DGLean/ with fifteen proved lemmas and full gate wiring, two epics ahead of the e4 trigger this file named. ADR-0010's Question 2 is amended rather than this file being the primary move: its trigger was a prediction, and its citation of ARCHITECTURE.md growth rule 1 was wrong twice over -- that rule is about module placement, and the 'first real theorem' sentence is CLAUDE.md's. ARCHITECTURE.md gains growth rule 6 and a DGLean row. m1 acceptance gains a namespace clause: e2 landed the directory but not the DGLean namespace, and every declaration is still at the root." }
   - { rev: 7, at: "2026-08-14", note: "DG0 and DG1 completed. Issues #328, #329, #335, #336, and #337 are closed; milestones #19 and #20 are closed. ADR-0012 supersedes the temporary DGLean root and the implementation now lives under DerivedAlgGeo/CategoryTheory/DGCategory with namespace CategoryTheory.DGCategory." }
   - { rev: 8, at: "2026-08-14", note: "Landing evidence recorded per epic, in the summaries, matching how stability-families.yaml records a closed epic: e0 and e1 in #330, e2 in #343, e3 in #354, e4 in #370. One correction to rev 7. It marked m1 done citing ADR-0012's namespace, but #372 moved the files without renaming the declarations, so every dg declaration was still at the root when that was written; the clause is satisfied by #374, which wraps the nine dg files in namespace CategoryTheory. ADR-0012 asks for established mathematical namespaces rather than a repository prefix, so the classes sit at CategoryTheory.DGCategory, CategoryTheory.DGFunctor and so on, with the DGCategory-specific lemmas nesting under CategoryTheory.DGCategory." }
+  - { rev: 9, at: "2026-08-15", note: "DG2 epics filed as #376 (e5), #377 (e6), #378 (e7), each body written against a fresh measurement of mathlib_rev 520045ab rather than against the plan. Three results. (1) e2's summary claimed a shift on Hom-complexes that #343 never landed; the claim is corrected here and the work moves to e5. (2) Pretriangulated requires HasShift C ℤ, HasZeroObject and additivity of every shiftFunctor, and H0 C has only Preadditive -- that, not the six class fields, is e6's real cost, and it was invisible when e6 was sized XL. (3) m2's acceptance asks for agreement 'stated as an isomorphism of triangulated structures', a notion the pin does not have; since Pretriangulated.distinguishedTriangles is a field, agreement is an equality of Set (Triangle _) plus Functor.CommShift. That clause is left standing and #378 carries the obligation to amend it in the PR that proves the theorem, so the wording changes with the evidence rather than ahead of it. Also measured as already present at the pin: CochainComplex.mappingCone, HomotopyCategory.triangle and distinguishedTriangles, Pretriangulated and IsTriangulated on HomotopyCategory, Cochain.shift/rightShift/leftShift/rightUnshift/leftUnshift, and Localization.pretriangulated as candidate transport machinery. m2 moves to lane now." }
 retired: []
 
 # GitHub milestones are roadmap phases. Epic issues live inside them, and
@@ -170,7 +171,7 @@ items:
     parent: dg-enhancements-m1
     title: "DG categories, dg functors, and the Hom-complex shift"
     status: done
-    summary: "The definitional core: a bespoke `DGCategory` structure over a commutative ring k (ADR-0010 Question 1, Option B), dg functors, the opposite and product dg categories, and the shift on Hom-complexes with its sign conventions fixed once and documented where a reader will find them. Composition is written directly on `Cochain.comp`; no monoidal structure is required or assumed. Landed in #343, with ADR-0011 settling the Hom-complexes over AddCommGrpCat and k-linearity as the refinement `DGLinear`. Issue #335 is closed."
+    summary: "The definitional core: a bespoke `DGCategory` structure over a commutative ring k (ADR-0010 Question 1, Option B), dg functors, the opposite and product dg categories, and the shift on Hom-complexes with its sign conventions fixed once and documented where a reader will find them. Composition is written directly on `Cochain.comp`; no monoidal structure is required or assumed. NOT DELIVERED, and moved to e5 (#376): the shift on Hom-complexes named in this summary is absent from the tree -- grep over DerivedAlgGeo/CategoryTheory/DGCategory finds two doc-comment mentions and one shiftFunctorZero use in Model/Seam.lean, and no shift construction. The rest landed in #343, with ADR-0011 settling the Hom-complexes over AddCommGrpCat and k-linearity as the refinement `DGLinear`. Issue #335 is closed."
     priority: must
     size: XL
     tags: [lean, definitions, dg-core]
@@ -206,8 +207,8 @@ items:
     gh_milestone: 21
     kind: milestone
     title: "DG2 — Pretriangulated dg categories and the enhancement structure"
-    status: planned
-    lane: next
+    status: in_progress
+    lane: now
     acceptance:
       - "Shift and cone are available at the dg level, and `IsPretriangulated` is a predicate on a dg category rather than an assumption carried in prose."
       - "`Enhancement T` is a structure bundling a dg category with an equivalence H⁰ A ≌ T, and it is inhabited by a constructed example before any theorem quantifies over it."
@@ -217,39 +218,39 @@ items:
       - "Zero sorries; all gates green; nothing anchor-free depends on the Anchor or Compatibility roots."
 
   - id: dg-enhancements-e5
-    gh_issue: null
+    gh_issue: 376
     gh_sub_issues: []
     kind: epic
     parent: dg-enhancements-m2
     title: "Dg-level shift and cone, and the pretriangulated predicate"
-    status: planned
-    summary: "Twisted-complex-style shift and cone objects inside a dg category, and IsPretriangulated as a predicate. Where Mathlib's MappingCone already supplies the model case, consume it rather than re-proving it."
+    status: ready
+    summary: "Twisted-complex-style shift and cone objects inside a dg category, and IsPretriangulated as a predicate. Where Mathlib's MappingCone already supplies the model case, consume it rather than re-proving it. Scope grew on measurement: this epic also owns the shift on Hom-complexes that e2's summary claimed and #343 did not land."
     priority: must
     size: L
     tags: [lean, pretriangulated, cone]
     labels: [area:dg, type:feature, source:1507.05509]
 
   - id: dg-enhancements-e6
-    gh_issue: null
+    gh_issue: 377
     gh_sub_issues: []
     kind: epic
     parent: dg-enhancements-m2
     title: "The Enhancement structure and transport of the triangulated structure to H⁰"
     status: planned
-    summary: "Enhancement T as a structure, and the transport theorem: H⁰ of a pretriangulated dg category carries a pretriangulated structure. The transport is the whole point of the track and must be proved, not instantiated by fiat."
+    summary: "Enhancement T as a structure, and the transport theorem: H⁰ of a pretriangulated dg category carries a pretriangulated structure. The transport is the whole point of the track and must be proved, not instantiated by fiat. The measured obstacle is HasShift (H0 C) ℤ and HasZeroObject (H0 C), which Pretriangulated requires and H0 does not yet have; the six class fields are the easier half."
     priority: must
     size: XL
     tags: [lean, enhancement, transport, seam]
     labels: [area:dg, area:derived, bridge:h0-seam, type:feature, source:2101.04404]
 
   - id: dg-enhancements-e7
-    gh_issue: null
+    gh_issue: 378
     gh_sub_issues: []
     kind: epic
     parent: dg-enhancements-m2
     title: "K^dg(A) enhances the homotopy category, and the structures agree"
     status: planned
-    summary: "The first inhabited enhancement, plus the agreement theorem against Mathlib's own triangulated instance. Without the agreement clause this epic would produce a second, incomparable triangulated structure on the same category."
+    summary: "The first inhabited enhancement, plus the agreement theorem against Mathlib's own triangulated instance. Without the agreement clause this epic would produce a second, incomparable triangulated structure on the same category. Mathlib already has Pretriangulated and IsTriangulated on HomotopyCategory at the pin, so the target structure is free and the cost moves to Functor.CommShift for Cdg.seam."
     priority: must
     size: L
     tags: [lean, nonvacuity, agreement]
