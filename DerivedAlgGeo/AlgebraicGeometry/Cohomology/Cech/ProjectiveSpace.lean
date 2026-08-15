@@ -121,4 +121,50 @@ def cechCochainsDegreewiseAddEquiv (d n : ℕ) :
           (piObj_polynomialVariableChart ι k x))).addCommGroupIsoToAddEquiv.trans
         (cechTermSectionAddEquiv ι k d x).symm)
 
+/-! ## The explicit algebraic Čech complex
+
+`cechCochainsDegreewiseAddEquiv` compares one degree at a time. Carrying the differential across
+it turns that family of comparisons into an isomorphism of cochain complexes, which is what makes
+`Hⁱ(Pⁿ, O(d))` the cohomology of a complex written in homogeneous localizations.
+
+The differential is *defined* by transport rather than as an alternating sum. That is deliberate:
+`d ∘ d = 0` and the comparison isomorphism are then both free, and the alternating-sum formula
+becomes a separate lemma about this complex instead of a proof obligation inside its
+construction. -/
+
+/-- Mathlib's Čech complex of `O(d)` over the variable charts. -/
+noncomputable abbrev cechComplexOfTwist (d : ℕ) : CochainComplex AddCommGrpCat.{u} ℕ :=
+  (cechComplexFunctor (polynomialVariableChart ι k)).obj (twistPresheaf ι k d)
+
+/-- The degreewise comparison, as an isomorphism of bundled abelian groups. -/
+noncomputable def cechCochainsIso (d n : ℕ) :
+    (cechComplexOfTwist ι k d).X n ≅
+      AddCommGrpCat.of (polynomialVariableCechCochains ι k d n) :=
+  (cechCochainsDegreewiseAddEquiv ι k d n).toAddCommGrpIso
+
+/-- The algebraic Čech complex of `O(d)`: in degree `n`, the explicit product of degree-zero
+homogeneous localizations, with the differential carried over from Mathlib's Čech complex. -/
+noncomputable def polynomialVariableCechComplex (d : ℕ) :
+    CochainComplex AddCommGrpCat.{u} ℕ :=
+  CochainComplex.of
+    (fun n => AddCommGrpCat.of (polynomialVariableCechCochains ι k d n))
+    (fun n => (cechCochainsIso ι k d n).inv ≫
+      (cechComplexOfTwist ι k d).d n (n + 1) ≫ (cechCochainsIso ι k d (n + 1)).hom)
+    (fun n => by
+      simp only [Category.assoc, Iso.hom_inv_id_assoc]
+      rw [← Category.assoc ((cechComplexOfTwist ι k d).d n (n + 1)),
+        HomologicalComplex.d_comp_d, Limits.zero_comp, Limits.comp_zero])
+
+/-- The Čech complex of `O(d)` over the variable charts *is* the explicit algebraic complex.
+
+Composed with the Čech-to-derived comparison of
+`DerivedAlgGeo.AlgebraicGeometry.Cohomology.Cech.GlobalComparison`, this presents every
+`Hⁱ(Pⁿ, O(d))` as the cohomology of a complex of homogeneous localizations. -/
+noncomputable def polynomialVariableCechComplexIso (d : ℕ) :
+    cechComplexOfTwist ι k d ≅ polynomialVariableCechComplex ι k d :=
+  HomologicalComplex.Hom.isoOfComponents (fun n => cechCochainsIso ι k d n) (by
+    intro i j hij
+    obtain rfl : i + 1 = j := hij
+    simp [polynomialVariableCechComplex, CochainComplex.of_d])
+
 end AlgebraicGeometry.Proj

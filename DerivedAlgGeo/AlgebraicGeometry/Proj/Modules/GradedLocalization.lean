@@ -305,6 +305,127 @@ theorem isUnit_algebraMap_end_of_mul_mem {g₁ g₂ h : A}
   · intro y
     exact ⟨(↑u⁻¹ : Localization (Submonoid.powers g₂)) • y, by simp [key, smul_smul]⟩
 
+/-- The map of ordinary localized modules along a Čech face.
+
+`g₁` is already invertible after inverting `g₂`, so the universal property of
+`LocalizedModule (Submonoid.powers g₁) M` produces this map without any inclusion of
+denominator submonoids. This is the underlying map of `faceMap`; it carries no grading. -/
+noncomputable def faceLift {g₁ g₂ h : A} (hgh : g₁ * h ∈ Submonoid.powers g₂) :
+    LocalizedModule (Submonoid.powers g₁) M →ₗ[A]
+      LocalizedModule (Submonoid.powers g₂) M :=
+  LocalizedModule.lift _ (LocalizedModule.mkLinearMap (Submonoid.powers g₂) M)
+    (isUnit_algebraMap_end_of_mul_mem (M := M) hgh)
+
+/-- Along a face, clearing the denominator `g₁ⁿ` multiplies numerator and denominator by `hⁿ`.
+
+This is the formula the graded face map is defined by: the abstract `LocalizedModule.lift` is
+inverted here into an explicit fraction, which is what the degree-zero certificate needs.
+
+Both sides are pinned by multiplying through by `g₁ ⁿ`, which acts invertibly on the target --
+that is the whole content of `isUnit_algebraMap_end_of_mul_mem`. -/
+theorem faceLift_mk {g₁ g₂ h : A} (hgh : g₁ * h ∈ Submonoid.powers g₂)
+    (hg : g₁ * h = g₂) (m : M) (n : ℕ) :
+    faceLift (M := M) hgh
+        (LocalizedModule.mk m (⟨g₁ ^ n, n, rfl⟩ : Submonoid.powers g₁)) =
+      LocalizedModule.mk (h ^ n • m) (⟨g₂ ^ n, n, rfl⟩ : Submonoid.powers g₂) := by
+  have hunit := isUnit_algebraMap_end_of_mul_mem (M := M) hgh
+    (⟨g₁ ^ n, n, rfl⟩ : Submonoid.powers g₁)
+  rw [Module.End.isUnit_iff] at hunit
+  apply hunit.1
+  rw [Module.algebraMap_end_apply, Module.algebraMap_end_apply]
+  have hleft : (g₁ ^ n) • faceLift (M := M) hgh
+      (LocalizedModule.mk m ⟨g₁ ^ n, n, rfl⟩) =
+      LocalizedModule.mk (S := Submonoid.powers g₂) m 1 := by
+    rw [← LinearMap.map_smul, LocalizedModule.smul'_mk]
+    have hcancel : LocalizedModule.mk ((g₁ ^ n) • m)
+        (⟨g₁ ^ n, n, rfl⟩ : Submonoid.powers g₁) =
+        LocalizedModule.mk (S := Submonoid.powers g₁) m 1 :=
+      LocalizedModule.mk_cancel (⟨g₁ ^ n, n, rfl⟩ : Submonoid.powers g₁) m
+    rw [hcancel, faceLift, LocalizedModule.lift_mk_one]
+    rfl
+  have hright : (g₁ ^ n) • LocalizedModule.mk (h ^ n • m)
+      (⟨g₂ ^ n, n, rfl⟩ : Submonoid.powers g₂) =
+      LocalizedModule.mk (S := Submonoid.powers g₂) m 1 := by
+    rw [LocalizedModule.smul'_mk, ← mul_smul, ← mul_pow, hg]
+    exact LocalizedModule.mk_cancel (⟨g₂ ^ n, n, rfl⟩ : Submonoid.powers g₂) m
+  rw [hleft, hright]
+
+omit [AddSubgroupClass σM M] in
+/-- A face map preserves the degree-zero condition.
+
+Clearing `g₁ⁿ` costs `hⁿ` in both numerator and denominator, so the matching-degree certificate
+survives with its degree raised by `n • e`. -/
+theorem isDegreeZero_faceLift {g₁ g₂ h : A} {e : ι} (hh : h ∈ 𝒜 e)
+    (hgh : g₁ * h ∈ Submonoid.powers g₂) (hg : g₁ * h = g₂)
+    {z : LocalizedModule (Submonoid.powers g₁) M}
+    (hz : IsDegreeZero 𝒜 𝓜 (Submonoid.powers g₁) z) :
+    IsDegreeZero 𝒜 𝓜 (Submonoid.powers g₂) (faceLift (M := M) hgh z) := by
+  obtain ⟨c, rfl⟩ := hz
+  obtain ⟨n, hn⟩ := c.den_mem
+  -- `Submonoid.powers` membership arrives unreduced; pin the beta-reduced form.
+  have hn' : g₁ ^ n = (c.den : A) := hn
+  have hden : (⟨(c.den : A), c.den_mem⟩ : Submonoid.powers g₁) = ⟨g₁ ^ n, n, rfl⟩ :=
+    Subtype.ext hn'.symm
+  have hpow : g₂ ^ n = h ^ n * (c.den : A) := by
+    rw [← hg, mul_pow, mul_comm (g₁ ^ n) (h ^ n), hn']
+  refine ⟨
+    { deg := n • e + c.deg
+      num := ⟨h ^ n • (c.num : M),
+        SetLike.GradedSMul.smul_mem (SetLike.pow_mem_graded n hh) c.num.2⟩
+      den := ⟨g₂ ^ n, hpow ▸ SetLike.mul_mem_graded (SetLike.pow_mem_graded n hh) c.den.2⟩
+      den_mem := ⟨n, rfl⟩ }, ?_⟩
+  show LocalizedModule.mk _ _ = _
+  rw [NumDenSameDeg.embedding, hden, faceLift_mk (M := M) hgh hg]
+
+/-- The Čech face map on degree-zero homogeneous localizations.
+
+`mapOfLE` cannot supply this: along a face the denominator submonoids are `Submonoid.powers g₁`
+and `Submonoid.powers g₂` with `g₁ * h = g₂`, and divisibility does not nest powers submonoids.
+The map exists anyway because `g₁` is invertible once `g₂` is. -/
+noncomputable def faceMap {g₁ g₂ h : A} {e : ι} (hh : h ∈ 𝒜 e)
+    (hgh : g₁ * h ∈ Submonoid.powers g₂) (hg : g₁ * h = g₂) :
+    DegreeZeroLocalization 𝒜 𝓜 (.powers g₁) →+
+      DegreeZeroLocalization 𝒜 𝓜 (.powers g₂) where
+  toFun z := ⟨faceLift (M := M) hgh (z : LocalizedModule (Submonoid.powers g₁) M),
+    isDegreeZero_faceLift hh hgh hg z.2⟩
+  map_zero' := by
+    apply ext
+    exact (faceLift (M := M) hgh).map_zero
+  map_add' x y := by
+    apply ext
+    exact (faceLift (M := M) hgh).map_add
+      (x : LocalizedModule (Submonoid.powers g₁) M)
+      (y : LocalizedModule (Submonoid.powers g₁) M)
+
+@[simp]
+theorem coe_faceMap {g₁ g₂ h : A} {e : ι} (hh : h ∈ 𝒜 e)
+    (hgh : g₁ * h ∈ Submonoid.powers g₂) (hg : g₁ * h = g₂)
+    (z : DegreeZeroLocalization 𝒜 𝓜 (.powers g₁)) :
+    ((faceMap (𝓜 := 𝓜) hh hgh hg z : DegreeZeroLocalization 𝒜 𝓜 (.powers g₂)) :
+        LocalizedModule (Submonoid.powers g₂) M) =
+      faceLift (M := M) hgh (z : LocalizedModule (Submonoid.powers g₁) M) :=
+  rfl
+
+/-- The face map in explicit fractions: `m / g₁ⁿ ↦ hⁿ m / g₂ⁿ`. -/
+theorem faceMap_mk {g₁ g₂ h : A} {e : ι} (hh : h ∈ 𝒜 e)
+    (hgh : g₁ * h ∈ Submonoid.powers g₂) (hg : g₁ * h = g₂)
+    (c : NumDenSameDeg 𝒜 𝓜 (.powers g₁)) (n : ℕ) (hn : g₁ ^ n = (c.den : A)) :
+    faceMap (𝓜 := 𝓜) hh hgh hg (mk c) =
+      mk ({ deg := n • e + c.deg
+            num := ⟨h ^ n • (c.num : M),
+              SetLike.GradedSMul.smul_mem (SetLike.pow_mem_graded n hh) c.num.2⟩
+            den := ⟨g₂ ^ n, by
+              rw [show g₂ ^ n = h ^ n * (c.den : A) by
+                rw [← hg, mul_pow, mul_comm (g₁ ^ n) (h ^ n), hn]]
+              exact SetLike.mul_mem_graded (SetLike.pow_mem_graded n hh) c.den.2⟩
+            den_mem := ⟨n, rfl⟩ } : NumDenSameDeg 𝒜 𝓜 (.powers g₂)) := by
+  apply ext
+  have hden : (⟨(c.den : A), c.den_mem⟩ : Submonoid.powers g₁) = ⟨g₁ ^ n, n, rfl⟩ :=
+    Subtype.ext hn.symm
+  show faceLift (M := M) hgh (NumDenSameDeg.embedding c) = _
+  rw [NumDenSameDeg.embedding, hden, faceLift_mk (M := M) hgh hg]
+  rfl
+
 /-! ### Localization away from one homogeneous element -/
 
 /-- The degree-zero fraction `m / fⁿ` when `f` has degree `d` and `m` has degree `n • d`. -/
