@@ -6,6 +6,7 @@ import DerivedAlgGeo.AlgebraicGeometry.Cohomology.Cech.Comparison
 import DerivedAlgGeo.AlgebraicGeometry.Cohomology.Cech.GlobalComparison
 import DerivedAlgGeo.AlgebraicGeometry.Cohomology.Cech.InitialPage
 import DerivedAlgGeo.AlgebraicGeometry.Cohomology.Cech.InjectiveAcyclic
+import DerivedAlgGeo.AlgebraicGeometry.Cohomology.Cech.ProjectiveSpace
 import DerivedAlgGeo.AlgebraicGeometry.Cohomology.Cech.SmallSiteResolution
 import DerivedAlgGeo.AlgebraicGeometry.Cohomology.Cech.TotalComparison
 
