@@ -35,7 +35,9 @@ set_option relaxedAutoImplicit false
 
 universe v u
 
-open CategoryTheory CochainComplex CochainComplex.HomComplex
+namespace CategoryTheory
+
+open CochainComplex CochainComplex.HomComplex
 
 variable (A : Type u) [Category.{v} A] [Preadditive A]
 
@@ -90,3 +92,5 @@ instance : DGCategory.{v} (Cdg A) where
     exact δ_comp f g h (p + 1) (q + 1) r' hr rfl rfl
 
 end Cdg
+
+end CategoryTheory

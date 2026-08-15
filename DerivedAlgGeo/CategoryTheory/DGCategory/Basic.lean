@@ -58,7 +58,8 @@ set_option relaxedAutoImplicit false
 
 universe v u w
 
-open CategoryTheory
+
+namespace CategoryTheory
 
 /-- The data of a dg category on a type of objects `C`: a cochain complex of
 abelian groups for each pair of objects, a degree-zero identity, and a
@@ -91,3 +92,5 @@ class DGCategory (C : Type u) extends DGCategoryStruct.{v} C where
       dgComp p (q + 1) r' (by omega) f (((dgHom Y Z).d q (q + 1)).hom g) +
         q.negOnePow • dgComp (p + 1) q r' (by omega)
           (((dgHom X Y).d p (p + 1)).hom f) g
+
+end CategoryTheory

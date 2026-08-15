@@ -36,7 +36,8 @@ set_option relaxedAutoImplicit false
 
 universe u
 
-open CategoryTheory
+
+namespace CategoryTheory
 
 /-- The cochain complex that is `ℤ` in every degree, with zero differential. -/
 @[simps]
@@ -65,3 +66,5 @@ instance dgCategory (X : Type u) : DGCategory.{0} (Const X) where
     simp
 
 end Const
+
+end CategoryTheory

@@ -39,7 +39,9 @@ set_option relaxedAutoImplicit false
 
 universe v u u' u''
 
-open CategoryTheory DGCategoryStruct DGCategory
+namespace CategoryTheory
+
+open DGCategoryStruct DGCategory
 
 variable {C : Type u} [DGCategory.{v} C]
 
@@ -356,3 +358,5 @@ def h0CompIso (F : DGFunctor C D) (G : DGFunctor D E) :
 
 
 end DGFunctor
+
+end CategoryTheory

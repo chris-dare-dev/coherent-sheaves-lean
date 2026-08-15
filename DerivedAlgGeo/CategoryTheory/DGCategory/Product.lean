@@ -32,7 +32,9 @@ set_option relaxedAutoImplicit false
 
 universe v u u'
 
-open CategoryTheory DGCategoryStruct
+namespace CategoryTheory
+
+open DGCategoryStruct
 
 /-- The differential of the degreewise product, named separately: a proof in a
 later field of a structure instance cannot see an earlier field given inline,
@@ -167,3 +169,5 @@ instance prod : DGCategory.{v} (C × D) where
       dgProd_fst_add, dgProd_snd_add, dgProd_fst_units_smul, dgProd_snd_units_smul]
 
 end DGCategory
+
+end CategoryTheory
