@@ -1484,3 +1484,21 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Numerical.K3.IntegralMukaiData.isSpherical_mukaiVector_iff
 #print axioms AlgebraicGeometry.Numerical.K3.IntegralMukaiData.isIsotropic_mukaiVector_iff
 #print axioms AlgebraicGeometry.Numerical.K3.IntegralMukaiData.expectedDim_mukaiVector
+
+-- The K₀ bridge: realizing a triangulated Grothendieck group numerically.
+-- `NumericalRealization`, `Descends` and `PreservesEuler` are all SUPPLIED
+-- geometric input, none of it constructed here, so a clean axiom list on the
+-- isometry theorems says they follow from that input -- not that any variety
+-- or any Fourier-Mukai transform provides it.
+#print axioms AlgebraicGeometry.Numerical.NumericalRealization
+#print axioms AlgebraicGeometry.Numerical.NumericalRealization.mk.inj
+#print axioms AlgebraicGeometry.Numerical.NumericalRealization.mk.sizeOf_spec
+#print axioms AlgebraicGeometry.Numerical.NumericalRealization.cl
+#print axioms AlgebraicGeometry.Numerical.Descends
+#print axioms AlgebraicGeometry.Numerical.Descends.apply_of
+#print axioms AlgebraicGeometry.Numerical.Descends.of_natIso
+#print axioms AlgebraicGeometry.Numerical.PreservesEuler
+#print axioms AlgebraicGeometry.Numerical.pairing_mukaiVector_map
+#print axioms AlgebraicGeometry.Numerical.selfPairing_mukaiVector_map
+#print axioms AlgebraicGeometry.Numerical.isSpherical_mukaiVector_map_iff
+#print axioms AlgebraicGeometry.Numerical.pairing_mukaiVector_transform
