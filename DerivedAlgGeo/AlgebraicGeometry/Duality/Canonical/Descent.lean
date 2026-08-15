@@ -3,7 +3,7 @@ Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under the MIT license.
 -/
 import DerivedAlgGeo.AlgebraicGeometry.Duality.Canonical.Differentials
-import DerivedAlgGeo.AlgebraicGeometry.Divisors.Dual
+import DerivedAlgGeo.AlgebraicGeometry.Divisors.LineBundleDual
 import DerivedAlgGeo.Topology.Opens.CoversTop
 
 /-!
