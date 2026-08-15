@@ -98,6 +98,14 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AddCommGrpCat.piIsoPi_hom_eval
 #print axioms AddCommGrpCat.piIsoPi_hom_eval_apply
 #print axioms AddCommGrpCat.piAddEquivPi
+
+-- The degreewise Cech comparison on polynomial Proj: degree n of Mathlib's Cech complex of
+-- O(d) over the variable charts is the explicit product of homogeneous degree-zero
+-- localizations. Degreewise only; the differential transport is separate.
+#print axioms AlgebraicGeometry.Proj.polynomialVariableChart
+#print axioms AlgebraicGeometry.Proj.twistPresheaf
+#print axioms AlgebraicGeometry.Proj.piObj_polynomialVariableChart
+#print axioms AlgebraicGeometry.Proj.cechCochainsDegreewiseAddEquiv
 #print axioms AlgebraicGeometry.Proj.AffineComparisonDataOn
 #print axioms AlgebraicGeometry.Proj.AffineComparisonDataOn.localQuasicoherentData
 #print axioms AlgebraicGeometry.Proj.AffineComparisonDataOn.associatedSheaf_isQuasicoherent
