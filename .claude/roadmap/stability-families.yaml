@@ -68,6 +68,7 @@ generations:
   - { rev: 6, at: "2026-08-15", note: "SF2 implementation started with native child #380 under epic #193: bind ordinary slicing semistability to genuine and indexed-uniform quadratic support before tackling the Definition 21.9 quotient and geometric fibers." }
   - { rev: 7, at: "2026-08-15", note: "Native child #387 under epic #193 now connects the saturated integral quotient to the real support quotient and its scalar extension. Bijectivity is an explicit model-specific premise, not an automatic consequence of saturation." }
   - { rev: 8, at: "2026-08-15", note: "Native child #389 removes the one-fixed-category restriction from the ordinary numerical adapter: actual slicings in varying fiber categories map to one common class space with one charge and quadratic form. Geometric base change remains separate." }
+  - { rev: 9, at: "2026-08-15", note: "Native child #391 under epic #194 binds the five-clause ordinary families package and the Theorem 22.2 source-clause projection to actual slicing-defined loci on varying abstract fiber categories. The geometric probes remain explicit premises." }
 retired: []
 
 # GitHub milestones are roadmap phases. Epic issues live inside them, and
@@ -166,15 +167,15 @@ items:
 
   - id: stability-families-e5
     gh_issue: 194
-    gh_sub_issues: []
+    gh_sub_issues: [391]
     kind: epic
     parent: stability-families-m2
     title: "Define nonvacuous stability-in-families interfaces (§§20–23)"
-    status: blocked
-    summary: "Represent the five family conditions and relative HN interfaces with concrete nonvacuity, while keeping Theorem 22.2's geometric and moduli inputs explicit."
+    status: in_progress
+    summary: "The five-clause ordinary package and its Theorem 22.2 source-clause projection are now being bound to actual slicing-defined loci on varying abstract fiber categories (#391). Geometric openness, base change, relative HN structures, and bounded moduli remain explicit client obligations."
     priority: should
     size: XL
-    tags: [families, relative-hn, blocked]
+    tags: [families, relative-hn]
 
   - id: stability-families-m3
     gh_milestone: 16
