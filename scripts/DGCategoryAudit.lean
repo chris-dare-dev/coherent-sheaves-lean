@@ -180,3 +180,35 @@ import DerivedAlgGeo.CategoryTheory.DGCategory
 #print axioms CategoryTheory.Cdg.comp_snd_of_split
 #print axioms CategoryTheory.Cdg.isConeOf
 #print axioms CategoryTheory.Cdg.isPretriangulated
+
+-- dg-enhancements-e6: shift uniqueness, the Enhancement structure, and its
+-- first inhabitant.
+#print axioms CategoryTheory.IsShiftBy.inv
+#print axioms CategoryTheory.IsShiftBy.inv_hom
+#print axioms CategoryTheory.IsShiftBy.hom_inv
+#print axioms CategoryTheory.IsShiftBy.inv_closed
+#print axioms CategoryTheory.IsShiftBy.compare
+#print axioms CategoryTheory.IsShiftBy.compare_mem_cocycles
+#print axioms CategoryTheory.IsShiftBy.compare_comp_compare
+#print axioms CategoryTheory.H0.isZero_of_dgId_eq_zero
+#print axioms CategoryTheory.H0.hasZeroObject
+#print axioms CategoryTheory.Enhancement
+#print axioms CategoryTheory.Enhancement.dgCat
+#print axioms CategoryTheory.Enhancement.equiv
+#print axioms CategoryTheory.Enhancement.isDGCategory
+#print axioms CategoryTheory.Enhancement.isPretriangulated
+#print axioms CategoryTheory.Enhancement.mk.inj
+#print axioms CategoryTheory.Enhancement.mk.sizeOf_spec
+#print axioms CategoryTheory.Enhancement.hasZeroObject
+#print axioms CategoryTheory.Cdg.enhancement
+
+-- dg-enhancements-e6: composition of shifts, and the action on morphisms a
+-- shift functor on H0 would have.
+#print axioms CategoryTheory.compRight.congr_simp
+#print axioms CategoryTheory.dgComp_closed
+#print axioms CategoryTheory.IsShiftBy.comp
+#print axioms CategoryTheory.IsShiftBy.mapShift
+#print axioms CategoryTheory.IsShiftBy.mapShift_mem_cocycles
+#print axioms CategoryTheory.IsShiftBy.mapShift_id
+#print axioms CategoryTheory.IsShiftBy.mapShift_comp
+#print axioms CategoryTheory.IsShiftBy.compare_eq_mapShift
