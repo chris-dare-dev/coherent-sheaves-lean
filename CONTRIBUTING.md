@@ -2,9 +2,9 @@
 
 ## Place code by mathematics
 
-All stable Lean code lives below `DerivedAlgGeo/`. Follow the subject hierarchy
-described in `ARCHITECTURE.md`; do not add new top-level libraries or restore
-the retired repository roots.
+All stable Lean code lives below `DerivedAlgGeo/`. Follow the existing subject
+hierarchy; do not add new top-level libraries or restore retired repository
+roots.
 
 Choose the narrowest natural home:
 
@@ -17,6 +17,11 @@ Choose the narrowest natural home:
 Use Mathlib's established namespace when extending a Mathlib concept. Add a
 same-named umbrella for a new non-leaf directory and export stable leaves
 through their nearest existing umbrellas.
+
+Keep generic `Algebra`, `Topology`, and `LinearAlgebra` modules independent of
+specialized geometry and stability applications. A new top-level subject is
+appropriate only for a coherent body of reusable mathematics, not for one
+milestone or provenance boundary.
 
 ## Proof and trust policy
 

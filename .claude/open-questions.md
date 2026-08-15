@@ -1,17 +1,20 @@
-# Open questions — decisions blocking contract v1
+# Contract-v1 owner questions
 
-Five. Each has a `gate:owner` issue. Each names what changes either way, so the
-answer is a choice and not an essay.
+Q2 and Q3 are answered, Q4 is deliberately deferred, and Q1 is settled for the
+formalization but still open for corpus-version verification. The remaining
+owner choices stay linked to `gate:owner` issues and name what changes either
+way.
 
 Ranked by how much they block.
 
 ---
 
-## Q1 — Which arXiv version of `math/0212237` was §8 formalized against?
+## Q1 — Which arXiv version of `math/0212237` was §8 formalized against? — **ANSWERED FOR THE FORMALIZATION**
 
-**Blocks:** the registry schema's `source.version` is `required` when
-`scheme == arxiv`, so no entry can be minted until this is known.
-**Effort to answer:** 5 minutes, by opening `arxiv.org/abs/math/0212237`.
+`formalization.yaml` pins `math/0212237v3`, confirmed by the owner. This no
+longer blocks minting. The remaining gap is narrower: arXMCP's ingested corpus
+does not record which version its bytes came from, so corpus grounding cannot
+upgrade a probable v3 match to a confirmed versioned match until #171 lands.
 
 **Nothing on this machine knows.** The live `bridgeland-stability` notebook
 records `arxiv_version = ''` — and the red team found this is not specific to
@@ -24,10 +27,8 @@ arXiv's latest — so after the author posts a v3 and the operator re-ingests, t
 resolver would match against v3 bytes and write `status: current` for an entry
 declaring v2.
 
-**Consequence either way:** the answer goes into `formalization.yaml`
-`source.id` and into every registry entry. It also forces an arXMCP-side
-change — an `arxiv_version` backfill in ingest — which is a **third** arXMCP CLI
-change, not the two the architecture budgeted.
+**Current consequence:** the formalization remains pinned to v3; the
+arXMCP-side `arxiv_version` backfill is tracked by #171.
 
 ---
 
@@ -50,7 +51,7 @@ lives. Nothing that positively chose `arXMCP/contract/` survives — including
 "rule 7", which is the only reason `mfc` was made arXMCP-side rather than
 shared.
 
-**Blocks:** the contract package (#19-22, epic #3). The milestone that would
+**Blocks:** historically, the contract package (#146–#149, epic #130). The milestone that would
 have created `arXMCP/contract/` stopped at `research-complete` on this finding;
 no code was written against the withdrawn decision.
 
@@ -208,9 +209,9 @@ nothing above has to be rewritten when it lands.
   one that catches the thing this repo most fears". That is the argument for
   preferring **1 + 3** over the recommended 1 + 2 whenever this is reopened.
 
-**Cross-reference errors in the tracker, for whoever picks this up:** #50 cites
-"#41" for the coverage census — that is **#52**; #41 is `@[discharges]`. #52
-cites "#39" for the sketch lane — that is `external_decls[]`, and no
+**Cross-reference errors in the migrated tracker, for whoever picks this up:** #177 cites
+"#168" for the coverage census — that is **#179**; #168 is `@[discharges]`. #179
+cites "#166" for the sketch lane — that is `external_decls[]`, and no
 sketch-lane issue exists yet.
 
 ---

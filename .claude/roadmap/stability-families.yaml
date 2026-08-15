@@ -63,6 +63,7 @@ generations:
   - { rev: 1, at: "2026-08-07", note: "Initial program materialized as GitHub milestones #6–#9, epics #79–#84, and active SF0 children #85–#90." }
   - { rev: 2, at: "2026-08-08", note: "Refreshed after #85–#87 and #94 completed, the #88–#90 recovery stack reached reviewed green drafts, and SF1 children #106–#111 were materialized." }
   - { rev: 3, at: "2026-08-12", note: "Migrated to derived-alg-geo-lean: remapped milestones and issues, updated monorepo ownership boundaries, and linked destination migration PRs #218–#223." }
+  - { rev: 4, at: "2026-08-14", note: "Unified source layout recorded. SF0 is complete and milestone #14 is closed; current modules live under DerivedAlgGeo/CategoryTheory/Triangulated/StabilityCondition. Active geometry links now point to the in-repository AlgebraicGeometry subject, while the reusable stacks/moduli boundary remains an owner decision in #214." }
 retired: []
 
 # GitHub milestones are roadmap phases. Epic issues live inside them, and
@@ -73,7 +74,7 @@ items:
     gh_milestone: 14
     kind: milestone
     title: "SF0 — Stabilize and recover"
-    status: in_progress
+    status: done
     lane: now
     acceptance:
       - "Current trust prose agrees with merged HRS, wall, support, and census declarations."
@@ -154,7 +155,7 @@ items:
     parent: stability-families-m2
     title: "Upgrade to uniform quadratic support (§§18, 21)"
     status: planned
-    summary: "Replace the current homogeneous-function/arbitrary-set boundary with the quadratic and semistable-class structures the paper actually uses, reusing PR #78 only for perturbation openness."
+    summary: "Replace the current homogeneous-function/arbitrary-set boundary with the quadratic and semistable-class structures the paper actually uses, reusing the perturbation-openness results now maintained in DerivedAlgGeo/CategoryTheory/Triangulated/StabilityCondition/Support/Basic.lean."
     priority: must
     size: L
     tags: [support, quadratic-form, uniformity]
@@ -187,7 +188,7 @@ items:
     gh_sub_issues: []
     kind: epic
     parent: stability-families-m3
-    title: "Coordinate geometric and moduli prerequisites across repositories"
+    title: "Coordinate geometric and moduli prerequisites across ownership boundaries"
     status: blocked
     summary: "Parked coordination epic. Coherent-sheaf and derived foundations now live in this monorepo; Quot, stack, boundedness, and good-moduli ownership remains explicit and no placeholder axiom is permitted."
     priority: should

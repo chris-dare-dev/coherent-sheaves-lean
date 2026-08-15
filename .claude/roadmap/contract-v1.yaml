@@ -1,11 +1,24 @@
 schema: roadmap/1
 slug: contract-v1
-project: bridgeland-stab-lean
+project: derived-alg-geo-lean
 title: "The arXMCP contract — a cold seam between a corpus and a formalization"
 status: active
 phase: decomposed        # init -> refined -> decomposed -> sequenced -> complete
 brief: |
-  Two sibling repos document a contract that has zero code on either side. This repo's CLAUDE.md §8 says "`formalization.yaml` is the entire interface"; arXMCP contains no parser for it (`find -iname "*formaliz*"` returns zero files) and no document that mentions this repo exists (grep for `bridgeland-stab-lean` across all its .md/.py/.yaml returns zero hits). The interface is prose on both sides and unilateral. Worse, the identifier a contract would need does not exist: `chunk_id` is a genuine content hash but rotates on any parse change (the Makefile's own help for `ingest-recover-preambles` reads "NOTE: triggers chunk_id rotation"), there is no alias table, `merge_insert` has no delete arm so rotation doubles rather than fails, and `source_span` — which `ingest/schema.py:240-250` calls "the authoritative resolving key" — is NULL on 15280/15280 live rows. Meanwhile the one runtime bridge, `lean_verify`, is off by default, runs Lean v4.31.0 against this repo's v4.29.0 pin, is bounded by a 30 s timeout against a 14.5-235 s cold `import Mathlib`, has no sandbox on Windows, and fails open on the legal form `set_option maxHeartbeats 400000 in theorem sneaky : False := bad` (regexes executed and reproduced by the audit). This track builds the contract as a COLD SEAM: versioned files exchanged at git tags, no runtime coupling, identity minted by a human in this repo and containing zero corpus-derived bytes, and all elaboration/axiom evidence produced by sweeping `Environment.constants` in the pinned environment rather than by regex over source. It is designed to be cloned: a second adopter with a different notebook and a different topic stands up their own topic repo from a template, and nothing in the contract mentions Bridgeland.
+  Current state (2026-08-14): the formalization now lives in the unified
+  `derived-alg-geo-lean` repository at Lean/Mathlib v4.32.1, with an
+  environment-based emitter and CI already active. The remaining contract work
+  is tracked here and any arXMCP changes stay explicitly cross-repository.
+
+  Historical starting point (2026-08-04): two sibling repos documented a
+  contract that had zero code on either side. The interface was prose and
+  unilateral; corpus identifiers rotated under re-ingest; and the runtime
+  `lean_verify` bridge had toolchain, timeout, sandbox, and fail-open gaps.
+  This track builds a COLD SEAM: versioned files exchanged at git tags, no
+  runtime coupling, identity minted by a human in this repo and containing zero
+  corpus-derived bytes, and all elaboration/axiom evidence produced by sweeping
+  `Environment.constants` in the pinned environment rather than by regex over
+  source. It is designed to be cloned for another mathematical topic.
 goal:
   hmw: "How might we let a Lean declaration durably cite a statement in a paper — and let an agent read how much that citation is worth, axis by axis — without either repo trusting the other's environment, uptime, or good intentions?"
   objective: "Ship a file-based, schema-validated, adversarially-fixtured contract between a corpus notebook and a topic formalization repo, prove it by cutting the first release, and prove it generalizes by standing up a second topic."
@@ -37,7 +50,7 @@ goal:
     - "No elaboration or axiom verdict produced by arXMCP about this repo's environment. (ADR-0003)"
     - "No aggregate trust token at any level, in any artifact. (ADR-0005)"
     - "No `faithfulness: agent_drafted`. An LLM verdict may not occupy the one human axis. (ADR-0005)"
-    - "No geometric-lane work. D^b(Coh X), Serre duality, Chern characters, and Fourier-Mukai remain out of scope per CLAUDE.md §4; the contract must not create pressure to open that lane."
+    - "No geometric-lane work inside this contract track. Derived categories, Serre duality, Chern characters, and Fourier–Mukai content are owned by their mathematical roadmaps under DerivedAlgGeo."
     - "No `sorry`, including as a contract-development convenience. CLAUDE.md §2 is unconditional."
   evidence:
     - ".claude/notes/2026-08-04-arxmcp-lean-integration-audit.md — 8 areas surveyed, each independently re-verified by a second agent instructed to default to REFUTED."
@@ -56,14 +69,15 @@ generated_by: { agent: claude-opus-5, at: "2026-08-04" }
 generations:
   - { rev: 1, at: "2026-08-04" }
   - { rev: 2, at: "2026-08-04", note: "Spike #27 answered: elabTerm/isDefEq are usable at the v4.29.0 pin, so `mfc restate-check` (#61) moves from v1.1 into M2/e9 and supersedes #54." }
+  - { rev: 3, at: "2026-08-14", note: "Tracker IDs remapped to derived-alg-geo-lean after repository unification: milestones 10–15, epics 128–138, and children 139–188. The current source root and pin are DerivedAlgGeo at v4.32.1; the 2026-08-04 pin and repository split remain historical evidence only." }
 retired: []          # tombstoned item ids; ids are write-once, never deleted
 
 # ---------------------------------------------------------------------------
 # LOCAL CONVENTION NOTE
 #
 # arXMCP maps one plan TRACK to one GitHub milestone, with epics as issues
-# inside it. This repo has exactly one track, so that mapping would produce a
-# single milestone with 11 epics and no burndown granularity.
+# inside it. This roadmap uses phase milestones so its eleven epics retain
+# useful burndown granularity alongside the repository's other tracks.
 #
 # Here, GitHub milestones are the track's PHASES (m0..m4 below) and epics are
 # issues assigned to them. `kind: milestone` items carry `parent: <epic-id>`
@@ -74,7 +88,7 @@ retired: []          # tombstoned item ids; ids are write-once, never deleted
 items:
   # ===================== M0 — honest baseline =====================
   - id: contract-v1-m0
-    gh_milestone: 1
+    gh_milestone: 11
     kind: milestone
     title: "Honest baseline — stop the repo making false claims about itself"
     summary: "Three claims in this repo are false as written, and one of them is a live drift hazard. formalization.yaml:3-5 says its schema 'mirrors the anchor key-for-key'; it is missing the anchor's first key (schema_version) and seven shared keys differ in TYPE. CLAUDE.md §8 cites arXMCP CLAUDE.md §4.8 for a rule §4.8 does not contain, and uses the present indicative for an R5 track that is brief-only with no plans/ entry. source.id pins an arXiv paper with no version, which silently resolves to latest. None of this needs the contract to exist, and all of it must be true before anything cites this repo."
@@ -86,8 +100,8 @@ items:
       - "Given `lake build`, when it runs, then scripts/ is built (today it is covered by no lean_lib and can rot silently)"
 
   - id: contract-v1-e1
-    gh_issue: 1
-    gh_sub_issues: [12, 13, 14, 15, 16]
+    gh_issue: 128
+    gh_sub_issues: [139, 140, 141, 142, 143]
     kind: epic
     parent: contract-v1-m0
     title: "Close the false claims in the trust record and the contract prose"
@@ -99,19 +113,19 @@ items:
       note: [".claude/notes/2026-08-04-arxmcp-lean-integration-audit.md"]
 
   - id: contract-v1-e2
-    gh_issue: 2
-    gh_sub_issues: [17]
+    gh_issue: 129
+    gh_sub_issues: [144]
     kind: epic
     parent: contract-v1-m0
     title: "Make the audit script a real build target"
-    summary: "scripts/Audit.lean is covered by no lean_lib, so `lake build` never builds it and its own header admits it can rot. It also exits 0 when #print axioms prints [sorryAx], so it is not a gate and cannot become one. Add it to the build now; the emitter replaces its function in contract-v1-e4."
+    summary: "Completed baseline work: subsystem audits are explicit Lake targets, CI checks their output rather than trusting #print axioms' exit code, and the combined environment emitter supplies the repository-wide gate. Current audit files are scripts/AlgebraicGeometryAudit.lean, scripts/StabilityConditionAudit.lean, and scripts/DGCategoryAudit.lean."
     priority: must
     size: S
     tags: [enabler, infra]
 
   # ===================== M1 — spec and producer =====================
   - id: contract-v1-m1
-    gh_milestone: 2
+    gh_milestone: 10
     kind: milestone
     title: "Contract v1 — the spec, the emitter, and the first CI"
     summary: "The seven schemas exist and are green on their own conformance corpus; the emitter produces evidence by sweeping Environment.constants rather than by parsing source; and this repo has CI for the first time in its history. Nothing is exchanged with arXMCP yet — this milestone builds only the producing half, so its correctness does not depend on a decision about the consumer."
@@ -125,8 +139,8 @@ items:
       note: [".claude/decisions/ADR-0003-evidence-at-the-environment.md", ".claude/decisions/ADR-0007-contract-package-location.md"]
 
   - id: contract-v1-e3
-    gh_issue: 3
-    gh_sub_issues: [18, 19, 20, 21, 22]
+    gh_issue: 130
+    gh_sub_issues: [145, 146, 147, 148, 149]
     kind: epic
     parent: contract-v1-m1
     title: "The contract package — schemas, adversarial fixtures, and the mfc CLI"
@@ -136,8 +150,8 @@ items:
     tags: [enabler, schema, trust-language]
 
   - id: contract-v1-e4
-    gh_issue: 4
-    gh_sub_issues: [23, 24, 25, 26, 27, 28]
+    gh_issue: 131
+    gh_sub_issues: [150, 151, 152, 153, 154, 155]
     kind: epic
     parent: contract-v1-m1
     title: "The emitter — evidence from Environment.constants, never from source"
@@ -147,8 +161,8 @@ items:
     tags: [enabler, lean, trust, named-exception]
 
   - id: contract-v1-e5
-    gh_issue: 5
-    gh_sub_issues: [29, 30, 31, 32, 33]
+    gh_issue: 132
+    gh_sub_issues: [156, 157, 158, 159, 160]
     kind: epic
     parent: contract-v1-m1
     title: "Producer CI — the first CI in this repo's history"
@@ -159,7 +173,7 @@ items:
 
   # ===================== M2 — the seam closes =====================
   - id: contract-v1-m2
-    gh_milestone: 3
+    gh_milestone: 12
     kind: milestone
     title: "The seam closes — identity, grounding, first release, first reader"
     summary: "The registry mints durable keys; arXMCP answers the one question it is allowed to answer and writes its answer to a file; this repo cuts its first tag ever; arXMCP pins that tag and re-serves its records verbatim. At the end of this milestone the artifact both repos call 'the entire interface' has a reader, on the consumer side, for the first time."
@@ -174,8 +188,8 @@ items:
       note: [".claude/decisions/ADR-0002-identity-is-minted-here.md", ".claude/decisions/ADR-0004-registry-lives-in-the-topic-repo.md"]
 
   - id: contract-v1-e6
-    gh_issue: 6
-    gh_sub_issues: [34, 35, 36, 37, 38, 39, 40, 41]
+    gh_issue: 133
+    gh_sub_issues: [161, 162, 163, 164, 165, 166, 167, 168]
     kind: epic
     parent: contract-v1-m2
     title: "The statement registry — durable identity, minted by hand"
@@ -185,8 +199,8 @@ items:
     tags: [value, identity, trust]
 
   - id: contract-v1-e7
-    gh_issue: 7
-    gh_sub_issues: [42, 43, 44, 45]
+    gh_issue: 134
+    gh_sub_issues: [169, 170, 171, 172]
     kind: epic
     parent: contract-v1-m2
     title: "Grounding resolution — arXMCP answers exactly one question"
@@ -196,8 +210,8 @@ items:
     tags: [enabler, corpus, cross-repo]
 
   - id: contract-v1-e8
-    gh_issue: 8
-    gh_sub_issues: [46, 47, 48, 49]
+    gh_issue: 135
+    gh_sub_issues: [173, 174, 175, 176]
     kind: epic
     parent: contract-v1-m2
     title: "First release, and the consumer side that reads it"
@@ -207,8 +221,8 @@ items:
     tags: [value, release, cross-repo]
 
   - id: contract-v1-e9
-    gh_issue: 9
-    gh_sub_issues: [50, 51, 52, 53, 54, 61]
+    gh_issue: 136
+    gh_sub_issues: [177, 178, 179, 180, 181, 188]
     kind: epic
     parent: contract-v1-m2
     title: "Human faithfulness review — the axis no machine may write"
@@ -219,7 +233,7 @@ items:
 
   # ===================== M3 — generalization =====================
   - id: contract-v1-m3
-    gh_milestone: 4
+    gh_milestone: 13
     kind: milestone
     title: "Generalization gate — a second topic, or the claim is not made"
     summary: "The user's requirement is that a notebook for any other topic can clone this contract. That is either demonstrated or it is not claimed. The gate is a deliberately DIFFERENT topic — no upstream anchor, different Mathlib coverage, at least one textbook-sourced entry — taken end to end before the template is published."
@@ -230,8 +244,8 @@ items:
       - "Given the template before the gate passes, when its own trust record is read, then generalization_validated reads false with a date"
 
   - id: contract-v1-e10
-    gh_issue: 10
-    gh_sub_issues: [55, 56]
+    gh_issue: 137
+    gh_sub_issues: [182, 183]
     kind: epic
     parent: contract-v1-m3
     title: "The topic template and the second-topic gate"
@@ -242,7 +256,7 @@ items:
 
   # ===================== M4 — arXMCP Lean surface =====================
   - id: contract-v1-m4
-    gh_milestone: 5
+    gh_milestone: 15
     kind: milestone
     title: "arXMCP Lean surface — the tool sitting next to the honest record"
     summary: "Not part of the contract, and deliberately separated from it so the contract does not block on it. But it is on the same wire an agent reads: today an agent can get outcome: 'clean' on a sorry-backed proof from lean_verify while reading an honest multi-axis record beside it. Three fixes, batched into one TOOL_SCHEMA_VERSION bump per arXMCP's byte-stability discipline."
@@ -253,8 +267,8 @@ items:
       - "Given a response that previously carried status: ok, when the handler runs post-rename, then it says what it means"
 
   - id: contract-v1-e11
-    gh_issue: 11
-    gh_sub_issues: [57, 58, 59]
+    gh_issue: 138
+    gh_sub_issues: [184, 185, 186]
     kind: epic
     parent: contract-v1-m4
     title: "Close the lean_verify fail-open and the misreadable status"

@@ -11,6 +11,7 @@
 # Planning and session handoffs live in the issue tracker or external notes.
 HANDOFF.md
 ROADMAP.md
+/ARCHITECTURE.md
 
 # Environment-emission artifacts are attached to releases or CI runs, not
 # committed as potentially stale trust records.

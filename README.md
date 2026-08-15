@@ -1,103 +1,62 @@
 # DerivedAlgGeo
 
-`DerivedAlgGeo` is a Lean 4 library for derived algebraic geometry. It develops
-coherent sheaves and their cohomology, derived and dg categories, Bridgeland
-stability conditions, Fourier--Mukai prerequisites, duality, intersection
-theory, and Riemann--Roch.
+[![CI](https://github.com/chris-dare-dev/derived-alg-geo-lean/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/chris-dare-dev/derived-alg-geo-lean/actions/workflows/ci.yml)
+[![Documentation](https://github.com/chris-dare-dev/derived-alg-geo-lean/actions/workflows/docs.yml/badge.svg)](https://chris-dare-dev.github.io/derived-alg-geo-lean/)
+[![Lean](https://img.shields.io/badge/Lean-v4.32.1-blue.svg)](https://github.com/leanprover/lean4/releases/tag/v4.32.1)
+[![License](https://img.shields.io/badge/license-MIT%20%2F%20Apache--2.0-blue.svg)](LICENSE.md)
 
-The repository follows Mathlib's layout: one public source root, organized by
-mathematical subject rather than by the history of the repositories that were
-merged into it.
+`DerivedAlgGeo` is a Lean 4 library for derived algebraic geometry. Its current
+scope includes coherent sheaves and cohomology, dg and derived categories,
+Bridgeland stability conditions, duality, intersection theory, and
+Fourier--Mukai prerequisites.
 
-## Source layout
+The project is under active development. APIs may change as the formalization
+grows and relevant results are upstreamed to Mathlib.
 
-```text
-DerivedAlgGeo.lean
-DerivedAlgGeo/
-├── Algebra/
-│   └── Category/Grp/              # generic algebra infrastructure
-├── AlgebraicGeometry/
-│   ├── CoherentSheaf/
-│   ├── Cohomology/
-│   ├── Divisors/
-│   ├── Duality/
-│   ├── IntersectionTheory/
-│   ├── Modules/
-│   ├── Numerical/
-│   ├── Proj/
-│   ├── RiemannRoch/
-│   └── Variety/
-├── CategoryTheory/
-│   ├── DGCategory/
-│   └── Triangulated/
-│       ├── TStructure/
-│       └── StabilityCondition/
-├── LinearAlgebra/
-│   ├── Lattice/
-│   └── Matrix/
-├── Topology/
-└── Development/                   # exploratory code, outside the public root
-```
+## Use
 
-The old `CohLean`, `DGLean`, and `BridgelandStabLean` roots have been retired.
-Their content now lives in this subject hierarchy and uses canonical
-mathematical namespaces such as `AlgebraicGeometry`, `CategoryTheory`,
-`CategoryTheory.Triangulated`, `IntegralLattice`, and `Mukai`.
-
-## Imports
-
-For the complete stable library:
+The complete stable library is available through one import:
 
 ```lean
 import DerivedAlgGeo
 ```
 
-Prefer the narrowest useful umbrella in library code, for example:
+Library code should prefer the narrowest useful subject import, such as:
 
 ```lean
 import DerivedAlgGeo.AlgebraicGeometry.CoherentSheaf
-import DerivedAlgGeo.AlgebraicGeometry.Cohomology.Cech
 import DerivedAlgGeo.CategoryTheory.DGCategory
-import DerivedAlgGeo.CategoryTheory.Triangulated.TStructure
 import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition
 ```
 
-`DerivedAlgGeo.Development` is intentionally not imported by
-`DerivedAlgGeo.lean`; its probes may change while an API is being designed.
-
-## Build and verification
-
-The repository is pinned to Lean/Mathlib v4.32.1.
+The repository is pinned to Lean and Mathlib v4.32.1. From a checkout:
 
 ```bash
+lake exe cache get
 lake build
-scripts/gates.sh fast
-scripts/gates.sh
 ```
 
-The full gate runs the unified environment linter, source-independence and
-coverage checks, the subsystem axiom audits, and the repository-wide
-declaration emitter. In particular, it rejects declarations depending on
-`sorryAx`.
+Run `scripts/gates.sh fast` while developing and `scripts/gates.sh` before
+requesting review.
 
-The maintained audit sources are:
+## Layout
 
-- `scripts/AlgebraicGeometryAudit.lean`
-- `scripts/StabilityConditionAudit.lean`
-- `scripts/DGCategoryAudit.lean`
+- `DerivedAlgGeo/AlgebraicGeometry` — coherent sheaves, cohomology, duality,
+  intersection theory, Proj, and Riemann--Roch.
+- `DerivedAlgGeo/CategoryTheory` — dg categories, t-structures, and stability
+  conditions.
+- `DerivedAlgGeo/LinearAlgebra` — integral and Mukai lattices and matrix tools.
+- `DerivedAlgGeo/Algebra` and `DerivedAlgGeo/Topology` — reusable supporting
+  mathematics.
+- `DerivedAlgGeo/Development` — exploratory code outside the stable umbrella.
 
-Documentation is built from the nested package so `doc-gen4` does not become a
-runtime dependency:
-
-```bash
-cd docbuild
-lake build DerivedAlgGeo:docs
-```
-
-See `ARCHITECTURE.md` for ownership and dependency rules and
-`CONTRIBUTING.md` for the contribution workflow.
+Generated API documentation is published at
+[chris-dare-dev.github.io/derived-alg-geo-lean](https://chris-dare-dev.github.io/derived-alg-geo-lean/).
+See [CONTRIBUTING.md](CONTRIBUTING.md) for placement, proof, audit, and review
+requirements.
 
 ## License
 
-Repository-authored code is released under the MIT license. Files derived from
-external sources retain the notices described in `LICENSES/`.
+Repository-authored work is MIT-licensed. A small number of files derived from
+Mathlib or earlier Apache-2.0 work retain that license and attribution. See
+[LICENSE.md](LICENSE.md) for the complete scope and notices.
