@@ -1,20 +1,20 @@
-# `.claude/` — decision record for the arXMCP ⇄ Lean contract
+# `.claude/` — repository decisions and roadmaps
 
-This directory records **why** the two-repo architecture is shaped the way it is.
-It is not documentation of what the code does; `CLAUDE.md` and `README.md` cover
-that. Everything here is either a decision that was made, a decision that is
-still open, or the evidence a decision rests on.
+This directory records why the repository and its formalization tracks are
+shaped the way they are. It is not user documentation; `README.md` and
+`CONTRIBUTING.md` cover that. Everything here is a decision, a roadmap, or the
+evidence behind one.
 
 ## Layout
 
 | Path | What it is |
 |---|---|
 | `decisions/ADR-*.md` | One architectural decision each. Status is `accepted`, `open`, or `superseded`. An `open` ADR names the person who must decide and what changes either way. |
-| `roadmap/contract-v1.yaml` | The track registry: milestones, epics, and their GitHub numbers. Schema mirrors arXMCP's `plans/*/roadmap.yaml` so one parser reads both. |
+| `roadmap/*.yaml` | Track registries for milestones, epics, and their GitHub numbers. |
 | `notes/2026-08-04-*.md` | The four artifacts the 2026-08-04 workflows produced, verbatim. Dated because they are snapshots, not living docs. |
 | `open-questions.md` | The decisions blocking work, each with a GitHub issue. |
 | `references/mathlib-style.md` | The Mathlib conventions this repo holds itself to, and the deltas it keeps on purpose. The spec `agents/mathlib-reviewer.md` enforces. |
-| `agents/` | Repo-local subagents. One per file. |
+| `agents/` | Repo-local agent specifications. One per file. |
 | `skills/` | Repo-local skills, one directory each. `formalize-issue` is the unattended iteration. |
 | `settings.json` | Hooks. Currently: the Mathlib-convention check on every Lean edit. |
 
@@ -60,6 +60,7 @@ Do not treat a line number here as current. Re-open the file.
 
 ## Where the issues live
 
-All of them, both repos' worth, are filed on `chris-dare-dev/bridgeland-stab-lean`
-— see `decisions/ADR-0006-issue-localization.md` for why, and for the migration
-trigger that would split them.
+All active work for this library is tracked in
+[`chris-dare-dev/derived-alg-geo-lean`](https://github.com/chris-dare-dev/derived-alg-geo-lean/issues).
+Cross-repository items say so explicitly and link their owning repository.
+ADR-0006 records the historical localization and migration decision.
