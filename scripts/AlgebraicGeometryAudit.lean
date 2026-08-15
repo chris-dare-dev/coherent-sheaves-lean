@@ -124,6 +124,14 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Proj.twistPresheaf
 #print axioms AlgebraicGeometry.Proj.piObj_polynomialVariableChart
 #print axioms AlgebraicGeometry.Proj.cechCochainsDegreewiseAddEquiv
+-- Mathlib's Cech differential read in coordinates (#340). Both proofs finish with `exact`
+-- rather than `rw`: the two sides differ in the HasProduct instance that Pi.pi carries, which
+-- rw will not see through but definitional unification will.
+#print axioms CategoryTheory.cechNerve
+#print axioms CategoryTheory.cechCosimplicial
+#print axioms CategoryTheory.cechTermFamily
+#print axioms CategoryTheory.cechComplexFunctor_delta_π
+#print axioms CategoryTheory.cechComplexFunctor_d_π
 -- The complex-level form (#340). The differential is carried across the degreewise comparison
 -- rather than defined as an alternating sum, so d-squared and the comparison isomorphism are
 -- both free; the alternating-sum formula is a separate lemma about this complex.
