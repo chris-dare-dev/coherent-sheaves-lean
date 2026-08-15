@@ -150,10 +150,10 @@ jobs:
       # linux-x86_64 in any case, so the fix is not to make the two lanes agree
       # on a variable: it is to state the platform this cache is FOR, and to have
       # a runner of that platform be the thing that writes it. That is the
-      # `cache-warm` job at the bottom of this file.
+      # `Cache warm` workflow, in .github/workflows/cache-warm.yml.
       #
       # Restore is keyed exactly, then falls back by prefix to the newest cache
-      # for the same toolchain and manifest -- in practice the one `cache-warm`
+      # for the same toolchain and manifest -- in practice the one `Cache warm`
       # saved on `main`, found via GitHub's default-branch fallback.
       # A stale restore is safe rather than merely tolerable: lake's build is
       # trace-hash based, so anything out of date is rebuilt. The failure mode is
@@ -332,7 +332,7 @@ jobs:
       # `push` to `main` -- but `push` routes to the self-hosted Mac, so this
       # job wrote a macOS entry that the lane needing it could never read. The
       # writer has to be a runner of the platform the cache is for; see the
-      # `cache-warm` job below.
+      # `Cache warm` workflow, in .github/workflows/cache-warm.yml.
 
       - name: Upload trust artifacts
         if: always()
@@ -359,10 +359,11 @@ jobs:
   # from the required list when this lands -- otherwise the split it was added
   # to survive still breaks protection.
   #
-  # `cache-warm` is deliberately NOT in `needs`. It is skipped on every event
-  # except a push to `main`, and a skip here has to read as a failure (see
-  # below), so depending on it would fail every pull request. It gates nothing
-  # by design; `build` on the same commit makes the correctness claim.
+  # Only jobs that must pass belong in `needs`. Cache warming is a separate
+  # workflow (.github/workflows/cache-warm.yml) precisely so it cannot appear
+  # here: it is skipped on every event except a push to `main`, a skip has to
+  # read as a failure below, and it gates nothing by design -- `build` on the
+  # same commit makes the correctness claim.
   ci:
     needs: [build]
     # `always()` so this job still runs when an upstream job failed -- without
@@ -389,85 +390,3 @@ jobs:
             fi
           done
           exit "$rc"
-
-  # ---------------------------------------------------------------------------
-  # The writer for the `.lake/build` cache the hosted lane restores (2026-08-15).
-  #
-  # WHY THIS IS A SEPARATE JOB AND NOT A STEP IN `build`. The cache is a
-  # linux-x86_64 artifact, so a linux-x86_64 runner has to produce it. `build`
-  # on a `push` runs on the self-hosted Mac, which is the fast lane precisely
-  # because it never needs this cache -- it keeps its own 8.3 GB `.lake` between
-  # runs. Asking that job to also emit a Linux cache is asking it to emit an
-  # artifact for a machine it is not. So: `main` moves, a hosted runner rebuilds
-  # from the previous hosted state and publishes the result, and every PR
-  # branched from `main` restores it through GitHub's default-branch fallback.
-  # Free on a public repository.
-  #
-  # NOT a required check and it gates nothing: `build` on the same commit has
-  # already made the correctness claim, and this job repeats none of it. It is
-  # deliberately NOT `continue-on-error` either -- a warm cache that quietly
-  # stopped being produced is exactly the "gate that silently does not run"
-  # failure this repository keeps writing comments about, and a visible red mark
-  # on a job nothing depends on is the cheapest possible way to notice.
-  cache-warm:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    timeout-minutes: 90
-    permissions:
-      contents: read
-    steps:
-      - uses: actions/checkout@v4
-
-      # Prefix-only restore: the exact key carries this commit's sha and by
-      # definition does not exist yet. This is what makes the warm job itself
-      # incremental -- it rebuilds the merge's downstream cone, not all 377
-      # modules.
-      - name: Restore previous build output
-        uses: actions/cache/restore@v4
-        with:
-          path: .lake/build
-          key: lake-build-linux-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-${{ github.sha }}
-          restore-keys: |
-            lake-build-linux-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-
-
-      - uses: leanprover/lean-action@v1
-        with:
-          build: true
-          use-mathlib-cache: true
-          use-github-cache: false
-          nanoda: false
-
-      # `lake build` above covers `defaultTargets`, which is `DerivedAlgGeo`
-      # alone. The gates in `build` need three things beyond it, and a cache
-      # that omits them leaves the hosted lane paying for them from cold every
-      # time -- `lake build emit` alone is around 420 s there. Keep this list in
-      # step with the `lake build` invocations in the `build` job above.
-      - name: Build the targets the gates add
-        run: |
-          set -euo pipefail
-          lake build \
-            DerivedAlgGeo.Development \
-            DerivedAlgGeo.AlgebraicGeometry.Numerical.Specializations.Surface \
-            DerivedAlgGeo.AlgebraicGeometry.Numerical.Specializations.Threefold \
-            DerivedAlgGeo.AlgebraicGeometry.Numerical.Specializations.Fourfold \
-            DerivedAlgGeoSweep \
-            emit
-
-      # Refuse to publish a partial cache. `--no-build` exits non-zero the
-      # moment a listed target is not already up to date, so this fails if the
-      # build above silently produced less than it claimed -- which is the only
-      # way this job can hurt anything downstream.
-      - name: Verify the tree is fully built
-        run: |
-          set -euo pipefail
-          lake build --no-build \
-            DerivedAlgGeo \
-            DerivedAlgGeo.Development \
-            DerivedAlgGeoSweep \
-            emit
-
-      - name: Save build output
-        uses: actions/cache/save@v4
-        with:
-          path: .lake/build
-          key: lake-build-linux-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-${{ github.sha }}
