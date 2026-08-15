@@ -3248,3 +3248,20 @@ says that the interface is consistent, not that any functor is of kernel type.
 #print axioms CategoryTheory.Triangulated.FourierMukai.Correspondence.IsKernelFunctor.iso
 #print axioms CategoryTheory.Triangulated.FourierMukai.transform_isTriangulated
 #print axioms CategoryTheory.Triangulated.FourierMukai.transform_additive
+
+/-! ## Fourier--Mukai lane -- convolution of kernels
+
+`ConvolutionData` supplies Huybrechts' Prop. 5.10 rather than proving it, so a
+clean axiom list here says the supplied-data interface is consistent and that
+its consequences follow from it -- not that any convolution exists.
+-/
+
+#print axioms CategoryTheory.Triangulated.FourierMukai.ConvolutionData
+#print axioms CategoryTheory.Triangulated.FourierMukai.ConvolutionData.mk.inj
+#print axioms CategoryTheory.Triangulated.FourierMukai.ConvolutionData.mk.sizeOf_spec
+#print axioms CategoryTheory.Triangulated.FourierMukai.ConvolutionData.conv
+#print axioms CategoryTheory.Triangulated.FourierMukai.ConvolutionData.compIso
+#print axioms CategoryTheory.Triangulated.FourierMukai.ConvolutionData.isKernelFunctor_transform_comp
+#print axioms CategoryTheory.Triangulated.FourierMukai.ConvolutionData.isKernelFunctor_comp
+#print axioms CategoryTheory.Triangulated.FourierMukai.ConvolutionData.transformMapConvIso
+#print axioms CategoryTheory.Triangulated.FourierMukai.ConvolutionData.transformMapConvIso_refl
