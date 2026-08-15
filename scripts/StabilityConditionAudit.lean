@@ -3073,6 +3073,12 @@ end SlicingChecks
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.complexPullbackComp
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.identityDerivedPullback
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.compositeDerivedPullback
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.complexPullbackIdLocalized
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.derivedPullbackId
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.complexPullbackCompLocalized
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.derivedPullbackComp
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.derivedPullK₀_id
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.derivedPullK₀_comp
 #print axioms CategoryTheory.Abelian.image.congr_simp
 #print axioms CategoryTheory.Functor.IsLeftTExact.isGE_map
 #print axioms CategoryTheory.Functor.IsRightTExact.isLE_map
