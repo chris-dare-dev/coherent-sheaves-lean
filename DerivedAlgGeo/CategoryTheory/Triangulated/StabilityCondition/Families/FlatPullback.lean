@@ -226,6 +226,41 @@ theorem flatPullbackStalkModel_preservesFiniteLimits
     flatStalkMap_preservesFiniteLimits f x
   exact @comp_preservesFiniteLimits _ _ _ _ _ _ _ _ hStalk hScalars
 
+/-- Presheaf-level module pullback underlying scheme module pullback. -/
+abbrev presheafModulePullback
+    {T U : SchemeBaseChange S} (f : T ⟶ U) :
+    U.left.PresheafOfModules ⥤ T.left.PresheafOfModules :=
+  PresheafOfModules.pullback f.left.toRingCatSheafHom.hom
+
+/-- After taking a stalk, module-sheaf pullback reduces canonically to
+presheaf-module pullback.  The sheafification step disappears because it
+induces an isomorphism on every module stalk. -/
+def modulePullbackStalkPresheafIso
+    {T U : SchemeBaseChange S} (f : T ⟶ U) (x : T.left) :
+    modulePullback f ⋙ moduleStalkFunctor T.left x ≅
+      Scheme.Modules.toPresheafOfModules U.left ⋙
+        presheafModulePullback f ⋙
+          presheafModuleStalkFunctor T.left x :=
+  Functor.isoWhiskerRight
+        (SheafOfModules.pullbackIso f.left.toRingCatSheafHom)
+        (moduleStalkFunctor T.left x) ≪≫
+    Functor.associator _ _ _ ≪≫
+    Functor.isoWhiskerLeft
+      (Scheme.Modules.toPresheafOfModules U.left ⋙
+        presheafModulePullback f)
+      (presheafModuleStalkSheafificationIso T.left x).symm
+
+/-- The exact remaining local comparison at the presheaf level: pull back a
+presheaf of modules and then take its stalk, or first take the source stalk
+and extend scalars along the induced local-ring map. -/
+structure PresheafPullbackStalkComparison
+    {T U : SchemeBaseChange S} (f : T ⟶ U) where
+  /-- The comparison is natural in every presheaf of modules. -/
+  iso (x : T.left) :
+    presheafModulePullback f ⋙ presheafModuleStalkFunctor T.left x ≅
+      presheafModuleStalkFunctor U.left (f.left x) ⋙
+        ModuleCat.extendScalars.{u, u, u} (f.left.stalkMap x).hom
+
 /-- The precise comparison datum still needed from the module-sheaf
 pullback API: actual pullback followed by the stalk at `x` agrees with
 stalk followed by extension of scalars along the local-ring map. -/
@@ -237,6 +272,19 @@ structure PullbackStalkComparison
     modulePullback f ⋙ moduleStalkFunctor T.left x ≅
       moduleStalkFunctor U.left (f.left x) ⋙
         ModuleCat.extendScalars.{u, u, u} (f.left.stalkMap x).hom
+
+/-- A presheaf-level pullback-to-stalk comparison supplies the sheaf-level
+comparison automatically; module sheafification contributes no additional
+geometric obligation. -/
+def PresheafPullbackStalkComparison.toPullbackStalkComparison
+    {T U : SchemeBaseChange S} {f : T ⟶ U}
+    (h : PresheafPullbackStalkComparison f) :
+    PullbackStalkComparison f where
+  iso x :=
+    modulePullbackStalkPresheafIso f x ≪≫
+      Functor.isoWhiskerLeft
+        (Scheme.Modules.toPresheafOfModules U.left) (h.iso x) ≪≫
+      (Functor.associator _ _ _).symm
 
 /-- The pullback-to-stalk comparison for the identity morphism, assembled
 from the identity laws for module pullback, stalk maps, and scalar extension. -/
@@ -300,6 +348,14 @@ theorem isExactPullback_of_flat_of_stalkComparison
   letI : PreservesFiniteLimits (modulePullback f) :=
     modulePullback_preservesFiniteLimits_of_flat_of_stalkComparison f h
   exact IsExactPullback.of_preservesFiniteLimits f
+
+/-- A flat scheme morphism has exact module-sheaf pullback as soon as the
+single presheaf-level pullback-to-stalk comparison is supplied. -/
+theorem isExactPullback_of_flat_of_presheafStalkComparison
+    {T U : SchemeBaseChange S} (f : T ⟶ U) [Flat f.left]
+    (h : PresheafPullbackStalkComparison f) : IsExactPullback f :=
+  isExactPullback_of_flat_of_stalkComparison f
+    h.toPullbackStalkComparison
 
 end SchemeBaseChange
 
