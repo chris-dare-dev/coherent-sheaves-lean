@@ -19,10 +19,11 @@ flat ring homomorphism preserves finite limits.  A flat morphism of schemes
 has a flat map on every local ring, so the corresponding scalar-extension
 functor is left exact at every stalk.
 
-The remaining global step is a natural comparison between the stalk of
-module-sheaf pullback and extension of scalars along the stalk map.  That
-comparison is not presently exposed by Mathlib's module-sheaf API, so this
-file does not yet install `IsExactPullback` from scheme flatness alone.
+The neighborhood-diagram pullback is identified below with extension of
+scalars on stalks. The remaining global step is to compare restriction of
+presheaf-module pullback to the neighborhood diagram with that local
+pullback, so this file does not yet install `IsExactPullback` from scheme
+flatness alone.
 -/
 
 namespace CategoryTheory.Triangulated.StabilityCondition.Families
@@ -51,6 +52,16 @@ def moduleStalkRingIsColimit (X : Scheme.{u}) (x : X) :
     IsColimit (moduleStalkRingCocone X x) :=
   isColimitOfPreserves (forget₂ CommRingCat RingCat)
     (colimit.isColimit ((OpenNhds.inclusion x).op ⋙ X.presheaf))
+
+/-- The colimit over the neighborhood diagram of modules, bundled over the
+local ring at `x`. -/
+def neighborhoodModuleStalkFunctor (X : Scheme.{u}) (x : X) :
+    PresheafOfModules.{u}
+        ((OpenNhds.inclusion x).op ⋙ X.ringCatSheaf.obj) ⥤
+      ModuleCat.{u} (X.presheaf.stalk x) :=
+  letI : InitiallySmall.{u} (OpenNhds x) :=
+    initiallySmall_of_essentiallySmall _
+  PresheafOfModules.colimitFunctor (moduleStalkRingIsColimit X x)
 
 /-- The stalk of a presheaf of modules, bundled over the local ring. -/
 def presheafModuleStalkFunctor (X : Scheme.{u}) (x : X) :
@@ -231,6 +242,96 @@ abbrev presheafModulePullback
     {T U : SchemeBaseChange S} (f : T ⟶ U) :
     U.left.PresheafOfModules ⥤ T.left.PresheafOfModules :=
   PresheafOfModules.pullback f.left.toRingCatSheafHom.hom
+
+/-- The ring map on neighborhood diagrams induced by a scheme morphism at a
+point. Its component over `V ∋ f(x)` is the restriction of the scheme map
+from `Γ(V, 𝒪_Y)` to `Γ(f⁻¹(V), 𝒪_X)`. -/
+def neighborhoodRingHom {X Y : Scheme.{u}} (f : X ⟶ Y) (x : X) :
+    (OpenNhds.inclusion (f x)).op ⋙ Y.ringCatSheaf.obj ⟶
+      (OpenNhds.map f.base x).op ⋙
+        ((OpenNhds.inclusion x).op ⋙ X.ringCatSheaf.obj) where
+  app V := (forget₂ CommRingCat RingCat).map (f.app V.unop.1)
+  naturality V W g := by
+    exact f.toRingCatSheafHom.hom.naturality
+      ((OpenNhds.inclusion (f x)).op.map g)
+
+/-- Pullback of modules along the induced map between the two neighborhood
+ring diagrams. -/
+abbrev neighborhoodModulePullback {X Y : Scheme.{u}}
+    (f : X ⟶ Y) (x : X) :=
+  PresheafOfModules.pullback (neighborhoodRingHom f x)
+
+/-- The neighborhood ring map commutes with the two stalk cocones through the
+scheme morphism's map on local rings. -/
+lemma neighborhoodRingHom_comp_stalkCocone {X Y : Scheme.{u}}
+    (f : X ⟶ Y) (x : X) (V : (OpenNhds (f x))ᵒᵖ) :
+    (moduleStalkRingCocone Y (f x)).ι.app V ≫
+        (forget₂ CommRingCat RingCat).map (f.stalkMap x) =
+      (neighborhoodRingHom f x).app V ≫
+        (moduleStalkRingCocone X x).ι.app
+          ((OpenNhds.map f.base x).op.obj V) := by
+  obtain ⟨⟨V, hxV⟩⟩ := V
+  exact congr_arg (forget₂ CommRingCat RingCat).map
+    (Scheme.Hom.germ_stalkMap f V x hxV)
+
+/-- Objectwise comparison between the two right adjoints used to compute
+pullback followed by the neighborhood colimit. -/
+def constNeighborhoodPushforwardIsoApp {X Y : Scheme.{u}}
+    (f : X ⟶ Y) (x : X) (N : ModuleCat.{u} (X.presheaf.stalk x)) :
+    (PresheafOfModules.constFunctor (moduleStalkRingCocone X x) ⋙
+      PresheafOfModules.pushforward (neighborhoodRingHom f x)).obj N ≅
+    (ModuleCat.restrictScalars (f.stalkMap x).hom ⋙
+      PresheafOfModules.constFunctor
+        (moduleStalkRingCocone Y (f x))).obj N :=
+  PresheafOfModules.isoMk
+    (fun V ↦ ModuleCat.isoMk (Iso.refl _) (fun r ↦ by
+      ext m
+      exact congrArg (fun s : X.presheaf.stalk x ↦ s • (show N from m))
+        (CategoryTheory.congr_fun
+          (neighborhoodRingHom_comp_stalkCocone f x V) r)))
+    (fun {V W} g ↦ by ext m; rfl)
+
+/-- Natural comparison between constant neighborhood modules followed by
+pushforward and restriction of scalars followed by constant modules. -/
+def constNeighborhoodPushforwardIso {X Y : Scheme.{u}}
+    (f : X ⟶ Y) (x : X) :
+    PresheafOfModules.constFunctor (moduleStalkRingCocone X x) ⋙
+        PresheafOfModules.pushforward (neighborhoodRingHom f x) ≅
+      ModuleCat.restrictScalars (f.stalkMap x).hom ⋙
+        PresheafOfModules.constFunctor
+          (moduleStalkRingCocone Y (f x)) :=
+  NatIso.ofComponents (constNeighborhoodPushforwardIsoApp f x)
+    (fun {M N} g ↦ by ext V m; rfl)
+
+/-- Pulling a module diagram back from neighborhoods of `f(x)` and taking its
+neighborhood colimit agrees with first taking the stalk at `f(x)` and then
+extending scalars along the local-ring map at `x`. -/
+def neighborhoodModulePullbackStalkIso {X Y : Scheme.{u}}
+    (f : X ⟶ Y) (x : X) :
+    neighborhoodModulePullback f x ⋙ neighborhoodModuleStalkFunctor X x ≅
+      neighborhoodModuleStalkFunctor Y (f x) ⋙
+        ModuleCat.extendScalars (f.stalkMap x).hom := by
+  letI : InitiallySmall.{u} (OpenNhds x) :=
+    initiallySmall_of_essentiallySmall _
+  letI : InitiallySmall.{u} (OpenNhds (f x)) :=
+    initiallySmall_of_essentiallySmall _
+  letI : CommRing (moduleStalkRingCocone X x).pt :=
+    inferInstanceAs (CommRing (X.presheaf.stalk x))
+  letI : CommRing (moduleStalkRingCocone Y (f x)).pt :=
+    inferInstanceAs (CommRing (Y.presheaf.stalk (f x)))
+  change neighborhoodModulePullback f x ⋙
+      PresheafOfModules.colimitFunctor (moduleStalkRingIsColimit X x) ≅
+    PresheafOfModules.colimitFunctor
+        (moduleStalkRingIsColimit Y (f x)) ⋙
+      ModuleCat.extendScalars (f.stalkMap x).hom
+  exact Adjunction.leftAdjointCompIso
+    (PresheafOfModules.pullbackPushforwardAdjunction
+      (neighborhoodRingHom f x))
+    (PresheafOfModules.colimitAdjunction (moduleStalkRingIsColimit X x))
+    ((PresheafOfModules.colimitAdjunction
+      (moduleStalkRingIsColimit Y (f x))).comp
+        (ModuleCat.extendRestrictScalarsAdj (f.stalkMap x).hom))
+    (constNeighborhoodPushforwardIso f x)
 
 /-- After taking a stalk, module-sheaf pullback reduces canonically to
 presheaf-module pullback.  The sheafification step disappears because it
