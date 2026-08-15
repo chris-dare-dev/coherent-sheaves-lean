@@ -24,6 +24,11 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.mk_surjective
 #print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.mk_eq_mk_iff
 #print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.mapOfLE
+-- mapOfLE needs S <= T, which a Cech face does not give: the denominators are .powers g1 and
+-- .powers g2 with g1 * h = g2, and divisibility does not nest powers submonoids. These two
+-- supply the universal-property route instead -- g1 is already invertible once g2 is.
+#print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.isUnit_algebraMap_localization_of_mul_mem
+#print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.isUnit_algebraMap_end_of_mul_mem
 #print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.awayMk
 #print axioms AlgebraicGeometry.Proj.GradedLinearMap
 #print axioms AlgebraicGeometry.Proj.GradedLinearMap.map
@@ -137,6 +142,16 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Proj.cechCofactor_mem
 #print axioms AlgebraicGeometry.Proj.basicOpen_denominator_le
 #print axioms AlgebraicGeometry.Proj.cechTermSectionAddEquiv
+-- The comparison is the canonical pointwise fraction-to-section map, not merely some
+-- equivalence: the two trivializations by the index's first variable cancel. This is what makes
+-- restriction to a smaller open a pointwise computation, which the Cech differential needs.
+#print axioms AlgebraicGeometry.Proj.cechTermSectionAddEquiv_apply_mk
+#print axioms AlgebraicGeometry.Proj.cechTermSectionAddEquiv_toAddMonoidHom
+#print axioms AlgebraicGeometry.Proj.moduleAwayToSection_cechDenominator_bijective
+#print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.natShiftLinearEquivOfMulMem_apply_mk
+#print axioms AlgebraicGeometry.Proj.natShiftSectionFromSelfOn_apply
+#print axioms AlgebraicGeometry.Proj.natShiftFiberLinearEquivOfMem_symm_apply_mk
+#print axioms AlgebraicGeometry.Proj.natShiftSectionFromSelfOn_selfBasicOpenSectionAddEquiv_mk
 #print axioms AlgebraicGeometry.Proj.basicOpen_polynomialVariableCechDenominator
 
 -- The geometric source object is a bundle of explicit data, not an axiom identifying schemes

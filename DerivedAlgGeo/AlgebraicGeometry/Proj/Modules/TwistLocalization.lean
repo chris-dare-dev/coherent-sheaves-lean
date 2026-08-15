@@ -419,6 +419,37 @@ theorem natShiftLinearEquivOfMem_symm_apply_mk (hfS : f ∈ S)
   congr 1
   exact mul_comm _ _
 
+/-- Value of the cofactor trivialization on a homogeneous fraction.
+
+The `OfMem` sibling above divides by `f ^ d`; here `f` need only be invertible, so the fraction
+is multiplied by the cofactor power `h ^ d` and the denominator picks up `(f * h) ^ d` instead.
+This is the computation rule the Čech comparison needs, where `f` is one variable and `h` is the
+product of the others. -/
+@[simp]
+theorem natShiftLinearEquivOfMulMem_apply_mk {h : A} {e : ℕ} (h_deg : h ∈ 𝒜 e)
+    (hfh : f * h ∈ S) (c : NumDenSameDeg 𝒜 (natShift 𝒜 d) S) :
+    natShiftLinearEquivOfMulMem 𝒜 hf d h_deg hfh (DegreeZeroLocalization.mk c) =
+      DegreeZeroLocalization.mk
+        { deg := c.deg + d * (1 + e)
+          num := ⟨(c.num : A) * h ^ d, by
+            have hnum : (c.num : A) ∈ 𝒜 (c.deg + d) := c.num.2
+            simpa [Nat.mul_add, Nat.mul_comm, ← add_assoc] using
+              SetLike.mul_mem_graded hnum (SetLike.pow_mem_graded d h_deg)⟩
+          den := ⟨(c.den : A) * (f * h) ^ d, by
+            simpa using SetLike.mul_mem_graded c.den.2
+              (SetLike.pow_mem_graded d (SetLike.mul_mem_graded hf h_deg))⟩
+          den_mem := S.mul_mem c.den_mem (S.pow_mem hfh d) } := by
+  apply ext
+  change Localization.mk (h ^ d) (twistPowerOfMulMem (f := f) d hfh) •
+      LocalizedModule.mk (c.num : A) ⟨(c.den : A), c.den_mem⟩ =
+    LocalizedModule.mk ((c.num : A) * h ^ d)
+      ⟨(c.den : A) * (f * h) ^ d, S.mul_mem c.den_mem (S.pow_mem hfh d)⟩
+  rw [LocalizedModule.mk_smul_mk]
+  congr 1
+  · exact mul_comm _ _
+  · ext
+    exact mul_comm _ _
+
 end DegreeZeroLocalization
 
 end AlgebraicGeometry.Proj

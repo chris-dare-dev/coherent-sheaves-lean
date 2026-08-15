@@ -625,4 +625,61 @@ noncomputable def cechTermSectionAddEquiv (ι k : Type u) [Field k] (d : ℕ) {n
       (natShiftSectionAddEquivOn (polynomialGrading ι k)
         (MvPolynomial.isHomogeneous_X k (x 0)) d (basicOpen_denominator_le ι k x)).symm)
 
+/-- The Čech comparison is the canonical homogeneous-fraction section map.
+
+This is what makes the comparison usable rather than merely existent. As defined,
+`cechTermSectionAddEquiv` is a composite of three equivalences, two of which are built from a
+choice of trivializing element — the first variable `X (x 0)` of the index. Nothing about the
+statement should depend on that choice, and this says so: the composite is
+`moduleAwayToSection`, which is canonical and refers to no trivialization at all. The two
+trivializations cancel, one algebraic and one pointwise on stalks.
+
+The consequence worth having is that `moduleAwayToSection` is defined *pointwise*, by enlarging
+the denominator submonoid at each point. Any statement about how the comparison interacts with
+restriction to a smaller open therefore reduces to a pointwise computation, instead of having to
+be pushed through three constructed equivalences. That is the route to the Čech differential. -/
+theorem cechTermSectionAddEquiv_apply_mk (ι k : Type u) [Field k] (d : ℕ) {n : ℕ}
+    (x : Fin (n + 1) → ι)
+    (c : NumDenSameDeg (polynomialGrading ι k) (natShift (polynomialGrading ι k) d)
+      (.powers (polynomialVariableCechDenominator ι k x))) :
+    cechTermSectionAddEquiv ι k d x (DegreeZeroLocalization.mk c) =
+      moduleAwayToSection (polynomialGrading ι k) (natShift (polynomialGrading ι k) d)
+        (polynomialVariableCechDenominator ι k x) (DegreeZeroLocalization.mk c) := by
+  change natShiftSectionFromSelfOn (polynomialGrading ι k)
+      (MvPolynomial.isHomogeneous_X k (x 0)) d (basicOpen_denominator_le ι k x)
+      (selfBasicOpenSectionAddEquiv (polynomialGrading ι k)
+        (polynomialVariableCechDenominator_mem ι k x) (Nat.succ_pos n)
+        (DegreeZeroLocalization.natShiftLinearEquivOfMulMem (polynomialGrading ι k)
+          (MvPolynomial.isHomogeneous_X k (x 0)) d (cechCofactor_mem ι k x) _
+          (DegreeZeroLocalization.mk c))) = _
+  rw [DegreeZeroLocalization.natShiftLinearEquivOfMulMem_apply_mk,
+    natShiftSectionFromSelfOn_selfBasicOpenSectionAddEquiv_mk]
+  congr 1
+  apply DegreeZeroLocalization.ext
+  simp only [DegreeZeroLocalization.coe_mk, NumDenSameDeg.embedding]
+  rw [LocalizedModule.mk_eq]
+  refine ⟨1, ?_⟩
+  simp only [one_smul, Submonoid.smul_def, smul_eq_mul, mul_pow]
+  ring
+
+/-- As an additive map, the Čech comparison is exactly the canonical fraction-to-section map. -/
+theorem cechTermSectionAddEquiv_toAddMonoidHom (ι k : Type u) [Field k] (d : ℕ) {n : ℕ}
+    (x : Fin (n + 1) → ι) :
+    (cechTermSectionAddEquiv ι k d x).toAddMonoidHom =
+      moduleAwayToSection (polynomialGrading ι k) (natShift (polynomialGrading ι k) d)
+        (polynomialVariableCechDenominator ι k x) :=
+  moduleAwayToSection_unique _ _ _ _ (cechTermSectionAddEquiv_apply_mk ι k d x)
+
+/-- The canonical fraction-to-section map is bijective on every Čech intersection.
+
+The degree-one statement `moduleAwayToSection_natShift_degreeOne_bijective` does not cover this:
+a Čech denominator is a product of `n + 1` variables, so it has degree `n + 1`, and the chart it
+cuts out is not a degree-one chart once `n ≥ 1`. -/
+theorem moduleAwayToSection_cechDenominator_bijective (ι k : Type u) [Field k] (d : ℕ) {n : ℕ}
+    (x : Fin (n + 1) → ι) :
+    Function.Bijective (moduleAwayToSection (polynomialGrading ι k)
+      (natShift (polynomialGrading ι k) d) (polynomialVariableCechDenominator ι k x)) := by
+  rw [← cechTermSectionAddEquiv_toAddMonoidHom ι k d x]
+  exact (cechTermSectionAddEquiv ι k d x).bijective
+
 end AlgebraicGeometry.Proj
