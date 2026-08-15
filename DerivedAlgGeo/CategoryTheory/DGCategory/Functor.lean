@@ -22,7 +22,9 @@ set_option relaxedAutoImplicit false
 
 universe v u u' u''
 
-open CategoryTheory DGCategoryStruct
+namespace CategoryTheory
+
+open DGCategoryStruct
 
 /-- A dg functor between dg categories. -/
 structure DGFunctor (C : Type u) (D : Type u')
@@ -65,3 +67,5 @@ def comp (F : DGFunctor C D) (G : DGFunctor D E) : DGFunctor C E where
   map_comp p q r h f g := by simp [F.map_comp p q r h f g, G.map_comp p q r h (F.map p f) (F.map q g)]
 
 end DGFunctor
+
+end CategoryTheory

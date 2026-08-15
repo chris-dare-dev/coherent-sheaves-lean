@@ -22,7 +22,9 @@ set_option relaxedAutoImplicit false
 
 universe v u w
 
-open CategoryTheory DGCategoryStruct
+namespace CategoryTheory
+
+open DGCategoryStruct
 
 /-- A `k`-linear structure on a dg category: given `k`-module structures on the
 graded pieces of the Hom-complexes, both the differential and the composition
@@ -44,3 +46,5 @@ class DGLinear (k : Type w) [CommRing k] (C : Type u) [DGCategory.{v} C]
   comp_smul_right {X Y Z : C} (p q r : ℤ) (h : p + q = r) (c : k)
       (f : (dgHom X Y).X p) (g : (dgHom Y Z).X q) :
     dgComp p q r h f (c • g) = c • dgComp p q r h f g
+
+end CategoryTheory

@@ -20,7 +20,9 @@ set_option relaxedAutoImplicit false
 
 universe v u
 
-open CategoryTheory CochainComplex CochainComplex.HomComplex
+namespace CategoryTheory
+
+open CochainComplex CochainComplex.HomComplex
 
 variable {A : Type u} [Category.{v} A] [Preadditive A]
 
@@ -35,7 +37,7 @@ lemma cocycles_eq (K L : Cdg A) :
 primitive in degree `m` with `m + 1 = 0`; this one is the range of `δ (-1) 0`.
 The two conditions are the same condition. -/
 lemma mem_coboundaries_iff' (K L : Cdg A) (f : (DGCategoryStruct.dgHom K L).X 0) :
-    f ∈ _root_.coboundaries K L ↔ ∃ β : Cochain (of A K) (of A L) (-1), δ (-1) 0 β = f :=
+    f ∈ _root_.CategoryTheory.coboundaries K L ↔ ∃ β : Cochain (of A K) (of A L) (-1), δ (-1) 0 β = f :=
   Iff.rfl
 
 /-! ## Crossing the instance boundary
@@ -255,3 +257,5 @@ noncomputable def seam : H0 (Cdg A) ≌ HomotopyCategory A (ComplexShape.up ℤ)
   (h0Functor (A := A)).asEquivalence
 
 end Cdg
+
+end CategoryTheory
