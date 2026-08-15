@@ -1459,3 +1459,28 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms CategoryTheory.Sheaf.freeAbelianYonedaSheafMap_stalk_isIso
 #print axioms CategoryTheory.Sheaf.freeAbelianYonedaSheaf_stalk_isZero_of_not_mem
 #print axioms CategoryTheory.Sheaf.cechComplex_exactAt_succ_of_injective
+
+-- Mukai vector: the identification of the abstract Mukai extension with the
+-- numerical Mukai pairing. Every field of `IntegralMukaiData` is supplied
+-- geometric data, so a clean axiom list here says the identification follows
+-- from that data -- not that any K3 satisfies it.
+#print axioms AlgebraicGeometry.Numerical.K3.IntegralMukaiData
+#print axioms AlgebraicGeometry.Numerical.K3.IntegralMukaiData.mk.inj
+#print axioms AlgebraicGeometry.Numerical.K3.IntegralMukaiData.mk.sizeOf_spec
+#print axioms AlgebraicGeometry.Numerical.K3.IntegralMukaiData.c₁
+#print axioms AlgebraicGeometry.Numerical.K3.IntegralMukaiData.s
+#print axioms AlgebraicGeometry.Numerical.K3.IntegralMukaiData.b
+#print axioms AlgebraicGeometry.Numerical.K3.IntegralMukaiData.b_comm
+#print axioms AlgebraicGeometry.Numerical.K3.IntegralMukaiData.b_spec
+#print axioms AlgebraicGeometry.Numerical.K3.IntegralMukaiData.s_spec
+#print axioms AlgebraicGeometry.Numerical.K3.IntegralMukaiData.mukaiVector
+#print axioms AlgebraicGeometry.Numerical.K3.IntegralMukaiData.mukaiVector_fst
+#print axioms AlgebraicGeometry.Numerical.K3.IntegralMukaiData.mukaiVector_snd_fst
+#print axioms AlgebraicGeometry.Numerical.K3.IntegralMukaiData.mukaiVector_snd_snd
+#print axioms AlgebraicGeometry.Numerical.K3.IntegralMukaiData.pairing_mukaiVector
+#print axioms AlgebraicGeometry.Numerical.K3.IntegralMukaiData.selfPairing_mukaiVector
+#print axioms AlgebraicGeometry.Numerical.K3.IntegralMukaiData.chi₂_eq_neg_pairing
+#print axioms AlgebraicGeometry.Numerical.K3.IntegralMukaiData.selfPairing_mukaiVector_eq_neg_chi₂
+#print axioms AlgebraicGeometry.Numerical.K3.IntegralMukaiData.isSpherical_mukaiVector_iff
+#print axioms AlgebraicGeometry.Numerical.K3.IntegralMukaiData.isIsotropic_mukaiVector_iff
+#print axioms AlgebraicGeometry.Numerical.K3.IntegralMukaiData.expectedDim_mukaiVector

@@ -2,5 +2,6 @@ import DerivedAlgGeo.AlgebraicGeometry.Numerical.GrothendieckGroup.Discriminant
 import DerivedAlgGeo.AlgebraicGeometry.Numerical.GrothendieckGroup.Dual
 import DerivedAlgGeo.AlgebraicGeometry.Numerical.GrothendieckGroup.EulerPairing
 import DerivedAlgGeo.AlgebraicGeometry.Numerical.GrothendieckGroup.Lattice
+import DerivedAlgGeo.AlgebraicGeometry.Numerical.GrothendieckGroup.MukaiVector
 
 /-! # Numerical Grothendieck-group invariants -/
