@@ -75,6 +75,30 @@ class IsExactPullback {T U : SchemeBaseChange S} (f : T ⟶ U) : Prop where
 attribute [instance] IsExactPullback.preservesFiniteLimits
   IsExactPullback.preservesFiniteColimits
 
+/-- Module-sheaf pullback preserves finite colimits for every scheme
+morphism, because it is left adjoint to module-sheaf pushforward. -/
+theorem modulePullback_preservesFiniteColimits
+    {T U : SchemeBaseChange S} (f : T ⟶ U) :
+    PreservesFiniteColimits (modulePullback f) :=
+  inferInstance
+
+/-- Construct exact module-sheaf pullback from the only nonautomatic
+obligation: preservation of finite limits. -/
+theorem IsExactPullback.of_preservesFiniteLimits
+    {T U : SchemeBaseChange S} (f : T ⟶ U)
+    [PreservesFiniteLimits (modulePullback f)] : IsExactPullback f where
+  preservesFiniteLimits := inferInstance
+  preservesFiniteColimits := modulePullback_preservesFiniteColimits f
+
+/-- Exactness of module-sheaf pullback is equivalent to preservation of
+finite limits; finite-colimit preservation is automatic. -/
+theorem isExactPullback_iff_preservesFiniteLimits
+    {T U : SchemeBaseChange S} (f : T ⟶ U) :
+    IsExactPullback f ↔ PreservesFiniteLimits (modulePullback f) := by
+  constructor
+  · exact fun h ↦ h.preservesFiniteLimits
+  · exact fun _ ↦ IsExactPullback.of_preservesFiniteLimits f
+
 /-- The triangulated pullback functor between concrete scheme-derived fibers,
 defined when module pullback is exact. -/
 def derivedPullback {T U : SchemeBaseChange S} (f : T ⟶ U)
