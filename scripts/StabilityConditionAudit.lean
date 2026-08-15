@@ -2975,6 +2975,29 @@ end SlicingChecks
 
 /-! ## Families lane -- abstract Definition 20.5/21.15 interfaces -/
 
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.TriangulatedFiberFamily
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.TriangulatedFiberFamily.mk.inj
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.TriangulatedFiberFamily.mk.sizeOf_spec
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.TriangulatedFiberFamily.fibers
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.TriangulatedFiberFamily.fiberPreadditive
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.TriangulatedFiberFamily.fiberZero
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.TriangulatedFiberFamily.fiberShift
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.TriangulatedFiberFamily.fiberShiftAdditive
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.TriangulatedFiberFamily.fiberPretriangulated
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.TriangulatedFiberFamily.pullAdditive
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.TriangulatedFiberFamily.pullCommShift
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.TriangulatedFiberFamily.pullTriangulated
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.TriangulatedFiberFamily.Fiber
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.TriangulatedFiberFamily.pull
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.TriangulatedFiberFamily.pullK₀
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.TriangulatedFiberFamily.pullK₀_of
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.TriangulatedFiberFamily.pullK₀_id
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.TriangulatedFiberFamily.pullK₀_comp
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.TriangulatedFiberFamily.constant
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.TriangulatedFiberFamily.CompatibleClassMaps
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.TriangulatedFiberFamily.CompatibleClassMaps.pull_compatible
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.TriangulatedFiberFamily.CompatibleClassMaps.class_pull
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.TriangulatedFiberFamily.CompatibleClassMaps.constant
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.ChargeProbe
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.ChargeProbe.IsLocallyConstant
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.UniversallyLocallyConstantCharge
