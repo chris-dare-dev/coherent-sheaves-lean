@@ -5,6 +5,7 @@ Released under the MIT license.
 import DerivedAlgGeo.CategoryTheory.DGCategory.Model.Complexes
 import DerivedAlgGeo.CategoryTheory.DGCategory.Model.Enhancement
 import DerivedAlgGeo.CategoryTheory.DGCategory.Model.Pretriangulated
+import DerivedAlgGeo.CategoryTheory.DGCategory.Model.Shift
 import DerivedAlgGeo.CategoryTheory.DGCategory.Model.Seam
 
 /-!
