@@ -3,8 +3,12 @@
 #
 # An unattended formalization loop needs a single exit code to branch on, and it
 # needs the gates in cheapest-first order so a failure is reported in two minutes
-# rather than forty. Nothing here is new policy: every gate already runs in
-# `.github/workflows/ci.yml`.
+# rather than forty. Every gate below also runs in `.github/workflows/ci.yml`,
+# with ONE deliberate exception: `workflows`. That one cannot be a CI gate,
+# because a workflow file too invalid to parse is also too invalid to run the
+# job that would have checked it -- GitHub just fails a run named after the file
+# and reports no checks at all. It has to fire before the file reaches GitHub,
+# which means here. See scripts/check_workflows.sh.
 #
 #   scripts/gates.sh fast   build + style + axiom audits          (~minutes)
 #   scripts/gates.sh        everything CI runs, in CI's order
@@ -132,6 +136,11 @@ mathlib_style() {
 
 echo "== gates ($MODE) =="
 
+# First because it is the cheapest gate here by three orders of magnitude
+# (~100ms against minutes) and because it is the one whose failure is otherwise
+# invisible: an invalid workflow does not produce a red check, it produces no
+# checks. In `fast` mode too, for the same reason.
+gate workflows scripts/check_workflows.sh
 gate mathlib-style mathlib_style
 gate build lake build
 gate algebraic-geometry-audit algebraic_geometry_audit
