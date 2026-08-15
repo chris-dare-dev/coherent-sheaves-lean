@@ -94,7 +94,10 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AddCommGrpCat.productConeIsLimit
 #print axioms AddCommGrpCat.piIsoPi
 #print axioms AddCommGrpCat.piIsoPi_inv_π
+#print axioms AddCommGrpCat.piIsoPi_inv_π_apply
 #print axioms AddCommGrpCat.piIsoPi_hom_eval
+#print axioms AddCommGrpCat.piIsoPi_hom_eval_apply
+#print axioms AddCommGrpCat.piAddEquivPi
 #print axioms AlgebraicGeometry.Proj.AffineComparisonDataOn
 #print axioms AlgebraicGeometry.Proj.AffineComparisonDataOn.localQuasicoherentData
 #print axioms AlgebraicGeometry.Proj.AffineComparisonDataOn.associatedSheaf_isQuasicoherent
