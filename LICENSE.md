@@ -1,3 +1,51 @@
+# Licenses
+
+Except for the files listed under **Apache-2.0 material**, repository-authored
+source and documentation are licensed under the MIT License.
+
+## MIT License
+
+Copyright (c) 2026 Chris Dare
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+## Apache-2.0 material
+
+The following repository-maintained files retain their Mathlib contributors'
+Apache-2.0 headers:
+
+- `DerivedAlgGeo/CategoryTheory/Triangulated/TStructure/ImageFactorisation.lean`
+- `DerivedAlgGeo/CategoryTheory/Triangulated/StabilityCondition/Foundation/Deformation/SeminormComparison.lean`
+- `DerivedAlgGeo/CategoryTheory/Triangulated/StabilityCondition/Foundation/Deformation/LocalInjectivity.lean`
+- `DerivedAlgGeo/CategoryTheory/Triangulated/StabilityCondition/Foundation/Deformation/LocalComparison.lean`
+- `DerivedAlgGeo/CategoryTheory/Triangulated/StabilityCondition/Foundation/Deformation/ConnectedComponent.lean`
+- `DerivedAlgGeo/CategoryTheory/Triangulated/StabilityCondition/Foundation/Deformation/LocalHomeomorphism.lean`
+
+The five deformation modules were derived from
+`mattrobball/BridgelandStability` at revision
+`9e48f23a382ba117b63076a33e0e775389fef1ba`, then ported to Lean and Mathlib
+v4.32.1 and adapted to the repository-owned stability-condition API. No
+separately versioned source, vendor tree, compatibility root, or runtime
+dependency on that repository remains.
+
+Those files are Copyright (c) 2026 Mathlib Contributors. Their license follows.
+
                                  Apache License
                            Version 2.0, January 2004
                         http://www.apache.org/licenses/

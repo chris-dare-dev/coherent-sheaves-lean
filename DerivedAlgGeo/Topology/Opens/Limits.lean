@@ -46,8 +46,8 @@ be turned into finite presentation on a scheme at all. Mathlib never instantiate
 
 This file replaces two independent workarounds for the same gap — an earlier global
 `hasBinaryProducts` module and four `local instance`s in
-`CohLean/Coh/Descent/Locality.lean` — so that the explanation exists in one place and a third is
-not written next time.
+`DerivedAlgGeo/AlgebraicGeometry/CoherentSheaf/Descent/Locality.lean` — so that the explanation
+exists in one place and a third is not written next time.
 
 This is DerivedAlgGeo-owned infrastructure. If Mathlib later exposes equivalent reachable lattice
 instances, this module can be simplified or deleted; contributing that fix upstream is useful

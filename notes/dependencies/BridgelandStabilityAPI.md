@@ -11,7 +11,7 @@ comparison oracle. Literal source independence was completed on 2026-08-14:
 - the two exact Apache-2.0 helper copies were replaced by owner-native proofs;
 - the five retained Apache-2.0 deformation/topology implementations were
   adapted into owner namespaces and imports, with provenance recorded under
-  `LICENSES/`;
+  the third-party notice in `LICENSE.md`;
 - every phase, symmetry, metric, mass, weak-stability, and tilting consumer now
   reaches repository-owned declarations;
 - deformation now constructs global HN filtrations, the deformed slicing, its

@@ -13,7 +13,7 @@
 #     in type or presence.
 #
 # Do not rename keys to taste. Closing these divergences is tracked as
-# .claude/roadmap/contract-v1.yaml -> contract-v1-e1 (GitHub #13).
+# .claude/roadmap/contract-v1.yaml -> contract-v1-e1 (GitHub #140).
 #
 # Every field is a claim. If a field cannot be filled honestly, it says
 # "none" or "pending" -- never a flattering guess.
@@ -75,7 +75,7 @@ source:
   # because the column that would say is empty for every row. Until GitHub #44
   # backfills arxiv_version, a quote match against the corpus is a match
   # against a probable-but-unconfirmed v3. Do not upgrade that to "confirmed"
-  # on the strength of a hash match alone.
+  # on the strength of a hash match alone. The backfill is GitHub #171.
   id: math/0212237v3
   type: arXiv
   license: arXiv perpetual non-exclusive

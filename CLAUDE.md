@@ -32,8 +32,8 @@ Never add imports or namespaces rooted at `CohLean`, `DGLean`, or
 - Do not edit generated build artifacts by hand.
 - Do not alter unrelated work in a dirty tree.
 
-Read `ARCHITECTURE.md` before creating a new directory and
-`CONTRIBUTING.md` before publishing a change.
+Read `CONTRIBUTING.md` before creating a new directory or publishing a
+change; it owns the human-facing placement and contribution rules.
 
 ## Required verification
 
