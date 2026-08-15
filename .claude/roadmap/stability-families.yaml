@@ -65,6 +65,7 @@ generations:
   - { rev: 3, at: "2026-08-12", note: "Migrated to derived-alg-geo-lean: remapped milestones and issues, updated monorepo ownership boundaries, and linked destination migration PRs #218–#223." }
   - { rev: 4, at: "2026-08-14", note: "Unified source layout recorded. SF0 is complete and milestone #14 is closed; current modules live under DerivedAlgGeo/CategoryTheory/Triangulated/StabilityCondition. Active geometry links now point to the in-repository AlgebraicGeometry subject, while the reusable stacks/moduli boundary remains an owner decision in #214." }
   - { rev: 5, at: "2026-08-14", note: "SF1 source-faithfulness closeout kept milestone #17 open and reopened #208: the current Lemma 14.17 biconditional stores an extra Hom-vanishing implication in its type-two branch. The strengthened candidate remains mapped but is not literal source coverage." }
+  - { rev: 6, at: "2026-08-15", note: "SF2 implementation started with native child #380 under epic #193: bind ordinary slicing semistability to genuine and indexed-uniform quadratic support before tackling the Definition 21.9 quotient and geometric fibers." }
 retired: []
 
 # GitHub milestones are roadmap phases. Epic issues live inside them, and
@@ -151,12 +152,12 @@ items:
 
   - id: stability-families-e4
     gh_issue: 193
-    gh_sub_issues: []
+    gh_sub_issues: [380]
     kind: epic
     parent: stability-families-m2
     title: "Upgrade to uniform quadratic support (§§18, 21)"
-    status: planned
-    summary: "Replace the current homogeneous-function/arbitrary-set boundary with the quadratic and semistable-class structures the paper actually uses, reusing the perturbation-openness results now maintained in DerivedAlgGeo/CategoryTheory/Triangulated/StabilityCondition/Support/Basic.lean."
+    status: in_progress
+    summary: "The genuine quadratic and indexed-uniform layers are in place for abstract loci and weak heart semistability. Native child #380 adds the missing ordinary slicing-defined semistable locus and fixed-category uniform adapter; the Definition 21.9 quotient and genuinely varying geometric fibers remain follow-ons."
     priority: must
     size: L
     tags: [support, quadratic-form, uniformity]
