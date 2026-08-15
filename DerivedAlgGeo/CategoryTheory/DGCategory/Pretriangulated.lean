@@ -1,0 +1,164 @@
+/-
+Copyright (c) 2026 Chris Dare. All rights reserved.
+Released under the MIT license.
+-/
+import DerivedAlgGeo.CategoryTheory.DGCategory.H0
+
+/-!
+# Shifts and cones inside a dg category
+
+`dg-enhancements-e5`. A dg category has no shift functor and no cone
+construction the way a triangulated category has: it has *representability
+conditions*, and this file states them.
+
+## Why these are predicates rather than constructions
+
+`X[n]` and `Cone f` are not built from `X` and `f`. They are objects of `C`
+whose dg module of maps *in* is prescribed:
+
+* `Y` is a shift of `X` by `n` when `dgHom W Y ≅ (dgHom W X)⟦n⟧`, naturally in
+  `W`;
+* `Z` is a cone on a closed degree-zero `f : X ⟶ Y` when `dgHom W Z` is the
+  mapping cone of `dgHom W X → dgHom W Y`, naturally in `W`.
+
+Both are conditions a dg category may or may not satisfy, so `IsPretriangulated`
+is a class asserting that it does.
+
+## Naturality is not an axiom here
+
+Each condition is stated as *right composition with one fixed element is
+bijective*, and that is what buys the naturality clause for free: composition
+with a fixed element commutes with composition on the other side by
+`dgComp_assoc`, so there is no square left to impose. Stating the iso of dg
+modules directly would put a graded naturality axiom in the structure and then
+oblige every witness to prove it.
+
+## The degree conventions
+
+`Hom^d(K, L) = ∏ₚ Hom(Kᵖ, L^{p+d})`, so with `L = X[n]` the identity-like
+element of `Hom(X, X[n])` sits in degree `-n`, not `n`. That is why
+`IsShiftBy.hom` has degree `-n`, and it matches Mathlib: `mappingCone.inl` is a
+`Cochain F (mappingCone φ) (-1)`, the inclusion of `F[1]`.
+
+The cone conditions are transcribed from Mathlib's `mappingCone` API rather than
+rederived. `IsConeOf.δ_inl` is `mappingCone.δ_inl`, and the bijectivity clause
+is the pair `mappingCone.id` (surjectivity) and `inl_fst`/`inl_snd`/`inr_fst`/
+`inr_snd` (injectivity).
+
+## The zero clause is dg-level, and stronger than it needs to be
+
+`IsPretriangulated.exists_zero` asks for an object with `dgId Z = 0`. In a
+preadditive category that is exactly "`Z` is a zero object", so the clause says
+`Z⁰ C` and `H⁰ C` have a zero object on the nose.
+
+The literature does not axiomatize this: `Cone (𝟙 X)` is contractible, so `H⁰`
+gets its zero object from the cone clause alone. Contractibility is a homotopy
+statement about `H⁰`, which is `dg-enhancements-e6`'s subject, and deriving the
+zero object there rather than assuming it here would invert the dependency. The
+clause is kept, and it costs nothing: every model in this repository has a
+strict dg zero object.
+-/
+
+set_option autoImplicit false
+set_option relaxedAutoImplicit false
+
+universe v u
+
+namespace CategoryTheory
+
+open DGCategoryStruct DGCategory
+
+variable {C : Type u} [DGCategory.{v} C]
+
+/-- Right composition with a fixed `ε : (dgHom X Y).X n`, as an additive map on
+the Hom-complex from any `W`. This is the map every representability condition
+below asks to be bijective. -/
+def compRight (W : C) {X Y : C} {n : ℤ} (ε : (dgHom X Y).X n) (p q : ℤ) (h : p + n = q) :
+    (dgHom W X).X p →+ (dgHom W Y).X q :=
+  (dgComp p n q h).flip ε
+
+@[simp]
+lemma compRight_apply (W : C) {X Y : C} {n : ℤ} (ε : (dgHom X Y).X n) (p q : ℤ)
+    (h : p + n = q) (f : (dgHom W X).X p) :
+    compRight W ε p q h f = dgComp p n q h f ε := rfl
+
+/-- `ε` exhibits `Y` as a shift of `X` by `n`: it is closed of degree `-n`, and
+right composition with it identifies `dgHom W X` with `dgHom W Y` in every
+degree, for every `W`. -/
+structure IsShiftBy (X : C) (n : ℤ) (Y : C) where
+  /-- The identity-like element, of degree `-n`. -/
+  hom : (dgHom X Y).X (-n)
+  /-- It is closed. -/
+  hom_closed : ((dgHom X Y).d (-n) (-n + 1)).hom hom = 0
+  /-- Right composition with it is bijective in every degree, from every object. -/
+  bijective (W : C) (p q : ℤ) (h : p + -n = q) :
+    Function.Bijective (compRight W hom p q h)
+
+/-- `Z` is a cone on the closed degree-zero morphism `f : X ⟶ Y`: it carries an
+inclusion `inr` of `Y` and a degree `-1` inclusion `inl` of `X` whose
+differential is `f ≫ inr`, and every map into `Z` splits uniquely along the
+two. -/
+structure IsConeOf {X Y : C} (f : (dgHom X Y).X 0) (Z : C) where
+  /-- The inclusion of `Y`. -/
+  inr : (dgHom Y Z).X 0
+  /-- It is closed. -/
+  inr_closed : ((dgHom Y Z).d 0 1).hom inr = 0
+  /-- The inclusion of `X`, of degree `-1`. -/
+  inl : (dgHom X Z).X (-1)
+  /-- Its differential is `f` followed by `inr`. This is `mappingCone.δ_inl`. -/
+  δ_inl : ((dgHom X Z).d (-1) 0).hom inl = dgComp 0 0 0 (by omega) f inr
+  /-- Every map into `Z` splits uniquely as `a ≫ inl + b ≫ inr`. -/
+  bijective (W : C) (p q : ℤ) (hq : p + 1 = q) :
+    Function.Bijective (fun ab : (dgHom W X).X q × (dgHom W Y).X p =>
+      dgComp q (-1) p (by omega) ab.1 inl + dgComp p 0 p (by omega) ab.2 inr)
+
+namespace IsShiftBy
+
+/-- Every object is its own shift by zero, witnessed by the identity. The
+degree-`-0` and degree-`0` Hom-groups are the same group, so no transport is
+needed. -/
+def self (X : C) : IsShiftBy X 0 X where
+  hom := dgId X
+  hom_closed := dgId_cocycle X
+  bijective W p q h := by
+    have hq : q = p := by omega
+    subst hq
+    -- `-0` and `0` are the same integer definitionally but not syntactically:
+    -- the field's degree is `-n`, so `compRight` here carries `n := -0` while
+    -- `dgComp_id` is stated at `0`. `exact` closes the gap and `simp` does not,
+    -- so the two directions are term proofs rather than rewrites.
+    refine ⟨fun a b hab => ?_, fun c => ⟨c, ?_⟩⟩
+    · exact (dgComp_id q a).symm.trans (hab.trans (dgComp_id q b))
+    · exact dgComp_id q c
+
+end IsShiftBy
+
+namespace IsConeOf
+
+variable {X Y Z : C} {f : (dgHom X Y).X 0}
+
+/-- The composite `X ⟶ Y ⟶ Cone f` is a coboundary: `inl` is its primitive.
+This is the whole content of `δ_inl`, restated so that `H⁰` can read it, and it
+is what makes the cone sequence a triangle in `dg-enhancements-e6`. -/
+lemma comp_inr_mem_coboundaries (hc : IsConeOf f Z) :
+    dgComp 0 0 0 (by omega) f hc.inr ∈ coboundaries X Z :=
+  ⟨hc.inl, hc.δ_inl⟩
+
+/-- `inr` is a cocycle, so it is a morphism of `Z⁰`. -/
+lemma inr_mem_cocycles (hc : IsConeOf f Z) : hc.inr ∈ cocycles Y Z :=
+  hc.inr_closed
+
+end IsConeOf
+
+/-- A pretriangulated dg category: it has a zero object, a shift in every
+degree, and a cone on every closed degree-zero morphism. -/
+class IsPretriangulated (C : Type u) [DGCategory.{v} C] : Prop where
+  /-- Some object has zero identity, so `Z⁰ C` and `H⁰ C` have a zero object. -/
+  exists_zero : ∃ Z : C, dgId Z = 0
+  /-- Every object has a shift in every degree. -/
+  exists_shift (X : C) (n : ℤ) : ∃ Y : C, Nonempty (IsShiftBy X n Y)
+  /-- Every closed degree-zero morphism has a cone. -/
+  exists_cone {X Y : C} (f : (dgHom X Y).X 0) (hf : f ∈ cocycles X Y) :
+    ∃ Z : C, Nonempty (IsConeOf f Z)
+
+end CategoryTheory
