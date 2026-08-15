@@ -1869,6 +1869,16 @@ family, HN structure over a curve, boundedness, or moduli theory. -/
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Support.ZeroChargeLattice.saturatedClosure_le_ker
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Support.ZeroChargeLattice.quotientCharge
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Support.ZeroChargeLattice.quotientCharge_quotientClass
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Support.ZeroChargeLattice.quotientToRealQuotient
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Support.ZeroChargeLattice.quotientToRealQuotient.congr_simp
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Support.ZeroChargeLattice.quotientToRealQuotient_quotientClass
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Support.ZeroChargeLattice.RealScalarExtension
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Support.ZeroChargeLattice.scalarExtensionComparison
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Support.ZeroChargeLattice.scalarExtensionComparison_tmul
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Support.ZeroChargeLattice.scalarExtensionComparison_quotientClass
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Support.ZeroChargeLattice.exists_scalarExtensionEquiv_iff
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Support.ZeroChargeLattice.scalarExtensionEquiv
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Support.ZeroChargeLattice.scalarExtensionEquiv_apply
 
 /-! ## FiniteLength lane — charges on the free lattice of simples
 
