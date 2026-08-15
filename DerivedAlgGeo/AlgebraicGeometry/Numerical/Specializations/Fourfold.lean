@@ -19,18 +19,21 @@ in Layer A was tuned to a dimension.
 
 * `Fourfold.chi_eq` —
   `χ(E) = r·∫td₄(X) + ∫c₁(E)·td₃(X) + ∫ch₂(E)·td₂(X) + ∫ch₃(E)·td₁(X) + ∫ch₄(E)`.
+* `CalabiYauFourfold.IsCalabiYau` — the numerical signature of a Calabi–Yau fourfold.
+* `CalabiYauFourfold.chi_eq` — `χ(E) = 2·rank(E) + ∫ch₂(E)·td₂(X) + ∫ch₄(E)` on such a
+  fourfold.
+
+Models live in `Numerical/Examples/Fourfold/`: `ℙ⁴`, whose Todd class has no vanishing
+component, and the sextic Calabi–Yau, which inhabits `CalabiYauFourfold.IsCalabiYau`.
 
 ## Not proved here
 
-No fourfold *model* exists in `Numerical/Examples/`, so the statement is conditional on a
-`NumericalVariety 4 A N` existing at all. The rank-one analogue would be `ℚ[t]/(t⁵)` with
-`∫t⁴ = d`, built the same way as `Examples/RankOneSurface.lean`.
-
 Hyperkähler fourfolds — the case the Bridgeland side would want next — are *not* given a
-class here. Unlike `K3.IsK3` and `CalabiYauThreefold.IsCalabiYau`, their numerical
-signature is not two conditions on the Todd class: the Fujiki relations constrain the whole
-intersection form, and asserting a fragment of that as a class field would hide a real
-theorem the way the module docstring of `Numerical/Defs.lean` forbids.
+class here. Unlike `K3.IsK3`, `CalabiYauThreefold.IsCalabiYau` and `IsCalabiYau` below,
+their numerical signature is not a few conditions on the Todd class: the Fujiki relations
+constrain the whole intersection form, and asserting a fragment of that as a class field
+would hide a real theorem the way the module docstring of `Numerical/Core/Definitions.lean`
+forbids.
 -/
 
 universe u v
@@ -70,5 +73,50 @@ theorem chi_eq (E : N) :
   rw [h, chComp_zero, degree_algebraMap_mul, toddComp_zero, mul_one]
 
 end Fourfold
+
+namespace CalabiYauFourfold
+
+open NumericalRing NumericalVariety
+
+variable {A : Type u} {N : Type v}
+variable [CommRing A] [Algebra ℚ A] [AddCommGroup N] [NumericalVariety 4 A N]
+
+/-- The numerical signature of a **Calabi–Yau fourfold**: trivial canonical class and
+`χ(O_X) = 2`.
+
+The three conditions are the odd Todd components vanishing — `td₁ = −K_X/2 = 0` and
+`td₃ = c₁c₂/24 = 0`, both consequences of `c₁ = 0` — together with `∫_X td₄ = 2`, which is
+`χ(O_X) = 1 − 0 + 0 − 0 + 1` for `h^{0,i}(X) = 1, 0, 0, 0, 1`.
+
+The `2` is the one place a fourfold differs qualitatively from the threefold, where the
+corresponding value is `0`: `χ` still sees the rank here, so unlike
+`CalabiYauThreefold.chi_eq_of_chComp_eq` there is no rank-blindness statement to make. -/
+class IsCalabiYau (A : Type u) (N : Type v) [CommRing A] [Algebra ℚ A] [AddCommGroup N]
+    [NumericalVariety 4 A N] : Prop where
+  /-- `td₁(X) = −K_X/2 = 0`. -/
+  toddComp_one : toddComp (A := A) (N := N) 1 = 0
+  /-- `td₃(X) = c₁c₂/24 = 0`. -/
+  toddComp_three : toddComp (A := A) (N := N) 3 = 0
+  /-- `∫_X td₄(X) = χ(O_X) = 2`. -/
+  degree_toddComp_four : degree (n := 4) (toddComp (A := A) (N := N) 4) = 2
+
+variable [IsCalabiYau A N]
+
+/-- **Riemann–Roch on a Calabi–Yau fourfold**:
+`χ(E) = 2·rank(E) + ∫_X ch₂(E)·td₂(X) + ∫_X ch₄(E)`.
+
+Two of the five terms of `Fourfold.chi_eq` vanish, both because an odd Todd component does;
+the rank term survives with the coefficient `∫td₄ = 2`. -/
+theorem chi_eq (E : N) :
+    (chi (A := A) E : ℚ)
+      = 2 * (rank (A := A) E : ℚ)
+        + degree (n := 4) (chComp (A := A) E 2 * toddComp (N := N) 2)
+        + degree (n := 4) (chComp (A := A) E 4) := by
+  rw [Fourfold.chi_eq E, IsCalabiYau.toddComp_one, IsCalabiYau.toddComp_three,
+    IsCalabiYau.degree_toddComp_four]
+  simp only [mul_zero, map_zero]
+  ring
+
+end CalabiYauFourfold
 
 end AlgebraicGeometry.Numerical

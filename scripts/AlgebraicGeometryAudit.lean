@@ -377,9 +377,19 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 -- degree_ch_mul_todd is dimension-general, so they must not acquire axioms that the
 -- n = 2 case does not have.
 #print axioms Threefold.chi_eq
+#print axioms Threefold.chiStructureSheaf
+#print axioms CalabiYauThreefold.IsCalabiYau
+#print axioms CalabiYauThreefold.IsCalabiYau.toddComp_one
+#print axioms CalabiYauThreefold.IsCalabiYau.degree_toddComp_three
 #print axioms CalabiYauThreefold.chi_eq
 #print axioms CalabiYauThreefold.chi_eq_of_chComp_eq
 #print axioms Fourfold.chi_eq
+#print axioms Fourfold.chiStructureSheaf
+#print axioms CalabiYauFourfold.IsCalabiYau
+#print axioms CalabiYauFourfold.IsCalabiYau.toddComp_one
+#print axioms CalabiYauFourfold.IsCalabiYau.toddComp_three
+#print axioms CalabiYauFourfold.IsCalabiYau.degree_toddComp_four
+#print axioms CalabiYauFourfold.chi_eq
 
 -- Layer A: the dual involution and the Euler pairing. chi2 is what Bridgeland stability
 -- is defined against, so a sorry here would contaminate the downstream repos.
@@ -458,6 +468,109 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms Examples.p2_chi_structureSheaf
 #print axioms Examples.p2Chi_lineBundle
 #print axioms Examples.p2ChCoeff_lineBundle
+
+-- Layer A: the abelian surface. Both Todd components above td0 vanish, so it is the
+-- surface model on which chi sees neither the rank nor c1.
+#print axioms Examples.abelianTodd
+#print axioms Examples.abelianTodd_mem
+#print axioms Examples.abelianTodd_sum
+#print axioms Examples.abelianNumericalVariety
+#print axioms Examples.abelianToddComp_one
+#print axioms Examples.abelianChiStructureSheaf
+#print axioms Examples.abelianChi_eq_of_chComp_two_eq
+
+-- Layer A: the dimension-general Picard-rank-one construction. Every threefold and
+-- fourfold model below is built from it, so a sorry here would unmodel dimensions three
+-- and four at once.
+#print axioms Examples.rankOneRel
+#print axioms Examples.rankOneRel_ne_zero
+#print axioms Examples.RankOneRing
+#print axioms Examples.rankOnePB
+#print axioms Examples.rankOnePB_dim
+#print axioms Examples.rankOneH
+#print axioms Examples.rankOnePB_gen
+#print axioms Examples.rankOnePB_basis_apply
+#print axioms Examples.rankOneH_pow_succ
+#print axioms Examples.rankOneH_pow_eq_zero
+#print axioms Examples.rankOneW
+#print axioms Examples.rankOneW_le
+#print axioms Examples.lt_rankOnePB_dim
+#print axioms Examples.rankOneIdx
+#print axioms Examples.rankOneIdx.congr_simp
+#print axioms Examples.rankOneBasis_eq_pow
+#print axioms Examples.rankOneH_pow_mem_piece
+#print axioms Examples.rankOne_one_mem
+#print axioms Examples.rankOne_mul_mem
+#print axioms Examples.rankOne_algebraMap_mul_mem
+#print axioms Examples.rankOneDegree
+#print axioms Examples.rankOneDegree_basis_of_ne
+#print axioms Examples.rankOneDegree_basis_top
+#print axioms Examples.rankOneDegree_pow
+#print axioms Examples.rankOneDegree_algebraMap_mul_pow
+#print axioms Examples.rankOneDegree_sum_mul_sum
+#print axioms Examples.rankOneNumericalRing
+#print axioms Examples.rankOneCh
+#print axioms Examples.rankOneCh_mem
+#print axioms Examples.rankOneCh_sum
+#print axioms Examples.rankOneTodd
+#print axioms Examples.rankOneTodd_mem
+#print axioms Examples.rankOneTodd_sum
+#print axioms Examples.rankOneNumericalVariety
+
+-- Layer A: linear-section coordinates in dimensions three and four. These are what make
+-- chi integral on the lattice, so an axiom here would undermine every Euler
+-- characteristic the threefold and fourfold models report.
+#print axioms Examples.ThreefoldNum
+#print axioms Examples.threefoldChCoeff
+#print axioms Examples.threefoldChCoeff_add
+#print axioms Examples.threefoldRank
+#print axioms Examples.threefoldChCoeff_zero
+#print axioms Examples.threefoldChi_sum
+#print axioms Examples.FourfoldNum
+#print axioms Examples.fourfoldChCoeff
+#print axioms Examples.fourfoldChCoeff_add
+#print axioms Examples.fourfoldRank
+#print axioms Examples.fourfoldChCoeff_zero
+#print axioms Examples.fourfoldChi_sum
+
+-- Layer A: the threefold models. p3 has no vanishing Todd component and so is the model
+-- that can detect an error anywhere in Threefold.chi_eq; the quintic is what makes
+-- CalabiYauThreefold.IsCalabiYau inhabited.
+#print axioms Examples.p3Todd
+#print axioms Examples.p3Chi
+#print axioms Examples.p3NumericalVariety
+#print axioms Examples.p3ChiStructureSheaf
+#print axioms Examples.p3Chi_lineBundle
+#print axioms Examples.p3ChCoeff_lineBundle_two
+#print axioms Examples.p3ChCoeff_lineBundle_three
+#print axioms Examples.quinticTodd
+#print axioms Examples.quinticChi
+#print axioms Examples.quinticNumericalVariety
+#print axioms Examples.quintic_isCalabiYau
+#print axioms Examples.quinticChi_structureSheaf
+#print axioms Examples.quinticChi_hyperplaneSection
+#print axioms Examples.quinticChi_curveSection
+#print axioms Examples.quinticChi_point
+#print axioms Examples.quinticChi_lineBundle
+
+-- Layer A: the fourfold models. Same division of labour one dimension up, and the sextic
+-- is what makes CalabiYauFourfold.IsCalabiYau inhabited.
+#print axioms Examples.p4Todd
+#print axioms Examples.p4Chi
+#print axioms Examples.p4NumericalVariety
+#print axioms Examples.p4ChiStructureSheaf
+#print axioms Examples.p4Chi_lineBundle
+#print axioms Examples.p4ChCoeff_lineBundle_four
+#print axioms Examples.sexticTodd
+#print axioms Examples.sexticChi
+#print axioms Examples.sexticNumericalVariety
+#print axioms Examples.sextic_isCalabiYau
+#print axioms Examples.sexticChi_structureSheaf
+#print axioms Examples.sexticChi_hyperplaneSection
+#print axioms Examples.sexticChi_surfaceSection
+#print axioms Examples.sexticChi_curveSection
+#print axioms Examples.sexticChi_point
+#print axioms Examples.sexticChi_lineBundle
 
 -- Layer B: the Mathlib gap that blocks the local-to-global criterion for coherence.
 #print axioms SheafOfModules.Presentation.isFinite_of_isIso
