@@ -34,6 +34,11 @@ three of its five generators.
 
 * `fourfoldChCoeff_add` — additivity.
 * `fourfoldChi_sum` — the Riemann–Roch sum with `Finset.range 5` expanded.
+
+## References
+
+* Hartshorne, *Algebraic Geometry*, I.7 and V.1
+* Griffiths–Harris, *Principles of Algebraic Geometry*, ch. 4
 -/
 
 namespace AlgebraicGeometry.Numerical
@@ -45,7 +50,9 @@ stands for `a·[O_X] + b·[O_{X∩H}] + c·[O_{X∩H²}] + e·[O_{X∩H³}] + f�
 abbrev FourfoldNum : Type := ℤ × ℤ × ℤ × ℤ × ℤ
 
 /-- The Chern-character coefficients of a class in linear-section coordinates on a fourfold
-of degree `∫_X H⁴ = d`. -/
+of degree `∫_X H⁴ = d`. The coefficient of `Hⁱ` is entry `i`. The `7/12` and `−3/2` in
+entries `4` and `3` are the terms that do not follow the threefold pattern; see the module
+docstring for the expansion of `(1 − e^{−H})ᵏ` they come from. -/
 noncomputable def fourfoldChCoeff (d : ℚ) (E : FourfoldNum) : ℕ → ℚ
   | 0 => (E.1 : ℚ)
   | 1 => (E.2.1 : ℚ)
@@ -95,7 +102,8 @@ theorem fourfoldChCoeff_add (d : ℚ) (E F : FourfoldNum) (i : ℕ) :
     ring
   | _ + 5 => show (0 : ℚ) = 0 + 0; rw [add_zero]
 
-/-- The rank of a class in linear-section coordinates is its `[O_X]` multiplicity. -/
+/-- The rank of a class in linear-section coordinates is its `[O_X]` multiplicity: the other
+four generators are supported in positive codimension. -/
 def fourfoldRank : FourfoldNum →+ ℤ where
   toFun E := E.1
   map_zero' := rfl

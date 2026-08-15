@@ -48,8 +48,13 @@ number rather than a chosen one.
 
 * `quintic_isCalabiYau` — the model satisfies `CalabiYauThreefold.IsCalabiYau`.
 * `quinticChi_lineBundle` — `χ(O_X(m)) = 5m(m² + 5)/6`, which is `5` at `m = 1` and `0` at
-  `m = 0`, as a Calabi–Yau threefold embedded in `ℙ⁴` by a five-dimensional linear system
-  requires.
+  `m = 0`, as the quintic's embedding in `ℙ⁴` by the complete system `|H|`, with
+  `h⁰(O_X(1)) = 5`, requires.
+
+## References
+
+* Hartshorne, *Algebraic Geometry*, I.7 and V.1
+* Griffiths–Harris, *Principles of Algebraic Geometry*, ch. 4
 -/
 
 namespace AlgebraicGeometry.Numerical

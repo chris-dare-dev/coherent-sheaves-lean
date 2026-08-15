@@ -22,8 +22,10 @@ exactly that reason: a Bridgeland central charge normalised against `χ` degener
 a way it does not on a K3, and a statement that silently assumed `∫td₂ ≠ 0` would pass on
 both other surface models.
 
-`A` carries a polarisation `H` of type `(1, d)`, so `∫_A H² = 2d`. The evenness is not a
-convention: Riemann–Roch on this very model gives `χ(H) = ∫ch₂(H) = H²/2`, an integer.
+`A` carries a polarisation `H` of type `(1, d)`, so `∫_A H² = 2d`. The evenness is an input,
+not something this model checks: it is Riemann–Roch on `A` itself — `χ(O_A(H)) = H²/2` must
+be an integer — and `[O_A(H)]` is one of the classes the integral lattice `SurfaceNum` below
+does *not* contain, so the model cannot evaluate it.
 
 ## Chern-character coordinates
 
@@ -123,12 +125,25 @@ classes differ.
 This is the two-dimensional shadow of `CalabiYauThreefold.chi_eq_of_chComp_eq`, and it is
 the reason to carry this model alongside the K3: on a K3 the rank term survives with
 coefficient `∫td₂ = 2`, so the same statement is false there. -/
-theorem abelianChi_eq_of_chComp_two_eq (d : ℕ) (E F : SurfaceNum) (h : E.2.2 = F.2.2) :
+theorem abelianChi_eq_of_chComp_two_eq (d : ℕ) (E F : SurfaceNum)
+    (h : letI := abelianNumericalVariety d
+      NumericalVariety.chComp (A := SurfaceRing) E 2
+        = NumericalVariety.chComp (A := SurfaceRing) F 2) :
     letI := abelianNumericalVariety d
     NumericalVariety.chi (A := SurfaceRing) E = NumericalVariety.chi (A := SurfaceRing) F := by
   letI := abelianNumericalVariety d
+  -- `∫_A` renormalised to send `H²` to `1` is a coefficient extractor: it turns the equality
+  -- of codimension-two components into the equality of the coordinates behind them. The
+  -- model's own degree `2d` would not do, since it annihilates the coordinate when `d = 0`.
+  have hcoeff : ((E.2.2 : ℤ) : ℚ) = ((F.2.2 : ℤ) : ℚ) := by
+    -- the ascription is what unfolds `chComp` to its normal form; `congrArg` alone leaves
+    -- the components folded and `simp` then has nothing to fire on
+    have h' : surfaceDegree 1 (algebraMap ℚ SurfaceRing ((E.2.2 : ℤ) : ℚ) * H ^ 2)
+        = surfaceDegree 1 (algebraMap ℚ SurfaceRing ((F.2.2 : ℤ) : ℚ) * H ^ 2) :=
+      congrArg (fun x => surfaceDegree 1 x) h
+    simpa only [surfaceDegree_algebraMap_mul, surfaceDegree_Hsq, mul_one] using h'
   show 2 * (d : ℤ) * E.2.2 = 2 * (d : ℤ) * F.2.2
-  rw [h]
+  rw [show E.2.2 = F.2.2 from by exact_mod_cast hcoeff]
 
 end Examples
 

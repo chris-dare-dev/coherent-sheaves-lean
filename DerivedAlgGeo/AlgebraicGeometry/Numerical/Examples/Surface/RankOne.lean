@@ -183,9 +183,10 @@ noncomputable def surfaceNumericalRing (h2 : ℚ) : NumericalRing 2 SurfaceRing 
 
 /-! ### The Chern character
 
-Both models use the same `N` and the same Chern character; only `td` differs. Coefficients
-are rational rather than integral because `ch₂` is a half-integer on `ℙ²` — see
-`Examples/ProjectivePlaneModel.lean`. -/
+All three models use the same `N`. `K3.lean` and `Abelian.lean` share `k3ChCoeff`;
+`ProjectivePlane.lean` reparametrises with its own `p2ChCoeff`, because `ch₂` is a
+half-integer on `ℙ²` — see `Examples/Surface/ProjectivePlane.lean`. Coefficients are
+therefore rational rather than integral. -/
 
 /-- A class is recorded by the three rational coefficients of `ch = a + b·H + c·H²`. -/
 abbrev SurfaceNum : Type := ℤ × ℤ × ℤ

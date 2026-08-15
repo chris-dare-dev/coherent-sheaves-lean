@@ -45,6 +45,11 @@ rather than something the model has to arrange.
 * `threefoldChCoeff_add` — additivity, the hypothesis `rankOneNumericalVariety` asks for.
 * `threefoldChi_sum` — the Riemann–Roch sum with `Finset.range 4` expanded, so that each
   model closes its own Riemann–Roch obligation by `push_cast; ring`.
+
+## References
+
+* Hartshorne, *Algebraic Geometry*, I.7 and V.1
+* Griffiths–Harris, *Principles of Algebraic Geometry*, ch. 4
 -/
 
 namespace AlgebraicGeometry.Numerical

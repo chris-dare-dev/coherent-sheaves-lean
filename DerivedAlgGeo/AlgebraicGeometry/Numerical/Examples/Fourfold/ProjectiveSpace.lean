@@ -28,6 +28,9 @@ from `c₁ = 5H` and `c₂ = 10H²`: `td₁ = c₁/2`, `td₂ = (c₁² + c₂)/
 * `p4ChiStructureSheaf` — `∫_{ℙ⁴} td₄ = χ(O_{ℙ⁴}) = 1`.
 * `p4Chi_lineBundle` — Riemann–Roch on this model reproduces
   `χ(O(m)) = (m+1)(m+2)(m+3)(m+4)/24`.
+* `p4ChCoeff_lineBundle_four` — the class used there really is `O(m)`: its Chern character is
+  `e^{mH}` in codimension four, which is the only check on the `7/12` and `−3/2` of
+  `Examples/Fourfold/LinearSection.lean`.
 -/
 
 namespace AlgebraicGeometry.Numerical

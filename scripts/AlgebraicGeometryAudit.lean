@@ -490,14 +490,14 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms Examples.rankOneH
 #print axioms Examples.rankOnePB_gen
 #print axioms Examples.rankOnePB_basis_apply
-#print axioms Examples.rankOneH_pow_succ
+#print axioms Examples.rankOneH_pow_succ_eq_zero
 #print axioms Examples.rankOneH_pow_eq_zero
 #print axioms Examples.rankOneW
 #print axioms Examples.rankOneW_le
 #print axioms Examples.lt_rankOnePB_dim
 #print axioms Examples.rankOneIdx
 #print axioms Examples.rankOneIdx.congr_simp
-#print axioms Examples.rankOneBasis_eq_pow
+#print axioms Examples.rankOnePB_basis_eq_pow
 #print axioms Examples.rankOneH_pow_mem_piece
 #print axioms Examples.rankOne_one_mem
 #print axioms Examples.rankOne_mul_mem

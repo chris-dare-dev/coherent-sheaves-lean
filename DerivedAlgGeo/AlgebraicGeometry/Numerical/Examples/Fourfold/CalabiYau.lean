@@ -12,8 +12,9 @@ A smooth sextic hypersurface `X ⊂ ℙ⁵`, and the model that makes
 `AlgebraicGeometry.Numerical.CalabiYauFourfold` inhabited.
 
 The data: `∫_X H⁴ = 6`, `K_X = 0`, and the Chern classes of a degree-six hypersurface in
-`ℙ⁵`, which the adjunction formula `c(X) = (1+H)⁶/(1+6H)` gives as `c₂ = 15H²` and
-`c₄ = 435H⁴`. Hence
+`ℙ⁵`, which the normal-bundle sequence `0 → T_X → T_{ℙ⁵}|_X → O_X(6) → 0` and the Whitney
+sum formula give as `c(X) = (1+H)⁶/(1+6H)`, hence `c₂ = 15H²` and `c₄ = 435H⁴`. Adjunction
+is the `c₁` half of that same computation: `K_X = (K_{ℙ⁵} + 6H)|_X = 0`. Hence
 
 `td(X) = 1 + 0 + (5/4)H² + 0 + (1/3)H⁴`,
 
@@ -48,6 +49,11 @@ checked numbers rather than transcribed ones.
 * `sextic_isCalabiYau` — the model satisfies `CalabiYauFourfold.IsCalabiYau`.
 * `sexticChi_lineBundle` — `χ(O_X(m)) = (m⁴ + 15m² + 8)/4`, which is `6` at `m = 1` and `2`
   at `m = 0`.
+
+## References
+
+* Hartshorne, *Algebraic Geometry*, I.7 and V.1
+* Griffiths–Harris, *Principles of Algebraic Geometry*, ch. 4
 -/
 
 namespace AlgebraicGeometry.Numerical
@@ -135,8 +141,9 @@ theorem sexticChi_point : sexticChi (0, 0, 0, 0, 1) = 1 := rfl
 /-- **Riemann–Roch on the sextic reproduces `χ(O_X(m)) = (m⁴ + 15m² + 8)/4`.**
 
 `O(mH)` is the class `(1, m, c, e, f)` with `2c = m(m+1)`, `6e = m(m+1)(m+2)` and
-`4f = m(m+1)(m+2)(m+3)`; the last is integral because a product of four consecutive integers
-is divisible by `24`.
+`4f = m(m+1)(m+2)(m+3)`. The denominator there is `4` rather than the `24` of `ℙ⁴` because
+the point class is `[pt] = H⁴/6`, so `f = 6·C(m+3,4)` and `24·C(m+3,4)` clears to `4f`; it
+is an integer because a product of four consecutive integers is divisible by `24`.
 
 At `m = 1` this gives `6`, which is `h⁰(O_X(1)) = 6` for the sextic embedded in `ℙ⁵`; at
 `m = 0` it gives `2 = χ(O_X)`. -/

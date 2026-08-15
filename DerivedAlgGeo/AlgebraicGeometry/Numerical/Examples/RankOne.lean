@@ -57,9 +57,9 @@ the self-intersection of an integral class. The individual models take integer d
 * Fulton, *Intersection Theory*, ch. 15 and 19
 -/
 
-universe u v
+universe v
 
-open Polynomial Submodule Set
+open Polynomial
 
 namespace AlgebraicGeometry.Numerical
 
@@ -95,7 +95,7 @@ theorem rankOnePB_basis_apply (n : ℕ) (i : Fin (rankOnePB n).dim) :
   rw [(rankOnePB n).basis_eq_pow, rankOnePB_gen]
 
 /-- `H^{n+1} = 0`: the relation, in the ring. -/
-theorem rankOneH_pow_succ (n : ℕ) : rankOneH n ^ (n + 1) = 0 := by
+theorem rankOneH_pow_succ_eq_zero (n : ℕ) : rankOneH n ^ (n + 1) = 0 := by
   change AdjoinRoot.root (rankOneRel n) ^ (n + 1) = 0
   rw [← AdjoinRoot.eval₂_root (rankOneRel n)]
   simp [rankOneRel]
@@ -105,7 +105,7 @@ theorem rankOneH_pow_succ (n : ℕ) : rankOneH n ^ (n + 1) = 0 := by
 Chern and Todd components be defined uniformly in `i` — see the module docstring. -/
 theorem rankOneH_pow_eq_zero (n : ℕ) {k : ℕ} (hk : n < k) : rankOneH n ^ k = 0 := by
   obtain ⟨m, rfl⟩ : ∃ m, k = n + 1 + m := ⟨k - (n + 1), by omega⟩
-  rw [pow_add, rankOneH_pow_succ, zero_mul]
+  rw [pow_add, rankOneH_pow_succ_eq_zero, zero_mul]
 
 /-! ### The grading by codimension -/
 
@@ -131,7 +131,7 @@ def rankOneIdx (n : ℕ) {k : ℕ} (hk : k ≤ n) : Fin (rankOnePB n).dim :=
 
 /-- The basis vector at index `k` is `Hᵏ`, stated with `k` rather than a `Fin` coercion so
 that `rw` can use it against a goal mentioning the exponent directly. -/
-theorem rankOneBasis_eq_pow (n : ℕ) {k : ℕ} (hk : k ≤ n) :
+theorem rankOnePB_basis_eq_pow (n : ℕ) {k : ℕ} (hk : k ≤ n) :
     (rankOnePB n).basis (rankOneIdx n hk) = rankOneH n ^ k := by
   rw [rankOnePB_basis_apply]
   rfl
@@ -142,7 +142,7 @@ theorem rankOneH_pow_mem_piece (n k : ℕ) :
     rankOneH n ^ k ∈ gradedPiece (⇑(rankOnePB n).basis) (rankOneW n) k := by
   by_cases hk : k ≤ n
   · have hmem := mem_gradedPiece (b := ⇑(rankOnePB n).basis) (w := rankOneW n) (rankOneIdx n hk)
-    rwa [rankOneBasis_eq_pow] at hmem
+    rwa [rankOnePB_basis_eq_pow] at hmem
   · rw [rankOneH_pow_eq_zero n (by omega)]
     exact Submodule.zero_mem _
 
@@ -191,7 +191,7 @@ convention: the power is genuinely zero there. -/
 theorem rankOneDegree_pow (n : ℕ) (d : ℚ) (k : ℕ) :
     rankOneDegree n d (rankOneH n ^ k) = if k = n then d else 0 := by
   by_cases hle : k ≤ n
-  · rw [← rankOneBasis_eq_pow n hle]
+  · rw [← rankOnePB_basis_eq_pow n hle]
     by_cases hk : k = n
     · -- the two indices are the same `Fin`, but only after `k = n` is used on the values
       have hidx : rankOneIdx n hle = rankOneIdx n (le_refl n) := by
