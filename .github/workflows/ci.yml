@@ -4,6 +4,12 @@ on:
   push:
     branches: [main, 'agent/**']
   pull_request:
+  # A merge queue entry is a synthetic branch GitHub builds from `main` plus the
+  # queued PR(s), and it reports its own checks. Without this trigger the queue
+  # would sit forever waiting for a check that never runs, so this line and the
+  # "Require merge queue" setting have to be turned on in that order: this first,
+  # the setting second. Removing it later re-creates the same deadlock.
+  merge_group:
   workflow_dispatch:
 
 concurrency:
@@ -41,6 +47,16 @@ jobs:
     # protection but a PR editing this line to a bare self-hosted label would
     # have routed itself onto the owner's daily-driver Mac and executed there.
     # Never make self-hosted routing depend on anything a pull_request can edit.
+    #
+    # `merge_group` lands on ubuntu-latest for exactly the same reason, and it is
+    # worth saying out loud because the event LOOKS trustworthy in a way
+    # `pull_request` does not: only a maintainer can queue a PR. But the queue
+    # branch is `main` plus the PR's commits, so the workflow file GitHub
+    # evaluates there is still the contributor's copy of this file -- queuing a
+    # PR is not a review of the routing expression inside it. The condition above
+    # names `push` and `workflow_dispatch` positively and sends everything else
+    # hosted, so merge_group is already handled; do not "tidy" that into a
+    # negative test against `pull_request`, which would hand the Mac to the queue.
     #
     # The fast lane also has a cost that is not speed: one machine means one
     # shared .lake/build. Concurrent CI runs -- and the owner building locally
@@ -80,6 +96,13 @@ jobs:
           case "${{ github.event_name }}" in
             pull_request) base="${{ github.event.pull_request.base.sha }}" ;;
             push) base="${{ github.event.before }}" ;;
+            # merge_group is deliberately absent. `github.event.merge_group.base_sha`
+            # exists and would let this step scope a queue entry too -- and it
+            # should not. The queue is the last thing that runs before `main`
+            # moves, and it is the one place where two independently-green
+            # branches meet for the first time; scoping there would reintroduce
+            # exactly the hole the queue was added to close. Falling through
+            # leaves `base` empty, which the check below turns into `scope=all`.
           esac
           if [ -z "$base" ] || [ "$base" = "0000000000000000000000000000000000000000" ] \
              || ! git cat-file -e "$base^{commit}" 2>/dev/null; then
@@ -127,10 +150,10 @@ jobs:
       # linux-x86_64 in any case, so the fix is not to make the two lanes agree
       # on a variable: it is to state the platform this cache is FOR, and to have
       # a runner of that platform be the thing that writes it. That is the
-      # `cache-warm` job at the bottom of this file.
+      # `Cache warm` workflow, in .github/workflows/cache-warm.yml.
       #
       # Restore is keyed exactly, then falls back by prefix to the newest cache
-      # for the same toolchain and manifest -- in practice the one `cache-warm`
+      # for the same toolchain and manifest -- in practice the one `Cache warm`
       # saved on `main`, found via GitHub's default-branch fallback.
       # A stale restore is safe rather than merely tolerable: lake's build is
       # trace-hash based, so anything out of date is rebuilt. The failure mode is
@@ -309,7 +332,7 @@ jobs:
       # `push` to `main` -- but `push` routes to the self-hosted Mac, so this
       # job wrote a macOS entry that the lane needing it could never read. The
       # writer has to be a runner of the platform the cache is for; see the
-      # `cache-warm` job below.
+      # `Cache warm` workflow, in .github/workflows/cache-warm.yml.
 
       - name: Upload trust artifacts
         if: always()
@@ -323,83 +346,57 @@ jobs:
           if-no-files-found: warn
 
   # ---------------------------------------------------------------------------
-  # The writer for the `.lake/build` cache the hosted lane restores (2026-08-15).
+  # The single required status check (2026-08-15).
   #
-  # WHY THIS IS A SEPARATE JOB AND NOT A STEP IN `build`. The cache is a
-  # linux-x86_64 artifact, so a linux-x86_64 runner has to produce it. `build`
-  # on a `push` runs on the self-hosted Mac, which is the fast lane precisely
-  # because it never needs this cache -- it keeps its own 8.3 GB `.lake` between
-  # runs. Asking that job to also emit a Linux cache is asking it to emit an
-  # artifact for a machine it is not. So: `main` moves, a hosted runner rebuilds
-  # from the previous hosted state and publishes the result, and every PR
-  # branched from `main` restores it through GitHub's default-branch fallback.
-  # Free on a public repository.
+  # Branch protection can only require a check by NAME, and a rule that names a
+  # check nothing produces does not fail -- it waits, or is bypassed. So the
+  # moment `build` is split into several jobs, a rule requiring `build` silently
+  # stops protecting anything. This job exists so the required check is a name
+  # that survives every future change to the job graph: split `build` in two,
+  # add a job, rename one, and the only edit needed is the `needs` list here.
   #
-  # NOT a required check and it gates nothing: `build` on the same commit has
-  # already made the correctness claim, and this job repeats none of it. It is
-  # deliberately NOT `continue-on-error` either -- a warm cache that quietly
-  # stopped being produced is exactly the "gate that silently does not run"
-  # failure this repository keeps writing comments about, and a visible red mark
-  # on a job nothing depends on is the cheapest possible way to notice.
-  cache-warm:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+  # It must therefore be the ONLY required context, and `build` must be removed
+  # from the required list when this lands -- otherwise the split it was added
+  # to survive still breaks protection.
+  #
+  # Only jobs that must pass belong in `needs`. Cache warming is a separate
+  # workflow (.github/workflows/cache-warm.yml) precisely so it cannot appear
+  # here: it is skipped on every event except a push to `main`, a skip has to
+  # read as a failure below, and it gates nothing by design -- `build` on the
+  # same commit makes the correctness claim.
+  ci:
+    needs: [build]
+    # `always()` so this job still runs when an upstream job failed -- without
+    # it, a failed `build` would leave `ci` skipped, and a skipped required
+    # check does not block a merge. This is the whole mechanism.
+    if: always()
     runs-on: ubuntu-latest
-    timeout-minutes: 90
-    permissions:
-      contents: read
     steps:
-      - uses: actions/checkout@v4
-
-      # Prefix-only restore: the exact key carries this commit's sha and by
-      # definition does not exist yet. This is what makes the warm job itself
-      # incremental -- it rebuilds the merge's downstream cone, not all 377
-      # modules.
-      - name: Restore previous build output
-        uses: actions/cache/restore@v4
-        with:
-          path: .lake/build
-          key: lake-build-linux-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-${{ github.sha }}
-          restore-keys: |
-            lake-build-linux-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-
-
-      - uses: leanprover/lean-action@v1
-        with:
-          build: true
-          use-mathlib-cache: true
-          use-github-cache: false
-          nanoda: false
-
-      # `lake build` above covers `defaultTargets`, which is `DerivedAlgGeo`
-      # alone. The gates in `build` need three things beyond it, and a cache
-      # that omits them leaves the hosted lane paying for them from cold every
-      # time -- `lake build emit` alone is around 420 s there. Keep this list in
-      # step with the `lake build` invocations in the `build` job above.
-      - name: Build the targets the gates add
+      - name: Every required job succeeded
+        # Through `env`, not interpolated into the script. Two reasons, and the
+        # second one is why the first attempt at this file was rejected outright:
+        # workflow expressions may only quote strings with SINGLE quotes, so the
+        # obvious `join(needs.*.result, " ")` is a syntax error -- and GitHub
+        # answers an invalid workflow by failing a run named after the file with
+        # no annotation and no checks at all, which reads exactly like CI never
+        # triggered. Keeping expressions out of the script body sidesteps the
+        # nested-quoting that caused it, and is the standard way to avoid script
+        # injection from expression output besides.
+        env:
+          RESULTS: ${{ join(needs.*.result, ' ') }}
         run: |
           set -euo pipefail
-          lake build \
-            DerivedAlgGeo.Development \
-            DerivedAlgGeo.AlgebraicGeometry.Numerical.Specializations.Surface \
-            DerivedAlgGeo.AlgebraicGeometry.Numerical.Specializations.Threefold \
-            DerivedAlgGeo.AlgebraicGeometry.Numerical.Specializations.Fourfold \
-            DerivedAlgGeoSweep \
-            emit
-
-      # Refuse to publish a partial cache. `--no-build` exits non-zero the
-      # moment a listed target is not already up to date, so this fails if the
-      # build above silently produced less than it claimed -- which is the only
-      # way this job can hurt anything downstream.
-      - name: Verify the tree is fully built
-        run: |
-          set -euo pipefail
-          lake build --no-build \
-            DerivedAlgGeo \
-            DerivedAlgGeo.Development \
-            DerivedAlgGeoSweep \
-            emit
-
-      - name: Save build output
-        uses: actions/cache/save@v4
-        with:
-          path: .lake/build
-          key: lake-build-linux-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-${{ github.sha }}
+          # Enumerate rather than pattern-match. `contains(needs.*.result,
+          # 'failure')` is the common form and it is wrong by omission: it
+          # passes a cancelled job, and it passes a SKIPPED one. A job that
+          # never ran has not proved anything, so anything other than `success`
+          # fails here.
+          echo "upstream results: ${RESULTS}"
+          rc=0
+          for r in ${RESULTS}; do
+            if [ "$r" != "success" ]; then
+              echo "::error::a required job did not succeed (result: ${r})"
+              rc=1
+            fi
+          done
+          exit "$rc"

@@ -1,0 +1,114 @@
+name: Cache warm
+
+# The writer for the `.lake/build` cache that CI's hosted lane restores.
+#
+# WHY THIS IS ITS OWN WORKFLOW AND NOT A JOB IN `ci.yml`. It started as a job
+# there and was cancelled on its first real run, 11 minutes into a 25-minute
+# cold build. `ci.yml` sets a workflow-level `cancel-in-progress: true` keyed on
+# `github.ref`, and every push to `main` shares the ref `refs/heads/main` -- so
+# each merge cancelled the warm job started by the merge before it. At the
+# current cadence (158 merges in the two days to 2026-08-15) that job would
+# essentially never have finished, and the cache it exists to write would never
+# have appeared.
+#
+# Job-level `concurrency` cannot fix that: cancelling a RUN cancels its jobs
+# whatever their own groups say. The two workloads simply want opposite
+# policies. `build` should be superseded -- an older commit's result is of no
+# interest once a newer one is in flight. `cache-warm` must not be, because its
+# whole value is finishing. Opposite policies need separate workflows.
+#
+# Splitting it out has a second benefit: it stops `cache-warm: skipping` from
+# appearing on every pull request's check list, where it meant nothing.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Queue, never cancel. GitHub holds at most one pending run per group and a new
+# one replaces the pending one, so a burst of merges collapses to "the one
+# running, plus the most recent" rather than piling up. Not keyed on `github.ref`
+# because this only ever runs for `main` and the group should be the workload,
+# not the branch.
+concurrency:
+  group: cache-warm
+  cancel-in-progress: false
+
+jobs:
+  warm:
+    # The cache is a linux-x86_64 artifact, so a linux-x86_64 runner has to
+    # produce it. CI's `build` job on a `push` runs on the self-hosted Mac, which
+    # is the fast lane precisely because it never needs this cache -- it keeps
+    # its own 8.3 GB `.lake` between runs. Asking that job to also emit a Linux
+    # cache is asking it to emit an artifact for a machine it is not. So: `main`
+    # moves, a hosted runner rebuilds from the previous hosted state and
+    # publishes the result, and every PR branched from `main` restores it through
+    # GitHub's default-branch fallback. Free on a public repository.
+    #
+    # This gates nothing and is not a required check: CI's `build` on the same
+    # commit has already made the correctness claim, and this repeats none of it.
+    # It is deliberately NOT `continue-on-error` either -- a warm cache that
+    # quietly stopped being produced is exactly the "gate that silently does not
+    # run" failure this repository keeps writing comments about, and a visible
+    # red mark on a workflow nothing depends on is the cheapest way to notice.
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      # Prefix-only restore: the exact key carries this commit's sha and by
+      # definition does not exist yet. This is what makes the warm run itself
+      # incremental -- it rebuilds the merge's downstream cone, not all 377
+      # modules. Measured over 218 historical commits, that cone is a median of
+      # 115 modules and 989 of 4969 CPU-seconds.
+      - name: Restore previous build output
+        uses: actions/cache/restore@v4
+        with:
+          path: .lake/build
+          key: lake-build-linux-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-${{ github.sha }}
+          restore-keys: |
+            lake-build-linux-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-
+
+      - uses: leanprover/lean-action@v1
+        with:
+          build: true
+          use-mathlib-cache: true
+          use-github-cache: false
+          nanoda: false
+
+      # `lake build` above covers `defaultTargets`, which is `DerivedAlgGeo`
+      # alone. The gates in `ci.yml` need three things beyond it, and a cache
+      # that omits them leaves the hosted lane paying for them from cold every
+      # time -- `lake build emit` alone is around 420 s there. Keep this list in
+      # step with the `lake build` invocations in `ci.yml`'s `build` job.
+      - name: Build the targets the gates add
+        run: |
+          set -euo pipefail
+          lake build \
+            DerivedAlgGeo.Development \
+            DerivedAlgGeo.AlgebraicGeometry.Numerical.Specializations.Surface \
+            DerivedAlgGeo.AlgebraicGeometry.Numerical.Specializations.Threefold \
+            DerivedAlgGeo.AlgebraicGeometry.Numerical.Specializations.Fourfold \
+            DerivedAlgGeoSweep \
+            emit
+
+      # Refuse to publish a partial cache. `--no-build` exits non-zero the
+      # moment a listed target is not already up to date, so this fails if the
+      # build above silently produced less than it claimed -- which is the only
+      # way this workflow can hurt anything downstream.
+      - name: Verify the tree is fully built
+        run: |
+          set -euo pipefail
+          lake build --no-build \
+            DerivedAlgGeo \
+            DerivedAlgGeo.Development \
+            DerivedAlgGeoSweep \
+            emit
+
+      - name: Save build output
+        uses: actions/cache/save@v4
+        with:
+          path: .lake/build
+          key: lake-build-linux-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-${{ github.sha }}
