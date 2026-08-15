@@ -137,6 +137,16 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Proj.cechCofactor_mem
 #print axioms AlgebraicGeometry.Proj.basicOpen_denominator_le
 #print axioms AlgebraicGeometry.Proj.cechTermSectionAddEquiv
+-- The comparison is the canonical pointwise fraction-to-section map, not merely some
+-- equivalence: the two trivializations by the index's first variable cancel. This is what makes
+-- restriction to a smaller open a pointwise computation, which the Cech differential needs.
+#print axioms AlgebraicGeometry.Proj.cechTermSectionAddEquiv_apply_mk
+#print axioms AlgebraicGeometry.Proj.cechTermSectionAddEquiv_toAddMonoidHom
+#print axioms AlgebraicGeometry.Proj.moduleAwayToSection_cechDenominator_bijective
+#print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.natShiftLinearEquivOfMulMem_apply_mk
+#print axioms AlgebraicGeometry.Proj.natShiftSectionFromSelfOn_apply
+#print axioms AlgebraicGeometry.Proj.natShiftFiberLinearEquivOfMem_symm_apply_mk
+#print axioms AlgebraicGeometry.Proj.natShiftSectionFromSelfOn_selfBasicOpenSectionAddEquiv_mk
 #print axioms AlgebraicGeometry.Proj.basicOpen_polynomialVariableCechDenominator
 
 -- The geometric source object is a bundle of explicit data, not an axiom identifying schemes
