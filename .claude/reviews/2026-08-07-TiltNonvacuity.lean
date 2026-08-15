@@ -9,11 +9,11 @@ orthogonality clause is vacuous because every map into a zero object is zero.
 
 Elaborate from the repo root with:
 
-  lake env lean scratch/TiltNonvacuity.lean
+  lake env lean .claude/reviews/2026-08-07-TiltNonvacuity.lean
 -/
-import BridgelandStabLean.Tilting.HeartTorsionPair
+import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Weak.Tilting.TorsionPair.Heart
 
-namespace BridgelandStabLean.Tilting.Review86
+namespace CategoryTheory.Triangulated.Tilting.Review86
 
 open CategoryTheory Limits Pretriangulated CategoryTheory.Triangulated ZeroObject
 
@@ -63,4 +63,4 @@ theorem trivialPair_tilt_le [IsTriangulated C] (n : ℤ) (X : C) :
   rw [HeartTorsionPair.tilt_le]
   exact trivialPair_tiltLEAt t n X
 
-end BridgelandStabLean.Tilting.Review86
+end CategoryTheory.Triangulated.Tilting.Review86

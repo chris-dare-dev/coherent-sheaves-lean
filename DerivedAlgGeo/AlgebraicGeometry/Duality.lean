@@ -1,0 +1,2 @@
+import DerivedAlgGeo.AlgebraicGeometry.Duality.Canonical
+import DerivedAlgGeo.AlgebraicGeometry.Duality.Serre

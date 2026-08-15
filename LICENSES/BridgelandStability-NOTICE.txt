@@ -5,11 +5,11 @@ The following repository-maintained files contain source derived from:
   https://github.com/mattrobball/BridgelandStability
   upstream revision 9e48f23a382ba117b63076a33e0e775389fef1ba
 
-  BridgelandStabLean/Foundation/Deformation/SeminormComparison.lean
-  BridgelandStabLean/Foundation/Deformation/LocalInjectivity.lean
-  BridgelandStabLean/Foundation/Deformation/LocalComparison.lean
-  BridgelandStabLean/Foundation/Deformation/ConnectedComponent.lean
-  BridgelandStabLean/Foundation/Deformation/LocalHomeomorphism.lean
+  DerivedAlgGeo/CategoryTheory/Triangulated/StabilityCondition/Foundation/Deformation/SeminormComparison.lean
+  DerivedAlgGeo/CategoryTheory/Triangulated/StabilityCondition/Foundation/Deformation/LocalInjectivity.lean
+  DerivedAlgGeo/CategoryTheory/Triangulated/StabilityCondition/Foundation/Deformation/LocalComparison.lean
+  DerivedAlgGeo/CategoryTheory/Triangulated/StabilityCondition/Foundation/Deformation/ConnectedComponent.lean
+  DerivedAlgGeo/CategoryTheory/Triangulated/StabilityCondition/Foundation/Deformation/LocalHomeomorphism.lean
 
 The source files are Copyright (c) 2026 Mathlib Contributors and are licensed
 under the Apache License, Version 2.0. The complete licence text is retained at

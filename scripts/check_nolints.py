@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 """Keep `scripts/nolints.json` a ratchet rather than a dumping ground.
 
-`lake exe runLinter CohLean` already rejects any violation that is not listed
+`lake exe runLinter DerivedAlgGeo` already rejects any violation that is not listed
 in `scripts/nolints.json`, so new code cannot add one. What it cannot detect is
 someone silencing a failure with `runLinter --update`, which rewrites the whole
 file from the current run and blesses the new violation along with every
 existing one. That turns the gate off without touching CI or any Lean file.
 
 This script closes that hole from the other side: the list may shrink, never
-grow, and only `CohLean` may appear in it at all. The other two libraries pass
-the linter outright and must keep doing so.
+grow. The dg-category and stability-condition subsystems entered the unified
+library without exceptions and must remain clean.
 
 Usage:
     python3 scripts/check_nolints.py
@@ -25,7 +25,7 @@ from pathlib import Path
 
 NOLINTS = Path("scripts/nolints.json")
 
-# The backlog as measured when the CohLean gate was first wired, 2026-08-14.
+# The backlog as measured when the algebraic-geometry gate was first wired, 2026-08-14.
 # Lower it whenever the real count drops -- `--relax` does that for you. It is
 # never raised: a change that needs a new exception needs a human argument for
 # that exception, in review, not a bumped constant.
@@ -34,7 +34,7 @@ CEILING = 203
 # Per-linter ceilings, for the same reason and with more resolution: they catch
 # an `--update` run from a library that lints clean today, which would add its
 # output here and quietly disable its own gate. Declaration names cannot be used
-# for that check -- plenty of genuine CohLean declarations live in Mathlib-rooted
+# for that check -- plenty of genuine project declarations live in Mathlib-rooted
 # namespaces like `ModuleCat.` -- but any such update grows a count.
 PER_LINTER_CEILING = {
     "docBlame": 148,
@@ -46,7 +46,7 @@ PER_LINTER_CEILING = {
 
 def main(argv: list[str]) -> int:
     if not NOLINTS.exists():
-        print(f"::error::{NOLINTS} is missing; the CohLean linter gate depends on it")
+        print(f"::error::{NOLINTS} is missing; the DerivedAlgGeo linter gate depends on it")
         return 1
 
     entries = json.loads(NOLINTS.read_text(encoding="utf-8"))

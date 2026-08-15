@@ -142,10 +142,9 @@ scripts/gates.sh        # everything CI runs, once fast is green
 A failing gate is the iteration's work, not a reason to weaken the gate. The
 usual failures on this queue, in order of frequency:
 
-- a new public theorem missing from `scripts/BridgelandAudit.lean` or
-  `scripts/Audit.lean` — CI fails on the hand-maintained audit, not the proof;
-- `check_anchor_free.py` rejecting a vendor import that belongs in
-  `Compatibility/`;
+- a new public theorem missing from `scripts/StabilityConditionAudit.lean`,
+  `scripts/AlgebraicGeometryAudit.lean`, or `scripts/DGCategoryAudit.lean`;
+- `check_source_independence.py` rejecting a retired or external source root;
 - convention errors the edit hook would have caught had the branch been written
   with it installed. Fix them; they are one-line fixes.
 

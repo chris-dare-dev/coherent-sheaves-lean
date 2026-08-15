@@ -19,24 +19,25 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 IMPORT = re.compile(r"^\s*import\s+(\S+)")
 FORBIDDEN_MODULE_ROOTS = (
     "BridgelandStability",
-    "BridgelandStabLean.Anchor",
-    "BridgelandStabLean.Compatibility",
+    "BridgelandStabLean",
+    "CohLean",
+    "DGLean",
 )
 FORBIDDEN_PATHS = (
     ROOT / "vendor" / "BridgelandStability",
-    ROOT / "BridgelandStabLean" / "Anchor.lean",
-    ROOT / "BridgelandStabLean" / "Anchor",
-    ROOT / "BridgelandStabLean" / "Compatibility.lean",
-    ROOT / "BridgelandStabLean" / "Compatibility",
+    ROOT / "BridgelandStabLean",
+    ROOT / "BridgelandStabLean.lean",
+    ROOT / "CohLean",
+    ROOT / "CohLean.lean",
+    ROOT / "DGLean",
+    ROOT / "DGLean.lean",
     ROOT
-    / "BridgelandStabLean"
-    / "ForMathlib"
+    / "DerivedAlgGeo"
     / "CategoryTheory"
     / "ObjectProperty"
     / "FullSubcategory.lean",
     ROOT
-    / "BridgelandStabLean"
-    / "ForMathlib"
+    / "DerivedAlgGeo"
     / "CategoryTheory"
     / "Triangulated"
     / "TStructure"

@@ -1,11 +1,11 @@
 # Documentation build. Nested on purpose.
 #
-# `doc-gen4` is not a dependency of CohLean and must not become one. A top-level
+# `doc-gen4` is not a dependency of DerivedAlgGeo and must not become one. A top-level
 # `[[require]]` would make every downstream build fetch a documentation generator it never
 # runs. Keeping it here leaves the ordinary `lake build` small and keeps documentation work
 # off `lakefile.toml`, the one file in this repository that parallel sessions share.
 #
-# Build with `lake build CohLean:docs` from this directory; output lands in
+# Build with `lake build DerivedAlgGeo:docs` from this directory; output lands in
 # `.lake/build/doc`. See CONTRIBUTING.md.
 name = "docbuild"
 version = "0.1.0"
@@ -15,11 +15,11 @@ reservoir = false
 # the parent first, so by the time this runs the oleans are already there.
 packagesDir = "../.lake/packages"
 
-# CohLean is required *first* deliberately. Lake resolves each package name once, and this
+# DerivedAlgGeo is required *first* deliberately. Lake resolves each package name once, and this
 # ordering makes the shared transitive dependencies -- Mathlib above all -- resolve to the
 # revisions pinned in the top-level `lake-manifest.json`, not to doc-gen4's.
 [[require]]
-name = "CohLean"
+name = "DerivedAlgGeo"
 path = "../"
 
 # Must track `lean-toolchain`. doc-gen4 tags a release per toolchain, and a mismatch here is

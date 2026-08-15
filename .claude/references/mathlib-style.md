@@ -20,16 +20,13 @@ Run by `.github/workflows/ci.yml` and by `CLAUDE.md`'s pre-push list.
 | Gate | Catches |
 |---|---|
 | `lake exe lint-style` (text-based) | trailing whitespace, windows line endings, space before `;`, non-allowlisted unicode and variant selectors, `Adaptation note` strings |
-| `lake exe lint-style` (syntax) | `set_option` left unscoped, unscoped `maxHeartbeats`, unclosed `section`/`namespace`, `.` used as a focusing dot instead of `·`, `$` instead of `<|`, `λ` instead of `fun`, files > 1500 lines, lines > 100 chars, unscoped `open Classical`, `show` where `change` is meant, double underscores in names, `def` names containing `_` |
+| `lake exe lint-style` (syntax) | `set_option` left unscoped, unscoped `maxHeartbeats`, unclosed `section`/`namespace`, `.` used as a focusing dot instead of `·`, `$` instead of `<|`, `λ` instead of `fun`, files > 1500 lines, breakable lines > 100 chars, unscoped `open Classical`, `show` where `change` is meant, double underscores in names, `def` names containing `_` |
 | `lake exe runLinter <Lib>` | missing docstrings on public defs, unused arguments, `simp` lemmas that don't apply, non-terminal `simp`-normal-form problems, deprecated-decl use, `dupNamespace` |
-| `scripts/Audit.lean`, `scripts/BridgelandAudit.lean`, `check_audit.py` | `sorryAx` and unexpected axioms reaching the audit surface |
-| `scripts/check_anchor_free.py` | vendor imports outside `Compatibility/` |
+| the three subsystem audits and `check_audit.py` | `sorryAx` and unexpected axioms reaching the audit surface |
+| `scripts/check_source_independence.py` | retired or external source roots re-entering the library |
 
-**Known coverage gap:** `runLinter` runs on `BridgelandStability` and
-`BridgelandStabLean` only. `CohLean` and the `DerivedAlgGeoLean` umbrella are
-not linted — that is the documentation/naming backlog `CLAUDE.md` refers to.
-Treat any `CohLean` file a change touches as unlinted, and review its docstrings
-and names by hand.
+`lake exe runLinter DerivedAlgGeo` covers the complete stable library. The
+development probes remain covered by the emitter and style checks.
 
 ## 2. Naming — reviewable, and the highest-value thing to review
 

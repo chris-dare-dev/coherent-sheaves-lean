@@ -96,13 +96,11 @@ jobs:
             exit 0
           fi
           echo "scope=partial" >> "$GITHUB_OUTPUT"
-          for tree in CohLean BridgelandStabLean DGLean; do
-            if printf '%s\n' "$files" | grep -qE "^$tree/"; then
-              echo "${tree}=true" >> "$GITHUB_OUTPUT"
-            else
-              echo "${tree}=false" >> "$GITHUB_OUTPUT"
-            fi
-          done
+          if printf '%s\n' "$files" | grep -qE '^DerivedAlgGeo(/|\.lean$)'; then
+            echo "library=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "library=false" >> "$GITHUB_OUTPUT"
+          fi
 
       # Build-output cache, hosted lane only (2026-08-14).
       #
@@ -149,45 +147,40 @@ jobs:
             python3 scripts/check_coverage_map.py "$f"
           done
 
-      - name: Coherent-sheaf axiom audit
-        if: steps.changed.outputs.scope == 'all' || steps.changed.outputs.CohLean == 'true'
+      - name: Algebraic-geometry axiom audit
         run: |
           set -euo pipefail
-          # The optional Development umbrella is outside CohLean's stable root;
-          # build it explicitly before the later per-file re-elaboration sweep.
-          lake build CohLean.Development \
-            CohLean.Numerical.Specializations.Surface \
-            CohLean.Numerical.Specializations.Threefold \
-            CohLean.Numerical.Specializations.Fourfold
-          lake env lean scripts/Audit.lean > coh-audit.txt 2>&1
-          if grep -q 'sorryAx' coh-audit.txt; then
-            echo "::error::sorryAx reached the coherent-sheaf audit"
+          # Development probes are outside the public umbrella and must be
+          # built explicitly for this audit.
+          lake build DerivedAlgGeo.Development \
+            DerivedAlgGeo.AlgebraicGeometry.Numerical.Specializations.Surface \
+            DerivedAlgGeo.AlgebraicGeometry.Numerical.Specializations.Threefold \
+            DerivedAlgGeo.AlgebraicGeometry.Numerical.Specializations.Fourfold
+          lake env lean scripts/AlgebraicGeometryAudit.lean > algebraic-geometry-audit.txt 2>&1
+          if grep -q 'sorryAx' algebraic-geometry-audit.txt; then
+            echo "::error::sorryAx reached the algebraic-geometry audit"
             exit 1
           fi
 
       - name: Stability-condition axiom audit
-        if: >-
-          steps.changed.outputs.scope == 'all'
-          || steps.changed.outputs.BridgelandStabLean == 'true'
         run: |
           set -euo pipefail
-          lake env lean scripts/BridgelandAudit.lean > bridgeland-audit.txt 2>&1 || {
-            echo "::error::scripts/BridgelandAudit.lean failed to elaborate"
-            cat bridgeland-audit.txt
+          lake env lean scripts/StabilityConditionAudit.lean > stability-condition-audit.txt 2>&1 || {
+            echo "::error::scripts/StabilityConditionAudit.lean failed to elaborate"
+            cat stability-condition-audit.txt
             exit 1
           }
-          python3 scripts/check_audit.py bridgeland-audit.txt
+          python3 scripts/check_audit.py stability-condition-audit.txt
 
       - name: DG axiom audit
-        if: steps.changed.outputs.scope == 'all' || steps.changed.outputs.DGLean == 'true'
         run: |
           set -euo pipefail
-          lake env lean scripts/DGLeanAudit.lean > dg-audit.txt 2>&1 || {
-            echo "::error::scripts/DGLeanAudit.lean failed to elaborate"
+          lake env lean scripts/DGCategoryAudit.lean > dg-audit.txt 2>&1 || {
+            echo "::error::scripts/DGCategoryAudit.lean failed to elaborate"
             cat dg-audit.txt
             exit 1
           }
-          python3 scripts/check_audit.py dg-audit.txt scripts/DGLeanAudit.lean
+          python3 scripts/check_audit.py dg-audit.txt scripts/DGCategoryAudit.lean
 
       - name: Audit completeness
         run: |
@@ -195,10 +188,9 @@ jobs:
           # check_audit.py catches an audit that lists a name the source no
           # longer has. This catches the reverse -- a new public declaration
           # nobody listed -- which is how PR #354 landed IsQuasiEquivalence
-          # outside the DG audit entirely. A ratchet, not a hard gate: CohLean
-          # and BridgelandStabLean carry large pre-existing gaps, recorded as
+          # outside the DG audit entirely. A ratchet, not a hard gate: the
+          # algebraic-geometry and stability subsystems carry pre-existing gaps, recorded as
           # ceilings in check_audit_complete.py, and only growth fails.
-          lake build DGLean
           lake env lean scripts/EnumDecls.lean > enum-decls.txt 2>&1 || {
             echo "::error::scripts/EnumDecls.lean failed to elaborate"
             cat enum-decls.txt
@@ -209,13 +201,7 @@ jobs:
       - name: Environment linters
         run: |
           set -euo pipefail
-          scope='${{ steps.changed.outputs.scope }}'
-          run_if () {  # run_if <changed-flag> <command...>
-            if [ "$scope" = "all" ] || [ "$1" = "true" ]; then shift; "$@";
-            else shift; echo "skipped (tree untouched): $*"; fi
-          }
-          run_if '${{ steps.changed.outputs.BridgelandStabLean }}' lake exe runLinter BridgelandStabLean
-          # CohLean's pre-existing backlog is enumerated per declaration in
+          # The pre-existing backlog is enumerated per declaration in
           # scripts/nolints.json, so this gate rejects anything NEW while the
           # 203 known violations stay visible and countable. Never silence a
           # failure with `runLinter --update`: that rewrites the whole file
@@ -224,12 +210,8 @@ jobs:
           #
           # check_nolints.py is NOT scoped: it reads the checked-in file, it is
           # cheap, and it is the half of this gate that catches a stale entry.
-          run_if '${{ steps.changed.outputs.CohLean }}' lake exe runLinter CohLean
+          lake exe runLinter DerivedAlgGeo
           python3 scripts/check_nolints.py
-          # DGLean is gated from its first commit and has no nolints entries.
-          # Keep it that way: it is clean at 62 declarations, and CohLean shows
-          # what retrofitting costs once a backlog exists.
-          run_if '${{ steps.changed.outputs.DGLean }}' lake exe runLinter DGLean
           # Style is per-file and cheap; it always runs.
           lake exe lint-style
 

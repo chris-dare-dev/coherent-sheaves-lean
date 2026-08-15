@@ -1,6 +1,6 @@
-name = "DerivedAlgGeoLean"
+name = "DerivedAlgGeo"
 version = "0.1.0"
-defaultTargets = ["DerivedAlgGeoLean", "DGLean"]
+defaultTargets = ["DerivedAlgGeo"]
 keywords = [
   "math", "algebraic-geometry", "derived-categories",
   "coherent-sheaves", "stability-conditions", "riemann-roch",
@@ -24,42 +24,26 @@ git = "https://github.com/chris-dare-dev/math-formal-contract-lean"
 rev = "65d600b1e70e403e8bcb43975e6aa178ee5ba439"
 
 [[lean_lib]]
-name = "CohLean"
-
-[[lean_lib]]
-name = "BridgelandStabLean"
-
-# Dg categories and enhancements. It is a default target so `lake build`
-# produces its oleans -- the "No declaration uses sorry" job runs
-# `lake env lean` over every tracked .lean file, and DGLean.lean cannot even
-# be read without them. Being a default target is separate from being imported
-# by DerivedAlgGeoLean.lean, which it deliberately is not until the subsystem
-# is stable; see DGLean.lean and ADR-0010.
-[[lean_lib]]
-name = "DGLean"
-
-# Stable umbrella for the combined environment.
-[[lean_lib]]
-name = "DerivedAlgGeoLean"
+name = "DerivedAlgGeo"
 
 # Sweep umbrella for `lake exe emit`. Separate from the stable umbrella because
-# the sorry gate must cover unstable and unimported code, which is exactly what
-# DerivedAlgGeoLean.lean is supposed to exclude. See DerivedAlgGeoSweep.lean.
+# the sorry gate must cover development probes that the public umbrella
+# intentionally excludes. See DerivedAlgGeoSweep.lean.
 [[lean_lib]]
 name = "DerivedAlgGeoSweep"
 
-# The coherent-sheaf and stability-condition audits remain independent so
-# their historical declaration lists and truncation checks stay meaningful.
+# Subsystem audits remain independent so their historical declaration lists
+# and truncation checks stay meaningful.
 [[lean_lib]]
-name = "Audit"
+name = "AlgebraicGeometryAudit"
 srcDir = "scripts"
 
 [[lean_lib]]
-name = "BridgelandAudit"
+name = "StabilityConditionAudit"
 srcDir = "scripts"
 
 [[lean_lib]]
-name = "DGLeanAudit"
+name = "DGCategoryAudit"
 srcDir = "scripts"
 
 [[lean_exe]]
