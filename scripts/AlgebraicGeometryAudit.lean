@@ -124,6 +124,14 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Proj.twistPresheaf
 #print axioms AlgebraicGeometry.Proj.piObj_polynomialVariableChart
 #print axioms AlgebraicGeometry.Proj.cechCochainsDegreewiseAddEquiv
+-- The comparison read one index at a time, and the per-index square (#340). The face
+-- morphism is left arbitrary in cechIndexEquiv_map_face: Opens is a thin category, so the
+-- inclusion Mathlib's Cech nerve produces is the only morphism there and Subsingleton.elim
+-- supplies it, with no separate identification of the face.
+#print axioms AlgebraicGeometry.Proj.cechIndexEquiv
+#print axioms AlgebraicGeometry.Proj.cechCochainsDegreewiseAddEquiv_apply
+#print axioms AlgebraicGeometry.Proj.cechCochainsDegreewiseAddEquiv_symm_apply
+#print axioms AlgebraicGeometry.Proj.cechIndexEquiv_map_face
 -- Mathlib's Cech differential read in coordinates (#340). Both proofs finish with `exact`
 -- rather than `rw`: the two sides differ in the HasProduct instance that Pi.pi carries, which
 -- rw will not see through but definitional unification will.

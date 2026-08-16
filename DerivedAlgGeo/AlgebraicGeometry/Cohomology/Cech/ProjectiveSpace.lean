@@ -104,22 +104,103 @@ theorem piObj_polynomialVariableChart {n : ℕ} (x : Fin (n + 1) → ι) :
   · exact le_iInf fun a => leOfHom (Pi.π (polynomialVariableChart ι k ∘ x) a)
   · exact leOfHom (Pi.lift fun a => homOfLE (iInf_le _ a))
 
+/-- One index of the degreewise comparison: the sections of `O(d)` on the categorical product of
+charts along `x`, identified with the explicit homogeneous localization at that index.
+
+Two steps: the identification of the open (`piObj_polynomialVariableChart`, transported by
+`eqToIso`) and the section comparison (`cechTermSectionAddEquiv`). -/
+noncomputable def cechIndexEquiv (d : ℕ) {n : ℕ} (x : Fin (n + 1) → ι) :
+    ((twistPresheaf ι k d).obj (op (∏ᶜ (polynomialVariableChart ι k ∘ x))) : AddCommGrpCat) ≃+
+      polynomialVariableCechTerm ι k d n x :=
+  (eqToIso (congrArg (fun W => (twistPresheaf ι k d).obj (op W))
+      (piObj_polynomialVariableChart ι k x))).addCommGroupIsoToAddEquiv.trans
+    (cechTermSectionAddEquiv ι k d x).symm
+
 /-- Degree `n` of the Čech complex of `O(d)` over the variable charts is the explicit product of
 homogeneous degree-zero localizations.
 
-The three factors are the outer product (`AddCommGrpCat.piAddEquivPi`), the identification of
-the open (`piObj_polynomialVariableChart`, transported by `eqToIso`), and the per-index section
-comparison (`cechTermSectionAddEquiv`). Degreewise only — the Čech differential is not claimed
-to correspond. -/
+The outer product is `AddCommGrpCat.piAddEquivPi` and each factor is `cechIndexEquiv`.
+Degreewise only — the Čech differential is not claimed to correspond here. -/
 def cechCochainsDegreewiseAddEquiv (d n : ℕ) :
     (((cechComplexFunctor (polynomialVariableChart ι k)).obj
         (twistPresheaf ι k d)).X n : AddCommGrpCat) ≃+
       polynomialVariableCechCochains ι k d n :=
   (AddCommGrpCat.piAddEquivPi _).trans
-    (AddEquiv.piCongrRight fun x =>
-      (eqToIso (congrArg (fun W => (twistPresheaf ι k d).obj (op W))
-          (piObj_polynomialVariableChart ι k x))).addCommGroupIsoToAddEquiv.trans
-        (cechTermSectionAddEquiv ι k d x).symm)
+    (AddEquiv.piCongrRight fun x => cechIndexEquiv ι k d x)
+
+/-- The degreewise comparison, read one index at a time: project, then compare that index.
+
+Stated against `AddCommGrpCat.piAddEquivPi` rather than `Limits.Pi.π` because the latter needs
+its family supplied explicitly to elaborate; `AddCommGrpCat.piIsoPi_hom_eval_apply` converts
+between them where a caller actually needs the categorical projection. -/
+theorem cechCochainsDegreewiseAddEquiv_apply (d n : ℕ)
+    (t : (((cechComplexFunctor (polynomialVariableChart ι k)).obj
+      (twistPresheaf ι k d)).X n : AddCommGrpCat)) (x : Fin (n + 1) → ι) :
+    cechCochainsDegreewiseAddEquiv ι k d n t x =
+      cechIndexEquiv ι k d x (AddCommGrpCat.piAddEquivPi _ t x) :=
+  rfl
+
+/-- The inverse comparison, read one index at a time. -/
+theorem cechCochainsDegreewiseAddEquiv_symm_apply (d n : ℕ)
+    (s : polynomialVariableCechCochains ι k d n) (x : Fin (n + 1) → ι) :
+    AddCommGrpCat.piAddEquivPi _
+        ((cechCochainsDegreewiseAddEquiv ι k d n).symm s) x =
+      (cechIndexEquiv ι k d x).symm (s x) := by
+  have h := cechCochainsDegreewiseAddEquiv_apply ι k d n
+    ((cechCochainsDegreewiseAddEquiv ι k d n).symm s) x
+  rw [AddEquiv.apply_symm_apply] at h
+  exact ((AddEquiv.symm_apply_eq _).mpr h).symm
+
+/-- The per-index square: the comparison carries a Čech face restriction to the algebraic face.
+
+The morphism `g` is left arbitrary on purpose. It ranges over `Opens`, where there is at most
+one morphism between two objects, so the face inclusion Mathlib's Čech nerve produces is *the*
+morphism here and needs no separate identification — `Subsingleton.elim` supplies it. The two
+`eqToHom`s identifying the categorical product of charts with the basic open of the denominator
+collapse into the same `twistPresheaf.map`, leaving exactly the restriction that
+`cechTermSectionAddEquiv_res_face` handles. -/
+theorem cechIndexEquiv_map_face (d : ℕ) {n : ℕ} (x : Fin (n + 2) → ι) (j : Fin (n + 2))
+    (g : (∏ᶜ (polynomialVariableChart ι k ∘ x)) ⟶
+      ∏ᶜ (polynomialVariableChart ι k ∘ (x ∘ j.succAbove)))
+    (w : ((twistPresheaf ι k d).obj
+      (op (∏ᶜ (polynomialVariableChart ι k ∘ (x ∘ j.succAbove)))) : AddCommGrpCat)) :
+    cechIndexEquiv ι k d x
+        (ConcreteCategory.hom ((twistPresheaf ι k d).map g.op) w) =
+      polynomialVariableCechFace ι k d x j
+        (cechIndexEquiv ι k d (x ∘ j.succAbove) w) := by
+  have hx := piObj_polynomialVariableChart ι k x
+  have hy := piObj_polynomialVariableChart ι k (x ∘ j.succAbove)
+  -- The restriction of sections that the algebraic face corresponds to.
+  let i : (op (ProjectiveSpectrum.basicOpen (polynomialGrading ι k)
+        (polynomialVariableCechDenominator ι k (x ∘ j.succAbove))) :
+      (Opens (ProjectiveSpectrum.top (polynomialGrading ι k)))ᵒᵖ) ⟶
+      op (ProjectiveSpectrum.basicOpen (polynomialGrading ι k)
+        (polynomialVariableCechDenominator ι k x)) :=
+    eqToHom (congrArg op hy.symm) ≫ g.op ≫ eqToHom (congrArg op hx)
+  refine (AddEquiv.symm_apply_eq (cechTermSectionAddEquiv ι k d x)).mpr ?_
+  rw [← cechTermSectionAddEquiv_res_face ι k d x j i
+    (cechIndexEquiv ι k d (x ∘ j.succAbove) w)]
+  have hEy : cechTermSectionAddEquiv ι k d (x ∘ j.succAbove)
+      (cechIndexEquiv ι k d (x ∘ j.succAbove) w) =
+      ((eqToIso (congrArg (fun W => (twistPresheaf ι k d).obj (op W))
+        hy)).addCommGroupIsoToAddEquiv) w :=
+    AddEquiv.apply_symm_apply _ _
+  rw [hEy]
+  -- Both sides are `twistPresheaf.map` of a morphism of opens applied to `w`; the two
+  -- morphisms agree because `(Opens X)ᵒᵖ` is thin.
+  have hmap : (twistPresheaf ι k d).map g.op ≫
+      (eqToIso (congrArg (fun W => (twistPresheaf ι k d).obj (op W)) hx)).hom =
+      (eqToIso (congrArg (fun W => (twistPresheaf ι k d).obj (op W)) hy)).hom ≫
+        (twistPresheaf ι k d).map i := by
+    have ex : (eqToIso (congrArg (fun W => (twistPresheaf ι k d).obj (op W)) hx)).hom =
+        (twistPresheaf ι k d).map (eqToHom (congrArg op hx)) := by
+      rw [eqToHom_map]; rfl
+    have ey : (eqToIso (congrArg (fun W => (twistPresheaf ι k d).obj (op W)) hy)).hom =
+        (twistPresheaf ι k d).map (eqToHom (congrArg op hy)) := by
+      rw [eqToHom_map]; rfl
+    rw [ex, ey, ← Functor.map_comp, ← Functor.map_comp]
+    exact congrArg _ (Subsingleton.elim _ _)
+  exact congrArg (fun m => (ConcreteCategory.hom m) w) hmap
 
 /-! ## The explicit algebraic Čech complex
 
