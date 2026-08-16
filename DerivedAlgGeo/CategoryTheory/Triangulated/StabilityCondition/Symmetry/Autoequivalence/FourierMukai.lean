@@ -3,6 +3,7 @@ Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under the MIT license.
 -/
 import DerivedAlgGeo.CategoryTheory.Triangulated.FourierMukai.GrothendieckGroup
+import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Symmetry.Autoequivalence.Stability.Composition
 import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Symmetry.Autoequivalence.Stability.Transport
 
 /-!
@@ -42,9 +43,9 @@ issue #453 removed.
   terms of the dual kernel's own class map rather than the opaque
   `K₀.mapF Φ.inverse` (`actStabOfDual`), and the two kernels' class maps are
   proved mutually inverse (`transformK₀_dual_comp`).
-* No orbit, group action, or `MulAction` structure. `actStab` is a single
-  transport, matching `actStabAut`, and composing two of them is not shown to
-  be the transport of a convolved kernel.
+* No orbit, group action, or `MulAction` structure. `trans` and `actStab_trans`
+  give the associativity clause of one, but there is no group here: no identity
+  law, and no type of autoequivalences-with-lattice-data to be a group of.
 * Nothing about Bridgeland's `Stab(X)` as a manifold, and no continuity or
   local-homeomorphism claim for the induced map.
 -/
@@ -261,6 +262,87 @@ end OfDual
 end Action
 
 end KernelAutoequivalence
+
+section Trans
+
+variable {𝒲₁ : Type t} {𝒲₂ : Type t} {𝒲₃ : Type t}
+  [Category.{w} 𝒲₁] [HasZeroObject 𝒲₁] [HasShift 𝒲₁ ℤ] [Preadditive 𝒲₁]
+  [∀ n : ℤ, (shiftFunctor 𝒲₁ n).Additive] [Pretriangulated 𝒲₁]
+  [Category.{w} 𝒲₂] [HasZeroObject 𝒲₂] [HasShift 𝒲₂ ℤ] [Preadditive 𝒲₂]
+  [∀ n : ℤ, (shiftFunctor 𝒲₂ n).Additive] [Pretriangulated 𝒲₂]
+  [Category.{w} 𝒲₃] [HasZeroObject 𝒲₃] [HasShift 𝒲₃ ℤ] [Preadditive 𝒲₃]
+  [∀ n : ℤ, (shiftFunctor 𝒲₃ n).Additive] [Pretriangulated 𝒲₃]
+
+/-- **Composing two kernel autoequivalences, given convolution data.**
+
+The composite is again a kernel autoequivalence, and its kernel is the
+*convolution* of the two. The isomorphism is the one
+`ConvolutionData.isKernelFunctor_comp` already uses: whisker each supplied
+isomorphism into place, then apply `compIso`.
+
+`corr₃` and the convolution data are supplied — this constructs the composite
+from them, it does not produce a correspondence for the composite out of
+nothing.
+
+Marked `@[reducible]` so that instance search sees `equiv` as
+`A₁.equiv.trans A₂.equiv` and picks up the six `Equivalence.trans` instances
+from `Stability/Composition`. Declaring them by hand for the composite instead
+does not work: `IsTriangulated` is indexed by the `CommShift` instance, so a
+hand-rolled copy is a different term from the one the use site finds. -/
+@[reducible]
+def KernelAutoequivalence.trans (A₁ : KernelAutoequivalence C 𝒲₁)
+    (A₂ : KernelAutoequivalence C 𝒲₂) (corr₃ : Correspondence C C 𝒲₃)
+    (D : ConvolutionData A₁.corr A₂.corr corr₃) : KernelAutoequivalence C 𝒲₃ where
+  corr := corr₃
+  kernel := D.conv A₁.kernel A₂.kernel
+  equiv := A₁.equiv.trans A₂.equiv
+  iso := Functor.isoWhiskerRight A₁.iso A₂.equiv.functor ≪≫
+    Functor.isoWhiskerLeft (A₁.corr.transform A₁.kernel) A₂.iso ≪≫
+      D.compIso A₁.kernel A₂.kernel
+
+omit [IsTriangulated C] in
+@[simp]
+theorem KernelAutoequivalence.trans_kernel (A₁ : KernelAutoequivalence C 𝒲₁)
+    (A₂ : KernelAutoequivalence C 𝒲₂) (corr₃ : Correspondence C C 𝒲₃)
+    (D : ConvolutionData A₁.corr A₂.corr corr₃) :
+    (A₁.trans A₂ corr₃ D).kernel = D.conv A₁.kernel A₂.kernel := rfl
+
+omit [IsTriangulated C] in
+@[simp]
+theorem KernelAutoequivalence.trans_equiv (A₁ : KernelAutoequivalence C 𝒲₁)
+    (A₂ : KernelAutoequivalence C 𝒲₂) (corr₃ : Correspondence C C 𝒲₃)
+    (D : ConvolutionData A₁.corr A₂.corr corr₃) :
+    (A₁.trans A₂ corr₃ D).equiv = A₁.equiv.trans A₂.equiv := rfl
+
+variable {Λ : Type u'} [AddCommGroup Λ] (v : K₀ C →+ Λ)
+
+/-- **Transporting along two kernel autoequivalences is transporting along the
+convolved one.**
+
+The composition law the lane was aimed at: the kernel that computes the
+composite action is `conv P Q`, so the action on stability conditions is
+tracked by kernels the whole way. The proof is `actStabAut_trans` — the
+transport does not know it came from a kernel — plus the fact that
+`(A₁.trans A₂ corr₃ D).equiv` is `A₁.equiv.trans A₂.equiv` definitionally. -/
+theorem KernelAutoequivalence.actStab_trans (A₁ : KernelAutoequivalence C 𝒲₁)
+    (A₂ : KernelAutoequivalence C 𝒲₂) (corr₃ : Correspondence C C 𝒲₃)
+    (D : ConvolutionData A₁.corr A₂.corr corr₃)
+    [A₁.equiv.functor.Additive] [A₁.equiv.inverse.Additive]
+    [A₂.equiv.functor.Additive] [A₂.equiv.inverse.Additive]
+    [A₁.equiv.functor.CommShift ℤ] [A₁.equiv.inverse.CommShift ℤ]
+    [A₂.equiv.functor.CommShift ℤ] [A₂.equiv.inverse.CommShift ℤ]
+    [A₁.equiv.functor.IsTriangulated] [A₁.equiv.inverse.IsTriangulated]
+    [A₂.equiv.functor.IsTriangulated] [A₂.equiv.inverse.IsTriangulated]
+    {lam₁ lam₂ : Λ →+ Λ}
+    (h₁ : ∀ x : K₀ C, v (K₀.mapF A₁.equiv.inverse x) = lam₁ (v x))
+    (h₂ : ∀ x : K₀ C, v (K₀.mapF A₂.equiv.inverse x) = lam₂ (v x))
+    (σ : StabilityCondition.WithClassMap C v) :
+    A₂.actStab v lam₂ h₂ (A₁.actStab v lam₁ h₁ σ)
+      = (A₁.trans A₂ corr₃ D).actStab v (lam₁.comp lam₂)
+          (hlam_trans v A₁.equiv A₂.equiv h₁ h₂) σ :=
+  actStabAut_trans v A₁.equiv A₂.equiv h₁ h₂ σ
+
+end Trans
 
 end
 

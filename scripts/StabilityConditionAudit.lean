@@ -3632,3 +3632,25 @@ that the two class maps are mutually inverse.
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.KernelAutoequivalence.actStabOfDual
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.KernelAutoequivalence.actStabOfDual_slicing
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.KernelAutoequivalence.actStabOfDual_Z
+
+/-! ## Composing two transports
+
+The associativity clause of an action, without a group. The six
+`Equivalence.trans` instances are `inferInstanceAs` wrappers that instance
+search cannot reach on its own; `KernelAutoequivalence.trans` is the kernel-level
+composite, whose kernel is the convolution.
+-/
+
+#print axioms CategoryTheory.Triangulated.transFunctorAdditive
+#print axioms CategoryTheory.Triangulated.transInverseAdditive
+#print axioms CategoryTheory.Triangulated.transFunctorCommShift
+#print axioms CategoryTheory.Triangulated.transInverseCommShift
+#print axioms CategoryTheory.Triangulated.transFunctorIsTriangulated
+#print axioms CategoryTheory.Triangulated.transInverseIsTriangulated
+#print axioms CategoryTheory.Triangulated.Slicing.mapEquiv_trans
+#print axioms CategoryTheory.Triangulated.hlam_trans
+#print axioms CategoryTheory.Triangulated.actStabAut_trans
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.KernelAutoequivalence.trans
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.KernelAutoequivalence.trans_kernel
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.KernelAutoequivalence.trans_equiv
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.KernelAutoequivalence.actStab_trans
