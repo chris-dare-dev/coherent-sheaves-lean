@@ -51,6 +51,21 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.natShiftToSelfLinearMapOfMulMem
 #print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.natShiftLinearEquivOfMulMem
 #print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.natShiftLinearEquivOfMem
+-- Integer twists (#439). The integer-shift membership condition depends only on the integer
+-- n + d, so lowering the twist by e while raising the fraction degree by e is literally the
+-- same condition -- the zero branch of the zero-extension needs no separate treatment, and the
+-- sign of d never enters. Taking d = 0 gives A ~ A(-e), the negative twist #332 needs.
+-- The two congruence lemmas elaboration generates for the integer-shift defs, audited rather
+-- than filtered: this repo already lists `.congr_simp` records elsewhere, and DGCategory needs
+-- them to reach ceiling 0, so the sweep must keep seeing them.
+#print axioms AlgebraicGeometry.Proj.intShift.congr_simp
+#print axioms AlgebraicGeometry.Proj.intShiftPiece.congr_simp
+#print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.mem_intShift_sub_natCast_add
+#print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.mul_pow_mem_intShift
+#print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.intShiftLowerLinearMap
+#print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.intShiftRaiseLinearMap
+#print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.intShiftLowerLinearEquiv
+#print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.intShiftLowerLinearEquiv_apply_mk
 #print axioms AlgebraicGeometry.Proj.isLocallyFraction
 #print axioms AlgebraicGeometry.Proj.associatedSheaf
 #print axioms AlgebraicGeometry.Proj.stalkEquiv

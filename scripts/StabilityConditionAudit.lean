@@ -59,8 +59,8 @@ to **488**. Both were right against the filter of the day, and both are
 superseded here -- the 821 in particular counted the 30 generated names
 described above. **Re-run the command; do not adjust the numbers.**
 
-**THE GAP IS NOW ZERO, re-measured after the general flat-pullback comparison
-on 2026-08-15.** Every
+**THE GAP IS NOW ZERO, re-measured after the scheme relative-HN package on
+2026-08-15.** Every
 public declaration in this library that is not a structure field projection is
 named below. Be precise about what that does and does not mean -- three of the
 four qualifications in this comment are unaffected by it:
@@ -73,10 +73,10 @@ four qualifications in this comment are unaffected by it:
   ratchet now rejects an unlisted public declaration, but zero in the narrower
   authored/non-projection census is still a measurement that must be rerun.
 
-* It issues **2621** audit commands. The environment holds **2985** authored
+* It issues **2733** audit commands. The environment holds **3050** authored
   declarations under the stability-condition modules under `DerivedAlgGeo`; the declarations outside the
   substantive hand audit are precisely the private declarations and structure
-  projections. Nine generated declarations are additionally listed because the newer
+  projections. Selected generated declarations are additionally listed because the newer
   repository-wide completeness ratchet deliberately uses a broader census.
   ("Authored" excludes constructors,
   recursors, `casesOn`, matchers, equation lemmas, internal names, and the six
@@ -89,8 +89,8 @@ four qualifications in this comment are unaffected by it:
   changes that.
 * **242 are ungated structure field projections** emitted by the `structure` command.
   These are not a coverage gap in any useful sense; listing them would be noise.
-  Seven projections and two generated constructor lemmas are nevertheless named
-  below to keep the broader CI completeness ratchet from worsening. They are
+  Some projections and generated constructor lemmas are nevertheless named below
+  to keep the broader CI completeness ratchet from worsening. They are
   called out because a census that does not
   separate them reports a shortfall five times the real one.
 * That leaves **0**. The literal-independence audit found 194 public names that
@@ -107,12 +107,12 @@ four qualifications in this comment are unaffected by it:
   than a zero-gap assertion because its intentionally broader census includes
   generated projections; `scripts/StabilityConditionCensus.lean` remains the precise measurement
   for the authored, non-projection claim above.
-* **716 of the distinct gated declarations are not theorems** (83 `structure`, 633 other
+* **745 of the distinct gated declarations are not theorems** (87 `structure`, 658 other
   constructions).
   For a `def`, `#print axioms` reports the axiom closure of a CONSTRUCTION and
   asserts nothing about any proposition. In particular
   `CategoryTheory.Triangulated.StabilityMassTriangleInequality` appears below
-formatted identically to the **1861** real theorems, but it is a `def ... :
+formatted identically to the **1897** real theorems, but it is a `def ... :
   Prop` -- its clean line means the definition is axiom-clean, NOT that the
   proposition holds.
 
@@ -3061,6 +3061,34 @@ end SlicingChecks
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeTriangulatedFiberFamily.pullToResidue
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeTriangulatedFiberFamily.pullK₀ToResidue
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeTriangulatedFiberFamily.pullK₀ToResidue_of
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeSemistableLocusIndex
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeSemistableLocusIndex.mk.inj
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeSemistableLocusIndex.mk.sizeOf_spec
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeSemistableLocusIndex.baseChange
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeSemistableLocusIndex.phase
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeSemistableLocusIndex.object
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeGenericSemistableLocusIndex
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeGenericSemistableLocusIndex.mk.inj
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeGenericSemistableLocusIndex.mk.sizeOf_spec
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeGenericSemistableLocusIndex.index
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeGenericSemistableLocusIndex.genericPoint
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.schemeSemistableLocus
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.mem_schemeSemistableLocus_iff
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.schemeSemistableOpenProbe
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.schemeGenericSemistabilityProbe
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.schemeSemistableOpenProbe_isOpen_iff
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.schemeGenericSemistabilityProbe_isGenericallyOpen_iff
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.universalSchemeSemistableOpenness_iff
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.universalSchemeGenericSemistabilityOpenness_iff
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.mem_schemeSemistableLocus_iff_of_baseChange
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.schemeSemistableLocus_eq_univ_of_phase
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.schemeSemistableLocus_eq_empty_of_not_phase
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.schemeSemistableLocus_isOpen
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.universalSchemeSemistableOpenness
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.schemeGenericSemistabilityProbe_isGenericallyOpen
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.universalSchemeGenericSemistabilityOpenness
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.universalSchemeSemistableOpenness_constant
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.universalSchemeGenericSemistabilityOpenness_constant
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeDerivedCategory
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBoundedDerivedCategory
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeDerivedCategory.Q
@@ -3192,6 +3220,48 @@ end SlicingChecks
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.DerivedPullbackInducingData.premise
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.DerivedPullbackInducingData.toPreimageData
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.DerivedPullbackInducingData.toPreimageData_of_flat
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.RegularCurveBaseChange
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.RegularCurveBaseChange.mk.inj
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.RegularCurveBaseChange.mk.sizeOf_spec
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.RegularCurveBaseChange.baseChange
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.RegularCurveBaseChange.noetherian
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.RegularCurveBaseChange.regular
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.RegularCurveBaseChange.dimensionLEOne
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.RegularCurveBaseChange.hasDimensionOne
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.RegularCurveBaseChange.instIsNoetherianLeftSchemeBaseChange
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.RegularCurveBaseChange.instIsRegularLocalRingCarrierStalkCommRingCatPresheafLeftSchemeBaseChange
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.RegularCurveBaseChange.instKrullDimLEOfNatNatCarrierStalkCommRingCatPresheafLeftSchemeBaseChange
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeRelativeHNFiltration
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeRelativeHNFiltration.mk.inj
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeRelativeHNFiltration.mk.sizeOf_spec
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeRelativeHNFiltration.filtration
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeRelativeHNFiltration.fiberFiltration
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeRelativeHNFiltration.fiber_length
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeRelativeHNFiltration.fiber_phase
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeRelativeHNFiltration.fiberFactorIso
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeRelativeHNFiltration.tower
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeRelativeHNFiltration.length
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeRelativeHNFiltration.factor
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeRelativeHNFiltration.phase
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeRelativeHNFiltration.phase_strictAnti
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeRelativeHNFiltration.factor_semistable
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeRelativeHNFiltration.fiberIndex
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeRelativeHNFiltration.ofBaseChangeWitness
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeRelativeHNFiltration.pullback
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeRelativeHNFiltration.pullback_length
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeRelativeHNFiltration.pullback_phase
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeRelativeHNFiltration.pullbackFactorIso
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeRelativeHNFiltration.restrictToFiber
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeRelativeHNFiltration.restrictToFiber_length
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeRelativeHNFiltration.restrictToFiber_phase
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeRelativeHNFiltration.restrictToFiberFactorIso
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeRelativeHNFiltration.pullback_comp_phase
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeRelativeHNFiltration.constant_nonempty
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.schemeRelativeHNProblem
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasSchemeRelativeHNFiltrations
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.integratesAfterDedekindBaseChange_of_relativeHN
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.hasSchemeRelativeHNFiltrations_constant
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.integratesAfterDedekindBaseChange_relativeHN_constant
 #print axioms CategoryTheory.Abelian.image.congr_simp
 #print axioms CategoryTheory.Functor.IsLeftTExact.isGE_map
 #print axioms CategoryTheory.Functor.IsRightTExact.isLE_map
