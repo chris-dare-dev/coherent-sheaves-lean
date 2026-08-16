@@ -1097,8 +1097,33 @@ open CategoryTheory.Triangulated
 #print axioms CategoryTheory.Triangulated.TStructure.IsCompactlyGeneratedBy.le_zero_eq
 #print axioms CategoryTheory.Triangulated.TStructure.IsCompactlyGeneratedBy.isLE_zero_of_generator
 #print axioms CategoryTheory.Triangulated.TStructure.AisleData
+#print axioms CategoryTheory.Triangulated.MappingTelescope.shiftMap
+#print axioms CategoryTheory.Triangulated.MappingTelescope.ι_shiftMap
+#print axioms CategoryTheory.Triangulated.MappingTelescope.ι_shiftMap_assoc
+#print axioms CategoryTheory.Triangulated.MappingTelescope.map
+#print axioms CategoryTheory.Triangulated.MappingTelescope.ι_map
+#print axioms CategoryTheory.Triangulated.MappingTelescope.ι_map_assoc
+#print axioms CategoryTheory.Triangulated.MappingTelescope.Data
+#print axioms CategoryTheory.Triangulated.MappingTelescope.Data.mk.inj
+#print axioms CategoryTheory.Triangulated.MappingTelescope.Data.mk.sizeOf_spec
+#print axioms CategoryTheory.Triangulated.MappingTelescope.Data.obj
+#print axioms CategoryTheory.Triangulated.MappingTelescope.Data.hom
+#print axioms CategoryTheory.Triangulated.MappingTelescope.Data.connecting
+#print axioms CategoryTheory.Triangulated.MappingTelescope.Data.distinguished
+#print axioms CategoryTheory.Triangulated.MappingTelescope.chosen
+#print axioms CategoryTheory.Triangulated.MappingTelescope.Data.exists_desc
+#print axioms CategoryTheory.Triangulated.MappingTelescope.Data.exists_desc_comp_ι
+#print axioms CategoryTheory.Triangulated.TStructure.ApproximationMap
+#print axioms CategoryTheory.Triangulated.TStructure.ApproximationMap.left
+#print axioms CategoryTheory.Triangulated.TStructure.ApproximationMap.left_mem
+#print axioms CategoryTheory.Triangulated.TStructure.ApproximationMap.hom
+#print axioms CategoryTheory.Triangulated.TStructure.ApproximationMap.hom_surjective
+#print axioms CategoryTheory.Triangulated.TStructure.ApproximationMap.mk.inj
+#print axioms CategoryTheory.Triangulated.TStructure.ApproximationMap.mk.sizeOf_spec
+#print axioms CategoryTheory.Triangulated.TStructure.ApproximationMap.shift_hom_injective
 #print axioms CategoryTheory.Triangulated.TStructure.AisleData.shift
 #print axioms CategoryTheory.Triangulated.TStructure.AisleData.exists_triangle
+#print axioms CategoryTheory.Triangulated.TStructure.AisleData.ofApproximationMaps
 #print axioms CategoryTheory.Triangulated.TStructure.AisleData.rightOrthogonal_le_shift
 #print axioms CategoryTheory.Triangulated.TStructure.AisleData.tStructure
 #print axioms CategoryTheory.Triangulated.TStructure.AisleData.tStructure.congr_simp
@@ -1113,6 +1138,7 @@ open CategoryTheory.Triangulated
 #print axioms CategoryTheory.Triangulated.TStructure.CompactGeneratorApproximation.tStructure_le_zero
 #print axioms CategoryTheory.Triangulated.TStructure.CompactGeneratorApproximation.tStructure_ge_one
 #print axioms CategoryTheory.Triangulated.TStructure.CompactGeneratorApproximation.isCompactlyGeneratedBy
+#print axioms CategoryTheory.Triangulated.TStructure.CompactGeneratorApproximation.ofApproximationMaps
 #print axioms CategoryTheory.Functor.isRightTExact_of_compactlyGenerated
 #print axioms CategoryTheory.Adjunction.isTExact_of_compactlyGenerated
 #print axioms CategoryTheory.ObjectProperty.hasInducedTStructure_of_preimage
@@ -1134,6 +1160,8 @@ open CategoryTheory.Triangulated
 #print axioms CategoryTheory.Triangulated.Polishchuk.InducedTStructureData.isGE_iff
 #print axioms CategoryTheory.Triangulated.Polishchuk.induce
 #print axioms CategoryTheory.Triangulated.Polishchuk.induceOfApproximation
+#print axioms CategoryTheory.Triangulated.Polishchuk.induceOfApproximationMaps
+#print axioms CategoryTheory.Triangulated.TStructure.IndExtensionData.ofApproximation
 
 /-! ## Repository-owned t-structure heart bridges -/
 
@@ -3721,9 +3749,28 @@ that the two class maps are mutually inverse.
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.KernelAutoequivalence.DualKernel.mapF_inverse_eq_transformK₀
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.KernelAutoequivalence.DualKernel.transformK₀_dual_comp
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.KernelAutoequivalence.DualKernel.transformK₀_comp_dual
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.KernelAutoequivalence.DualKernel.transformK₀AddEquiv
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.KernelAutoequivalence.DualKernel.transformK₀AddEquiv_apply
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.KernelAutoequivalence.DualKernel.transformK₀AddEquiv_symm_apply
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.KernelAutoequivalence.actStabOfDual
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.KernelAutoequivalence.actStabOfDual_slicing
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.KernelAutoequivalence.actStabOfDual_Z
+
+/-! ## Kernel autoequivalences as elements of the acting group
+
+The bridge into `GroupAction.AutPairQuot`. `toAutPair` needs a `DualKernel`
+and a supplied *invertible* `lam`; `mk_toAutPair_smul` says the group element's
+action is the transport `actStabOfDual` already gave. A clean axiom list here
+says the group membership follows from those two supplied data, not that any
+kernel provides either. This is a map on elements only -- it is NOT a monoid
+homomorphism, and the module docstring says why.
+-/
+
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.KernelAutoequivalence.toTriEquiv
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.KernelAutoequivalence.toAutPair
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.KernelAutoequivalence.toAutPair_lam
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.KernelAutoequivalence.toAutPair_act
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.KernelAutoequivalence.mk_toAutPair_smul
 
 /-! ## Composing two transports
 
@@ -3746,6 +3793,28 @@ composite, whose kernel is the convolution.
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.KernelAutoequivalence.trans_kernel
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.KernelAutoequivalence.trans_equiv
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.KernelAutoequivalence.actStab_trans
+
+/-! ## The unit kernel
+
+The unit *object* of the composition story, and only the object: `𝒪_Δ`
+presenting `𝟭` as a transform is supplied, exactly as `ConvolutionData` is. No
+identity law is proved, because a law would need convolution data comparing a
+correspondence with itself. What the unit kernel does buy for free is its own
+dual kernel -- `Equivalence.refl.inverse` is `𝟭 C` -- so every `DualKernel`
+consequence applies to `KernelAutoequivalence.id`.
+-/
+
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.UnitKernelData
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.UnitKernelData.mk.inj
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.UnitKernelData.mk.sizeOf_spec
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.UnitKernelData.unitKernel
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.UnitKernelData.unitIso
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.KernelAutoequivalence.id
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.KernelAutoequivalence.id_kernel
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.KernelAutoequivalence.id_equiv
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.KernelAutoequivalence.id_corr
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.UnitKernelData.toDualKernel
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.UnitKernelData.toDualKernel_dual
 
 /-! ## The k-linear Yoneda functor is homological
 

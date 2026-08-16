@@ -144,4 +144,31 @@ noncomputable def induceOfApproximation
       (adj.compactObjects_map_leftAdjoint hF hD.compact))
     hmonad hzero hbounded
 
+/-- The categorical A.17 constructor from Brown-style universal maps.
+
+The source approximation triangles and the proof that their cones are right
+orthogonal are both constructed internally.  The remaining representability
+input is precisely the existence of universal maps with the two Hom controls
+recorded by `TStructure.ApproximationMap`. -/
+noncomputable def induceOfApproximationMaps
+    {L : Functor D C} {F : Functor C D}
+    [L.CommShift ℤ] [L.IsTriangulated]
+    [F.Additive] [F.CommShift ℤ] [F.IsTriangulated]
+    (adj : L ⊣ F)
+    {tD : TStructure D} {G : ObjectProperty D} {Q : ObjectProperty D}
+    [Q.IsTriangulated] [Q.IsClosedUnderIsomorphisms]
+    [Q.HasInducedTStructure tD]
+    (hF : F.PreservesSmallCoproducts.{w})
+    (hD : tD.IsCompactlyGeneratedBy.{w} G)
+    (hshift : G.map L ≤ (G.map L).shift (1 : ℤ))
+    (happrox : ∀ A : C,
+      Nonempty (TStructure.ApproximationMap (G.map L).coprodClosure.{w} A))
+    (hmonad : (L ⋙ F).IsRightTExact tD tD)
+    (hzero : ∀ E : C, IsZero (F.obj E) → IsZero E)
+    (hbounded : TStructure.IsBounded (Q.tStructure tD)) :
+    InducedTStructureData F (Q.inverseImage F) Q tD (fun _ ↦ Iff.rfl) :=
+  induceOfApproximation adj hF hD
+    (TStructure.CompactGeneratorApproximation.ofApproximationMaps hshift happrox)
+    hmonad hzero hbounded
+
 end CategoryTheory.Triangulated.Polishchuk

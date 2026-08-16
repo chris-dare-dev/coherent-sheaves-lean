@@ -4,6 +4,7 @@ Released under the MIT license.
 -/
 import DerivedAlgGeo.AlgebraicGeometry.Numerical.GrothendieckGroup.MukaiVector
 import DerivedAlgGeo.CategoryTheory.Triangulated.FourierMukai.GrothendieckGroup
+import Mathlib.LinearAlgebra.BilinearForm.IsometryEquiv
 
 /-!
 # Realizing a triangulated Grothendieck group numerically
@@ -32,13 +33,26 @@ when `φ` preserves the Euler form: `pairing_mukaiVector_eq_of_preservesEuler`.
 Specialised to `Φ = C.transform K` it says the pairing is unchanged on Mukai
 vectors of **realized** classes, `pairing_mukaiVector_eq_on_realized`.
 
-**This is not an isometry of Mukai lattices, and is deliberately not named as
-one.** No map `MukaiLattice Λ → MukaiLattice Λ'` is constructed anywhere; the
-statements are equalities of pairings between vectors that happen to be indexed
-by the same classes. `mukaiVector` is a bare function, not an additive map, so
-there is nothing to be well-defined on Mukai-vector fibres, and no injectivity
-or surjectivity is assumed or proved. Building the actual lattice map is
-further work and would need `c₁` additive at minimum.
+**With `IntegralMukaiData` this is not an isometry, and is deliberately not
+named as one.** At that data level `mukaiVector` is a bare function, so there
+is no bilinear form for a map to be an isometry *of*; the statements are
+equalities of pairings between vectors that happen to be indexed by the same
+classes.
+
+**With `AdditiveMukaiData` it is one, and is named as one.** That structure
+adds additivity of `c₁`, which makes `mukaiVectorHom` an `AddMonoidHom` and
+`mukaiForm` a `LinearMap.BilinForm ℤ N`, and `isometryOfPreservesEuler`
+packages the same equality as a `LinearMap.BilinForm.Isometry` — Mathlib's
+structure, so the word carries its standard meaning.
+
+Two things that remain absent in both layers. No map
+`MukaiLattice Λ → MukaiLattice Λ'` is constructed anywhere: the isometry is of
+the forms on `N` and `N'`, not of the extensions, and one should not expect the
+split map `(r, c, s) ↦ (r, f c, s)` to be it, because a Fourier--Mukai
+transform does not preserve rank. And no injectivity or surjectivity of `φ` is
+assumed or proved, so `isometryOfPreservesEuler` is an isometric map;
+`isometryEquivOfPreservesEuler` is the bijective version and takes the
+bijection as an input.
 
 ## The realization is a hypothesis, and a large one
 
@@ -64,7 +78,9 @@ does is make the distance explicit and let the categorical side be stated.
 ## What this file does not assert
 
 * Nothing constructs a `NumericalRealization`, and nothing constructs a
-  `Descends` witness.  Both are supplied.
+  `Descends` witness.  Both are supplied.  Nothing constructs an
+  `AdditiveMukaiData` either, so the isometry statements are conditional on a
+  lattice-valued *additive* Chern class that no file produces.
 * **Nothing proves a Fourier--Mukai transform preserves the Euler pairing.**
   That it does when the transform is an equivalence is a real theorem, and the
   hypothesis that carries it is full faithfulness together with `k`-linearity
@@ -74,12 +90,14 @@ does is make the distance explicit and let the categorical side be stated.
   shown to satisfy it.
 * No Hodge structure appears anywhere in this repository, so the classical
   statement that a Fourier--Mukai equivalence induces a **Hodge** isometry is
-  not what is proved.  What is proved concerns the lattice form alone.
+  not what is proved.  What is proved concerns the lattice form alone.  This is
+  the claim `AdditiveMukaiData` does *not* license: an isometry of bilinear
+  forms is not a Hodge isometry, and nothing here has a Hodge structure to be
+  compatible with.
 * No claim that a realization is injective, surjective, or unique, and none
   that two functors with the same descent are isomorphic.
-* No map of Mukai lattices is constructed, and none of the pairing results is
-  an isometry statement. `c₁` and `mukaiVector` are bare functions; additivity
-  would be needed before a lattice map could even be written down.
+* No map of Mukai *extensions* `ℤ × Λ × ℤ → ℤ × Λ' × ℤ` is constructed.  The
+  isometry that does exist is of the forms pulled back to `N` and `N'`.
 -/
 
 universe v₁ v₂ v₃ w₁ w₂ u₁ u₂ u₃ x₁ x₂ y₁ y₂
@@ -213,6 +231,67 @@ theorem isSpherical_mukaiVector_iff_of_preservesEuler (D : IntegralMukaiData A N
   rw [Mukai.isSpherical_iff, Mukai.isSpherical_iff,
     selfPairing_mukaiVector_eq_of_preservesEuler D D' φ hφ]
 
+/-! ### The isometry
+
+Everything above equates *pairings*. With `AdditiveMukaiData` the Mukai form is
+a `LinearMap.BilinForm ℤ N` and `φ` is a linear map of the underlying groups,
+so the same equalities assemble into a `LinearMap.BilinForm.Isometry` — the
+word now carrying Mathlib's meaning rather than an informal one.
+
+Nothing new is proved: `map_app'` below is literally
+`pairing_mukaiVector_eq_of_preservesEuler`. What changes is that there is now
+an object for it to be a property of. -/
+
+/-- **An Euler-preserving map is an isometry of Mukai forms.**
+
+The proof field is `pairing_mukaiVector_eq_of_preservesEuler` unchanged; the
+content is in the types. `Isometry` is `LinearMap.BilinForm.Isometry`, so this
+asserts exactly: a `ℤ`-linear map under which the two Mukai forms agree.
+
+Read what is still absent. This is an isometry of the forms **on `N` and `N'`**
+— the numerical Grothendieck groups — not of the Mukai extensions `ℤ × Λ × ℤ`
+and `ℤ × Λ' × ℤ`, and no map between those is built here. Nor is `φ` claimed
+injective or surjective, so this is an isometric map rather than an isometric
+equivalence; `isometryEquivOfPreservesEuler` is the bijective version, and it
+takes the bijection as input.
+
+There is a reason not to expect the split map `(r, c, s) ↦ (r, f c, s)` on
+extensions: a Fourier--Mukai transform does not preserve rank in general, so a
+`Λ →+ Λ'` compatible with `mukaiVector` in that shape would be demanding
+something the intended examples do not satisfy. -/
+noncomputable def isometryOfPreservesEuler (D : AdditiveMukaiData A N Λ)
+    (D' : AdditiveMukaiData A' N' Λ') (φ : N →+ N')
+    (hφ : PreservesEuler (A := A) (A' := A') φ) :
+    D.mukaiForm →bᵢ D'.mukaiForm where
+  toLinearMap := φ.toIntLinearMap
+  map_app' E F :=
+    pairing_mukaiVector_eq_of_preservesEuler D.toIntegralMukaiData
+      D'.toIntegralMukaiData φ hφ E F
+
+@[simp]
+theorem isometryOfPreservesEuler_apply (D : AdditiveMukaiData A N Λ)
+    (D' : AdditiveMukaiData A' N' Λ') (φ : N →+ N')
+    (hφ : PreservesEuler (A := A) (A' := A') φ) (E : N) :
+    isometryOfPreservesEuler D D' φ hφ E = φ E := rfl
+
+/-- **An Euler-preserving isomorphism is an isometric equivalence.**
+
+The bijection is supplied, not derived: `PreservesEuler` says nothing about
+injectivity or surjectivity, and no result in this repository produces an
+isomorphism of numerical Grothendieck groups. Classically the class map of a
+Fourier--Mukai *equivalence* is one, and the categorical shadow of that is
+`DualKernel` in the stability track — but that lives on `K₀`, and getting from
+there to `N` would need the realizations to be compatible with both
+directions, which nothing states. -/
+noncomputable def isometryEquivOfPreservesEuler (D : AdditiveMukaiData A N Λ)
+    (D' : AdditiveMukaiData A' N' Λ') (φ : N ≃+ N')
+    (hφ : PreservesEuler (A := A) (A' := A') (φ : N →+ N')) :
+    LinearMap.BilinForm.IsometryEquiv D.mukaiForm D'.mukaiForm where
+  toLinearEquiv := φ.toIntLinearEquiv
+  map_app' E F :=
+    pairing_mukaiVector_eq_of_preservesEuler D.toIntegralMukaiData
+      D'.toIntegralMukaiData (φ : N →+ N') hφ E F
+
 end PairingTransfer
 
 section KernelFunctor
@@ -239,9 +318,12 @@ given a descent of its class map that preserves the Euler form.
 
 Read the quantifiers carefully. The conclusion is an equality of pairings for
 the Mukai vectors of `R.cl x` and `R.cl y`, for classes `x y : K₀ 𝒳`. It is
-NOT an isometry of Mukai lattices: no map between the two lattices is built, the
-statement says nothing at vectors outside the image of `mukaiVector ∘ R.cl`, and
-`mukaiVector` is not additive.
+NOT an isometry of Mukai lattices: no map between the two lattices is built,
+the statement says nothing at vectors outside the image of
+`mukaiVector ∘ R.cl`, and at this data level `mukaiVector` is not additive.
+`mukaiForm_eq_on_realized` is the `AdditiveMukaiData` restatement, where the
+two sides are values of a genuine bilinear form; even there the map whose
+isometry property it is, is `φ`, not a map of extensions.
 
 Every geometric input is named: the two realizations, the descent, and
 Euler-preservation. None is constructed anywhere, and the classical theorem --
@@ -264,6 +346,29 @@ theorem pairing_mukaiVector_eq_on_realized (C : Correspondence 𝒳 𝒴 𝒲) (
     rw [Correspondence.transformK₀_eq]; exact hd y
   rw [hx, hy]
   exact pairing_mukaiVector_eq_of_preservesEuler D D' φ hφ _ _
+
+/-- **The Mukai form is unchanged along a kernel functor's realized classes.**
+
+`pairing_mukaiVector_eq_on_realized` stated against `AdditiveMukaiData`, where
+the two sides are values of an actual bilinear form. The hypotheses are the
+same ones, with no addition beyond the additivity `AdditiveMukaiData` carries.
+
+Still not an isometry of the two Mukai *extensions*: the map whose isometry
+property this is, is `φ` on numerical Grothendieck groups
+(`isometryOfPreservesEuler`), and this theorem is that isometry evaluated at
+realized classes. -/
+theorem mukaiForm_eq_on_realized (C : Correspondence 𝒳 𝒴 𝒲) (K : 𝒲)
+    [C.pull.CommShift ℤ] [(C.tensor.obj K).CommShift ℤ] [C.push.CommShift ℤ]
+    [C.pull.IsTriangulated] [(C.tensor.obj K).IsTriangulated]
+    [C.push.IsTriangulated]
+    (R : NumericalRealization 𝒳 N) (R' : NumericalRealization 𝒴 N')
+    (φ : N →+ N') (hd : Descends R R' (C.transform K) φ)
+    (D : AdditiveMukaiData A N Λ) (D' : AdditiveMukaiData A' N' Λ')
+    (hφ : PreservesEuler (A := A) (A' := A') φ) (x y : K₀ 𝒳) :
+    D'.mukaiForm (R'.cl (C.transformK₀ K x)) (R'.cl (C.transformK₀ K y))
+      = D.mukaiForm (R.cl x) (R.cl y) :=
+  pairing_mukaiVector_eq_on_realized C K R R' φ hd D.toIntegralMukaiData
+    D'.toIntegralMukaiData hφ x y
 
 end KernelFunctor
 
