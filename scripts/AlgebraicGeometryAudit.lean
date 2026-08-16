@@ -148,6 +148,12 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Proj.polynomialVariable_isCechAcyclicCover_of_isQuasicoherent
 #print axioms AlgebraicGeometry.Proj.polynomialVariable_isCechAcyclicFor
 #print axioms AlgebraicGeometry.Proj.polynomialVariable_isCechAcyclicCover
+-- The same for an integer twist (#467 step 4). The acyclicity argument never mentions the
+-- twist -- it needs quasi-coherence and affineness of the intersections, and the degree
+-- restriction that constrains the trivialization plays no part -- so each is one application
+-- of the quasi-coherent form to polynomialIntShift_isQuasicoherent.
+#print axioms AlgebraicGeometry.Proj.polynomialVariableIntShift_isCechAcyclicFor
+#print axioms AlgebraicGeometry.Proj.polynomialVariableIntShift_isCechAcyclicCover
 #print axioms AlgebraicGeometry.Proj.polynomialVariable_adjoin_eq_top
 #print axioms AlgebraicGeometry.Proj.natShiftQuasicoherentData
 #print axioms AlgebraicGeometry.Proj.natShift_isQuasicoherent
