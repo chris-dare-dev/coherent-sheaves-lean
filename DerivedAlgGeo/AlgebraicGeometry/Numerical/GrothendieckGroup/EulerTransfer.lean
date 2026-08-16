@@ -17,7 +17,15 @@ The classical argument preserves `χ` from **full faithfulness**, not
 adjunction: `χ(E,F) = Σᵢ (-1)ⁱ dim Hom(E, F[i])`, and a fully faithful functor
 commuting with the shift matches the summands one by one.  Adjunction alone
 gives `Hom(ΦE, ΦF) ≅ Hom(E, ΦᴿΦF)`, which is `Hom(E,F)` only once `ΦᴿΦ ≅ 𝟭` —
-that is, only once `Φ` is fully faithful.
+that is, only once `Φ` is fully faithful.  Serre duality is *not* needed for
+this step; once full faithfulness is known the summands already match.
+
+Full faithfulness alone is also not quite enough, and the missing word is
+`k`-linear.  The summands are equal as `k`-dimensions, so the functor must
+induce `k`-linear isomorphisms on `Hom`; an additive fully faithful functor
+need not.  The hypothesis the construction below would discharge is therefore
+a fully faithful `k`-linear shift-compatible functor, together with the
+Hom-finiteness and boundedness that make the sum finite.
 
 Neither hypothesis reaches `chi₂` on its own, and the reason is structural.
 `NumericalVariety.chi₂` is `∫ ch(E)ᵛ · ch(F) · td(X)`: a formula in Chern
@@ -42,8 +50,10 @@ This file supplies it as `IsRiemannRoch` and does the bookkeeping.
 * `hd` — the descent square from `Realization`;
 
 and concludes `PreservesEuler φ`, hence (via
-`pairing_mukaiVector_transform`) that a kernel functor acts on Mukai lattices
-by isometries.
+`pairing_mukaiVector_eq_on_realized`) that a kernel functor leaves the Mukai
+pairing unchanged on realized classes.  That is an equality of pairings, not an
+isometry of lattices -- see `Realization`'s docstring for why the distinction
+matters here.
 
 ## What this file does not assert
 
@@ -54,9 +64,9 @@ by isometries.
   machinery exists in this repository; `Mathlib.CategoryTheory.Triangulated.Yoneda`
   has the exactness input, and the rest would be a track of its own.
 * **Nothing proves `PreservesCategoricalEuler` for any functor.**  In
-  particular full faithfulness is nowhere used, because with the form supplied
-  abstractly there is no `Hom` for it to act on.  That implication is exactly
-  what the construction above would unlock.
+  particular neither full faithfulness nor `k`-linearity is anywhere used,
+  because with the form supplied abstractly there is no `Hom` for either to act
+  on.  That implication is exactly what the construction above would unlock.
 * `IsRiemannRoch` is bilinear HRR, assumed.  No variety is shown to satisfy
   it, and `NumericalVariety.hirzebruch_riemannRoch` — the one-variable
   statement — is itself an axiom of the Layer A interface.
@@ -111,9 +121,11 @@ def IsRiemannRoch (R : NumericalRealization 𝒳 N)
 
 /-- `Φ` **preserves the categorical Euler form**.
 
-For a fully faithful shift-commuting functor this is the classical fact, term
-by term in `Σᵢ (-1)ⁱ dim Hom(E, F[i])`.  With the form supplied abstractly
-there is no `Hom` to run that argument on, so here it is a hypothesis. -/
+For a fully faithful `k`-linear shift-commuting functor this is the classical
+fact, term by term in `Σᵢ (-1)ⁱ dim Hom(E, F[i])`; `k`-linearity is what makes
+the matched summands equal as `k`-dimensions, and additivity alone would not.
+With the form supplied abstractly there is no `Hom` to run that argument on, so
+here it is a hypothesis. -/
 def PreservesCategoricalEuler (Φ : 𝒳 ⥤ 𝒴) [Φ.CommShift ℤ] [Φ.IsTriangulated]
     (E : CategoricalEulerForm 𝒳) (E' : CategoricalEulerForm 𝒴) : Prop :=
   ∀ x y : K₀ 𝒳, E'.chi (K₀.map Φ x) (K₀.map Φ y) = E.chi x y
@@ -161,14 +173,17 @@ variable {𝒳 : Type u₁} {𝒴 : Type u₂} {𝒲 : Type u₃}
   [AddCommGroup Λ] [AddCommGroup Λ'] [IsK3 A N] [IsK3 A' N']
 
 omit [NumericalRingWithDual 2 A] [NumericalRingWithDual 2 A'] in
-/-- **A kernel functor preserving the categorical Euler form acts on Mukai
-lattices by isometries.**
+/-- **A kernel functor preserving the categorical Euler form leaves the Mukai
+pairing unchanged on realized classes.**
 
-This is `pairing_mukaiVector_transform` with its `PreservesEuler` hypothesis
-discharged from categorical input.  Three obligations remain, and all three
-are named rather than hidden: constructing the categorical Euler form from
-`Hom`, proving a fully faithful functor preserves it, and bilinear HRR. -/
-theorem pairing_mukaiVector_transform_of_categorical
+An equality of pairings, not an isometry: no map of Mukai lattices is built
+here or anywhere downstream. This is `pairing_mukaiVector_eq_on_realized` with
+its `PreservesEuler` hypothesis discharged from categorical input.
+
+Three obligations remain, and all three are named rather than hidden:
+constructing the categorical Euler form from `Hom`, proving a fully faithful
+`k`-linear functor preserves it, and bilinear HRR. -/
+theorem pairing_mukaiVector_eq_on_realized_of_categorical
     (C : Correspondence 𝒳 𝒴 𝒲) (K : 𝒲)
     [C.pull.CommShift ℤ] [(C.tensor.obj K).CommShift ℤ] [C.push.CommShift ℤ]
     [C.pull.IsTriangulated] [(C.tensor.obj K).IsTriangulated]
@@ -185,7 +200,7 @@ theorem pairing_mukaiVector_transform_of_categorical
         (D'.mukaiVector (R'.cl (C.transformK₀ K y)))
       = Mukai.pairing D.b (D.mukaiVector (R.cl x))
         (D.mukaiVector (R.cl y)) :=
-  pairing_mukaiVector_transform C K R R' φ hd D D'
+  pairing_mukaiVector_eq_on_realized C K R R' φ hd D D'
     (preservesEuler_of_descends hsurj hRR hRR' hΦ hd) x y
 
 end KernelFunctor

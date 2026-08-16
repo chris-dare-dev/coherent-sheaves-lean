@@ -1468,11 +1468,11 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Numerical.K3.IntegralMukaiData.mk.inj
 #print axioms AlgebraicGeometry.Numerical.K3.IntegralMukaiData.mk.sizeOf_spec
 #print axioms AlgebraicGeometry.Numerical.K3.IntegralMukaiData.c₁
-#print axioms AlgebraicGeometry.Numerical.K3.IntegralMukaiData.s
 #print axioms AlgebraicGeometry.Numerical.K3.IntegralMukaiData.b
 #print axioms AlgebraicGeometry.Numerical.K3.IntegralMukaiData.b_comm
 #print axioms AlgebraicGeometry.Numerical.K3.IntegralMukaiData.b_spec
-#print axioms AlgebraicGeometry.Numerical.K3.IntegralMukaiData.s_spec
+#print axioms AlgebraicGeometry.Numerical.K3.mukaiSInt
+#print axioms AlgebraicGeometry.Numerical.K3.mukaiSInt_spec
 #print axioms AlgebraicGeometry.Numerical.K3.IntegralMukaiData.mukaiVector
 #print axioms AlgebraicGeometry.Numerical.K3.IntegralMukaiData.mukaiVector_fst
 #print axioms AlgebraicGeometry.Numerical.K3.IntegralMukaiData.mukaiVector_snd_fst
@@ -1498,10 +1498,10 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Numerical.Descends.apply_of
 #print axioms AlgebraicGeometry.Numerical.Descends.of_natIso
 #print axioms AlgebraicGeometry.Numerical.PreservesEuler
-#print axioms AlgebraicGeometry.Numerical.pairing_mukaiVector_map
-#print axioms AlgebraicGeometry.Numerical.selfPairing_mukaiVector_map
-#print axioms AlgebraicGeometry.Numerical.isSpherical_mukaiVector_map_iff
-#print axioms AlgebraicGeometry.Numerical.pairing_mukaiVector_transform
+#print axioms AlgebraicGeometry.Numerical.pairing_mukaiVector_eq_of_preservesEuler
+#print axioms AlgebraicGeometry.Numerical.selfPairing_mukaiVector_eq_of_preservesEuler
+#print axioms AlgebraicGeometry.Numerical.isSpherical_mukaiVector_iff_of_preservesEuler
+#print axioms AlgebraicGeometry.Numerical.pairing_mukaiVector_eq_on_realized
 
 -- Transferring Euler-form preservation across a realization. `IsRiemannRoch`
 -- is bilinear HRR and `PreservesCategoricalEuler` is what full faithfulness
@@ -1515,4 +1515,4 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Numerical.IsRiemannRoch
 #print axioms AlgebraicGeometry.Numerical.PreservesCategoricalEuler
 #print axioms AlgebraicGeometry.Numerical.preservesEuler_of_descends
-#print axioms AlgebraicGeometry.Numerical.pairing_mukaiVector_transform_of_categorical
+#print axioms AlgebraicGeometry.Numerical.pairing_mukaiVector_eq_on_realized_of_categorical

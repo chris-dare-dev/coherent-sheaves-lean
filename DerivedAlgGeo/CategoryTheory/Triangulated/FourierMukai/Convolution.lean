@@ -42,7 +42,7 @@ available once it is.
 * `conv` is a bare function `𝒲₁ → 𝒲₂ → 𝒲₃`, not a functor.  It is not assumed
   to be additive, exact, or even to send isomorphic kernels to isomorphic
   kernels — only to send them to kernels with *isomorphic transforms*, which
-  is what `transform_conv_congr` proves and is strictly weaker.
+  is what `transformMapConvIso` proves and is strictly weaker.
 * Associativity of convolution is not stated.  It needs a second layer of
   data relating the two ways of bracketing three correspondences, and no
   result here depends on it.

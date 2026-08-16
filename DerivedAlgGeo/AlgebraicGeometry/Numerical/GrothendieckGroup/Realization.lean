@@ -27,11 +27,18 @@ K₀ 𝒳  --K₀.map Φ-->  K₀ 𝒴
  ℤ×Λ×ℤ  ---------->  ℤ×Λ'×ℤ
 ```
 
-and the theorem is that the bottom row is an isometry for the Mukai pairing as
-soon as `φ` preserves the Euler form: `pairing_mukaiVector_map`.  Specialised
-to `Φ = C.transform K` this says a **kernel functor acts on Mukai lattices by
-isometries** (`pairing_mukaiVector_transform`) -- the statement the
-Fourier--Mukai lane was built toward, with every geometric input named.
+and the theorem is that the Mukai *pairing* of two Mukai vectors is unchanged
+when `φ` preserves the Euler form: `pairing_mukaiVector_eq_of_preservesEuler`.
+Specialised to `Φ = C.transform K` it says the pairing is unchanged on Mukai
+vectors of **realized** classes, `pairing_mukaiVector_eq_on_realized`.
+
+**This is not an isometry of Mukai lattices, and is deliberately not named as
+one.** No map `MukaiLattice Λ → MukaiLattice Λ'` is constructed anywhere; the
+statements are equalities of pairings between vectors that happen to be indexed
+by the same classes. `mukaiVector` is a bare function, not an additive map, so
+there is nothing to be well-defined on Mukai-vector fibres, and no injectivity
+or surjectivity is assumed or proved. Building the actual lattice map is
+further work and would need `c₁` additive at minimum.
 
 ## The realization is a hypothesis, and a large one
 
@@ -58,14 +65,20 @@ does is make the distance explicit and let the categorical side be stated.
 * Nothing constructs a `NumericalRealization`, and nothing constructs a
   `Descends` witness.  Both are supplied.
 * **Nothing proves a Fourier--Mukai transform preserves the Euler pairing.**
-  That it does when the transform is an equivalence is a real theorem, proved
-  from adjunction and Serre duality (Huybrechts, §5.2); `PreservesEuler` is a
-  hypothesis here, not a conclusion, and no transform is shown to satisfy it.
+  That it does when the transform is an equivalence is a real theorem, and the
+  hypothesis that carries it is full faithfulness together with `k`-linearity
+  and shift-compatibility -- not adjunction, and not Serre duality, which is
+  unnecessary once full faithfulness is known.  See `EulerTransfer`'s docstring.
+  `PreservesEuler` is a hypothesis here, not a conclusion, and no transform is
+  shown to satisfy it.
 * No Hodge structure appears anywhere in this repository, so the classical
   statement that a Fourier--Mukai equivalence induces a **Hodge** isometry is
   not what is proved.  What is proved concerns the lattice form alone.
 * No claim that a realization is injective, surjective, or unique, and none
   that two functors with the same descent are isomorphic.
+* No map of Mukai lattices is constructed, and none of the pairing results is
+  an isometry statement. `c₁` and `mukaiVector` are bare functions; additivity
+  would be needed before a lattice map could even be written down.
 -/
 
 universe v₁ v₂ v₃ w₁ w₂ u₁ u₂ u₃ x₁ x₂ y₁ y₂
@@ -140,9 +153,10 @@ variable {n : ℕ} {A : Type y₁} {A' : Type y₂} {N : Type x₁} {N' : Type x
 
 /-- `φ` **preserves the Euler form**: `χ(φE, φF) = χ(E, F)`.
 
-For a Fourier--Mukai equivalence this is a theorem (Huybrechts, §5.2), proved
-from adjunction and Serre duality.  Here it is a hypothesis; nothing in this
-repository discharges it for any functor. -/
+For a fully faithful `k`-linear shift-compatible functor this is a theorem;
+adjunction alone does not give it, and Serre duality is not needed for it.
+Here it is a hypothesis; nothing in this repository discharges it for any
+functor. -/
 def PreservesEuler (φ : N →+ N') : Prop :=
   ∀ E F : N, chi₂ (A := A') (φ E) (φ F) = chi₂ (A := A) E F
 
@@ -158,14 +172,15 @@ variable {A : Type y₁} {A' : Type y₂} {N : Type x₁} {N' : Type x₂}
   [CommRing A'] [Algebra ℚ A'] [AddCommGroup N'] [NumericalVariety 2 A' N']
   [AddCommGroup Λ] [AddCommGroup Λ'] [IsK3 A N] [IsK3 A' N']
 
-/-- **An Euler-preserving map induces an isometry of Mukai lattices.**
+/-- **An Euler-preserving map leaves the Mukai pairing unchanged.**
 
-This is the arithmetic heart of the bridge, and it is where the sign
+Not an isometry statement: this equates two pairings, and constructs no map of
+lattices. It is the arithmetic heart of the bridge, and where the sign
 convention pays off: both sides equal `−χ` of their arguments by
 `IntegralMukaiData.chi₂_eq_neg_pairing`, so preserving `χ` is exactly
 preserving the Mukai pairing.  The `ℤ`-valued conclusion comes from the
 `ℚ`-valued one by injectivity of the cast. -/
-theorem pairing_mukaiVector_map (D : IntegralMukaiData A N Λ)
+theorem pairing_mukaiVector_eq_of_preservesEuler (D : IntegralMukaiData A N Λ)
     (D' : IntegralMukaiData A' N' Λ') (φ : N →+ N')
     (hφ : PreservesEuler (A := A) (A' := A') φ) (E F : N) :
     Mukai.pairing D'.b (D'.mukaiVector (φ E)) (D'.mukaiVector (φ F))
@@ -179,23 +194,23 @@ theorem pairing_mukaiVector_map (D : IntegralMukaiData A N Λ)
   exact_mod_cast hq
 
 /-- Self-pairings are preserved, hence so is sphericity of a Mukai vector. -/
-theorem selfPairing_mukaiVector_map (D : IntegralMukaiData A N Λ)
+theorem selfPairing_mukaiVector_eq_of_preservesEuler (D : IntegralMukaiData A N Λ)
     (D' : IntegralMukaiData A' N' Λ') (φ : N →+ N')
     (hφ : PreservesEuler (A := A) (A' := A') φ) (E : N) :
     Mukai.selfPairing D'.b (D'.mukaiVector (φ E))
       = Mukai.selfPairing D.b (D.mukaiVector E) := by
   rw [Mukai.selfPairing_eq_pairing, Mukai.selfPairing_eq_pairing]
-  exact pairing_mukaiVector_map D D' φ hφ E E
+  exact pairing_mukaiVector_eq_of_preservesEuler D D' φ hφ E E
 
 /-- An Euler-preserving map carries spherical Mukai vectors to spherical ones,
 in both directions. -/
-theorem isSpherical_mukaiVector_map_iff (D : IntegralMukaiData A N Λ)
+theorem isSpherical_mukaiVector_iff_of_preservesEuler (D : IntegralMukaiData A N Λ)
     (D' : IntegralMukaiData A' N' Λ') (φ : N →+ N')
     (hφ : PreservesEuler (A := A) (A' := A') φ) (E : N) :
     Mukai.IsSpherical D'.b (D'.mukaiVector (φ E))
       ↔ Mukai.IsSpherical D.b (D.mukaiVector E) := by
   rw [Mukai.isSpherical_iff, Mukai.isSpherical_iff,
-    selfPairing_mukaiVector_map D D' φ hφ]
+    selfPairing_mukaiVector_eq_of_preservesEuler D D' φ hφ]
 
 end Isometry
 
@@ -218,15 +233,20 @@ variable {𝒳 : Type u₁} {𝒴 : Type u₂} {𝒲 : Type u₃}
   [CommRing A'] [Algebra ℚ A'] [AddCommGroup N'] [NumericalVariety 2 A' N']
   [AddCommGroup Λ] [AddCommGroup Λ'] [IsK3 A N] [IsK3 A' N']
 
-/-- **A kernel functor acts on Mukai lattices by isometries**, given a descent
-of its class map that preserves the Euler form.
+/-- **A kernel functor leaves the Mukai pairing unchanged on realized classes**,
+given a descent of its class map that preserves the Euler form.
 
-This is what the Fourier--Mukai lane was built toward.  Every geometric input
-is named: the two realizations, the descent, and Euler-preservation.  None of
-the three is constructed anywhere, and the classical theorem -- that a
-Fourier--Mukai *equivalence* supplies all of them, and a Hodge isometry
+Read the quantifiers carefully. The conclusion is an equality of pairings for
+the Mukai vectors of `R.cl x` and `R.cl y`, for classes `x y : K₀ 𝒳`. It is
+NOT an isometry of Mukai lattices: no map between the two lattices is built, the
+statement says nothing at vectors outside the image of `mukaiVector ∘ R.cl`, and
+`mukaiVector` is not additive.
+
+Every geometric input is named: the two realizations, the descent, and
+Euler-preservation. None is constructed anywhere, and the classical theorem --
+that a Fourier--Mukai *equivalence* supplies all of them and a Hodge isometry
 besides -- is not proved here. -/
-theorem pairing_mukaiVector_transform (C : Correspondence 𝒳 𝒴 𝒲) (K : 𝒲)
+theorem pairing_mukaiVector_eq_on_realized (C : Correspondence 𝒳 𝒴 𝒲) (K : 𝒲)
     [C.pull.CommShift ℤ] [(C.tensor.obj K).CommShift ℤ] [C.push.CommShift ℤ]
     [C.pull.IsTriangulated] [(C.tensor.obj K).IsTriangulated]
     [C.push.IsTriangulated]
@@ -242,7 +262,7 @@ theorem pairing_mukaiVector_transform (C : Correspondence 𝒳 𝒴 𝒲) (K : �
   have hy : R'.cl (C.transformK₀ K y) = φ (R.cl y) := by
     rw [Correspondence.transformK₀_eq]; exact hd y
   rw [hx, hy]
-  exact pairing_mukaiVector_map D D' φ hφ _ _
+  exact pairing_mukaiVector_eq_of_preservesEuler D D' φ hφ _ _
 
 end KernelFunctor
 
