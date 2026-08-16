@@ -240,6 +240,12 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Proj.polynomialVariableCechDenominator_succAbove
 #print axioms AlgebraicGeometry.Proj.polynomialVariableCechDenominator_succAbove_mem
 #print axioms AlgebraicGeometry.Proj.polynomialVariableCechFace
+-- The same three objects for an integer twist (#467 step 2). faceMap is generic in the grading,
+-- so the face instantiates at intShift with the identical denominator arithmetic; the two
+-- membership facts it consumes do not mention the twist at all.
+#print axioms AlgebraicGeometry.Proj.polynomialVariableIntCechTerm
+#print axioms AlgebraicGeometry.Proj.polynomialVariableIntCechCochains
+#print axioms AlgebraicGeometry.Proj.polynomialVariableIntCechFace
 -- G2 (#339): the algebraic Cech term is the sections of O(d) on that intersection. The
 -- denominator has degree n+1, so the algebraic trivialization goes through invertibility
 -- (X_mul_cechCofactor) rather than membership, and the sheaf-level one through the first

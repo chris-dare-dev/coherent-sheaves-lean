@@ -8,15 +8,21 @@ import Mathlib.Algebra.Module.TransferInstance
 import Mathlib.RingTheory.MvPolynomial.Ideal
 
 /-!
-# Sections of nonnegative twists on polynomial projective space
+# Twists on polynomial projective space
 
 This file constructs the comparison between degree-`d` homogeneous polynomials and global
 sections of `O(d)` on polynomial `Proj`.  The proof uses the variable basic-open cover, the
 constructed chart comparison from `TwistChart`, and the generic point of the polynomial ring.
 
-The comparison is stated over a field and for a nonempty finite variable type, which is the
-projective-space range consumed by the Serre-finiteness argument.  These hypotheses make the
-generic-point and denominator-cancellation steps explicit.
+The global-section comparison is stated over a field and for a nonempty finite variable type,
+which is the projective-space range consumed by the Serre-finiteness argument.  These hypotheses
+make the generic-point and denominator-cancellation steps explicit.
+
+The global-section comparison is for a *nonnegative* twist.  The Čech terms below come in both
+flavours: `polynomialVariableCechTerm` for `d : ℕ` and `polynomialVariableIntCechTerm` for
+`d : ℤ`.  The two are not yet identified for a nonnegative `d`; the `ℕ` versions are what the
+landed Čech differential is stated against, and retiring them in favour of the `ℤ` ones is
+follow-up work once the integer comparison layer exists.
 -/
 
 noncomputable section
@@ -615,6 +621,37 @@ noncomputable def polynomialVariableCechFace
       polynomialVariableCechTerm ι k d (n + 1) x :=
   DegreeZeroLocalization.faceMap
     (𝓜 := natShift (polynomialGrading ι k) d)
+    (MvPolynomial.isHomogeneous_X k (x j))
+    (polynomialVariableCechDenominator_succAbove_mem ι k x j)
+    (polynomialVariableCechDenominator_succAbove ι k x j)
+
+/-! ## Integer-twist Čech terms
+
+The same three objects for a twist of either sign. Nothing new is required:
+`DegreeZeroLocalization.faceMap` is generic in the grading, so the face instantiates at
+`intShift` with the identical denominator arithmetic, and the two membership facts it consumes —
+`polynomialVariableCechDenominator_succAbove` and its `Submonoid.powers` form — do not mention
+the twist at all. -/
+
+/-- The algebraic term attached to one variable Čech intersection, for an integer twist. -/
+abbrev polynomialVariableIntCechTerm
+    (ι k : Type u) [Field k] (d : ℤ) (n : ℕ) (x : Fin (n + 1) → ι) :=
+  DegreeZeroLocalization (polynomialGrading ι k)
+    (intShift (polynomialGrading ι k) d)
+      (.powers (polynomialVariableCechDenominator ι k x))
+
+/-- Degree-`n` algebraic Čech cochains for an integer twist. -/
+abbrev polynomialVariableIntCechCochains
+    (ι k : Type u) [Field k] (d : ℤ) (n : ℕ) :=
+  ∀ x : Fin (n + 1) → ι, polynomialVariableIntCechTerm ι k d n x
+
+/-- The `j`-th Čech face for an integer twist. -/
+noncomputable def polynomialVariableIntCechFace
+    (ι k : Type u) [Field k] (d : ℤ) {n : ℕ} (x : Fin (n + 2) → ι) (j : Fin (n + 2)) :
+    polynomialVariableIntCechTerm ι k d n (x ∘ j.succAbove) →+
+      polynomialVariableIntCechTerm ι k d (n + 1) x :=
+  DegreeZeroLocalization.faceMap
+    (𝓜 := intShift (polynomialGrading ι k) d)
     (MvPolynomial.isHomogeneous_X k (x j))
     (polynomialVariableCechDenominator_succAbove_mem ι k x j)
     (polynomialVariableCechDenominator_succAbove ι k x j)
