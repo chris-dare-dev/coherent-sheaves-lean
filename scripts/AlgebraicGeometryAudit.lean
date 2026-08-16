@@ -76,6 +76,15 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.intShiftZeroLinearEquiv_apply_mk
 #print axioms AlgebraicGeometry.Proj.intShiftFiberLinearEquivOfMem
 #print axioms AlgebraicGeometry.Proj.intShiftFiberLinearEquiv
+-- Sections over an open inside the chart. Because the two computation rules above are uniform
+-- in the sign of d, these are a direct mirror of the nonnegative constructions -- nothing here
+-- splits on the sign.
+#print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.mul_pow_toNat_mem_intShift
+#print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.intShiftZeroLinearEquiv_symm_apply_mk
+#print axioms AlgebraicGeometry.Proj.intShiftSectionToZeroOn
+#print axioms AlgebraicGeometry.Proj.intShiftSectionFromZeroOn
+#print axioms AlgebraicGeometry.Proj.intShiftSectionAddEquivOn
+#print axioms AlgebraicGeometry.Proj.intShiftSectionLinearEquivOn
 #print axioms AlgebraicGeometry.Proj.isLocallyFraction
 #print axioms AlgebraicGeometry.Proj.associatedSheaf
 #print axioms AlgebraicGeometry.Proj.stalkEquiv
