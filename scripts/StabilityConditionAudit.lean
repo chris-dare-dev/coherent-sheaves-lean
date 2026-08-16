@@ -59,8 +59,8 @@ to **488**. Both were right against the filter of the day, and both are
 superseded here -- the 821 in particular counted the 30 generated names
 described above. **Re-run the command; do not adjust the numbers.**
 
-**THE GAP IS NOW ZERO, re-measured after the scheme relative-HN package on
-2026-08-15.** Every
+**THE GAP IS NOW ZERO, re-measured after the bounded coherent/perfect
+scheme-derived fibers on 2026-08-16.** Every
 public declaration in this library that is not a structure field projection is
 named below. Be precise about what that does and does not mean -- three of the
 four qualifications in this comment are unaffected by it:
@@ -73,7 +73,7 @@ four qualifications in this comment are unaffected by it:
   ratchet now rejects an unlisted public declaration, but zero in the narrower
   authored/non-projection census is still a measurement that must be rerun.
 
-* It issues **2733** audit commands. The environment holds **3050** authored
+* It issues **2788** audit commands. The environment holds **3105** authored
   declarations under the stability-condition modules under `DerivedAlgGeo`; the declarations outside the
   substantive hand audit are precisely the private declarations and structure
   projections. Selected generated declarations are additionally listed because the newer
@@ -3262,6 +3262,70 @@ end SlicingChecks
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.integratesAfterDedekindBaseChange_of_relativeHN
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.hasSchemeRelativeHNFiltrations_constant
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.integratesAfterDedekindBaseChange_relativeHN_constant
+
+/-! ## Bounded coherent and perfect scheme-derived fibers
+
+`schemePerfect` is the thick envelope of degree-zero finite locally free
+coherent sheaves.  The pullback records below are contracts: clean axiom lists
+certify their constructions and consequences, not the existence of a
+geometric witness for every scheme morphism.
+-/
+
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeCoherentDerivedCategory
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBoundedCoherentDerivedCategory
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.tStructureIsLE_of_retract
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.tStructureIsGE_of_retract
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.instIsStableUnderRetractsMinus_derivedAlgGeo
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.instIsStableUnderRetractsPlus_derivedAlgGeo
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.instIsStableUnderRetractsBounded_derivedAlgGeo
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.mapHomologicalComplex_isStrictlyLE
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.mapHomologicalComplex_isStrictlyGE
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.mapDerivedCategory_isLE
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.mapDerivedCategory_isGE
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.mapDerivedCategory_bounded
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.schemeFiniteLocallyFreeGenerator
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.schemePerfect
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.schemeFiniteLocallyFreeGenerator_le_bounded
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.schemePerfect_le_bounded
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemePerfectDerivedCategory
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemePerfectDerivedCategory.ι
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemePerfectDerivedCategory.toBounded
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemePerfectDerivedCategory.structureSheafCoh
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemePerfectDerivedCategory.structureSheaf_mem_generator
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemePerfectDerivedCategory.structureSheaf_mem
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemePerfectDerivedCategory.structureSheaf
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemePerfectDerivedCategory.instNonemptySchemeCoherentDerivedCategorySchemeFiniteLocallyFreeGenerator
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemePerfectDerivedCategory.instNonemptySchemeCoherentDerivedCategorySchemePerfect
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.BoundedCoherentDerivedFiber
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.PerfectDerivedFiber
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.ResidueBoundedCoherentDerivedFiber
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.ResiduePerfectDerivedFiber
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.HasCoherentPullback
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.HasCoherentPullback.sheafPullback
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.HasCoherentPullback.preservesFiniteLimits
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.HasCoherentPullback.preservesFiniteColimits
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.HasCoherentPullback.comparison
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.HasCoherentPullback.derivedPullback
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.HasCoherentPullback.derivedFactors
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.HasCoherentPullback.commShift
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.HasCoherentPullback.isTriangulated
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.HasCoherentPullback.preservesBounded
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.coherentDerivedPullback
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.instCommShiftSchemeCoherentDerivedCategoryLeftSchemeCoherentDerivedPullbackInt
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.instIsTriangulatedSchemeCoherentDerivedCategoryLeftSchemeCoherentDerivedPullback
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.boundedCoherentDerivedPullback
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.boundedCoherentDerivedPullbackCompInclusion
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.PreservesPerfectPullback
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.PreservesPerfectPullback.mapsGenerator
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.coherentDerivedPullback_preservesPerfect
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.perfectDerivedPullback
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.perfectDerivedPullbackCompInclusion
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.GeometricDerivedPullbackIdentity
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.GeometricDerivedPullbackIdentity.boundedIso
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.GeometricDerivedPullbackIdentity.perfectIso
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.GeometricDerivedPullbackComposition
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.GeometricDerivedPullbackComposition.boundedIso
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.GeometricDerivedPullbackComposition.perfectIso
 #print axioms CategoryTheory.Abelian.image.congr_simp
 #print axioms CategoryTheory.Functor.IsLeftTExact.isGE_map
 #print axioms CategoryTheory.Functor.IsRightTExact.isLE_map
