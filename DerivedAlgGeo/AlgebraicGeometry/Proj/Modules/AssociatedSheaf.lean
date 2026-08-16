@@ -399,6 +399,15 @@ noncomputable def sectionAddEquivOfMemIff {σN : Type u} [SetLike σN M] [AddSub
     funext x
     rfl
 
+@[simp]
+theorem sectionAddEquivOfMemIff_apply {σN : Type u} [SetLike σN M] [AddSubgroupClass σN M]
+    (𝓝 : ℕ → σN) [SetLike.GradedSMul 𝒜 𝓝]
+    (hmem : ∀ i (m : M), m ∈ 𝓜 i ↔ m ∈ 𝓝 i) (U : Opens X)
+    (s : (associatedSheafInType 𝒜 𝓜).1.obj (op U)) (x : U) :
+    (sectionAddEquivOfMemIff 𝒜 𝓜 𝓝 hmem U s).1 x =
+      DegreeZeroLocalization.linearEquivOfMemIff (𝒜 := 𝒜) (𝓜 := 𝓜) 𝓝 hmem (s.1 x) :=
+  rfl
+
 /-! ## Sections on a basic open -/
 
 /-- The canonical additive map from the degree-zero homogeneous localization away from `f` to
