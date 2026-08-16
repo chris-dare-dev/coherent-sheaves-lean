@@ -35,6 +35,12 @@ integer grading on modules, belong to the later twisting-sheaf layer.
 Together these turn `DegreeZeroLocalization 𝒜 𝓜 (.powers f)` into fractions with an explicit
 representative and a computable equality test, which is what any basis for it has to start from
 (see the Laurent monomial basis of #491).
+
+`awayMk_zero`, `awayMk_add`, `awayMk_sum` and `awayMk_shift` are the arithmetic that goes with
+the normal form: the first three are additivity in the numerator at a fixed denominator, and the
+last puts two fractions over a common denominator. Spanning arguments need exactly this pair —
+decompose a numerator into a sum, then align denominators — and none of the four costs a
+cancellation hypothesis.
 -/
 
 noncomputable section
@@ -548,6 +554,59 @@ theorem awayMk_eq_awayMk_iff [IsDomain A] [Module.IsTorsionFree A M] {f : A} {e 
       (IsRegular.of_ne_zero (pow_ne_zero t hf0)) hu
   · intro h
     exact ⟨1, by simpa using h⟩
+
+/-- The zero numerator gives the zero fraction. -/
+theorem awayMk_zero {f : A} {e : ι} (hf : f ∈ 𝒜 e) (n : ℕ) :
+    awayMk (𝓜 := 𝓜) hf n (0 : M) (zero_mem (𝓜 (n • e))) = 0 := by
+  apply ext
+  rw [coe_awayMk, coe_zero]
+  simp
+
+/-- `awayMk` is additive in the numerator at a fixed denominator. -/
+theorem awayMk_add {f : A} {e : ι} (hf : f ∈ 𝒜 e) (n : ℕ) (p q : M)
+    (hp : p ∈ 𝓜 (n • e)) (hq : q ∈ 𝓜 (n • e)) :
+    awayMk hf n (p + q) (add_mem hp hq) = awayMk hf n p hp + awayMk hf n q hq := by
+  apply ext
+  rw [coe_awayMk, coe_add, coe_awayMk, coe_awayMk, LocalizedModule.mk_add_mk,
+    LocalizedModule.mk_eq]
+  refine ⟨1, ?_⟩
+  simp only [Submonoid.smul_def, Submonoid.coe_mul, one_smul, smul_add, ← mul_smul]
+
+/-- `awayMk` is additive over a finite sum of numerators.
+
+The membership hypothesis is total (`∀ b`) rather than restricted to `s`, because the summands on
+the right have to carry their own certificates and a `∀ b ∈ s` hypothesis is not available inside
+`Finset.sum`. In practice the summands are monomials of a fixed degree, so nothing is lost.
+
+The proof descends into `LocalizedModule` before inducting. That is not incidental: the numerator
+appears in the type of `awayMk`'s membership argument, so rewriting `Finset.sum_insert` in the
+goal directly fails on a non-type-correct motive. `coe_awayMk` discharges the certificate first,
+and the induction then runs over an ordinary equation. -/
+theorem awayMk_sum {f : A} {e : ι} (hf : f ∈ 𝒜 e) (n : ℕ) {β : Type*} (s : Finset β)
+    (p : β → M) (hp : ∀ b, p b ∈ 𝓜 (n • e)) :
+    awayMk hf n (∑ b ∈ s, p b) (sum_mem fun b _ => hp b) =
+      ∑ b ∈ s, awayMk hf n (p b) (hp b) := by
+  classical
+  apply ext
+  rw [coe_awayMk]
+  induction s using Finset.induction_on with
+  | empty => simp
+  | insert b s hb ih =>
+      rw [Finset.sum_insert hb, Finset.sum_insert hb, coe_add, coe_awayMk, ← ih,
+        LocalizedModule.mk_add_mk, LocalizedModule.mk_eq]
+      exact ⟨1, by
+        simp only [Submonoid.smul_def, Submonoid.coe_mul, one_smul, smul_add, ← mul_smul]⟩
+
+/-- Raising the denominator by `fᵗ` and the numerator with it leaves the fraction alone.
+
+This is what puts two `awayMk`s over a common denominator, which every argument about sums of
+fractions with different denominators needs. It holds over any ring: no cancellation is
+performed, so neither `IsDomain` nor torsion-freeness appears. -/
+theorem awayMk_shift {f : A} {e : ι} (hf : f ∈ 𝒜 e) (n t : ℕ) (p : M)
+    (hp : p ∈ 𝓜 (n • e)) (hfp : f ^ t • p ∈ 𝓜 ((n + t) • e)) :
+    awayMk hf (n + t) (f ^ t • p) hfp = awayMk hf n p hp := by
+  rw [awayMk, awayMk, mk_eq_mk_iff]
+  exact ⟨1, by simp [← mul_smul, ← pow_add]⟩
 
 end DegreeZeroLocalization
 

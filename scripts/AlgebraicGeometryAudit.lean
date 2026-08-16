@@ -43,6 +43,17 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 -- Both are prerequisites for any basis of the away localization.
 #print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.exists_awayMk
 #print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.awayMk_eq_awayMk_iff
+-- Numerator additivity at a fixed denominator, and the common-denominator move. Together these
+-- are what a spanning argument over monomial numerators consumes; none needs cancellation.
+#print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.awayMk_zero
+#print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.awayMk_add
+#print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.awayMk_sum
+#print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.awayMk_shift
+-- Auto-generated, not hand-written: `awayMk` carries its membership certificate as a dependent
+-- argument, so the first `rw [coe_awayMk]` in this file makes Lean emit a congruence lemma for
+-- it. It is a public declaration and the completeness ratchet counts it, so it is recorded here
+-- rather than left to widen the unaudited gap.
+#print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.awayMk.congr_simp
 #print axioms AlgebraicGeometry.Proj.GradedLinearMap
 #print axioms AlgebraicGeometry.Proj.GradedLinearMap.map
 #print axioms AlgebraicGeometry.Proj.GradedLinearMap.map_mk
