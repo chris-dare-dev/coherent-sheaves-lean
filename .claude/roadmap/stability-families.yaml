@@ -93,6 +93,8 @@ generations:
   - { rev: 31, at: "2026-08-16", note: "SF3 is active again under epic #195 with native children #460--#462. Child #460 starts the ordered cutover by constructing Dᵇ(Coh X), the perfect thick envelope of finite locally free coherent sheaves, scheme and residue fibers, the proved inclusion Perf(X) → Dᵇ(Coh X), and typed coherent/perfect pullback restriction and coherence contracts. The geometric base-change witness and unconditional finite-type openness/relative-HN existence remain the next two children." }
   - { rev: 32, at: "2026-08-16", note: "Child #461 connects the genuine bounded coherent pullback to the family-level pre-stability witness. Triangulated equivalences now transport the non-formal preimage axioms; bounded coherent identity and composition use the geometric unit/compositor; a bounded coherent realization constructs FiberPreStabilityBaseChangeData from left-adjoint inducing premises. The Appendix-A presentable/Ind theorem remains the precisely named upstream input rather than an assumed PreimageData witness, and #462 remains the next finite-type openness/relative-HN task." }
   - { rev: 33, at: "2026-08-16", note: "Child #462 restricts the geometric witness to actual finite-type objects of Over S, using Mathlib's locally-of-finite-type plus quasi-compact predicates. Residue-fiber phase equivalence proves each semistable locus Zariski open and yields generic openness from the same locus. The slicing HN axiom constructs SchemeRelativeHNFiltration objectwise over every regular finite-type curve, with its existing residue-fiber and pullback compatibility; no openness or relative-HN conclusion is supplied as an input. These are consequences of the repository's strong strict-family interface, not a semistable-reduction or moduli theorem." }
+  - { rev: 34, at: "2026-08-16", note: "Materialized SF5 (#29), SF6 (#28), and SF7 (#27). The closeout audit found that #127/#216 and #211/#215 were already implemented and audited on main; §3.4 is proposed as mapped with direct v1 PDF evidence and no coverage claim. SF7 is decomposed under #475 into bounded Corollary-A.23 truncation (#478), compact generation/Ind/A.17 (#477), scheme realization (#476), and downstream parameter removal (#479)." }
+  - { rev: 35, at: "2026-08-16", note: "SF7.1 begins by representing formula (A.8) as Slicing.InducedTStructures. T-structure orthogonality now proves the Hom-vanishing half of PreimageData, with an inhabited identity model; finite phase-truncation HN existence remains the next theorem rather than a structure field." }
 retired: []
 
 # GitHub milestones are roadmap phases. Epic issues live inside them, and
@@ -263,3 +265,87 @@ items:
     priority: must
     size: XL
     tags: [families, relative-hn, curves, geometry]
+
+  - id: stability-families-m5
+    gh_milestone: 29
+    kind: milestone
+    title: "SF5 — T-structure calculus"
+    status: done
+    lane: now
+    acceptance:
+      - "Truncation functors commute naturally with integer shifts and the comparison respects the truncation triangle."
+      - "Heart cohomology is homological and exact on distinguished triangles in every degree."
+      - "Boundedness, nondegeneracy, and left/right/two-sided t-exactness have reusable identity, composition, adjunction, and heart APIs."
+      - "The false unrestricted converse from nondegenerate to bounded is corrected rather than asserted."
+
+  - id: stability-families-e10
+    gh_issue: 216
+    gh_sub_issues: [127]
+    kind: epic
+    parent: stability-families-m5
+    title: "Cohomology functors, bounded t-structures, and t-exactness"
+    status: done
+    summary: "Closed by declaration-level audit of the migrated t-structure and all-degree cohomology modules. The repository proves bounded implies nondegenerate; the converse needs the finite-cohomology condition stated in Remark A.3 and is deliberately not claimed."
+    priority: must
+    size: L
+    tags: [t-structure, cohomology, exactness]
+
+  - id: stability-families-m6
+    gh_milestone: 28
+    kind: milestone
+    title: "SF6 — Slicing order and adjoint transport"
+    status: done
+    lane: now
+    acceptance:
+      - "Strict and weak slicing orders have all Lemma-3.13 characterizations, transitivity, shift, and autoequivalence equivariance."
+      - "Bayer and cofiltration packages preserve the paper's quantifier order at the abstract categorical level."
+      - "Preimage/pullback/pushforward constructions expose Hom and HN obligations honestly and preserve phases, orders, shifts, and equivalences."
+      - "The §3.4 registry coordinate is mapped with direct pinned-PDF evidence and remains a no-coverage claim."
+
+  - id: stability-families-e8
+    gh_issue: 211
+    gh_sub_issues: []
+    kind: epic
+    parent: stability-families-m6
+    title: "Slicing order relations and the Bayer/cofiltration properties"
+    status: done
+    summary: "Strict/weak order, all four phase characterizations, structural laws, abstract Bayer properties, and categorical cofiltration data are implemented and audited. Scheme-specific consequences remain outside this epic."
+    priority: must
+    size: L
+    tags: [slicing, order, bayer, cofiltration]
+
+  - id: stability-families-e9
+    gh_issue: 215
+    gh_sub_issues: []
+    kind: epic
+    parent: stability-families-m6
+    title: "Abstract pullback and pushforward of slicings along an adjoint pair"
+    status: done
+    summary: "Raw phase preimages, genuine PreimageData, identity/composition/equivalence transport, phase reflection, order functoriality, and equivariance are implemented. The Appendix-A theorem remains an explicit, uninhabited boundary assigned to SF7."
+    priority: must
+    size: L
+    tags: [slicing, transfer, adjunction]
+
+  - id: stability-families-m7
+    gh_milestone: 27
+    kind: milestone
+    title: "SF7 — Polishchuk/Appendix-A inducing theorem"
+    status: in_progress
+    lane: now
+    acceptance:
+      - "Formula (A.8)'s phase-indexed source t-structures produce genuine preimage slicings by a proved finite truncation argument."
+      - "Compact generation, Ind-extension, restriction to bounded coherent objects, and the A.17 recognition formulas are owned without axioms."
+      - "The scheme-derived realization inhabits every hypothesis used by the supported geometric cases."
+      - "HasLeftAdjointInducingTheorem and all downstream global theorem parameters are deleted."
+
+  - id: stability-families-e13
+    gh_issue: 475
+    gh_sub_issues: [478, 477, 476, 479]
+    kind: epic
+    parent: stability-families-m7
+    title: "Own the Polishchuk/Appendix-A inducing theorem"
+    status: in_progress
+    summary: "#478 is active with the bounded formula-(A.8) interface and Hom-vanishing theorem. #477 owns compact generation and A.17, #476 owns the honest Dqc/Db(Coh) scheme seam, and #479 removes the legacy theorem parameter downstream."
+    priority: must
+    size: XL
+    tags: [slicing, t-structure, ind, geometry]
