@@ -654,7 +654,7 @@ theorem mul_pow_toNat_mem_intShift_zero (hf : f ∈ 𝒜 1) (d : ℤ) (n : ℕ) 
   rcases ha with rfl | ⟨k, hk, ha⟩
   · exact Or.inl (zero_mul _)
   · refine Or.inr ⟨n + d.toNat, by push_cast; omega, ?_⟩
-    have hidx : k + (-d).toNat = n + d.toNat := by push_cast at hk; omega
+    have hidx : k + (-d).toNat = n + d.toNat := by omega
     have := SetLike.mul_mem_graded ha (SetLike.pow_mem_graded (-d).toNat hf)
     simpa [hidx] using this
 
@@ -801,6 +801,180 @@ theorem intShiftZeroLinearEquiv_symm_apply_mk (hf : f ∈ 𝒜 1) (d : ℤ) (hfS
   rw [LocalizedModule.mk_smul_mk]
   congr 1
   · exact mul_comm _ _
+  · ext
+    exact mul_comm _ _
+
+/-! ### The cofactor form, for Čech intersections
+
+`intShiftZeroLinearEquiv` asks for `f ∈ S`. A Čech intersection cannot supply that: the
+denominator there is `∏ₐ X_{x a}`, homogeneous of degree `n + 1`, so for `n ≥ 1` its powers
+submonoid contains no degree-one element at all. What is available is a homogeneous cofactor `h`
+with `f * h ∈ S` — the product of the remaining variables.
+
+The scalar is parameterized by its two exponents rather than by `d` directly. That is not
+cosmetic: writing the inverse as the `-d` instance of the same definition puts `(- -d).toNat`
+in the term, which is only propositionally `d.toNat`, and every subsequent `change` fails on it.
+Naming the exponents makes the forward and inverse scalars the *same* definition with the pair
+swapped, and their product telescopes to `(f * h) ^ (a + b)` over itself. -/
+
+/-- The cofactor scalar `h ^ a * f ^ b / (f * h) ^ a`, which equals `f ^ (b - a)` in the
+localization while keeping every denominator inside `S`. -/
+private def cofactorScalar {h : A} (a b : ℕ) (hfh : f * h ∈ S) : Localization S :=
+  Localization.mk (h ^ a * f ^ b) (twistPowerOfMulMem (f := f) a hfh)
+
+omit [GradedRing 𝒜] in
+/-- Swapping the two exponents inverts the cofactor scalar. -/
+private theorem cofactorScalar_mul {h : A} (a b : ℕ) (hfh : f * h ∈ S) :
+    cofactorScalar (f := f) (h := h) a b hfh *
+      cofactorScalar (f := f) (h := h) b a hfh = 1 := by
+  unfold cofactorScalar twistPowerOfMulMem
+  rw [Localization.mk_mul]
+  have hnum : (h ^ a * f ^ b) * (h ^ b * f ^ a) = ((f * h) ^ (a + b) : A) := by
+    rw [mul_pow, pow_add, pow_add]
+    ring
+  have hden : ((⟨(f * h) ^ a, S.pow_mem hfh a⟩ : S) * ⟨(f * h) ^ b, S.pow_mem hfh b⟩) =
+      ⟨(f * h) ^ (a + b), S.pow_mem hfh (a + b)⟩ := by
+    ext
+    exact (pow_add _ _ _).symm
+  rw [hnum, hden]
+  exact Localization.mk_self (⟨(f * h) ^ (a + b), S.pow_mem hfh (a + b)⟩ : S)
+
+/-- Degrees for the cofactor trivialization: multiplying by `h ^ a * f ^ b` carries the twist
+`(a : ℤ) - b` to the twist zero. -/
+theorem mul_pow_mul_pow_mem_intShift_zero {h : A} {e : ℕ} (hf : f ∈ 𝒜 1) (h_deg : h ∈ 𝒜 e)
+    (a b : ℕ) (d : ℤ) (hd : d = (a : ℤ) - b) (n : ℕ) (x : A)
+    (hx : x ∈ intShift 𝒜 d n) :
+    x * h ^ a * f ^ b ∈ intShift 𝒜 0 (n + a * (1 + e)) := by
+  simp only [intShift_apply, mem_intShiftPiece] at hx ⊢
+  rcases hx with rfl | ⟨k, hk, hx⟩
+  · exact Or.inl (by simp)
+  · refine Or.inr ⟨n + a * (1 + e), by push_cast; omega, ?_⟩
+    have hkey : k + b = n + a := by subst hd; omega
+    have hidx : k + a * e + b = n + a * (1 + e) := by
+      rw [Nat.mul_add, Nat.mul_one]
+      omega
+    have hmul := SetLike.mul_mem_graded
+      (SetLike.mul_mem_graded hx (SetLike.pow_mem_graded a h_deg))
+      (SetLike.pow_mem_graded b hf)
+    simpa [hidx] using hmul
+
+/-- The same, in the direction that produces the twist rather than removing it. -/
+theorem mul_pow_mul_pow_mem_intShift {h : A} {e : ℕ} (hf : f ∈ 𝒜 1) (h_deg : h ∈ 𝒜 e)
+    (a b : ℕ) (d : ℤ) (hd : d = (a : ℤ) - b) (n : ℕ) (x : A)
+    (hx : x ∈ intShift 𝒜 0 n) :
+    x * h ^ b * f ^ a ∈ intShift 𝒜 d (n + b * (1 + e)) := by
+  simp only [intShift_apply, mem_intShiftPiece] at hx ⊢
+  rcases hx with rfl | ⟨k, hk, hx⟩
+  · exact Or.inl (by simp)
+  · refine Or.inr ⟨k + b * e + a, ?_, ?_⟩
+    · have hkn : k = n := by omega
+      have hexp : n + b * (1 + e) = n + b + b * e := by ring
+      rw [hexp, hkn]
+      push_cast
+      omega
+    · have hmul := SetLike.mul_mem_graded
+        (SetLike.mul_mem_graded hx (SetLike.pow_mem_graded b h_deg))
+        (SetLike.pow_mem_graded a hf)
+      simpa using hmul
+
+/-- Trivializing an integer twist when `f` is only invertible in `S`, via a homogeneous cofactor.
+
+This is the form the Čech intersections need: there `f` is one variable of the index and `h` is
+the product of the others. The twist is given as `(a : ℤ) - b` so that the caller chooses the
+exponents; `a = d.toNat`, `b = (-d).toNat` recovers an arbitrary `d`. -/
+noncomputable def intShiftZeroLinearEquivOfMulMem {h : A} {e : ℕ} (hf : f ∈ 𝒜 1)
+    (h_deg : h ∈ 𝒜 e) (a b : ℕ) (d : ℤ) (hd : d = (a : ℤ) - b) (hfh : f * h ∈ S) :
+    DegreeZeroLocalization 𝒜 (intShift 𝒜 d) S ≃ₗ[
+      HomogeneousLocalization 𝒜 S] DegreeZeroLocalization 𝒜 (intShift 𝒜 0) S where
+  toFun z := by
+    refine ⟨cofactorScalar (f := f) (h := h) a b hfh • (z : LocalizedModule S A), ?_⟩
+    obtain ⟨c, hc⟩ := z.property
+    refine ⟨
+      { deg := c.deg + a * (1 + e)
+        num := ⟨(c.num : A) * h ^ a * f ^ b,
+          mul_pow_mul_pow_mem_intShift_zero 𝒜 hf h_deg a b d hd c.deg (c.num : A) c.num.2⟩
+        den := ⟨(c.den : A) * (f * h) ^ a, by
+          simpa using SetLike.mul_mem_graded c.den.2
+            (SetLike.pow_mem_graded a (SetLike.mul_mem_graded hf h_deg))⟩
+        den_mem := S.mul_mem c.den_mem (S.pow_mem hfh a) }, ?_⟩
+    rw [← hc]
+    change LocalizedModule.mk ((c.num : A) * h ^ a * f ^ b)
+        (⟨(c.den : A) * (f * h) ^ a, S.mul_mem c.den_mem (S.pow_mem hfh a)⟩ : S) =
+      Localization.mk (h ^ a * f ^ b) (twistPowerOfMulMem (f := f) a hfh) •
+        LocalizedModule.mk (c.num : A) ⟨(c.den : A), c.den_mem⟩
+    rw [LocalizedModule.mk_smul_mk]
+    congr 1
+    · rw [mul_assoc]
+      exact mul_comm _ _
+    · ext
+      exact mul_comm _ _
+  map_add' x y := by
+    apply ext
+    simp only [coe_add]
+    exact smul_add (cofactorScalar (f := f) (h := h) a b hfh)
+      (x : LocalizedModule S A) y
+  map_smul' r z := by
+    apply ext
+    simp only [coe_smul]
+    exact smul_comm (cofactorScalar (f := f) (h := h) a b hfh) r
+      (z : LocalizedModule S A)
+  invFun z := by
+    refine ⟨cofactorScalar (f := f) (h := h) b a hfh • (z : LocalizedModule S A), ?_⟩
+    obtain ⟨c, hc⟩ := z.property
+    refine ⟨
+      { deg := c.deg + b * (1 + e)
+        num := ⟨(c.num : A) * h ^ b * f ^ a,
+          mul_pow_mul_pow_mem_intShift 𝒜 hf h_deg a b d hd c.deg (c.num : A) c.num.2⟩
+        den := ⟨(c.den : A) * (f * h) ^ b, by
+          simpa using SetLike.mul_mem_graded c.den.2
+            (SetLike.pow_mem_graded b (SetLike.mul_mem_graded hf h_deg))⟩
+        den_mem := S.mul_mem c.den_mem (S.pow_mem hfh b) }, ?_⟩
+    rw [← hc]
+    change LocalizedModule.mk ((c.num : A) * h ^ b * f ^ a)
+        (⟨(c.den : A) * (f * h) ^ b, S.mul_mem c.den_mem (S.pow_mem hfh b)⟩ : S) =
+      Localization.mk (h ^ b * f ^ a) (twistPowerOfMulMem (f := f) b hfh) •
+        LocalizedModule.mk (c.num : A) ⟨(c.den : A), c.den_mem⟩
+    rw [LocalizedModule.mk_smul_mk]
+    congr 1
+    · rw [mul_assoc]
+      exact mul_comm _ _
+    · ext
+      exact mul_comm _ _
+  left_inv z := by
+    apply ext
+    change cofactorScalar (f := f) (h := h) b a hfh •
+      (cofactorScalar (f := f) (h := h) a b hfh • (z : LocalizedModule S A)) = z
+    rw [← mul_smul, mul_comm, cofactorScalar_mul (f := f) (h := h) a b hfh, one_smul]
+  right_inv z := by
+    apply ext
+    change cofactorScalar (f := f) (h := h) a b hfh •
+      (cofactorScalar (f := f) (h := h) b a hfh • (z : LocalizedModule S A)) = z
+    rw [← mul_smul, cofactorScalar_mul (f := f) (h := h) a b hfh, one_smul]
+
+/-- The cofactor trivialization in explicit fractions. -/
+@[simp]
+theorem intShiftZeroLinearEquivOfMulMem_apply_mk {h : A} {e : ℕ} (hf : f ∈ 𝒜 1)
+    (h_deg : h ∈ 𝒜 e) (a b : ℕ) (d : ℤ) (hd : d = (a : ℤ) - b) (hfh : f * h ∈ S)
+    (c : NumDenSameDeg 𝒜 (intShift 𝒜 d) S) :
+    intShiftZeroLinearEquivOfMulMem 𝒜 hf h_deg a b d hd hfh
+        (DegreeZeroLocalization.mk c) =
+      DegreeZeroLocalization.mk
+        { deg := c.deg + a * (1 + e)
+          num := ⟨(c.num : A) * h ^ a * f ^ b,
+            mul_pow_mul_pow_mem_intShift_zero 𝒜 hf h_deg a b d hd c.deg (c.num : A) c.num.2⟩
+          den := ⟨(c.den : A) * (f * h) ^ a, by
+            simpa using SetLike.mul_mem_graded c.den.2
+              (SetLike.pow_mem_graded a (SetLike.mul_mem_graded hf h_deg))⟩
+          den_mem := S.mul_mem c.den_mem (S.pow_mem hfh a) } := by
+  apply ext
+  change Localization.mk (h ^ a * f ^ b) (twistPowerOfMulMem (f := f) a hfh) •
+      LocalizedModule.mk (c.num : A) ⟨(c.den : A), c.den_mem⟩ =
+    LocalizedModule.mk ((c.num : A) * h ^ a * f ^ b)
+      ⟨(c.den : A) * (f * h) ^ a, S.mul_mem c.den_mem (S.pow_mem hfh a)⟩
+  rw [LocalizedModule.mk_smul_mk]
+  congr 1
+  · rw [mul_assoc]
+    exact mul_comm _ _
   · ext
     exact mul_comm _ _
 
