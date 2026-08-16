@@ -34,10 +34,14 @@ issue #453 removed.
   isomorphism to a transform are both supplied. That a Fourier--Mukai transform
   with a suitable kernel *is* an equivalence is the classical theorem, and it
   needs the geometry the abstract `Correspondence` does not carry.
-* Nothing says the quasi-inverse is again a kernel functor. Classically it is,
-  with the derived-dual kernel; here the inverse is just a functor, which is why
-  `actStab` takes the class-lattice compatibility as a hypothesis rather than
-  deriving it from a second kernel.
+* **Nothing constructs a `DualKernel`.** That the quasi-inverse of a
+  Fourier--Mukai equivalence is again one — with the derived-dual kernel
+  `P^∨ ⊗ p^*ω[dim]` — is classical, and supplying it is geometry. What this
+  file does is make the *consequences* of having one available: given a
+  `DualKernel`, the class-lattice compatibility `actStab` needs is stated in
+  terms of the dual kernel's own class map rather than the opaque
+  `K₀.mapF Φ.inverse` (`actStabOfDual`), and the two kernels' class maps are
+  proved mutually inverse (`transformK₀_dual_comp`).
 * No orbit, group action, or `MulAction` structure. `actStab` is a single
   transport, matching `actStabAut`, and composing two of them is not shown to
   be the transport of a convolved kernel.
@@ -118,6 +122,72 @@ theorem mapF_eq_transformK₀ :
 
 end ClassMap
 
+section Dual
+
+/-- A **dual kernel** for a kernel autoequivalence: a kernel presenting the
+*quasi-inverse* as a transform of the same correspondence.
+
+Classically this is the derived dual `P^∨ ⊗ p^*ω_X[dim X]`, and its existence is
+a theorem about smooth projective varieties. Here it is supplied. What it buys
+is that both directions of the equivalence become kernel-computable, which is
+what turns `actStab`'s remaining hypothesis into kernel data. -/
+structure DualKernel (A : KernelAutoequivalence C 𝒲) where
+  /-- The kernel of the quasi-inverse. -/
+  dual : 𝒲
+  /-- The quasi-inverse is the transform with that kernel. -/
+  invIso : A.equiv.inverse ≅ A.corr.transform dual
+
+namespace DualKernel
+
+variable {A} (D : DualKernel A)
+
+variable [A.corr.pull.CommShift ℤ] [A.corr.push.CommShift ℤ]
+  [A.corr.pull.IsTriangulated] [A.corr.push.IsTriangulated]
+  [(A.corr.tensor.obj D.dual).CommShift ℤ]
+  [(A.corr.tensor.obj D.dual).IsTriangulated]
+  [A.equiv.inverse.CommShift ℤ] [A.equiv.inverse.IsTriangulated]
+
+omit [IsTriangulated C] in
+/-- **The quasi-inverse's action on classes is computed by the dual kernel.**
+The mirror of `mapF_eq_transformK₀`, and the reason `actStabOfDual` can state
+its hypothesis in kernel terms. -/
+theorem mapF_inverse_eq_transformK₀ :
+    K₀.mapF A.equiv.inverse = A.corr.transformK₀ D.dual := by
+  have h : K₀.mapF A.equiv.inverse = K₀.map A.equiv.inverse := rfl
+  rw [h]
+  exact A.corr.K₀_map_eq_transformK₀ D.dual A.equiv.inverse D.invIso
+
+variable [(A.corr.tensor.obj A.kernel).CommShift ℤ]
+  [(A.corr.tensor.obj A.kernel).IsTriangulated]
+  [A.equiv.functor.CommShift ℤ] [A.equiv.functor.IsTriangulated]
+
+omit [IsTriangulated C] in
+/-- **The two kernels' class maps are mutually inverse.**
+
+Proved from `K₀.map_comp_map_eq_id` on the equivalence's unit, then transported
+across both kernel identifications. Neither convolution nor an identity kernel
+is involved: the inverse relation comes from the supplied equivalence, not from
+`conv P P^∨ ≅ 𝒪_Δ`. -/
+theorem transformK₀_dual_comp :
+    (A.corr.transformK₀ D.dual).comp (A.corr.transformK₀ A.kernel) =
+      AddMonoidHom.id (K₀ C) := by
+  rw [← A.mapF_eq_transformK₀, ← D.mapF_inverse_eq_transformK₀]
+  exact K₀.map_comp_map_eq_id A.equiv.functor A.equiv.inverse
+    A.equiv.unitIso.symm
+
+omit [IsTriangulated C] in
+/-- The composite in the other order is also the identity. -/
+theorem transformK₀_comp_dual :
+    (A.corr.transformK₀ A.kernel).comp (A.corr.transformK₀ D.dual) =
+      AddMonoidHom.id (K₀ C) := by
+  rw [← A.mapF_eq_transformK₀, ← D.mapF_inverse_eq_transformK₀]
+  exact K₀.map_comp_map_eq_id A.equiv.inverse A.equiv.functor
+    A.equiv.counitIso
+
+end DualKernel
+
+end Dual
+
 section Action
 
 variable {Λ : Type u'} [AddCommGroup Λ] (v : K₀ C →+ Λ)
@@ -151,6 +221,42 @@ theorem actStab_slicing (lam : Λ →+ Λ) (hlam) (σ) :
 theorem actStab_Z (lam : Λ →+ Λ) (hlam) (σ) (x : Λ) :
     (A.actStab v lam hlam σ).Z x = σ.Z (lam x) :=
   rfl
+
+section OfDual
+
+variable (D : DualKernel A)
+  [A.corr.pull.CommShift ℤ] [A.corr.push.CommShift ℤ]
+  [A.corr.pull.IsTriangulated] [A.corr.push.IsTriangulated]
+  [(A.corr.tensor.obj D.dual).CommShift ℤ]
+  [(A.corr.tensor.obj D.dual).IsTriangulated]
+
+/-- **Transport with the compatibility stated in kernel terms.**
+
+Identical to `actStab` except for its hypothesis: `hlam` is asked against
+`transformK₀ D.dual`, which is computed from the dual kernel, rather than
+against `K₀.mapF A.equiv.inverse`, which is opaque. `mapF_inverse_eq_transformK₀`
+identifies the two, so this is the same transport with a checkable premise. -/
+def actStabOfDual (lam : Λ →+ Λ)
+    (hlam : ∀ x : K₀ C, v (A.corr.transformK₀ D.dual x) = lam (v x))
+    (σ : StabilityCondition.WithClassMap C v) :
+    StabilityCondition.WithClassMap C v :=
+  A.actStab v lam (fun x => by
+    rw [show K₀.mapF A.equiv.inverse = A.corr.transformK₀ D.dual from
+      D.mapF_inverse_eq_transformK₀]
+    exact hlam x) σ
+
+@[simp]
+theorem actStabOfDual_slicing (lam : Λ →+ Λ) (hlam) (σ) :
+    (A.actStabOfDual v D lam hlam σ).slicing =
+      CategoryTheory.Triangulated.Slicing.mapEquiv σ.slicing A.equiv :=
+  rfl
+
+@[simp]
+theorem actStabOfDual_Z (lam : Λ →+ Λ) (hlam) (σ) (x : Λ) :
+    (A.actStabOfDual v D lam hlam σ).Z x = σ.Z (lam x) :=
+  rfl
+
+end OfDual
 
 end Action
 
