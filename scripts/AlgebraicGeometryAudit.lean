@@ -81,6 +81,15 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 -- splits on the sign.
 #print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.mul_pow_toNat_mem_intShift
 #print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.intShiftZeroLinearEquiv_symm_apply_mk
+-- The cofactor form (#467). A Cech intersection cannot supply f in S: its denominator has
+-- degree n+1, so for n >= 1 the powers submonoid contains no degree-one element. A homogeneous
+-- cofactor h with f*h in S is what is available. The scalar is parameterized by its exponents
+-- rather than by d, so the inverse is the same definition with the pair swapped -- writing it
+-- as the -d instance would put (- -d).toNat in the term, only propositionally d.toNat.
+#print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.mul_pow_mul_pow_mem_intShift_zero
+#print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.mul_pow_mul_pow_mem_intShift
+#print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.intShiftZeroLinearEquivOfMulMem
+#print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.intShiftZeroLinearEquivOfMulMem_apply_mk
 #print axioms AlgebraicGeometry.Proj.intShiftSectionToZeroOn
 #print axioms AlgebraicGeometry.Proj.intShiftSectionFromZeroOn
 #print axioms AlgebraicGeometry.Proj.intShiftSectionAddEquivOn
