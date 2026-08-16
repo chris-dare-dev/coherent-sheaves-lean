@@ -3,7 +3,7 @@ Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under the MIT license.
 -/
 import DerivedAlgGeo.CategoryTheory.Triangulated.FourierMukai.Convolution
-import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Foundation.TriangulatedGrothendieckFunctorial
+import DerivedAlgGeo.CategoryTheory.Triangulated.GrothendieckGroup.Functorial
 
 /-!
 # Kernel functors on the triangulated Grothendieck group
@@ -23,14 +23,6 @@ The second is the first place the abstract interface says something a caller
 could not have written down by unfolding definitions: it turns a supplied
 isomorphism of *functors* into an equality of *homomorphisms*, via
 `K₀.map_congr`.
-
-## Why this is a separate file
-
-`Triangulated.K₀` lives under `StabilityCondition.Foundation`, so importing it
-points a module at the stability track.  `FourierMukai.Basic` and
-`FourierMukai.Convolution` deliberately stay clear of that and depend on
-Mathlib alone; the dependency is confined here, where it is the subject rather
-than a convenience.
 
 ## What this file does not assert
 

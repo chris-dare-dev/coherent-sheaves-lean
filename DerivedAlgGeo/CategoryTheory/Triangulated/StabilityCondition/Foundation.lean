@@ -2,12 +2,12 @@
 Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under the MIT license.
 -/
-import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Foundation.PostnikovTower
+import DerivedAlgGeo.CategoryTheory.Triangulated.PostnikovTower
 import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Foundation.ExtensionClosure
 import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Foundation.Slicing
-import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Foundation.GrothendieckPresentation
-import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Foundation.TriangulatedGrothendieck
-import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Foundation.TriangulatedGrothendieckFunctorial
+import DerivedAlgGeo.CategoryTheory.Triangulated.GrothendieckGroup.Presentation
+import DerivedAlgGeo.CategoryTheory.Triangulated.GrothendieckGroup.Basic
+import DerivedAlgGeo.CategoryTheory.Triangulated.GrothendieckGroup.Functorial
 import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Foundation.PreStabilityCondition
 import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Foundation.IntervalCategory
 import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Foundation.QuasiAbelian
