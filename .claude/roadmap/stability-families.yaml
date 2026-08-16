@@ -90,6 +90,9 @@ generations:
   - { rev: 28, at: "2026-08-15", note: "Native child #444 specializes the honest left-adjoint inducing boundary to concrete exact scheme-derived pullback. The adapter records the adjoint, zero-reflection, and phase-monad premise, requires the presentable/Ind theorem explicitly, uses flatness only for exactness, and transports identity/composition through derived pullback coherence." }
   - { rev: 29, at: "2026-08-15", note: "Native child #445 removes the arbitrary-set shortcut from scheme-facing openness: the locus consists exactly of points where the actual residue-fiber pullback lies in the chosen slicing phase. Universal and generic probes reduce to Zariski openness of that locus; the named FiberPreStabilityBaseChangeData witness makes it full or empty and supplies both openness clauses, with a constant categorical model. No unconditional geometric witness or relative HN theorem is asserted." }
   - { rev: 30, at: "2026-08-15", note: "Native child #446 replaces the proposition-only Dedekind HN probe with SchemeRelativeHNFiltration: an actual HN tower over a scheme base change together with ordinary HN filtrations in every residue fiber, equality of lengths and phases, and factor isomorphisms to categorical pullback. A named geometric base-change witness constructs and pulls back the data; regular Noetherian one-dimensional curve bases and a nonempty constant-family model are explicit. General geometric existence remains a premise." }
+  - { rev: 31, at: "2026-08-16", note: "SF3 is active again under epic #195 with native children #460--#462. Child #460 starts the ordered cutover by constructing Dᵇ(Coh X), the perfect thick envelope of finite locally free coherent sheaves, scheme and residue fibers, the proved inclusion Perf(X) → Dᵇ(Coh X), and typed coherent/perfect pullback restriction and coherence contracts. The geometric base-change witness and unconditional finite-type openness/relative-HN existence remain the next two children." }
+  - { rev: 32, at: "2026-08-16", note: "Child #461 connects the genuine bounded coherent pullback to the family-level pre-stability witness. Triangulated equivalences now transport the non-formal preimage axioms; bounded coherent identity and composition use the geometric unit/compositor; a bounded coherent realization constructs FiberPreStabilityBaseChangeData from left-adjoint inducing premises. The Appendix-A presentable/Ind theorem remains the precisely named upstream input rather than an assumed PreimageData witness, and #462 remains the next finite-type openness/relative-HN task." }
+  - { rev: 33, at: "2026-08-16", note: "Child #462 restricts the geometric witness to actual finite-type objects of Over S, using Mathlib's locally-of-finite-type plus quasi-compact predicates. Residue-fiber phase equivalence proves each semistable locus Zariski open and yields generic openness from the same locus. The slicing HN axiom constructs SchemeRelativeHNFiltration objectwise over every regular finite-type curve, with its existing residue-fiber and pullback compatibility; no openness or relative-HN conclusion is supplied as an input. These are consequences of the repository's strong strict-family interface, not a semistable-reduction or moduli theorem." }
 retired: []
 
 # GitHub milestones are roadmap phases. Epic issues live inside them, and
@@ -202,24 +205,25 @@ items:
     gh_milestone: 16
     kind: milestone
     title: "SF3 — Geometry and moduli prerequisites"
-    status: planned
-    lane: later
+    status: in_progress
+    lane: now
     acceptance:
-      - "The AlgebraicGeometry subject has crossed the required B1–B5 gates with linked evidence."
-      - "Ownership and reusable APIs are chosen for Quot, stacks, boundedness, semistable reduction, and good moduli."
-      - "Only then are Theorems 22.2, 24.1, and the Part VI applications decomposed into implementation milestones."
+      - "Bounded coherent and perfect derived fibers are genuine categories with residue fibers, a proved Perf-to-bounded relationship, and nonvacuous pullback restriction contracts."
+      - "A geometric pre-stability base-change witness is constructed for the finite-type family class actually used downstream."
+      - "Finite-type semistable-locus openness and relative-HN existence are theorems from geometric hypotheses, not caller-supplied conclusions."
+      - "Quot, stacks, boundedness, and good-moduli ownership stays explicit before Theorems 22.2, 24.1, or Part VI are claimed."
 
   - id: stability-families-e6
     gh_issue: 195
-    gh_sub_issues: []
+    gh_sub_issues: [460, 461, 462]
     kind: epic
     parent: stability-families-m3
     title: "Coordinate geometric and moduli prerequisites across ownership boundaries"
-    status: blocked
-    summary: "Parked coordination epic. Coherent-sheaf and derived foundations now live in this monorepo; Quot, stack, boundedness, and good-moduli ownership remains explicit and no placeholder axiom is permitted."
-    priority: should
+    status: in_progress
+    summary: "Active ordered implementation epic. #460 delivered bounded coherent/perfect fibers; #461 delivered the geometric pre-stability base-change bridge from bounded coherent inducing data and the named Appendix-A theorem; #462 derives finite-type Zariski/generic openness and objectwise relative-HN existence from that witness. Quot, stack, moduli-boundedness, semistable reduction beyond the strict-family interface, and good-moduli work remain later explicit boundaries."
+    priority: must
     size: XL
-    tags: [cross-repo, parked, geometry, moduli]
+    tags: [families, geometry, moduli]
     links:
       repositories: [derived-alg-geo-lean, mathlib4]
 
