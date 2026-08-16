@@ -34,7 +34,8 @@ name.
 
 ## Remaining work
 
-1. Prove the A.13 compact-generator t-structure constructor.
+1. Construct the Brown-representability approximation triangles required by
+   the now-formalized A.13 aisle constructor.
 2. Construct A.14 in the large scheme-derived category and identify its
    bounded coherent restriction.
 3. Prove S-locality and bind the categorical result to the phase-indexed
