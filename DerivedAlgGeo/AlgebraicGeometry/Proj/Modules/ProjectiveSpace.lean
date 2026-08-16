@@ -792,6 +792,45 @@ theorem cechTermSectionAddEquiv_res_face (ι k : Type u) [Field k] (d : ℕ) {n 
     (polynomialVariableCechDenominator_succAbove_mem ι k x j)
     (polynomialVariableCechDenominator_succAbove ι k x j) i z
 
+/-- The integer-twist Čech comparison: the algebraic term at one variable intersection is the
+sections of `O(d)` there, for a twist of either sign.
+
+Five steps rather than the nonnegative case's three, and the two extra ones are both grading
+transports rather than geometry:
+
+1. `intShiftZeroLinearEquivOfMulMem` — the cofactor trivialization. The Čech denominator has
+   degree `n + 1`, so `f = X (x 0)` is only *invertible* in it, never a member; the cofactor is
+   the product of the remaining variables.
+2. `linearEquivOfMemIff` — `A(0)` is `A`, at the localization level.
+3. `selfBasicOpenSectionAddEquiv` — the structure module against its sections.
+4. `sectionAddEquivOfMemIff` — `A` is `A(0)`, at the section level.
+5. `intShiftSectionAddEquivOn` — the chart trivialization, undone.
+
+Steps 2 and 4 exist because the integer trivializations land at `A(0)` while the section
+comparison is stated against `A`; they move no data at all. -/
+noncomputable def intCechTermSectionAddEquiv (ι k : Type u) [Field k] (d : ℤ) {n : ℕ}
+    (x : Fin (n + 1) → ι) :
+    polynomialVariableIntCechTerm ι k d n x ≃+
+      (associatedSheafInType (polynomialGrading ι k)
+        (intShift (polynomialGrading ι k) d)).1.obj
+        (op (ProjectiveSpectrum.basicOpen (polynomialGrading ι k)
+          (polynomialVariableCechDenominator ι k x))) :=
+  ((DegreeZeroLocalization.intShiftZeroLinearEquivOfMulMem (polynomialGrading ι k)
+      (MvPolynomial.isHomogeneous_X k (x 0)) (cechCofactor_mem ι k x)
+      d.toNat (-d).toNat d (by omega)
+      (by rw [X_mul_cechCofactor]; exact Submonoid.mem_powers _)).toAddEquiv.trans
+    ((DegreeZeroLocalization.linearEquivOfMemIff (𝒜 := polynomialGrading ι k)
+        (𝓜 := intShift (polynomialGrading ι k) 0) (polynomialGrading ι k)
+        (fun i a => mem_intShift_zero_iff (polynomialGrading ι k) i a)).toAddEquiv.trans
+      ((selfBasicOpenSectionAddEquiv (polynomialGrading ι k)
+          (polynomialVariableCechDenominator_mem ι k x) (Nat.succ_pos n)).trans
+        ((sectionAddEquivOfMemIff (polynomialGrading ι k) (polynomialGrading ι k)
+            (intShift (polynomialGrading ι k) 0)
+            (fun i a => (mem_intShift_zero_iff (polynomialGrading ι k) i a).symm) _).trans
+          (intShiftSectionAddEquivOn (polynomialGrading ι k)
+            (MvPolynomial.isHomogeneous_X k (x 0)) d
+            (basicOpen_denominator_le ι k x)).symm))))
+
 /-- The canonical fraction-to-section map is bijective on every Čech intersection.
 
 The degree-one statement `moduleAwayToSection_natShift_degreeOne_bijective` does not cover this:
