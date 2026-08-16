@@ -264,6 +264,110 @@ theorem isRightTExact_leftAdjoint [F.Additive] (adj : F ⊣ G)
 
 end Adjunction
 
+section TruncationCompatibility
+
+variable (F : Functor C D) (t : TStructure C) (t' : TStructure D)
+  [F.CommShift ℤ] [F.IsTriangulated]
+  [Functor.IsTExact F t t']
+
+/-- A t-exact triangulated functor carries the canonical truncation triangle
+of an object to a truncation triangle of its image.
+
+This is the formal comparison used in Steps 2 and 3 of Polishchuk's Theorem
+A.17. It is constructed by uniqueness of truncation triangles, so it does not
+assume that the chosen truncation functors commute definitionally. -/
+noncomputable def mapTriangleLEGEIso (n : ℤ) (X : C) :
+    F.mapTriangle.obj ((t.triangleLEGE n (n + 1) rfl).obj X) ≅
+      (t'.triangleLEGE n (n + 1) rfl).obj (F.obj X) := by
+  let TC := (t.triangleLEGE n (n + 1) rfl).obj X
+  let TD := (t'.triangleLEGE n (n + 1) rfl).obj (F.obj X)
+  have hTC : TC ∈ distTriang C := t.triangleLEGE_distinguished n (n + 1) rfl X
+  have hFTC : F.mapTriangle.obj TC ∈ distTriang D :=
+    F.map_distinguished TC hTC
+  have hTD : TD ∈ distTriang D :=
+    t'.triangleLEGE_distinguished n (n + 1) rfl (F.obj X)
+  have hFTC₁ : t'.IsLE (F.obj TC.obj₁) n :=
+    IsRightTExact.isLE_map (F := F) (t := t) (t' := t') TC.obj₁ n
+      (by simpa only [TC, TStructure.triangleLEGE_obj_obj₁] using
+        t.isLE_truncLE_obj X n n)
+  have hFTC₃ : t'.IsGE (F.obj TC.obj₃) (n + 1) :=
+    IsLeftTExact.isGE_map (F := F) (t := t) (t' := t') TC.obj₃ (n + 1)
+      (by simpa only [TC, TStructure.triangleLEGE_obj_obj₃] using
+        t.isGE_truncGE_obj X (n + 1) (n + 1))
+  have hTD₁ : t'.IsLE TD.obj₁ n := by
+    simpa only [TD, TStructure.triangleLEGE_obj_obj₁] using
+      t'.isLE_truncLE_obj (F.obj X) n n
+  have hTD₃ : t'.IsGE TD.obj₃ (n + 1) := by
+    simpa only [TD, TStructure.triangleLEGE_obj_obj₃] using
+      t'.isGE_truncGE_obj (F.obj X) (n + 1) (n + 1)
+  simpa only [TC, TD] using
+    (t'.triangle_iso_exists hFTC hTD (Iso.refl _) n (n + 1)
+      hFTC₁ hFTC₃ hTD₁ hTD₃ (by omega)).choose
+
+/-- The coconnective truncation comparison of a t-exact functor. -/
+noncomputable def mapTruncLEIso (n : ℤ) (X : C) :
+    F.obj ((t.truncLE n).obj X) ≅ (t'.truncLE n).obj (F.obj X) :=
+  Triangle.π₁.mapIso (mapTriangleLEGEIso F t t' n X)
+
+/-- The connective truncation comparison of a t-exact functor. -/
+noncomputable def mapTruncGEIso (n : ℤ) (X : C) :
+    F.obj ((t.truncGE n).obj X) ≅ (t'.truncGE n).obj (F.obj X) :=
+  by
+    simpa only [Functor.mapTriangle_obj, Triangle.π₃, Triangle.mk,
+      TStructure.triangleLEGE_obj_obj₃, sub_add_cancel] using
+      Triangle.π₃.mapIso (mapTriangleLEGEIso F t t' (n - 1) X)
+
+/-- A t-exact functor which reflects zero objects also reflects the
+coconnective half of a t-structure. This is formula (A.3)'s reverse
+inclusion in the abstract large-category setting. -/
+theorem isLE_iff_of_reflectsZeroObjects
+    (hzero : ∀ E : C, IsZero (F.obj E) → IsZero E)
+    (X : C) (n : ℤ) :
+    t.IsLE X n ↔ t'.IsLE (F.obj X) n := by
+  constructor
+  · exact IsRightTExact.isLE_map X n
+  · intro hX
+    haveI : t'.IsLE (F.obj X) n := hX
+    have hTarget : IsZero ((t'.truncGE (n + 1)).obj (F.obj X)) :=
+      t'.isZero_truncGE_obj_of_isLE n (n + 1) rfl (F.obj X)
+    have hMapped : IsZero (F.obj ((t.truncGE (n + 1)).obj X)) :=
+      hTarget.of_iso (mapTruncGEIso F t t' (n + 1) X)
+    exact (t.isLE_iff_isZero_truncGE_obj n (n + 1) rfl X).2
+      (hzero _ hMapped)
+
+/-- A t-exact functor which reflects zero objects also reflects the
+connective half of a t-structure. This is formula (A.4)'s reverse inclusion
+in the abstract large-category setting. -/
+theorem isGE_iff_of_reflectsZeroObjects
+    (hzero : ∀ E : C, IsZero (F.obj E) → IsZero E)
+    (X : C) (n : ℤ) :
+    t.IsGE X n ↔ t'.IsGE (F.obj X) n := by
+  constructor
+  · exact IsLeftTExact.isGE_map X n
+  · intro hX
+    haveI : t'.IsGE (F.obj X) n := hX
+    have hTarget : IsZero ((t'.truncLT n).obj (F.obj X)) :=
+      t'.isZero_truncLT_obj_of_isGE n (F.obj X)
+    let e : F.obj ((t.truncLT n).obj X) ≅
+        (t'.truncLT n).obj (F.obj X) := by
+      simpa only [TStructure.truncLE, sub_add_cancel] using
+        mapTruncLEIso F t t' (n - 1) X
+    have hMapped : IsZero (F.obj ((t.truncLT n).obj X)) :=
+      hTarget.of_iso e
+    exact (t.isGE_iff_isZero_truncLT_obj n X).2 (hzero _ hMapped)
+
+/-- Boundedness descends along a t-exact zero-reflecting functor. This is the
+categorical boundedness argument in Step 4 of A.17. -/
+theorem isBounded_of_target
+    (hzero : ∀ E : C, IsZero (F.obj E) → IsZero E)
+    (hbounded : TStructure.IsBounded t') : TStructure.IsBounded t := by
+  intro X
+  obtain ⟨⟨a, ha⟩, ⟨b, hb⟩⟩ := hbounded (F.obj X)
+  exact ⟨⟨a, (isGE_iff_of_reflectsZeroObjects F t t' hzero X a).2 ha⟩,
+    ⟨b, (isLE_iff_of_reflectsZeroObjects F t t' hzero X b).2 hb⟩⟩
+
+end TruncationCompatibility
+
 /-- A t-exact functor carries the heart into the heart. -/
 theorem heart_map_of_isTExact [Functor.IsTExact F t t'] (X : C) (hX : t.heart X) :
     t'.heart (F.obj X) := by

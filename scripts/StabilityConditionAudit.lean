@@ -942,6 +942,9 @@ open CategoryTheory.Triangulated
 #print axioms CategoryTheory.Triangulated.AbelianHNFiltration.chain_strictMono
 #print axioms CategoryTheory.Triangulated.AbelianHNFiltration.factor_semistable
 #print axioms CategoryTheory.Triangulated.AbelianHNFiltration.factor_phase
+#print axioms CategoryTheory.Triangulated.AbelianHNFiltration.mk.sizeOf_spec
+#print axioms CategoryTheory.Triangulated.AbelianHNFiltration.nonempty
+#print axioms CategoryTheory.Triangulated.AbelianHNFiltration.phase
 #print axioms CategoryTheory.Triangulated.AbelianHNFiltration.phiPlus
 #print axioms CategoryTheory.Triangulated.AbelianHNFiltration.phiMinus
 #print axioms CategoryTheory.Triangulated.AbelianHNFiltration.phase_mem_range
@@ -1051,6 +1054,12 @@ open CategoryTheory.Triangulated
 #print axioms CategoryTheory.Functor.isLeftTExact_of_isGE_zero
 #print axioms CategoryTheory.Functor.isLeftTExact_rightAdjoint
 #print axioms CategoryTheory.Functor.isRightTExact_leftAdjoint
+#print axioms CategoryTheory.Functor.mapTriangleLEGEIso
+#print axioms CategoryTheory.Functor.mapTruncLEIso
+#print axioms CategoryTheory.Functor.mapTruncGEIso
+#print axioms CategoryTheory.Functor.isLE_iff_of_reflectsZeroObjects
+#print axioms CategoryTheory.Functor.isGE_iff_of_reflectsZeroObjects
+#print axioms CategoryTheory.Functor.isBounded_of_target
 #print axioms CategoryTheory.Functor.heart_map_of_isTExact
 #print axioms CategoryTheory.Functor.isRightTExact_comp
 #print axioms CategoryTheory.Functor.isLeftTExact_comp
@@ -1058,6 +1067,55 @@ open CategoryTheory.Triangulated
 #print axioms CategoryTheory.Functor.isRightTExact_id
 #print axioms CategoryTheory.Functor.isLeftTExact_id
 #print axioms CategoryTheory.Functor.isTExact_id
+
+/-! ## SF7.2 compact generation, Ind-extension, and A.17 core (#477) -/
+
+#print axioms CategoryTheory.Functor.PreservesSmallCoproducts
+#print axioms CategoryTheory.IsCompactObject
+#print axioms CategoryTheory.ObjectProperty.compactObjects
+#print axioms CategoryTheory.ObjectProperty.isCompactObject_of_iso
+#print axioms CategoryTheory.ObjectProperty.coprodClosure
+#print axioms CategoryTheory.ObjectProperty.coprodClosure.below.of_coproduct
+#print axioms CategoryTheory.ObjectProperty.coprodClosure.below.of_extension
+#print axioms CategoryTheory.ObjectProperty.coprodClosure.below.of_iso
+#print axioms CategoryTheory.ObjectProperty.coprodClosure.below.of_mem
+#print axioms CategoryTheory.ObjectProperty.coprodClosure.of_coproduct
+#print axioms CategoryTheory.ObjectProperty.coprodClosure.of_extension
+#print axioms CategoryTheory.ObjectProperty.coprodClosure.of_iso
+#print axioms CategoryTheory.ObjectProperty.coprodClosure.of_mem
+#print axioms CategoryTheory.ObjectProperty.instIsClosedUnderColimitsOfShapeCoprodClosureDiscrete
+#print axioms CategoryTheory.ObjectProperty.instIsClosedUnderIsomorphismsCompactObjects
+#print axioms CategoryTheory.ObjectProperty.instIsClosedUnderIsomorphismsCoprodClosure
+#print axioms CategoryTheory.ObjectProperty.instIsTriangulatedClosed₂CoprodClosure
+#print axioms CategoryTheory.ObjectProperty.le_coprodClosure
+#print axioms CategoryTheory.ObjectProperty.coprodClosure_le
+#print axioms CategoryTheory.ObjectProperty.coprodClosure_map_obj
+#print axioms CategoryTheory.Adjunction.isCompactObject_leftAdjoint_obj
+#print axioms CategoryTheory.Adjunction.compactObjects_map_leftAdjoint
+#print axioms CategoryTheory.Triangulated.TStructure.IsCompactlyGeneratedBy
+#print axioms CategoryTheory.Triangulated.TStructure.IsCompactlyGeneratedBy.compact
+#print axioms CategoryTheory.Triangulated.TStructure.IsCompactlyGeneratedBy.le_zero_eq
+#print axioms CategoryTheory.Triangulated.TStructure.IsCompactlyGeneratedBy.isLE_zero_of_generator
+#print axioms CategoryTheory.Functor.isRightTExact_of_compactlyGenerated
+#print axioms CategoryTheory.Adjunction.isTExact_of_compactlyGenerated
+#print axioms CategoryTheory.ObjectProperty.hasInducedTStructure_of_preimage
+#print axioms CategoryTheory.ObjectProperty.preimageLift
+#print axioms CategoryTheory.ObjectProperty.tStructure_isLE_iff_map
+#print axioms CategoryTheory.ObjectProperty.tStructure_isGE_iff_map
+#print axioms CategoryTheory.Triangulated.TStructure.boundedAisle
+#print axioms CategoryTheory.Triangulated.TStructure.IndExtensionData
+#print axioms CategoryTheory.Triangulated.TStructure.IndExtensionData.small_isBounded
+#print axioms CategoryTheory.Triangulated.TStructure.IndExtensionData.largeAisle
+#print axioms CategoryTheory.Triangulated.TStructure.IndExtensionData.compactlyGenerated
+#print axioms CategoryTheory.Triangulated.TStructure.IndExtensionData.hasInduced
+#print axioms CategoryTheory.Triangulated.TStructure.IndExtensionData.isLE_iff
+#print axioms CategoryTheory.Triangulated.TStructure.IndExtensionData.isGE_iff
+#print axioms CategoryTheory.Triangulated.Polishchuk.InducedTStructureData
+#print axioms CategoryTheory.Triangulated.Polishchuk.InducedTStructureData.tStructure
+#print axioms CategoryTheory.Triangulated.Polishchuk.InducedTStructureData.isBounded
+#print axioms CategoryTheory.Triangulated.Polishchuk.InducedTStructureData.isLE_iff
+#print axioms CategoryTheory.Triangulated.Polishchuk.InducedTStructureData.isGE_iff
+#print axioms CategoryTheory.Triangulated.Polishchuk.induce
 
 /-! ## Repository-owned t-structure heart bridges -/
 

@@ -864,6 +864,23 @@ fidelity:
     transfer axioms without an HN-existence argument. The large-category
     construction of the induced t-structures themselves remains #477.
 
+    COUNT UPDATE (SF7.2 compact-generation and A.17 core), 2026-08-16.
+    `IsCompactObject` is preservation of small coproducts by Hom, and the
+    inductive `ObjectProperty.coprodClosure` has the literal generator,
+    isomorphism, coproduct, and extension constructors of Definition A.11 plus
+    its least-closure theorem. Left adjoints to coproduct-preserving functors
+    preserve compact objects. Compactly generated aisles now prove the
+    functorial right-t-exactness argument of A.16 and Step 1 of A.17. T-exact
+    functors commute with both chosen truncations up to proved isomorphism;
+    zero reflection yields the two recognition equivalences, and target
+    boundedness yields source boundedness. `ObjectProperty` restriction proves
+    truncation stability rather than assuming it, and `Polishchuk.induce`
+    assembles categorical Steps 1--4 with formulas (A.3) and (A.4).
+    `TStructure.IndExtensionData` records clauses (i)--(iii) of A.14 as theorem
+    output. No declaration asserts A.13 or A.14 existence: their
+    Brown-representability/Neeman construction and the scheme S-locality layer
+    remain the open part of #477/#476.
+
     COUNT UPDATE (destination issue #226; owner-controlled Bridgeland
     foundation), 2026-08-12. The first Mathlib-only foundation slice adds
     repository-owned Postnikov towers, HN filtrations, slicings, elementary
