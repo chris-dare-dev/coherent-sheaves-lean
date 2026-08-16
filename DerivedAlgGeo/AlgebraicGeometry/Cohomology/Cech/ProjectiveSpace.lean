@@ -4,7 +4,9 @@ Released under the MIT license.
 -/
 import DerivedAlgGeo.AlgebraicGeometry.Proj.Modules.ProjectiveSpace
 import DerivedAlgGeo.Topology.Opens.Limits
+import DerivedAlgGeo.Algebra.Category.Grp.Preadditive
 import DerivedAlgGeo.Algebra.Category.Grp.Products
+import DerivedAlgGeo.AlgebraicGeometry.Cohomology.Cech.Differential
 import Mathlib.CategoryTheory.Sites.SheafCohomology.Cech
 
 /-!
@@ -19,12 +21,19 @@ product of homogeneous degree-zero localizations.
 * `polynomialVariableChart` — the variable basic-open cover of polynomial `Proj`;
 * `twistPresheaf` — the `AddCommGrpCat`-valued presheaf of `O(d)`, which is what Mathlib's
   Čech complex consumes;
-* `cechCochainsDegreewiseAddEquiv` — the degreewise comparison.
+* `cechCochainsDegreewiseAddEquiv` — the degreewise comparison;
+* `polynomialVariableCechComplex` — the algebraic Čech complex, with the differential carried
+  across that comparison;
+* `polynomialVariableCechComplexIso` — Mathlib's Čech complex *is* that algebraic complex.
 
 ## Main statements
 
 * `piObj_polynomialVariableChart` — the categorical product of the charts along a Čech index
-  is the basic open of the product denominator.
+  is the basic open of the product denominator;
+* `cechIndexEquiv_map_face` — the comparison carries a Čech face restriction to the algebraic
+  face map;
+* `cechCochainsDegreewiseAddEquiv_d` and `polynomialVariableCechComplex_d_apply` — the
+  differential is the alternating sum of the algebraic faces.
 
 ## Implementation notes
 
@@ -52,9 +61,17 @@ Degree `n` of the complex is *definitionally* the product over `Fin (n + 1) → 
 or unfolding lemma is needed to expose it, and `AddCommGrpCat.piAddEquivPi` applies to it
 directly.
 
-This is a degreewise statement only. Promoting it to an isomorphism of cochain complexes needs
-the Čech differential transported through it, which is separate work; nothing here asserts
-compatibility with the differential.
+**The differential.** `cechCochainsDegreewiseAddEquiv` compares one degree at a time;
+`polynomialVariableCechComplex` carries the differential across it, so `d ∘ d = 0` and the
+comparison isomorphism are both free, and the alternating-sum formula is a theorem about the
+complex rather than an obligation inside its construction.
+
+That formula is stated twice. `cechCochainsDegreewiseAddEquiv_d` reads Mathlib's differential
+through the comparison, and `polynomialVariableCechComplex_d_apply` phrases the same fact
+against the algebraic complex's own `d`. The first is the one to prove things with: the second
+puts the equation under the complex's carrier coercion, where `.X n` is semireducible and
+`CochainComplex.of.d` hides behind a `dite`, so a cochain has to be typed in the carrier rather
+than in the bare `Pi` type for anything to rewrite.
 
 ## Tags
 
@@ -223,6 +240,51 @@ noncomputable def cechCochainsIso (d n : ℕ) :
       AddCommGrpCat.of (polynomialVariableCechCochains ι k d n) :=
   (cechCochainsDegreewiseAddEquiv ι k d n).toAddCommGrpIso
 
+/-- **The Čech differential in homogeneous localizations.** Reading Mathlib's Čech differential
+through the degreewise comparison gives the alternating sum of the algebraic face maps.
+
+This is the computable form of the differential, and it is stated against the comparison rather
+than against `polynomialVariableCechComplex`'s own `d` on purpose: the latter puts the equation
+under the complex's carrier coercion, where `.X n` is semireducible and neither `rw` nor `show`
+reaches the `Pi` type being indexed. `polynomialVariableCechComplex_d_apply` derives that form
+from this one, where `CochainComplex.of_d` applies to a morphism instead. -/
+theorem cechCochainsDegreewiseAddEquiv_d (d n : ℕ)
+    (t : ((cechComplexOfTwist ι k d).X n : AddCommGrpCat)) (x : Fin (n + 2) → ι) :
+    cechCochainsDegreewiseAddEquiv ι k d (n + 1)
+        (ConcreteCategory.hom ((cechComplexOfTwist ι k d).d n (n + 1)) t) x =
+      ∑ j : Fin (n + 2), (-1 : ℤ) ^ (j : ℕ) •
+        polynomialVariableCechFace ι k d x j
+          (cechCochainsDegreewiseAddEquiv ι k d n t (x ∘ j.succAbove)) := by
+  rw [cechCochainsDegreewiseAddEquiv_apply]
+  have hproj : AddCommGrpCat.piAddEquivPi _
+      (ConcreteCategory.hom ((cechComplexOfTwist ι k d).d n (n + 1)) t) x =
+      ConcreteCategory.hom ((cechComplexOfTwist ι k d).d n (n + 1) ≫ Limits.Pi.π _ x) t := by
+    rw [ConcreteCategory.comp_apply]
+    exact AddCommGrpCat.piIsoPi_hom_eval_apply _ x _
+  rw [hproj]
+  -- The generic coordinate formula, supplied as an equation so that unification rather than
+  -- syntactic matching bridges the `HasProduct` instance and the `cechTermFamily` abbreviation.
+  have hd : (cechComplexOfTwist ι k d).d n (n + 1) ≫ Limits.Pi.π _ x =
+      ∑ j : Fin (n + 2), (-1 : ℤ) ^ (j : ℕ) •
+        (Limits.Pi.π _ (((cechNerve (polynomialVariableChart ι k)).map
+            (SimplexCategory.δ j).op).f x) ≫
+          (twistPresheaf ι k d).map (((cechNerve (polynomialVariableChart ι k)).map
+            (SimplexCategory.δ j).op).φ x).op) :=
+    cechComplexFunctor_d_π _ _ x
+  rw [hd]
+  refine (congrArg (cechIndexEquiv ι k d x)
+    (AddCommGrpCat.hom_sum_zsmul_apply Finset.univ
+      (fun j : Fin (n + 2) => (-1 : ℤ) ^ (j : ℕ)) _ t)).trans ?_
+  rw [map_sum]
+  refine Finset.sum_congr rfl fun j _ => ?_
+  rw [map_zsmul]
+  refine (congrArg (fun z => (-1 : ℤ) ^ (j : ℕ) • cechIndexEquiv ι k d x z)
+    (ConcreteCategory.comp_apply _ _ t)).trans ?_
+  refine (congrArg (fun z => (-1 : ℤ) ^ (j : ℕ) • z)
+    (cechIndexEquiv_map_face ι k d x j _ _)).trans ?_
+  congr 2
+
+
 /-- The algebraic Čech complex of `O(d)`: in degree `n`, the explicit product of degree-zero
 homogeneous localizations, with the differential carried over from Mathlib's Čech complex. -/
 noncomputable def polynomialVariableCechComplex (d : ℕ) :
@@ -247,5 +309,39 @@ noncomputable def polynomialVariableCechComplexIso (d : ℕ) :
     intro i j hij
     obtain rfl : i + 1 = j := hij
     simp [polynomialVariableCechComplex, CochainComplex.of_d])
+
+/-- The differential of the algebraic Čech complex, in coordinates.
+
+The complex is defined by transport, so this is what makes it computable: `Hⁱ(Pⁿ, O(d))` is the
+cohomology of a complex of homogeneous localizations whose differential is the alternating sum
+of the explicit face maps.
+
+`s` is taken in the complex's own carrier rather than in
+`polynomialVariableCechCochains ι k d n`. The two are definitionally equal, but only the former
+lets the differential be rewritten: `CochainComplex.of.d` hides behind a `dite` that only
+`CochainComplex.of_d` opens, and with `s` typed as the bare `Pi` type the rewritten term fails
+to be type-correct at `instances` transparency. -/
+theorem polynomialVariableCechComplex_d_apply (d n : ℕ)
+    (s : ((polynomialVariableCechComplex ι k d).X n : AddCommGrpCat))
+    (x : Fin (n + 2) → ι) :
+    ConcreteCategory.hom ((polynomialVariableCechComplex ι k d).d n (n + 1)) s x =
+      ∑ j : Fin (n + 2), (-1 : ℤ) ^ (j : ℕ) •
+        polynomialVariableCechFace ι k d x j (s (x ∘ j.succAbove)) := by
+  have hd : (polynomialVariableCechComplex ι k d).d n (n + 1) =
+      (cechCochainsIso ι k d n).inv ≫ (cechComplexOfTwist ι k d).d n (n + 1) ≫
+        (cechCochainsIso ι k d (n + 1)).hom := by
+    simp [polynomialVariableCechComplex, CochainComplex.of_d]
+  have happ := congrArg (fun m : (polynomialVariableCechComplex ι k d).X n ⟶
+      (polynomialVariableCechComplex ι k d).X (n + 1) => ConcreteCategory.hom m s) hd
+  refine (congrArg
+    (fun z : polynomialVariableCechCochains ι k d (n + 1) => z x) happ).trans ?_
+  show cechCochainsDegreewiseAddEquiv ι k d (n + 1)
+      (ConcreteCategory.hom ((cechComplexOfTwist ι k d).d n (n + 1))
+        (ConcreteCategory.hom (cechCochainsIso ι k d n).inv s)) x = _
+  rw [cechCochainsDegreewiseAddEquiv_d]
+  refine Finset.sum_congr rfl fun j _ => ?_
+  congr 2
+  exact congrArg (fun z : polynomialVariableCechCochains ι k d n => z (x ∘ j.succAbove))
+    ((cechCochainsDegreewiseAddEquiv ι k d n).apply_symm_apply s)
 
 end AlgebraicGeometry.Proj

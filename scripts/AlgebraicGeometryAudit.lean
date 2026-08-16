@@ -147,6 +147,13 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Proj.cechCochainsIso
 #print axioms AlgebraicGeometry.Proj.polynomialVariableCechComplex
 #print axioms AlgebraicGeometry.Proj.polynomialVariableCechComplexIso
+-- The differential in coordinates (#440). Stated twice: through the comparison, which is the
+-- form to prove with, and against the complex's own d, which needs its cochain typed in the
+-- carrier because CochainComplex.of.d hides behind a dite and .X n is semireducible.
+#print axioms AddCommGrpCat.hom_sum_apply
+#print axioms AddCommGrpCat.hom_sum_zsmul_apply
+#print axioms AlgebraicGeometry.Proj.cechCochainsDegreewiseAddEquiv_d
+#print axioms AlgebraicGeometry.Proj.polynomialVariableCechComplex_d_apply
 #print axioms AlgebraicGeometry.Proj.AffineComparisonDataOn
 #print axioms AlgebraicGeometry.Proj.AffineComparisonDataOn.localQuasicoherentData
 #print axioms AlgebraicGeometry.Proj.AffineComparisonDataOn.associatedSheaf_isQuasicoherent
