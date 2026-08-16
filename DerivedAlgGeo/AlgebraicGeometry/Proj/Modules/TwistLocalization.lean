@@ -771,6 +771,39 @@ theorem intShiftZeroLinearEquiv_apply_mk (hf : f ∈ 𝒜 1) (d : ℤ) (hfS : f 
   · ext
     exact mul_comm _ _
 
+/-- The numerator of the inverse trivialization lies in the twist it should. -/
+theorem mul_pow_toNat_mem_intShift (hf : f ∈ 𝒜 1) (d : ℤ) (n : ℕ) (a : A)
+    (ha : a ∈ intShift 𝒜 0 n) : a * f ^ d.toNat ∈ intShift 𝒜 d (n + (-d).toNat) := by
+  simp only [intShift_apply, mem_intShiftPiece] at ha ⊢
+  rcases ha with rfl | ⟨k, hk, ha⟩
+  · exact Or.inl (zero_mul _)
+  · refine Or.inr ⟨k + d.toNat, by push_cast at hk ⊢; omega, ?_⟩
+    simpa using SetLike.mul_mem_graded ha (SetLike.pow_mem_graded d.toNat hf)
+
+/-- The inverse trivialization in explicit fractions, again in one formula for both signs. -/
+@[simp]
+theorem intShiftZeroLinearEquiv_symm_apply_mk (hf : f ∈ 𝒜 1) (d : ℤ) (hfS : f ∈ S)
+    (c : NumDenSameDeg 𝒜 (intShift 𝒜 0) S) :
+    (intShiftZeroLinearEquiv 𝒜 hf d hfS).symm (DegreeZeroLocalization.mk c) =
+      DegreeZeroLocalization.mk
+        { deg := c.deg + (-d).toNat
+          num := ⟨(c.num : A) * f ^ d.toNat,
+            mul_pow_toNat_mem_intShift 𝒜 hf d c.deg (c.num : A) c.num.2⟩
+          den := ⟨(c.den : A) * f ^ (-d).toNat, by
+            simpa using SetLike.mul_mem_graded c.den.2
+              (SetLike.pow_mem_graded (-d).toNat hf)⟩
+          den_mem := S.mul_mem c.den_mem (S.pow_mem hfS (-d).toNat) } := by
+  apply ext
+  change Localization.mk (f ^ d.toNat) (twistPowerOfMem (f := f) (-d).toNat hfS) •
+      LocalizedModule.mk (c.num : A) ⟨(c.den : A), c.den_mem⟩ =
+    LocalizedModule.mk ((c.num : A) * f ^ d.toNat)
+      ⟨(c.den : A) * f ^ (-d).toNat, S.mul_mem c.den_mem (S.pow_mem hfS (-d).toNat)⟩
+  rw [LocalizedModule.mk_smul_mk]
+  congr 1
+  · exact mul_comm _ _
+  · ext
+    exact mul_comm _ _
+
 end IntShift
 
 end DegreeZeroLocalization
