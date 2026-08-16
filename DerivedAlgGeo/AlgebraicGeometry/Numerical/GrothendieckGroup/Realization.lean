@@ -45,12 +45,13 @@ further work and would need `c₁` additive at minimum.
 `NumericalRealization` follows the convention the stability-families track uses
 for geometric input: the datum is named, so that the obligation is auditable,
 and nothing here discharges it.  For an actual smooth projective `X` the
-realization would be `K₀(D^b(Coh X)) → N(X)`.  Every ingredient of that is
-missing at the pin:
+realization would be `K₀(D^b(Coh X)) → N(X)`.  The ingredients of that are
+missing or unconnected:
 
-* `D^b(Coh X)` does not exist here.  `Families.SchemeDerivedCategory` is the
-  derived category of **all** sheaves of modules and says in its own docstring
-  that no bounded coherent or perfect subcategory is identified;
+* `D^b(Coh X)` itself now exists —
+  `Families.BoundedGeometry.SchemeBoundedCoherentDerivedCategory`, with
+  `Perf(X)` inside it — but nothing connects it to this file: no class map
+  out of its `K₀` is constructed, and this file does not import it;
 * the Chern character of an object of a derived category does not exist --
   `NumericalVariety.chComp` is a field of the axiomatic interface, defined on
   the abstract `N`, not computed from a complex;
