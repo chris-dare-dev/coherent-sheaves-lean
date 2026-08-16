@@ -4,6 +4,7 @@ Released under the MIT license.
 -/
 import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Phase.Transfer.Equivariance
 import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Phase.Transfer.InducedTStructures
+import DerivedAlgGeo.CategoryTheory.Triangulated.CompactlyGenerated.Polishchuk
 import Mathlib.CategoryTheory.Adjunction.Basic
 
 /-!
@@ -11,17 +12,20 @@ import Mathlib.CategoryTheory.Adjunction.Basic
 
 Appendix A of arXiv:2607.28411v1 proves that a raw preimage collection is a
 slicing only under substantial extra hypotheses.  In Theorem A.17 these
-include presentable/Ind-completed categories, boundedness reflection, and
+include compactly generated large categories, boundedness reflection, and
 right t-exactness of the monad; Corollary A.23 uses the dual condition
 `Phi PhiL(P(phi)) ⊆ P(≥ phi)`.  Propositions 3.3 and 3.8 then verify the
 corresponding geometric conditions for finite and faithfully-flat morphisms.
 
-This file records the categorical shadow visible in the current bounded
-triangulated API.  It does **not** assert that adjunction plus conservativity
-produces a slicing: Remarks 3.2 and 3.7 explicitly say otherwise.  The actual
-bounded intermediate output is `Slicing.InducedTStructures`, whose fields are
-the recognition formulas (A.8); its Hom-vanishing consequence is proved in
-`Phase.Transfer.InducedTStructures`.
+The repository now owns the large-category definitions of compact objects and
+`Coprod`, adjoint compactness, generated-aisle functoriality, the categorical
+Steps 1--4 of A.17, bounded restriction, and formulas (A.3)/(A.4); see
+`CompactlyGenerated.Polishchuk`. It does **not** assert that adjunction plus
+conservativity produces a slicing: Remarks 3.2 and 3.7 explicitly say
+otherwise. The remaining theorem boundary is the A.13/A.14 large t-structure
+existence and its scheme realization. The bounded phase output is
+`Slicing.InducedTStructures`; Corollary A.23's finite HN argument from that
+output is proved in `Phase.Transfer.HN`.
 -/
 
 noncomputable section
@@ -62,11 +66,13 @@ structure Slicing.LeftAdjointInducingPremise (s : Slicing D)
 
 /-- The legacy global theorem input still used by the geometric callers.
 
-No inhabitant is provided in this repository.  Its premise is only a bounded
-shadow and is not asserted to imply its conclusion.  SF7 replaces callers of
-this proposition by the actual Theorem-A.17 hypotheses and constructs
-`Slicing.InducedTStructures`; the Corollary-A.23 phase-truncation theorem from
-that output to `PreimageData` is now proved in `Phase.Transfer.HN`. -/
+No inhabitant is provided in this repository. Its premise is only a bounded
+shadow and is not asserted to imply its conclusion. SF7 now constructs the
+categorical A.17 output from an actually constructed compactly generated
+source t-structure; A.13/A.14 existence and the scheme realization remain
+explicit. The Corollary-A.23 phase-truncation theorem from
+`Slicing.InducedTStructures` to `PreimageData` is proved in
+`Phase.Transfer.HN`. -/
 def HasLeftAdjointInducingTheorem : Prop :=
   ∀ {C : Type u₁} [Category.{v₁} C] [HasZeroObject C] [HasShift C ℤ]
       [Preadditive C] [∀ n : ℤ, (shiftFunctor C n).Additive]
