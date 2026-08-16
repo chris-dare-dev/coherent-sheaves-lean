@@ -264,6 +264,13 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Proj.intShiftSectionToZeroOn_apply
 #print axioms AlgebraicGeometry.Proj.intShiftSectionFromZeroOn_apply
 #print axioms AlgebraicGeometry.Proj.intShiftFiberLinearEquivOfMem_symm_apply_mk
+-- 3b closed. The five-step composite has to be named by `change` before anything rewrites:
+-- simp will not unfold it far enough to expose the mk argument, because two steps are AddEquiv
+-- transports whose apply lemmas only fire once the argument is already in mk form.
+#print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.linearEquivOfMemIff_mk
+#print axioms AlgebraicGeometry.Proj.intCechTermSectionAddEquiv_apply_mk
+#print axioms AlgebraicGeometry.Proj.intCechTermSectionAddEquiv_toAddMonoidHom
+#print axioms AlgebraicGeometry.Proj.moduleAwayToSection_intCechDenominator_bijective
 -- G2 (#339): the algebraic Cech term is the sections of O(d) on that intersection. The
 -- denominator has degree n+1, so the algebraic trivialization goes through invertibility
 -- (X_mul_cechCofactor) rather than membership, and the sheaf-level one through the first
