@@ -3287,3 +3287,19 @@ proof hole.
 #print axioms CategoryTheory.Triangulated.K₀.map_comp_map_eq_id
 #print axioms CategoryTheory.Triangulated.K₀.mapAddEquiv
 #print axioms CategoryTheory.Triangulated.K₀.mapAddEquiv_apply
+
+/-! ## The alternating sum along a bounded exact sequence
+
+Pure linear algebra: rank-nullity plus an induction. Mathlib's
+`Algebra.Homology.EulerCharacteristic` defines `eulerChar` but proves no
+relation to homology and nothing about exact complexes, so this is the
+arithmetic engine a Hom-built Euler form would run on. It is NOT that form,
+and nothing here mentions a category.
+-/
+
+#print axioms DerivedAlgGeo.LinearAlgebra.diffRank
+#print axioms DerivedAlgGeo.LinearAlgebra.finrank_eq_finrank_ker_add_diffRank
+#print axioms DerivedAlgGeo.LinearAlgebra.finrank_eq_diffRank_add_diffRank
+#print axioms DerivedAlgGeo.LinearAlgebra.sum_range_succ_smul_finrank
+#print axioms DerivedAlgGeo.LinearAlgebra.sum_range_succ_smul_finrank_eq_zero
+#print axioms DerivedAlgGeo.LinearAlgebra.diffRank_eq_zero_of_subsingleton
