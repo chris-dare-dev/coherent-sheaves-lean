@@ -13,7 +13,6 @@ import DerivedAlgGeo.AlgebraicGeometry.IntersectionTheory.ChernCharacter.Basic
 import DerivedAlgGeo.AlgebraicGeometry.Numerical.Specializations.Surface
 import DerivedAlgGeo.AlgebraicGeometry.Numerical.Specializations.Threefold
 import DerivedAlgGeo.AlgebraicGeometry.Numerical.Specializations.Fourfold
-import DerivedAlgGeo.Development.AlgebraicGeometry.Divisors.API
 
 open AlgebraicGeometry AlgebraicGeometry.Numerical
 
