@@ -3,6 +3,7 @@ Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under the MIT license.
 -/
 import DerivedAlgGeo.CategoryTheory.Triangulated.FourierMukai.GrothendieckGroup
+import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Symmetry.Autoequivalence.Stability.ClassMap
 import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Symmetry.Autoequivalence.Stability.Composition
 import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Symmetry.Autoequivalence.Stability.Transport
 
@@ -43,14 +44,25 @@ issue #453 removed.
   terms of the dual kernel's own class map rather than the opaque
   `K₀.mapF Φ.inverse` (`actStabOfDual`), and the two kernels' class maps are
   proved mutually inverse (`transformK₀_dual_comp`).
-* **No group of kernel autoequivalences.** The bundled group action on
-  stability conditions does exist elsewhere: `GroupAction.AutPairQuot v` in
-  `Stability/ClassMap.lean` is a `Group` with a `MulAction` on
-  `WithClassMap C v`, for autoequivalence–`lam` pairs with `lam` invertible.
-  What does not exist is a map from kernel autoequivalences into it as a
-  monoid: `trans` needs supplied `ConvolutionData` for each pair, so
-  kernel-tracked composition carries no identity law and forms no group.
-  `trans` and `actStab_trans` give only the associativity clause.
+* **No group of kernel autoequivalences, and no monoid map into one.** The
+  bundled group action on stability conditions exists elsewhere:
+  `GroupAction.AutPairQuot v` in `Stability/ClassMap.lean` is a `Group` with a
+  `MulAction` on `WithClassMap C v`, for autoequivalence–`lam` pairs with
+  `lam` invertible. `toAutPair` sends a kernel autoequivalence equipped with a
+  `DualKernel` and a compatible `lam : Λ ≃+ Λ` to one element of
+  `GroupAction.AutPair v`, and `mk_toAutPair_smul` identifies that element's
+  `AutPairQuot` action with `actStabOfDual`. That is a map on *elements* only.
+  It is not a monoid homomorphism and is not claimed to be one: there is no
+  multiplication on the source to preserve, because composing two kernel
+  autoequivalences needs a `ConvolutionData` supplied per pair (`trans`), and
+  no distinguished unit either, because `id` needs a supplied
+  `UnitKernelData`. `trans`/`actStab_trans` give the associativity clause and
+  `UnitKernelData`/`id`/`toDualKernel` give a unit *object*, but no identity
+  **law** relating the two is proved here — that would need convolution data
+  comparing a correspondence with itself, which nothing supplies.
+* **Nothing constructs a `UnitKernelData`.** That `𝒪_Δ` presents the identity
+  as a transform is the classical statement, and it needs the geometry the
+  abstract `Correspondence` does not carry.
 * Nothing about Bridgeland's `Stab(X)` as a manifold, and no continuity or
   local-homeomorphism claim for the induced map.
 -/
@@ -190,6 +202,32 @@ theorem transformK₀_comp_dual :
   exact K₀.map_comp_map_eq_id A.equiv.inverse A.equiv.functor
     A.equiv.counitIso
 
+omit [IsTriangulated C] in
+/-- **The kernel's class map, as an automorphism of `K₀ C`.**
+
+The two `comp` lemmas above are exactly the two round-trip identities
+`AddMonoidHom.toAddEquiv` asks for, so the bundling is bookkeeping. What it
+records is that having a `DualKernel` is what makes the class map invertible:
+`transformK₀` on its own is not claimed invertible anywhere
+(`FourierMukai/GrothendieckGroup.lean` says so explicitly), and the inverse
+here is the *dual kernel's* class map, not an abstract inverse.
+
+The equivalence is on `K₀ C`, not on a class lattice `Λ`. Nothing here maps
+`Λ` — `toAutPair` still takes its `lam` as supplied data. -/
+def transformK₀AddEquiv : K₀ C ≃+ K₀ C :=
+  AddMonoidHom.toAddEquiv (A.corr.transformK₀ A.kernel)
+    (A.corr.transformK₀ D.dual) D.transformK₀_dual_comp D.transformK₀_comp_dual
+
+omit [IsTriangulated C] in
+@[simp]
+theorem transformK₀AddEquiv_apply (x : K₀ C) :
+    D.transformK₀AddEquiv x = A.corr.transformK₀ A.kernel x := rfl
+
+omit [IsTriangulated C] in
+@[simp]
+theorem transformK₀AddEquiv_symm_apply (x : K₀ C) :
+    D.transformK₀AddEquiv.symm x = A.corr.transformK₀ D.dual x := rfl
+
 end DualKernel
 
 end Dual
@@ -200,6 +238,23 @@ variable {Λ : Type u'} [AddCommGroup Λ] (v : K₀ C →+ Λ)
   [A.equiv.functor.Additive] [A.equiv.inverse.Additive]
   [A.equiv.functor.CommShift ℤ] [A.equiv.inverse.CommShift ℤ]
   [A.equiv.functor.IsTriangulated] [A.equiv.inverse.IsTriangulated]
+
+/-- The underlying triangulated autoequivalence, with the ambient instances
+packed into `TriEquiv`'s fields.
+
+Nothing is added and nothing is proved: `TriEquiv` bundles instances that the
+use site already has, and this is the repackaging. `@[reducible]` for the same
+reason as `trans` — the fields must stay visible to instance search and to the
+defeq checks that `toAutPair_act` relies on. -/
+@[reducible]
+def toTriEquiv : GroupAction.TriEquiv C where
+  e := A.equiv
+  fAdd := inferInstance
+  iAdd := inferInstance
+  fCS := inferInstance
+  iCS := inferInstance
+  fTri := inferInstance
+  iTri := inferInstance
 
 /-- **A kernel autoequivalence transports a stability condition.**
 
@@ -260,6 +315,69 @@ theorem actStabOfDual_slicing (lam : Λ →+ Λ) (hlam) (σ) :
 @[simp]
 theorem actStabOfDual_Z (lam : Λ →+ Λ) (hlam) (σ) (x : Λ) :
     (A.actStabOfDual v D lam hlam σ).Z x = σ.Z (lam x) :=
+  rfl
+
+/-! ### Entry into the group
+
+`Stability/ClassMap.lean` builds a genuine `Group` — `AutPairQuot v` — acting
+on `WithClassMap C v`, out of pairs `(Φ, lam)` with `lam` invertible. The
+three declarations below put a kernel autoequivalence into it and check that
+nothing changes: the group element's action *is* `actStabOfDual`.
+
+The strengthening relative to `actStabOfDual` is `lam`'s invertibility, and it
+is a real hypothesis, not repackaging — `AutPair`'s own docstring makes the
+point. A kernel autoequivalence with a non-invertible compatible `lam` still
+transports stability conditions via `actStabOfDual`; it just is not a member
+of this group. -/
+
+/-- **A kernel autoequivalence with a dual kernel is an element of the acting
+group.**
+
+Every input is already on the table: `A` supplies the autoequivalence, `D`
+makes both directions kernel-computable, and `lam` is the class-lattice
+automorphism — supplied, exactly as in `AutPair`, because `v` is arbitrary and
+nothing recovers `lam` from `A`.
+
+The hypothesis is in kernel terms, matching `actStabOfDual` rather than
+`actStab`: `AutPair.compat` is stated against the opaque
+`K₀.mapF A.equiv.inverse`, and `mapF_inverse_eq_transformK₀` is what turns the
+checkable premise into it. That identification is the whole content of this
+definition. -/
+def toAutPair (lam : Λ ≃+ Λ)
+    (hlam : ∀ x : K₀ C, v (A.corr.transformK₀ D.dual x) = lam (v x)) :
+    GroupAction.AutPair v where
+  Φ := A.toTriEquiv
+  lam := lam
+  compat x := by
+    show v (K₀.mapF A.equiv.inverse x) = lam (v x)
+    rw [show K₀.mapF A.equiv.inverse = A.corr.transformK₀ D.dual from
+      D.mapF_inverse_eq_transformK₀]
+    exact hlam x
+
+omit [IsTriangulated C] in
+@[simp]
+theorem toAutPair_lam (lam : Λ ≃+ Λ) (hlam) :
+    (A.toAutPair v D lam hlam).lam = lam := rfl
+
+/-- **The group element acts by the transport it came from.**
+
+`rfl`: `AutPair.act` is `actStabAut` with the datum bundled, `actStabOfDual`
+is `actStabAut` with a rewritten premise, and the premises are propositions.
+Stated anyway, because "the element exists" and "the element acts the way you
+expect" are different claims and only the second is worth citing. -/
+theorem toAutPair_act (lam : Λ ≃+ Λ) (hlam) (σ) :
+    (A.toAutPair v D lam hlam).act σ =
+      A.actStabOfDual v D lam.toAddMonoidHom (fun x => hlam x) σ :=
+  rfl
+
+/-- The same statement at the quotient, where the `MulAction` actually lives.
+
+This is the sentence the round-2 review found missing: the transported
+stability condition is the image of `σ` under a group element, not merely the
+value of a map. -/
+theorem mk_toAutPair_smul (lam : Λ ≃+ Λ) (hlam) (σ) :
+    GroupAction.AutPairQuot.mk (A.toAutPair v D lam hlam) • σ =
+      A.actStabOfDual v D lam.toAddMonoidHom (fun x => hlam x) σ :=
   rfl
 
 end OfDual
@@ -351,6 +469,78 @@ theorem KernelAutoequivalence.actStab_trans (A₁ : KernelAutoequivalence C 𝒲
   actStabAut_trans v A₁.equiv A₂.equiv h₁ h₂ σ
 
 end Trans
+
+section Identity
+
+/-- A **unit kernel**: a kernel presenting the identity functor as a transform.
+
+Classically this is `𝒪_Δ ∈ D(X × X)`, and that its transform is the identity is
+a theorem about the diagonal. Here it is supplied, like every other geometric
+input to this file. -/
+structure UnitKernelData (corr : Correspondence C C 𝒲) where
+  /-- The kernel. -/
+  unitKernel : 𝒲
+  /-- It presents `𝟭 C` as a transform of `corr`. -/
+  unitIso : 𝟭 C ≅ corr.transform unitKernel
+
+/-- **The identity kernel autoequivalence**, from a unit kernel.
+
+`Equivalence.refl.functor` and `Equivalence.refl.inverse` are both `𝟭 C`
+definitionally, so the one supplied isomorphism serves as `iso` here and as
+`invIso` in `UnitKernelData.toDualKernel`.
+
+`@[reducible]` for the same reason as `trans`: a use site's instance search
+has to see `equiv` as `Equivalence.refl`.
+
+This produces the unit **object**, and only that. It is not proved to be a
+unit for `trans`, and cannot be without convolution data comparing `corr` with
+itself — see the module docstring. -/
+@[reducible]
+def KernelAutoequivalence.id (corr : Correspondence C C 𝒲)
+    (U : UnitKernelData corr) : KernelAutoequivalence C 𝒲 where
+  corr := corr
+  kernel := U.unitKernel
+  equiv := CategoryTheory.Equivalence.refl
+  iso := U.unitIso
+
+omit [IsTriangulated C] in
+@[simp]
+theorem KernelAutoequivalence.id_kernel (corr : Correspondence C C 𝒲)
+    (U : UnitKernelData corr) :
+    (KernelAutoequivalence.id corr U).kernel = U.unitKernel := rfl
+
+omit [IsTriangulated C] in
+@[simp]
+theorem KernelAutoequivalence.id_equiv (corr : Correspondence C C 𝒲)
+    (U : UnitKernelData corr) :
+    (KernelAutoequivalence.id corr U).equiv = CategoryTheory.Equivalence.refl := rfl
+
+omit [IsTriangulated C] in
+@[simp]
+theorem KernelAutoequivalence.id_corr (corr : Correspondence C C 𝒲)
+    (U : UnitKernelData corr) :
+    (KernelAutoequivalence.id corr U).corr = corr := rfl
+
+/-- **The identity's dual kernel is the unit kernel itself.**
+
+The one place the identity costs nothing extra: `Equivalence.refl.inverse` is
+`𝟭 C`, so the same supplied isomorphism discharges `DualKernel.invIso`. Every
+`DualKernel` consequence — `transformK₀AddEquiv`, `actStabOfDual`,
+`toAutPair` — therefore applies to `KernelAutoequivalence.id` with no further
+geometric input. -/
+def UnitKernelData.toDualKernel {corr : Correspondence C C 𝒲}
+    (U : UnitKernelData corr) :
+    KernelAutoequivalence.DualKernel (KernelAutoequivalence.id corr U) where
+  dual := U.unitKernel
+  invIso := U.unitIso
+
+omit [IsTriangulated C] in
+@[simp]
+theorem UnitKernelData.toDualKernel_dual {corr : Correspondence C C 𝒲}
+    (U : UnitKernelData corr) :
+    U.toDualKernel.dual = U.unitKernel := rfl
+
+end Identity
 
 end
 
