@@ -896,6 +896,17 @@ fidelity:
     every audited declaration remains within `propext`, `Classical.choice`,
     and `Quot.sound` with no `sorryAx`.
 
+    COUNT UPDATE (destination issue #429; general flat-pullback exactness),
+    2026-08-15. A module-valued skyscraper adjunction identifies presheaf
+    pullback followed by a stalk with stalk followed by extension of scalars
+    along the induced map of local rings. Mathlib's flatness theorem for stalk
+    maps therefore supplies `IsExactPullback` for every flat scheme morphism.
+    The census reports 2966 authored declarations, 166 private declarations,
+    and 242 ungated structure-field projections. Audit issues 2600 commands
+    and covers 2558 distinct declarations: 1847 theorems, 81 structures, and
+    630 other constructions. The authored public non-projection audit gap is
+    zero, and no `sorryAx` reaches the audit.
+
     COUNT UPDATE (destination issue #236; owner deformation foundation),
     2026-08-13. The opening units of the sixth Mathlib-only foundation slice
     introduces an owner relative-phase lift for complex charges, proves its
