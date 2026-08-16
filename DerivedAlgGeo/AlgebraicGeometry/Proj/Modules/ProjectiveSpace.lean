@@ -566,6 +566,47 @@ abbrev polynomialVariableCechCochains
     (ι k : Type u) [Field k] (d n : ℕ) :=
   ∀ x : Fin (n + 1) → ι, polynomialVariableCechTerm ι k d n x
 
+/-! ## The algebraic Čech faces
+
+Dropping one index from a Čech tuple divides the denominator by exactly one variable. That is
+the `g₁ * h = g₂` shape `DegreeZeroLocalization.faceMap` consumes, and it is why the face maps
+cannot come from `mapOfLE`: `Submonoid.powers (∏ a ≠ j, X (x a))` is not contained in
+`Submonoid.powers (∏ a, X (x a))`. -/
+
+/-- Dropping the `j`-th index multiplies the Čech denominator back up by that variable. -/
+theorem polynomialVariableCechDenominator_succAbove
+    (ι k : Type u) [Field k] {n : ℕ} (x : Fin (n + 2) → ι) (j : Fin (n + 2)) :
+    polynomialVariableCechDenominator ι k (x ∘ j.succAbove) * MvPolynomial.X (x j) =
+      polynomialVariableCechDenominator ι k x := by
+  classical
+  rw [polynomialVariableCechDenominator, polynomialVariableCechDenominator,
+    Fin.prod_univ_succAbove (fun a : Fin (n + 2) => MvPolynomial.X (R := k) (x a)) j,
+    mul_comm]
+  rfl
+
+/-- The `j`-th Čech denominator divides the full one, in the `Submonoid.powers` form
+`faceMap` asks for. -/
+theorem polynomialVariableCechDenominator_succAbove_mem
+    (ι k : Type u) [Field k] {n : ℕ} (x : Fin (n + 2) → ι) (j : Fin (n + 2)) :
+    polynomialVariableCechDenominator ι k (x ∘ j.succAbove) * MvPolynomial.X (x j) ∈
+      Submonoid.powers (polynomialVariableCechDenominator ι k x) :=
+  ⟨1, by
+    show polynomialVariableCechDenominator ι k x ^ 1 = _
+    rw [pow_one, polynomialVariableCechDenominator_succAbove]⟩
+
+/-- The `j`-th face of the algebraic Čech complex: restrict a degree-`d` fraction from the
+`(n + 1)`-fold intersection indexed by `x ∘ j.succAbove` to the `(n + 2)`-fold one indexed
+by `x`. -/
+noncomputable def polynomialVariableCechFace
+    (ι k : Type u) [Field k] (d : ℕ) {n : ℕ} (x : Fin (n + 2) → ι) (j : Fin (n + 2)) :
+    polynomialVariableCechTerm ι k d n (x ∘ j.succAbove) →+
+      polynomialVariableCechTerm ι k d (n + 1) x :=
+  DegreeZeroLocalization.faceMap
+    (𝓜 := natShift (polynomialGrading ι k) d)
+    (MvPolynomial.isHomogeneous_X k (x j))
+    (polynomialVariableCechDenominator_succAbove_mem ι k x j)
+    (polynomialVariableCechDenominator_succAbove ι k x j)
+
 /-! ## Comparing the algebraic Čech terms with sections -/
 
 /-- The product of all but the first variable in a Čech index. -/
@@ -669,6 +710,38 @@ theorem cechTermSectionAddEquiv_toAddMonoidHom (ι k : Type u) [Field k] (d : �
       moduleAwayToSection (polynomialGrading ι k) (natShift (polynomialGrading ι k) d)
         (polynomialVariableCechDenominator ι k x) :=
   moduleAwayToSection_unique _ _ _ _ (cechTermSectionAddEquiv_apply_mk ι k d x)
+
+/-- The Čech comparison intertwines the algebraic face with restriction of sections.
+
+This is the compatibility the Čech differential is transported by: on the algebraic side the
+`j`-th face is `polynomialVariableCechFace`, on the sheaf side it is restriction from the
+`(n + 1)`-fold intersection to the `(n + 2)`-fold one, and the comparison carries one to the
+other. It reduces to `moduleAwayToSection_res_faceMap` because
+`cechTermSectionAddEquiv_toAddMonoidHom` already identifies the comparison with the canonical
+pointwise map, where restriction only reindexes the point. -/
+theorem cechTermSectionAddEquiv_res_face (ι k : Type u) [Field k] (d : ℕ) {n : ℕ}
+    (x : Fin (n + 2) → ι) (j : Fin (n + 2))
+    (i : (op (ProjectiveSpectrum.basicOpen (polynomialGrading ι k)
+        (polynomialVariableCechDenominator ι k (x ∘ j.succAbove))) :
+          (Opens (ProjectiveSpectrum.top (polynomialGrading ι k)))ᵒᵖ) ⟶
+      op (ProjectiveSpectrum.basicOpen (polynomialGrading ι k)
+        (polynomialVariableCechDenominator ι k x)))
+    (z : polynomialVariableCechTerm ι k d n (x ∘ j.succAbove)) :
+    (associatedSheafInType (polynomialGrading ι k)
+          (natShift (polynomialGrading ι k) d)).1.map i
+        (cechTermSectionAddEquiv ι k d (x ∘ j.succAbove) z) =
+      cechTermSectionAddEquiv ι k d x (polynomialVariableCechFace ι k d x j z) := by
+  change (associatedSheafInType (polynomialGrading ι k)
+        (natShift (polynomialGrading ι k) d)).1.map i
+      ((cechTermSectionAddEquiv ι k d (x ∘ j.succAbove)).toAddMonoidHom z) =
+    (cechTermSectionAddEquiv ι k d x).toAddMonoidHom
+      (polynomialVariableCechFace ι k d x j z)
+  rw [cechTermSectionAddEquiv_toAddMonoidHom, cechTermSectionAddEquiv_toAddMonoidHom]
+  exact moduleAwayToSection_res_faceMap (polynomialGrading ι k)
+    (natShift (polynomialGrading ι k) d)
+    (MvPolynomial.isHomogeneous_X k (x j))
+    (polynomialVariableCechDenominator_succAbove_mem ι k x j)
+    (polynomialVariableCechDenominator_succAbove ι k x j) i z
 
 /-- The canonical fraction-to-section map is bijective on every Čech intersection.
 

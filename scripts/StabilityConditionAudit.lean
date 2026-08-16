@@ -59,13 +59,13 @@ to **488**. Both were right against the filter of the day, and both are
 superseded here -- the 821 in particular counted the 30 generated names
 described above. **Re-run the command; do not adjust the numbers.**
 
-**THE GAP IS NOW ZERO, re-measured after the literal source-independence
-cutover on 2026-08-14.** Every
+**THE GAP IS NOW ZERO, re-measured after the general flat-pullback comparison
+on 2026-08-15.** Every
 public declaration in this library that is not a structure field projection is
 named below. Be precise about what that does and does not mean -- three of the
 four qualifications in this comment are unaffected by it:
 
-* it does NOT cover the **132 private** declarations, which remain structurally
+* it does NOT cover the **166 private** declarations, which remain structurally
   unlistable;
 * it does NOT make this file a gate by itself -- `#print axioms` still exits 0
   on `[sorryAx]`; CI's output checker and environment emitter supply the gate;
@@ -73,7 +73,7 @@ four qualifications in this comment are unaffected by it:
   ratchet now rejects an unlisted public declaration, but zero in the narrower
   authored/non-projection census is still a measurement that must be rerun.
 
-* It issues **2347** audit commands. The environment holds **2718** authored
+* It issues **2605** audit commands. The environment holds **2971** authored
   declarations under the stability-condition modules under `DerivedAlgGeo`; the declarations outside the
   substantive hand audit are precisely the private declarations and structure
   projections. Seven projections are additionally listed because the newer
@@ -82,12 +82,12 @@ four qualifications in this comment are unaffected by it:
   recursors, `casesOn`, matchers, equation lemmas, internal names, and the six
   generated families named above -- none of which anybody writes or could
   list.)
-* **132 are `private`** -- 115 of them theorems -- and are *structurally*
+* **166 are `private`** -- 128 of them theorems -- and are *structurally*
   unlistable: Lean mangles a private name to `_private.<Module>.<n>.<Name>`,
   which cannot be written as a short name from an importing module. The
   instruction below cannot be followed for them, and no amount of diligence
   changes that.
-* **251 are structure field projections** emitted by the `structure` command.
+* **242 are ungated structure field projections** emitted by the `structure` command.
   These are not a coverage gap in any useful sense; listing them would be noise.
   Seven are nevertheless named below to keep the broader CI completeness
   ratchet from worsening. They are called out because a census that does not
@@ -106,12 +106,12 @@ four qualifications in this comment are unaffected by it:
   than a zero-gap assertion because its intentionally broader census includes
   generated projections; `scripts/StabilityConditionCensus.lean` remains the precise measurement
   for the authored, non-projection claim above.
-* **612 of the distinct gated declarations are not theorems** (68 `structure`, 544 other
+* **711 of the distinct gated declarations are not theorems** (81 `structure`, 630 other
   constructions).
   For a `def`, `#print axioms` reports the axiom closure of a CONSTRUCTION and
   asserts nothing about any proposition. In particular
   `CategoryTheory.Triangulated.StabilityMassTriangleInequality` appears below
-formatted identically to the **1723** real theorems, but it is a `def ... :
+formatted identically to the **1852** real theorems, but it is a `def ... :
   Prop` -- its clean line means the definition is axiom-clean, NOT that the
   proposition holds.
 
@@ -2391,9 +2391,11 @@ this against the file by eye. -/
 #print axioms CategoryTheory.Triangulated.Slicing.pushforwardPhaseCollection
 #print axioms CategoryTheory.Triangulated.Slicing.PreimageData
 #print axioms CategoryTheory.Triangulated.Slicing.preimageData_id
+#print axioms CategoryTheory.Triangulated.Slicing.PreimageData.comp
 #print axioms CategoryTheory.Triangulated.Slicing.preimage
 #print axioms CategoryTheory.Triangulated.Slicing.preimage_P
 #print axioms CategoryTheory.Triangulated.Slicing.preimage_id
+#print axioms CategoryTheory.Triangulated.Slicing.preimage_comp
 #print axioms CategoryTheory.Triangulated.Slicing.PreimageData.ofFaithful
 #print axioms CategoryTheory.Triangulated.Slicing.PreimageData.phaseShift
 #print axioms CategoryTheory.Triangulated.Slicing.pullback
@@ -3024,6 +3026,9 @@ end SlicingChecks
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.FiberPreStabilityBaseChangeData.preimageData
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.FiberPreStabilityBaseChangeData.slicing_compatible
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.FiberPreStabilityBaseChangeData.phase_iff
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.FiberPreStabilityBaseChangeData.preimageData_comp
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.FiberPreStabilityBaseChangeData.slicing_compatible_comp
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.FiberPreStabilityBaseChangeData.phase_iff_comp
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.FiberPreStabilityBaseChangeData.class_pull
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.FiberPreStabilityBaseChangeData.charge_pull
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.FiberPreStabilityBaseChangeData.constant
@@ -3080,11 +3085,51 @@ end SlicingChecks
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.isExactPullback_iff_preservesFiniteLimits
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.moduleStalkRingCocone
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.moduleStalkRingIsColimit
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.neighborhoodModuleStalkFunctor
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.presheafModuleStalkFunctor
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.moduleStalkFunctor
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.presheafModuleStalkToSheafificationApp
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.presheafModuleStalkToSheafificationApp_isIso
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.presheafModuleStalkSheafificationIso
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.moduleStalkForgetIso
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.moduleStalkFunctor_preservesFiniteLimits
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.flatStalkMap_preservesFiniteLimits
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.flatPullbackStalkModel_preservesFiniteLimits
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.presheafModulePullback
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.neighborhoodRingHom
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.neighborhoodModulePullback
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.neighborhoodRingHom_comp_stalkCocone
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.constNeighborhoodPushforwardIsoApp
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.constNeighborhoodPushforwardIso
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.neighborhoodModulePullbackStalkIso
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.modulePullbackStalkPresheafIso
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.presheafModulePullbackStalkIso
+#print axioms ModuleCat.isoMk.congr_simp
+#print axioms ModuleCat.restrictScalarsCongr.congr_simp
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.moduleStalkFunctors_jointlyReflectIsomorphisms
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.preservesFiniteLimits_of_stalkwise
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.PresheafPullbackStalkComparison
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.PresheafPullbackStalkComparison.iso
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.PresheafPullbackStalkComparison.mk.inj
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.PresheafPullbackStalkComparison.mk.sizeOf_spec
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.PullbackStalkComparison
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.PullbackStalkComparison.iso
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.PullbackStalkComparison.mk.inj
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.PullbackStalkComparison.mk.sizeOf_spec
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.PresheafPullbackStalkComparison.toPullbackStalkComparison
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.pullbackStalkComparisonId
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.PullbackStalkComparison.comp
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.modulePullback_preservesFiniteLimits_of_flat_of_stalkComparison
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.isExactPullback_of_flat_of_stalkComparison
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.isExactPullback_of_flat_of_presheafStalkComparison
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.presheafPullbackStalkComparison
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.isExactPullback_of_flat
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.isExactPullbackOfFlat
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.openImmersionPullbackStalkForgetIso
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.openImmersionPullbackStalk_preservesFiniteLimits
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.openImmersionModulePullback_preservesFiniteLimits
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.isExactPullback_of_isOpenImmersion
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.isExactPullbackOfIsOpenImmersion
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.derivedPullback
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.derivedPullback.congr_simp
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.derivedPullbackFactors

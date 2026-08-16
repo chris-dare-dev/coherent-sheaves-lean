@@ -13,7 +13,6 @@ import DerivedAlgGeo.AlgebraicGeometry.IntersectionTheory.ChernCharacter.Basic
 import DerivedAlgGeo.AlgebraicGeometry.Numerical.Specializations.Surface
 import DerivedAlgGeo.AlgebraicGeometry.Numerical.Specializations.Threefold
 import DerivedAlgGeo.AlgebraicGeometry.Numerical.Specializations.Fourfold
-import DerivedAlgGeo.Development.AlgebraicGeometry.Divisors.API
 
 open AlgebraicGeometry AlgebraicGeometry.Numerical
 
@@ -29,6 +28,15 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 -- supply the universal-property route instead -- g1 is already invertible once g2 is.
 #print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.isUnit_algebraMap_localization_of_mul_mem
 #print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.isUnit_algebraMap_end_of_mul_mem
+-- The face map those two lemmas exist for. faceLift is the bare localized-module map from the
+-- universal property; faceMap is its restriction to the degree-zero part, and faceMap_mk is the
+-- explicit fraction m / g1^n |-> h^n m / g2^n that the Cech differential is computed with.
+#print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.faceLift
+#print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.faceLift_mk
+#print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.isDegreeZero_faceLift
+#print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.faceMap
+#print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.coe_faceMap
+#print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.faceMap_mk
 #print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.awayMk
 #print axioms AlgebraicGeometry.Proj.GradedLinearMap
 #print axioms AlgebraicGeometry.Proj.GradedLinearMap.map
@@ -48,6 +56,11 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Proj.stalkEquiv
 #print axioms AlgebraicGeometry.Proj.moduleAwayToSection
 #print axioms AlgebraicGeometry.Proj.moduleAwayToSection_unique
+-- Faces vs restriction (#340). moduleAwayToSection is pointwise mapOfLE and restriction only
+-- reindexes the point, so the sheaf-level statement reduces to the algebraic one: once both
+-- face denominators are inverted, h^n m / g^n and m / f^n are the same element.
+#print axioms AlgebraicGeometry.Proj.mapOfLE_faceMap
+#print axioms AlgebraicGeometry.Proj.moduleAwayToSection_res_faceMap
 #print axioms AlgebraicGeometry.Proj.associatedSheafSelfIso
 #print axioms AlgebraicGeometry.Proj.moduleAwayToSection_self_bijective
 #print axioms AlgebraicGeometry.Proj.associatedMap
@@ -111,6 +124,36 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Proj.twistPresheaf
 #print axioms AlgebraicGeometry.Proj.piObj_polynomialVariableChart
 #print axioms AlgebraicGeometry.Proj.cechCochainsDegreewiseAddEquiv
+-- The comparison read one index at a time, and the per-index square (#340). The face
+-- morphism is left arbitrary in cechIndexEquiv_map_face: Opens is a thin category, so the
+-- inclusion Mathlib's Cech nerve produces is the only morphism there and Subsingleton.elim
+-- supplies it, with no separate identification of the face.
+#print axioms AlgebraicGeometry.Proj.cechIndexEquiv
+#print axioms AlgebraicGeometry.Proj.cechCochainsDegreewiseAddEquiv_apply
+#print axioms AlgebraicGeometry.Proj.cechCochainsDegreewiseAddEquiv_symm_apply
+#print axioms AlgebraicGeometry.Proj.cechIndexEquiv_map_face
+-- Mathlib's Cech differential read in coordinates (#340). Both proofs finish with `exact`
+-- rather than `rw`: the two sides differ in the HasProduct instance that Pi.pi carries, which
+-- rw will not see through but definitional unification will.
+#print axioms CategoryTheory.cechNerve
+#print axioms CategoryTheory.cechCosimplicial
+#print axioms CategoryTheory.cechTermFamily
+#print axioms CategoryTheory.cechComplexFunctor_delta_π
+#print axioms CategoryTheory.cechComplexFunctor_d_π
+-- The complex-level form (#340). The differential is carried across the degreewise comparison
+-- rather than defined as an alternating sum, so d-squared and the comparison isomorphism are
+-- both free; the alternating-sum formula is a separate lemma about this complex.
+#print axioms AlgebraicGeometry.Proj.cechComplexOfTwist
+#print axioms AlgebraicGeometry.Proj.cechCochainsIso
+#print axioms AlgebraicGeometry.Proj.polynomialVariableCechComplex
+#print axioms AlgebraicGeometry.Proj.polynomialVariableCechComplexIso
+-- The differential in coordinates (#440). Stated twice: through the comparison, which is the
+-- form to prove with, and against the complex's own d, which needs its cochain typed in the
+-- carrier because CochainComplex.of.d hides behind a dite and .X n is semireducible.
+#print axioms AddCommGrpCat.hom_sum_apply
+#print axioms AddCommGrpCat.hom_sum_zsmul_apply
+#print axioms AlgebraicGeometry.Proj.cechCochainsDegreewiseAddEquiv_d
+#print axioms AlgebraicGeometry.Proj.polynomialVariableCechComplex_d_apply
 #print axioms AlgebraicGeometry.Proj.AffineComparisonDataOn
 #print axioms AlgebraicGeometry.Proj.AffineComparisonDataOn.localQuasicoherentData
 #print axioms AlgebraicGeometry.Proj.AffineComparisonDataOn.associatedSheaf_isQuasicoherent
@@ -133,6 +176,12 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Proj.polynomialTwistingGlobalSectionsAddEquiv
 #print axioms AlgebraicGeometry.Proj.polynomialTwistingGlobalSectionsModuleIso
 #print axioms AlgebraicGeometry.Proj.polynomialVariableCechDenominator_mem
+-- The Cech faces (#340). Dropping index j divides the denominator by exactly one variable, so
+-- the face is DegreeZeroLocalization.faceMap and not mapOfLE: powers of the smaller denominator
+-- are not contained in powers of the larger one.
+#print axioms AlgebraicGeometry.Proj.polynomialVariableCechDenominator_succAbove
+#print axioms AlgebraicGeometry.Proj.polynomialVariableCechDenominator_succAbove_mem
+#print axioms AlgebraicGeometry.Proj.polynomialVariableCechFace
 -- G2 (#339): the algebraic Cech term is the sections of O(d) on that intersection. The
 -- denominator has degree n+1, so the algebraic trivialization goes through invertibility
 -- (X_mul_cechCofactor) rather than membership, and the sheaf-level one through the first
@@ -147,6 +196,8 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 -- restriction to a smaller open a pointwise computation, which the Cech differential needs.
 #print axioms AlgebraicGeometry.Proj.cechTermSectionAddEquiv_apply_mk
 #print axioms AlgebraicGeometry.Proj.cechTermSectionAddEquiv_toAddMonoidHom
+-- The consumable form: the comparison carries polynomialVariableCechFace to restriction.
+#print axioms AlgebraicGeometry.Proj.cechTermSectionAddEquiv_res_face
 #print axioms AlgebraicGeometry.Proj.moduleAwayToSection_cechDenominator_bijective
 #print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.natShiftLinearEquivOfMulMem_apply_mk
 #print axioms AlgebraicGeometry.Proj.natShiftSectionFromSelfOn_apply
