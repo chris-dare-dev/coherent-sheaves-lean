@@ -353,6 +353,52 @@ theorem stalkEquiv_germ (U : Opens X) (x : X) (hx : x ∈ U)
       s.1 ⟨x, hx⟩ :=
   stalkToFiber_germ 𝒜 𝓜 U x hx s
 
+/-! ## Changing the grading by a membership equivalence
+
+The section-level counterpart of `DegreeZeroLocalization.linearEquivOfMemIff`. Applied
+pointwise, it moves nothing: the underlying dependent function and the local fraction's
+numerator and denominator are unchanged, and only the membership certificate is rebuilt. -/
+
+/-- Sections of the associated sheaf depend only on the membership predicates of the graded
+pieces. -/
+noncomputable def sectionAddEquivOfMemIff {σN : Type u} [SetLike σN M] [AddSubgroupClass σN M]
+    (𝓝 : ℕ → σN) [SetLike.GradedSMul 𝒜 𝓝]
+    (hmem : ∀ i (m : M), m ∈ 𝓜 i ↔ m ∈ 𝓝 i) (U : Opens X) :
+    (associatedSheafInType 𝒜 𝓜).1.obj (op U) ≃+
+      (associatedSheafInType 𝒜 𝓝).1.obj (op U) where
+  toFun s := by
+    refine ⟨fun x => DegreeZeroLocalization.linearEquivOfMemIff
+      (𝒜 := 𝒜) (𝓜 := 𝓜) 𝓝 hmem (s.1 x), ?_⟩
+    intro x
+    obtain ⟨V, hxV, i, e, r, t, ht, h⟩ := s.2 x
+    refine ⟨V, hxV, i, e, ⟨(r : M), (hmem e (r : M)).mp r.2⟩, t, ht, fun y => ?_⟩
+    have hy := h y
+    dsimp only at hy ⊢
+    rw [hy]
+    rfl
+  invFun s := by
+    refine ⟨fun x => DegreeZeroLocalization.linearEquivOfMemIff
+      (𝒜 := 𝒜) (𝓜 := 𝓝) 𝓜 (fun i m => (hmem i m).symm) (s.1 x), ?_⟩
+    intro x
+    obtain ⟨V, hxV, i, e, r, t, ht, h⟩ := s.2 x
+    refine ⟨V, hxV, i, e, ⟨(r : M), (hmem e (r : M)).mpr r.2⟩, t, ht, fun y => ?_⟩
+    have hy := h y
+    dsimp only at hy ⊢
+    rw [hy]
+    rfl
+  left_inv s := by
+    apply section_ext
+    funext x
+    rfl
+  right_inv s := by
+    apply section_ext
+    funext x
+    rfl
+  map_add' s t := by
+    apply section_ext
+    funext x
+    rfl
+
 /-! ## Sections on a basic open -/
 
 /-- The canonical additive map from the degree-zero homogeneous localization away from `f` to
