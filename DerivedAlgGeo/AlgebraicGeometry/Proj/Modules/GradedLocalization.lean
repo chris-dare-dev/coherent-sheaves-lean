@@ -426,6 +426,45 @@ theorem faceMap_mk {g₁ g₂ h : A} {e : ι} (hh : h ∈ 𝒜 e)
   rw [NumDenSameDeg.embedding, hden, faceLift_mk (M := M) hgh hg]
   rfl
 
+/-! ### Changing the grading by a membership equivalence
+
+Two gradings with the same members present the same degree-zero localization. The underlying
+element of `LocalizedModule S M` does not move at all; only the certificate is rebuilt. This is
+the localization-level counterpart of `associatedIsoOfPiecewiseIff`, and it is what lets a
+statement about `intShift 𝒜 0` be read as one about `𝒜`. -/
+
+/-- Degree-zero localizations depend only on the membership predicates of the graded pieces. -/
+noncomputable def linearEquivOfMemIff {σN : Type*} [SetLike σN M] [AddSubgroupClass σN M]
+    (𝓝 : ι → σN) [SetLike.GradedSMul 𝒜 𝓝]
+    (hmem : ∀ i (m : M), m ∈ 𝓜 i ↔ m ∈ 𝓝 i) :
+    DegreeZeroLocalization 𝒜 𝓜 S ≃ₗ[HomogeneousLocalization 𝒜 S]
+      DegreeZeroLocalization 𝒜 𝓝 S where
+  toFun z := ⟨(z : LocalizedModule S M), by
+    obtain ⟨c, hc⟩ := z.property
+    exact ⟨{ deg := c.deg
+             num := ⟨(c.num : M), (hmem c.deg (c.num : M)).mp c.num.2⟩
+             den := c.den
+             den_mem := c.den_mem }, hc⟩⟩
+  invFun z := ⟨(z : LocalizedModule S M), by
+    obtain ⟨c, hc⟩ := z.property
+    exact ⟨{ deg := c.deg
+             num := ⟨(c.num : M), (hmem c.deg (c.num : M)).mpr c.num.2⟩
+             den := c.den
+             den_mem := c.den_mem }, hc⟩⟩
+  left_inv _ := rfl
+  right_inv _ := rfl
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+
+@[simp]
+theorem coe_linearEquivOfMemIff {σN : Type*} [SetLike σN M] [AddSubgroupClass σN M]
+    (𝓝 : ι → σN) [SetLike.GradedSMul 𝒜 𝓝]
+    (hmem : ∀ i (m : M), m ∈ 𝓜 i ↔ m ∈ 𝓝 i) (z : DegreeZeroLocalization 𝒜 𝓜 S) :
+    ((linearEquivOfMemIff (𝒜 := 𝒜) (𝓜 := 𝓜) (S := S) 𝓝 hmem z :
+        DegreeZeroLocalization 𝒜 𝓝 S) : LocalizedModule S M) =
+      (z : LocalizedModule S M) :=
+  rfl
+
 /-! ### Localization away from one homogeneous element -/
 
 /-- The degree-zero fraction `m / fⁿ` when `f` has degree `d` and `m` has degree `n • d`. -/

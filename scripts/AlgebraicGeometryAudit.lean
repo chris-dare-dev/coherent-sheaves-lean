@@ -252,6 +252,13 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Proj.polynomialVariableIntCechTerm
 #print axioms AlgebraicGeometry.Proj.polynomialVariableIntCechCochains
 #print axioms AlgebraicGeometry.Proj.polynomialVariableIntCechFace
+-- The integer Cech comparison (#467 step 3). Five steps where the nonnegative case has three;
+-- the two extra ones are grading transports that move no data -- the integer trivializations
+-- land at A(0) while the section comparison is stated against A.
+#print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.linearEquivOfMemIff
+#print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.coe_linearEquivOfMemIff
+#print axioms AlgebraicGeometry.Proj.sectionAddEquivOfMemIff
+#print axioms AlgebraicGeometry.Proj.intCechTermSectionAddEquiv
 -- G2 (#339): the algebraic Cech term is the sections of O(d) on that intersection. The
 -- denominator has degree n+1, so the algebraic trivialization goes through invertibility
 -- (X_mul_cechCofactor) rather than membership, and the sheaf-level one through the first
