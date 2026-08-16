@@ -164,6 +164,10 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Proj.polynomialVariable_isCechAcyclicCover_of_isQuasicoherent
 #print axioms AlgebraicGeometry.Proj.polynomialVariable_isCechAcyclicFor
 #print axioms AlgebraicGeometry.Proj.polynomialVariable_isCechAcyclicCover
+-- Acyclicity (#338) and the complex identification (#339) combine into the statement the twist
+-- computation starts from (#340): Hⁱ(Pⁿ, O(d)) is the homology of the explicit complex of
+-- degree-zero homogeneous localizations.
+#print axioms AlgebraicGeometry.Proj.polynomialVariableCechComplex_computesCohomology
 -- The same for an integer twist (#467 step 4). The acyclicity argument never mentions the
 -- twist -- it needs quasi-coherence and affineness of the intersections, and the degree
 -- restriction that constrains the trivialization plays no part -- so each is one application
@@ -280,6 +284,13 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Proj.intShiftSectionToZeroOn_apply
 #print axioms AlgebraicGeometry.Proj.intShiftSectionFromZeroOn_apply
 #print axioms AlgebraicGeometry.Proj.intShiftFiberLinearEquivOfMem_symm_apply_mk
+-- 3b closed. The five-step composite has to be named by `change` before anything rewrites:
+-- simp will not unfold it far enough to expose the mk argument, because two steps are AddEquiv
+-- transports whose apply lemmas only fire once the argument is already in mk form.
+#print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.linearEquivOfMemIff_mk
+#print axioms AlgebraicGeometry.Proj.intCechTermSectionAddEquiv_apply_mk
+#print axioms AlgebraicGeometry.Proj.intCechTermSectionAddEquiv_toAddMonoidHom
+#print axioms AlgebraicGeometry.Proj.moduleAwayToSection_intCechDenominator_bijective
 -- G2 (#339): the algebraic Cech term is the sections of O(d) on that intersection. The
 -- denominator has degree n+1, so the algebraic trivialization goes through invertibility
 -- (X_mul_cechCofactor) rather than membership, and the sheaf-level one through the first

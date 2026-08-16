@@ -2,7 +2,7 @@
 Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under the MIT license.
 -/
-import DerivedAlgGeo.CategoryTheory.Triangulated.CompactlyGenerated
+import DerivedAlgGeo.CategoryTheory.Triangulated.CompactlyGenerated.Existence
 import DerivedAlgGeo.CategoryTheory.Triangulated.TStructure.Restriction
 
 /-!
@@ -14,9 +14,10 @@ large t-structure, aisle `Coprod(Dᵇ≤0)`, and restriction equal to the origin
 bounded t-structure.
 
 The record is theorem output data, not a replacement for Neeman's theorem.
-In particular, there is no global proposition saying that arbitrary bounded
-t-structures have an Ind-extension. Scheme-specific existence remains the
-geometric construction required by SF7.3.
+The repository now assembles a t-structure from honest aisle approximation
+triangles in `CompactlyGenerated.Existence`, but it does not manufacture those
+triangles merely from compactness. Brown representability and scheme-specific
+existence remain the geometric construction required by SF7.3.
 -/
 
 noncomputable section
