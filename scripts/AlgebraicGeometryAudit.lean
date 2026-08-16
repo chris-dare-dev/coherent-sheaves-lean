@@ -98,6 +98,11 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 -- G1b: the variable cover of polynomial projective space is Cech-acyclic for every
 -- nonnegative twist, so the Cech-to-derived comparison applies to O(d).
 #print axioms AlgebraicGeometry.Proj.polynomialVariable_coversTop
+-- Acyclicity takes quasi-coherence as its hypothesis, not a twist (#439): the twist enters the
+-- argument in exactly one place, so a negative twist is acyclic here the moment its
+-- quasi-coherence lands. The O(d) statements are corollaries supplying that input.
+#print axioms AlgebraicGeometry.Proj.polynomialVariable_isCechAcyclicFor_of_isQuasicoherent
+#print axioms AlgebraicGeometry.Proj.polynomialVariable_isCechAcyclicCover_of_isQuasicoherent
 #print axioms AlgebraicGeometry.Proj.polynomialVariable_isCechAcyclicFor
 #print axioms AlgebraicGeometry.Proj.polynomialVariable_isCechAcyclicCover
 #print axioms AlgebraicGeometry.Proj.polynomialVariable_adjoin_eq_top
