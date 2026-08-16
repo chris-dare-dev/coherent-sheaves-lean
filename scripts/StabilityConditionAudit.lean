@@ -135,6 +135,7 @@ invisible.
 -/
 import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition
 import DerivedAlgGeo.CategoryTheory.Triangulated.FourierMukai
+import DerivedAlgGeo.CategoryTheory.Triangulated.LinearYoneda
 import DerivedAlgGeo.LinearAlgebra
 
 open CategoryTheory.Triangulated
@@ -3476,3 +3477,14 @@ that the two class maps are mutually inverse.
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.KernelAutoequivalence.actStabOfDual
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.KernelAutoequivalence.actStabOfDual_slicing
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.KernelAutoequivalence.actStabOfDual_Z
+
+/-! ## The k-linear Yoneda functor is homological
+
+The `ModuleCat k` counterpart of Mathlib's `preadditiveYoneda` instance, and the
+one a `k`-dimension count can use — `finrank` is not statable in `AddCommGrpCat`.
+`ShiftSequence ℤ` is NOT here; see the module docstring for the three Mathlib
+gaps that block it.
+-/
+
+#print axioms CategoryTheory.Triangulated.linearYoneda_isHomological
+#print axioms CategoryTheory.Triangulated.linearYoneda_map_distinguished
