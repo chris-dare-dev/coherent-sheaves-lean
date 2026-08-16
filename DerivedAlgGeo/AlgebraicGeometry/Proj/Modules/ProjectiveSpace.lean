@@ -507,6 +507,18 @@ theorem polynomialNatShift_isQuasicoherent (ι k : Type u) [Field k] (d : ℕ) :
     (fun i => ⟨MvPolynomial.X i, MvPolynomial.isHomogeneous_X k i⟩) d
     (polynomialVariable_adjoin_eq_top ι k)
 
+/-- Every integer twist of polynomial projective space is quasi-coherent.
+
+The variable charts have degree one and generate, which is exactly the hypothesis
+`intShift_isQuasicoherent` takes. The sign of `d` never enters. This is the negative-twist
+input the Serre-finiteness dévissage needs. -/
+theorem polynomialIntShift_isQuasicoherent (ι k : Type u) [Field k] (d : ℤ) :
+    (associatedSheaf (polynomialGrading ι k)
+      (intShift (polynomialGrading ι k) d)).IsQuasicoherent :=
+  intShift_isQuasicoherent (polynomialGrading ι k)
+    (fun i => ⟨MvPolynomial.X i, MvPolynomial.isHomogeneous_X k i⟩) d
+    (polynomialVariable_adjoin_eq_top ι k)
+
 /-! ## Degreewise algebra for the variable Čech cover -/
 
 /-- The product of the variables indexing one `(n + 1)`-fold Čech intersection. -/
