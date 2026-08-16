@@ -47,12 +47,12 @@ theorem Slicing.exists_dual_phase_truncation (s : Slicing C) (A : C)
   | zero =>
       intro A F hF
       have hn : F.n = 0 := by omega
-      exact ⟨A, (0 : C), Or.inl (F.zero_isZero hn), Or.inl (isZero_zero C),
+      exact ⟨A, (0 : C), Or.inl (F.isZero_of_length_zero hn), Or.inl (isZero_zero C),
         𝟙 A, 0, 0, contractible_distinguished A⟩
   | succ m ih =>
       intro A F hF
       by_cases hn : F.n = 0
-      · exact ⟨A, (0 : C), Or.inl (F.zero_isZero hn), Or.inl (isZero_zero C),
+      · exact ⟨A, (0 : C), Or.inl (F.isZero_of_length_zero hn), Or.inl (isZero_zero C),
           𝟙 A, 0, 0, contractible_distinguished A⟩
       have hn₀ : 0 < F.n := Nat.pos_of_ne_zero hn
       by_cases hnonneg : ∀ i : Fin F.n, 0 ≤ F.φ i
@@ -71,7 +71,7 @@ theorem Slicing.exists_dual_phase_truncation (s : Slicing C) (A : C)
             have hij : i = j := Fin.ext (by omega)
             subst j
             linarith
-          let G := F.prefix C (F.n - 1) (by omega) (by omega)
+          let G := F.prefix C (F.n - 1) (by omega)
           obtain ⟨X, Y, hX, hY, f, g, h, hT⟩ :=
             ih (F.chain.obj' (F.n - 1) (by omega)) G
               (by change F.n - 1 ≤ m; omega)

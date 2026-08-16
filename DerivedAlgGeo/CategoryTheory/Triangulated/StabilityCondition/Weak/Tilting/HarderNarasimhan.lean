@@ -474,7 +474,7 @@ theorem phaseTilt_existsHNWithLastSource_of_freeShift_zeroCharge_extension
           let U : C := (FX.triangle jLast).obj₃
           let FG : HNFiltration C sigma.slicing.P Gobj :=
             CategoryTheory.Triangulated.HNFiltration.prefix
-              C FX (FX.n - 1) (by lia) (by lia)
+              C FX (FX.n - 1) (by lia)
           have hnFG : 0 < FG.n := by change 0 < FX.n - 1; lia
           have hGfree : phaseFree sigma.slicing beta Gobj := by
             constructor
@@ -1056,7 +1056,7 @@ theorem phaseTilt_hasHNProperty_of_zeroChargeDecompositions
           let U : C := (FX.triangle jLast).obj₃
           let FG : HNFiltration C sigma.slicing.P Gobj :=
             CategoryTheory.Triangulated.HNFiltration.prefix
-              C FX (FX.n - 1) (by lia) (by lia)
+              C FX (FX.n - 1) (by lia)
           have hnFG : 0 < FG.n := by change 0 < FX.n - 1; lia
           have hGtors : phaseTors sigma.slicing beta Gobj := ⟨
             CategoryTheory.Triangulated.HNFiltration.chain_obj_gtProp

@@ -162,7 +162,7 @@ def PreservesEuler (φ : N →+ N') : Prop :=
 
 end Euler
 
-section Isometry
+section PairingTransfer
 
 open NumericalRing NumericalRingWithDual NumericalVariety K3
 
@@ -212,7 +212,7 @@ theorem isSpherical_mukaiVector_iff_of_preservesEuler (D : IntegralMukaiData A N
   rw [Mukai.isSpherical_iff, Mukai.isSpherical_iff,
     selfPairing_mukaiVector_eq_of_preservesEuler D D' φ hφ]
 
-end Isometry
+end PairingTransfer
 
 section KernelFunctor
 

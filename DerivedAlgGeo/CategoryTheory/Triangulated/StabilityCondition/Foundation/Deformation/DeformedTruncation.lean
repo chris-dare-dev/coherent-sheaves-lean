@@ -75,7 +75,7 @@ theorem semistable_has_tight_deformedHN
   have hn : 0 < G.n := by
     by_contra h
     push Not at h
-    exact hE (G.zero_isZero (by omega))
+    exact hE (G.isZero_of_length_zero (by omega))
   have hinterval : ∀ j,
       σ.slicing.intervalProp C (φ - 4 * ε₀) (φ + 4 * ε₀) (G.factor j) := by
     intro j

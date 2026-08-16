@@ -35,7 +35,6 @@ def HNFiltration.zero {P : ℝ → ObjectProperty C} (E : C) (hE : IsZero E) :
   triangle_obj₂ := fun i => Fin.elim0 i
   base_isZero := by simpa [ComposableArrows.left] using hE
   top_iso := ⟨by simpa [ComposableArrows.right] using Iso.refl E⟩
-  zero_isZero := fun _ => hE
   φ := fun i => Fin.elim0 i
   hφ := fun i => Fin.elim0 i
   semistable := fun i => Fin.elim0 i
@@ -53,7 +52,6 @@ def HNFiltration.single {P : ℝ → ObjectProperty C} (S : C) (φ : ℝ)
     ⟨eqToIso (by simp [ComposableArrows.obj', ComposableArrows.mk₁_obj])⟩
   base_isZero := isZero_zero C
   top_iso := ⟨eqToIso (by simp [ComposableArrows.right, ComposableArrows.mk₁_obj])⟩
-  zero_isZero := fun h => by omega
   φ := fun _ => φ
   hφ := fun _ _ h => by omega
   semistable := fun i => by
@@ -85,7 +83,7 @@ theorem HNFiltration.semistable_of_length_one
 
 /-- Keep the first `k` factors of an HN filtration. -/
 def HNFiltration.prefix {P : ℝ → ObjectProperty C} {E : C}
-    (F : HNFiltration C P E) (k : ℕ) (hk : k ≤ F.n) (hk₀ : 0 < k) :
+    (F : HNFiltration C P E) (k : ℕ) (hk : k ≤ F.n) :
     HNFiltration C P (F.chain.obj ⟨k, by omega⟩) where
   n := k
   chain := ComposableArrows.mkOfObjOfMapSucc
@@ -97,7 +95,6 @@ def HNFiltration.prefix {P : ℝ → ObjectProperty C} {E : C}
   triangle_obj₂ := fun i => F.triangle_obj₂ ⟨i, by omega⟩
   base_isZero := F.base_isZero
   top_iso := ⟨Iso.refl _⟩
-  zero_isZero := fun h => by omega
   φ := fun i => F.φ ⟨i, by omega⟩
   hφ := by
     intro i j hij
@@ -106,13 +103,13 @@ def HNFiltration.prefix {P : ℝ → ObjectProperty C} {E : C}
 
 @[simp]
 theorem HNFiltration.prefix_φ {P : ℝ → ObjectProperty C} {E : C}
-    (F : HNFiltration C P E) (k : ℕ) (hk : k ≤ F.n) (hk₀ : 0 < k)
-    (i : Fin k) : (F.prefix C k hk hk₀).φ i = F.φ ⟨i, by omega⟩ := rfl
+    (F : HNFiltration C P E) (k : ℕ) (hk : k ≤ F.n)
+    (i : Fin k) : (F.prefix C k hk).φ i = F.φ ⟨i, by omega⟩ := rfl
 
 /-- The lowest phase of a nonempty prefix is its last retained phase. -/
 theorem HNFiltration.prefix_phiMinus {P : ℝ → ObjectProperty C} {E : C}
     (F : HNFiltration C P E) (k : ℕ) (hk : k ≤ F.n) (hk₀ : 0 < k) :
-    (F.prefix C k hk hk₀).phiMinus C hk₀ = F.φ ⟨k - 1, by omega⟩ := by
+    (F.prefix C k hk).phiMinus C hk₀ = F.φ ⟨k - 1, by omega⟩ := by
   rfl
 
 /-- A filtration prefix whose factors all lie strictly above a cutoff has its
@@ -120,7 +117,7 @@ lowest phase strictly above that cutoff. -/
 theorem HNFiltration.prefix_phiMinus_gt {P : ℝ → ObjectProperty C} {E : C}
     (F : HNFiltration C P E) (k : ℕ) (hk : k ≤ F.n) (hk₀ : 0 < k)
     (t : ℝ) (ht : ∀ j : Fin k, t < F.φ ⟨j.val, by omega⟩) :
-    t < (F.prefix C k hk hk₀).phiMinus C hk₀ := by
+    t < (F.prefix C k hk).phiMinus C hk₀ := by
   rw [F.prefix_phiMinus C k hk hk₀]
   exact ht ⟨k - 1, by omega⟩
 
@@ -130,7 +127,7 @@ theorem HNFiltration.chain_obj_gtProp (s : Slicing C) {E : C}
     (F : HNFiltration C s.P E) (k : ℕ) (hk : k ≤ F.n) (hk₀ : 0 < k)
     (t : ℝ) (ht : ∀ j : Fin k, t < F.φ ⟨j.val, by omega⟩) :
     s.gtProp C t (F.chain.obj ⟨k, by omega⟩) :=
-  Or.inr ⟨F.prefix C k hk hk₀, hk₀, F.prefix_phiMinus_gt C k hk hk₀ t ht⟩
+  Or.inr ⟨F.prefix C k hk, hk₀, F.prefix_phiMinus_gt C k hk hk₀ t ht⟩
 
 /-- A chain object inherits a weak upper phase bound from all factors in the
 prefix ending at that object. -/
@@ -138,7 +135,7 @@ theorem HNFiltration.chain_obj_leProp (s : Slicing C) {E : C}
     (F : HNFiltration C s.P E) (k : ℕ) (hk : k ≤ F.n) (hk₀ : 0 < k)
     (t : ℝ) (ht : ∀ j : Fin k, F.φ ⟨j.val, by omega⟩ ≤ t) :
     s.leProp C t (F.chain.obj ⟨k, by omega⟩) := by
-  refine Or.inr ⟨F.prefix C k hk hk₀, hk₀, ?_⟩
+  refine Or.inr ⟨F.prefix C k hk, hk₀, ?_⟩
   exact ht ⟨0, hk₀⟩
 
 /-- Append one lower-phase semistable factor along a distinguished triangle. -/
@@ -208,7 +205,6 @@ def HNFiltration.appendFactor {P : ℝ → ObjectProperty C} {Y Z : C}
         simp only [ComposableArrows.mkOfObjOfMapSucc_obj, obj,
           show ¬(G.n + 1 ≤ G.n) by omega, dite_false]
         exact Iso.refl Z⟩
-      zero_isZero := fun h => by omega
       φ := fun i => if h : i < G.n then G.φ ⟨i, h⟩ else ψ
       hφ := by
         intro i j hij
@@ -277,7 +273,7 @@ def HNFiltration.ofTriangleThirdZero
     (f : X ⟶ E) (g : E ⟶ Y) (h : Y ⟶ X⟦(1 : ℤ)⟧)
     (hT : Triangle.mk f g h ∈ distTriang C) :
     HNFiltration C P E := by
-  have hY : IsZero Y := GY.zero_isZero hGY
+  have hY : IsZero Y := GY.isZero_of_length_zero hGY
   letI : IsIso f := (Triangle.isZero₃_iff_isIso₁ _ hT).mp hY
   exact GX.ofIso C (asIso f)
 
@@ -338,7 +334,7 @@ theorem HNFiltration.exists_of_distinguished_triangle
           · exact hY_gt ⟨0, by omega⟩
         · have hYtwo : 2 ≤ GY.n := by omega
           let jLast : Fin GY.n := ⟨GY.n - 1, by omega⟩
-          let GY' := GY.prefix C (GY.n - 1) (by omega) (by omega)
+          let GY' := GY.prefix C (GY.n - 1) (by omega)
           let Tlast := GY.triangle jLast
           let e₁ := Classical.choice (GY.triangle_obj₁ jLast)
           let e₂ := Classical.choice (GY.triangle_obj₂ jLast)
@@ -465,7 +461,7 @@ theorem HNFiltration.exists_of_distinguished_triangle_phase_bounds
             · exact hY_le j0
         · have hYtwo : 2 ≤ GY.n := by omega
           let jLast : Fin GY.n := ⟨GY.n - 1, by omega⟩
-          let GY' := GY.prefix C (GY.n - 1) (by omega) (by omega)
+          let GY' := GY.prefix C (GY.n - 1) (by omega)
           let Tlast := GY.triangle jLast
           let e₁ := Classical.choice (GY.triangle_obj₁ jLast)
           let e₂ := Classical.choice (GY.triangle_obj₂ jLast)
@@ -605,7 +601,7 @@ theorem HNFiltration.exists_split_at_cutoff
             · intro j
               exact Fin.elim0 j
           · have hn2 : 2 ≤ F.n := by omega
-            let G := F.prefix C (F.n - 1) (by omega) (by omega)
+            let G := F.prefix C (F.n - 1) (by omega)
             obtain ⟨X, Y', GX, GY', f', g', h', hT', hGX_gt, hGY'_le,
                 hGY'_bound, hGX_contain⟩ :=
               ih (F.chain.obj' (F.n - 1) (by omega)) G (by
@@ -684,7 +680,6 @@ def HNFiltration.shift (s : Slicing C) {E : C}
     ⟨(shiftFunctor C a).mapIso (Classical.choice (F.triangle_obj₂ i))⟩
   base_isZero := (shiftFunctor C a).map_isZero F.base_isZero
   top_iso := ⟨(shiftFunctor C a).mapIso (Classical.choice F.top_iso)⟩
-  zero_isZero := fun h => (shiftFunctor C a).map_isZero (F.zero_isZero h)
   φ := fun i => F.φ i + a
   hφ := by
     intro i j hij
@@ -787,11 +782,11 @@ theorem Slicing.exists_split_at_cutoff (s : Slicing C) [IsTriangulated C]
   have hXgt : s.gtProp C t X := by
     by_cases hn : 0 < GX.n
     · exact s.gtProp_of_hn C GX t hGX hn
-    · exact Or.inl (GX.zero_isZero (by omega))
+    · exact Or.inl (GX.isZero_of_length_zero (by omega))
   have hYle : s.leProp C t Y := by
     by_cases hn : 0 < GY.n
     · exact s.leProp_of_hn C GY t hGY hn
-    · exact Or.inl (GY.zero_isZero (by omega))
+    · exact Or.inl (GY.isZero_of_length_zero (by omega))
   have hXlt : s.ltProp C b X := by
     by_cases hn : 0 < GX.n
     · apply s.ltProp_of_hn C GX b _ hn
@@ -799,7 +794,7 @@ theorem Slicing.exists_split_at_cutoff (s : Slicing C) [IsTriangulated C]
       obtain ⟨i, hi⟩ := hGXorig j
       rw [hi]
       exact (hF i).2
-    · exact Or.inl (GX.zero_isZero (by omega))
+    · exact Or.inl (GX.isZero_of_length_zero (by omega))
   exact ⟨X, Y, f, g, h, hT, hXgt, hYle, hXlt⟩
 
 end CategoryTheory.Triangulated

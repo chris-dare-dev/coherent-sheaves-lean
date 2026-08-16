@@ -1597,8 +1597,8 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Numerical.K3.IntegralMukaiData.mk.sizeOf_spec
 #print axioms AlgebraicGeometry.Numerical.K3.IntegralMukaiData.c₁
 #print axioms AlgebraicGeometry.Numerical.K3.IntegralMukaiData.b
-#print axioms AlgebraicGeometry.Numerical.K3.IntegralMukaiData.b_comm
 #print axioms AlgebraicGeometry.Numerical.K3.IntegralMukaiData.b_spec
+#print axioms AlgebraicGeometry.Numerical.K3.IntegralMukaiData.b_comm_on_realized
 #print axioms AlgebraicGeometry.Numerical.K3.mukaiSInt
 #print axioms AlgebraicGeometry.Numerical.K3.mukaiSInt_spec
 #print axioms AlgebraicGeometry.Numerical.K3.IntegralMukaiData.mukaiVector

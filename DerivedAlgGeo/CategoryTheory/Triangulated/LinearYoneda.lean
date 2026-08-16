@@ -16,9 +16,10 @@ lands in `ModuleCat k` instead.
 
 The distinction is not cosmetic. A categorical Euler form
 `χ(E,F) = Σᵢ (-1)ⁱ dim_k Hom(E, F[i])` needs `Module.finrank k` of each `Hom`,
-and `finrank` is not statable in `AddCommGrpCat` — there is no `k` there to take
-dimensions over. `preadditiveYoneda` therefore cannot feed that construction and
-`linearYoneda` can.
+and `finrank k` is not statable in `AddCommGrpCat` — the objects carry no
+`k`-action to take dimensions over (`finrank ℤ` is statable, but `ℤ`-rank is
+not the dimension count `χ` needs). `preadditiveYoneda` therefore cannot feed
+that construction and `linearYoneda` can.
 
 ## Why the proof is short
 

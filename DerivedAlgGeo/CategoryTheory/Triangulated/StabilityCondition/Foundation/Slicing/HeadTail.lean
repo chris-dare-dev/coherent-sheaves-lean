@@ -86,7 +86,7 @@ theorem HNFiltration.exists_headTailFiltration
           exact Fin.elim0 j
       · have hn2 : 2 ≤ F.n := by omega
         let A := F.chain.obj' (F.n - 1) (by omega)
-        let P := F.prefix C (F.n - 1) (by omega) (by omega)
+        let P := F.prefix C (F.n - 1) (by omega)
         have hPn : 0 < P.n := by
           change 0 < F.n - 1
           omega

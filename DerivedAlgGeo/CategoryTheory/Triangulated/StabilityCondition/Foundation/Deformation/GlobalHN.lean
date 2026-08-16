@@ -309,7 +309,7 @@ theorem deformedHN_exists
       C W hr0 hr1 hW hε₀ hε₀16 hWide hε hεhalf hε2 hε8 hsin
       n top E hGt' hLe
     exact ⟨G⟩
-  · exact ⟨HNFiltration.zero C E (F.zero_isZero (by omega))⟩
+  · exact ⟨HNFiltration.zero C E (F.isZero_of_length_zero (by omega))⟩
 
 end StabilityCondition.WithClassMap
 

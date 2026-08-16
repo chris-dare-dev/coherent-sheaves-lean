@@ -213,7 +213,7 @@ theorem interior_has_enveloped_HN_skewed
   have hn : 0 < G.n := by
     by_contra h
     push Not at h
-    exact hE (G.zero_isZero (by omega))
+    exact hE (G.isZero_of_length_zero (by omega))
   have hfirstSS := G.semistable ⟨0, hn⟩
   have hfirstLe : σ.slicing.phiPlus C (G.factor ⟨0, hn⟩)
       hfirstSS.nonzero ≤ σ.slicing.phiPlus C E hE :=

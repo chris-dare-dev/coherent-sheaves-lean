@@ -494,9 +494,6 @@ noncomputable def WeakAbelianHNFiltration.toAmbientHN
     haveI : IsIso L.arrow :=
       (Subobject.isIso_arrow_iff_eq_top L).2 hL
     exact ⟨t.heart.ι.mapIso (asIso L.arrow)⟩
-  zero_isZero := fun hn ↦ False.elim <| by
-    have := F.hn
-    omega
   φ := fun j ↦ weakPhaseOfSlope (F.μ j)
   hφ := by
     intro i j hij

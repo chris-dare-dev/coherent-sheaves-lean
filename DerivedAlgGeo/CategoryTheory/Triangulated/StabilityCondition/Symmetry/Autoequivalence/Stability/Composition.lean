@@ -32,9 +32,14 @@ are what let `mapEquiv (Φ.trans Ψ)` be written at all.
 
 ## What this file does not assert
 
-* **No group and no `MulAction`.** This is one equation between two transports.
-  Turning it into an action needs a group of autoequivalences-with-lattice-data
-  and an identity law, neither of which is here.
+* **No new group and no new `MulAction`.** This is one equation between two
+  transports, stated for a bare `lam : Λ →+ Λ`. The bundled version already
+  exists: `GroupAction.AutPairQuot v` (`Stability/ClassMap.lean`) is a group
+  with a `MulAction` on `WithClassMap C v`, whose `act_mul` is this equation
+  for pairs whose `lam` is invertible. This file is the strictly more general
+  unbundled statement — a non-invertible `lam` still transports — and the
+  kernel-tracking consumer (`KernelAutoequivalence.actStab_trans`) needs it in
+  this form.
 * Nothing about the *composite* of two stability conditions, which is not a
   thing; only about applying two transports in sequence.
 * No claim that `lam₁.comp lam₂` is the unique lattice map compatible with
@@ -83,7 +88,14 @@ instance transInverseIsTriangulated : (Φ.trans Ψ).inverse.IsTriangulated :=
 /-- **Reindexing twice is reindexing along the composite.**
 
 Definitional: `mapEquiv` reindexes by `Φ.inverse`, and `(Φ.trans Ψ).inverse` is
-`Ψ.inverse ⋙ Φ.inverse` on the nose. -/
+`Ψ.inverse ⋙ Φ.inverse` on the nose. The bundled counterpart is
+`TriEquiv.act_comp` (`Slicing/Quotient.lean`) — the same `Slicing.ext`-on-`rfl`
+argument for a `TriEquiv` instead of a bare `Equivalence`.
+
+Pin note: "on the nose" is Mathlib's literal `inverse := f.inverse ⋙ e.inverse`
+in the definition of `Equivalence.trans`. If a Mathlib bump redefines
+`Equivalence.trans`, this `rfl` — and `KernelAutoequivalence.actStab_trans`
+behind it — is the first thing to break. Re-check here if the pin moves. -/
 theorem Slicing.mapEquiv_trans (s : Slicing C) :
     (s.mapEquiv Φ).mapEquiv Ψ = s.mapEquiv (Φ.trans Ψ) := by
   ext φ X

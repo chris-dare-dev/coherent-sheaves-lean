@@ -59,8 +59,7 @@ def HNFiltration.ofIso {P : ℝ → ObjectProperty C} {E E' : C}
       triangle_obj₁ := F.triangle_obj₁
       triangle_obj₂ := F.triangle_obj₂
       base_isZero := F.base_isZero
-      top_iso := ⟨(Classical.choice F.top_iso).trans e⟩
-      zero_isZero := fun h => IsZero.of_iso (F.zero_isZero h) e.symm }
+      top_iso := ⟨(Classical.choice F.top_iso).trans e⟩ }
   φ := F.φ
   hφ := F.hφ
   semistable := F.semistable
@@ -165,7 +164,7 @@ theorem Slicing.ltProp_of_intervalProp (s : Slicing C) {a b : ℝ} {E : C}
   · exact Or.inl hE
   · by_cases hn : 0 < F.n
     · exact Or.inr ⟨F, hn, (hF ⟨0, hn⟩).2⟩
-    · exact Or.inl (F.zero_isZero (by lia))
+    · exact Or.inl (F.isZero_of_length_zero (by lia))
 
 /-- Membership in an open phase interval implies the corresponding strict
 lower bound. -/
@@ -175,7 +174,7 @@ theorem Slicing.gtProp_of_intervalProp (s : Slicing C) {a b : ℝ} {E : C}
   · exact Or.inl hE
   · by_cases hn : 0 < F.n
     · exact Or.inr ⟨F, hn, (hF ⟨F.n - 1, by lia⟩).1⟩
-    · exact Or.inl (F.zero_isZero (by lia))
+    · exact Or.inl (F.isZero_of_length_zero (by lia))
 
 /-! ### Hom-vanishing across phase cuts -/
 

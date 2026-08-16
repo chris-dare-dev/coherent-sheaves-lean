@@ -43,11 +43,21 @@ structure PostnikovTower (E : C) where
   base_isZero : IsZero chain.left
   /-- The top of the tower is isomorphic to the filtered object. -/
   top_iso : Nonempty (chain.right ≅ E)
-  /-- A tower with no factors filters only a zero object. -/
-  zero_isZero : n = 0 → IsZero E
 
 /-- The number of factors in a Postnikov tower. -/
 def PostnikovTower.length {E : C} (P : PostnikovTower C E) : ℕ := P.n
+
+variable {C} in
+/-- **A tower with no factors filters only a zero object.**
+
+Formerly a structure field (`zero_isZero`), which overstated what a
+constructor must supply: a length-zero chain starts and ends at the same
+object, so `base_isZero` transported across `top_iso` already proves this. -/
+theorem PostnikovTower.isZero_of_length_zero {E : C} (P : PostnikovTower C E)
+    (h : P.n = 0) : IsZero E := by
+  have h0 : P.chain.right = P.chain.left :=
+    congrArg P.chain.obj (Fin.ext (by simp [h]))
+  exact (h0 ▸ P.base_isZero).of_iso P.top_iso.some.symm
 
 variable {C} in
 /-- The `i`-th factor of a Postnikov tower. -/
