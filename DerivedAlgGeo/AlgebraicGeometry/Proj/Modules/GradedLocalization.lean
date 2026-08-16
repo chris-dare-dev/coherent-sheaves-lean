@@ -465,6 +465,17 @@ theorem coe_linearEquivOfMemIff {σN : Type*} [SetLike σN M] [AddSubgroupClass 
       (z : LocalizedModule S M) :=
   rfl
 
+@[simp]
+theorem linearEquivOfMemIff_mk {σN : Type*} [SetLike σN M] [AddSubgroupClass σN M]
+    (𝓝 : ι → σN) [SetLike.GradedSMul 𝒜 𝓝]
+    (hmem : ∀ i (m : M), m ∈ 𝓜 i ↔ m ∈ 𝓝 i) (c : NumDenSameDeg 𝒜 𝓜 S) :
+    linearEquivOfMemIff (𝒜 := 𝒜) (𝓜 := 𝓜) (S := S) 𝓝 hmem (mk c) =
+      mk { deg := c.deg
+           num := ⟨(c.num : M), (hmem c.deg (c.num : M)).mp c.num.2⟩
+           den := c.den
+           den_mem := c.den_mem } :=
+  rfl
+
 /-! ### Localization away from one homogeneous element -/
 
 /-- The degree-zero fraction `m / fⁿ` when `f` has degree `d` and `m` has degree `n • d`. -/
