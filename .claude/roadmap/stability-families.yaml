@@ -95,6 +95,7 @@ generations:
   - { rev: 33, at: "2026-08-16", note: "Child #462 restricts the geometric witness to actual finite-type objects of Over S, using Mathlib's locally-of-finite-type plus quasi-compact predicates. Residue-fiber phase equivalence proves each semistable locus Zariski open and yields generic openness from the same locus. The slicing HN axiom constructs SchemeRelativeHNFiltration objectwise over every regular finite-type curve, with its existing residue-fiber and pullback compatibility; no openness or relative-HN conclusion is supplied as an input. These are consequences of the repository's strong strict-family interface, not a semistable-reduction or moduli theorem." }
   - { rev: 34, at: "2026-08-16", note: "Materialized SF5 (#29), SF6 (#28), and SF7 (#27). The closeout audit found that #127/#216 and #211/#215 were already implemented and audited on main; §3.4 is proposed as mapped with direct v1 PDF evidence and no coverage claim. SF7 is decomposed under #475 into bounded Corollary-A.23 truncation (#478), compact generation/Ind/A.17 (#477), scheme realization (#476), and downstream parameter removal (#479)." }
   - { rev: 35, at: "2026-08-16", note: "SF7.1 begins by representing formula (A.8) as Slicing.InducedTStructures. T-structure orthogonality now proves the Hom-vanishing half of PreimageData, with an inhabited identity model; finite phase-truncation HN existence remains the next theorem rather than a structure field." }
+  - { rev: 36, at: "2026-08-16", note: "SF7.1 (#478) is complete. A charge-free head/tail theorem splits any target HN filtration with exact tail phase indexing. Formula-(A.8) truncation triangles are identified with those target splits by t-structure uniqueness, and induction on target HN length constructs source HN filtrations with strict phase windows. InducedTStructures.preimageData now has no HN-existence input; compact generation/Ind/A.17 (#477) is next." }
 retired: []
 
 # GitHub milestones are roadmap phases. Epic issues live inside them, and
@@ -345,7 +346,19 @@ items:
     parent: stability-families-m7
     title: "Own the Polishchuk/Appendix-A inducing theorem"
     status: in_progress
-    summary: "#478 is active with the bounded formula-(A.8) interface and Hom-vanishing theorem. #477 owns compact generation and A.17, #476 owns the honest Dqc/Db(Coh) scheme seam, and #479 removes the legacy theorem parameter downstream."
+    summary: "#478 is complete: formula-(A.8) t-structures construct Hom-vanishing and finite source HN filtrations. #477 now owns compact generation and A.17, #476 owns the honest Dqc/Db(Coh) scheme seam, and #479 removes the legacy theorem parameter downstream."
     priority: must
     size: XL
     tags: [slicing, t-structure, ind, geometry]
+
+  - id: stability-families-e13-1
+    gh_issue: 478
+    gh_sub_issues: []
+    kind: deliverable
+    parent: stability-families-e13
+    title: "Derive preimage slicings from phase-indexed induced t-structures"
+    status: done
+    summary: "Charge-free head/tail decomposition plus truncation-triangle uniqueness gives a finite induction on target HN length. InducedTStructures.preimageData constructs the complete honest transfer witness."
+    priority: must
+    size: L
+    tags: [slicing, t-structure, hn]
