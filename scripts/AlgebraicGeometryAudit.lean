@@ -1644,6 +1644,30 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Numerical.K3.IntegralMukaiData.isSpherical_mukaiVector_iff
 #print axioms AlgebraicGeometry.Numerical.K3.IntegralMukaiData.isIsotropic_mukaiVector_iff
 #print axioms AlgebraicGeometry.Numerical.K3.IntegralMukaiData.expectedDim_mukaiVector
+#print axioms AlgebraicGeometry.Numerical.K3.IntegralMukaiData.b_c₁_add
+
+-- Additive `c₁`. ONE new supplied field on top of `IntegralMukaiData`, and it
+-- is genuinely supplied: `b_c₁_add` above proves everything the weaker
+-- structure implies, which is additivity of `c₁` AGAINST THE FORM, and `b` is
+-- nowhere assumed nondegenerate, so that stops short of additivity. With the
+-- field, the Mukai vector is an `AddMonoidHom` and the Mukai form is a real
+-- `LinearMap.BilinForm`, which is what lets the word "isometry" be used below
+-- in Mathlib's sense.
+#print axioms AlgebraicGeometry.Numerical.K3.AdditiveMukaiData
+#print axioms AlgebraicGeometry.Numerical.K3.AdditiveMukaiData.mk.inj
+#print axioms AlgebraicGeometry.Numerical.K3.AdditiveMukaiData.mk.sizeOf_spec
+#print axioms AlgebraicGeometry.Numerical.K3.AdditiveMukaiData.toIntegralMukaiData
+#print axioms AlgebraicGeometry.Numerical.K3.AdditiveMukaiData.c₁_add
+#print axioms AlgebraicGeometry.Numerical.K3.AdditiveMukaiData.c₁Hom
+#print axioms AlgebraicGeometry.Numerical.K3.AdditiveMukaiData.c₁Hom_apply
+#print axioms AlgebraicGeometry.Numerical.K3.AdditiveMukaiData.mukaiVectorHom
+#print axioms AlgebraicGeometry.Numerical.K3.AdditiveMukaiData.mukaiVectorHom_apply
+#print axioms AlgebraicGeometry.Numerical.K3.AdditiveMukaiData.mukaiForm
+#print axioms AlgebraicGeometry.Numerical.K3.AdditiveMukaiData.mukaiForm_apply
+#print axioms AlgebraicGeometry.Numerical.K3.AdditiveMukaiData.mukaiForm_comm
+#print axioms AlgebraicGeometry.Numerical.K3.AdditiveMukaiData.mukaiForm_eq_neg_chi₂
+#print axioms AlgebraicGeometry.Numerical.K3.AdditiveMukaiData.mukaiVectorIsometry
+#print axioms AlgebraicGeometry.Numerical.K3.AdditiveMukaiData.mukaiVectorIsometry_apply
 
 -- The K₀ bridge: realizing a triangulated Grothendieck group numerically.
 -- `NumericalRealization`, `Descends` and `PreservesEuler` are all SUPPLIED
@@ -1662,6 +1686,17 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Numerical.selfPairing_mukaiVector_eq_of_preservesEuler
 #print axioms AlgebraicGeometry.Numerical.isSpherical_mukaiVector_iff_of_preservesEuler
 #print axioms AlgebraicGeometry.Numerical.pairing_mukaiVector_eq_on_realized
+
+-- The isometry itself, in Mathlib's sense of the word: a `ℤ`-linear map under
+-- which the two Mukai forms agree. It is an isometry of the forms on the
+-- NUMERICAL GROTHENDIECK GROUPS, not of the Mukai extensions, and no map
+-- between those is built. The proof fields are the pairing theorems above
+-- unchanged -- what a clean axiom list says here is that naming the structure
+-- adds no assumption.
+#print axioms AlgebraicGeometry.Numerical.isometryOfPreservesEuler
+#print axioms AlgebraicGeometry.Numerical.isometryOfPreservesEuler_apply
+#print axioms AlgebraicGeometry.Numerical.isometryEquivOfPreservesEuler
+#print axioms AlgebraicGeometry.Numerical.mukaiForm_eq_on_realized
 
 -- Transferring Euler-form preservation across a realization. `IsRiemannRoch`
 -- is bilinear HRR and `PreservesCategoricalEuler` is what full faithfulness
