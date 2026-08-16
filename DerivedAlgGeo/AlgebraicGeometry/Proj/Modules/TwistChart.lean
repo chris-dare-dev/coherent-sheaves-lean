@@ -53,6 +53,29 @@ noncomputable def natShiftFiberLinearEquiv {f : A} (hf : f ∈ 𝒜 1) (d : ℕ)
         Fiber 𝒜 𝒜 x.1 :=
   natShiftFiberLinearEquivOfMem 𝒜 hf d x.2
 
+/-! ## Integer twists, pointwise
+
+The trivialization of an integer twist is the same construction, with the sign of `d` decided
+once inside `DegreeZeroLocalization.intShiftZeroLinearEquiv`. It lands at `A(0)` rather than at
+`A`; the identification of `A(0)` with `A` is the separate zero-normalization already available
+as `sheafTwistZeroIso` at the sheaf level. -/
+
+/-- The pointwise trivialization of `A(d)` at a point lying in `D₊(f)`, for an integer twist. -/
+noncomputable def intShiftFiberLinearEquivOfMem {f : A} (hf : f ∈ 𝒜 1) (d : ℤ)
+    {x : ProjectiveSpectrum 𝒜} (hx : x ∈ ProjectiveSpectrum.basicOpen 𝒜 f) :
+    Fiber 𝒜 (intShift 𝒜 d) x ≃ₗ[
+      HomogeneousLocalization 𝒜 x.asHomogeneousIdeal.toIdeal.primeCompl]
+        Fiber 𝒜 (intShift 𝒜 0) x :=
+  DegreeZeroLocalization.intShiftZeroLinearEquiv 𝒜 hf d hx
+
+/-- The pointwise trivialization of `A(d)` at a point of `D₊(f)`, for an integer twist. -/
+noncomputable def intShiftFiberLinearEquiv {f : A} (hf : f ∈ 𝒜 1) (d : ℤ)
+    (x : ProjectiveSpectrum.basicOpen 𝒜 f) :
+    Fiber 𝒜 (intShift 𝒜 d) x.1 ≃ₗ[
+      HomogeneousLocalization 𝒜 x.1.asHomogeneousIdeal.toIdeal.primeCompl]
+        Fiber 𝒜 (intShift 𝒜 0) x.1 :=
+  intShiftFiberLinearEquivOfMem 𝒜 hf d x.2
+
 /-- Divide a locally fractional section of `A(d)̃` by `f ^ d`, over any open contained in
 `D₊(f)`.
 

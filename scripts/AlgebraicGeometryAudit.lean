@@ -66,6 +66,16 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.intShiftRaiseLinearMap
 #print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.intShiftLowerLinearEquiv
 #print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.intShiftLowerLinearEquiv_apply_mk
+-- Aiming at a prescribed twist. intShiftLowerLinearEquiv computes its target as d - e, which
+-- cannot be pointed at A(0) without a transport; the hypothesis-carrying form takes the target
+-- as a parameter instead. intShiftZeroLinearEquiv decides the sign of d once, and nothing
+-- downstream sees the case split.
+#print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.intShiftShiftLinearEquiv
+#print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.mul_pow_toNat_mem_intShift_zero
+#print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.intShiftZeroLinearEquiv
+#print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.intShiftZeroLinearEquiv_apply_mk
+#print axioms AlgebraicGeometry.Proj.intShiftFiberLinearEquivOfMem
+#print axioms AlgebraicGeometry.Proj.intShiftFiberLinearEquiv
 #print axioms AlgebraicGeometry.Proj.isLocallyFraction
 #print axioms AlgebraicGeometry.Proj.associatedSheaf
 #print axioms AlgebraicGeometry.Proj.stalkEquiv
