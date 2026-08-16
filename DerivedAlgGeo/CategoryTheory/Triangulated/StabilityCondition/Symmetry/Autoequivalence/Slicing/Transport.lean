@@ -68,10 +68,20 @@ measured 2026-08-05 by doing exactly that and re-running the linter:
 |---|---|
 | `PostnikovTower.mapF` | `HNFiltration.mapF`, which passes it straight through |
 | `Slicing.mapEquiv` | `Slicing.mapEquiv_P`, whose *statement* carries it |
-| `isTriangleAdditive_of_isTriangulated` | `K₀.mapF` |
+| `isTriangleAdditive_of_isTriangulated` (retired, see below) | `K₀.map` |
 
-Six errors before, six after; the build stayed green throughout. Following the
-chase to its end amputates the hypothesis from `K₀.mapF_of`, from
+Six errors before, six after; the build stayed green throughout.
+
+The third row's subject was retired in #487: the stability track's
+endofunctor-only `K₀.mapF` and the `isTriangleAdditive_of_isTriangulated`
+instance that fed it are gone, superseded by the generic `K₀.map` and
+`K₀.isTriangleAdditive_map`. The measurement above is left as recorded rather
+than transplanted — it was taken against the retired instance on 2026-08-05 and
+has not been re-run against its replacement. What carries over is only the
+uncontroversial part: `K₀.isTriangleAdditive_map` carries the same
+`@[nolint unusedArguments]` for the same stated reason.
+
+Following the chase to its end amputates the hypothesis from `K₀.map_of`, from
 `AutStabilityAction`, and finally from `TriEquiv.iAdd` — a structure field
 whose whole purpose is to make the six instances of a triangulated
 auto-equivalence travel together.

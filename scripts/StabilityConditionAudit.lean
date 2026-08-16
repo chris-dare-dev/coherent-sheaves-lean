@@ -2163,12 +2163,6 @@ These extend the foundational library's own namespace, since they are API for it
 
 /-! ## K0Functor — K₀ is functorial in triangulated functors -/
 
-#print axioms CategoryTheory.Triangulated.isTriangleAdditive_of_isTriangulated
-#print axioms CategoryTheory.Triangulated.K₀.mapF
-#print axioms CategoryTheory.Triangulated.K₀.mapF_of
-#print axioms CategoryTheory.Triangulated.K₀.mapF_id
-#print axioms CategoryTheory.Triangulated.K₀.mapF_comp
-#print axioms CategoryTheory.Triangulated.K₀.mapF_congr
 
 /-! ## StrictFiniteLength — general strict-hypothesis transfer -/
 
@@ -2605,7 +2599,7 @@ this against the file by eye. -/
 #print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.shiftNegTwoMapTriangleIso
 #print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.shiftNegTwoIsTriangulated
 #print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.shiftTwoTriEquiv
-#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.K₀.mapF_shift_neg_two
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.K₀.map_shift_neg_two
 #print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.shiftTwoPair
 #print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.deckShift_neg_one_inv_apply
 #print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.shiftTwoPair_act_eq_deck_neg_one
@@ -3699,7 +3693,7 @@ datum, not that any kernel provides it.
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.KernelAutoequivalence.kernel
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.KernelAutoequivalence.equiv
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.KernelAutoequivalence.iso
-#print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.KernelAutoequivalence.mapF_eq_transformK₀
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.KernelAutoequivalence.map_eq_transformK₀
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.KernelAutoequivalence.of_obj_eq
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.KernelAutoequivalence.actStab
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.KernelAutoequivalence.actStab_slicing
@@ -3718,7 +3712,7 @@ that the two class maps are mutually inverse.
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.KernelAutoequivalence.DualKernel.mk.sizeOf_spec
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.KernelAutoequivalence.DualKernel.dual
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.KernelAutoequivalence.DualKernel.invIso
-#print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.KernelAutoequivalence.DualKernel.mapF_inverse_eq_transformK₀
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.KernelAutoequivalence.DualKernel.map_inverse_eq_transformK₀
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.KernelAutoequivalence.DualKernel.transformK₀_dual_comp
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.KernelAutoequivalence.DualKernel.transformK₀_comp_dual
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.KernelAutoequivalence.DualKernel.transformK₀AddEquiv

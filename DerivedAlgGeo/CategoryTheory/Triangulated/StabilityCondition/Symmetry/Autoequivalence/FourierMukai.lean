@@ -24,11 +24,16 @@ kernel rather than by the functor's construction.
 ## Direction of dependence
 
 This file lives in the stability track and imports the generic
-Fourier--Mukai modules, never the reverse. `mapF` and `actStabAut` are both
-stability-track declarations, so a file under
+Fourier--Mukai modules, never the reverse. `actStabAut`, `Slicing` and
+`WithClassMap` are all stability-track declarations, so a file under
 `CategoryTheory/Triangulated/FourierMukai/` could not state any of this
 without pointing a generic module at a specialized one — the layering that
 issue #453 removed.
+
+`K₀.map` used to be on that list too, under its stability-track twin
+`K₀.mapF`; #487 retired the twin, so the class-map half of the argument now
+rests on `actStabAut` alone. That is enough: the *transport* is what is
+specialized here, not the Grothendieck-group functoriality.
 
 ## What this file does not assert
 
@@ -42,7 +47,7 @@ issue #453 removed.
   file does is make the *consequences* of having one available: given a
   `DualKernel`, the class-lattice compatibility `actStab` needs is stated in
   terms of the dual kernel's own class map rather than the opaque
-  `K₀.mapF Φ.inverse` (`actStabOfDual`), and the two kernels' class maps are
+  `K₀.map Φ.inverse` (`actStabOfDual`), and the two kernels' class maps are
   proved mutually inverse (`transformK₀_dual_comp`).
 * **No group of kernel autoequivalences, and no monoid map into one.** The
   bundled group action on stability conditions exists elsewhere:
@@ -109,8 +114,8 @@ variable (A : KernelAutoequivalence C 𝒲)
 omit [IsTriangulated C] in
 /-- On classes of objects, the autoequivalence and its transform agree.
 
-Stated this way round rather than as a `simp` lemma about `K₀.mapF`: the
-existing `K₀.mapF_of` already rewrites that left-hand side, so a lemma phrased
+Stated this way round rather than as a `simp` lemma about `K₀.map`: the
+existing `K₀.map_of` already rewrites that left-hand side, so a lemma phrased
 against it would not be in simp-normal form. -/
 theorem of_obj_eq (E : C) :
     K₀.of C (A.equiv.functor.obj E) =
@@ -127,16 +132,17 @@ variable [A.corr.pull.CommShift ℤ] [(A.corr.tensor.obj A.kernel).CommShift ℤ
 omit [IsTriangulated C] in
 /-- **The action on classes is computed by the kernel.**
 
-`K₀.mapF` and `K₀.map` agree on an endofunctor — both are
-`K₀.lift C (fun X ↦ K₀.of C (F.obj X))` — so this is
-`Correspondence.K₀_map_eq_transformK₀` transported across that identification
-and the supplied isomorphism. It is what makes the kernel, rather than the
-functor's construction, the thing that determines the transported charge. -/
-theorem mapF_eq_transformK₀ :
-    K₀.mapF A.equiv.functor = A.corr.transformK₀ A.kernel := by
-  have h : K₀.mapF A.equiv.functor = K₀.map A.equiv.functor := rfl
-  rw [h]
-  exact A.corr.K₀_map_eq_transformK₀ A.kernel A.equiv.functor A.iso
+Exactly `Correspondence.K₀_map_eq_transformK₀` at the supplied isomorphism. It
+is what makes the kernel, rather than the functor's construction, the thing
+that determines the transported charge.
+
+Until #487 this proof had a step in it: the stability track carried its own
+endofunctor-only `K₀.mapF`, definitionally equal to `K₀.map` but a different
+constant, and the theorem had to cross that identification. `mapF` is retired
+and the crossing is gone. -/
+theorem map_eq_transformK₀ :
+    K₀.map A.equiv.functor = A.corr.transformK₀ A.kernel :=
+  A.corr.K₀_map_eq_transformK₀ A.kernel A.equiv.functor A.iso
 
 end ClassMap
 
@@ -167,13 +173,11 @@ variable [A.corr.pull.CommShift ℤ] [A.corr.push.CommShift ℤ]
 
 omit [IsTriangulated C] in
 /-- **The quasi-inverse's action on classes is computed by the dual kernel.**
-The mirror of `mapF_eq_transformK₀`, and the reason `actStabOfDual` can state
+The mirror of `map_eq_transformK₀`, and the reason `actStabOfDual` can state
 its hypothesis in kernel terms. -/
-theorem mapF_inverse_eq_transformK₀ :
-    K₀.mapF A.equiv.inverse = A.corr.transformK₀ D.dual := by
-  have h : K₀.mapF A.equiv.inverse = K₀.map A.equiv.inverse := rfl
-  rw [h]
-  exact A.corr.K₀_map_eq_transformK₀ D.dual A.equiv.inverse D.invIso
+theorem map_inverse_eq_transformK₀ :
+    K₀.map A.equiv.inverse = A.corr.transformK₀ D.dual :=
+  A.corr.K₀_map_eq_transformK₀ D.dual A.equiv.inverse D.invIso
 
 variable [(A.corr.tensor.obj A.kernel).CommShift ℤ]
   [(A.corr.tensor.obj A.kernel).IsTriangulated]
@@ -189,7 +193,7 @@ is involved: the inverse relation comes from the supplied equivalence, not from
 theorem transformK₀_dual_comp :
     (A.corr.transformK₀ D.dual).comp (A.corr.transformK₀ A.kernel) =
       AddMonoidHom.id (K₀ C) := by
-  rw [← A.mapF_eq_transformK₀, ← D.mapF_inverse_eq_transformK₀]
+  rw [← A.map_eq_transformK₀, ← D.map_inverse_eq_transformK₀]
   exact K₀.map_comp_map_eq_id A.equiv.functor A.equiv.inverse
     A.equiv.unitIso.symm
 
@@ -198,7 +202,7 @@ omit [IsTriangulated C] in
 theorem transformK₀_comp_dual :
     (A.corr.transformK₀ A.kernel).comp (A.corr.transformK₀ D.dual) =
       AddMonoidHom.id (K₀ C) := by
-  rw [← A.mapF_eq_transformK₀, ← D.mapF_inverse_eq_transformK₀]
+  rw [← A.map_eq_transformK₀, ← D.map_inverse_eq_transformK₀]
   exact K₀.map_comp_map_eq_id A.equiv.inverse A.equiv.functor
     A.equiv.counitIso
 
@@ -264,10 +268,10 @@ transport needs redoing.
 
 `hlam` is stated for the *quasi-inverse*, following `actStabAut`. Classically
 the quasi-inverse of a Fourier--Mukai equivalence is again one, with the
-derived-dual kernel, and `hlam` would follow from `mapF_eq_transformK₀` for
+derived-dual kernel, and `hlam` would follow from `map_eq_transformK₀` for
 that kernel; nothing here supplies it. -/
 def actStab (lam : Λ →+ Λ)
-    (hlam : ∀ x : K₀ C, v (K₀.mapF A.equiv.inverse x) = lam (v x))
+    (hlam : ∀ x : K₀ C, v (K₀.map A.equiv.inverse x) = lam (v x))
     (σ : StabilityCondition.WithClassMap C v) :
     StabilityCondition.WithClassMap C v :=
   actStabAut A.equiv v lam hlam σ
@@ -295,15 +299,15 @@ variable (D : DualKernel A)
 
 Identical to `actStab` except for its hypothesis: `hlam` is asked against
 `transformK₀ D.dual`, which is computed from the dual kernel, rather than
-against `K₀.mapF A.equiv.inverse`, which is opaque. `mapF_inverse_eq_transformK₀`
+against `K₀.map A.equiv.inverse`, which is opaque. `map_inverse_eq_transformK₀`
 identifies the two, so this is the same transport with a checkable premise. -/
 def actStabOfDual (lam : Λ →+ Λ)
     (hlam : ∀ x : K₀ C, v (A.corr.transformK₀ D.dual x) = lam (v x))
     (σ : StabilityCondition.WithClassMap C v) :
     StabilityCondition.WithClassMap C v :=
   A.actStab v lam (fun x => by
-    rw [show K₀.mapF A.equiv.inverse = A.corr.transformK₀ D.dual from
-      D.mapF_inverse_eq_transformK₀]
+    rw [show K₀.map A.equiv.inverse = A.corr.transformK₀ D.dual from
+      D.map_inverse_eq_transformK₀]
     exact hlam x) σ
 
 @[simp]
@@ -340,7 +344,7 @@ nothing recovers `lam` from `A`.
 
 The hypothesis is in kernel terms, matching `actStabOfDual` rather than
 `actStab`: `AutPair.compat` is stated against the opaque
-`K₀.mapF A.equiv.inverse`, and `mapF_inverse_eq_transformK₀` is what turns the
+`K₀.map A.equiv.inverse`, and `map_inverse_eq_transformK₀` is what turns the
 checkable premise into it. That identification is the whole content of this
 definition. -/
 def toAutPair (lam : Λ ≃+ Λ)
@@ -349,9 +353,9 @@ def toAutPair (lam : Λ ≃+ Λ)
   Φ := A.toTriEquiv
   lam := lam
   compat x := by
-    show v (K₀.mapF A.equiv.inverse x) = lam (v x)
-    rw [show K₀.mapF A.equiv.inverse = A.corr.transformK₀ D.dual from
-      D.mapF_inverse_eq_transformK₀]
+    show v (K₀.map A.equiv.inverse x) = lam (v x)
+    rw [show K₀.map A.equiv.inverse = A.corr.transformK₀ D.dual from
+      D.map_inverse_eq_transformK₀]
     exact hlam x
 
 omit [IsTriangulated C] in
@@ -460,8 +464,8 @@ theorem KernelAutoequivalence.actStab_trans (A₁ : KernelAutoequivalence C 𝒲
     [A₁.equiv.functor.IsTriangulated] [A₁.equiv.inverse.IsTriangulated]
     [A₂.equiv.functor.IsTriangulated] [A₂.equiv.inverse.IsTriangulated]
     {lam₁ lam₂ : Λ →+ Λ}
-    (h₁ : ∀ x : K₀ C, v (K₀.mapF A₁.equiv.inverse x) = lam₁ (v x))
-    (h₂ : ∀ x : K₀ C, v (K₀.mapF A₂.equiv.inverse x) = lam₂ (v x))
+    (h₁ : ∀ x : K₀ C, v (K₀.map A₁.equiv.inverse x) = lam₁ (v x))
+    (h₂ : ∀ x : K₀ C, v (K₀.map A₂.equiv.inverse x) = lam₂ (v x))
     (σ : StabilityCondition.WithClassMap C v) :
     A₂.actStab v lam₂ h₂ (A₁.actStab v lam₁ h₁ σ)
       = (A₁.trans A₂ corr₃ D).actStab v (lam₁.comp lam₂)
