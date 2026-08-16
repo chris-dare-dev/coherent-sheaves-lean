@@ -9,12 +9,40 @@ import Mathlib.CategoryTheory.Subobject.ArtinianObject
 import Mathlib.CategoryTheory.Subobject.NoetherianObject
 
 /-!
-# Strict morphisms for owner quasi-abelian foundations
+# Strict morphisms, and finiteness conditions built from them
 
-This module owns the small categorical vocabulary needed by Bridgeland's
-thin-interval argument.  A morphism is strict when its canonical coimage to
-image comparison is an isomorphism.  The universal-property criteria below
-avoid importing the corresponding vendor module.
+A morphism is **strict** when its canonical coimage-to-image comparison is an
+isomorphism.  The universal-property criteria below avoid importing the
+corresponding vendor module.
+
+Four layers, in order:
+
+* strict morphisms — `IsStrict`, `IsStrictMono`, `IsStrictEpi`, their kernel
+  and cokernel criteria, and their relation to `NormalMono`/`RegularEpi`/
+  `StrongEpi`;
+* `StrictShortExact`, and what it becomes in an abelian category, where every
+  morphism is strict (`isStrict_of_abelian`);
+* strict subobjects, and the strict Artinian, Noetherian and finite-length
+  object properties they generate, each paired with its non-strict counterpart;
+* transfer of all of it along a fully faithful functor preserving monos.
+
+## Placement
+
+Generic category theory: this file imports only Mathlib, mentions no stability
+condition, and lives in namespace `CategoryTheory.Triangulated`.  It sat under
+`StabilityCondition/Foundation/` until #488 because its first consumer was
+Bridgeland's thin-interval argument — `Foundation/Slicing/IntervalStrictness.lean`
+is still the caller.  A first consumer is not a layer, and the move is the one
+#454 made for `PostnikovTower` and `K₀`: the namespace said generic while the
+path said specialized.
+
+## What this file does not assert
+
+**No category is shown to be quasi-abelian, and the axioms of one are nowhere
+stated.**  The filename records which theory this vocabulary is drawn from, not
+a claim that the theory is developed here — `QuasiAbelian` appears in no
+declaration in this file.  What is developed is strictness of individual
+morphisms and the finiteness conditions built on it.
 -/
 
 noncomputable section
