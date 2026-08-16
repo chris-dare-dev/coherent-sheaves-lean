@@ -12,7 +12,8 @@ Geometrically, for `P ∈ D(X × Y)` and `Q ∈ D(Y × Z)` the composite
 
 `Q ∗ P = Rπ_{XZ*}(π_{XY}^* P ⊗^L π_{YZ}^* Q) ∈ D(X × Z)`
 
-(Huybrechts, Prop. 5.10).  Proving that from the three-projection description
+which is the classical composition law.  Proving it from the three-projection
+description
 needs the projection formula and flat base change on a triple product, none of
 which the abstract `Correspondence` of `FourierMukai.Basic` carries.
 
@@ -67,8 +68,9 @@ variable {𝒳 : Type u₁} {𝒴 : Type u₂} {𝒵 : Type u₃}
 
 /-- Convolution data for three correspondences arranged as `𝒳 → 𝒴 → 𝒵`.
 
-`conv` is the kernel-level operation and `compIso` is Huybrechts' Prop. 5.10
-for it: composing the transform with kernel `P` and the transform with kernel
+`conv` is the kernel-level operation and `compIso` is the classical
+composition law for it: composing the transform with kernel `P` and the
+transform with kernel
 `Q` gives the transform with kernel `conv P Q`.  Both are supplied; neither is
 derived. -/
 structure ConvolutionData (C₁ : Correspondence 𝒳 𝒴 𝒲₁)

@@ -15,9 +15,9 @@ that a Hom-built Euler form would need.
 
 Commits: 7 + 1 review-fix commit. Files: 14. New public declarations: 82.
 
-**Status: review round 1 applied.** Findings 1, 2, 4, 6, 7 are fixed; 3 and 5
-need an owner decision and are recorded below. Full `scripts/gates.sh` is green
-after the fixes.
+**Status: review round 1 applied.** Findings 1, 2, 4, 5, 6, 7 are fixed;
+finding 3 needs an owner decision and is recorded below. Full
+`scripts/gates.sh` is green after the fixes.
 
 ---
 
@@ -29,7 +29,7 @@ after the fixes.
 | 2 | "isometry of Mukai lattices" overclaims | **Fixed by renaming.** Old → new: `pairing_mukaiVector_map` → `..._eq_of_preservesEuler`; `selfPairing_mukaiVector_map` → `..._eq_of_preservesEuler`; `isSpherical_mukaiVector_map_iff` → `..._iff_of_preservesEuler`; `pairing_mukaiVector_transform` → `pairing_mukaiVector_eq_on_realized`; `..._transform_of_categorical` → `..._eq_on_realized_of_categorical`. Every "isometry" / "acts on Mukai lattices" claim is gone; docstrings now state that no lattice map is built, `mukaiVector` is not additive, and nothing is claimed off the image of `mukaiVector ∘ R.cl`. |
 | 3 | Generic layer imports `StabilityCondition` | **Open — owner decision.** See below. |
 | 4 | Full-faithfulness explanation omits `k`-linearity | **Fixed.** `EulerTransfer` now says the functor must be fully faithful **and `k`-linear** and shift-compatible, and that Serre duality is unnecessary once full faithfulness is known. `Realization`'s `PreservesEuler` docstring corrected the same way. |
-| 5 | Branch cites unpinned Huybrechts coordinates | **Open — owner decision.** See below. The handoff's earlier claim that no Lean file cites Huybrechts was wrong. |
+| 5 | Branch cites unpinned Huybrechts coordinates | **Fixed.** Owner chose to strip. All five "Huybrechts, Prop. 5.10" citations removed; the docstrings now say "the classical composition law". No Lean file on this branch names a Huybrechts coordinate. (The handoff's earlier claim that none did was wrong at the time — it is true now.) |
 | 6 | Spherical disclaimer incomplete | **Fixed.** Now states the graded self-Ext algebra is `k ⊕ k[-2]` including `Ext¹ = 0`, and that the converse from `χ = 2` needs simplicity and Serre duality. |
 | 7 | Broken reference `transform_conv_congr` | **Fixed** → `transformMapConvIso`. |
 
@@ -337,9 +337,15 @@ Huybrechts–Lehn §1.1 and §2.1 in a References section, unpinned. So informal
 docstring references to textbooks are existing practice, and `registry/` governs
 coverage claims rather than bibliography.
 
-The owner decides between: (a) accept docstring citations as non-coverage,
-consistent with the `main` precedent; (b) mint a non-arXiv pin kind (ISBN +
-edition + PDF sha256); or (c) strip the coordinates from the five docstrings.
+**Resolved: the owner chose to strip.** All five coordinates are removed; the
+docstrings now refer to "the classical composition law" without a citation. No
+Lean file on this branch names a Huybrechts coordinate, so no pin is needed for
+this branch to merge.
+
+The general question is untouched and will return with the next textbook-sourced
+lane: whether `registry/` should gain a non-arXiv pin kind (ISBN + edition + PDF
+sha256), or whether unpinned docstring bibliography stays acceptable as the
+`main` precedent suggests.
 
 For reference: the full text has been ingested into the `bridgeland-stability`
 arXMCP notebook as `paper_id: textbook:huybrechts-fm`, 692 chunks, retrievable

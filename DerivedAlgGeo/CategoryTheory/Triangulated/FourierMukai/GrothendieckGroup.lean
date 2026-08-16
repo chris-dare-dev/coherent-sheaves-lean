@@ -16,7 +16,8 @@ names that homomorphism and proves the two facts that make it useful:
   class map of a kernel functor is computed by any of its kernels
   (`K₀_map_eq_transformK₀`); and
 * the convolved kernel's class map is the composite of the two factors'
-  (`transformK₀_conv`) -- the K-theoretic shadow of Huybrechts' Prop. 5.10.
+  (`transformK₀_conv`) -- the K-theoretic shadow of the classical composition
+  law for kernel transforms.
 
 The second is the first place the abstract interface says something a caller
 could not have written down by unfolding definitions: it turns a supplied
@@ -34,9 +35,9 @@ than a convenience.
 ## What this file does not assert
 
 * No Euler pairing, Mukai vector, or numerical invariant appears.  Relating a
-  transform's action on `K₀` to a Mukai-lattice isometry needs the Chern
-  character and Riemann--Roch, which live under `AlgebraicGeometry.Numerical`
-  and are not imported here.
+  transform's action on `K₀` to the Mukai pairing needs the Chern character and
+  Riemann--Roch, which live under `AlgebraicGeometry.Numerical` and are not
+  imported here.
 * Nothing is claimed about injectivity, surjectivity, or invertibility of
   `transformK₀`, and no transform is shown to be an equivalence.
 * `transformK₀` depends on the chosen kernel, and no result here says two
@@ -130,8 +131,8 @@ variable {𝒳 : Type u₁} {𝒴 : Type u₂} {𝒵 : Type u₃}
   [HasZeroObject 𝒲₃] [HasShift 𝒲₃ ℤ] [Preadditive 𝒲₃]
   [∀ n : ℤ, (shiftFunctor 𝒲₃ n).Additive] [Pretriangulated 𝒲₃]
 
-/-- The K-theoretic shadow of Huybrechts' Prop. 5.10: convolving kernels
-composes their class maps.
+/-- The K-theoretic shadow of the classical composition law: convolving
+kernels composes their class maps.
 
 The supplied datum is an isomorphism of functors; what comes out is an
 equality of homomorphisms, because `K₀.map_congr` collapses the isomorphism.

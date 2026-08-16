@@ -36,7 +36,7 @@ absent here.  This file does not
 * assume `tensor` is monoidal, symmetric, associative, or unital, or that it
   is exact in either variable;
 * convolve two kernels or prove that a composite of two transforms is a
-  transform (Huybrechts, Prop. 5.10);
+  transform;
 * prove that a kernel is determined by its transform, or that any particular
   class of functors consists of kernel functors (Orlov's theorem);
 * connect a kernel functor to a stability condition, a t-structure, or a
