@@ -87,6 +87,7 @@ generations:
   - { rev: 25, at: "2026-08-15", note: "Child #429 now proves the local comparison over neighborhood categories: pullback along the induced neighborhood ring diagram followed by its module colimit is naturally isomorphic to the source stalk followed by extension of scalars along the scheme stalk map. The remaining presheaf comparison is therefore isolated to global-to-neighborhood pullback base change." }
   - { rev: 26, at: "2026-08-15", note: "Child #429 completed the arbitrary presheaf pullback-to-stalk comparison and installed exact derived pullback for every flat scheme morphism. Epics #193 and #194 and milestone SF2 are closed; the source coordinate remains target because geometric slicing, openness, relative HN, and moduli theorems are still open." }
   - { rev: 27, at: "2026-08-15", note: "Milestone SF4 (#26) begins the next families phase with epics #441 and #442. Native child #443 first makes preimage-slicing witnesses compositional before scheme inducing data, genuine Zariski openness, and relative HN over curves are attempted." }
+  - { rev: 28, at: "2026-08-15", note: "Native child #444 specializes the honest left-adjoint inducing boundary to concrete exact scheme-derived pullback. The adapter records the adjoint, zero-reflection, and phase-monad premise, requires the presentable/Ind theorem explicitly, uses flatness only for exactness, and transports identity/composition through derived pullback coherence." }
 retired: []
 
 # GitHub milestones are roadmap phases. Epic issues live inside them, and
@@ -240,7 +241,7 @@ items:
     parent: stability-families-m4
     title: "Construct geometric slicing and openness witnesses"
     status: in_progress
-    summary: "Child #443 supplies the identity/composition coherence prerequisite. Child #444 will attach the exact inducing premises to scheme-derived pullback, and #445 will realize the openness clauses through genuine Zariski loci."
+    summary: "Children #443 and #444 supply compositional preimage witnesses and attach the explicit left-adjoint inducing premises to concrete exact/flat scheme-derived pullback without inhabiting the presentable/Ind theorem. Child #445 will realize the openness clauses through genuine Zariski loci."
     priority: must
     size: XL
     tags: [families, slicing, openness, geometry]

@@ -73,10 +73,10 @@ four qualifications in this comment are unaffected by it:
   ratchet now rejects an unlisted public declaration, but zero in the narrower
   authored/non-projection census is still a measurement that must be rerun.
 
-* It issues **2605** audit commands. The environment holds **2971** authored
+* It issues **2621** audit commands. The environment holds **2985** authored
   declarations under the stability-condition modules under `DerivedAlgGeo`; the declarations outside the
   substantive hand audit are precisely the private declarations and structure
-  projections. Seven projections are additionally listed because the newer
+  projections. Nine generated declarations are additionally listed because the newer
   repository-wide completeness ratchet deliberately uses a broader census.
   ("Authored" excludes constructors,
   recursors, `casesOn`, matchers, equation lemmas, internal names, and the six
@@ -89,8 +89,9 @@ four qualifications in this comment are unaffected by it:
   changes that.
 * **242 are ungated structure field projections** emitted by the `structure` command.
   These are not a coverage gap in any useful sense; listing them would be noise.
-  Seven are nevertheless named below to keep the broader CI completeness
-  ratchet from worsening. They are called out because a census that does not
+  Seven projections and two generated constructor lemmas are nevertheless named
+  below to keep the broader CI completeness ratchet from worsening. They are
+  called out because a census that does not
   separate them reports a shortfall five times the real one.
 * That leaves **0**. The literal-independence audit found 194 public names that
   had accumulated outside this list; all 194 were added on 2026-08-14.
@@ -106,12 +107,12 @@ four qualifications in this comment are unaffected by it:
   than a zero-gap assertion because its intentionally broader census includes
   generated projections; `scripts/StabilityConditionCensus.lean` remains the precise measurement
   for the authored, non-projection claim above.
-* **711 of the distinct gated declarations are not theorems** (81 `structure`, 630 other
+* **716 of the distinct gated declarations are not theorems** (83 `structure`, 633 other
   constructions).
   For a `def`, `#print axioms` reports the axiom closure of a CONSTRUCTION and
   asserts nothing about any proposition. In particular
   `CategoryTheory.Triangulated.StabilityMassTriangleInequality` appears below
-formatted identically to the **1852** real theorems, but it is a `def ... :
+formatted identically to the **1861** real theorems, but it is a `def ... :
   Prop` -- its clean line means the definition is axiom-clean, NOT that the
   proposition holds.
 
@@ -2391,10 +2392,12 @@ this against the file by eye. -/
 #print axioms CategoryTheory.Triangulated.Slicing.PreimageData
 #print axioms CategoryTheory.Triangulated.Slicing.preimageData_id
 #print axioms CategoryTheory.Triangulated.Slicing.PreimageData.comp
+#print axioms CategoryTheory.Triangulated.Slicing.PreimageData.ofIso
 #print axioms CategoryTheory.Triangulated.Slicing.preimage
 #print axioms CategoryTheory.Triangulated.Slicing.preimage_P
 #print axioms CategoryTheory.Triangulated.Slicing.preimage_id
 #print axioms CategoryTheory.Triangulated.Slicing.preimage_comp
+#print axioms CategoryTheory.Triangulated.Slicing.preimage_iso
 #print axioms CategoryTheory.Triangulated.Slicing.PreimageData.ofFaithful
 #print axioms CategoryTheory.Triangulated.Slicing.PreimageData.phaseShift
 #print axioms CategoryTheory.Triangulated.Slicing.pullback
@@ -3174,6 +3177,20 @@ end SlicingChecks
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.complexPullbackCompLocalized_commShift
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.derivedPullbackId_commShift
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.derivedPullbackComp_commShift
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.DerivedPullbackPreimageData
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.DerivedPullbackPreimageData.preimageData
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.DerivedPullbackPreimageData.preimage
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.DerivedPullbackPreimageData.identity
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.DerivedPullbackPreimageData.preimage_identity
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.DerivedPullbackPreimageData.comp
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.DerivedPullbackPreimageData.preimage_comp
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.DerivedPullbackInducingData
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.DerivedPullbackInducingData.mk.inj
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.DerivedPullbackInducingData.mk.sizeOf_spec
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.DerivedPullbackInducingData.leftAdjoint
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.DerivedPullbackInducingData.premise
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.DerivedPullbackInducingData.toPreimageData
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.DerivedPullbackInducingData.toPreimageData_of_flat
 #print axioms CategoryTheory.Abelian.image.congr_simp
 #print axioms CategoryTheory.Functor.IsLeftTExact.isGE_map
 #print axioms CategoryTheory.Functor.IsRightTExact.isLE_map
