@@ -89,6 +89,7 @@ generations:
   - { rev: 27, at: "2026-08-15", note: "Milestone SF4 (#26) begins the next families phase with epics #441 and #442. Native child #443 first makes preimage-slicing witnesses compositional before scheme inducing data, genuine Zariski openness, and relative HN over curves are attempted." }
   - { rev: 28, at: "2026-08-15", note: "Native child #444 specializes the honest left-adjoint inducing boundary to concrete exact scheme-derived pullback. The adapter records the adjoint, zero-reflection, and phase-monad premise, requires the presentable/Ind theorem explicitly, uses flatness only for exactness, and transports identity/composition through derived pullback coherence." }
   - { rev: 29, at: "2026-08-15", note: "Native child #445 removes the arbitrary-set shortcut from scheme-facing openness: the locus consists exactly of points where the actual residue-fiber pullback lies in the chosen slicing phase. Universal and generic probes reduce to Zariski openness of that locus; the named FiberPreStabilityBaseChangeData witness makes it full or empty and supplies both openness clauses, with a constant categorical model. No unconditional geometric witness or relative HN theorem is asserted." }
+  - { rev: 30, at: "2026-08-15", note: "Native child #446 replaces the proposition-only Dedekind HN probe with SchemeRelativeHNFiltration: an actual HN tower over a scheme base change together with ordinary HN filtrations in every residue fiber, equality of lengths and phases, and factor isomorphisms to categorical pullback. A named geometric base-change witness constructs and pulls back the data; regular Noetherian one-dimensional curve bases and a nonempty constant-family model are explicit. General geometric existence remains a premise." }
 retired: []
 
 # GitHub milestones are roadmap phases. Epic issues live inside them, and
@@ -226,7 +227,7 @@ items:
     gh_milestone: 26
     kind: milestone
     title: "SF4 — Geometric slicing and relative HN (§§18–23)"
-    status: in_progress
+    status: done
     lane: now
     acceptance:
       - "Preimage-slicing witnesses are coherent under identity and composition and usable by category-valued families."
@@ -253,8 +254,8 @@ items:
     kind: epic
     parent: stability-families-m4
     title: "Construct relative HN structures over curves"
-    status: planned
-    summary: "Child #446 will replace the proposition-valued Dedekind HN probe with object-level relative filtration data after the geometric slicing and openness path is available."
+    status: done
+    summary: "Child #446 supplies object-level relative HN data over actual scheme base changes, specializes the existence interface to regular Noetherian curve bases, records ordinary HN restrictions to every residue fiber with length, phase, and factor compatibility, supports pullback through the explicit geometric slicing witness, and gives a nonempty constant-family model. Unconditional geometric existence remains separate."
     priority: must
     size: XL
     tags: [families, relative-hn, curves, geometry]
