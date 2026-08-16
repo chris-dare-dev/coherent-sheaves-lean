@@ -142,7 +142,17 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Proj.polynomialVariable_adjoin_eq_top
 #print axioms AlgebraicGeometry.Proj.natShiftQuasicoherentData
 #print axioms AlgebraicGeometry.Proj.natShift_isQuasicoherent
+-- Integer twists (#439). Same three steps as the nonnegative case; the only difference is that
+-- the chart trivialization lands at A(0) rather than A, so the transport composes with the
+-- zero-normalization -- an isomorphism because intShift 0 and the grading have equal members.
+-- The sign of d never enters, because the trivialization it rests on is uniform in the sign.
+#print axioms AlgebraicGeometry.Proj.intShiftOverIso
+#print axioms AlgebraicGeometry.Proj.intShiftZeroIso
+#print axioms AlgebraicGeometry.Proj.intShiftLocalQuasicoherentData
+#print axioms AlgebraicGeometry.Proj.intShiftQuasicoherentData
+#print axioms AlgebraicGeometry.Proj.intShift_isQuasicoherent
 #print axioms AlgebraicGeometry.Proj.polynomialNatShift_isQuasicoherent
+#print axioms AlgebraicGeometry.Proj.polynomialIntShift_isQuasicoherent
 #print axioms AlgebraicGeometry.Proj.affineComparisonDataSelf
 #print axioms AlgebraicGeometry.Proj.associatedSheaf_self_isQuasicoherent
 #print axioms AlgebraicGeometry.Proj.AffineComparisonData.quasicoherentData

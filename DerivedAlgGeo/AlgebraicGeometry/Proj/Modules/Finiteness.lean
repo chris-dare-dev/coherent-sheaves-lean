@@ -345,6 +345,74 @@ theorem natShift_isQuasicoherent {I : Type u} (g : I → 𝒜 1) (d : ℕ)
     (associatedSheaf 𝒜 (natShift 𝒜 d)).IsQuasicoherent :=
   (natShiftQuasicoherentData 𝒜 g d hg).isQuasicoherent
 
+/-! ## Integer twists
+
+The same three steps as the nonnegative case. The one difference is that the chart
+trivialization lands at `A(0)` rather than at `A`, so the transport is composed with the
+zero-normalization — which is an isomorphism for the cheapest possible reason: `intShift 𝒜 0`
+and `𝒜` have the same members. -/
+
+/-- Trivializing an integer twist over an open contained in a degree-one chart. -/
+noncomputable def intShiftOverIso {f : A} (hf : f ∈ 𝒜 1) (d : ℤ)
+    {V : (AlgebraicGeometry.Proj 𝒜).Opens}
+    (hV : V ≤ ProjectiveSpectrum.basicOpen 𝒜 f) :
+    (associatedSheaf 𝒜 (intShift 𝒜 d)).over V ≅
+      (associatedSheaf 𝒜 (intShift 𝒜 0)).over V :=
+  (SheafOfModules.fullyFaithfulForget _).preimageIso <|
+    PresheafOfModules.isoMk
+      (fun W ↦ (intShiftSectionLinearEquivOn 𝒜 hf d
+        ((leOfHom W.unop.hom).trans hV)).toModuleIso)
+      (by
+        intro W W' g
+        ext s
+        apply section_ext
+        funext x
+        rfl)
+
+/-- The zero twist is the structure module, as associated sheaves. -/
+noncomputable def intShiftZeroIso :
+    associatedSheaf 𝒜 (intShift 𝒜 0) ≅ associatedSheaf 𝒜 𝒜 :=
+  associatedIsoOfPiecewiseIff (𝓜 := intShift 𝒜 0) 𝒜 𝒜
+    (fun i a => mem_intShift_zero_iff 𝒜 i a)
+
+/-- Quasi-coherent data for an integer twist on a degree-one standard chart.
+
+As in the nonnegative case no `AffineComparisonData` for `intShift 𝒜 d` is required or
+available: quasi-coherence is local, and for a graded ring generated in degree one the
+degree-one charts already cover. -/
+noncomputable def intShiftLocalQuasicoherentData (f : 𝒜 1) (d : ℤ) :
+    ((associatedSheaf 𝒜 (intShift 𝒜 d)).over
+      (standardAway 𝒜 (degreeOneStandardChart 𝒜 f)).opensRange).QuasicoherentData :=
+  SheafOfModules.QuasicoherentData.ofIsIso.{u, u, u, u}
+    (intShiftOverIso 𝒜 f.2 d (standardAway_degreeOne_opensRange_le 𝒜 f)).inv
+    (SheafOfModules.QuasicoherentData.ofIsIso.{u, u, u, u}
+      ((SheafOfModules.overFunctor (AlgebraicGeometry.Proj 𝒜).ringCatSheaf
+        (standardAway 𝒜 (degreeOneStandardChart 𝒜 f)).opensRange).mapIso
+          (intShiftZeroIso 𝒜)).inv
+      (AffineComparisonData.localQuasicoherentData 𝒜 𝒜 (affineComparisonDataSelf 𝒜)
+        (degreeOneStandardChart 𝒜 f)))
+
+/-- Quasi-coherent data for an integer twist, glued from the degree-one charts alone. -/
+noncomputable def intShiftQuasicoherentData {I : Type u} (g : I → 𝒜 1) (d : ℤ)
+    (hg : Algebra.adjoin (𝒜 0) (Set.range fun j => (g j : A)) = ⊤) :
+    (associatedSheaf 𝒜 (intShift 𝒜 d)).QuasicoherentData.{u, u, u, u} :=
+  SheafOfModules.QuasicoherentData.bind (associatedSheaf 𝒜 (intShift 𝒜 d))
+    (fun i => (standardAway 𝒜 (degreeOneStandardChart 𝒜 (g i))).opensRange)
+    (degreeOneCharts_coversTop 𝒜 g hg)
+    (fun i => intShiftLocalQuasicoherentData 𝒜 (g i) d)
+
+set_option maxHeartbeats 1600000 in
+set_option synthInstance.maxHeartbeats 400000 in
+/-- Every integer twist is quasi-coherent as soon as degree-one elements generate `A` over
+`𝒜 0`.
+
+This is the hypothesis the nonnegative statement already takes, unchanged: the sign of the twist
+never enters, because the chart trivialization it rests on is uniform in the sign. -/
+theorem intShift_isQuasicoherent {I : Type u} (g : I → 𝒜 1) (d : ℤ)
+    (hg : Algebra.adjoin (𝒜 0) (Set.range fun j => (g j : A)) = ⊤) :
+    (associatedSheaf 𝒜 (intShift 𝒜 d)).IsQuasicoherent :=
+  (intShiftQuasicoherentData 𝒜 g d hg).isQuasicoherent
+
 /-! ## Coherence -/
 
 /-- Explicit finite-presentation hypotheses for all degree-zero localized modules.  No
