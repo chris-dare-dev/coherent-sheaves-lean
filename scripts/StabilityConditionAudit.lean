@@ -59,8 +59,8 @@ to **488**. Both were right against the filter of the day, and both are
 superseded here -- the 821 in particular counted the 30 generated names
 described above. **Re-run the command; do not adjust the numbers.**
 
-**THE GAP IS NOW ZERO, re-measured after the geometric bounded-coherent
-base-change bridge on 2026-08-16.** Every
+**THE GAP IS NOW ZERO, re-measured after the finite-type openness and
+relative-HN consequences on 2026-08-16.** Every
 public declaration in this library that is not a structure field projection is
 named below. Be precise about what that does and does not mean -- three of the
 four qualifications in this comment are unaffected by it:
@@ -73,7 +73,7 @@ four qualifications in this comment are unaffected by it:
   ratchet now rejects an unlisted public declaration, but zero in the narrower
   authored/non-projection census is still a measurement that must be rerun.
 
-* It issues **2861** audit commands. The environment holds **3194** authored
+* It issues **2885** audit commands. The environment holds **3214** authored
   declarations under the stability-condition modules under `DerivedAlgGeo`; the declarations outside the
   substantive hand audit are precisely the private declarations and structure
   projections. Selected generated declarations are additionally listed because the newer
@@ -107,12 +107,12 @@ four qualifications in this comment are unaffected by it:
   than a zero-gap assertion because its intentionally broader census includes
   generated projections; `scripts/StabilityConditionCensus.lean` remains the precise measurement
   for the authored, non-projection claim above.
-* **817 of the distinct gated declarations are not theorems** (100 `structure`, 717 other
+* **825 of the distinct gated declarations are not theorems** (103 `structure`, 722 other
   constructions).
   For a `def`, `#print axioms` reports the axiom closure of a CONSTRUCTION and
   asserts nothing about any proposition. In particular
   `CategoryTheory.Triangulated.StabilityMassTriangleInequality` appears below
-formatted identically to the **1969** real theorems, but it is a `def ... :
+formatted identically to the **1981** real theorems, but it is a `def ... :
   Prop` -- its clean line means the definition is axiom-clean, NOT that the
   proposition holds.
 
@@ -3385,6 +3385,39 @@ records below assert openness or relative-HN existence.
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.GeometricPreStabilityBaseChangeData.toFiberPreStabilityBaseChangeData
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.GeometricPreStabilityBaseChangeData.phase_iff
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.GeometricPreStabilityBaseChangeData.phase_iff_comp
+
+/-! ## Finite-type openness and relative HN consequences
+
+Finite type is the concrete conjunction of Mathlib's locally-of-finite-type
+and quasi-compact morphism predicates.  The conclusions below are constructed
+from `GeometricPreStabilityBaseChangeData`; no openness or relative-HN
+existence proposition is an input.
+-/
+
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.IsFiniteTypeBaseChange
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.FiniteTypeSchemeSemistableLocusIndex
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.FiniteTypeSchemeSemistableLocusIndex.mk.inj
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.FiniteTypeSchemeSemistableLocusIndex.mk.sizeOf_spec
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.FiniteTypeSchemeSemistableLocusIndex.index
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.FiniteTypeSchemeSemistableLocusIndex.finiteType
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.FiniteTypeSchemeGenericSemistableLocusIndex
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.FiniteTypeSchemeGenericSemistableLocusIndex.mk.inj
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.FiniteTypeSchemeGenericSemistableLocusIndex.mk.sizeOf_spec
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.FiniteTypeSchemeGenericSemistableLocusIndex.index
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.FiniteTypeSchemeGenericSemistableLocusIndex.finiteType
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.finiteTypeRegularCurveEligible
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.finiteTypeSchemeSemistableLocus_isOpen
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.universalFiniteTypeSchemeSemistableOpenness
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.finiteTypeSchemeGenericSemistabilityProbe_isGenericallyOpen
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.universalFiniteTypeSchemeGenericSemistabilityOpenness
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.finiteTypeSchemeRelativeHNFiltration
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.hasFiniteTypeSchemeRelativeHNFiltrations
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.integratesAfterFiniteTypeRegularCurveBaseChange
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.FiniteTypeGeometricConsequences
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.FiniteTypeGeometricConsequences.semistableOpenness
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.FiniteTypeGeometricConsequences.genericOpenness
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.FiniteTypeGeometricConsequences.relativeHN
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.GeometricPreStabilityBaseChangeData.finiteTypeConsequences
 #print axioms CategoryTheory.Abelian.image.congr_simp
 #print axioms CategoryTheory.Functor.IsLeftTExact.isGE_map
 #print axioms CategoryTheory.Functor.IsRightTExact.isLE_map
