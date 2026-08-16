@@ -38,6 +38,22 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.coe_faceMap
 #print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.faceMap_mk
 #print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.awayMk
+-- awayMk as a normal form (#491): every away fraction is one, and equality is decided by
+-- cross-multiplication rather than by the existential the general criterion leaves behind.
+-- Both are prerequisites for any basis of the away localization.
+#print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.exists_awayMk
+#print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.awayMk_eq_awayMk_iff
+-- Numerator additivity at a fixed denominator, and the common-denominator move. Together these
+-- are what a spanning argument over monomial numerators consumes; none needs cancellation.
+#print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.awayMk_zero
+#print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.awayMk_add
+#print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.awayMk_sum
+#print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.awayMk_shift
+-- Auto-generated, not hand-written: `awayMk` carries its membership certificate as a dependent
+-- argument, so the first `rw [coe_awayMk]` in this file makes Lean emit a congruence lemma for
+-- it. It is a public declaration and the completeness ratchet counts it, so it is recorded here
+-- rather than left to widen the unaudited gap.
+#print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.awayMk.congr_simp
 #print axioms AlgebraicGeometry.Proj.GradedLinearMap
 #print axioms AlgebraicGeometry.Proj.GradedLinearMap.map
 #print axioms AlgebraicGeometry.Proj.GradedLinearMap.map_mk
@@ -148,6 +164,10 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Proj.polynomialVariable_isCechAcyclicCover_of_isQuasicoherent
 #print axioms AlgebraicGeometry.Proj.polynomialVariable_isCechAcyclicFor
 #print axioms AlgebraicGeometry.Proj.polynomialVariable_isCechAcyclicCover
+-- Acyclicity (#338) and the complex identification (#339) combine into the statement the twist
+-- computation starts from (#340): Hⁱ(Pⁿ, O(d)) is the homology of the explicit complex of
+-- degree-zero homogeneous localizations.
+#print axioms AlgebraicGeometry.Proj.polynomialVariableCechComplex_computesCohomology
 -- The same for an integer twist (#467 step 4). The acyclicity argument never mentions the
 -- twist -- it needs quasi-coherence and affineness of the intersections, and the degree
 -- restriction that constrains the trivialization plays no part -- so each is one application
