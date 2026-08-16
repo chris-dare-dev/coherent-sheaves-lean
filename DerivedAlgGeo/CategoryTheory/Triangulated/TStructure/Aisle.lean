@@ -14,11 +14,11 @@ relevant shift and every object admits the required approximation triangle.  Its
 right orthogonal is then the coaisle, and the two properties determine a
 t-structure.
 
-For Theorem A.13 of arXiv:2607.28411v1, Brown representability is used precisely
-to construct the approximation triangles.  Keeping that theorem input in
-`AisleData` makes the remaining boundary explicit: this file proves that those
-triangles really do assemble into a t-structure, but does not postulate that they
-exist for arbitrary compact generators.
+For Theorem A.13 of arXiv:2607.28411v1, Brown representability constructs
+universal approximation maps. `AisleData.ofApproximationMaps` completes those
+maps to distinguished triangles and proves their cones are right orthogonal.
+This file then assembles the triangles into a t-structure, but does not
+postulate that compact generators alone produce the universal maps.
 -/
 
 noncomputable section
@@ -32,6 +32,28 @@ namespace CategoryTheory.Triangulated.TStructure
 variable {C : Type u} [Category.{v} C] [HasZeroObject C] [HasShift C ℤ]
   [Preadditive C] [∀ n : ℤ, (shiftFunctor C n).Additive]
   [Pretriangulated C]
+
+/-- A universal map from an aisle candidate to an object.
+
+The two Hom conditions are the exact amount of control needed to prove that
+the cone of `hom` is right orthogonal to `U`: surjectivity kills maps through
+the middle term, while injectivity after `[1]` kills their connecting maps.
+Brown representability constructs maps with these properties in the
+compact-generator application. -/
+structure ApproximationMap (U : ObjectProperty C) (A : C) where
+  /-- The approximating object. -/
+  left : C
+  /-- The approximating object belongs to the aisle candidate. -/
+  left_mem : U left
+  /-- The universal approximation morphism. -/
+  hom : left ⟶ A
+  /-- Every map from an object of `U` to `A` factors through `hom`. -/
+  hom_surjective (Z : C) (hZ : U Z) :
+    Function.Surjective (fun f : Z ⟶ left => f ≫ hom)
+  /-- After shifting the approximation triangle, precomposition with `hom[1]`
+  is injective on maps from objects of `U`. -/
+  shift_hom_injective (Z : C) (hZ : U Z) :
+    Function.Injective (fun f : Z ⟶ left⟦(1 : ℤ)⟧ => f ≫ hom⟦(1 : ℤ)⟧')
 
 /-- The data that makes an object property an aisle.
 
@@ -50,6 +72,43 @@ structure AisleData (U : ObjectProperty C) : Prop where
 namespace AisleData
 
 variable {U : ObjectProperty C}
+
+/-- Complete universal approximation maps to triangles and prove that their
+cones lie in the right orthogonal.
+
+This is the exactness step between Brown representability's map-level output
+and the aisle constructor.  In particular, callers no longer have to supply a
+chosen cone or assert its orthogonality. -/
+theorem ofApproximationMaps
+    (hshift : U ≤ U.shift (1 : ℤ))
+    (happrox : ∀ A : C, Nonempty (ApproximationMap U A)) :
+    AisleData U where
+  shift := hshift
+  exists_triangle A := by
+    obtain ⟨a⟩ := happrox A
+    obtain ⟨Y, g, h, hT⟩ :=
+      Pretriangulated.distinguished_cocone_triangle a.hom
+    let T := Triangle.mk a.hom g h
+    have hY : U.rightOrthogonal Y := by
+      intro Z f hZ
+      have hfh : f ≫ h = 0 := by
+        apply a.shift_hom_injective Z hZ
+        change (f ≫ h) ≫ a.hom⟦(1 : ℤ)⟧' =
+          (0 : Z ⟶ a.left⟦(1 : ℤ)⟧) ≫ a.hom⟦(1 : ℤ)⟧'
+        have hh : h ≫ a.hom⟦(1 : ℤ)⟧' = 0 := by
+          have hh' := comp_distTriang_mor_zero₃₁ (Triangle.mk a.hom g h) hT
+          dsimp only [Triangle.mk] at hh'
+          exact hh'
+        rw [Category.assoc, hh, comp_zero, zero_comp]
+      obtain ⟨k, rfl⟩ := Triangle.coyoneda_exact₃ T hT f hfh
+      obtain ⟨l, rfl⟩ := a.hom_surjective Z hZ k
+      change (l ≫ a.hom) ≫ g = 0
+      have hfg : a.hom ≫ g = 0 := by
+        have hfg' := comp_distTriang_mor_zero₁₂ (Triangle.mk a.hom g h) hT
+        dsimp only [Triangle.mk] at hfg'
+        exact hfg'
+      rw [Category.assoc, hfg, comp_zero]
+    exact ⟨a.left, Y, a.left_mem, hY, a.hom, g, h, hT⟩
 
 /-- The right orthogonal of an aisle is closed under the opposite shift. -/
 lemma rightOrthogonal_le_shift (h : AisleData U) :
