@@ -76,6 +76,88 @@ noncomputable def intShiftFiberLinearEquiv {f : A} (hf : f ∈ 𝒜 1) (d : ℤ)
         Fiber 𝒜 (intShift 𝒜 0) x.1 :=
   intShiftFiberLinearEquivOfMem 𝒜 hf d x.2
 
+/-! ## Integer twists, on sections
+
+The same construction as the nonnegative case, pointwise, with the certificate rebuilt by the
+single computation rules `intShiftZeroLinearEquiv_apply_mk` and its `symm` sibling. Because
+those rules are uniform in the sign of `d`, nothing here splits on it. -/
+
+/-- Trivialize a locally fractional section of `A(d)̃`, over any open contained in `D₊(f)`. -/
+noncomputable def intShiftSectionToZeroOn {f : A} (hf : f ∈ 𝒜 1) (d : ℤ)
+    {U : Opens X} (hU : U ≤ ProjectiveSpectrum.basicOpen 𝒜 f)
+    (s : (associatedSheafInType 𝒜 (intShift 𝒜 d)).1.obj (op U)) :
+    (associatedSheafInType 𝒜 (intShift 𝒜 0)).1.obj (op U) := by
+  refine ⟨fun x => intShiftFiberLinearEquivOfMem 𝒜 hf d (hU x.2) (s.1 x), ?_⟩
+  intro x
+  obtain ⟨V, hxV, i, e, r, t, ht, h⟩ := s.2 x
+  refine ⟨V, hxV, i, e + d.toNat,
+    ⟨(r : A) * f ^ (-d).toNat,
+      DegreeZeroLocalization.mul_pow_toNat_mem_intShift_zero 𝒜 hf d e (r : A) r.2⟩,
+    ⟨(t : A) * f ^ d.toNat,
+      by simpa using SetLike.mul_mem_graded t.2 (SetLike.pow_mem_graded d.toNat hf)⟩,
+    (fun y => y.1.asHomogeneousIdeal.toIdeal.primeCompl.mul_mem
+      (ht y) (y.1.asHomogeneousIdeal.toIdeal.primeCompl.pow_mem (hU (i y).2) d.toNat)),
+    fun y => ?_⟩
+  change intShiftFiberLinearEquivOfMem 𝒜 hf d (hU (i y).2) (s.1 (i y)) = _
+  have hy := h y
+  change s.1 (i y) = _ at hy
+  rw [hy]
+  exact DegreeZeroLocalization.intShiftZeroLinearEquiv_apply_mk 𝒜 hf d (hU (i y).2) _
+
+/-- The inverse trivialization on sections, over any open contained in `D₊(f)`. -/
+noncomputable def intShiftSectionFromZeroOn {f : A} (hf : f ∈ 𝒜 1) (d : ℤ)
+    {U : Opens X} (hU : U ≤ ProjectiveSpectrum.basicOpen 𝒜 f)
+    (s : (associatedSheafInType 𝒜 (intShift 𝒜 0)).1.obj (op U)) :
+    (associatedSheafInType 𝒜 (intShift 𝒜 d)).1.obj (op U) := by
+  refine ⟨fun x => (intShiftFiberLinearEquivOfMem 𝒜 hf d (hU x.2)).symm (s.1 x), ?_⟩
+  intro x
+  obtain ⟨V, hxV, i, e, r, t, ht, h⟩ := s.2 x
+  refine ⟨V, hxV, i, e + (-d).toNat,
+    ⟨(r : A) * f ^ d.toNat,
+      DegreeZeroLocalization.mul_pow_toNat_mem_intShift 𝒜 hf d e (r : A) r.2⟩,
+    ⟨(t : A) * f ^ (-d).toNat,
+      by simpa using SetLike.mul_mem_graded t.2 (SetLike.pow_mem_graded (-d).toNat hf)⟩,
+    (fun y => y.1.asHomogeneousIdeal.toIdeal.primeCompl.mul_mem
+      (ht y) (y.1.asHomogeneousIdeal.toIdeal.primeCompl.pow_mem (hU (i y).2) (-d).toNat)),
+    fun y => ?_⟩
+  change (intShiftFiberLinearEquivOfMem 𝒜 hf d (hU (i y).2)).symm (s.1 (i y)) = _
+  have hy := h y
+  change s.1 (i y) = _ at hy
+  rw [hy]
+  exact DegreeZeroLocalization.intShiftZeroLinearEquiv_symm_apply_mk 𝒜 hf d (hU (i y).2) _
+
+/-- Over any open contained in `D₊(f)`, an integer twist is trivial on sections. -/
+noncomputable def intShiftSectionAddEquivOn {f : A} (hf : f ∈ 𝒜 1) (d : ℤ)
+    {U : Opens X} (hU : U ≤ ProjectiveSpectrum.basicOpen 𝒜 f) :
+    (associatedSheafInType 𝒜 (intShift 𝒜 d)).1.obj (op U) ≃+
+      (associatedSheafInType 𝒜 (intShift 𝒜 0)).1.obj (op U) where
+  toFun := intShiftSectionToZeroOn 𝒜 hf d hU
+  invFun := intShiftSectionFromZeroOn 𝒜 hf d hU
+  left_inv s := by
+    apply section_ext
+    funext x
+    exact (intShiftFiberLinearEquivOfMem 𝒜 hf d (hU x.2)).symm_apply_apply (s.1 x)
+  right_inv s := by
+    apply section_ext
+    funext x
+    exact (intShiftFiberLinearEquivOfMem 𝒜 hf d (hU x.2)).apply_symm_apply (s.1 x)
+  map_add' s t := by
+    apply section_ext
+    funext x
+    exact (intShiftFiberLinearEquivOfMem 𝒜 hf d (hU x.2)).map_add (s.1 x) (t.1 x)
+
+/-- The integer chart trivialization is linear over the structure-sheaf sections. -/
+noncomputable def intShiftSectionLinearEquivOn {f : A} (hf : f ∈ 𝒜 1) (d : ℤ)
+    {U : Opens X} (hU : U ≤ ProjectiveSpectrum.basicOpen 𝒜 f) :
+    (associatedSheafInType 𝒜 (intShift 𝒜 d)).1.obj (op U) ≃ₗ[𝒪.1.obj (op U)]
+      (associatedSheafInType 𝒜 (intShift 𝒜 0)).1.obj (op U) :=
+  { intShiftSectionAddEquivOn 𝒜 hf d hU with
+    map_smul' := fun r s => by
+      apply section_ext
+      funext x
+      exact (intShiftFiberLinearEquivOfMem 𝒜 hf d (hU x.2)).map_smul
+        (AlgebraicGeometry.openToLocalization 𝒜 U x.1 x.2 r) (s.1 x) }
+
 /-- Divide a locally fractional section of `A(d)̃` by `f ^ d`, over any open contained in
 `D₊(f)`.
 
