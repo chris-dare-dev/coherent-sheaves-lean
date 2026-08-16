@@ -111,6 +111,24 @@ theorem Slicing.PreimageData.comp {s : Slicing E} {G : D ⥤ E}
   hom_vanishing := hF.hom_vanishing
   hn_exists := hF.hn_exists
 
+/-- A natural isomorphism of detecting functors transports the two non-formal
+preimage axioms.  In particular, the HN factors are unchanged because phase
+membership is invariant under the component isomorphisms. -/
+theorem Slicing.PreimageData.ofIso {s : Slicing D} {F G : C ⥤ D}
+    (hF : s.PreimageData F) (e : F ≅ G) : s.PreimageData G where
+  hom_vanishing phi₁ phi₂ A B hphi hA hB g :=
+    hF.hom_vanishing phi₁ phi₂ A B hphi
+      (ObjectProperty.prop_of_iso _ (e.app A).symm hA)
+      (ObjectProperty.prop_of_iso _ (e.app B).symm hB) g
+  hn_exists X := by
+    have hphase : s.preimagePhase G = s.preimagePhase F := by
+      funext phi Y
+      apply propext
+      exact ⟨ObjectProperty.prop_of_iso _ (e.app Y).symm,
+        ObjectProperty.prop_of_iso _ (e.app Y)⟩
+    rw [hphase]
+    exact hF.hn_exists X
+
 @[simp]
 theorem Slicing.preimage_P (s : Slicing D) (F : C ⥤ D) [F.Additive]
     [F.CommShift ℤ] [F.IsTriangulated] (h : s.PreimageData F)
@@ -137,6 +155,19 @@ theorem Slicing.preimage_comp (s : Slicing E) (G : D ⥤ E)
       (s.preimage G hG).preimage F hF := by
   apply Slicing.ext
   rfl
+
+/-- Preimage slicings are invariant under a natural isomorphism of the
+detecting functors. -/
+theorem Slicing.preimage_iso (s : Slicing D) (F G : C ⥤ D)
+    [F.Additive] [F.CommShift ℤ] [F.IsTriangulated]
+    [G.Additive] [G.CommShift ℤ] [G.IsTriangulated]
+    (hF : s.PreimageData F) (e : F ≅ G) :
+    s.preimage G (hF.ofIso e) = s.preimage F hF := by
+  apply Slicing.ext
+  funext phi X
+  apply propext
+  exact ⟨ObjectProperty.prop_of_iso _ (e.app X).symm,
+    ObjectProperty.prop_of_iso _ (e.app X)⟩
 
 /-- For a faithful functor, target Hom-vanishing supplies the Hom component of
 `PreimageData`; only HN existence remains to be proved. -/
