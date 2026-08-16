@@ -64,9 +64,9 @@ structure Slicing.LeftAdjointInducingPremise (s : Slicing D)
 
 No inhabitant is provided in this repository.  Its premise is only a bounded
 shadow and is not asserted to imply its conclusion.  SF7 replaces callers of
-this proposition by the actual Theorem-A.17 hypotheses, constructs
-`Slicing.InducedTStructures`, and then applies the Corollary-A.23 phase
-truncation theorem. -/
+this proposition by the actual Theorem-A.17 hypotheses and constructs
+`Slicing.InducedTStructures`; the Corollary-A.23 phase-truncation theorem from
+that output to `PreimageData` is now proved in `Phase.Transfer.HN`. -/
 def HasLeftAdjointInducingTheorem : Prop :=
   ∀ {C : Type u₁} [Category.{v₁} C] [HasZeroObject C] [HasShift C ℤ]
       [Preadditive C] [∀ n : ℤ, (shiftFunctor C n).Additive]
