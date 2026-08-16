@@ -13,6 +13,4 @@ correspondence; the convolution of kernels as supplied data; and the induced
 maps on the triangulated Grothendieck group.  No geometry, and no theorem
 asserting that a functor is of this form.
 
-`Basic` and `Convolution` depend on Mathlib alone.  `GrothendieckGroup` is the
-only module here that reaches into `StabilityCondition.Foundation`, for `K₀`.
 -/
