@@ -68,6 +68,42 @@ theorem phase_iff (h : FiberPreStabilityBaseChangeData F classMap sigma)
   rw [h.slicing_compatible f]
   exact Slicing.preimage_P _ _ _ _ _
 
+/-- The witnesses attached to two successive base changes compose to a
+witness for the corresponding composite of pullback functors.  This uses the
+strictly typed iterated functor; comparison with `F.pull (f ≫ g)` is supplied
+separately by the functoriality of the underlying category-valued family. -/
+theorem preimageData_comp (h : FiberPreStabilityBaseChangeData F classMap sigma)
+    {r s t : B} (f : r ⟶ s) (g : s ⟶ t) :
+    (sigma r).slicing.PreimageData (F.pull g ⋙ F.pull f) := by
+  let hg : ((sigma r).slicing.preimage (F.pull f) (h.preimageData f)).PreimageData
+      (F.pull g) := by
+    rw [← h.slicing_compatible f]
+    exact h.preimageData g
+  exact (h.preimageData f).comp hg
+
+/-- The slicing over the target of two successive base changes can be
+constructed in one step along the composite pullback functor. -/
+theorem slicing_compatible_comp
+    (h : FiberPreStabilityBaseChangeData F classMap sigma)
+    {r s t : B} (f : r ⟶ s) (g : s ⟶ t) :
+    (sigma t).slicing =
+      (sigma r).slicing.preimage (F.pull g ⋙ F.pull f)
+        (h.preimageData_comp f g) := by
+  apply Slicing.ext
+  funext phi E
+  apply propext
+  exact (h.phase_iff g phi E).trans
+    (h.phase_iff f phi ((F.pull g).obj E))
+
+/-- Phase membership transported through a composite base change agrees with
+transport through its two stages. -/
+theorem phase_iff_comp (h : FiberPreStabilityBaseChangeData F classMap sigma)
+    {r s t : B} (f : r ⟶ s) (g : s ⟶ t) (phi : ℝ) (E : F.Fiber t) :
+    (sigma t).slicing.P phi E ↔
+      (sigma r).slicing.P phi ((F.pull f).obj ((F.pull g).obj E)) :=
+  (h.phase_iff g phi E).trans
+    (h.phase_iff f phi ((F.pull g).obj E))
+
 /-- Pullback preserves the common numerical class of an object. -/
 theorem class_pull (h : FiberPreStabilityBaseChangeData F classMap sigma)
     {s t : B} (f : s ⟶ t) (E : F.Fiber t) :
