@@ -909,6 +909,19 @@ fidelity:
     A.14 restriction equivalences; Mathlib v4.32.1 has no Brown-representability
     or triangulated homotopy-colimit theorem from which to derive them.
 
+    COUNT UPDATE (SF7.2 compact finite-support bridge), 2026-08-16.
+    `IsCompactObject.exists_finite_sum` now proves the concrete additive
+    consequence needed by the Brown tower: every morphism from an
+    `IsCompactObject.{0}` object into a universe-zero small coproduct is a
+    finite sum of component morphisms followed by coproduct injections. The
+    proof identifies the additive-group coproduct in the definition of
+    compactness with a direct sum and extracts its finite support. This removes
+    the first prerequisite
+    for proving that compact sources see the mapping telescope as a sequential
+    direct limit; the telescope factorization and eventual-equality theorems,
+    followed by construction of the universal approximation maps, remain
+    open in #477.
+
     COUNT UPDATE (destination issue #226; owner-controlled Bridgeland
     foundation), 2026-08-12. The first Mathlib-only foundation slice adds
     repository-owned Postnikov towers, HN filtrations, slicings, elementary

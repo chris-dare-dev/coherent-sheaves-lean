@@ -1076,6 +1076,7 @@ open CategoryTheory.Triangulated
 #print axioms CategoryTheory.IsCompactObject.coproductComparisonIso.congr_simp
 #print axioms CategoryTheory.IsCompactObject.map_ι_coproductComparisonIso_hom
 #print axioms CategoryTheory.IsCompactObject.map_ι_coproductComparisonIso_hom_assoc
+#print axioms CategoryTheory.IsCompactObject.exists_finite_sum
 #print axioms CategoryTheory.ObjectProperty.compactObjects
 #print axioms CategoryTheory.ObjectProperty.isCompactObject_of_iso
 #print axioms CategoryTheory.ObjectProperty.coprodClosure
