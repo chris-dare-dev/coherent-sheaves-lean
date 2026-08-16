@@ -74,13 +74,13 @@ private theorem exists_hn_of_target {s : Slicing D} {F : C ⥤ D}
   | zero =>
       intro E G hG
       have hGn : G.n = 0 := by omega
-      have hFE : IsZero (F.obj E) := G.zero_isZero hGn
+      have hFE : IsZero (F.obj E) := G.isZero_of_length_zero hGn
       let H := HNFiltration.zero (P := s.preimagePhase F) C E (h.isZero_of_map_isZero hFE)
       exact ⟨H, fun _ => rfl, fun hn => absurd hn (by omega)⟩
   | succ m ih =>
       intro E G hG
       by_cases hGn : G.n = 0
-      · have hFE : IsZero (F.obj E) := G.zero_isZero hGn
+      · have hFE : IsZero (F.obj E) := G.isZero_of_length_zero hGn
         let H := HNFiltration.zero (P := s.preimagePhase F) C E
           (h.isZero_of_map_isZero hFE)
         exact ⟨H, fun _ => rfl, fun hn => absurd hn (by omega)⟩
@@ -108,7 +108,7 @@ private theorem exists_hn_of_target {s : Slicing D} {F : C ⥤ D}
         have hTY₃ : tD.IsGE Y 1 := by
           apply (TID.ge_one_iff phi Y).2
           by_cases hGYzero : GY.n = 0
-          · exact Or.inl (GY.zero_isZero hGYzero)
+          · exact Or.inl (GY.isZero_of_length_zero hGYzero)
           · have hGYpos : 0 < GY.n := Nat.pos_of_ne_zero hGYzero
             apply s.ltProp_of_hn D GY phi _ hGYpos
             intro j

@@ -146,6 +146,7 @@ open CategoryTheory.Triangulated
 #print axioms CategoryTheory.Triangulated.PostnikovTower.length
 #print axioms CategoryTheory.Triangulated.PostnikovTower.factor
 #print axioms CategoryTheory.Triangulated.PostnikovTower.factors
+#print axioms CategoryTheory.Triangulated.PostnikovTower.isZero_of_length_zero
 #print axioms CategoryTheory.Triangulated.ExtensionClosure
 #print axioms CategoryTheory.Triangulated.ExtensionClosure.mono
 #print axioms CategoryTheory.Triangulated.ExtensionClosure.hom_eq_zero

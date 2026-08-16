@@ -114,7 +114,6 @@ noncomputable def PostnikovTower.mapF {E : C} (P : PostnikovTower C E)
   triangle_obj₂ := fun i => ⟨F.mapIso (P.triangle_obj₂ i).some⟩
   base_isZero := F.map_isZero P.base_isZero
   top_iso := ⟨F.mapIso P.top_iso.some⟩
-  zero_isZero := fun h => F.map_isZero (P.zero_isZero h)
 
 /-- Push an HN filtration through a triangulated functor.
 

@@ -438,7 +438,7 @@ theorem StabilityCondition.WithClassMap.observableStabilityFunctionOnHeart_hasHN
                 _ ≤ 1 := σ.slicing.phiPlus_le_of_leProp C hXobj hXheart.2
           let FX : HNFiltration C σ.slicing.P
               (F.chain.obj ⟨F.n - 1, by omega⟩) :=
-            F.prefix C (F.n - 1) (by omega) (by omega)
+            F.prefix C (F.n - 1) (by omega)
           have hFXn : 0 < FX.n := by change 0 < F.n - 1; omega
           have hFXheart : t.heart (F.chain.obj ⟨F.n - 1, by omega⟩) := by
             rw [σ.slicing.toTStructure_heart_iff C]
@@ -796,7 +796,6 @@ def HNFiltration.rotateStability
   triangle_obj₂ := F.triangle_obj₂
   base_isZero := F.base_isZero
   top_iso := F.top_iso
-  zero_isZero := F.zero_isZero
   φ := fun i ↦ F.φ i + θ
   hφ := by intro i j hij; linarith [F.hφ hij]
   semistable := by
@@ -819,7 +818,6 @@ def HNFiltration.unrotateStability
   triangle_obj₂ := F.triangle_obj₂
   base_isZero := F.base_isZero
   top_iso := F.top_iso
-  zero_isZero := F.zero_isZero
   φ := fun i ↦ F.φ i - θ
   hφ := by intro i j hij; linarith [F.hφ hij]
   semistable := by
@@ -962,7 +960,7 @@ theorem stabilityMass_toReal_triangle_eq_add_of_hn_separated
   | zero =>
       intro X Y GX GY hn E f g h hT _hsep
       have hYn : GY.n = 0 := by omega
-      have hYz : IsZero Y := GY.zero_isZero hYn
+      have hYz : IsZero Y := GY.isZero_of_length_zero hYn
       haveI : IsIso f := (Triangle.isZero₃_iff_isIso₁ _ hT).mp hYz
       rw [stabilityMass_congr σ (asIso f)]
       rw [show stabilityMass σ Y = 0 from
@@ -971,7 +969,7 @@ theorem stabilityMass_toReal_triangle_eq_add_of_hn_separated
   | succ m ih =>
       intro X Y GX GY hn E f g h hT hsep
       by_cases hYn : GY.n = 0
-      · have hYz : IsZero Y := GY.zero_isZero hYn
+      · have hYz : IsZero Y := GY.isZero_of_length_zero hYn
         haveI : IsIso f := (Triangle.isZero₃_iff_isIso₁ _ hT).mp hYz
         rw [stabilityMass_congr σ (asIso f)]
         rw [show stabilityMass σ Y = 0 from
@@ -1337,7 +1335,7 @@ theorem stabilityMassTriangleInequality_of_semistable_obj₁
   | zero =>
       intro U hU G hG
       have hn : G.n = 0 := by omega
-      have hzero : IsZero U.obj₁ := G.zero_isZero hn
+      have hzero : IsZero U.obj₁ := G.isZero_of_length_zero hn
       haveI : IsIso U.mor₂ := (Triangle.isZero₁_iff_isIso₂ U hU).mp hzero
       rw [stabilityMass_congr σ (asIso U.mor₂)]
       simp [show stabilityMass σ U.obj₁ = 0 from
@@ -1345,7 +1343,7 @@ theorem stabilityMassTriangleInequality_of_semistable_obj₁
   | succ m ih =>
       intro U hU G hG
       by_cases hn0 : G.n = 0
-      · have hzero : IsZero U.obj₁ := G.zero_isZero hn0
+      · have hzero : IsZero U.obj₁ := G.isZero_of_length_zero hn0
         haveI : IsIso U.mor₂ := (Triangle.isZero₁_iff_isIso₂ U hU).mp hzero
         rw [stabilityMass_congr σ (asIso U.mor₂)]
         simp [show stabilityMass σ U.obj₁ = 0 from
@@ -1569,7 +1567,6 @@ theorem AbelianHNFiltration.mass_eq_stabilityMass_toReal
         let eTop : (F.chain (Fin.last F.n) : t.heart.FullSubcategory) ≅ E :=
           eEq.trans (asIso (⊤ : Subobject E).arrow)
         exact ⟨(t.heart).ι.mapIso eTop⟩
-      zero_isZero := fun h ↦ absurd h (Nat.ne_of_gt F.nonempty)
       φ := F.phase
       hφ := F.phase_strictAnti
       semistable := fun i ↦ by
@@ -1934,12 +1931,12 @@ theorem stabilityMass_triangle_le_of_obj₁_phase_one
     CategoryTheory.Triangulated.HNFiltration.exists_split_at_cutoff C FE 0
   have hEposgtP : σ.slicing.gtProp C 0 Epos := by
     by_cases hn : GEpos.n = 0
-    · exact Or.inl (GEpos.zero_isZero hn)
+    · exact Or.inl (GEpos.isZero_of_length_zero hn)
     · exact σ.slicing.gtProp_of_hn C GEpos 0 hEposgt
         (Nat.pos_of_ne_zero hn)
   have hElowleP : σ.slicing.leProp C 0 Elow := by
     by_cases hn : GElow.n = 0
-    · exact Or.inl (GElow.zero_isZero hn)
+    · exact Or.inl (GElow.isZero_of_length_zero hn)
     · exact σ.slicing.leProp_of_hn C GElow 0 hElowle
         (Nat.pos_of_ne_zero hn)
   have hfq : T.mor₁ ≫ qE = 0 :=
@@ -1968,12 +1965,12 @@ theorem stabilityMass_triangle_le_of_obj₁_phase_one
     CategoryTheory.Triangulated.HNFiltration.exists_split_at_cutoff C FF 2
   have hFhighgtP : σ.slicing.gtProp C 2 Fhigh := by
     by_cases hn : GFhigh.n = 0
-    · exact Or.inl (GFhigh.zero_isZero hn)
+    · exact Or.inl (GFhigh.isZero_of_length_zero hn)
     · exact σ.slicing.gtProp_of_hn C GFhigh 2 hFhighgt
         (Nat.pos_of_ne_zero hn)
   have hFlowleP : σ.slicing.leProp C 2 Flow := by
     by_cases hn : GFlow.n = 0
-    · exact Or.inl (GFlow.zero_isZero hn)
+    · exact Or.inl (GFlow.isZero_of_length_zero hn)
     · exact σ.slicing.leProp_of_hn C GFlow 2 hFlowle
         (Nat.pos_of_ne_zero hn)
   have hiFw : iF ≫ U.mor₃ = 0 :=

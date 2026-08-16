@@ -102,16 +102,23 @@ field — see `mukaiSInt`, which derives it.
 Note what `b_spec` does and does not say. It constrains `b` only on the image
 of `c₁`; it does not assert that `b` is the full intersection form of a
 geometric lattice, and `c₁` is a bare function, not an additive map. This is
-deliberately weaker than a geometric lattice package. -/
+deliberately weaker than a geometric lattice package.
+
+Symmetry is **not** a field. On the image of `c₁` it is already a theorem —
+`b_spec` and commutativity of `A` force it, see `b_comm_on_realized` — and
+off the image it would be exactly the kind of global demand on `Λ` this
+structure otherwise avoids; nothing downstream consumes it. An earlier draft
+carried a `b_comm` field; the review that measured its use count (zero) is the
+reason it is gone. -/
 structure IntegralMukaiData (A : Type u) (N : Type v) (Λ : Type w)
     [CommRing A] [Algebra ℚ A] [AddCommGroup N] [NumericalVariety 2 A N]
     [AddCommGroup Λ] where
   /-- The first Chern class, valued in the supplied lattice. -/
   c₁ : N → Λ
-  /-- The integral symmetric form on `Λ`. -/
+  /-- The integral form on `Λ`.  Symmetry is not demanded: on the image of
+  `c₁` it follows from `b_spec` (`b_comm_on_realized`), and off the image
+  nothing here needs it. -/
   b : Λ →ₗ[ℤ] Λ →ₗ[ℤ] ℤ
-  /-- The form is symmetric. -/
-  b_comm : ∀ x y : Λ, b x y = b y x
   /-- The form computes the intersection number of first Chern classes. -/
   b_spec : ∀ E F : N, (b (c₁ E) (c₁ F) : ℚ)
     = degree (n := 2) (chComp (A := A) E 1 * chComp (A := A) F 1)
@@ -119,6 +126,18 @@ structure IntegralMukaiData (A : Type u) (N : Type v) (Λ : Type w)
 namespace IntegralMukaiData
 
 variable (D : IntegralMukaiData A N Λ)
+
+omit [IsK3 A N] in
+/-- **On realized classes the form is symmetric**, with no symmetry field:
+`b_spec` computes both sides as the same intersection number, `A` is
+commutative, and the integer cast is injective. This is all the symmetry the
+structure can see; symmetry off the image of `c₁` is neither demanded nor
+available. -/
+theorem b_comm_on_realized (E F : N) :
+    D.b (D.c₁ E) (D.c₁ F) = D.b (D.c₁ F) (D.c₁ E) := by
+  have h : (D.b (D.c₁ E) (D.c₁ F) : ℚ) = (D.b (D.c₁ F) (D.c₁ E) : ℚ) := by
+    rw [D.b_spec, D.b_spec, mul_comm]
+  exact_mod_cast h
 
 /-- The Mukai vector `v(E) = (r, c₁, s)` as an element of the abstract Mukai
 extension of `Λ`. Not an additive map: no additivity of `c₁` is assumed, so

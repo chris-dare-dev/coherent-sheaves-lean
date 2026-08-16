@@ -43,14 +43,19 @@ issue #453 removed.
   terms of the dual kernel's own class map rather than the opaque
   `K₀.mapF Φ.inverse` (`actStabOfDual`), and the two kernels' class maps are
   proved mutually inverse (`transformK₀_dual_comp`).
-* No orbit, group action, or `MulAction` structure. `trans` and `actStab_trans`
-  give the associativity clause of one, but there is no group here: no identity
-  law, and no type of autoequivalences-with-lattice-data to be a group of.
+* **No group of kernel autoequivalences.** The bundled group action on
+  stability conditions does exist elsewhere: `GroupAction.AutPairQuot v` in
+  `Stability/ClassMap.lean` is a `Group` with a `MulAction` on
+  `WithClassMap C v`, for autoequivalence–`lam` pairs with `lam` invertible.
+  What does not exist is a map from kernel autoequivalences into it as a
+  monoid: `trans` needs supplied `ConvolutionData` for each pair, so
+  kernel-tracked composition carries no identity law and forms no group.
+  `trans` and `actStab_trans` give only the associativity clause.
 * Nothing about Bridgeland's `Stab(X)` as a manifold, and no continuity or
   local-homeomorphism claim for the induced map.
 -/
 
-universe w u u' t
+universe w u u' x t x₁ x₂ x₃ t₁ t₂ t₃
 
 namespace CategoryTheory.Triangulated.StabilityCondition.Symmetry
 
@@ -62,7 +67,7 @@ noncomputable section
 variable {C : Type u} [Category.{w} C] [HasZeroObject C] [HasShift C ℤ]
   [Preadditive C] [∀ n : ℤ, (shiftFunctor C n).Additive] [Pretriangulated C]
   [IsTriangulated C]
-  {𝒲 : Type t} [Category.{w} 𝒲] [HasZeroObject 𝒲] [HasShift 𝒲 ℤ]
+  {𝒲 : Type t} [Category.{x} 𝒲] [HasZeroObject 𝒲] [HasShift 𝒲 ℤ]
   [Preadditive 𝒲] [∀ n : ℤ, (shiftFunctor 𝒲 n).Additive] [Pretriangulated 𝒲]
 
 /-- A **kernel autoequivalence**: an autoequivalence of `C` presented as a
@@ -73,7 +78,7 @@ them are all supplied. Nothing here proves that any transform is an
 equivalence — that is the classical theorem and it needs geometry. -/
 structure KernelAutoequivalence (C : Type u) [Category.{w} C] [HasZeroObject C]
     [HasShift C ℤ] [Preadditive C] [∀ n : ℤ, (shiftFunctor C n).Additive]
-    [Pretriangulated C] (𝒲 : Type t) [Category.{w} 𝒲] [HasZeroObject 𝒲]
+    [Pretriangulated C] (𝒲 : Type t) [Category.{x} 𝒲] [HasZeroObject 𝒲]
     [HasShift 𝒲 ℤ] [Preadditive 𝒲] [∀ n : ℤ, (shiftFunctor 𝒲 n).Additive]
     [Pretriangulated 𝒲] where
   /-- The correspondence from `C` to itself. -/
@@ -265,12 +270,15 @@ end KernelAutoequivalence
 
 section Trans
 
-variable {𝒲₁ : Type t} {𝒲₂ : Type t} {𝒲₃ : Type t}
-  [Category.{w} 𝒲₁] [HasZeroObject 𝒲₁] [HasShift 𝒲₁ ℤ] [Preadditive 𝒲₁]
+-- Independent universes for the three kernel categories, matching the
+-- polymorphism of the generic `FourierMukai` modules: nothing about
+-- composition forces two transforms' kernels to live at the same size.
+variable {𝒲₁ : Type t₁} {𝒲₂ : Type t₂} {𝒲₃ : Type t₃}
+  [Category.{x₁} 𝒲₁] [HasZeroObject 𝒲₁] [HasShift 𝒲₁ ℤ] [Preadditive 𝒲₁]
   [∀ n : ℤ, (shiftFunctor 𝒲₁ n).Additive] [Pretriangulated 𝒲₁]
-  [Category.{w} 𝒲₂] [HasZeroObject 𝒲₂] [HasShift 𝒲₂ ℤ] [Preadditive 𝒲₂]
+  [Category.{x₂} 𝒲₂] [HasZeroObject 𝒲₂] [HasShift 𝒲₂ ℤ] [Preadditive 𝒲₂]
   [∀ n : ℤ, (shiftFunctor 𝒲₂ n).Additive] [Pretriangulated 𝒲₂]
-  [Category.{w} 𝒲₃] [HasZeroObject 𝒲₃] [HasShift 𝒲₃ ℤ] [Preadditive 𝒲₃]
+  [Category.{x₃} 𝒲₃] [HasZeroObject 𝒲₃] [HasShift 𝒲₃ ℤ] [Preadditive 𝒲₃]
   [∀ n : ℤ, (shiftFunctor 𝒲₃ n).Additive] [Pretriangulated 𝒲₃]
 
 /-- **Composing two kernel autoequivalences, given convolution data.**

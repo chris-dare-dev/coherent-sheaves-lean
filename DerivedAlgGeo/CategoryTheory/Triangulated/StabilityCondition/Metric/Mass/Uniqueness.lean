@@ -163,14 +163,14 @@ omit [IsTriangulated C] in
 private lemma HNFiltration.classMass_prefix_last
     {s : Slicing C} (Z : K₀ C →+ ℂ) {E : C}
     (F : HNFiltration C s.P E) (hn : 1 < F.n) :
-    (F.prefix C (F.n - 1) (by lia) (by lia)).classMass Z +
+    (F.prefix C (F.n - 1) (by lia)).classMass Z +
         factorMass Z (F.factor ⟨F.n - 1, by lia⟩) = F.classMass Z := by
   unfold HNFiltration.classMass
   let f : Fin F.n → ℝ≥0∞ := fun i ↦ ENNReal.ofReal ‖classCharge Z (F.factor i)‖
   calc
     (∑ i : Fin (F.n - 1),
         ENNReal.ofReal ‖classCharge Z
-          ((F.prefix C (F.n - 1) (by lia) (by lia)).factor i)‖) +
+          ((F.prefix C (F.n - 1) (by lia)).factor i)‖) +
         factorMass Z (F.factor ⟨F.n - 1, by lia⟩) =
         (∑ i ∈ Finset.univ.erase (⟨F.n - 1, by lia⟩ : Fin F.n), f i) +
           f ⟨F.n - 1, by lia⟩ := by
@@ -262,7 +262,7 @@ private theorem HNFiltration.exists_headTail
           exact Fin.elim0 j
       · have hn2 : 2 ≤ F.n := by omega
         let A := F.chain.obj' (F.n - 1) (by lia)
-        let P := F.prefix C (F.n - 1) (by lia) (by lia)
+        let P := F.prefix C (F.n - 1) (by lia)
         have hPn : 0 < P.n := by
           change 0 < F.n - 1
           omega
@@ -413,7 +413,7 @@ theorem HNFiltration.classMass_eq_classMass
   induction m with
   | zero =>
       intro E F G hlen
-      have hE : IsZero E := F.zero_isZero (by omega)
+      have hE : IsZero E := F.isZero_of_length_zero (by omega)
       rw [F.classMass_eq_zero_of_isZero Z hE, G.classMass_eq_zero_of_isZero Z hE]
   | succ m ih =>
       intro E F G hlen
@@ -469,7 +469,7 @@ theorem HNFiltration.classMass_eq_classMass
           omega
       have htailF : s.ltProp C φ YF := by
         by_cases hzero : TF.n = 0
-        · exact Or.inl (TF.zero_isZero hzero)
+        · exact Or.inl (TF.isZero_of_length_zero hzero)
         · apply s.ltProp_of_hn C TF φ
           · intro j
             obtain ⟨i, hi, hφi⟩ := hφTF j
@@ -478,7 +478,7 @@ theorem HNFiltration.classMass_eq_classMass
           · exact Nat.pos_of_ne_zero hzero
       have htailG : s.ltProp C φ YG := by
         by_cases hzero : TG.n = 0
-        · exact Or.inl (TG.zero_isZero hzero)
+        · exact Or.inl (TG.isZero_of_length_zero hzero)
         · apply s.ltProp_of_hn C TG φ
           · intro j
             obtain ⟨i, hi, hφi⟩ := hφTG j

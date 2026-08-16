@@ -49,7 +49,14 @@ instance isTriangleAdditive_of_isTriangulated
     IsTriangleAdditive (fun X => K₀.of C (F.obj X)) where
   additive T hT := K₀.of_triangle C (F.mapTriangle.obj T) (F.map_distinguished T hT)
 
-/-- The endomorphism of `K₀ C` induced by a triangulated functor. -/
+/-- The endomorphism of `K₀ C` induced by a triangulated functor.
+
+Subsumed by the generic `K₀.map` (`Triangulated/GrothendieckGroup/Functorial.lean`),
+which handles functors between *different* categories; the two agree by `rfl`
+on endofunctors (see `KernelAutoequivalence.mapF_eq_transformK₀`, which uses
+exactly that). Kept because the stability track predates `K₀.map` and calls
+this everywhere; migrating the track and deleting `mapF` is tracked as an
+issue rather than done piecemeal. -/
 noncomputable def K₀.mapF (F : C ⥤ C) [F.Additive] [F.CommShift ℤ] [F.IsTriangulated] :
     K₀ C →+ K₀ C :=
   K₀.lift C (fun X => K₀.of C (F.obj X))

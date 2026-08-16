@@ -51,7 +51,6 @@ noncomputable def HNFiltration.shiftWeakAmbient {t : TStructure C}
     ⟨(shiftFunctor C a).mapIso (Classical.choice (F.triangle_obj₂ i))⟩
   base_isZero := (shiftFunctor C a).map_isZero F.base_isZero
   top_iso := ⟨(shiftFunctor C a).mapIso (Classical.choice F.top_iso)⟩
-  zero_isZero := fun h ↦ (shiftFunctor C a).map_isZero (F.zero_isZero h)
   φ := fun j ↦ F.φ j + (a : ℝ)
   hφ := by
     intro i j hij
