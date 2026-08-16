@@ -126,6 +126,38 @@ noncomputable def intShiftSectionFromZeroOn {f : A} (hf : f ∈ 𝒜 1) (d : ℤ
   rw [hy]
   exact DegreeZeroLocalization.intShiftZeroLinearEquiv_symm_apply_mk 𝒜 hf d (hU (i y).2) _
 
+@[simp]
+theorem intShiftSectionToZeroOn_apply {f : A} (hf : f ∈ 𝒜 1) (d : ℤ)
+    {U : Opens X} (hU : U ≤ ProjectiveSpectrum.basicOpen 𝒜 f)
+    (s : (associatedSheafInType 𝒜 (intShift 𝒜 d)).1.obj (op U)) (x : U) :
+    (intShiftSectionToZeroOn 𝒜 hf d hU s).1 x =
+      intShiftFiberLinearEquivOfMem 𝒜 hf d (hU x.2) (s.1 x) :=
+  rfl
+
+@[simp]
+theorem intShiftSectionFromZeroOn_apply {f : A} (hf : f ∈ 𝒜 1) (d : ℤ)
+    {U : Opens X} (hU : U ≤ ProjectiveSpectrum.basicOpen 𝒜 f)
+    (s : (associatedSheafInType 𝒜 (intShift 𝒜 0)).1.obj (op U)) (x : U) :
+    (intShiftSectionFromZeroOn 𝒜 hf d hU s).1 x =
+      (intShiftFiberLinearEquivOfMem 𝒜 hf d (hU x.2)).symm (s.1 x) :=
+  rfl
+
+/-- The pointwise inverse trivialization on a homogeneous fraction. -/
+theorem intShiftFiberLinearEquivOfMem_symm_apply_mk {f : A} (hf : f ∈ 𝒜 1) (d : ℤ)
+    {x : ProjectiveSpectrum 𝒜} (hx : x ∈ ProjectiveSpectrum.basicOpen 𝒜 f)
+    (c : NumDenSameDeg 𝒜 (intShift 𝒜 0) x.asHomogeneousIdeal.toIdeal.primeCompl) :
+    (intShiftFiberLinearEquivOfMem 𝒜 hf d hx).symm (DegreeZeroLocalization.mk c) =
+      DegreeZeroLocalization.mk
+        { deg := c.deg + (-d).toNat
+          num := ⟨(c.num : A) * f ^ d.toNat,
+            DegreeZeroLocalization.mul_pow_toNat_mem_intShift 𝒜 hf d c.deg (c.num : A) c.num.2⟩
+          den := ⟨(c.den : A) * f ^ (-d).toNat, by
+            simpa using SetLike.mul_mem_graded c.den.2
+              (SetLike.pow_mem_graded (-d).toNat hf)⟩
+          den_mem := Submonoid.mul_mem _ c.den_mem
+            (Submonoid.pow_mem _ hx (-d).toNat) } :=
+  DegreeZeroLocalization.intShiftZeroLinearEquiv_symm_apply_mk 𝒜 hf d hx c
+
 /-- Over any open contained in `D₊(f)`, an integer twist is trivial on sections. -/
 noncomputable def intShiftSectionAddEquivOn {f : A} (hf : f ∈ 𝒜 1) (d : ℤ)
     {U : Opens X} (hU : U ≤ ProjectiveSpectrum.basicOpen 𝒜 f) :

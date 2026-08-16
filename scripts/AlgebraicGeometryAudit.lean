@@ -259,6 +259,11 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.coe_linearEquivOfMemIff
 #print axioms AlgebraicGeometry.Proj.sectionAddEquivOfMemIff
 #print axioms AlgebraicGeometry.Proj.intCechTermSectionAddEquiv
+-- Pointwise readings of the integer section maps, toward the bijectivity restatement (#467 3b).
+#print axioms AlgebraicGeometry.Proj.sectionAddEquivOfMemIff_apply
+#print axioms AlgebraicGeometry.Proj.intShiftSectionToZeroOn_apply
+#print axioms AlgebraicGeometry.Proj.intShiftSectionFromZeroOn_apply
+#print axioms AlgebraicGeometry.Proj.intShiftFiberLinearEquivOfMem_symm_apply_mk
 -- G2 (#339): the algebraic Cech term is the sections of O(d) on that intersection. The
 -- denominator has degree n+1, so the algebraic trivialization goes through invertibility
 -- (X_mul_cechCofactor) rather than membership, and the sheaf-level one through the first
