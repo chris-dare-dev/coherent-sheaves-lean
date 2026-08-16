@@ -36,7 +36,7 @@ unchanged and still applies — but it is not a member of this group.
 
 Where the inverse comes from is worth seeing, because it is the only step that
 uses `Φ` being an equivalence rather than merely a triangulated endofunctor:
-`Φ.functor ⋙ Φ.inverse ≅ 𝟭 C` via `unitIso`, and `K₀.mapF_congr` turns that
+`Φ.functor ⋙ Φ.inverse ≅ 𝟭 C` via `unitIso`, and `K₀.map_congr` turns that
 natural isomorphism into an *equality* of maps on `K₀`. That is what lets
 `compat` be transported to `Φ.symm`.
 
@@ -92,7 +92,7 @@ structure AutPair (v : K₀ C →+ Λ) where
   from `Φ`, because `v` is arbitrary. -/
   lam : Λ ≃+ Λ
   /-- `v ∘ K₀(Φ⁻¹) = lam ∘ v`. -/
-  compat : ∀ x : K₀ C, v (K₀.mapF Φ.e.inverse x) = lam (v x)
+  compat : ∀ x : K₀ C, v (K₀.map Φ.e.inverse x) = lam (v x)
 
 namespace AutPair
 
@@ -103,8 +103,8 @@ def id (v : K₀ C →+ Λ) : AutPair v where
   Φ := TriEquiv.id
   lam := AddEquiv.refl Λ
   compat x := by
-    show v (K₀.mapF (𝟭 C) x) = _
-    rw [K₀.mapF_id]
+    show v (K₀.map (𝟭 C) x) = _
+    rw [K₀.map_id]
     rfl
 
 /-- `mul a b` is `a * b`: it acts by `b` first, matching
@@ -118,16 +118,16 @@ def mul (a b : AutPair v) : AutPair v where
   Φ := b.Φ.comp a.Φ
   lam := a.lam.trans b.lam
   compat x := by
-    show v (K₀.mapF (a.Φ.e.inverse ⋙ b.Φ.e.inverse) x) = _
-    rw [K₀.mapF_comp]
-    show v (K₀.mapF b.Φ.e.inverse (K₀.mapF a.Φ.e.inverse x)) = _
+    show v (K₀.map (a.Φ.e.inverse ⋙ b.Φ.e.inverse) x) = _
+    rw [K₀.map_comp]
+    show v (K₀.map b.Φ.e.inverse (K₀.map a.Φ.e.inverse x)) = _
     rw [b.compat, a.compat]
     rfl
 
 /-- The inverse pair.
 
 The only step in this file that uses `Φ` being an *equivalence*: `unitIso`
-gives `Φ.functor ⋙ Φ.inverse ≅ 𝟭 C`, and `K₀.mapF_congr` promotes that
+gives `Φ.functor ⋙ Φ.inverse ≅ 𝟭 C`, and `K₀.map_congr` promotes that
 natural isomorphism to an equality of maps on `K₀`. Without it there is no way
 to move `compat` across to `Φ⁻¹`. -/
 def inv (a : AutPair v) : AutPair v where
@@ -135,13 +135,13 @@ def inv (a : AutPair v) : AutPair v where
   lam := a.lam.symm
   compat x := by
     -- `Φ⁻¹ ∘ Φ` is the identity ON `K₀`, as an equality of maps rather than
-    -- merely a natural isomorphism. That upgrade is `K₀.mapF_congr`.
-    have key : ∀ y : K₀ C, K₀.mapF a.Φ.e.inverse (K₀.mapF a.Φ.e.functor y) = y := by
-      have h : (K₀.mapF a.Φ.e.inverse).comp (K₀.mapF a.Φ.e.functor)
+    -- merely a natural isomorphism. That upgrade is `K₀.map_congr`.
+    have key : ∀ y : K₀ C, K₀.map a.Φ.e.inverse (K₀.map a.Φ.e.functor y) = y := by
+      have h : (K₀.map a.Φ.e.inverse).comp (K₀.map a.Φ.e.functor)
           = AddMonoidHom.id (K₀ C) := by
-        rw [← K₀.mapF_comp, K₀.mapF_congr a.Φ.e.unitIso.symm, K₀.mapF_id]
+        rw [← K₀.map_comp, K₀.map_congr a.Φ.e.unitIso.symm, K₀.map_id]
       exact fun y => DFunLike.congr_fun h y
-    show v (K₀.mapF a.Φ.e.functor x) = a.lam.symm (v x)
+    show v (K₀.map a.Φ.e.functor x) = a.lam.symm (v x)
     rw [AddEquiv.eq_symm_apply, ← a.compat, key]
 
 /-- Isomorphism of pairs: the auto-equivalences are naturally isomorphic, and

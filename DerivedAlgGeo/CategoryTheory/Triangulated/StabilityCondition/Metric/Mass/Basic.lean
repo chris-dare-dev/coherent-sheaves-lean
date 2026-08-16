@@ -137,7 +137,7 @@ inverse-image object. -/
 theorem act_charge (σ : StabilityCondition.WithClassMap C v) (E : C) :
     (a.act σ).charge E = σ.charge (a.Φ.e.inverse.obj E) := by
   have hcl : a.lam (classOf C v E) = classOf C v (a.Φ.e.inverse.obj E) := by
-    rw [classOf, ← a.compat, K₀.mapF_of]
+    rw [classOf, ← a.compat, K₀.map_of]
   change σ.Z (a.lam (classOf C v E)) = σ.Z (classOf C v (a.Φ.e.inverse.obj E))
   rw [hcl]
 
