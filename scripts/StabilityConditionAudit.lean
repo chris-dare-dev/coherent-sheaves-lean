@@ -1097,8 +1097,33 @@ open CategoryTheory.Triangulated
 #print axioms CategoryTheory.Triangulated.TStructure.IsCompactlyGeneratedBy.le_zero_eq
 #print axioms CategoryTheory.Triangulated.TStructure.IsCompactlyGeneratedBy.isLE_zero_of_generator
 #print axioms CategoryTheory.Triangulated.TStructure.AisleData
+#print axioms CategoryTheory.Triangulated.MappingTelescope.shiftMap
+#print axioms CategoryTheory.Triangulated.MappingTelescope.ι_shiftMap
+#print axioms CategoryTheory.Triangulated.MappingTelescope.ι_shiftMap_assoc
+#print axioms CategoryTheory.Triangulated.MappingTelescope.map
+#print axioms CategoryTheory.Triangulated.MappingTelescope.ι_map
+#print axioms CategoryTheory.Triangulated.MappingTelescope.ι_map_assoc
+#print axioms CategoryTheory.Triangulated.MappingTelescope.Data
+#print axioms CategoryTheory.Triangulated.MappingTelescope.Data.mk.inj
+#print axioms CategoryTheory.Triangulated.MappingTelescope.Data.mk.sizeOf_spec
+#print axioms CategoryTheory.Triangulated.MappingTelescope.Data.obj
+#print axioms CategoryTheory.Triangulated.MappingTelescope.Data.hom
+#print axioms CategoryTheory.Triangulated.MappingTelescope.Data.connecting
+#print axioms CategoryTheory.Triangulated.MappingTelescope.Data.distinguished
+#print axioms CategoryTheory.Triangulated.MappingTelescope.chosen
+#print axioms CategoryTheory.Triangulated.MappingTelescope.Data.exists_desc
+#print axioms CategoryTheory.Triangulated.MappingTelescope.Data.exists_desc_comp_ι
+#print axioms CategoryTheory.Triangulated.TStructure.ApproximationMap
+#print axioms CategoryTheory.Triangulated.TStructure.ApproximationMap.left
+#print axioms CategoryTheory.Triangulated.TStructure.ApproximationMap.left_mem
+#print axioms CategoryTheory.Triangulated.TStructure.ApproximationMap.hom
+#print axioms CategoryTheory.Triangulated.TStructure.ApproximationMap.hom_surjective
+#print axioms CategoryTheory.Triangulated.TStructure.ApproximationMap.mk.inj
+#print axioms CategoryTheory.Triangulated.TStructure.ApproximationMap.mk.sizeOf_spec
+#print axioms CategoryTheory.Triangulated.TStructure.ApproximationMap.shift_hom_injective
 #print axioms CategoryTheory.Triangulated.TStructure.AisleData.shift
 #print axioms CategoryTheory.Triangulated.TStructure.AisleData.exists_triangle
+#print axioms CategoryTheory.Triangulated.TStructure.AisleData.ofApproximationMaps
 #print axioms CategoryTheory.Triangulated.TStructure.AisleData.rightOrthogonal_le_shift
 #print axioms CategoryTheory.Triangulated.TStructure.AisleData.tStructure
 #print axioms CategoryTheory.Triangulated.TStructure.AisleData.tStructure.congr_simp
@@ -1113,6 +1138,7 @@ open CategoryTheory.Triangulated
 #print axioms CategoryTheory.Triangulated.TStructure.CompactGeneratorApproximation.tStructure_le_zero
 #print axioms CategoryTheory.Triangulated.TStructure.CompactGeneratorApproximation.tStructure_ge_one
 #print axioms CategoryTheory.Triangulated.TStructure.CompactGeneratorApproximation.isCompactlyGeneratedBy
+#print axioms CategoryTheory.Triangulated.TStructure.CompactGeneratorApproximation.ofApproximationMaps
 #print axioms CategoryTheory.Functor.isRightTExact_of_compactlyGenerated
 #print axioms CategoryTheory.Adjunction.isTExact_of_compactlyGenerated
 #print axioms CategoryTheory.ObjectProperty.hasInducedTStructure_of_preimage
@@ -1134,6 +1160,8 @@ open CategoryTheory.Triangulated
 #print axioms CategoryTheory.Triangulated.Polishchuk.InducedTStructureData.isGE_iff
 #print axioms CategoryTheory.Triangulated.Polishchuk.induce
 #print axioms CategoryTheory.Triangulated.Polishchuk.induceOfApproximation
+#print axioms CategoryTheory.Triangulated.Polishchuk.induceOfApproximationMaps
+#print axioms CategoryTheory.Triangulated.TStructure.IndExtensionData.ofApproximation
 
 /-! ## Repository-owned t-structure heart bridges -/
 

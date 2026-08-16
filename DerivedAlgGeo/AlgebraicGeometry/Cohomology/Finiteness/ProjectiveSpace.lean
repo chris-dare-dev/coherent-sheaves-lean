@@ -3,6 +3,8 @@ Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under the MIT license.
 -/
 import DerivedAlgGeo.AlgebraicGeometry.Proj.Modules.ProjectiveSpace
+import DerivedAlgGeo.AlgebraicGeometry.Cohomology.Cech.GlobalComparison
+import DerivedAlgGeo.AlgebraicGeometry.Cohomology.Cech.ProjectiveSpace
 import DerivedAlgGeo.AlgebraicGeometry.Cohomology.Finiteness.Boundedness
 
 /-!
@@ -172,6 +174,60 @@ theorem polynomialVariable_isCechAcyclicCover (ι k : Type u) [Field k] (d : ℕ
           (natShift (polynomialGrading ι k) d))) :=
   polynomialVariable_isCechAcyclicCover_of_isQuasicoherent ι k
     (natShift (polynomialGrading ι k) d) (polynomialNatShift_isQuasicoherent ι k d)
+
+/-! ## `Hⁱ(Pⁿ, O(d))` is the cohomology of the explicit complex
+
+The acyclicity above is a hypothesis, not yet a computation. Feeding it to
+`isCechAcyclicCover_cechComputesDerivedCohomologyAt_opens` and composing with
+`polynomialVariableCechComplexIso` turns it into the statement the twist computation actually
+starts from: `Hⁱ(Pⁿ, O(d))` *is* the degree-`i` cohomology of a complex written entirely in
+degree-zero homogeneous localizations, with the differential of
+`polynomialVariableCechComplex_d_apply`. -/
+
+set_option maxHeartbeats 1600000 in
+set_option synthInstance.maxHeartbeats 400000 in
+/-- **The explicit Čech complex computes the cohomology of `O(d)`.**
+
+In every degree `n` and for every nonnegative twist `d`, the derived cohomology
+`Hⁿ(Pⁿ, O(d))` is the degree-`n` homology of `polynomialVariableCechComplex` — the explicit
+product of degree-zero homogeneous localizations whose differential is the alternating sum of
+`polynomialVariableCechFace`.
+
+Three inputs meet, and each is already proved elsewhere:
+
+* `polynomialVariable_isCechAcyclicCover` (#338) — the variable cover is Čech-acyclic for
+  `O(d)`, which is what makes the Čech cohomology the derived cohomology at all;
+* `isCechAcyclicCover_cechComputesDerivedCohomologyAt_opens` — the Čech-to-derived comparison,
+  whose terminal object is `⊤` and whose injective resolution is chosen for the small site;
+* `polynomialVariableCechComplexIso` (#339) — Mathlib's Čech complex of the cover *is* the
+  explicit algebraic complex.
+
+The `HasExt` witness is passed positionally, for the reason recorded on
+`isCechAcyclicCover_cechComputesDerivedCohomology_opens`: `Sheaf.H` lands in the `HasExt`
+universe, so `HasExt.{u}` and `HasExt.{u + 1}` name different groups and instance search must
+not be allowed to pick.
+
+The conclusion is `Nonempty` rather than a chosen equivalence because that is the shape
+`CechComputesDerivedCohomologyAt` supplies; nothing downstream needs a canonical choice, and the
+comparison is not natural in `d` without further work. -/
+theorem polynomialVariableCechComplex_computesCohomology (ι k : Type u) [Field k] (d n : ℕ)
+    [hExt : HasExt.{u + 1} (TopCat.Sheaf AddCommGrpCat.{u}
+      (_root_.AlgebraicGeometry.Proj (polynomialGrading ι k)))] :
+    Nonempty
+      (((polynomialVariableCechComplex ι k d).homology n : AddCommGrpCat.{u}) ≃+
+        @CategoryTheory.Sheaf.H
+          (Opens (_root_.AlgebraicGeometry.Proj (polynomialGrading ι k))) _
+          (Opens.grothendieckTopology
+            (_root_.AlgebraicGeometry.Proj (polynomialGrading ι k)))
+          ((_root_.AlgebraicGeometry.Scheme.Modules.toSheaf _).obj
+            (associatedSheaf (polynomialGrading ι k)
+              (natShift (polynomialGrading ι k) d))) _ hExt n) := by
+  obtain ⟨e⟩ := CategoryTheory.Sheaf.isCechAcyclicCover_cechComputesDerivedCohomologyAt_opens
+    (T := (⊤ : Opens (_root_.AlgebraicGeometry.Proj (polynomialGrading ι k))))
+    isTerminalTop (polynomialVariableChart ι k) hExt
+    (polynomialVariable_isCechAcyclicCover ι k d) n
+  exact ⟨(HomologicalComplex.homologyMapIso
+    (polynomialVariableCechComplexIso ι k d) n).symm.addCommGroupIsoToAddEquiv.trans e⟩
 
 /-! ## Integer twists
 

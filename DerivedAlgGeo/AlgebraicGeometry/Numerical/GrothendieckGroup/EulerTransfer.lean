@@ -51,9 +51,12 @@ This file supplies it as `IsRiemannRoch` and does the bookkeeping.
 
 and concludes `PreservesEuler φ`, hence (via
 `pairing_mukaiVector_eq_on_realized`) that a kernel functor leaves the Mukai
-pairing unchanged on realized classes.  That is an equality of pairings, not an
-isometry of lattices -- see `Realization`'s docstring for why the distinction
-matters here.
+pairing unchanged on realized classes.  Against `IntegralMukaiData` that is an
+equality of pairings and not an isometry of lattices; against
+`AdditiveMukaiData` the same conclusion is an isometry of the Mukai forms on
+`N` and `N'` (`Realization.isometryOfPreservesEuler`), and still not a map of
+Mukai extensions.  See `Realization`'s docstring for why the distinctions
+matter here.
 
 ## What this file does not assert
 
@@ -176,9 +179,12 @@ omit [NumericalRingWithDual 2 A] [NumericalRingWithDual 2 A'] in
 /-- **A kernel functor preserving the categorical Euler form leaves the Mukai
 pairing unchanged on realized classes.**
 
-An equality of pairings, not an isometry: no map of Mukai lattices is built
-here or anywhere downstream. This is `pairing_mukaiVector_eq_on_realized` with
-its `PreservesEuler` hypothesis discharged from categorical input.
+An equality of pairings, stated against `IntegralMukaiData`, where there is no
+bilinear form for it to be an isometry of. This is
+`pairing_mukaiVector_eq_on_realized` with its `PreservesEuler` hypothesis
+discharged from categorical input; with `AdditiveMukaiData` the same
+`PreservesEuler` output feeds `isometryOfPreservesEuler`, and no map of Mukai
+*extensions* is built there either.
 
 Three obligations remain, and all three are named rather than hidden:
 constructing the categorical Euler form from `Hom`, proving a fully faithful
