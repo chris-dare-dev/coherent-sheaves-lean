@@ -18,6 +18,23 @@ whose module numerator and ring denominator lie in matching graded pieces.
 The construction is intentionally indexed by the same additive grading monoid on the ring and
 the module. Integer shifts, which require reconciling the natural grading used by `Proj` with an
 integer grading on modules, belong to the later twisting-sheaf layer.
+
+## Localizing away from one element
+
+`awayMk` writes the fraction `m / fⁿ`, and two statements make it a usable normal form:
+
+* `exists_awayMk` — every degree-zero fraction away from `f` *is* an `awayMk`. The denominator
+  is a power of `f` by construction; what has to be proved is that the `NumDenSameDeg` degree
+  certificate is forced to be `n • deg f`, which is `DirectSum.degree_eq_of_mem_mem` once `fⁿ`
+  is known to be nonzero.
+* `awayMk_eq_awayMk_iff` — two such fractions agree exactly when they cross-multiply, with no
+  residual `∃ u` from the localization. The `∃ u` is what the general
+  `mk_eq_mk_iff` leaves behind; cancelling it is where the domain and torsion-freeness
+  hypotheses are spent, and they are spent nowhere else.
+
+Together these turn `DegreeZeroLocalization 𝒜 𝓜 (.powers f)` into fractions with an explicit
+representative and a computable equality test, which is what any basis for it has to start from
+(see the Laurent monomial basis of #491).
 -/
 
 noncomputable section
@@ -483,6 +500,54 @@ theorem coe_awayMk {f : A} {d : ι} (hf : f ∈ 𝒜 d) (n : ℕ) (m : M)
       LocalizedModule (.powers f) M) =
         LocalizedModule.mk m (⟨f ^ n, ⟨n, rfl⟩⟩ : Submonoid.powers f) :=
   rfl
+
+/-- **`awayMk` is a normal form.** Every degree-zero fraction away from `f` is `m / fⁿ` for some
+`n` and some `m` of degree `n • deg f`.
+
+The denominator is a power of `f` because that is what `Submonoid.powers f` means; the content is
+that the `NumDenSameDeg` degree certificate has no freedom left. It is pinned by
+`DirectSum.degree_eq_of_mem_mem`: the denominator lies both in the certified piece and, as `fⁿ`,
+in `n • deg f`, and a nonzero homogeneous element lies in exactly one piece.
+
+The hypothesis is `∀ n, fⁿ ≠ 0` rather than `f ≠ 0` so that no domain assumption is needed here;
+in a domain `pow_ne_zero` supplies it. It cannot be dropped: over a ring where `f` is nilpotent
+the localization is trivial and the degree is genuinely unconstrained. -/
+theorem exists_awayMk {f : A} {e : ι} (hf : f ∈ 𝒜 e) (hf0 : ∀ n : ℕ, f ^ n ≠ 0)
+    (z : DegreeZeroLocalization 𝒜 𝓜 (.powers f)) :
+    ∃ (n : ℕ) (m : M) (hm : m ∈ 𝓜 (n • e)), z = awayMk hf n m hm := by
+  obtain ⟨c, rfl⟩ := mk_surjective z
+  obtain ⟨deg, num, den, den_mem⟩ := c
+  obtain ⟨n, hn⟩ := den_mem
+  have hden : (den : A) ∈ 𝒜 (n • e) := hn ▸ SetLike.pow_mem_graded n hf
+  have hdeg : deg = n • e :=
+    DirectSum.degree_eq_of_mem_mem 𝒜 den.2 hden (hn ▸ hf0 n)
+  subst hdeg
+  refine ⟨n, (num : M), num.2, ext ?_⟩
+  exact congrArg (fun s : Submonoid.powers f => LocalizedModule.mk (num : M) s)
+    (Subtype.ext hn.symm : (⟨(den : A), ⟨n, hn⟩⟩ : Submonoid.powers f) = ⟨f ^ n, ⟨n, rfl⟩⟩)
+
+/-- **Cross-multiplication decides equality of `awayMk`s.** `p / fⁿ = q / fᵐ` exactly when
+`fᵐ • p = fⁿ • q`, with no surviving `∃ u`.
+
+`mk_eq_mk_iff` is the general criterion and it leaves an unknown `u ∈ Submonoid.powers f`
+behind. Cancelling that `u` is the whole point of this lemma and the only place the two
+hypotheses are used: `IsDomain A` makes every `fᵗ` regular, and `Module.IsTorsionFree A M`
+turns a regular ring element into an injective scalar action on `M`. For `M = A` the latter is
+an instance, so the polynomial case needs neither supplied by hand.
+
+Without torsion-freeness the statement is false, not merely unproved: an `f`-torsion element of
+`M` is a nonzero numerator whose fraction is zero. -/
+theorem awayMk_eq_awayMk_iff [IsDomain A] [Module.IsTorsionFree A M] {f : A} {e : ι}
+    (hf : f ∈ 𝒜 e) (hf0 : f ≠ 0) {n m : ℕ} {p q : M} (hp : p ∈ 𝓜 (n • e))
+    (hq : q ∈ 𝓜 (m • e)) :
+    awayMk hf n p hp = awayMk hf m q hq ↔ f ^ m • p = f ^ n • q := by
+  rw [awayMk, awayMk, mk_eq_mk_iff]
+  constructor
+  · rintro ⟨⟨u, t, rfl⟩, hu⟩
+    exact Module.IsTorsionFree.isSMulRegular (M := M)
+      (IsRegular.of_ne_zero (pow_ne_zero t hf0)) hu
+  · intro h
+    exact ⟨1, by simpa using h⟩
 
 end DegreeZeroLocalization
 

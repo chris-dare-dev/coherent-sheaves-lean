@@ -38,6 +38,11 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.coe_faceMap
 #print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.faceMap_mk
 #print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.awayMk
+-- awayMk as a normal form (#491): every away fraction is one, and equality is decided by
+-- cross-multiplication rather than by the existential the general criterion leaves behind.
+-- Both are prerequisites for any basis of the away localization.
+#print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.exists_awayMk
+#print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.awayMk_eq_awayMk_iff
 #print axioms AlgebraicGeometry.Proj.GradedLinearMap
 #print axioms AlgebraicGeometry.Proj.GradedLinearMap.map
 #print axioms AlgebraicGeometry.Proj.GradedLinearMap.map_mk
