@@ -54,6 +54,25 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 -- it. It is a public declaration and the completeness ratchet counts it, so it is recorded here
 -- rather than left to widen the unaudited gap.
 #print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.awayMk.congr_simp
+-- The Laurent exponent of a monomial fraction (#491). awayMk_monomial_eq_iff_laurentExponent is
+-- the load-bearing one: it makes beta - m * gamma a complete invariant, so the monomial
+-- fractions of a twist are indexed by exponents rather than by representatives. The other two
+-- statements cut that index down to the set the basis needs -- total degree the twist, and
+-- nonnegative off the support of gamma.
+#print axioms AlgebraicGeometry.Proj.natToIntExponent
+#print axioms AlgebraicGeometry.Proj.natToIntExponent_injective
+#print axioms AlgebraicGeometry.Proj.degree_natToIntExponent
+#print axioms AlgebraicGeometry.Proj.laurentExponent
+#print axioms AlgebraicGeometry.Proj.laurentExponent_apply
+#print axioms AlgebraicGeometry.Proj.laurentExponent_eq_iff
+#print axioms AlgebraicGeometry.Proj.degree_laurentExponent
+#print axioms AlgebraicGeometry.Proj.laurentExponent_nonneg_of_apply_eq_zero
+#print axioms AlgebraicGeometry.Proj.monomial_one_mem_polynomialGrading
+#print axioms AlgebraicGeometry.Proj.monomial_one_pow
+#print axioms AlgebraicGeometry.Proj.monomial_one_ne_zero
+#print axioms AlgebraicGeometry.Proj.monomial_mem_natShift
+#print axioms AlgebraicGeometry.Proj.awayMk_monomial_eq_iff
+#print axioms AlgebraicGeometry.Proj.awayMk_monomial_eq_iff_laurentExponent
 #print axioms AlgebraicGeometry.Proj.GradedLinearMap
 #print axioms AlgebraicGeometry.Proj.GradedLinearMap.map
 #print axioms AlgebraicGeometry.Proj.GradedLinearMap.map_mk
