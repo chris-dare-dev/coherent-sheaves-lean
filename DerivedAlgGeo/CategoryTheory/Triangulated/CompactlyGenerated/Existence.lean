@@ -14,10 +14,11 @@ shift-stable.  Once Brown representability supplies an approximation triangle
 with left term in `Coprod(G)` and right term in its right orthogonal, the aisle
 constructor produces the compactly generated t-structure and formula (A.2).
 
-The structure `CompactGeneratorApproximation` deliberately contains those
-approximation triangles.  No instance is manufactured merely from compactness:
-constructing this structure is exactly the Brown-representability step that
-remains to be formalized.
+The structure `CompactGeneratorApproximation` contains those approximation
+triangles, while `ofApproximationMaps` constructs them from Brown-style
+universal maps and proves the required orthogonality. No instance is
+manufactured merely from compactness: existence of the universal maps is the
+Brown-representability step that remains to be formalized.
 -/
 
 noncomputable section
@@ -80,6 +81,24 @@ structure CompactGeneratorApproximation (G : ObjectProperty C) : Prop where
         Triangle.mk f g h ∈ distTriang C
 
 namespace CompactGeneratorApproximation
+
+/-- Brown-style universal maps produce the approximation triangles required
+by Theorem A.13.
+
+The cone and its right-orthogonality are constructed internally by
+`AisleData.ofApproximationMaps`; callers only provide the generator shift and
+the two Hom controls on the universal maps. -/
+theorem ofApproximationMaps
+    (hG : G ≤ G.shift (1 : ℤ))
+    (happrox : ∀ A : C,
+      Nonempty (ApproximationMap G.coprodClosure.{w} A)) :
+    CompactGeneratorApproximation.{w} G := by
+  have hAisle : AisleData G.coprodClosure.{w} :=
+    AisleData.ofApproximationMaps
+      (ObjectProperty.coprodClosure_le_shift hG) happrox
+  exact
+    { generator_shift := hG
+      exists_triangle := hAisle.exists_triangle }
 
 variable (h : CompactGeneratorApproximation.{w} G)
 include h
