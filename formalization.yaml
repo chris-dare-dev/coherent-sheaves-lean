@@ -851,6 +851,19 @@ fidelity:
     structure, and the legacy global theorem input remains uninhabited pending
     the later SF7 slices.
 
+    COUNT UPDATE (SF7.1 finite phase-truncation theorem), 2026-08-16.
+    `HNFiltration.exists_headTailFiltration` extracts the charge-free
+    triangulated head/tail construction that was previously private inside
+    mass uniqueness and preserves the exact indexing of all tail phases.
+    `Slicing.InducedTStructures.isZero_of_map_isZero` proves the zero-length
+    base case directly from the two formula-(A.8) recognition equivalences.
+    `Slicing.InducedTStructures.hn_exists` identifies each mapped source
+    truncation triangle with the target HN head/tail triangle by t-structure
+    uniqueness and inducts on target filtration length. Finally,
+    `Slicing.InducedTStructures.preimageData` constructs both non-formal
+    transfer axioms without an HN-existence argument. The large-category
+    construction of the induced t-structures themselves remains #477.
+
     COUNT UPDATE (destination issue #226; owner-controlled Bridgeland
     foundation), 2026-08-12. The first Mathlib-only foundation slice adds
     repository-owned Postnikov towers, HN filtrations, slicings, elementary
