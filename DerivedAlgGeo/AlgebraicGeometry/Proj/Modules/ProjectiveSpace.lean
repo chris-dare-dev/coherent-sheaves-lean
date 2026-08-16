@@ -831,6 +831,74 @@ noncomputable def intCechTermSectionAddEquiv (ι k : Type u) [Field k] (d : ℤ)
             (MvPolynomial.isHomogeneous_X k (x 0)) d
             (basicOpen_denominator_le ι k x)).symm))))
 
+set_option maxHeartbeats 1600000 in
+set_option synthInstance.maxHeartbeats 400000 in
+/-- The integer Čech comparison is the canonical homogeneous-fraction section map.
+
+The five-step composite has to be named by `change` before anything will rewrite: `simp` will
+not unfold it far enough to expose the `mk` argument, because two of the steps are `AddEquiv`
+transports whose `apply` lemmas only fire once the argument is already in `mk` form. Naming the
+chain, then rewriting inside-out, reduces the whole statement to a pointwise identity in the
+localization at each prime, closed by `ring`. -/
+theorem intCechTermSectionAddEquiv_apply_mk (ι k : Type u) [Field k] (d : ℤ) {n : ℕ}
+    (x : Fin (n + 1) → ι)
+    (c : NumDenSameDeg (polynomialGrading ι k) (intShift (polynomialGrading ι k) d)
+      (.powers (polynomialVariableCechDenominator ι k x))) :
+    intCechTermSectionAddEquiv ι k d x (DegreeZeroLocalization.mk c) =
+      moduleAwayToSection (polynomialGrading ι k)
+        (intShift (polynomialGrading ι k) d)
+        (polynomialVariableCechDenominator ι k x) (DegreeZeroLocalization.mk c) := by
+  change intShiftSectionFromZeroOn (polynomialGrading ι k)
+      (MvPolynomial.isHomogeneous_X k (x 0)) d (basicOpen_denominator_le ι k x)
+      (sectionAddEquivOfMemIff (polynomialGrading ι k) (polynomialGrading ι k)
+        (intShift (polynomialGrading ι k) 0)
+        (fun i a => (mem_intShift_zero_iff (polynomialGrading ι k) i a).symm) _
+        (selfBasicOpenSectionAddEquiv (polynomialGrading ι k)
+          (polynomialVariableCechDenominator_mem ι k x) (Nat.succ_pos n)
+          (DegreeZeroLocalization.linearEquivOfMemIff (polynomialGrading ι k)
+            (fun i a => mem_intShift_zero_iff (polynomialGrading ι k) i a)
+            (DegreeZeroLocalization.intShiftZeroLinearEquivOfMulMem (polynomialGrading ι k)
+              (MvPolynomial.isHomogeneous_X k (x 0)) (cechCofactor_mem ι k x)
+              d.toNat (-d).toNat d (by omega)
+              (by rw [X_mul_cechCofactor]; exact Submonoid.mem_powers _)
+              (DegreeZeroLocalization.mk c))))) = _
+  rw [DegreeZeroLocalization.intShiftZeroLinearEquivOfMulMem_apply_mk,
+    DegreeZeroLocalization.linearEquivOfMemIff_mk,
+    selfBasicOpenSectionAddEquiv_apply_mk]
+  apply section_ext
+  funext y
+  rw [intShiftSectionFromZeroOn_apply, sectionAddEquivOfMemIff_apply,
+    moduleAwayToSection_apply, moduleAwayToSection_apply,
+    DegreeZeroLocalization.mapOfLE_mk,
+    DegreeZeroLocalization.linearEquivOfMemIff_mk,
+    DegreeZeroLocalization.mapOfLE_mk,
+    intShiftFiberLinearEquivOfMem_symm_apply_mk]
+  apply DegreeZeroLocalization.ext
+  simp only [DegreeZeroLocalization.coe_mk, NumDenSameDeg.embedding]
+  rw [LocalizedModule.mk_eq]
+  refine ⟨1, ?_⟩
+  simp only [one_smul, Submonoid.smul_def, smul_eq_mul, mul_pow]
+  ring
+
+/-- As an additive map, the integer Čech comparison is the canonical fraction-to-section map. -/
+theorem intCechTermSectionAddEquiv_toAddMonoidHom (ι k : Type u) [Field k] (d : ℤ) {n : ℕ}
+    (x : Fin (n + 1) → ι) :
+    (intCechTermSectionAddEquiv ι k d x).toAddMonoidHom =
+      moduleAwayToSection (polynomialGrading ι k)
+        (intShift (polynomialGrading ι k) d)
+        (polynomialVariableCechDenominator ι k x) :=
+  moduleAwayToSection_unique _ _ _ _ (intCechTermSectionAddEquiv_apply_mk ι k d x)
+
+/-- The canonical fraction-to-section map is bijective on every Čech intersection, for a twist
+of either sign. -/
+theorem moduleAwayToSection_intCechDenominator_bijective (ι k : Type u) [Field k] (d : ℤ)
+    {n : ℕ} (x : Fin (n + 1) → ι) :
+    Function.Bijective (moduleAwayToSection (polynomialGrading ι k)
+      (intShift (polynomialGrading ι k) d)
+      (polynomialVariableCechDenominator ι k x)) := by
+  rw [← intCechTermSectionAddEquiv_toAddMonoidHom ι k d x]
+  exact (intCechTermSectionAddEquiv ι k d x).bijective
+
 /-- The canonical fraction-to-section map is bijective on every Čech intersection.
 
 The degree-one statement `moduleAwayToSection_natShift_degreeOne_bijective` does not cover this:
