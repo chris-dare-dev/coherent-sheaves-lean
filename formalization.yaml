@@ -881,6 +881,20 @@ fidelity:
     Brown-representability/Neeman construction and the scheme S-locality layer
     remain the open part of #477/#476.
 
+    COUNT UPDATE (SF7.2 A.13 constructor), 2026-08-16.
+    `TStructure.AisleData` isolates the exact approximation-triangle output of
+    Brown representability and constructs a t-structure whose degree-zero aisle
+    is the supplied property and whose degree-one coaisle is its right
+    orthogonal. `ObjectProperty.coprodClosure_le_shift` proves that G[1] ⊆ G
+    propagates through arbitrary coproducts, isomorphisms, and extensions.
+    `CompactGeneratorApproximation.tStructure` therefore assembles the A.13
+    t-structure, proves formula (A.2), and proves compact generation once the
+    generators are compact. `Polishchuk.induceOfApproximation` passes that
+    construction directly into A.17 and obtains source-generator compactness
+    from the adjunction. There is deliberately no inhabitant of
+    `CompactGeneratorApproximation` derived from compactness alone: constructing
+    its approximation triangles is the remaining Brown-representability theorem.
+
     COUNT UPDATE (destination issue #226; owner-controlled Bridgeland
     foundation), 2026-08-12. The first Mathlib-only foundation slice adds
     repository-owned Postnikov towers, HN filtrations, slicings, elementary
