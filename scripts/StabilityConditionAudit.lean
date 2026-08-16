@@ -59,8 +59,8 @@ to **488**. Both were right against the filter of the day, and both are
 superseded here -- the 821 in particular counted the 30 generated names
 described above. **Re-run the command; do not adjust the numbers.**
 
-**THE GAP IS NOW ZERO, re-measured after the bounded coherent/perfect
-scheme-derived fibers on 2026-08-16.** Every
+**THE GAP IS NOW ZERO, re-measured after the geometric bounded-coherent
+base-change bridge on 2026-08-16.** Every
 public declaration in this library that is not a structure field projection is
 named below. Be precise about what that does and does not mean -- three of the
 four qualifications in this comment are unaffected by it:
@@ -73,7 +73,7 @@ four qualifications in this comment are unaffected by it:
   ratchet now rejects an unlisted public declaration, but zero in the narrower
   authored/non-projection census is still a measurement that must be rerun.
 
-* It issues **2788** audit commands. The environment holds **3105** authored
+* It issues **2861** audit commands. The environment holds **3194** authored
   declarations under the stability-condition modules under `DerivedAlgGeo`; the declarations outside the
   substantive hand audit are precisely the private declarations and structure
   projections. Selected generated declarations are additionally listed because the newer
@@ -107,12 +107,12 @@ four qualifications in this comment are unaffected by it:
   than a zero-gap assertion because its intentionally broader census includes
   generated projections; `scripts/StabilityConditionCensus.lean` remains the precise measurement
   for the authored, non-projection claim above.
-* **745 of the distinct gated declarations are not theorems** (87 `structure`, 658 other
+* **817 of the distinct gated declarations are not theorems** (100 `structure`, 717 other
   constructions).
   For a `def`, `#print axioms` reports the axiom closure of a CONSTRUCTION and
   asserts nothing about any proposition. In particular
   `CategoryTheory.Triangulated.StabilityMassTriangleInequality` appears below
-formatted identically to the **1897** real theorems, but it is a `def ... :
+formatted identically to the **1969** real theorems, but it is a `def ... :
   Prop` -- its clean line means the definition is axiom-clean, NOT that the
   proposition holds.
 
@@ -3326,6 +3326,65 @@ geometric witness for every scheme morphism.
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.GeometricDerivedPullbackComposition
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.GeometricDerivedPullbackComposition.boundedIso
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.GeometricDerivedPullbackComposition.perfectIso
+
+/-! ## Geometric bounded-coherent base change
+
+This layer constructs the slicing preimage witness from the actual bounded
+coherent pullback.  The presentable/Ind inducing theorem, its left adjoint,
+zero-reflection, and phase-monad premises remain explicit inputs; none of the
+records below assert openness or relative-HN existence.
+-/
+
+#print axioms CategoryTheory.Triangulated.Slicing.preimage.congr_simp
+#print axioms CategoryTheory.Triangulated.Slicing.preimageData_equivalence
+#print axioms CategoryTheory.Triangulated.Slicing.preimage_equivalence_P
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.schemeCoherentHasDerivedCategory
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.HasCoherentPullback.derivedAdditive
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.instAdditiveSchemeCoherentDerivedCategoryLeftSchemeCoherentDerivedPullback
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.instAdditiveBoundedCoherentDerivedFiberBoundedCoherentDerivedPullback
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.instCommShiftBoundedCoherentDerivedFiberBoundedCoherentDerivedPullbackInt
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.instIsTriangulatedBoundedCoherentDerivedFiberBoundedCoherentDerivedPullback
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.instCommShiftBoundedCoherentDerivedFiberDerivedCategoryCohLeftSchemeHomFunctorBoundedCoherentDerivedPullbackCompInclusionInt
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.TriangulatedEquivalence
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.TriangulatedEquivalence.mk.inj
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.TriangulatedEquivalence.mk.sizeOf_spec
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.TriangulatedEquivalence.e
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.TriangulatedEquivalence.functorAdditive
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.TriangulatedEquivalence.inverseAdditive
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.TriangulatedEquivalence.functorCommShift
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.TriangulatedEquivalence.inverseCommShift
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.TriangulatedEquivalence.functorTriangulated
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.TriangulatedEquivalence.inverseTriangulated
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.TriangulatedEquivalence.preimageDataInverse
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.BoundedCoherentPullbackPreimageData
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.BoundedCoherentPullbackPreimageData.preimageData
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.BoundedCoherentPullbackPreimageData.preimage
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.BoundedCoherentPullbackPreimageData.identity
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.BoundedCoherentPullbackPreimageData.preimage_identity
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.BoundedCoherentPullbackPreimageData.comp
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.BoundedCoherentPullbackPreimageData.preimage_comp
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.BoundedCoherentPullbackInducingData
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.BoundedCoherentPullbackInducingData.mk.inj
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.BoundedCoherentPullbackInducingData.mk.sizeOf_spec
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.BoundedCoherentPullbackInducingData.leftAdjoint
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.BoundedCoherentPullbackInducingData.premise
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.BoundedCoherentPullbackInducingData.toPreimageData
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.BoundedCoherentDerivedRealization
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.BoundedCoherentDerivedRealization.mk.inj
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.BoundedCoherentDerivedRealization.mk.sizeOf_spec
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.BoundedCoherentDerivedRealization.fiberEquivalence
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.BoundedCoherentDerivedRealization.pullbackIso
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.BoundedCoherentDerivedRealization.preimageData
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.GeometricPreStabilityBaseChangeData
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.GeometricPreStabilityBaseChangeData.mk.inj
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.GeometricPreStabilityBaseChangeData.mk.sizeOf_spec
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.GeometricPreStabilityBaseChangeData.classMapCompatible
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.GeometricPreStabilityBaseChangeData.chargeCompatible
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.GeometricPreStabilityBaseChangeData.inducing
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.GeometricPreStabilityBaseChangeData.slicingCompatible
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.GeometricPreStabilityBaseChangeData.toFiberPreStabilityBaseChangeData
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.GeometricPreStabilityBaseChangeData.phase_iff
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.GeometricPreStabilityBaseChangeData.phase_iff_comp
 #print axioms CategoryTheory.Abelian.image.congr_simp
 #print axioms CategoryTheory.Functor.IsLeftTExact.isGE_map
 #print axioms CategoryTheory.Functor.IsRightTExact.isLE_map

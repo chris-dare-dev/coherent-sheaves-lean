@@ -49,6 +49,12 @@ attribute [local instance] HasDerivedCategory.standard
 attribute [local instance]
   preservesBinaryBiproducts_of_preservesBinaryProducts
 
+/-- The standard derived-category localization for coherent sheaves on a
+locally Noetherian scheme. -/
+noncomputable instance schemeCoherentHasDerivedCategory
+    (X : Scheme.{u}) [IsLocallyNoetherian X] : HasDerivedCategory (Coh X) :=
+  HasDerivedCategory.standard (Coh X)
+
 /-- The derived category of coherent sheaves on a locally Noetherian scheme. -/
 abbrev SchemeCoherentDerivedCategory (X : Scheme.{u}) [IsLocallyNoetherian X] :=
   DerivedCategory (Coh X)
@@ -288,6 +294,8 @@ class HasCoherentPullback {T U : SchemeBaseChange S} (f : T ⟶ U)
   /-- The derived functor is induced by degreewise coherent-sheaf pullback. -/
   derivedFactors : DerivedCategory.Q ⋙ derivedPullback ≅
     sheafPullback.mapHomologicalComplex (ComplexShape.up ℤ) ⋙ DerivedCategory.Q
+  /-- Derived coherent pullback is additive. -/
+  derivedAdditive : derivedPullback.Additive
   /-- Derived coherent pullback commutes with shifts. -/
   commShift : derivedPullback.CommShift ℤ
   /-- Derived coherent pullback is triangulated. -/
@@ -306,6 +314,12 @@ def coherentDerivedPullback {T U : SchemeBaseChange S} (f : T ⟶ U)
     [HasCoherentPullback f] :
     SchemeCoherentDerivedCategory U.left ⥤ SchemeCoherentDerivedCategory T.left :=
   HasCoherentPullback.derivedPullback f
+
+instance {T U : SchemeBaseChange S} (f : T ⟶ U)
+    [IsLocallyNoetherian T.left] [IsLocallyNoetherian U.left]
+    [HasCoherentPullback f] : (coherentDerivedPullback f).Additive := by
+  dsimp [coherentDerivedPullback]
+  exact HasCoherentPullback.derivedAdditive
 
 instance {T U : SchemeBaseChange S} (f : T ⟶ U)
     [IsLocallyNoetherian T.left] [IsLocallyNoetherian U.left]
@@ -328,6 +342,18 @@ def boundedCoherentDerivedPullback {T U : SchemeBaseChange S} (f : T ⟶ U)
     (DerivedCategory.Bounded.ι ⋙ coherentDerivedPullback f)
     (fun E ↦ HasCoherentPullback.preservesBounded E.obj E.property)
 
+instance {T U : SchemeBaseChange S} (f : T ⟶ U)
+    [IsLocallyNoetherian T.left] [IsLocallyNoetherian U.left]
+    [HasCoherentPullback f] : (boundedCoherentDerivedPullback f).Additive := by
+  dsimp [boundedCoherentDerivedPullback]
+  infer_instance
+
+noncomputable instance {T U : SchemeBaseChange S} (f : T ⟶ U)
+    [IsLocallyNoetherian T.left] [IsLocallyNoetherian U.left]
+    [HasCoherentPullback f] : (boundedCoherentDerivedPullback f).CommShift ℤ := by
+  dsimp [boundedCoherentDerivedPullback]
+  infer_instance
+
 /-- The bounded lift forgets to coherent derived pullback. -/
 def boundedCoherentDerivedPullbackCompInclusion
     {T U : SchemeBaseChange S} (f : T ⟶ U)
@@ -335,7 +361,23 @@ def boundedCoherentDerivedPullbackCompInclusion
     [HasCoherentPullback f] :
     boundedCoherentDerivedPullback f ⋙ DerivedCategory.Bounded.ι ≅
       DerivedCategory.Bounded.ι ⋙ coherentDerivedPullback f :=
-  Iso.refl _
+  (DerivedCategory.TStructure.t (C := Coh T.left)).bounded.liftCompιIso
+    (DerivedCategory.Bounded.ι ⋙ coherentDerivedPullback f)
+    (fun E ↦ HasCoherentPullback.preservesBounded E.obj E.property)
+
+noncomputable instance {T U : SchemeBaseChange S} (f : T ⟶ U)
+    [IsLocallyNoetherian T.left] [IsLocallyNoetherian U.left]
+    [HasCoherentPullback f] :
+    NatTrans.CommShift (boundedCoherentDerivedPullbackCompInclusion f).hom ℤ := by
+  dsimp [boundedCoherentDerivedPullbackCompInclusion]
+  exact Functor.CommShift.ofComp_compatibility _ _
+
+instance {T U : SchemeBaseChange S} (f : T ⟶ U)
+    [IsLocallyNoetherian T.left] [IsLocallyNoetherian U.left]
+    [HasCoherentPullback f] : (boundedCoherentDerivedPullback f).IsTriangulated := by
+  rw [Functor.isTriangulated_iff_comp_right
+    (boundedCoherentDerivedPullbackCompInclusion f)]
+  infer_instance
 
 /-- The remaining generator-level obligation for coherent pullback to
 restrict to perfect complexes.  It is deliberately stated only on the finite
