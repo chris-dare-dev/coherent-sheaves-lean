@@ -3365,3 +3365,24 @@ and nothing here mentions a category.
 #print axioms DerivedAlgGeo.LinearAlgebra.sum_range_succ_smul_finrank
 #print axioms DerivedAlgGeo.LinearAlgebra.sum_range_succ_smul_finrank_eq_zero
 #print axioms DerivedAlgGeo.LinearAlgebra.diffRank_eq_zero_of_subsingleton
+
+/-! ## Kernel functors acting on stability conditions
+
+The join between the Fourier--Mukai lane and the autoequivalence action. Every
+field of `KernelAutoequivalence` is supplied -- nothing proves a transform is an
+equivalence -- so a clean axiom list here says the transport follows from that
+datum, not that any kernel provides it.
+-/
+
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.KernelAutoequivalence
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.KernelAutoequivalence.mk.inj
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.KernelAutoequivalence.mk.sizeOf_spec
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.KernelAutoequivalence.corr
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.KernelAutoequivalence.kernel
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.KernelAutoequivalence.equiv
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.KernelAutoequivalence.iso
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.KernelAutoequivalence.mapF_eq_transformK₀
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.KernelAutoequivalence.of_obj_eq
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.KernelAutoequivalence.actStab
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.KernelAutoequivalence.actStab_slicing
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.KernelAutoequivalence.actStab_Z
