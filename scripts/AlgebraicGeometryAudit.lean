@@ -148,6 +148,10 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Proj.polynomialVariable_isCechAcyclicCover_of_isQuasicoherent
 #print axioms AlgebraicGeometry.Proj.polynomialVariable_isCechAcyclicFor
 #print axioms AlgebraicGeometry.Proj.polynomialVariable_isCechAcyclicCover
+-- Acyclicity (#338) and the complex identification (#339) combine into the statement the twist
+-- computation starts from (#340): Hⁱ(Pⁿ, O(d)) is the homology of the explicit complex of
+-- degree-zero homogeneous localizations.
+#print axioms AlgebraicGeometry.Proj.polynomialVariableCechComplex_computesCohomology
 -- The same for an integer twist (#467 step 4). The acyclicity argument never mentions the
 -- twist -- it needs quasi-coherence and affineness of the intersections, and the degree
 -- restriction that constrains the trivialization plays no part -- so each is one application
