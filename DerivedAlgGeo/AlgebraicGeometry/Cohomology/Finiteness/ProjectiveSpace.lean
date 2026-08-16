@@ -173,4 +173,51 @@ theorem polynomialVariable_isCechAcyclicCover (ι k : Type u) [Field k] (d : ℕ
   polynomialVariable_isCechAcyclicCover_of_isQuasicoherent ι k
     (natShift (polynomialGrading ι k) d) (polynomialNatShift_isQuasicoherent ι k d)
 
+/-! ## Integer twists
+
+Both statements are the quasi-coherent form applied to `intShift`. The acyclicity argument never
+mentions the twist: it needs quasi-coherence and affineness of the intersections, and the degree
+restriction that constrains the *trivialization* of `O(d)` plays no part in it. So the negative
+case costs exactly one application, once `polynomialIntShift_isQuasicoherent` exists. -/
+
+set_option maxHeartbeats 1600000 in
+set_option synthInstance.maxHeartbeats 400000 in
+/-- Every integer twist `O(d)` is acyclic on every variable Čech intersection. -/
+theorem polynomialVariableIntShift_isCechAcyclicFor (ι k : Type u) [Field k] (d : ℤ)
+    [hExt : HasExt.{u + 1} (TopCat.Sheaf AddCommGrpCat.{u}
+      (_root_.AlgebraicGeometry.Proj (polynomialGrading ι k)))] :
+    @CategoryTheory.Sheaf.IsCechAcyclicFor
+      (Opens (_root_.AlgebraicGeometry.Proj (polynomialGrading ι k))) _
+      (Opens.grothendieckTopology (_root_.AlgebraicGeometry.Proj (polynomialGrading ι k))) _
+      hExt ι _
+      (fun i : ι => _root_.AlgebraicGeometry.Proj.basicOpen (polynomialGrading ι k)
+        (MvPolynomial.X i))
+      ((_root_.AlgebraicGeometry.Scheme.Modules.toSheaf _).obj
+        (associatedSheaf (polynomialGrading ι k)
+          (intShift (polynomialGrading ι k) d))) :=
+  polynomialVariable_isCechAcyclicFor_of_isQuasicoherent ι k
+    (intShift (polynomialGrading ι k) d) (polynomialIntShift_isQuasicoherent ι k d)
+
+set_option maxHeartbeats 1600000 in
+set_option synthInstance.maxHeartbeats 400000 in
+/-- The variable cover is Čech-acyclic for every integer twist, so `Hⁱ(Pⁿ, O(d))` is the Čech
+cohomology of that cover in every degree and for either sign of `d`.
+
+This is the input `#332`'s dévissage needs: it surjects a finite sum of `O(-d)` onto a coherent
+sheaf and does descending induction, which requires the comparison at negative twists. -/
+theorem polynomialVariableIntShift_isCechAcyclicCover (ι k : Type u) [Field k] (d : ℤ)
+    [hExt : HasExt.{u + 1} (TopCat.Sheaf AddCommGrpCat.{u}
+      (_root_.AlgebraicGeometry.Proj (polynomialGrading ι k)))] :
+    @CategoryTheory.Sheaf.IsCechAcyclicCover
+      (Opens (_root_.AlgebraicGeometry.Proj (polynomialGrading ι k))) _
+      (Opens.grothendieckTopology (_root_.AlgebraicGeometry.Proj (polynomialGrading ι k))) _
+      hExt ι _
+      (fun i : ι => _root_.AlgebraicGeometry.Proj.basicOpen (polynomialGrading ι k)
+        (MvPolynomial.X i))
+      ((_root_.AlgebraicGeometry.Scheme.Modules.toSheaf _).obj
+        (associatedSheaf (polynomialGrading ι k)
+          (intShift (polynomialGrading ι k) d))) :=
+  polynomialVariable_isCechAcyclicCover_of_isQuasicoherent ι k
+    (intShift (polynomialGrading ι k) d) (polynomialIntShift_isQuasicoherent ι k d)
+
 end AlgebraicGeometry.Proj
