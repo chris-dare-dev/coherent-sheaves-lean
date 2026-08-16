@@ -133,6 +133,7 @@ on a name that no longer exists is a hard error, but a name never added is
 invisible.
 -/
 import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition
+import DerivedAlgGeo.CategoryTheory.Triangulated.FourierMukai
 import DerivedAlgGeo.LinearAlgebra
 
 open CategoryTheory.Triangulated
@@ -3266,3 +3267,84 @@ end SlicingChecks
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.Theorem22_2SourceClauses
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.Theorem22_2DependencyContract
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.Theorem22_2DependencyContract.hasSourceClauses
+
+/-! ## Fourier--Mukai lane -- the abstract kernel-functor interface
+
+Every record here is hypothesis-only. `Correspondence` asks for three functors
+and assumes nothing about them, so a clean axiom list for these declarations
+says that the interface is consistent, not that any functor is of kernel type.
+-/
+
+#print axioms CategoryTheory.Triangulated.FourierMukai.Correspondence
+#print axioms CategoryTheory.Triangulated.FourierMukai.Correspondence.mk.inj
+#print axioms CategoryTheory.Triangulated.FourierMukai.Correspondence.mk.sizeOf_spec
+#print axioms CategoryTheory.Triangulated.FourierMukai.Correspondence.pull
+#print axioms CategoryTheory.Triangulated.FourierMukai.Correspondence.tensor
+#print axioms CategoryTheory.Triangulated.FourierMukai.Correspondence.push
+#print axioms CategoryTheory.Triangulated.FourierMukai.Correspondence.transform
+#print axioms CategoryTheory.Triangulated.FourierMukai.Correspondence.transform_obj
+#print axioms CategoryTheory.Triangulated.FourierMukai.Correspondence.transform_map
+#print axioms CategoryTheory.Triangulated.FourierMukai.Correspondence.transformMapIso
+#print axioms CategoryTheory.Triangulated.FourierMukai.Correspondence.transformMapIso_refl
+#print axioms CategoryTheory.Triangulated.FourierMukai.Correspondence.IsKernelFunctor
+#print axioms CategoryTheory.Triangulated.FourierMukai.Correspondence.isKernelFunctor_transform
+#print axioms CategoryTheory.Triangulated.FourierMukai.Correspondence.IsKernelFunctor.of_natIso
+#print axioms CategoryTheory.Triangulated.FourierMukai.Correspondence.IsKernelFunctor.kernel
+#print axioms CategoryTheory.Triangulated.FourierMukai.Correspondence.IsKernelFunctor.iso
+#print axioms CategoryTheory.Triangulated.FourierMukai.transform_isTriangulated
+#print axioms CategoryTheory.Triangulated.FourierMukai.transform_additive
+
+/-! ## Fourier--Mukai lane -- convolution of kernels
+
+`ConvolutionData` supplies Huybrechts' Prop. 5.10 rather than proving it, so a
+clean axiom list here says the supplied-data interface is consistent and that
+its consequences follow from it -- not that any convolution exists.
+-/
+
+#print axioms CategoryTheory.Triangulated.FourierMukai.ConvolutionData
+#print axioms CategoryTheory.Triangulated.FourierMukai.ConvolutionData.mk.inj
+#print axioms CategoryTheory.Triangulated.FourierMukai.ConvolutionData.mk.sizeOf_spec
+#print axioms CategoryTheory.Triangulated.FourierMukai.ConvolutionData.conv
+#print axioms CategoryTheory.Triangulated.FourierMukai.ConvolutionData.compIso
+#print axioms CategoryTheory.Triangulated.FourierMukai.ConvolutionData.isKernelFunctor_transform_comp
+#print axioms CategoryTheory.Triangulated.FourierMukai.ConvolutionData.isKernelFunctor_comp
+#print axioms CategoryTheory.Triangulated.FourierMukai.ConvolutionData.transformMapConvIso
+#print axioms CategoryTheory.Triangulated.FourierMukai.ConvolutionData.transformMapConvIso_refl
+
+/-! ## Fourier--Mukai lane -- the induced maps on K₀
+
+The only FourierMukai module that reaches into this subsystem's own
+`Foundation`, for `Triangulated.K₀`. `transformK₀_conv` turns the supplied
+Prop. 5.10 isomorphism into an equality of homomorphisms, so its axiom list is
+the one to read if the supplied-data interface is ever suspected of hiding a
+proof hole.
+-/
+
+#print axioms CategoryTheory.Triangulated.FourierMukai.Correspondence.transformK₀
+#print axioms CategoryTheory.Triangulated.FourierMukai.Correspondence.transformK₀_eq
+#print axioms CategoryTheory.Triangulated.FourierMukai.Correspondence.transformK₀_of
+#print axioms CategoryTheory.Triangulated.FourierMukai.Correspondence.K₀_map_eq_transformK₀
+#print axioms CategoryTheory.Triangulated.FourierMukai.Correspondence.K₀_map_eq_transformK₀_kernel
+#print axioms CategoryTheory.Triangulated.FourierMukai.ConvolutionData.transformK₀_conv
+
+/-! ## K₀ of an exact equivalence -/
+
+#print axioms CategoryTheory.Triangulated.K₀.map_comp_map_eq_id
+#print axioms CategoryTheory.Triangulated.K₀.mapAddEquiv
+#print axioms CategoryTheory.Triangulated.K₀.mapAddEquiv_apply
+
+/-! ## The alternating sum along a bounded exact sequence
+
+Pure linear algebra: rank-nullity plus an induction. Mathlib's
+`Algebra.Homology.EulerCharacteristic` defines `eulerChar` but proves no
+relation to homology and nothing about exact complexes, so this is the
+arithmetic engine a Hom-built Euler form would run on. It is NOT that form,
+and nothing here mentions a category.
+-/
+
+#print axioms DerivedAlgGeo.LinearAlgebra.diffRank
+#print axioms DerivedAlgGeo.LinearAlgebra.finrank_eq_finrank_ker_add_diffRank
+#print axioms DerivedAlgGeo.LinearAlgebra.finrank_eq_diffRank_add_diffRank
+#print axioms DerivedAlgGeo.LinearAlgebra.sum_range_succ_smul_finrank
+#print axioms DerivedAlgGeo.LinearAlgebra.sum_range_succ_smul_finrank_eq_zero
+#print axioms DerivedAlgGeo.LinearAlgebra.diffRank_eq_zero_of_subsingleton
