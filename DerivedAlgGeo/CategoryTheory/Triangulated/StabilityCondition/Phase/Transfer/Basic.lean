@@ -169,6 +169,41 @@ theorem Slicing.preimage_iso (s : Slicing D) (F G : C ⥤ D)
   exact ⟨ObjectProperty.prop_of_iso _ (e.app X).symm,
     ObjectProperty.prop_of_iso _ (e.app X)⟩
 
+/-- A triangulated equivalence supplies the two non-formal preimage axioms.
+
+Unlike `Slicing.mapEquiv`, this theorem allows the source and target
+categories to differ.  HN filtrations are transported through the inverse
+functor and then identified with the original object by the unit isomorphism.
+-/
+theorem Slicing.preimageData_equivalence (s : Slicing D) (e : C ≌ D)
+    [e.inverse.Additive]
+    [e.functor.CommShift ℤ] [e.inverse.CommShift ℤ]
+    [e.functor.IsTriangulated] [e.inverse.IsTriangulated] :
+    s.PreimageData e.functor where
+  hom_vanishing phi₁ phi₂ A B hphi hA hB g := by
+    apply e.functor.map_injective
+    simpa using s.hom_vanishing phi₁ phi₂ (e.functor.obj A)
+      (e.functor.obj B) hphi hA hB (e.functor.map g)
+  hn_exists E := by
+    obtain ⟨Fil⟩ := s.hn_exists (e.functor.obj E)
+    exact ⟨CategoryTheory.Triangulated.HNFiltration.ofIso C
+      (HNFiltration.mapF
+        (P' := fun phi X => s.P phi (e.functor.obj X)) Fil e.inverse
+        (fun phi X h => ObjectProperty.prop_of_iso _
+          (e.counitIso.app X).symm h))
+      (e.unitIso.app E).symm⟩
+
+/-- The preimage slicing along a triangulated equivalence is detected exactly
+by the equivalence functor. -/
+theorem Slicing.preimage_equivalence_P (s : Slicing D) (e : C ≌ D)
+    [e.functor.Additive] [e.inverse.Additive]
+    [e.functor.CommShift ℤ] [e.inverse.CommShift ℤ]
+    [e.functor.IsTriangulated] [e.inverse.IsTriangulated]
+    (phi : ℝ) (X : C) :
+    (s.preimage e.functor (s.preimageData_equivalence e)).P phi X ↔
+      s.P phi (e.functor.obj X) :=
+  Iff.rfl
+
 /-- For a faithful functor, target Hom-vanishing supplies the Hom component of
 `PreimageData`; only HN existence remains to be proved. -/
 def Slicing.PreimageData.ofFaithful (s : Slicing D) (F : C ⥤ D)
