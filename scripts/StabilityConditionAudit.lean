@@ -3703,9 +3703,28 @@ that the two class maps are mutually inverse.
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.KernelAutoequivalence.DualKernel.mapF_inverse_eq_transformK₀
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.KernelAutoequivalence.DualKernel.transformK₀_dual_comp
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.KernelAutoequivalence.DualKernel.transformK₀_comp_dual
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.KernelAutoequivalence.DualKernel.transformK₀AddEquiv
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.KernelAutoequivalence.DualKernel.transformK₀AddEquiv_apply
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.KernelAutoequivalence.DualKernel.transformK₀AddEquiv_symm_apply
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.KernelAutoequivalence.actStabOfDual
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.KernelAutoequivalence.actStabOfDual_slicing
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.KernelAutoequivalence.actStabOfDual_Z
+
+/-! ## Kernel autoequivalences as elements of the acting group
+
+The bridge into `GroupAction.AutPairQuot`. `toAutPair` needs a `DualKernel`
+and a supplied *invertible* `lam`; `mk_toAutPair_smul` says the group element's
+action is the transport `actStabOfDual` already gave. A clean axiom list here
+says the group membership follows from those two supplied data, not that any
+kernel provides either. This is a map on elements only -- it is NOT a monoid
+homomorphism, and the module docstring says why.
+-/
+
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.KernelAutoequivalence.toTriEquiv
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.KernelAutoequivalence.toAutPair
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.KernelAutoequivalence.toAutPair_lam
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.KernelAutoequivalence.toAutPair_act
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.KernelAutoequivalence.mk_toAutPair_smul
 
 /-! ## Composing two transports
 
@@ -3728,6 +3747,28 @@ composite, whose kernel is the convolution.
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.KernelAutoequivalence.trans_kernel
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.KernelAutoequivalence.trans_equiv
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.KernelAutoequivalence.actStab_trans
+
+/-! ## The unit kernel
+
+The unit *object* of the composition story, and only the object: `𝒪_Δ`
+presenting `𝟭` as a transform is supplied, exactly as `ConvolutionData` is. No
+identity law is proved, because a law would need convolution data comparing a
+correspondence with itself. What the unit kernel does buy for free is its own
+dual kernel -- `Equivalence.refl.inverse` is `𝟭 C` -- so every `DualKernel`
+consequence applies to `KernelAutoequivalence.id`.
+-/
+
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.UnitKernelData
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.UnitKernelData.mk.inj
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.UnitKernelData.mk.sizeOf_spec
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.UnitKernelData.unitKernel
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.UnitKernelData.unitIso
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.KernelAutoequivalence.id
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.KernelAutoequivalence.id_kernel
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.KernelAutoequivalence.id_equiv
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.KernelAutoequivalence.id_corr
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.UnitKernelData.toDualKernel
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.UnitKernelData.toDualKernel_dual
 
 /-! ## The k-linear Yoneda functor is homological
 
