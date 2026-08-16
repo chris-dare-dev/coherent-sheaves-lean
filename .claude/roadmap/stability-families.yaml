@@ -85,6 +85,8 @@ generations:
   - { rev: 23, at: "2026-08-15", note: "Child #429 factors out the presheaf-module stalk functor and proves that module sheafification preserves every module stalk. It also makes the pullback-to-stalk comparison contract canonical for identity morphisms and closed under composition, using the corresponding laws for module pullback, scheme stalk maps, and extension of scalars. The remaining task is therefore the presheaf-pullback comparison for an arbitrary scheme morphism, not sheafification or separate coherence work for composites." }
   - { rev: 24, at: "2026-08-15", note: "Child #429 now exposes the presheaf-module pullback beneath scheme module pullback and proves that its stalk controls the sheaf-level stalk comparison through Mathlib's pullback construction and stalkwise invariance of sheafification. Consequently, flat exactness reduces to one typed PresheafPullbackStalkComparison; no sheafification or sheaf-level comparison premise remains. Constructing that presheaf comparison for an arbitrary scheme morphism is the remaining theorem." }
   - { rev: 25, at: "2026-08-15", note: "Child #429 now proves the local comparison over neighborhood categories: pullback along the induced neighborhood ring diagram followed by its module colimit is naturally isomorphic to the source stalk followed by extension of scalars along the scheme stalk map. The remaining presheaf comparison is therefore isolated to global-to-neighborhood pullback base change." }
+  - { rev: 26, at: "2026-08-15", note: "Child #429 completed the arbitrary presheaf pullback-to-stalk comparison and installed exact derived pullback for every flat scheme morphism. Epics #193 and #194 and milestone SF2 are closed; the source coordinate remains target because geometric slicing, openness, relative HN, and moduli theorems are still open." }
+  - { rev: 27, at: "2026-08-15", note: "Milestone SF4 (#26) begins the next families phase with epics #441 and #442. Native child #443 first makes preimage-slicing witnesses compositional before scheme inducing data, genuine Zariski openness, and relative HN over curves are attempted." }
 retired: []
 
 # GitHub milestones are roadmap phases. Epic issues live inside them, and
@@ -161,8 +163,8 @@ items:
     gh_milestone: 18
     kind: milestone
     title: "SF2 — Uniform support and families (§§18–23)"
-    status: planned
-    lane: later
+    status: done
+    lane: now
     acceptance:
       - "A genuine quadratic form controls semistable classes and is packaged uniformly over an indexed family."
       - "Definitions 20.5 and 21.15 are decomposed into separately auditable fields."
@@ -175,8 +177,8 @@ items:
     kind: epic
     parent: stability-families-m2
     title: "Upgrade to uniform quadratic support (§§18, 21)"
-    status: in_progress
-    summary: "The genuine quadratic and indexed-uniform layers are in place for weak and ordinary semistability (#380). Child #387 supplies the canonical Definition 21.9 integral-to-real quotient comparison. Child #389 binds one common charge and form to actual slicings across varying abstract fiber categories. Schemes, base-change functors, relative HN geometry, and boundedness remain follow-ons."
+    status: done
+    summary: "Closed after children #380, #387, and #389 established genuine quadratic support, the integral-to-real quotient comparison, and one common charge and form across varying abstract fiber categories. Geometric realization is tracked in SF4."
     priority: must
     size: L
     tags: [support, quadratic-form, uniformity]
@@ -187,8 +189,8 @@ items:
     kind: epic
     parent: stability-families-m2
     title: "Define nonvacuous stability-in-families interfaces (§§20–23)"
-    status: in_progress
-    summary: "Child #391 binds the five-clause ordinary package and its Theorem 22.2 source-clause projection to actual slicing-defined loci on varying fiber categories. Child #393 adds an abstract contravariant category-valued family, triangulated pullback functors, and K₀-compatible common class maps. Child #395 packages actual fiber pre-stability conditions with explicit preimage-slicing witnesses and proves phase, class, charge, and nonzero semistable-locus transport. Child #397 joins that compatibility to the five-clause package, projects the Theorem 22.2 source clauses, and supplies a constant categorical model. Child #399 anchors the base-change category and topological probes to actual schemes and their Zariski topology. Child #401 constructs actual residue-field base changes and evaluates the supplied categorical family and K₀ pullback at those point fibers. Child #403 constructs concrete unbounded and bounded derived categories of module sheaves on every scheme and residue-field scheme, plus objectwise realization interfaces. Child #405 exposes actual module-sheaf pullback and its pseudofunctor isomorphisms, then descends explicitly exact pullbacks to triangulated derived and K₀ pullback. Child #407 closes exact pullback under identities and composition and records the corresponding complex-level coherence. Child #414 descends the unit and compositor through derived localization and proves K₀ identity and composition. Child #417 proves complex- and derived-level left-unit, right-unit, and associativity coherence with canonical congruence through localization. Child #425 proves shift compatibility for the localization comparison and the complex, localized, and derived unit/compositor. Child #429 reduces exactness to left exactness, constructs the left-exact local-ring stalk and flat scalar-extension model, proves a stalkwise-to-global preservation criterion, supplies exact pullback for open immersions, proves module sheafification preserves module stalks, makes the comparison contract unital and compositional, and reduces the sheaf-level comparison and flat exactness to one typed presheaf-level comparison. Its neighborhood-category component is now proved; only global-to-neighborhood pullback base change remains before the arbitrary presheaf-pullback-to-stalk comparison. General nonexact left-derived pullback, bounded coherent or perfect subcategories, geometric preimage/HN witnesses, geometric openness, relative HN structures, and bounded moduli remain explicit follow-ons."
+    status: done
+    summary: "Closed after children #391--#429 built the nonvacuous ordinary-family interfaces, categorical and scheme base change, residue and derived fibers, coherent exact derived pullback, and the theorem that flat scheme pullback is exact. General nonexact left-derived pullback, bounded coherent or perfect subcategories, geometric preimage/HN witnesses, geometric openness, relative HN structures, and bounded moduli remain explicit SF4/SF3 follow-ons."
     priority: should
     size: XL
     tags: [families, relative-hn]
@@ -217,3 +219,40 @@ items:
     tags: [cross-repo, parked, geometry, moduli]
     links:
       repositories: [derived-alg-geo-lean, mathlib4]
+
+  - id: stability-families-m4
+    gh_milestone: 26
+    kind: milestone
+    title: "SF4 — Geometric slicing and relative HN (§§18–23)"
+    status: in_progress
+    lane: now
+    acceptance:
+      - "Preimage-slicing witnesses are coherent under identity and composition and usable by category-valued families."
+      - "Actual scheme-derived pullback consumes an honest geometric inducing package with every unproved presentable/Ind hypothesis explicit."
+      - "Ordinary and generic semistability loci are genuine Zariski loci, and openness is proved only from named geometric hypotheses."
+      - "Relative HN structures over curve/Dedekind bases carry object-level filtration data and have a nonvacuous constant-family model."
+      - "Bounded coherent/perfect fibers, Quot, stacks, moduli, and Theorem 22.2 remain separate until their hypotheses are proved."
+
+  - id: stability-families-e11
+    gh_issue: 441
+    gh_sub_issues: [443, 444, 445]
+    kind: epic
+    parent: stability-families-m4
+    title: "Construct geometric slicing and openness witnesses"
+    status: in_progress
+    summary: "Child #443 supplies the identity/composition coherence prerequisite. Child #444 will attach the exact inducing premises to scheme-derived pullback, and #445 will realize the openness clauses through genuine Zariski loci."
+    priority: must
+    size: XL
+    tags: [families, slicing, openness, geometry]
+
+  - id: stability-families-e12
+    gh_issue: 442
+    gh_sub_issues: [446]
+    kind: epic
+    parent: stability-families-m4
+    title: "Construct relative HN structures over curves"
+    status: planned
+    summary: "Child #446 will replace the proposition-valued Dedekind HN probe with object-level relative filtration data after the geometric slicing and openness path is available."
+    priority: must
+    size: XL
+    tags: [families, relative-hn, curves, geometry]

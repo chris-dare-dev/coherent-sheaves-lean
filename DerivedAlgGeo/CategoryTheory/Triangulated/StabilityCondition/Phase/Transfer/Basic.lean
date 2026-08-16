@@ -30,7 +30,7 @@ open CategoryTheory.Triangulated
 open CategoryTheory CategoryTheory.Limits CategoryTheory.Pretriangulated
 open scoped ZeroObject
 
-universe v₁ u₁ v₂ u₂
+universe v₁ u₁ v₂ u₂ v₃ u₃
 
 namespace CategoryTheory.Triangulated
 
@@ -38,6 +38,8 @@ variable {C : Type u₁} [Category.{v₁} C] [HasZeroObject C] [HasShift C ℤ]
   [Preadditive C] [∀ n : ℤ, (shiftFunctor C n).Additive] [Pretriangulated C]
 variable {D : Type u₂} [Category.{v₂} D] [HasZeroObject D] [HasShift D ℤ]
   [Preadditive D] [∀ n : ℤ, (shiftFunctor D n).Additive] [Pretriangulated D]
+variable {E : Type u₃} [Category.{v₃} E] [HasZeroObject E] [HasShift E ℤ]
+  [Preadditive E] [∀ n : ℤ, (shiftFunctor E n).Additive] [Pretriangulated E]
 
 /-- The raw inverse-image phase collection along a functor.
 
@@ -97,6 +99,18 @@ def Slicing.preimage (s : Slicing D) (F : C ⥤ D) [F.Additive]
   hom_vanishing := h.hom_vanishing
   hn_exists := h.hn_exists
 
+/-- Preimage witnesses compose in the same contravariant order as their
+functors.  The second witness is measured against the slicing constructed by
+the first stage, so its HN filtrations already have exactly the phases needed
+for the composite. -/
+theorem Slicing.PreimageData.comp {s : Slicing E} {G : D ⥤ E}
+    [G.Additive] [G.CommShift ℤ] [G.IsTriangulated]
+    (hG : s.PreimageData G) {F : C ⥤ D}
+    (hF : (s.preimage G hG).PreimageData F) :
+    s.PreimageData (F ⋙ G) where
+  hom_vanishing := hF.hom_vanishing
+  hn_exists := hF.hn_exists
+
 @[simp]
 theorem Slicing.preimage_P (s : Slicing D) (F : C ⥤ D) [F.Additive]
     [F.CommShift ℤ] [F.IsTriangulated] (h : s.PreimageData F)
@@ -107,6 +121,20 @@ theorem Slicing.preimage_P (s : Slicing D) (F : C ⥤ D) [F.Additive]
 @[simp]
 theorem Slicing.preimage_id (s : Slicing C) :
     s.preimage (Functor.id C) s.preimageData_id = s := by
+  apply Slicing.ext
+  rfl
+
+/-- Constructing a preimage slicing in two stages agrees with constructing it
+along the composite functor.  The statement is independent of the proof terms
+used to witness the slicing axioms. -/
+@[simp]
+theorem Slicing.preimage_comp (s : Slicing E) (G : D ⥤ E)
+    [G.Additive] [G.CommShift ℤ] [G.IsTriangulated]
+    (hG : s.PreimageData G) (F : C ⥤ D)
+    [F.Additive] [F.CommShift ℤ] [F.IsTriangulated]
+    (hF : (s.preimage G hG).PreimageData F) :
+    s.preimage (F ⋙ G) (hG.comp hF) =
+      (s.preimage G hG).preimage F hF := by
   apply Slicing.ext
   rfl
 

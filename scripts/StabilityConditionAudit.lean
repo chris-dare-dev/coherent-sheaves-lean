@@ -73,7 +73,7 @@ four qualifications in this comment are unaffected by it:
   ratchet now rejects an unlisted public declaration, but zero in the narrower
   authored/non-projection census is still a measurement that must be rerun.
 
-* It issues **2600** audit commands. The environment holds **2966** authored
+* It issues **2605** audit commands. The environment holds **2971** authored
   declarations under the stability-condition modules under `DerivedAlgGeo`; the declarations outside the
   substantive hand audit are precisely the private declarations and structure
   projections. Seven projections are additionally listed because the newer
@@ -111,7 +111,7 @@ four qualifications in this comment are unaffected by it:
   For a `def`, `#print axioms` reports the axiom closure of a CONSTRUCTION and
   asserts nothing about any proposition. In particular
   `CategoryTheory.Triangulated.StabilityMassTriangleInequality` appears below
-formatted identically to the **1847** real theorems, but it is a `def ... :
+formatted identically to the **1852** real theorems, but it is a `def ... :
   Prop` -- its clean line means the definition is axiom-clean, NOT that the
   proposition holds.
 
@@ -2390,9 +2390,11 @@ this against the file by eye. -/
 #print axioms CategoryTheory.Triangulated.Slicing.pushforwardPhaseCollection
 #print axioms CategoryTheory.Triangulated.Slicing.PreimageData
 #print axioms CategoryTheory.Triangulated.Slicing.preimageData_id
+#print axioms CategoryTheory.Triangulated.Slicing.PreimageData.comp
 #print axioms CategoryTheory.Triangulated.Slicing.preimage
 #print axioms CategoryTheory.Triangulated.Slicing.preimage_P
 #print axioms CategoryTheory.Triangulated.Slicing.preimage_id
+#print axioms CategoryTheory.Triangulated.Slicing.preimage_comp
 #print axioms CategoryTheory.Triangulated.Slicing.PreimageData.ofFaithful
 #print axioms CategoryTheory.Triangulated.Slicing.PreimageData.phaseShift
 #print axioms CategoryTheory.Triangulated.Slicing.pullback
@@ -3023,6 +3025,9 @@ end SlicingChecks
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.FiberPreStabilityBaseChangeData.preimageData
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.FiberPreStabilityBaseChangeData.slicing_compatible
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.FiberPreStabilityBaseChangeData.phase_iff
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.FiberPreStabilityBaseChangeData.preimageData_comp
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.FiberPreStabilityBaseChangeData.slicing_compatible_comp
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.FiberPreStabilityBaseChangeData.phase_iff_comp
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.FiberPreStabilityBaseChangeData.class_pull
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.FiberPreStabilityBaseChangeData.charge_pull
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.FiberPreStabilityBaseChangeData.constant
