@@ -1096,6 +1096,23 @@ open CategoryTheory.Triangulated
 #print axioms CategoryTheory.Triangulated.TStructure.IsCompactlyGeneratedBy.compact
 #print axioms CategoryTheory.Triangulated.TStructure.IsCompactlyGeneratedBy.le_zero_eq
 #print axioms CategoryTheory.Triangulated.TStructure.IsCompactlyGeneratedBy.isLE_zero_of_generator
+#print axioms CategoryTheory.Triangulated.TStructure.AisleData
+#print axioms CategoryTheory.Triangulated.TStructure.AisleData.shift
+#print axioms CategoryTheory.Triangulated.TStructure.AisleData.exists_triangle
+#print axioms CategoryTheory.Triangulated.TStructure.AisleData.rightOrthogonal_le_shift
+#print axioms CategoryTheory.Triangulated.TStructure.AisleData.tStructure
+#print axioms CategoryTheory.Triangulated.TStructure.AisleData.tStructure.congr_simp
+#print axioms CategoryTheory.Triangulated.TStructure.AisleData.tStructure_le_zero
+#print axioms CategoryTheory.Triangulated.TStructure.AisleData.tStructure_ge_one
+#print axioms CategoryTheory.ObjectProperty.coprodClosure_le_shift
+#print axioms CategoryTheory.Triangulated.TStructure.CompactGeneratorApproximation
+#print axioms CategoryTheory.Triangulated.TStructure.CompactGeneratorApproximation.generator_shift
+#print axioms CategoryTheory.Triangulated.TStructure.CompactGeneratorApproximation.exists_triangle
+#print axioms CategoryTheory.Triangulated.TStructure.CompactGeneratorApproximation.aisleData
+#print axioms CategoryTheory.Triangulated.TStructure.CompactGeneratorApproximation.tStructure
+#print axioms CategoryTheory.Triangulated.TStructure.CompactGeneratorApproximation.tStructure_le_zero
+#print axioms CategoryTheory.Triangulated.TStructure.CompactGeneratorApproximation.tStructure_ge_one
+#print axioms CategoryTheory.Triangulated.TStructure.CompactGeneratorApproximation.isCompactlyGeneratedBy
 #print axioms CategoryTheory.Functor.isRightTExact_of_compactlyGenerated
 #print axioms CategoryTheory.Adjunction.isTExact_of_compactlyGenerated
 #print axioms CategoryTheory.ObjectProperty.hasInducedTStructure_of_preimage
@@ -1116,6 +1133,7 @@ open CategoryTheory.Triangulated
 #print axioms CategoryTheory.Triangulated.Polishchuk.InducedTStructureData.isLE_iff
 #print axioms CategoryTheory.Triangulated.Polishchuk.InducedTStructureData.isGE_iff
 #print axioms CategoryTheory.Triangulated.Polishchuk.induce
+#print axioms CategoryTheory.Triangulated.Polishchuk.induceOfApproximation
 
 /-! ## Repository-owned t-structure heart bridges -/
 
