@@ -117,4 +117,58 @@ noncomputable def induce
       isLE_iff := hLE
       isGE_iff := hGE }
 
+/-- The categorical A.17 constructor with the source t-structure assembled
+directly from the A.13 approximation triangles.
+
+Compactness of the source generators is derived from the adjunction and target
+compactness. Thus the only source existence input is the honest Brown-
+representability approximation output, not a pre-existing t-structure or its
+compact-generation equality. -/
+noncomputable def induceOfApproximation
+    {L : Functor D C} {F : Functor C D}
+    [L.CommShift ℤ] [L.IsTriangulated]
+    [F.Additive] [F.CommShift ℤ] [F.IsTriangulated]
+    (adj : L ⊣ F)
+    {tD : TStructure D} {G : ObjectProperty D} {Q : ObjectProperty D}
+    [Q.IsTriangulated] [Q.IsClosedUnderIsomorphisms]
+    [Q.HasInducedTStructure tD]
+    (hF : F.PreservesSmallCoproducts.{w})
+    (hD : tD.IsCompactlyGeneratedBy.{w} G)
+    (happrox : TStructure.CompactGeneratorApproximation.{w} (G.map L))
+    (hmonad : (L ⋙ F).IsRightTExact tD tD)
+    (hzero : ∀ E : C, IsZero (F.obj E) → IsZero E)
+    (hbounded : TStructure.IsBounded (Q.tStructure tD)) :
+    InducedTStructureData F (Q.inverseImage F) Q tD (fun _ ↦ Iff.rfl) :=
+  induce adj hF hD
+    (happrox.isCompactlyGeneratedBy
+      (adj.compactObjects_map_leftAdjoint hF hD.compact))
+    hmonad hzero hbounded
+
+/-- The categorical A.17 constructor from Brown-style universal maps.
+
+The source approximation triangles and the proof that their cones are right
+orthogonal are both constructed internally.  The remaining representability
+input is precisely the existence of universal maps with the two Hom controls
+recorded by `TStructure.ApproximationMap`. -/
+noncomputable def induceOfApproximationMaps
+    {L : Functor D C} {F : Functor C D}
+    [L.CommShift ℤ] [L.IsTriangulated]
+    [F.Additive] [F.CommShift ℤ] [F.IsTriangulated]
+    (adj : L ⊣ F)
+    {tD : TStructure D} {G : ObjectProperty D} {Q : ObjectProperty D}
+    [Q.IsTriangulated] [Q.IsClosedUnderIsomorphisms]
+    [Q.HasInducedTStructure tD]
+    (hF : F.PreservesSmallCoproducts.{w})
+    (hD : tD.IsCompactlyGeneratedBy.{w} G)
+    (hshift : G.map L ≤ (G.map L).shift (1 : ℤ))
+    (happrox : ∀ A : C,
+      Nonempty (TStructure.ApproximationMap (G.map L).coprodClosure.{w} A))
+    (hmonad : (L ⋙ F).IsRightTExact tD tD)
+    (hzero : ∀ E : C, IsZero (F.obj E) → IsZero E)
+    (hbounded : TStructure.IsBounded (Q.tStructure tD)) :
+    InducedTStructureData F (Q.inverseImage F) Q tD (fun _ ↦ Iff.rfl) :=
+  induceOfApproximation adj hF hD
+    (TStructure.CompactGeneratorApproximation.ofApproximationMaps hshift happrox)
+    hmonad hzero hbounded
+
 end CategoryTheory.Triangulated.Polishchuk

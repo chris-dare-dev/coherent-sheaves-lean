@@ -881,6 +881,34 @@ fidelity:
     Brown-representability/Neeman construction and the scheme S-locality layer
     remain the open part of #477/#476.
 
+    COUNT UPDATE (SF7.2 A.13 constructor), 2026-08-16.
+    `TStructure.AisleData` isolates the exact approximation-triangle output of
+    Brown representability and constructs a t-structure whose degree-zero aisle
+    is the supplied property and whose degree-one coaisle is its right
+    orthogonal. `ObjectProperty.coprodClosure_le_shift` proves that G[1] ⊆ G
+    propagates through arbitrary coproducts, isomorphisms, and extensions.
+    `CompactGeneratorApproximation.tStructure` therefore assembles the A.13
+    t-structure, proves formula (A.2), and proves compact generation once the
+    generators are compact. `Polishchuk.induceOfApproximation` passes that
+    construction directly into A.17 and obtains source-generator compactness
+    from the adjunction. There is deliberately no inhabitant of
+    `CompactGeneratorApproximation` derived from compactness alone: constructing
+    its approximation triangles is the remaining Brown-representability theorem.
+
+    COUNT UPDATE (SF7.2 Brown-map and A.14 assembly), 2026-08-16.
+    `TStructure.ApproximationMap` records the two map-level consequences used
+    from Brown representability: every map out of the aisle factors through the
+    approximation, and the shifted Hom map is injective. The repository now
+    completes each approximation map to a distinguished triangle and proves by
+    triangulated exactness that its cone is right orthogonal; neither the cone
+    nor orthogonality is supplied by the caller. The compact-generator and
+    Polishchuk constructors consume these universal maps directly.
+    `IndExtensionData.ofApproximation` also derives the large aisle formula and
+    compact generation from this A.13 output. The remaining honest boundary is
+    existence of the universal maps from compact generators and the geometric
+    A.14 restriction equivalences; Mathlib v4.32.1 has no Brown-representability
+    or triangulated homotopy-colimit theorem from which to derive them.
+
     COUNT UPDATE (destination issue #226; owner-controlled Bridgeland
     foundation), 2026-08-12. The first Mathlib-only foundation slice adds
     repository-owned Postnikov towers, HN filtrations, slicings, elementary

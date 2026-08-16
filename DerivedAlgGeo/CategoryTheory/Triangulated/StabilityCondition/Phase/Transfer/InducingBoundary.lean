@@ -22,8 +22,11 @@ The repository now owns the large-category definitions of compact objects and
 Steps 1--4 of A.17, bounded restriction, and formulas (A.3)/(A.4); see
 `CompactlyGenerated.Polishchuk`. It does **not** assert that adjunction plus
 conservativity produces a slicing: Remarks 3.2 and 3.7 explicitly say
-otherwise. The remaining theorem boundary is the A.13/A.14 large t-structure
-existence and its scheme realization. The bounded phase output is
+otherwise. The repository also owns the formal A.13 aisle constructor; the
+constructor now completes Brown-style universal maps to distinguished
+approximation triangles and proves their cones right orthogonal. The remaining
+theorem boundary is existence of those universal maps from compact generators,
+the geometric restriction part of A.14, and the scheme realization. The bounded phase output is
 `Slicing.InducedTStructures`; Corollary A.23's finite HN argument from that
 output is proved in `Phase.Transfer.HN`.
 -/
@@ -69,8 +72,9 @@ structure Slicing.LeftAdjointInducingPremise (s : Slicing D)
 No inhabitant is provided in this repository. Its premise is only a bounded
 shadow and is not asserted to imply its conclusion. SF7 now constructs the
 categorical A.17 output from an actually constructed compactly generated
-source t-structure; A.13/A.14 existence and the scheme realization remain
-explicit. The Corollary-A.23 phase-truncation theorem from
+source t-structure. The A.13 constructor is now formalized down to the
+universal-map output of Brown representability, while map existence, geometric
+A.14 restriction, and the scheme realization remain explicit. The Corollary-A.23 phase-truncation theorem from
 `Slicing.InducedTStructures` to `PreimageData` is proved in
 `Phase.Transfer.HN`. -/
 def HasLeftAdjointInducingTheorem : Prop :=

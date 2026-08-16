@@ -2,7 +2,7 @@
 Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under the MIT license.
 -/
-import DerivedAlgGeo.CategoryTheory.Triangulated.CompactlyGenerated
+import DerivedAlgGeo.CategoryTheory.Triangulated.CompactlyGenerated.Existence
 import DerivedAlgGeo.CategoryTheory.Triangulated.TStructure.Restriction
 
 /-!
@@ -14,9 +14,10 @@ large t-structure, aisle `Coprod(Dᵇ≤0)`, and restriction equal to the origin
 bounded t-structure.
 
 The record is theorem output data, not a replacement for Neeman's theorem.
-In particular, there is no global proposition saying that arbitrary bounded
-t-structures have an Ind-extension. Scheme-specific existence remains the
-geometric construction required by SF7.3.
+`IndExtensionData.ofApproximation` now derives the large t-structure, aisle
+formula, and compact generation from the A.13 output; only the geometric
+restriction statements remain as A.14-specific inputs. Brown representability
+and scheme-specific restriction remain the construction required by SF7.
 -/
 
 noncomputable section
@@ -59,5 +60,40 @@ structure IndExtensionData (P : ObjectProperty C) [P.IsTriangulated]
   /-- Clause (iii), connective half, in every degree. -/
   isGE_iff (X : P.FullSubcategory) (n : ℤ) :
     large.IsGE X.obj n ↔ small.IsGE X n
+
+namespace IndExtensionData
+
+/-- Assemble the output of A.14 from the A.13 approximation and the geometric
+restriction theorem.
+
+The large t-structure, its aisle formula, and compact generation are derived
+from `happrox`.  The only remaining A.14-specific inputs are stability of the
+selected bounded subcategory under truncation and the two recognition
+equivalences; these are exactly the geometric restriction statements rather
+than another large t-structure existence assumption. -/
+theorem ofApproximation
+    (P : ObjectProperty C) [P.IsTriangulated]
+    (small : TStructure P.FullSubcategory)
+    (hsmall : small.IsBounded)
+    (happrox : CompactGeneratorApproximation.{w} (boundedAisle P small))
+    (hcompact : boundedAisle P small ≤
+      ObjectProperty.compactObjects.{w} (C := C))
+    (hInduced : P.HasInducedTStructure happrox.tStructure)
+    (hLE : ∀ (X : P.FullSubcategory) (n : ℤ),
+      happrox.tStructure.IsLE X.obj n ↔ small.IsLE X n)
+    (hGE : ∀ (X : P.FullSubcategory) (n : ℤ),
+      happrox.tStructure.IsGE X.obj n ↔ small.IsGE X n) :
+    IndExtensionData.{w} P small happrox.tStructure := by
+  letI : P.HasInducedTStructure happrox.tStructure := hInduced
+  exact
+    { small_isBounded := hsmall
+      largeAisle := happrox.tStructure_le_zero
+      compactlyGenerated :=
+        ⟨boundedAisle P small, happrox.isCompactlyGeneratedBy hcompact⟩
+      hasInduced := hInduced
+      isLE_iff := hLE
+      isGE_iff := hGE }
+
+end IndExtensionData
 
 end CategoryTheory.Triangulated.TStructure
