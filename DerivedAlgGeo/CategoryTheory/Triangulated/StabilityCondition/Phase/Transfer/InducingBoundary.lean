@@ -3,6 +3,7 @@ Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under the MIT license.
 -/
 import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Phase.Transfer.Equivariance
+import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Phase.Transfer.InducedTStructures
 import Mathlib.CategoryTheory.Adjunction.Basic
 
 /-!
@@ -15,10 +16,12 @@ right t-exactness of the monad; Corollary A.23 uses the dual condition
 `Phi PhiL(P(phi)) ⊆ P(≥ phi)`.  Propositions 3.3 and 3.8 then verify the
 corresponding geometric conditions for finite and faithfully-flat morphisms.
 
-This file records the categorical shape visible in the current bounded
+This file records the categorical shadow visible in the current bounded
 triangulated API.  It does **not** assert that adjunction plus conservativity
-produces a slicing: Remarks 3.2 and 3.7 explicitly say otherwise.  The output
-of the future Ind/geometric theorem is exactly `Slicing.PreimageData`.
+produces a slicing: Remarks 3.2 and 3.7 explicitly say otherwise.  The actual
+bounded intermediate output is `Slicing.InducedTStructures`, whose fields are
+the recognition formulas (A.8); its Hom-vanishing consequence is proved in
+`Phase.Transfer.InducedTStructures`.
 -/
 
 noncomputable section
@@ -35,12 +38,16 @@ variable {C : Type u₁} [Category.{v₁} C] [HasZeroObject C] [HasShift C ℤ]
 variable {D : Type u₂} [Category.{v₂} D] [HasZeroObject D] [HasShift D ℤ]
   [Preadditive D] [∀ n : ℤ, (shiftFunctor D n).Additive] [Pretriangulated D]
 
-/-- The bounded categorical fragment of the left-adjoint inducing criterion
+/-- The old bounded categorical shadow of the left-adjoint inducing criterion
 from Corollary A.23.
 
 The composite `L ⋙ F` is the monad on the category carrying `s`.  The phase
-condition is the source's `(v')` hypothesis.  Presentability, Ind-extension,
-and boundedness-reflection are deliberately not fabricated here. -/
+condition resembles the bounded restriction of the source's `(v')`
+hypothesis, but is not equivalent to it: `(v')` is stated in the Ind-extended
+category.  Presentability, coproduct preservation, the large derived
+categories, Ind-extension, and boundedness reflection are deliberately not
+fabricated here.  New code should target `Slicing.InducedTStructures`; this
+record remains temporarily for the existing geometric callers. -/
 structure Slicing.LeftAdjointInducingPremise (s : Slicing D)
     (F : C ⥤ D) (L : D ⥤ C) where
   /-- The functor used to detect phase slices has a left adjoint. -/
@@ -53,11 +60,13 @@ structure Slicing.LeftAdjointInducingPremise (s : Slicing D)
   monad_ge : ∀ (phi : ℝ) (E : D), s.P phi E →
     s.geProp D phi ((L ⋙ F).obj E)
 
-/-- The exact theorem still required to connect the Appendix-A hypotheses to
-the bounded slicing constructor.
+/-- The legacy global theorem input still used by the geometric callers.
 
-No inhabitant is provided in this repository: proving it requires the
-presentable/Ind and t-structure machinery listed in Theorem A.17. -/
+No inhabitant is provided in this repository.  Its premise is only a bounded
+shadow and is not asserted to imply its conclusion.  SF7 replaces callers of
+this proposition by the actual Theorem-A.17 hypotheses, constructs
+`Slicing.InducedTStructures`, and then applies the Corollary-A.23 phase
+truncation theorem. -/
 def HasLeftAdjointInducingTheorem : Prop :=
   ∀ {C : Type u₁} [Category.{v₁} C] [HasZeroObject C] [HasShift C ℤ]
       [Preadditive C] [∀ n : ℤ, (shiftFunctor C n).Additive]

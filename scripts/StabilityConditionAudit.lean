@@ -2421,6 +2421,15 @@ this against the file by eye. -/
 #print axioms CategoryTheory.Triangulated.Slicing.PrecedesWeak.preimage
 #print axioms CategoryTheory.Triangulated.Slicing.preimage_mapEquiv
 #print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.AutPair.preimage_representatives
+#print axioms CategoryTheory.Triangulated.Slicing.InducedTStructures
+#print axioms CategoryTheory.Triangulated.Slicing.InducedTStructures.mk.inj
+#print axioms CategoryTheory.Triangulated.Slicing.InducedTStructures.mk.sizeOf_spec
+#print axioms CategoryTheory.Triangulated.Slicing.InducedTStructures.tStructure
+#print axioms CategoryTheory.Triangulated.Slicing.InducedTStructures.le_zero_iff
+#print axioms CategoryTheory.Triangulated.Slicing.InducedTStructures.ge_one_iff
+#print axioms CategoryTheory.Triangulated.Slicing.InducedTStructures.hom_vanishing
+#print axioms CategoryTheory.Triangulated.Slicing.InducedTStructures.toPreimageData
+#print axioms CategoryTheory.Triangulated.Slicing.inducedTStructuresId
 #print axioms CategoryTheory.Triangulated.Slicing.LeftAdjointInducingPremise
 #print axioms CategoryTheory.Triangulated.HasLeftAdjointInducingTheorem
 
