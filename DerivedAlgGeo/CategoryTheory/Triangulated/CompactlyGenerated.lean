@@ -3,6 +3,7 @@ Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under the MIT license.
 -/
 import DerivedAlgGeo.CategoryTheory.Triangulated.TStructure.Exactness
+import Mathlib.CategoryTheory.Adjunction.Additive
 import Mathlib.CategoryTheory.Adjunction.Limits
 import Mathlib.CategoryTheory.ObjectProperty.ColimitsOfShape
 import Mathlib.CategoryTheory.Triangulated.Generators
@@ -54,13 +55,52 @@ def PreservesSmallCoproducts (F : Functor C D) : Prop :=
 
 end Functor
 
-variable {C : Type u} [Category.{v} C]
+variable {C : Type u} [Category.{v} C] [Preadditive C]
 
 /-- Definition A.9: `K` is compact when `Hom(K, -)` preserves all small
-coproducts in the indexing universe `w`. -/
+coproducts in the indexing universe `w`.
+
+The Hom functor is valued in additive commutative groups, so the colimit on
+the target side is the direct sum of Hom groups.  Using ordinary set-valued
+coyoneda here would instead form a disjoint union of Hom sets, which is not
+the triangulated notion of compactness. -/
 def IsCompactObject (K : C) : Prop :=
   ∀ (ι : Type w),
-    PreservesColimitsOfShape (Discrete ι) (coyoneda.obj (op K))
+    PreservesColimitsOfShape (Discrete ι) (preadditiveCoyoneda.obj (op K))
+
+namespace IsCompactObject
+
+variable {K : C} (hK : IsCompactObject.{w} K)
+
+/-- The defining compactness comparison: maps from `K` into a coproduct form
+the direct sum of the Hom groups into its summands. -/
+noncomputable def coproductComparisonIso {ι : Type w} (X : ι → C)
+    [HasCoproduct X]
+    [HasColimit (Discrete.functor X ⋙ preadditiveCoyoneda.obj (op K))] :
+    (preadditiveCoyoneda.obj (op K)).obj (∐ X) ≅
+      colimit (Discrete.functor X ⋙ preadditiveCoyoneda.obj (op K)) := by
+  letI : PreservesColimitsOfShape (Discrete ι)
+      (preadditiveCoyoneda.obj (op K)) := hK ι
+  exact preservesColimitIso (preadditiveCoyoneda.obj (op K))
+    (Discrete.functor X)
+
+/-- Under the compactness comparison, postcomposition with a coproduct
+injection is the corresponding direct-sum injection. -/
+@[reassoc (attr := simp)]
+theorem map_ι_coproductComparisonIso_hom {ι : Type w} (X : ι → C)
+    [HasCoproduct X]
+    [HasColimit (Discrete.functor X ⋙ preadditiveCoyoneda.obj (op K))]
+    (i : ι) :
+    (preadditiveCoyoneda.obj (op K)).map (Sigma.ι X i) ≫
+      (hK.coproductComparisonIso X).hom =
+        colimit.ι (Discrete.functor X ⋙ preadditiveCoyoneda.obj (op K))
+          ⟨i⟩ := by
+  letI : PreservesColimitsOfShape (Discrete ι)
+      (preadditiveCoyoneda.obj (op K)) := hK ι
+  exact ι_preservesColimitIso_hom
+    (preadditiveCoyoneda.obj (op K)) (Discrete.functor X) ⟨i⟩
+
+end IsCompactObject
 
 namespace ObjectProperty
 
@@ -71,13 +111,15 @@ def compactObjects : ObjectProperty C := fun K ↦ IsCompactObject.{w} K
 theorem isCompactObject_of_iso {K K' : C} (e : K ≅ K')
     (hK : IsCompactObject.{w} K) : IsCompactObject.{w} K' := by
   intro ι
-  letI : PreservesColimitsOfShape (Discrete ι) (coyoneda.obj (op K)) := hK ι
-  exact preservesColimitsOfShape_of_natIso (coyoneda.mapIso e.symm.op)
+  letI : PreservesColimitsOfShape (Discrete ι)
+      (preadditiveCoyoneda.obj (op K)) := hK ι
+  exact preservesColimitsOfShape_of_natIso
+    (preadditiveCoyoneda.mapIso e.symm.op)
 
 instance : (compactObjects.{w} (C := C)).IsClosedUnderIsomorphisms where
   of_iso e := isCompactObject_of_iso e
 
-variable [HasZeroObject C] [HasShift C ℤ] [Preadditive C]
+variable [HasZeroObject C] [HasShift C ℤ]
   [∀ n : ℤ, (shiftFunctor C n).Additive] [Pretriangulated C]
 
 /-- Definition A.11's `Coprod(P)`: the smallest full subcategory containing
@@ -157,8 +199,9 @@ end ObjectProperty
 
 namespace Adjunction
 
-variable {C : Type u₁} [Category.{v} C] {D : Type u₂} [Category.{v} D]
-  {L : Functor D C} {F : Functor C D}
+variable {C : Type u₁} [Category.{v} C] [Preadditive C]
+  {D : Type u₂} [Category.{v} D] [Preadditive D]
+  {L : Functor D C} {F : Functor C D} [L.Additive]
 
 /-- A left adjoint to a small-coproduct-preserving functor carries compact
 objects to compact objects. This is the compactness step in A.16 and A.17. -/
@@ -167,13 +210,17 @@ theorem isCompactObject_leftAdjoint_obj (adj : L ⊣ F)
     (hK : IsCompactObject.{w} K) : IsCompactObject.{w} (L.obj K) := by
   intro ι
   letI : PreservesColimitsOfShape (Discrete ι) F := hF ι
-  letI : PreservesColimitsOfShape (Discrete ι) (coyoneda.obj (op K)) := hK ι
+  letI : PreservesColimitsOfShape (Discrete ι)
+      (preadditiveCoyoneda.obj (op K)) := hK ι
   haveI : PreservesColimitsOfShape (Discrete ι)
-      (F ⋙ coyoneda.obj (op K)) := inferInstance
-  let e : coyoneda.obj (op (L.obj K)) ≅ F ⋙ coyoneda.obj (op K) := by
-    simpa only [Functor.comp_obj, Functor.op_obj,
-      Functor.whiskeringLeft_obj_obj] using
-        (adj.compCoyonedaIso.app (op K))
+      (F ⋙ preadditiveCoyoneda.obj (op K)) := inferInstance
+  let e : preadditiveCoyoneda.obj (op (L.obj K)) ≅
+      F ⋙ preadditiveCoyoneda.obj (op K) :=
+    NatIso.ofComponents
+      (fun X ↦ (adj.homAddEquiv K X).toAddCommGrpIso)
+      (fun f ↦ by
+        ext g
+        exact adj.homEquiv_naturality_right g f)
   exact preservesColimitsOfShape_of_natIso e.symm
 
 /-- The essential image under a left adjoint of compact objects is compact
@@ -190,7 +237,7 @@ end Adjunction
 
 namespace Triangulated.TStructure
 
-variable [HasZeroObject C] [HasShift C ℤ] [Preadditive C]
+variable [HasZeroObject C] [HasShift C ℤ]
   [∀ n : ℤ, (shiftFunctor C n).Additive] [Pretriangulated C]
 
 /-- Definition A.11: `t` is compactly generated by `G` when the generators
