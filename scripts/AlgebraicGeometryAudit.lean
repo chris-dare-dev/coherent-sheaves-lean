@@ -1502,3 +1502,17 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Numerical.selfPairing_mukaiVector_map
 #print axioms AlgebraicGeometry.Numerical.isSpherical_mukaiVector_map_iff
 #print axioms AlgebraicGeometry.Numerical.pairing_mukaiVector_transform
+
+-- Transferring Euler-form preservation across a realization. `IsRiemannRoch`
+-- is bilinear HRR and `PreservesCategoricalEuler` is what full faithfulness
+-- would give; both are supplied, and `CategoricalEulerForm` is supplied rather
+-- than built from Hom. A clean axiom list here is a statement about the
+-- bookkeeping, not about any variety or any functor.
+#print axioms AlgebraicGeometry.Numerical.CategoricalEulerForm
+#print axioms AlgebraicGeometry.Numerical.CategoricalEulerForm.mk.inj
+#print axioms AlgebraicGeometry.Numerical.CategoricalEulerForm.mk.sizeOf_spec
+#print axioms AlgebraicGeometry.Numerical.CategoricalEulerForm.chi
+#print axioms AlgebraicGeometry.Numerical.IsRiemannRoch
+#print axioms AlgebraicGeometry.Numerical.PreservesCategoricalEuler
+#print axioms AlgebraicGeometry.Numerical.preservesEuler_of_descends
+#print axioms AlgebraicGeometry.Numerical.pairing_mukaiVector_transform_of_categorical

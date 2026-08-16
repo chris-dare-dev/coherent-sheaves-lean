@@ -66,4 +66,35 @@ theorem K₀.map_congr {F G : C ⥤ D} [F.Additive] [G.Additive]
   ext X
   exact K₀.of_iso D (e.app X)
 
+/-- A one-sided inverse of triangulated functors gives a one-sided inverse on
+Grothendieck groups. -/
+theorem K₀.map_comp_map_eq_id (F : C ⥤ D) (G : D ⥤ C) [F.CommShift ℤ]
+    [G.CommShift ℤ] [F.IsTriangulated] [G.IsTriangulated] (e : F ⋙ G ≅ 𝟭 C) :
+    (K₀.map G).comp (K₀.map F) = AddMonoidHom.id (K₀ C) := by
+  rw [← K₀.map_comp, K₀.map_congr e, K₀.map_id]
+
+/-- **An exact equivalence induces an isomorphism on `K₀`.**
+
+Stated from the two unit/counit isomorphisms rather than from `Equivalence`,
+so that a caller who has a quasi-inverse triangulated functor in hand does not
+first have to package it. -/
+def K₀.mapAddEquiv (F : C ⥤ D) (G : D ⥤ C) [F.CommShift ℤ] [G.CommShift ℤ]
+    [F.IsTriangulated] [G.IsTriangulated] (e : F ⋙ G ≅ 𝟭 C)
+    (e' : G ⋙ F ≅ 𝟭 D) : K₀ C ≃+ K₀ D where
+  toFun := K₀.map F
+  invFun := K₀.map G
+  map_add' := (K₀.map F).map_add
+  left_inv x := by
+    have := K₀.map_comp_map_eq_id F G e
+    exact congrArg (fun f : K₀ C →+ K₀ C => f x) this
+  right_inv y := by
+    have := K₀.map_comp_map_eq_id G F e'
+    exact congrArg (fun f : K₀ D →+ K₀ D => f y) this
+
+@[simp]
+theorem K₀.mapAddEquiv_apply (F : C ⥤ D) (G : D ⥤ C) [F.CommShift ℤ]
+    [G.CommShift ℤ] [F.IsTriangulated] [G.IsTriangulated] (e : F ⋙ G ≅ 𝟭 C)
+    (e' : G ⋙ F ≅ 𝟭 D) (x : K₀ C) : K₀.mapAddEquiv F G e e' x = K₀.map F x :=
+  rfl
+
 end CategoryTheory.Triangulated

@@ -3281,3 +3281,9 @@ proof hole.
 #print axioms CategoryTheory.Triangulated.FourierMukai.Correspondence.K₀_map_eq_transformK₀
 #print axioms CategoryTheory.Triangulated.FourierMukai.Correspondence.K₀_map_eq_transformK₀_kernel
 #print axioms CategoryTheory.Triangulated.FourierMukai.ConvolutionData.transformK₀_conv
+
+/-! ## K₀ of an exact equivalence -/
+
+#print axioms CategoryTheory.Triangulated.K₀.map_comp_map_eq_id
+#print axioms CategoryTheory.Triangulated.K₀.mapAddEquiv
+#print axioms CategoryTheory.Triangulated.K₀.mapAddEquiv_apply
