@@ -42,6 +42,8 @@ representative beyond the one `signProjection` already makes.
   so it is indexed by a variable rather than by a splitting.
 * `signIdemAt_eq_self_of_apply_eq_zero` — at a variable the denominator does not invert, the
   idempotent is the identity. This is what makes the peeling induction terminate degreewise.
+* `signIdem_laurentFace_same` — the projection commutes with the face that inserts `X_{i₀}`
+  itself, the one case `signProjection_laurentFace_comm` cannot be instantiated at.
 
 ## Implementation notes
 
@@ -75,8 +77,9 @@ neither.
 
 ## What this file does not assert
 
-Nothing here builds the block subcomplexes, shows `signIdemAt` is a chain map, or says anything
-about `Hⁿ`. It supplies the commuting idempotent family and its uniform indexing.
+Nothing here assembles `signIdemAt` into a chain map on the Čech complex, builds the block
+subcomplexes, or says anything about `Hⁿ`. It supplies the commuting idempotent family, its
+uniform indexing, and both halves of the face case analysis a chain-map proof consumes.
 
 ## Tags
 
@@ -254,6 +257,81 @@ theorem signIdem_comm [IsDomain R] {γ γ₀ γ₁ : ι →₀ ℕ} {i₀ i₁ :
           (monomial_one_mem_polynomialGrading (R := R) γ) m b hb := by
     rintro a b ha hb rfl; rfl
   exact hcongr _ _ _ _ (divMonomial_idem_comm hdisj p).symm
+
+/-! ## The face that inserts the projected variable
+
+`signProjection_laurentFace_comm` (#539) covers every Čech face `X_e` with `e ≠ i₀`; its
+hypothesis `δ' i₀ = 0` unfolds to exactly that condition. The face `e = i₀` is **not** covered by
+it — that statement forces `c = δ i₀ = γ i₀`, while inserting `X_{i₀}` makes `δ i₀ = γ i₀ + 1`,
+so it cannot even be instantiated there. Nor is it the retraction
+`signProjection_laurentFace`, which concerns the face from `γ'` into `γ`.
+
+It is a third statement, and it holds for a clean reason: **a Čech face preserves the Laurent
+exponent.** It multiplies numerator and denominator by the same `X_e^m`, so `α` is unchanged, and
+`signIdem` is a condition on `α` alone. Both sides reduce to
+`X_{i₀}^{m(c+1)} · (p /ᵐᵒⁿᵒᵐⁱᵃˡ X_{i₀}^{m·c})`.
+
+With `signProjection_laurentFace_comm` this is the full case analysis a chain-map proof needs. -/
+
+set_option maxHeartbeats 1600000 in
+theorem signIdem_laurentFace_same [IsDomain R] {γ γ' δ : ι →₀ ℕ} {i₀ : ι} {c : ℕ}
+    (hγ : γ = Finsupp.single i₀ c + γ') (hγ' : γ' i₀ = 0)
+    (hδ : δ = Finsupp.single i₀ (c + 1) + γ')
+    (hδγ : δ = Finsupp.single i₀ 1 + γ) (d : ℕ)
+    (z : DegreeZeroLocalization (polynomialGrading ι R)
+      (natShift (polynomialGrading ι R) d)
+      (.powers (MvPolynomial.monomial γ (1 : R)))) :
+    signIdem hδ hγ' d (laurentFace hδγ d z) =
+      laurentFace hδγ d (signIdem hγ hγ' d z) := by
+  obtain ⟨m, p, hp, rfl⟩ :=
+    DegreeZeroLocalization.exists_awayMk (monomial_one_mem_polynomialGrading (R := R) γ)
+      (monomial_one_pow_ne_zero γ) z
+  have hdegδ : δ.degree = 1 + γ.degree := by rw [hδγ, map_add, Finsupp.degree_single]
+  have hmono1 : (MvPolynomial.monomial (Finsupp.single i₀ 1) (1 : R)) ^ m =
+      MvPolynomial.monomial (Finsupp.single i₀ m) 1 := by
+    rw [monomial_one_pow, Finsupp.smul_single, smul_eq_mul, Nat.mul_one]
+  -- face of z, and its membership at δ
+  have hface : (MvPolynomial.monomial (Finsupp.single i₀ 1) (1 : R)) ^ m • p ∈
+      natShift (polynomialGrading ι R) d (m • (1 + γ.degree)) :=
+    monomial_single_pow_smul_mem hp
+  have hfaceδ : (MvPolynomial.monomial (Finsupp.single i₀ 1) (1 : R)) ^ m • p ∈
+      natShift (polynomialGrading ι R) d (m • δ.degree) := by rw [hdegδ]; exact hface
+  -- the two numerator identities
+  have hsplit : Finsupp.single i₀ (m * (c + 1)) =
+      Finsupp.single i₀ m + Finsupp.single i₀ (m * c) := by
+    rw [← Finsupp.single_add]; congr 1; ring
+  have hL : MvPolynomial.divMonomial
+      ((MvPolynomial.monomial (Finsupp.single i₀ 1) (1 : R)) ^ m • p)
+      (Finsupp.single i₀ (m * (c + 1))) =
+      MvPolynomial.divMonomial p (Finsupp.single i₀ (m * c)) := by
+    rw [hmono1, smul_eq_mul, hsplit, divMonomial_monomial_mul_add]
+  have hR : MvPolynomial.monomial (Finsupp.single i₀ m) (1 : R) *
+      (MvPolynomial.monomial (Finsupp.single i₀ (m * c)) 1 *
+        MvPolynomial.divMonomial p (Finsupp.single i₀ (m * c))) =
+      MvPolynomial.monomial (Finsupp.single i₀ (m * (c + 1))) 1 *
+        MvPolynomial.divMonomial p (Finsupp.single i₀ (m * c)) := by
+    rw [← mul_assoc, MvPolynomial.monomial_mul, one_mul, ← hsplit]
+  rw [laurentFace_awayMk hδγ hp hface,
+    DegreeZeroLocalization.awayMk_deg_congr hdegδ.symm (monomial_mem_add_degree hδγ)
+      (monomial_one_mem_polynomialGrading (R := R) δ) m _ hface hfaceδ,
+    signIdem_awayMk hδ hγ' hfaceδ (monomial_mul_divMonomial_mem hδ hfaceδ),
+    signIdem_awayMk hγ hγ' hp (monomial_mul_divMonomial_mem hγ hp),
+    laurentFace_awayMk hδγ (monomial_mul_divMonomial_mem hγ hp)
+      (monomial_single_pow_smul_mem (monomial_mul_divMonomial_mem hγ hp)),
+    DegreeZeroLocalization.awayMk_deg_congr hdegδ.symm (monomial_mem_add_degree hδγ)
+      (monomial_one_mem_polynomialGrading (R := R) δ) m _
+      (monomial_single_pow_smul_mem (monomial_mul_divMonomial_mem hγ hp))
+      (by rw [hdegδ]; exact monomial_single_pow_smul_mem (monomial_mul_divMonomial_mem hγ hp))]
+  have hcongr : ∀ (a b : MvPolynomial ι R)
+      (ha : a ∈ natShift (polynomialGrading ι R) d (m • δ.degree))
+      (hb : b ∈ natShift (polynomialGrading ι R) d (m • δ.degree)), a = b →
+      DegreeZeroLocalization.awayMk (𝓜 := natShift (polynomialGrading ι R) d)
+          (monomial_one_mem_polynomialGrading (R := R) δ) m a ha =
+        DegreeZeroLocalization.awayMk (𝓜 := natShift (polynomialGrading ι R) d)
+          (monomial_one_mem_polynomialGrading (R := R) δ) m b hb := by
+    rintro a b ha hb rfl; rfl
+  refine hcongr _ _ _ _ ?_
+  rw [hL, hmono1, smul_eq_mul, hR]
 
 /-! ## The uniform family -/
 

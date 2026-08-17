@@ -154,6 +154,10 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Proj.single_add_erase
 #print axioms AlgebraicGeometry.Proj.signIdemAt
 #print axioms AlgebraicGeometry.Proj.signIdemAt_eq_self_of_apply_eq_zero
+-- The face e = i0, which signProjection_laurentFace_comm cannot be instantiated at: that
+-- statement forces c = delta i0 = gamma i0, but inserting X_i0 makes delta i0 = gamma i0 + 1.
+-- A Cech face preserves the Laurent exponent, and signIdem is a condition on the exponent alone.
+#print axioms AlgebraicGeometry.Proj.signIdem_laurentFace_same
 -- The block decomposition (#340, step 2). Each away localization is decomposed by the negative
 -- support N(alpha) of the Laurent exponent: laurentFilter selects one block of a numerator,
 -- blockProj descends it to the localization (choice-based, pinned by blockProj_awayMk, same
