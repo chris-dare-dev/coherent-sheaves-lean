@@ -70,6 +70,22 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Proj.laurentExponent
 #print axioms AlgebraicGeometry.Proj.laurentExponent_apply
 #print axioms AlgebraicGeometry.Proj.laurentExponent_eq_iff
+-- The twist abstraction (#568). IsPolynomialTwist isolates the only reading of a numerator the
+-- Laurent argument makes -- an element of 𝓜 n is homogeneous of degree n + d -- so the stack can
+-- be stated once and instantiated at natShift for d : N and intShift for d : Z. The p = 0
+-- disjunct is what makes intShift fit: it carries zero in degrees where n + d is negative and
+-- there is no graded piece to name.
+#print axioms AlgebraicGeometry.Proj.IsPolynomialTwist
+#print axioms AlgebraicGeometry.Proj.isPolynomialTwist_natShift
+#print axioms AlgebraicGeometry.Proj.isPolynomialTwist_intShift
+#print axioms AlgebraicGeometry.Proj.degree_laurentExponent_int
+#print axioms AlgebraicGeometry.Proj.IsPolynomialTwist.degree_eq_of_mem_support
+#print axioms AlgebraicGeometry.Proj.IsPolynomialTwist.monomial_coeff_mem
+#print axioms AlgebraicGeometry.Proj.IsPolynomialTwist.degree_laurentExponent_of_mem_support
+-- The degree bookkeeping at either sign. The by_cases on the quotient is the only place the two
+-- signs behave differently: a negative twist can put the numerator's degree below m * c, and then
+-- the quotient is zero rather than a numerator of lower degree.
+#print axioms AlgebraicGeometry.Proj.IsPolynomialTwist.divMonomial_mem
 #print axioms AlgebraicGeometry.Proj.degree_laurentExponent
 #print axioms AlgebraicGeometry.Proj.laurentExponent_nonneg_of_apply_eq_zero
 #print axioms AlgebraicGeometry.Proj.monomial_one_mem_polynomialGrading

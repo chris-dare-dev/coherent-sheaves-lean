@@ -188,6 +188,59 @@ theorem divMonomial_mem_natShift {γ γ' : ι →₀ ℕ} {i₀ : ι} {c : ℕ}
   rw [← hsplit]
   exact hp
 
+set_option maxHeartbeats 800000 in
+/-- **The degree bookkeeping, for a twist of either sign.**
+
+`divMonomial_mem_natShift` with `natShift` replaced by any `IsPolynomialTwist`. The twist is again
+untouched: only the denominator's contribution `m • γ.degree` moves.
+
+The nonnegative proof reads the membership as homogeneity and cancels `m * c` off the degree
+directly. That cancellation is not available here, because a negative twist can put the numerator's
+degree below `m * c` — and then there is nothing to divide, so the quotient is zero and the `p = 0`
+disjunct of `IsPolynomialTwist` carries it. The `by_cases` on the quotient is therefore not
+defensive bookkeeping; it is the only place the two signs behave differently in this whole
+argument. -/
+theorem IsPolynomialTwist.divMonomial_mem {σM : Type u} [SetLike σM (MvPolynomial ι R)]
+    {𝓜 : ℕ → σM} {d : ℤ} (h𝓜 : IsPolynomialTwist 𝓜 d)
+    {γ γ' : ι →₀ ℕ} {i₀ : ι} {c : ℕ} (hγ : γ = Finsupp.single i₀ c + γ') {m : ℕ}
+    {p : MvPolynomial ι R} (hp : p ∈ 𝓜 (m • γ.degree)) :
+    MvPolynomial.divMonomial p (Finsupp.single i₀ (m * c)) ∈ 𝓜 (m • γ'.degree) := by
+  classical
+  by_cases hq : MvPolynomial.divMonomial p (Finsupp.single i₀ (m * c)) = 0
+  · exact (h𝓜 _ _).mpr (Or.inl hq)
+  -- The quotient is nonzero, so some exponent of `p` is divisible by `X_{i₀}^{m * c}`; its degree
+  -- is what pins the quotient's homogeneous degree.
+  obtain ⟨β, hβ⟩ := MvPolynomial.support_nonempty.mpr hq
+  have hcoeff : MvPolynomial.coeff (Finsupp.single i₀ (m * c) + β) p ≠ 0 := by
+    have := MvPolynomial.mem_support_iff.mp hβ
+    rwa [MvPolynomial.coeff_divMonomial] at this
+  have hmem : Finsupp.single i₀ (m * c) + β ∈ p.support :=
+    MvPolynomial.mem_support_iff.mpr hcoeff
+  have hdeg := h𝓜.degree_eq_of_mem_support hp hmem
+  rw [map_add, Finsupp.degree_single] at hdeg
+  have hγdeg : γ.degree = c + γ'.degree := by
+    rw [hγ, map_add, Finsupp.degree_single]
+  -- The target degree, in `ℕ`, and the identity that places it.
+  have hβdeg : (β.degree : ℤ) = ((m • γ'.degree : ℕ) : ℤ) + d := by
+    rw [hγdeg] at hdeg
+    push_cast [Nat.cast_mul] at hdeg ⊢
+    push_cast [nsmul_eq_mul] at hdeg ⊢
+    linarith
+  refine (h𝓜 _ _).mpr (Or.inr ⟨β.degree, hβdeg, ?_⟩)
+  -- `p` is homogeneous in degree `m * c + β.degree`, so the quotient is homogeneous in `β.degree`.
+  rcases (h𝓜 _ p).mp hp with rfl | ⟨e, he, hhom⟩
+  · exact absurd (by simp) hcoeff
+  have hesplit : e = m * c + β.degree := by
+    have : (e : ℤ) = ((m * c + β.degree : ℕ) : ℤ) := by
+      rw [he, hγdeg]
+      push_cast [Nat.cast_mul] at hβdeg ⊢
+      push_cast [nsmul_eq_mul] at hβdeg ⊢
+      linarith
+    exact_mod_cast this
+  refine isHomogeneous_divMonomial (s := Finsupp.single i₀ (m * c)) ?_
+  rw [Finsupp.degree_single]
+  exact hesplit ▸ hhom
+
 /-! ## The projection itself
 
 The numerator operation descends to a map on the localization. A representative is packaged as
