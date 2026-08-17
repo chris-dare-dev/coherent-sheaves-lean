@@ -108,6 +108,7 @@ generations:
   - { rev: 46, at: "2026-08-17", note: "SF8.2 (#518) constructs a groupoid-valued relative-perfect moduli problem on diagrams of actual scheme base changes. Mathlib's Pseudofunctor owns the coherence laws, every abstract fiber is equivalent to the core of the universally-gluable relative-perfect category, and each transition is compared naturally with the repository's exact derived pullback. Isomorphism classes, geometric fibers, and a nonempty identity model are concrete; preservation along arbitrary base changes, descent, and algebraicity remain unclaimed." }
   - { rev: 47, at: "2026-08-17", note: "SF9.1 (#523) builds the reusable stack-in-groupoids substrate directly on Mathlib's Pseudofunctor, DescentData, IsPrestack, and IsStack APIs. Cover restriction is proved fully faithful and essentially surjective, the stack condition transports across explicit fiber/descent equivalences, and ordinary sheaves of types yield discrete stacks. Subcanonicity supplies a nonconstant big-Zariski stack represented by every scheme. Pullback-compatible and fiber-representability interfaces are separate from the stack condition; no algebraicity theorem is bundled or claimed." }
   - { rev: 48, at: "2026-08-17", note: "SF8.3 (#519) replaces the caller-selected boundedness switch by an actual geometric predicate: a locally-finite-type, quasi-compact scheme over the base, a universally-gluable relative-perfect universal family in the selected subfunctor, explicit geometric fibers, and coverage up to isomorphism after equality of the actual residue-field base changes. The predicate is monotone under enlarging admitted families and shrinking the target, and adapts directly to Definition 21.15(5). The identity parameter scheme and zero complex give a concrete inhabited model after every locally Noetherian base change. General residue pullback for nonzero families and semistable boundedness remain named inputs to SF8.4 rather than hidden propositions." }
+  - { rev: 49, at: "2026-08-17", note: "SF8.4 (#520) introduces actual epimorphic module-sheaf quotient presentations, their commuting morphisms, target functor, and pullback functor; preservation of epimorphisms makes base change a theorem. Representability is never a name: RepresentableQuotientProblem requires a Yoneda isomorphism, and finite-type parameter spaces additionally require the actual structure morphism to be locally of finite type and quasi-compact. Since Mathlib has no general Quot scheme or Grassmannian at this pin, the supported zero-quotient functor is proved represented by the terminal identity scheme, maps to the concrete zero relative-perfect moduli problem, and inhabits SF8.3 boundedness. No nonzero Quot, semistable boundedness, or algebraicity claim is made." }
 retired: []
 
 # GitHub milestones are roadmap phases. Epic issues live inside them, and
@@ -432,7 +433,7 @@ items:
     parent: stability-families-m8
     title: "Own relative-perfect moduli and boundedness"
     status: in_progress
-    summary: "#521 and #518 deliver the relative-perfect object and groupoid-valued moduli layers. SF8.3 #519 now supplies honest finite-type boundedness witnesses, monotonicity, a Definition 21.15(5) adapter, and a concrete zero-family model. Next #520 constructs supported Quot/parameter spaces; #528 remains the independent general-scheme Dqc seam."
+    summary: "#521, #518, #519, and #520 deliver the relative-perfect object, groupoid-valued moduli, finite-type boundedness, and supported Quot/parameter-space layers. The first Quot functor is the represented zero case and deliberately makes no nonzero semistable claim. #528 remains the independent general-scheme Dqc seam before SF8 can close."
     priority: must
     size: XL
     tags: [relative-perfect, moduli, boundedness, quot]
@@ -491,7 +492,8 @@ items:
     kind: deliverable
     parent: stability-families-e14
     title: "Build Quot/parameter-space realizations for bounded complexes"
-    status: planned
+    status: done
+    summary: "Built epimorphic module-sheaf quotient presentations with a category, target functor, and pullback/base-change functor. Added a representability interface requiring a Yoneda isomorphism and actual finite-type parameter morphism. Proved the zero-quotient functor is represented by the identity scheme, maps to the zero relative-perfect moduli model, and inhabits SF8.3 boundedness. General nonzero Quot representability remains unclaimed."
     priority: must
     size: XL
     tags: [quot, parameter-space, bounded-complexes]
