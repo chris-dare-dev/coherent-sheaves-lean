@@ -4076,4 +4076,43 @@ and no geometry.
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.affineQuasicoherentSheavesHasFiniteProducts
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.affineTildeDerivedFunctor
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.affineTildeDerivedHomologyIso
+/-! ## The geometric Fourier--Mukai correspondence: a dependency ledger
+
+INHABITANT-FREE BY DESIGN. Nothing constructs a `HasDerivedPushforward` or a
+`HasDerivedTensor`, and no scheme is shown to admit either, so a clean axiom
+list here is emphatically NOT evidence that a geometric Fourier--Mukai
+transform exists in this repository. What it says is that
+`geometricCorrespondence` assembles a `Correspondence` from exactly three
+inputs -- the existing derived-pullback contract, a supplied derived tensor,
+and a supplied derived pushforward -- and from nothing else.
+
+Derived pushforward and derived tensor on `D^b(Coh)` do not exist anywhere in
+the repository; this file names them rather than building them. The middle
+scheme is deliberately NOT required to be a product: `Correspondence` does not
+consume that, and it is the composition law (`ConvolutionData`) that needs it.
+-/
+
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasDerivedPushforward
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasDerivedPushforward.derivedPushforward
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasDerivedPushforward.additive
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasDerivedPushforward.commShift
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasDerivedPushforward.isTriangulated
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.derivedPushforward
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasDerivedTensor
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasDerivedTensor.derivedTensor
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasDerivedTensor.additive
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasDerivedTensor.commShift
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasDerivedTensor.isTriangulated
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.derivedTensor
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.geometricCorrespondence
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.geometricCorrespondence_pull
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.geometricCorrespondence_tensor
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.geometricCorrespondence_push
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.derivedPushforward_additive
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.derivedPushforwardCommShift
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.derivedPushforward_isTriangulated
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.derivedTensor_additive
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.derivedTensorCommShift
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.derivedTensor_isTriangulated
+
 
