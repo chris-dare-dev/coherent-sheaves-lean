@@ -68,6 +68,15 @@ jobs:
       # fetched here are the ones it reuses.
       - name: Build DerivedAlgGeo
         uses: leanprover/lean-action@v1
+        with:
+          # The third and last call site, set for the same reason as the other
+          # two even though this job gates nothing: `nanoda` defaults to off,
+          # so nothing runs today -- but a reader who greps
+          # `nanoda-allow-sorry` and finds it at two of three call sites will
+          # reasonably conclude the third was considered and exempted. It was
+          # not. One rule, every call site.
+          nanoda: false
+          nanoda-allow-sorry: false
 
       # doc-gen4 is required from `docbuild/`, a nested package, so that neither `lake build`
       # here nor any downstream package that requires DerivedAlgGeo has to fetch it. See

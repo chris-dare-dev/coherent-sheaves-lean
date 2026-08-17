@@ -194,7 +194,25 @@ jobs:
           build: true
           use-mathlib-cache: true
           use-github-cache: false
+          # nanoda is off, and NOT because the axis does not matter. Measured
+          # while standing up CI for math-formal-contract-lean, recorded here
+          # rather than rediscovered: `nanoda: true` cannot run at this
+          # toolchain. lean-action's run_nanoda.sh detects the module name with
+          # `grep -A5 '^\[package\]' lakefile.toml`, and Lake REJECTS the
+          # `[package]` table that grep wants; past that, lean4export master
+          # emits NDJSON 3.1.0 while nanoda 0.3.2 expects the older
+          # space-separated format.
           nanoda: false
+          # ...and this line is load-bearing even though nanoda is off.
+          #
+          # `nanoda-allow-sorry` DEFAULTS TO "true" (verified in the action's
+          # own action.yml). So the day anyone flips `nanoda: true`, the
+          # default silently adds a checker that PASSES ON SORRY-BACKED
+          # PROOFS -- a green check meaning nothing, in a repository whose
+          # CLAUDE.md forbids `sorry` outright. Setting it false now costs a
+          # line and removes the trap; leaving it to be remembered later is
+          # how the trap gets sprung.
+          nanoda-allow-sorry: false
 
       - name: Pin and coverage records
         run: |
