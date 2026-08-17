@@ -202,7 +202,7 @@ def lift (R : PullbackAcyclicResolution f)
   exact ((Functor.whiskeringLeft _ _ _).obj
     (SchemeDerivedCategory.Q U.left)).preimage (R.whiskeredLift G β)
 
-@[reassoc (attr := simp)]
+@[reassoc]
 lemma whiskerLeft_lift (R : PullbackAcyclicResolution f)
     (G : U.DerivedFiber ⥤ T.DerivedFiber)
     (β : SchemeDerivedCategory.Q U.left ⋙ G ⟶ ordinaryPullback f) :
@@ -282,7 +282,7 @@ lemma whiskeredLift_fac (R : PullbackAcyclicResolution f)
   simp only [Category.assoc, hcounit, hrest]
   simpa only [localizationComparison, CategoryTheory.asIso_hom] using! hβ.symm
 
-@[reassoc (attr := simp)]
+@[reassoc]
 lemma lift_fac (R : PullbackAcyclicResolution f)
     (G : U.DerivedFiber ⥤ T.DerivedFiber)
     (β : SchemeDerivedCategory.Q U.left ⋙ G ⟶ ordinaryPullback f) :
