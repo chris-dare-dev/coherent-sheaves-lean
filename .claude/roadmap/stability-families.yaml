@@ -106,6 +106,7 @@ generations:
   - { rev: 44, at: "2026-08-17", note: "SF7 is closed at its supported boundary after green merged #514 and #515; the exact unproved general-scheme Dqc identifications continue as SF8.0 #528. SF8 (#31) and SF9 (#30) are materialized under epics #517 and #516. SF8.1 begins with honest Dqc total objects, explicit pseudo-coherence, local bounded stalkwise-flat Tor models, geometric flat-model fibers, and fiberwise negative-Ext vanishing; no arbitrary Tor predicate or general derived-pullback instance is introduced." }
   - { rev: 45, at: "2026-08-17", note: "SF3 and its ownership gate are closed: #460--#462 delivered the concrete derived fibers, geometric base-change witness, finite-type openness, and relative-HN package, while ADR-0013 selects the monorepo and unblocks SF8/SF9. SF8.1 (#521) delivers the relative-perfect and universally-gluable object layer with a concrete zero model; algebraicity, boundedness, and arbitrary derived pullback remain unclaimed." }
   - { rev: 46, at: "2026-08-17", note: "SF8.2 (#518) constructs a groupoid-valued relative-perfect moduli problem on diagrams of actual scheme base changes. Mathlib's Pseudofunctor owns the coherence laws, every abstract fiber is equivalent to the core of the universally-gluable relative-perfect category, and each transition is compared naturally with the repository's exact derived pullback. Isomorphism classes, geometric fibers, and a nonempty identity model are concrete; preservation along arbitrary base changes, descent, and algebraicity remain unclaimed." }
+  - { rev: 47, at: "2026-08-17", note: "SF9.1 (#523) builds the reusable stack-in-groupoids substrate directly on Mathlib's Pseudofunctor, DescentData, IsPrestack, and IsStack APIs. Cover restriction is proved fully faithful and essentially surjective, the stack condition transports across explicit fiber/descent equivalences, and ordinary sheaves of types yield discrete stacks. Subcanonicity supplies a nonconstant big-Zariski stack represented by every scheme. Pullback-compatible and fiber-representability interfaces are separate from the stack condition; no algebraicity theorem is bundled or claimed." }
 retired: []
 
 # GitHub milestones are roadmap phases. Epic issues live inside them, and
@@ -497,8 +498,8 @@ items:
     gh_milestone: 30
     kind: milestone
     title: "SF9 — Algebraic stacks, semistable reduction, and good moduli"
-    status: planned
-    lane: next
+    status: in_progress
+    lane: now
     acceptance:
       - "Stacks in groupoids, covers, and effective descent are reusable and independent of stability conditions."
       - "Algebraicity of the supported relative-perfect moduli problem is a theorem from named representability hypotheses."
@@ -511,8 +512,8 @@ items:
     kind: epic
     parent: stability-families-m9
     title: "Build algebraic-stack and good-moduli infrastructure"
-    status: planned
-    summary: "After the SF8 groupoid-valued moduli problem, build generic stacks in groupoids (#523), prove algebraicity only in supported cases (#522), formalize semistable reduction (#525), and construct good moduli spaces under explicit hypotheses (#524)."
+    status: in_progress
+    summary: "SF9.1 #523 delivers generic stacks in groupoids, effective Čech and morphism descent, equivalence transport, representable-morphism interfaces, and a representable big-Zariski example. Next prove algebraicity only in supported cases (#522), then formalize semistable reduction (#525) and good moduli spaces under explicit hypotheses (#524)."
     priority: must
     size: XL
     tags: [stacks, descent, semistable-reduction, good-moduli]
@@ -523,7 +524,8 @@ items:
     kind: deliverable
     parent: stability-families-e15
     title: "Formalize stacks in groupoids and scheme descent"
-    status: planned
+    status: done
+    summary: "Built a reusable StackInGroupoids wrapper over Mathlib's effective descent, explicit covering families and Čech descent equivalences, morphism descent, stack transport across fiber/descent equivalences, pullback-compatible representability interfaces, and nonconstant representable big-Zariski stacks from Yoneda subcanonicity."
     priority: must
     size: XL
     tags: [stacks, groupoids, descent]
