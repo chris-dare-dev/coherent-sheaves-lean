@@ -37,8 +37,11 @@ representative beyond the one `signProjection` already makes.
   `X_{i₀}^{m·c} · (p /ᵐᵒⁿᵒᵐⁱᵃˡ X_{i₀}^{m·c})`, i.e. it truncates away the terms whose
   `i₀`-exponent has gone negative. This is the workhorse — both other results go through it.
 * `signIdem_comm` — **`e_{i₀}` and `e_{i₁}` commute for `i₀ ≠ i₁`.** With `signIdem_idem` this
-  makes `{e_j}_{j ∈ supp γ}` a finite commuting family of idempotents, which is exactly the data
-  a `⨁_{F ⊆ supp γ}` decomposition is assembled from.
+  makes `{e_j}` a commuting family of idempotents.
+* `signIdemAt` — the same idempotent with the splitting supplied uniformly by `Finsupp.erase`,
+  so it is indexed by a variable rather than by a splitting.
+* `signIdemAt_eq_self_of_apply_eq_zero` — at a variable the denominator does not invert, the
+  idempotent is the identity. This is what makes the peeling induction terminate degreewise.
 
 ## Implementation notes
 
@@ -52,10 +55,28 @@ and `add_comm` remain.
 dividing by `X_{i₀}^{m·c}` and multiplying it straight back leaves the graded piece where it
 started, so a composite of idempotents stays a legitimate numerator at the same twist.
 
+## The uniform family, and why peeling beats `⨁_F`
+
+`signIdemAt γ i₀` instantiates the splitting at `Finsupp.erase`, so there is one idempotent per
+*variable of `ι`* rather than one per splitting — which is what an induction over variables
+needs. `signIdemAt_eq_self_of_apply_eq_zero` says it is the **identity** at any variable the
+denominator does not invert.
+
+That single fact is what makes the peeling route terminate. Splitting `C = e_{i₀}C ⊕ (1-e_{i₀})C`
+and recursing on the second summand, `(1 - e_{i₀})` kills every term whose denominator omits
+`i₀`, so after peeling `r` variables the complex vanishes in every degree below `r - 1` — a
+Čech tuple of length `n+1` cannot contain `r > n+1` distinct variables. Each `Hⁿ` is therefore
+settled by finitely many peels, with no bound needed on `ι` itself.
+
+The `⨁_{F ⊆ supp γ}` decomposition would instead need `∑_F π_F = 1`, a powerset expansion of
+`∏_j (e_j + (1 - e_j))` in `AddMonoidHom.End` — a **noncommutative** ring, so `Finset.prod_add`
+does not apply — and it would need homology to commute with infinite products. Peeling needs
+neither.
+
 ## What this file does not assert
 
-Nothing here builds the decomposition `⨁_F W_F` itself, or the block subcomplexes `C_F`, or any
-statement about `Hⁿ`. It supplies the commuting idempotent family those are assembled from.
+Nothing here builds the block subcomplexes, shows `signIdemAt` is a chain map, or says anything
+about `Hⁿ`. It supplies the commuting idempotent family and its uniform indexing.
 
 ## Tags
 
@@ -233,5 +254,67 @@ theorem signIdem_comm [IsDomain R] {γ γ₀ γ₁ : ι →₀ ℕ} {i₀ i₁ :
           (monomial_one_mem_polynomialGrading (R := R) γ) m b hb := by
     rintro a b ha hb rfl; rfl
   exact hcongr _ _ _ _ (divMonomial_idem_comm hdisj p).symm
+
+/-! ## The uniform family -/
+
+/-- Every exponent vector splits at a chosen variable. -/
+theorem single_add_erase (γ : ι →₀ ℕ) (i₀ : ι) :
+    γ = Finsupp.single i₀ (γ i₀) + γ.erase i₀ := by
+  classical
+  ext j
+  by_cases hj : j = i₀
+  · subst hj; simp [Finsupp.erase_same]
+  · simp [Ne.symm hj, Finsupp.erase_ne hj]
+
+/-- **The sign projection at a variable**, with the splitting supplied uniformly.
+
+Indexed by a variable of `ι` rather than by a splitting, which is what an induction over
+variables consumes. -/
+noncomputable def signIdemAt [IsDomain R] (γ : ι →₀ ℕ) (i₀ : ι) (d : ℕ) :
+    DegreeZeroLocalization (polynomialGrading ι R)
+        (natShift (polynomialGrading ι R) d)
+        (.powers (MvPolynomial.monomial γ (1 : R))) →+
+      DegreeZeroLocalization (polynomialGrading ι R)
+        (natShift (polynomialGrading ι R) d)
+        (.powers (MvPolynomial.monomial γ (1 : R))) :=
+  signIdem (single_add_erase γ i₀) Finsupp.erase_same d
+
+set_option maxHeartbeats 1200000 in
+/-- **At a variable the denominator does not invert, the projection is the identity.**
+
+No Laurent monomial over `Xᵞ` can have a negative exponent at a variable `Xᵞ` does not invert,
+so there is nothing for the truncation to remove: the divisor is `X_{i₀}^{m·0} = 1`.
+
+This is what makes the peeling induction terminate. `1 - signIdemAt γ i₀` annihilates every term
+whose denominator omits `i₀`, so peeling `r` distinct variables kills every Čech degree below
+`r - 1`. -/
+theorem signIdemAt_eq_self_of_apply_eq_zero [IsDomain R] {γ : ι →₀ ℕ} {i₀ : ι} (d : ℕ)
+    (h0 : γ i₀ = 0)
+    (z : DegreeZeroLocalization (polynomialGrading ι R)
+      (natShift (polynomialGrading ι R) d)
+      (.powers (MvPolynomial.monomial γ (1 : R)))) :
+    signIdemAt γ i₀ d z = z := by
+  obtain ⟨m, p, hp, rfl⟩ :=
+    DegreeZeroLocalization.exists_awayMk (monomial_one_mem_polynomialGrading (R := R) γ)
+      (monomial_one_pow_ne_zero γ) z
+  have hz : m * γ i₀ = 0 := by rw [h0, Nat.mul_zero]
+  have hres : MvPolynomial.monomial (Finsupp.single i₀ (m * γ i₀)) (1 : R) *
+      MvPolynomial.divMonomial p (Finsupp.single i₀ (m * γ i₀)) ∈
+      natShift (polynomialGrading ι R) d (m • γ.degree) := by
+    rw [hz, Finsupp.single_zero, MvPolynomial.divMonomial_zero,
+      MvPolynomial.monomial_zero', map_one, one_mul]
+    exact hp
+  rw [signIdemAt, signIdem_awayMk _ _ hp hres]
+  have hcongr : ∀ (a b : MvPolynomial ι R)
+      (ha : a ∈ natShift (polynomialGrading ι R) d (m • γ.degree))
+      (hb : b ∈ natShift (polynomialGrading ι R) d (m • γ.degree)), a = b →
+      DegreeZeroLocalization.awayMk (𝓜 := natShift (polynomialGrading ι R) d)
+          (monomial_one_mem_polynomialGrading (R := R) γ) m a ha =
+        DegreeZeroLocalization.awayMk (𝓜 := natShift (polynomialGrading ι R) d)
+          (monomial_one_mem_polynomialGrading (R := R) γ) m b hb := by
+    rintro a b ha hb rfl; rfl
+  exact hcongr _ _ _ hp (by
+    rw [hz, Finsupp.single_zero, MvPolynomial.divMonomial_zero,
+      MvPolynomial.monomial_zero', map_one, one_mul])
 
 end AlgebraicGeometry.Proj

@@ -148,6 +148,12 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Proj.signIdem_awayMk
 #print axioms AlgebraicGeometry.Proj.divMonomial_idem_comm
 #print axioms AlgebraicGeometry.Proj.signIdem_comm
+-- The uniform family (#491 -> #340). signIdemAt is indexed by a variable rather than a
+-- splitting, and signIdemAt_eq_self_of_apply_eq_zero is what makes the peeling induction
+-- terminate degreewise: 1 - e_i0 annihilates every term whose denominator omits i0.
+#print axioms AlgebraicGeometry.Proj.single_add_erase
+#print axioms AlgebraicGeometry.Proj.signIdemAt
+#print axioms AlgebraicGeometry.Proj.signIdemAt_eq_self_of_apply_eq_zero
 -- The block decomposition (#340, step 2). Each away localization is decomposed by the negative
 -- support N(alpha) of the Laurent exponent: laurentFilter selects one block of a numerator,
 -- blockProj descends it to the localization (choice-based, pinned by blockProj_awayMk, same
