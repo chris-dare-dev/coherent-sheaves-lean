@@ -12,52 +12,60 @@ import DerivedAlgGeo.CategoryTheory.Triangulated.FourierMukai.Convolution
 inputs. This file does the same for the **composition law**: the abstract
 `ConvolutionData` asks for a kernel operation `conv` *and* the family of
 isomorphisms `Φ_P ⋙ Φ_Q ≅ Φ_{conv P Q}`, both as supplied data, and this ledger
-reduces that.
+reduces both.
 
-## What this ledger buys: `conv` stops being supplied
+## What this ledger buys
 
-Classically `conv P Q = Rπ_{XW*}(π_{XY}^* P ⊗^L π_{YW}^* Q)` on the triple
-product. Every functor in that expression is one the *first* ledger already
-names — two derived pullbacks, one derived tensor, one derived pushforward —
-so given a triple product with its three projections, `convKernel` is a
-**definition**. `ConvolutionData`'s first field stops being an obligation.
+**`conv` stops being supplied.** Classically
+`conv P Q = Rπ_{XW*}(π_{XY}^* P ⊗^L π_{YW}^* Q)` on the triple product. Every
+functor in that expression is one the *first* ledger already names — two
+derived pullbacks, one derived tensor, one derived pushforward — so given a
+triple product with its three projections, `convKernel` is a **definition**.
 
-Its second field does not. `compIso` is Prop. 5.10 and is a genuine theorem;
-proving it needs the projection formula and flat base change, which are named
-here as `HasProjectionFormula` and `HasFlatBaseChange` but **not** used to
-derive anything. The honest statement of this ledger's effect is therefore:
+**`compIso` stops being supplied.** Prop. 5.10 is *derived* here
+(`geometricCompIso`) from seven named inputs: the projection formula on each
+slot (`HasProjectionFormula`, `HasProjectionFormulaRight`), flat base change
+(`HasFlatBaseChange`), monoidality of derived pullback
+(`HasDerivedPullbackTensor`), associativity of the derived tensor
+(`HasDerivedTensorAssoc`), and agreement of the two pullback and the two
+pushforward routes across the triple product (`HasCommonPullbackRoute`,
+`HasCommonPushforwardRoute`). The honest statement of this ledger's effect:
 
-> `ConvolutionData` went from two supplied fields to one, and the remaining
-> one now has its two classical inputs named next to it.
+> Both fields of `ConvolutionData` are now constructed; what is supplied is
+> the seven classical isomorphisms above, each named as a class with the
+> geometry it encodes stated in its docstring.
+
+The earlier form of this file supplied `compIso` whole, as a
+`HasConvolutionComparison` class naming the projection formula and flat base
+change beside it without consuming them. That class is gone: the derivation
+consumes its inputs or they would not be here.
 
 ## Where the product finally becomes load-bearing
 
 `KernelCorrespondence.lean` deliberately did *not* require its middle scheme to
 be a product, because `Correspondence` does not consume that. Here the
-situation is different and the docstrings say so: `compIso` is *false* without
-it. The base-change square that the classical proof uses is the one formed by
-two projections of an actual fibre product, and there is no substitute.
+situation is different and the docstrings say so: the seven inputs are jointly
+*false* without it. The base-change square is cartesian precisely because the
+intermediate objects are honest fibre products, and the two route classes'
+`comm` guards hold precisely because the projections really are projections.
 
-`TripleProductGeometry` therefore carries the projections as data but still
-does not *assert* that the objects are products — because nothing in this file
-consumes that assertion either. What consumes it is a proof of `compIso`, which
-this file does not contain. A caller discharging `HasConvolutionComparison`
-is the one who will need the product structure, and the class docstring says so.
-Asserting it here would be an unconsumed hypothesis, which is the thing both
-review rounds attacked.
+`TripleProductGeometry` still carries the projections as data and does not
+*assert* that the objects are products — nothing in this file consumes that
+assertion. What consumes it is a caller discharging the seven classes, and
+each class docstring says which piece of product geometry its instance
+encodes. Asserting productness here would be an unconsumed hypothesis, which
+is the shape both review rounds attacked.
 
 ## What this file does not assert
 
-* **Nothing constructs a `HasProjectionFormula`, a `HasFlatBaseChange`, or a
-  `HasConvolutionComparison`**, and no scheme is shown to admit any of them.
-  Inhabitant-free, exactly like the first ledger.
-* **The projection formula and flat base change are named but not consumed.**
-  They are stated because they are what a proof of `compIso` would use, and
-  naming them is the point of a ledger — but this file derives nothing from
-  them, and a reader must not take their presence as progress toward `compIso`.
-  Deriving `compIso` from them is the next piece of work, not this one.
-* No associativity of convolution — `Convolution.lean` says that needs a second
-  data layer relating the two bracketings, and this ledger does not supply it.
+* **Nothing constructs an instance of any of the seven classes**, and no
+  scheme is shown to admit any of them. Inhabitant-free, exactly like the
+  first ledger: a clean axiom report on `geometricCompIso` means the
+  *derivation* adds nothing, not that a geometric Fourier--Mukai transform
+  exists in this repository. Nothing here constructs a `Correspondence`.
+* No associativity of convolution — `Convolution.lean` says that needs a
+  second data layer relating the two bracketings, and this ledger does not
+  supply it.
 * No unit: `𝒪_Δ` along the diagonal is absent, so `UnitKernelData` is still
   unreachable geometrically.
 -/
@@ -86,8 +94,9 @@ objects locally Noetherian — which `Dᵇ(Coh)` requires — so a caller suppli
 the objects together with that hypothesis anyway.
 
 **Not asserted: that any of these objects is a product.** Nothing in this file
-consumes it. What consumes it is a proof of `HasConvolutionComparison`, which
-this file does not contain; see that class's docstring. -/
+consumes it. What consumes it is a caller discharging the seven input classes
+of `geometricCompIso`, whose instances are exactly where the product geometry
+lives; see their docstrings. -/
 structure TripleProductGeometry (Z₁ Z₂ Z₃ : SchemeBaseChange S) where
   /-- The triple product `X ×_S Y ×_S W`. -/
   triple : SchemeBaseChange S
@@ -112,7 +121,13 @@ variable {Z₁ Z₂ Z₃ : SchemeBaseChange S}
 `conv P Q = Rπ_{XW*}(π_{XY}^* P ⊗^L π_{YW}^* Q)`, the classical formula, built
 from functors the first ledger already names. This is the field that
 `ConvolutionData` asks for as data and that this ledger removes from the
-obligation list. -/
+obligation list.
+
+The kernel `π_{YW}^* Q` sits in the *first* slot of the tensor bifunctor, with
+`π_{XY}^* P` as the argument. That choice is aligned with
+`Correspondence.transform`, which pins its kernel to the first slot; keeping
+the two conventions aligned is what lets `geometricCompIso` avoid asking for a
+braiding. Flip either one and a braiding becomes a genuine eighth input. -/
 noncomputable def convKernel
     [HasCoherentPullback G.πXY] [HasCoherentPullback G.πYW]
     [HasDerivedTensor G.triple] [HasDerivedPushforward G.πXW]
@@ -132,12 +147,14 @@ variable {Z : SchemeBaseChange S} [IsLocallyNoetherian Z.left]
 
 /-- **The projection formula, supplied.**
 
-`Rq_*(A ⊗^L Lq^* B) ≅ Rq_* A ⊗^L B`, for `q : Z ⟶ U`.
+`Rq_*(Lq^* B ⊗^L A) ≅ B ⊗^L Rq_* A` in the twist-by-`Lq^* B` reading: the
+twist by a pulled-back kernel commutes with pushforward.
 
-Named because it is one of the two classical inputs to Prop. 5.10, **not**
-because anything in this file uses it. Nothing here derives `compIso`, and this
-class is not a step toward it — it is a statement of what such a step would
-need. -/
+One of the seven inputs to `geometricCompIso`, consumed there at the morphism
+`πYW` of the triple product. Discharging it for a projection of an honest
+fibre product is the classical projection formula; for an arbitrary morphism
+it is generally false, which is where the product geometry lives in this
+input. -/
 class HasProjectionFormula {Z U : SchemeBaseChange S}
     [IsLocallyNoetherian Z.left] [IsLocallyNoetherian U.left] (q : Z ⟶ U)
     [HasCoherentPullback q] [HasDerivedTensor Z] [HasDerivedTensor U]
@@ -150,29 +167,330 @@ class HasProjectionFormula {Z U : SchemeBaseChange S}
 
 /-- **Flat base change, supplied.**
 
-For a cartesian square with `u`, `v` the two sides and `p`, `q` the two
+For a cartesian square with `u`, `v` the two sides and `q`, `q'` the two
 projections, `Lv^* Rq_* ≅ Rq'_* Lu^*`.
 
-The square this file has in mind is the one formed by two projections of the
-triple product, which is cartesian *because* the objects are products — the
-place where productness finally does work. Stated abstractly on a supplied
-square so that the class does not itself have to assert productness.
-
-Named, not used: as with `HasProjectionFormula`, nothing here derives anything
-from it. -/
+One of the seven inputs to `geometricCompIso`, consumed there at the square
+`(q₁, πYW, πXY, p₂)`. That square is cartesian *because* the objects are
+products — the place where productness does work in this input. Stated
+abstractly on a supplied square so that the class does not itself have to
+assert productness. -/
 class HasFlatBaseChange {T T' U U' : SchemeBaseChange S}
     [IsLocallyNoetherian T.left] [IsLocallyNoetherian T'.left]
     [IsLocallyNoetherian U.left] [IsLocallyNoetherian U'.left]
     (q : T ⟶ U) (q' : T' ⟶ U') (u : T' ⟶ T) (v : U' ⟶ U)
     [HasCoherentPullback u] [HasCoherentPullback v]
     [HasDerivedPushforward q] [HasDerivedPushforward q'] where
-  /-- The square commutes. -/
+  /-- The square commutes. A **guard**: it is what makes `iso` the right thing
+  to ask for, and the derivation deliberately consumes `iso` alone. -/
   comm : u ≫ q = q' ≫ v
   /-- Base-change isomorphism. -/
   iso : derivedPushforward q ⋙ boundedCoherentDerivedPullback v ≅
     boundedCoherentDerivedPullback u ⋙ derivedPushforward q'
 
+/-- **Monoidality of derived pullback**, `Lf^*(K ⊗^L −) ≅ Lf^*K ⊗^L Lf^*(−)`.
+
+Stated as a family in the twist `K`, natural in the remaining variable, which
+is exactly what the derivation consumes. A full `MonoidalFunctor` structure
+would add unitors and coherence that nothing here touches; `HasDerivedTensor`
+does not even provide a monoidal category for one to be stated over. -/
+class HasDerivedPullbackTensor {T U : SchemeBaseChange S}
+    [IsLocallyNoetherian T.left] [IsLocallyNoetherian U.left] (f : T ⟶ U)
+    [HasCoherentPullback f] [HasDerivedTensor T] [HasDerivedTensor U] where
+  /-- Pullback carries a twist to the twist by the pullback. -/
+  iso : ∀ K : SchemeBoundedCoherentDerivedCategory U.left,
+    (derivedTensor U).obj K ⋙ boundedCoherentDerivedPullback f ≅
+      boundedCoherentDerivedPullback f ⋙
+        (derivedTensor T).obj ((boundedCoherentDerivedPullback f).obj K)
+
+/-- **Associativity of the derived tensor.** No pentagon, no unit, no braiding.
+
+Braiding is genuinely not needed, and that is a fact about this repository's
+conventions rather than a general one: `Correspondence.transform` pins the
+kernel to the *first* slot of the bifunctor, and `convKernel` puts
+`πYW^* Q` in that same slot with `πXY^* P` as the argument. Flipping either
+convention would force a braiding. -/
+class HasDerivedTensorAssoc (Z : SchemeBaseChange S)
+    [IsLocallyNoetherian Z.left] [HasDerivedTensor Z] where
+  /-- `A ⊗ (B ⊗ −) ≅ (A ⊗ B) ⊗ −`. -/
+  iso : ∀ A B : SchemeBoundedCoherentDerivedCategory Z.left,
+    (derivedTensor Z).obj B ⋙ (derivedTensor Z).obj A ≅
+      (derivedTensor Z).obj (((derivedTensor Z).obj A).obj B)
+
+/-- **The projection formula on the other slot**, `Rq_*(Lq^* E ⊗^L A) ≅ Rq_* A`-twisted:
+as a functor in `E`, `Lq^* ⋙ (A ⊗ −) ⋙ Rq_* ≅ (Rq_* A) ⊗ −`.
+
+A separate class from `HasProjectionFormula`, deliberately. The derivation
+consumes the two at **different morphisms** — this one at `πXW`, that one at
+`πYW` — so merging them into one class with two fields would leave one field
+unconsumed at each of the two instances.
+
+It is also not a consequence of `HasProjectionFormula` plus a braiding: that
+one is a family in the target variable natural in the source, this one a family
+in the source variable natural in the target. -/
+class HasProjectionFormulaRight {Z U : SchemeBaseChange S}
+    [IsLocallyNoetherian Z.left] [IsLocallyNoetherian U.left] (q : Z ⟶ U)
+    [HasCoherentPullback q] [HasDerivedTensor Z] [HasDerivedTensor U]
+    [HasDerivedPushforward q] where
+  /-- The right-slot projection isomorphism. -/
+  iso : ∀ A : SchemeBoundedCoherentDerivedCategory Z.left,
+    boundedCoherentDerivedPullback q ⋙ (derivedTensor Z).obj A ⋙
+        derivedPushforward q ≅
+      (derivedTensor U).obj ((derivedPushforward q).obj A)
+
+/-- **Two pullback routes to the same place agree.**
+
+Bundles functoriality of derived pullback with the commuting triangle
+`π₁ ≫ p₁ = π₃ ≫ p₃`, because the derivation needs exactly the composite and
+never the two halves separately.
+
+Not reducible to `GeometricDerivedPullbackComposition`: that is stated at the
+literal `f ≫ g`, so bridging two different composites would need `eqToHom`
+transport across compound terms, and it additionally demands three
+`PreservesPerfectPullback` instances and carries a `perfectIso` field that
+nothing here touches. -/
+class HasCommonPullbackRoute {X T Z₁ Z₃ : SchemeBaseChange S}
+    [IsLocallyNoetherian X.left] [IsLocallyNoetherian T.left]
+    [IsLocallyNoetherian Z₁.left] [IsLocallyNoetherian Z₃.left]
+    (p₁ : Z₁ ⟶ X) (π₁ : T ⟶ Z₁) (p₃ : Z₃ ⟶ X) (π₃ : T ⟶ Z₃)
+    [HasCoherentPullback p₁] [HasCoherentPullback π₁]
+    [HasCoherentPullback p₃] [HasCoherentPullback π₃] where
+  /-- The triangle commutes. A **guard**: it is what makes the isomorphism
+  below the right thing to ask for, and it is deliberately not consumed by the
+  derivation, which uses `iso` alone. -/
+  comm : π₁ ≫ p₁ = π₃ ≫ p₃
+  /-- The two pullback routes agree. -/
+  iso : boundedCoherentDerivedPullback p₁ ⋙ boundedCoherentDerivedPullback π₁ ≅
+    boundedCoherentDerivedPullback p₃ ⋙ boundedCoherentDerivedPullback π₃
+
+/-- **Two pushforward routes to the same place agree.**
+
+The pushforward companion of `HasCommonPullbackRoute`, and unlike it there is
+no existing composition contract at all — nothing in the repository names
+`R(g ∘ f)_* ≅ Rf_* ⋙ Rg_*`. -/
+class HasCommonPushforwardRoute {W T Z₂ Z₃ : SchemeBaseChange S}
+    [IsLocallyNoetherian W.left] [IsLocallyNoetherian T.left]
+    [IsLocallyNoetherian Z₂.left] [IsLocallyNoetherian Z₃.left]
+    (π₂ : T ⟶ Z₂) (q₂ : Z₂ ⟶ W) (π₃ : T ⟶ Z₃) (q₃ : Z₃ ⟶ W)
+    [HasDerivedPushforward π₂] [HasDerivedPushforward q₂]
+    [HasDerivedPushforward π₃] [HasDerivedPushforward q₃] where
+  /-- The triangle commutes. A guard, as above. -/
+  comm : π₂ ≫ q₂ = π₃ ≫ q₃
+  /-- The two pushforward routes agree. -/
+  iso : derivedPushforward π₂ ⋙ derivedPushforward q₂ ≅
+    derivedPushforward π₃ ⋙ derivedPushforward q₃
+
 end ClassicalInputs
+
+section Derivation
+
+/-! ### Deriving Prop. 5.10
+
+`compIso` is no longer supplied. `geometricCompIso` below is the classical
+argument, written as eight intermediate functors `E₀, …, E₇` and eight steps,
+each naming the single input it consumes:
+
+| step | rewrites | input |
+|---|---|---|
+| 1 | `q₁_* ⋙ p₂^*` → `πXY^* ⋙ πYW_*` | `HasFlatBaseChange` |
+| 2 | `(⊗P) ⋙ πXY^*` → `πXY^* ⋙ (⊗πXY^*P)` | `HasDerivedPullbackTensor` |
+| 3 | `πYW_* ⋙ (⊗Q)` → `(⊗πYW^*Q) ⋙ πYW_*` | `HasProjectionFormula` (symm) |
+| 4 | `(⊗a) ⋙ (⊗b)` → `(⊗(b ⊗ a))` | `HasDerivedTensorAssoc` |
+| 5 | `πYW_* ⋙ q₂_*` → `πXW_* ⋙ q₃_*` | `HasCommonPushforwardRoute` |
+| 6 | `p₁^* ⋙ πXY^*` → `p₃^* ⋙ πXW^*` | `HasCommonPullbackRoute` |
+| 7 | `πXW^* ⋙ (⊗M) ⋙ πXW_*` → `(⊗ Rπ_{XW*} M)` | `HasProjectionFormulaRight` |
+
+Every intermediate and every step is written with a fully ascribed type,
+inside a single definition, so that no signature is left to section-variable
+inclusion order and no composite is left to higher-order unification — the
+two failure modes that consumed the first attempt at this proof. Mathlib's
+own note on `Functor.associator` warns that leaning on the definitional
+`Functor.assoc` "tends to make Lean slow"; the three private combinators
+below spell the associators out once each.
+
+**Naturality.** Every intermediate is a functor `Dᵇ(Coh X) ⥤ Dᵇ(Coh W)` and
+every step is an isomorphism of such functors, so naturality **in the
+argument object** is free and never checked by hand. Naturality in `P` or `Q`
+is neither obtained nor claimed: `ConvolutionData.compIso` is a bare family
+and every consumer evaluates it at a point, so asserting more would be an
+unconsumed strengthening. -/
+
+/-- Rewrite an adjacent pair at the head of a right-associated composite.
+The two pairs may pass through different middle categories — every rewrite in
+the chain below does. -/
+private def pairCongr {A₁ A₂ A₂' A₃ A₄ : Type*} [Category A₁] [Category A₂]
+    [Category A₂'] [Category A₃] [Category A₄]
+    {F : A₁ ⥤ A₂} {G : A₂ ⥤ A₃} {F' : A₁ ⥤ A₂'} {G' : A₂' ⥤ A₃}
+    (R : A₃ ⥤ A₄) (e : F ⋙ G ≅ F' ⋙ G') : F ⋙ G ⋙ R ≅ F' ⋙ G' ⋙ R :=
+  (Functor.associator F G R).symm ≪≫ Functor.isoWhiskerRight e R ≪≫
+    Functor.associator F' G' R
+
+/-- Collapse an adjacent pair to one functor at the head of a right-associated
+composite. -/
+private def pairCollapse {A₁ A₂ A₃ A₄ : Type*} [Category A₁] [Category A₂]
+    [Category A₃] [Category A₄] {F : A₁ ⥤ A₂} {G : A₂ ⥤ A₃} {H : A₁ ⥤ A₃}
+    (R : A₃ ⥤ A₄) (e : F ⋙ G ≅ H) : F ⋙ G ⋙ R ≅ H ⋙ R :=
+  (Functor.associator F G R).symm ≪≫ Functor.isoWhiskerRight e R
+
+/-- Collapse an adjacent triple to one functor at the head of a
+right-associated composite. -/
+private def tripleCollapse {A₁ A₂ A₃ A₄ A₅ : Type*} [Category A₁] [Category A₂]
+    [Category A₃] [Category A₄] [Category A₅] {F : A₁ ⥤ A₂} {G : A₂ ⥤ A₃}
+    {H : A₃ ⥤ A₄} {K : A₁ ⥤ A₄} (R : A₄ ⥤ A₅) (e : F ⋙ G ⋙ H ≅ K) :
+    F ⋙ G ⋙ H ⋙ R ≅ K ⋙ R :=
+  Functor.isoWhiskerLeft F (Functor.associator G H R).symm ≪≫
+    (Functor.associator F (G ⋙ H) R).symm ≪≫ Functor.isoWhiskerRight e R
+
+/-- **Prop. 5.10, derived**: `Φ_P ⋙ Φ_Q ≅ Φ_{Q ∗ P}` for the geometric
+correspondences, with `Q ∗ P = convKernel G P Q`.
+
+Natural in the argument object (each side is a functor and the isomorphism is
+an isomorphism of functors); a bare family in `P` and `Q`, which is exactly
+what `ConvolutionData.compIso` consumes.
+
+The seven instance arguments beyond the first ledger's are the seven classical
+inputs; see the section docstring for which step consumes which. Nothing
+constructs any of them, so this derivation moves the trust boundary — from
+"Prop. 5.10 holds" to the seven standard isomorphisms it classically follows
+from — without shrinking it to zero. -/
+noncomputable def geometricCompIso
+    {X Y W Z₁ Z₂ Z₃ : SchemeBaseChange S}
+    [IsLocallyNoetherian X.left] [IsLocallyNoetherian Y.left]
+    [IsLocallyNoetherian W.left] [IsLocallyNoetherian Z₁.left]
+    [IsLocallyNoetherian Z₂.left] [IsLocallyNoetherian Z₃.left]
+    (p₁ : Z₁ ⟶ X) (q₁ : Z₁ ⟶ Y) (p₂ : Z₂ ⟶ Y) (q₂ : Z₂ ⟶ W)
+    (p₃ : Z₃ ⟶ X) (q₃ : Z₃ ⟶ W)
+    [HasCoherentPullback p₁] [HasDerivedTensor Z₁] [HasDerivedPushforward q₁]
+    [HasCoherentPullback p₂] [HasDerivedTensor Z₂] [HasDerivedPushforward q₂]
+    [HasCoherentPullback p₃] [HasDerivedTensor Z₃] [HasDerivedPushforward q₃]
+    (G : TripleProductGeometry Z₁ Z₂ Z₃) [IsLocallyNoetherian G.triple.left]
+    [HasCoherentPullback G.πXY] [HasCoherentPullback G.πYW]
+    [HasCoherentPullback G.πXW] [HasDerivedTensor G.triple]
+    [HasDerivedPushforward G.πYW] [HasDerivedPushforward G.πXW]
+    [HasFlatBaseChange q₁ G.πYW G.πXY p₂] [HasProjectionFormula G.πYW]
+    [HasDerivedPullbackTensor G.πXY] [HasDerivedTensorAssoc G.triple]
+    [HasProjectionFormulaRight G.πXW]
+    [HasCommonPullbackRoute p₁ G.πXY p₃ G.πXW]
+    [HasCommonPushforwardRoute G.πYW q₂ G.πXW q₃]
+    (P : SchemeBoundedCoherentDerivedCategory Z₁.left)
+    (Q : SchemeBoundedCoherentDerivedCategory Z₂.left) :
+    (geometricCorrespondence X Y Z₁ p₁ q₁).transform P ⋙
+        (geometricCorrespondence Y W Z₂ p₂ q₂).transform Q ≅
+      (geometricCorrespondence X W Z₃ p₃ q₃).transform (convKernel G P Q) :=
+  -- The two pulled-back kernels and their tensor product on the triple product.
+  let a : SchemeBoundedCoherentDerivedCategory G.triple.left :=
+    (boundedCoherentDerivedPullback G.πXY).obj P
+  let b : SchemeBoundedCoherentDerivedCategory G.triple.left :=
+    (boundedCoherentDerivedPullback G.πYW).obj Q
+  let M : SchemeBoundedCoherentDerivedCategory G.triple.left :=
+    ((derivedTensor G.triple).obj b).obj a
+  -- The eight intermediate functors, each ascribed in full.
+  let E₀ : SchemeBoundedCoherentDerivedCategory X.left ⥤
+      SchemeBoundedCoherentDerivedCategory W.left :=
+    boundedCoherentDerivedPullback p₁ ⋙ (derivedTensor Z₁).obj P ⋙
+      derivedPushforward q₁ ⋙ boundedCoherentDerivedPullback p₂ ⋙
+        (derivedTensor Z₂).obj Q ⋙ derivedPushforward q₂
+  let E₁ : SchemeBoundedCoherentDerivedCategory X.left ⥤
+      SchemeBoundedCoherentDerivedCategory W.left :=
+    boundedCoherentDerivedPullback p₁ ⋙ (derivedTensor Z₁).obj P ⋙
+      boundedCoherentDerivedPullback G.πXY ⋙ derivedPushforward G.πYW ⋙
+        (derivedTensor Z₂).obj Q ⋙ derivedPushforward q₂
+  let E₂ : SchemeBoundedCoherentDerivedCategory X.left ⥤
+      SchemeBoundedCoherentDerivedCategory W.left :=
+    boundedCoherentDerivedPullback p₁ ⋙ boundedCoherentDerivedPullback G.πXY ⋙
+      (derivedTensor G.triple).obj a ⋙ derivedPushforward G.πYW ⋙
+        (derivedTensor Z₂).obj Q ⋙ derivedPushforward q₂
+  let E₃ : SchemeBoundedCoherentDerivedCategory X.left ⥤
+      SchemeBoundedCoherentDerivedCategory W.left :=
+    boundedCoherentDerivedPullback p₁ ⋙ boundedCoherentDerivedPullback G.πXY ⋙
+      (derivedTensor G.triple).obj a ⋙ (derivedTensor G.triple).obj b ⋙
+        derivedPushforward G.πYW ⋙ derivedPushforward q₂
+  let E₄ : SchemeBoundedCoherentDerivedCategory X.left ⥤
+      SchemeBoundedCoherentDerivedCategory W.left :=
+    boundedCoherentDerivedPullback p₁ ⋙ boundedCoherentDerivedPullback G.πXY ⋙
+      (derivedTensor G.triple).obj M ⋙
+        derivedPushforward G.πYW ⋙ derivedPushforward q₂
+  let E₅ : SchemeBoundedCoherentDerivedCategory X.left ⥤
+      SchemeBoundedCoherentDerivedCategory W.left :=
+    boundedCoherentDerivedPullback p₁ ⋙ boundedCoherentDerivedPullback G.πXY ⋙
+      (derivedTensor G.triple).obj M ⋙
+        derivedPushforward G.πXW ⋙ derivedPushforward q₃
+  let E₆ : SchemeBoundedCoherentDerivedCategory X.left ⥤
+      SchemeBoundedCoherentDerivedCategory W.left :=
+    boundedCoherentDerivedPullback p₃ ⋙ boundedCoherentDerivedPullback G.πXW ⋙
+      (derivedTensor G.triple).obj M ⋙
+        derivedPushforward G.πXW ⋙ derivedPushforward q₃
+  let E₇ : SchemeBoundedCoherentDerivedCategory X.left ⥤
+      SchemeBoundedCoherentDerivedCategory W.left :=
+    boundedCoherentDerivedPullback p₃ ⋙
+      (derivedTensor Z₃).obj (convKernel G P Q) ⋙ derivedPushforward q₃
+  -- Seam in: the composite of the two transforms is `E₀` definitionally.
+  let s₀ : (geometricCorrespondence X Y Z₁ p₁ q₁).transform P ⋙
+      (geometricCorrespondence Y W Z₂ p₂ q₂).transform Q ≅ E₀ := Iso.refl _
+  -- Step 1, flat base change at the square `(q₁, πYW, πXY, p₂)`.
+  let s₁ : E₀ ≅ E₁ :=
+    Functor.isoWhiskerLeft (boundedCoherentDerivedPullback p₁)
+      (Functor.isoWhiskerLeft ((derivedTensor Z₁).obj P)
+        (pairCongr ((derivedTensor Z₂).obj Q ⋙ derivedPushforward q₂)
+          (HasFlatBaseChange.iso (q := q₁) (q' := G.πYW)
+            (u := G.πXY) (v := p₂))))
+  -- Step 2, monoidality of the pullback along `πXY`, at the twist `P`.
+  let s₂ : E₁ ≅ E₂ :=
+    Functor.isoWhiskerLeft (boundedCoherentDerivedPullback p₁)
+      (pairCongr
+        (derivedPushforward G.πYW ⋙ (derivedTensor Z₂).obj Q ⋙
+          derivedPushforward q₂)
+        (HasDerivedPullbackTensor.iso (f := G.πXY) P))
+  -- Step 3, the projection formula along `πYW` at the twist `Q`, reversed.
+  let s₃ : E₂ ≅ E₃ :=
+    Functor.isoWhiskerLeft (boundedCoherentDerivedPullback p₁)
+      (Functor.isoWhiskerLeft (boundedCoherentDerivedPullback G.πXY)
+        (Functor.isoWhiskerLeft ((derivedTensor G.triple).obj a)
+          (pairCongr (derivedPushforward q₂)
+            (HasProjectionFormula.iso (q := G.πYW) Q).symm)))
+  -- Step 4, associativity of the derived tensor on the triple product.
+  let s₄ : E₃ ≅ E₄ :=
+    Functor.isoWhiskerLeft (boundedCoherentDerivedPullback p₁)
+      (Functor.isoWhiskerLeft (boundedCoherentDerivedPullback G.πXY)
+        (pairCollapse (derivedPushforward G.πYW ⋙ derivedPushforward q₂)
+          (HasDerivedTensorAssoc.iso (Z := G.triple) b a)))
+  -- Step 5, the two pushforward routes agree; tail whisker only.
+  let s₅ : E₄ ≅ E₅ :=
+    Functor.isoWhiskerLeft (boundedCoherentDerivedPullback p₁)
+      (Functor.isoWhiskerLeft (boundedCoherentDerivedPullback G.πXY)
+        (Functor.isoWhiskerLeft ((derivedTensor G.triple).obj M)
+          (HasCommonPushforwardRoute.iso (π₂ := G.πYW) (q₂ := q₂)
+            (π₃ := G.πXW) (q₃ := q₃))))
+  -- Step 6, the two pullback routes agree; head whisker only. The route is
+  -- ascribed first so `pairCongr`'s endpoints are determined before the
+  -- expected type is checked.
+  let route : boundedCoherentDerivedPullback p₁ ⋙
+      boundedCoherentDerivedPullback G.πXY ≅
+        boundedCoherentDerivedPullback p₃ ⋙
+          boundedCoherentDerivedPullback G.πXW :=
+    HasCommonPullbackRoute.iso (p₁ := p₁) (π₁ := G.πXY)
+      (p₃ := p₃) (π₃ := G.πXW)
+  let s₆ : E₅ ≅ E₆ :=
+    pairCongr (F := boundedCoherentDerivedPullback p₁)
+      (F' := boundedCoherentDerivedPullback p₃)
+      (G := boundedCoherentDerivedPullback G.πXY)
+      (G' := boundedCoherentDerivedPullback G.πXW)
+      ((derivedTensor G.triple).obj M ⋙
+        derivedPushforward G.πXW ⋙ derivedPushforward q₃)
+      route
+  -- Step 7, the right-slot projection formula along `πXW` at the twist `M`,
+  -- landing on `convKernel` by one delta unfold.
+  let s₇ : E₆ ≅ E₇ :=
+    Functor.isoWhiskerLeft (boundedCoherentDerivedPullback p₃)
+      (tripleCollapse (derivedPushforward q₃)
+        (HasProjectionFormulaRight.iso (q := G.πXW) M))
+  -- Seam out: `E₇` is the transform with kernel `convKernel` definitionally.
+  let s₈ : E₇ ≅
+      (geometricCorrespondence X W Z₃ p₃ q₃).transform (convKernel G P Q) :=
+    Iso.refl _
+  s₀ ≪≫ s₁ ≪≫ s₂ ≪≫ s₃ ≪≫ s₄ ≪≫ s₅ ≪≫ s₆ ≪≫ s₇ ≪≫ s₈
+
+end Derivation
 
 section Assembly
 
@@ -181,45 +499,13 @@ variable {X Y W Z₁ Z₂ Z₃ : SchemeBaseChange S}
   [IsLocallyNoetherian W.left] [IsLocallyNoetherian Z₁.left]
   [IsLocallyNoetherian Z₂.left] [IsLocallyNoetherian Z₃.left]
 
-/-- **The remaining obligation: Prop. 5.10 for the geometric convolution.**
-
-`Φ_P ⋙ Φ_Q ≅ Φ_{convKernel P Q}`, uniformly in `Q`.
-
-This is the one field of `ConvolutionData` that survives the ledger. It is a
-real theorem, not bookkeeping, and proving it is where the geometry finally has
-to be done: the classical argument pushes the composite around the triple
-product using the **projection formula** and **flat base change**, and the
-base-change square it uses is cartesian precisely because the intermediate
-objects are honest fibre products.
-
-So a caller discharging this class is asserting the product structure, whether
-or not it is spelled out — which is why neither this file nor
-`KernelCorrespondence.lean` asserts it separately. `HasProjectionFormula` and
-`HasFlatBaseChange` are named above as what a proof would consume; nothing here
-consumes them. -/
-class HasConvolutionComparison
-    (p₁ : Z₁ ⟶ X) (q₁ : Z₁ ⟶ Y) (p₂ : Z₂ ⟶ Y) (q₂ : Z₂ ⟶ W)
-    (p₃ : Z₃ ⟶ X) (q₃ : Z₃ ⟶ W)
-    [HasCoherentPullback p₁] [HasDerivedTensor Z₁] [HasDerivedPushforward q₁]
-    [HasCoherentPullback p₂] [HasDerivedTensor Z₂] [HasDerivedPushforward q₂]
-    [HasCoherentPullback p₃] [HasDerivedTensor Z₃] [HasDerivedPushforward q₃]
-    (G : TripleProductGeometry Z₁ Z₂ Z₃) [IsLocallyNoetherian G.triple.left]
-    [HasCoherentPullback G.πXY] [HasCoherentPullback G.πYW]
-    [HasDerivedTensor G.triple] [HasDerivedPushforward G.πXW] where
-  /-- Prop. 5.10, uniformly in both kernels. -/
-  compIso : ∀ (P : SchemeBoundedCoherentDerivedCategory Z₁.left)
-      (Q : SchemeBoundedCoherentDerivedCategory Z₂.left),
-    (geometricCorrespondence X Y Z₁ p₁ q₁).transform P ⋙
-        (geometricCorrespondence Y W Z₂ p₂ q₂).transform Q ≅
-      (geometricCorrespondence X W Z₃ p₃ q₃).transform (convKernel G P Q)
-
-/-- **The geometric convolution data, assembled.**
+/-- **The geometric convolution data, assembled — with no supplied fields.**
 
 A `ConvolutionData` for the three geometric correspondences, with `conv` the
-*constructed* `convKernel` and `compIso` the one remaining supplied field.
-
-Compare the abstract structure, which asks for both. That is the whole content
-of this ledger. -/
+constructed `convKernel` and `compIso` the derived `geometricCompIso`.
+Compare the abstract structure, which asks for both as data; that reduction —
+from two supplied fields to zero, given the seven named classical inputs — is
+the whole content of this ledger. -/
 noncomputable def geometricConvolutionData
     (p₁ : Z₁ ⟶ X) (q₁ : Z₁ ⟶ Y) (p₂ : Z₂ ⟶ Y) (q₂ : Z₂ ⟶ W)
     (p₃ : Z₃ ⟶ X) (q₃ : Z₃ ⟶ W)
@@ -228,13 +514,18 @@ noncomputable def geometricConvolutionData
     [HasCoherentPullback p₃] [HasDerivedTensor Z₃] [HasDerivedPushforward q₃]
     (G : TripleProductGeometry Z₁ Z₂ Z₃) [IsLocallyNoetherian G.triple.left]
     [HasCoherentPullback G.πXY] [HasCoherentPullback G.πYW]
-    [HasDerivedTensor G.triple] [HasDerivedPushforward G.πXW]
-    [HasConvolutionComparison p₁ q₁ p₂ q₂ p₃ q₃ G] :
+    [HasCoherentPullback G.πXW] [HasDerivedTensor G.triple]
+    [HasDerivedPushforward G.πYW] [HasDerivedPushforward G.πXW]
+    [HasFlatBaseChange q₁ G.πYW G.πXY p₂] [HasProjectionFormula G.πYW]
+    [HasDerivedPullbackTensor G.πXY] [HasDerivedTensorAssoc G.triple]
+    [HasProjectionFormulaRight G.πXW]
+    [HasCommonPullbackRoute p₁ G.πXY p₃ G.πXW]
+    [HasCommonPushforwardRoute G.πYW q₂ G.πXW q₃] :
     ConvolutionData (geometricCorrespondence X Y Z₁ p₁ q₁)
       (geometricCorrespondence Y W Z₂ p₂ q₂)
       (geometricCorrespondence X W Z₃ p₃ q₃) where
   conv P Q := convKernel G P Q
-  compIso P Q := HasConvolutionComparison.compIso P Q
+  compIso P Q := geometricCompIso p₁ q₁ p₂ q₂ p₃ q₃ G P Q
 
 end Assembly
 
@@ -244,16 +535,19 @@ For a geometric Fourier--Mukai theory with composition, a caller must supply:
 
 1. `HasDerivedTensor` on each of the four relevant schemes — absent from the
    repository;
-2. `HasDerivedPushforward` along each of the four relevant morphisms — absent
+2. `HasDerivedPushforward` along each of the five relevant morphisms — absent
    from the repository, and where properness lives;
 3. `HasCoherentPullback` along each pullback used — an *existing* contract from
    #460--462, so no new kind of obligation;
 4. a `TripleProductGeometry` — the objects and projections;
-5. `HasConvolutionComparison` — Prop. 5.10, the one genuine theorem left, whose
-   proof needs the projection formula and flat base change (both named above)
-   and the product structure.
+5. the seven classical isomorphisms: `HasProjectionFormula`,
+   `HasProjectionFormulaRight`, `HasFlatBaseChange`,
+   `HasDerivedPullbackTensor`, `HasDerivedTensorAssoc`,
+   `HasCommonPullbackRoute`, `HasCommonPushforwardRoute` — where the product
+   structure of the `TripleProductGeometry` finally does its work.
 
-Everything else in the Fourier--Mukai lane follows: `transform`,
+Prop. 5.10 itself is no longer on the list: `geometricCompIso` derives it from
+item 5. Everything else in the Fourier--Mukai lane follows: `transform`,
 `transformK₀`, closure of kernel functors under composition, the transport of
 stability conditions, and — with a `KernelAutoequivalence` and a `DualKernel`
 on top — the group action and the Mukai isometry.

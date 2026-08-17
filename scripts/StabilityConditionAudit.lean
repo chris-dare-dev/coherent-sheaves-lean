@@ -4117,18 +4117,20 @@ consume that, and it is the composition law (`ConvolutionData`) that needs it.
 
 /-! ## Convolution of kernels: the second ledger
 
-INHABITANT-FREE, like the first. Nothing constructs a `HasProjectionFormula`,
-a `HasFlatBaseChange`, or a `HasConvolutionComparison`.
+INHABITANT-FREE, like the first. Nothing constructs an instance of any of the
+seven input classes.
 
-What this ledger buys is that `conv` stops being supplied data: `convKernel` is
-the classical `R(pi_XW)_*(pi_XY^* P (x)^L pi_YW^* Q)` built from functors the
-first ledger already names, so `ConvolutionData` goes from two supplied fields
-to one. The survivor is `compIso` -- Prop. 5.10, a genuine theorem.
+What this ledger buys is that BOTH fields of `ConvolutionData` stop being
+supplied: `convKernel` is the classical
+`R(pi_XW)_*(pi_XY^* P (x)^L pi_YW^* Q)` built from functors the first ledger
+already names, and `geometricCompIso` DERIVES Prop. 5.10 from seven named
+inputs -- projection formula (both slots), flat base change, monoidality of
+pullback, tensor associativity, and the two route-agreement classes. The old
+`HasConvolutionComparison`, which supplied compIso whole, is deleted.
 
-The projection formula and flat base change are NAMED BUT NOT CONSUMED. They
-are what a proof of compIso would use; nothing here derives anything from them,
-and a clean axiom list must not be read as progress toward compIso.
--/
+A clean axiom line on `geometricCompIso` means the derivation adds nothing
+beyond its inputs; it is NOT evidence that any input is constructible, and
+nothing here constructs a `Correspondence`. -/
 
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.TripleProductGeometry
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.TripleProductGeometry.mk.inj
@@ -4143,8 +4145,19 @@ and a clean axiom list must not be read as progress toward compIso.
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasFlatBaseChange
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasFlatBaseChange.comm
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasFlatBaseChange.iso
-#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasConvolutionComparison
-#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasConvolutionComparison.compIso
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasDerivedPullbackTensor
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasDerivedPullbackTensor.iso
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasDerivedTensorAssoc
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasDerivedTensorAssoc.iso
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasProjectionFormulaRight
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasProjectionFormulaRight.iso
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasCommonPullbackRoute
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasCommonPullbackRoute.comm
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasCommonPullbackRoute.iso
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasCommonPushforwardRoute
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasCommonPushforwardRoute.comm
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasCommonPushforwardRoute.iso
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.geometricCompIso
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.geometricConvolutionData
 
 
