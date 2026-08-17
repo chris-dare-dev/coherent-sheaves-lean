@@ -9,6 +9,7 @@ import DerivedAlgGeo.CategoryTheory.Triangulated.QuasiAbelian
 import DerivedAlgGeo.CategoryTheory.Triangulated.ExtensionClosure
 import DerivedAlgGeo.CategoryTheory.Triangulated.GrothendieckGroup
 import DerivedAlgGeo.CategoryTheory.Triangulated.FourierMukai
+import DerivedAlgGeo.CategoryTheory.Triangulated.LinearOpposite
 import DerivedAlgGeo.CategoryTheory.Triangulated.LinearYoneda
 import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Foundation
 import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition
