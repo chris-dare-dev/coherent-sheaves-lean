@@ -1255,8 +1255,19 @@ open CategoryTheory.Triangulated
 #print axioms CategoryTheory.Triangulated.Polishchuk.InducedTStructureData.isGE_iff
 #print axioms CategoryTheory.Triangulated.Polishchuk.induce
 #print axioms CategoryTheory.Triangulated.Polishchuk.induceOfApproximation
+#print axioms CategoryTheory.Triangulated.Polishchuk.induceOfBrown
 #print axioms CategoryTheory.Triangulated.Polishchuk.induceOfApproximationMaps
+#print axioms CategoryTheory.Triangulated.TStructure.coprodBoundedAisle_rightOrthogonal_of_isGE
+#print axioms CategoryTheory.Triangulated.TStructure.boundedAisle_le_large
+#print axioms CategoryTheory.Triangulated.TStructure.large_isLE_zero_iff
+#print axioms CategoryTheory.Triangulated.TStructure.large_isGE_one_iff
+#print axioms CategoryTheory.Triangulated.TStructure.boundedAisle_le_shift
+#print axioms CategoryTheory.Triangulated.TStructure.large_isLE_iff
+#print axioms CategoryTheory.Triangulated.TStructure.large_isGE_iff
+#print axioms CategoryTheory.Triangulated.TStructure.hasInducedTStructure_of_largeAisle
+#print axioms CategoryTheory.Triangulated.TStructure.IndExtensionData.ofCompactGenerators
 #print axioms CategoryTheory.Triangulated.TStructure.IndExtensionData.ofApproximation
+#print axioms CategoryTheory.Triangulated.TStructure.IndExtensionData.ofBrown
 
 /-! ## Repository-owned t-structure heart bridges -/
 

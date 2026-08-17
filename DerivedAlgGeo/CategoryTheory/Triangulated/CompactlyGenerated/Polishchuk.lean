@@ -144,6 +144,36 @@ noncomputable def induceOfApproximation
       (adj.compactObjects_map_leftAdjoint hF hD.compact))
     hmonad hzero hbounded
 
+/-- The categorical A.17 constructor using the repository-owned Brown tower.
+
+The source compact generators are the left-adjoint images of the target
+generators. Their compactness follows from the adjunction and coproduct
+preservation. The remaining size and shift-closure assumptions are stated
+explicitly, so no approximation-map or global inducing theorem is accepted
+from the caller. -/
+noncomputable def induceOfBrown
+    {L : Functor D C} {F : Functor C D}
+    [L.CommShift ℤ] [L.IsTriangulated]
+    [F.Additive] [F.CommShift ℤ] [F.IsTriangulated]
+    (adj : L ⊣ F)
+    {tD : TStructure D} {G : ObjectProperty D} {Q : ObjectProperty D}
+    [Q.IsTriangulated] [Q.IsClosedUnderIsomorphisms]
+    [Q.HasInducedTStructure tD]
+    [ObjectProperty.Small.{0} (G.map L)] [LocallySmall.{0} C]
+    [HasCoproducts.{0} C]
+    (hF : F.PreservesSmallCoproducts.{0})
+    (hD : tD.IsCompactlyGeneratedBy.{0} G)
+    (hshift : G.map L ≤ (G.map L).shift (1 : ℤ))
+    (hmonad : (L ⋙ F).IsRightTExact tD tD)
+    (hzero : ∀ E : C, IsZero (F.obj E) → IsZero E)
+    (hbounded : TStructure.IsBounded (Q.tStructure tD)) :
+    InducedTStructureData F (Q.inverseImage F) Q tD (fun _ ↦ Iff.rfl) :=
+  induceOfApproximation adj hF hD
+    (TStructure.CompactGeneratorBrown.compactGeneratorApproximation
+      (G := G.map L) hshift
+      (adj.compactObjects_map_leftAdjoint hF hD.compact))
+    hmonad hzero hbounded
+
 /-- The categorical A.17 constructor from Brown-style universal maps.
 
 The source approximation triangles and the proof that their cones are right
