@@ -4170,4 +4170,31 @@ nothing here constructs a `Correspondence`. -/
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.geometricCompIso
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.geometricConvolutionData
 
+/-! ## The unit kernel: the third ledger
+
+INHABITANT-FREE, like the first two. `diagonalKernel` is a DEFINITION
+(`Rdelta_*` of the tensor unit) and `geometricUnitIso` DERIVES that its
+transform is the identity from four inputs: `HasProjectionFormulaRight` at
+the diagonal (an existing class, consumed at a second site), `HasTensorUnit`,
+and the two retraction classes, whose `comm` triangle identities are guards
+the derivation deliberately does not consume. `DualKernel` remains a named
+absence: its classical formula needs derived duals and a dualizing complex,
+which have no substrate here. A clean axiom line on `geometricUnitIso` means
+the derivation adds nothing beyond its inputs, not that any input is
+constructible.
+-/
+
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasTensorUnit
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasTensorUnit.unit
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasTensorUnit.iso
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasPullbackRetraction
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasPullbackRetraction.comm
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasPullbackRetraction.iso
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasPushforwardRetraction
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasPushforwardRetraction.comm
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasPushforwardRetraction.iso
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.diagonalKernel
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.geometricUnitIso
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.geometricUnitKernelData
+
 
