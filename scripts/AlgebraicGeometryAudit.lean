@@ -179,6 +179,22 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Proj.blockProj_blockProj_of_ne
 #print axioms AlgebraicGeometry.Proj.blockProj_eq_zero_of_not_subset
 #print axioms AlgebraicGeometry.Proj.laurentFace_blockProj
+-- The contracting homotopy of a block (#340, step 3). laurentHomotopy projects out ALL of the
+-- cone variable and reinserts the surplus by a face, which makes it well defined whatever the
+-- tuple contains and buys the two identities the homotopy computation d h + h d = id consumes:
+-- an UNRESTRICTED square with every face (laurentHomotopy_laurentFace_comm -- including the
+-- face in the cone variable itself, where the surplus shifts by one and rebalances), and the
+-- retraction of the cone face on a block (laurentHomotopy_laurentFace_blockProj), which is the
+-- only identity that sees the block and the only place i0 ∉ F is spent.
+#print axioms AlgebraicGeometry.Proj.monomial_mul_divMonomial_cancel
+#print axioms AlgebraicGeometry.Proj.laurentFilter_apply_ge
+#print axioms AlgebraicGeometry.Proj.laurentHomotopy_split
+#print axioms AlgebraicGeometry.Proj.laurentHomotopy_back
+#print axioms AlgebraicGeometry.Proj.laurentHomotopy
+#print axioms AlgebraicGeometry.Proj.laurentHomotopy_numerator_mem
+#print axioms AlgebraicGeometry.Proj.laurentHomotopy_awayMk
+#print axioms AlgebraicGeometry.Proj.laurentHomotopy_laurentFace_blockProj
+#print axioms AlgebraicGeometry.Proj.laurentHomotopy_laurentFace_comm
 #print axioms AlgebraicGeometry.Proj.GradedLinearMap
 #print axioms AlgebraicGeometry.Proj.GradedLinearMap.map
 #print axioms AlgebraicGeometry.Proj.GradedLinearMap.map_mk
