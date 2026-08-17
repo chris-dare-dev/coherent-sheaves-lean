@@ -1817,3 +1817,27 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.zeroGeometricFiberModel
 #print axioms AlgebraicGeometry.universallyGluableDataZero
 #print axioms AlgebraicGeometry.schemeUniversallyGluableRelativePerfect_zero
+
+/-! ## Groupoid-valued relative-perfect moduli problem (#518) -/
+
+#print axioms AlgebraicGeometry.RelativePerfectGeometricFiber
+#print axioms AlgebraicGeometry.RelativePerfectIsomorphismClasses
+#print axioms AlgebraicGeometry.RelativePerfectModuliFiber
+#print axioms AlgebraicGeometry.RelativePerfectModuliProblem
+#print axioms AlgebraicGeometry.RelativePerfectModuliProblem.ambientComparison
+#print axioms AlgebraicGeometry.RelativePerfectModuliProblem.base
+#print axioms AlgebraicGeometry.RelativePerfectModuliProblem.exactPullback
+#print axioms AlgebraicGeometry.RelativePerfectModuliProblem.fiberEquivalence
+#print axioms AlgebraicGeometry.RelativePerfectModuliProblem.mk.inj
+#print axioms AlgebraicGeometry.RelativePerfectModuliProblem.mk.sizeOf_spec
+#print axioms AlgebraicGeometry.RelativePerfectModuliProblem.presheaf
+#print axioms AlgebraicGeometry.RelativePerfectModuliProblem.presheaf_obj_isGroupoid
+#print axioms AlgebraicGeometry.constantRelativePerfectPresheaf
+#print axioms AlgebraicGeometry.identityBaseChangeDiagram
+#print axioms AlgebraicGeometry.identityRelativePerfectModuliProblem
+#print axioms AlgebraicGeometry.relativePerfectForget
+#print axioms AlgebraicGeometry.relativePerfectGeometricZeroObject
+#print axioms AlgebraicGeometry.relativePerfectIsomorphismClass
+#print axioms AlgebraicGeometry.relativePerfectModuliFiber_nonempty
+#print axioms AlgebraicGeometry.relativePerfectModuliForget
+#print axioms AlgebraicGeometry.relativePerfectZeroObject

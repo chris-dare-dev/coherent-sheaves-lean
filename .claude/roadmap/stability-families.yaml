@@ -105,6 +105,7 @@ generations:
   - { rev: 43, at: "2026-08-17", note: "SF7.4 deletes the legacy global inducing-theorem switch and its bounded left-adjoint surrogate. Scheme pullback inducing packages now carry the actual phase-indexed A.17/A.8 output, and the owned Corollary-A.23 finite truncation theorem constructs every downstream preimage witness. Natural-isomorphism transport supplies concrete unbounded and bounded-coherent identity pullback models. Geometric base change, finite-type openness, and relative-HN consumers no longer accept a global theorem parameter or caller-supplied PreimageData." }
   - { rev: 44, at: "2026-08-17", note: "SF7 is closed at its supported boundary after green merged #514 and #515; the exact unproved general-scheme Dqc identifications continue as SF8.0 #528. SF8 (#31) and SF9 (#30) are materialized under epics #517 and #516. SF8.1 begins with honest Dqc total objects, explicit pseudo-coherence, local bounded stalkwise-flat Tor models, geometric flat-model fibers, and fiberwise negative-Ext vanishing; no arbitrary Tor predicate or general derived-pullback instance is introduced." }
   - { rev: 45, at: "2026-08-17", note: "SF3 and its ownership gate are closed: #460--#462 delivered the concrete derived fibers, geometric base-change witness, finite-type openness, and relative-HN package, while ADR-0013 selects the monorepo and unblocks SF8/SF9. SF8.1 (#521) delivers the relative-perfect and universally-gluable object layer with a concrete zero model; algebraicity, boundedness, and arbitrary derived pullback remain unclaimed." }
+  - { rev: 46, at: "2026-08-17", note: "SF8.2 (#518) constructs a groupoid-valued relative-perfect moduli problem on diagrams of actual scheme base changes. Mathlib's Pseudofunctor owns the coherence laws, every abstract fiber is equivalent to the core of the universally-gluable relative-perfect category, and each transition is compared naturally with the repository's exact derived pullback. Isomorphism classes, geometric fibers, and a nonempty identity model are concrete; preservation along arbitrary base changes, descent, and algebraicity remain unclaimed." }
 retired: []
 
 # GitHub milestones are roadmap phases. Epic issues live inside them, and
@@ -464,7 +465,8 @@ items:
     kind: deliverable
     parent: stability-families-e14
     title: "Construct the groupoid-valued relative-perfect moduli problem"
-    status: planned
+    status: done
+    summary: "Constructed a coherent Cat-valued pseudofunctor whose fibers are groupoids equivalent to the actual universally-gluable relative-perfect cores, with natural comparison to exact derived pullback on objects and morphisms. Added isomorphism classes, geometric-point fibers, and a concrete nonempty identity model without claiming arbitrary pullback preservation, descent, or algebraicity."
     priority: must
     size: L
     tags: [moduli, groupoid, base-change]
