@@ -49,6 +49,9 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.awayMk_add
 #print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.awayMk_sum
 #print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.awayMk_shift
+-- A fraction is zero exactly when its numerator is (#491). This is what makes the numerator a
+-- faithful record: independence of fractions reduces to independence of numerators.
+#print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.awayMk_eq_zero_iff
 -- Auto-generated, not hand-written: `awayMk` carries its membership certificate as a dependent
 -- argument, so the first `rw [coe_awayMk]` in this file makes Lean emit a congruence lemma for
 -- it. It is a public declaration and the completeness ratchet counts it, so it is recorded here
@@ -83,6 +86,11 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Proj.awayMk_eq_sum_monomial
 #print axioms AlgebraicGeometry.Proj.exists_sum_awayMk_monomial
 #print axioms AlgebraicGeometry.Proj.laurentExponent_mem_index
+-- Independence (#491): a vanishing monomial combination at a fixed denominator has vanishing
+-- coefficients. With exists_sum_awayMk_monomial this is the basis statement in usable form -- a
+-- map may be DEFINED by its effect on monomial fractions.
+#print axioms AlgebraicGeometry.Proj.sum_monomial_eq_zero_iff
+#print axioms AlgebraicGeometry.Proj.sum_awayMk_monomial_eq_zero_iff
 #print axioms AlgebraicGeometry.Proj.GradedLinearMap
 #print axioms AlgebraicGeometry.Proj.GradedLinearMap.map
 #print axioms AlgebraicGeometry.Proj.GradedLinearMap.map_mk

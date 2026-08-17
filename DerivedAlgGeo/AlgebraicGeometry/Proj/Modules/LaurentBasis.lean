@@ -298,4 +298,50 @@ theorem laurentExponent_mem_index {d m : ℕ} {γ : ι →₀ ℕ} {p : MvPolyno
   ⟨degree_laurentExponent γ β m d (degree_eq_of_mem_support hp hβ),
     fun _ hj => laurentExponent_nonneg_of_apply_eq_zero γ m β hj⟩
 
+/-! ## Independence
+
+Spanning says the monomial fractions reach everything. This section says they do so in exactly one
+way at a fixed denominator: a vanishing combination has vanishing coefficients.
+
+`DegreeZeroLocalization.awayMk_eq_zero_iff` does the work by moving the question off the
+localization entirely — a fraction is zero exactly when its numerator is — after which it is the
+ordinary statement that distinct monomials of `MvPolynomial` are independent. Nothing here needs
+the Laurent exponent; it enters only when denominators differ, and there
+`awayMk_monomial_eq_iff_laurentExponent` already decides equality. -/
+
+/-- Distinct monomials are independent: a vanishing sum over a `Finset` of exponents has every
+coefficient zero. -/
+theorem sum_monomial_eq_zero_iff (s : Finset (ι →₀ ℕ)) (c : (ι →₀ ℕ) → R) :
+    (∑ β ∈ s, MvPolynomial.monomial β (c β)) = 0 ↔ ∀ β ∈ s, c β = 0 := by
+  classical
+  constructor
+  · intro h β hβ
+    have hcoeff := congrArg (MvPolynomial.coeff β) h
+    rwa [MvPolynomial.coeff_sum, MvPolynomial.coeff_zero,
+      Finset.sum_congr rfl (fun b _ => MvPolynomial.coeff_monomial β b (c b)),
+      Finset.sum_ite_eq' s β (fun b => c b), if_pos hβ] at hcoeff
+  · intro h
+    exact Finset.sum_eq_zero fun β hβ => by rw [h β hβ]; simp
+
+set_option maxHeartbeats 800000 in
+/-- **The monomial fractions are independent at a fixed denominator.**
+
+Combined with `exists_sum_awayMk_monomial` this is the basis statement of #491 in usable form:
+every element is a monomial combination over a common denominator, and that combination is
+unique. A map may therefore be *defined* by its effect on the monomial fractions, which is what
+the sign projection of #340's contracting homotopy needs. -/
+theorem sum_awayMk_monomial_eq_zero_iff [IsDomain R] {γ : ι →₀ ℕ} {d m : ℕ}
+    (s : Finset (ι →₀ ℕ)) (c : (ι →₀ ℕ) → R)
+    (hc : ∀ β, MvPolynomial.monomial β (c β) ∈
+      natShift (polynomialGrading ι R) d (m • γ.degree)) :
+    (∑ β ∈ s, DegreeZeroLocalization.awayMk
+        (𝓜 := natShift (polynomialGrading ι R) d)
+        (monomial_one_mem_polynomialGrading (R := R) γ) m
+        (MvPolynomial.monomial β (c β)) (hc β)) = 0 ↔ ∀ β ∈ s, c β = 0 := by
+  rw [← DegreeZeroLocalization.awayMk_sum
+      (monomial_one_mem_polynomialGrading (R := R) γ) m s
+      (fun β => MvPolynomial.monomial β (c β)) hc,
+    DegreeZeroLocalization.awayMk_eq_zero_iff _ (monomial_one_ne_zero (R := R) γ),
+    sum_monomial_eq_zero_iff]
+
 end AlgebraicGeometry.Proj
