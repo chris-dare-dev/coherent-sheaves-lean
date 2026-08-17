@@ -75,12 +75,18 @@ algebraic_geometry_audit() {
     DerivedAlgGeo.AlgebraicGeometry.Numerical.Specializations.Surface \
     DerivedAlgGeo.AlgebraicGeometry.Numerical.Specializations.Threefold \
     DerivedAlgGeo.AlgebraicGeometry.Numerical.Specializations.Fourfold || return 1
-  lake env lean scripts/AlgebraicGeometryAudit.lean > "$GATE_TMP"/algebraic-geometry-audit.txt 2>&1 || {
-    # Show the reason: this function redirects its own output, so without this
-    # the wrapper's log is empty and the gate fails silently.
-    tail -20 "$GATE_TMP"/algebraic-geometry-audit.txt
-    return 1
-  }
+  # Since #480 the records live in per-area files; `#print axioms` output does
+  # not replay across the import boundary, so each area file is run directly.
+  : > "$GATE_TMP"/algebraic-geometry-audit.txt
+  for f in scripts/AlgebraicGeometryAudit/*.lean; do
+    lake env lean "$f" >> "$GATE_TMP"/algebraic-geometry-audit.txt 2>&1 || {
+      # Show the reason: this function redirects its own output, so without
+      # this the wrapper's log is empty and the gate fails silently.
+      echo "failed: $f"
+      tail -20 "$GATE_TMP"/algebraic-geometry-audit.txt
+      return 1
+    }
+  done
   grep -q 'sorryAx' "$GATE_TMP"/algebraic-geometry-audit.txt && { echo "sorryAx reached the audit"; return 1; }
   return 0
 }
@@ -109,10 +115,15 @@ audit_complete() {
 }
 
 stability_condition_audit() {
-  lake env lean scripts/StabilityConditionAudit.lean > "$GATE_TMP"/stability-condition-audit.txt 2>&1 || {
-    tail -20 "$GATE_TMP"/stability-condition-audit.txt
-    return 1
-  }
+  # Per-area invocation, as above: the umbrella alone would emit no records.
+  : > "$GATE_TMP"/stability-condition-audit.txt
+  for f in scripts/StabilityConditionAudit/*.lean; do
+    lake env lean "$f" >> "$GATE_TMP"/stability-condition-audit.txt 2>&1 || {
+      echo "failed: $f"
+      tail -20 "$GATE_TMP"/stability-condition-audit.txt
+      return 1
+    }
+  done
   python3 scripts/check_audit.py "$GATE_TMP"/stability-condition-audit.txt
 }
 

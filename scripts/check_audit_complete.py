@@ -85,9 +85,14 @@ def load_env(path: Path) -> dict[str, set[str]]:
 
 
 def listed_names(path: Path) -> set[str]:
+    # Since #480 an audit may be split into `<stem>/*.lean` area files behind
+    # an imports-only umbrella; read the umbrella plus every area file. For an
+    # unsplit audit the glob is empty and this reads the one file, as before.
+    files = [path] + sorted((path.parent / path.stem).glob("*.lean"))
     return {
         line.split()[-1]
-        for line in path.read_text(encoding="utf-8").splitlines()
+        for f in files
+        for line in f.read_text(encoding="utf-8").splitlines()
         if line.startswith("#print axioms")
     }
 

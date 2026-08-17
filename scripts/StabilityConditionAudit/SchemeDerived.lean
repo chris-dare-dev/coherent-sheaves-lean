@@ -1,0 +1,26 @@
+/-
+SchemeDerived slice of the StabilityCondition audit, split out so concurrent
+branches append to different files (#480). See the umbrella file for the contract and reading guide.
+-/
+import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition
+import DerivedAlgGeo.CategoryTheory.Triangulated.FourierMukai
+import DerivedAlgGeo.CategoryTheory.Triangulated.LinearYoneda
+import DerivedAlgGeo.CategoryTheory.Triangulated.LinearCoyoneda
+import DerivedAlgGeo.CategoryTheory.Triangulated.GrothendieckGroup.EulerForm
+import DerivedAlgGeo.LinearAlgebra
+open CategoryTheory.Triangulated
+
+/-! ## Affine quasi-coherent derived realization (#528) -/
+
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.AffineQuasicoherentDerivedCategory
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.AffineQuasicoherentSheaves
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.affineGammaDerivedFunctor
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.affineGammaDerivedHomologyIso
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.affineQuasicoherentDerivedCategory_isTriangulated
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.affineQuasicoherentSheavesAbelian
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.affineQuasicoherentSheavesEquiv
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.affineQuasicoherentSheavesEquiv_functor_additive
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.affineQuasicoherentSheavesEquiv_inverse_additive
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.affineQuasicoherentSheavesHasFiniteProducts
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.affineTildeDerivedFunctor
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.affineTildeDerivedHomologyIso

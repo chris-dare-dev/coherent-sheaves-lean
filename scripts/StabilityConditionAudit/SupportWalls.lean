@@ -1,0 +1,158 @@
+/-
+SupportWalls slice of the StabilityCondition audit, split out so concurrent
+branches append to different files (#480). See the umbrella file for the contract and reading guide.
+-/
+import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition
+import DerivedAlgGeo.CategoryTheory.Triangulated.FourierMukai
+import DerivedAlgGeo.CategoryTheory.Triangulated.LinearYoneda
+import DerivedAlgGeo.CategoryTheory.Triangulated.LinearCoyoneda
+import DerivedAlgGeo.CategoryTheory.Triangulated.GrothendieckGroup.EulerForm
+import DerivedAlgGeo.LinearAlgebra
+open CategoryTheory.Triangulated
+
+/-! ## Support lane — the Kontsevich-Soibelman quadratic-form reformulation
+
+The basic statements are linear algebra plus one compactness argument over a
+finite-dimensional real normed space and keep `S` arbitrary. The later
+genuine/uniform/quotient declarations add bundled quadratic forms, a saturated
+integral quotient, and a weak-stability adapter whose selected loci are actual
+nonzero weak-semistable heart classes. The adapter still supplies no geometric
+family, HN structure over a curve, boundedness, or moduli theory. -/
+
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Support.HasSupportProperty
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Support.IsHomogTwo
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Support.IsCompatible
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Support.slice
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Support.isCompact_slice
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Support.norm_inv_smul_mem_slice
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Support.hasSupportProperty_of_isCompatible
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Support.exists_isCompatible_of_hasSupportProperty
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Support.hasSupportProperty_iff
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Support.HasSupportProperty.mono
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Support.HasSupportProperty.eq_zero_of_charge_eq_zero
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Support.hasSupportProperty_of_norm_sub_le
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Support.HasSupportProperty.exists_tolerance
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Support.isOpen_hasSupportProperty
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Support.quadraticForm_isHomogTwo
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Support.HasQuadraticSupportProperty
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Support.HasQuadraticSupportProperty.hasSupportProperty
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Support.HasQuadraticSupportProperty.mono
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Support.familyLocus
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Support.HasUniformQuadraticSupportProperty
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Support.HasUniformQuadraticSupportProperty.fiber
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Support.hasUniformQuadraticSupportProperty_of_union
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Support.hasUniformQuadraticSupportProperty_iff_union
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Support.HasUniformQuadraticSupportProperty.reindex
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Support.HasQuadraticSupportProperty.constant
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Support.hasUniformQuadraticSupportProperty_constant_iff
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Support.transportQuadraticForm
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Support.transportQuadraticForm_apply
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Support.isCompatible_transport
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Support.HasUniformQuadraticSupportProperty.transport
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Support.hasUniformQuadraticSupportProperty_transport_iff
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Support.quotientCharge
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Support.quotientCharge_mkQ
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Support.quotientFamilyLocus
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Support.HasUniformQuadraticSupportPropertyModulo
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Support.hasUniformQuadraticSupportPropertyModulo_iff
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Support.HasUniformQuadraticSupportPropertyModulo.fiber
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Support.HasUniformQuadraticSupportPropertyModulo.hasSupportProperty
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Support.mkQ_eq_zero_of_mem
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Support.HasQuadraticSupportProperty.constant_modulo
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Support.ZeroChargeLattice.IsSaturated
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Support.ZeroChargeLattice.saturatedClosure
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Support.ZeroChargeLattice.subset_saturatedClosure
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Support.ZeroChargeLattice.isSaturated_saturatedClosure
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Support.ZeroChargeLattice.saturatedClosure_le
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Support.ZeroChargeLattice.neg_mem_saturatedClosure_iff
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Support.ZeroChargeLattice.Quotient
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Support.ZeroChargeLattice.quotientClass
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Support.ZeroChargeLattice.quotientClass_eq_zero_iff
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Support.ZeroChargeLattice.quotient_isAddTorsionFree
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Support.ZeroChargeLattice.quotient_moduleFinite
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Support.ZeroChargeLattice.quotient_moduleFree
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Support.ZeroChargeLattice.saturatedClosure_le_ker
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Support.ZeroChargeLattice.quotientCharge
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Support.ZeroChargeLattice.quotientCharge_quotientClass
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Support.ZeroChargeLattice.quotientToRealQuotient
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Support.ZeroChargeLattice.quotientToRealQuotient.congr_simp
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Support.ZeroChargeLattice.quotientToRealQuotient_quotientClass
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Support.ZeroChargeLattice.RealScalarExtension
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Support.ZeroChargeLattice.scalarExtensionComparison
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Support.ZeroChargeLattice.scalarExtensionComparison_tmul
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Support.ZeroChargeLattice.scalarExtensionComparison_quotientClass
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Support.ZeroChargeLattice.exists_scalarExtensionEquiv_iff
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Support.ZeroChargeLattice.scalarExtensionEquiv
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Support.ZeroChargeLattice.scalarExtensionEquiv_apply
+
+/-! ## FiniteLength lane — charges on the free lattice of simples
+
+`Fin n -> Z` is a MODEL of `K_0(A)` for a finite-length abelian category, not
+an identification: that is Jordan-Holder, which exists in neither Mathlib nor
+the foundational library. Every result is a theorem about `Fin n -> Z`. -/
+
+#print axioms CategoryTheory.Triangulated.StabilityCondition.FiniteLength.mem_cone_smul
+#print axioms CategoryTheory.Triangulated.StabilityCondition.FiniteLength.mem_cone_sum
+#print axioms CategoryTheory.Triangulated.StabilityCondition.FiniteLength.chargeOf
+#print axioms CategoryTheory.Triangulated.StabilityCondition.FiniteLength.chargeOf_apply
+#print axioms CategoryTheory.Triangulated.StabilityCondition.FiniteLength.chargeOf_single
+#print axioms CategoryTheory.Triangulated.StabilityCondition.FiniteLength.eq_chargeOf
+#print axioms CategoryTheory.Triangulated.StabilityCondition.FiniteLength.existsUnique_charge
+#print axioms CategoryTheory.Triangulated.StabilityCondition.FiniteLength.mem_cone_natCombination
+#print axioms CategoryTheory.Triangulated.StabilityCondition.FiniteLength.chargeOf_mem_cone
+#print axioms CategoryTheory.Triangulated.StabilityCondition.FiniteLength.chargeOf_ne_zero
+
+/-! ## Wall lane — numerical walls in the (s, t) half plane
+
+Arithmetic on triples of reals. There is NO surface: no coherent sheaf, no
+Chern character, no polarisation, and no Bogomolov-Gieseker inequality -- and
+none is axiomatised, because the wall equation is an identity and needs none. -/
+
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.NumClass
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.NumClass.rk
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.NumClass.deg
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.NumClass.ch2
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.reZ
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.imZ
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.minA
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.minB
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.minC
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.wallExpr
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.wallExpr_eq
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.wall_iff_circle
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.wall_circle_eq
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.wall_line_eq
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.shift
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.minA_shift
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.minB_shift
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.minC_shift
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.wallExpr_shift
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.charge_eq_zero_iff
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.eq_of_two_walls
+
+/-! ### Wall lane — the nested wall theorem
+
+Still the same arithmetic: `wall_eq_of_meet` is a statement about triples of
+reals and says nothing about sheaves. In particular it is NOT the geometric
+nested-wall theorem, which additionally asserts that the walls it orders are
+walls of actual stability, and that is not expressible at the pin.
+
+`wall_eq_of_meet_needs_charge` is a counterexample, not a theorem about walls:
+it exhibits two genuinely different walls meeting at the one point where `v`'s
+charge degenerates, which is what makes the charge hypothesis load-bearing
+rather than decorative. -/
+
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.minor_orth
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.crossAB
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.crossAC
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.crossBC
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.crossAB_swap
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.crossAC_swap
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.crossBC_swap
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.minorCross_eq_zero_of_two_walls
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.wall_subset_of_crossZero
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.wall_eq_of_meet
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.degV
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.degV_charge_eq_zero
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.wall_eq_of_meet_needs_charge
+

@@ -216,7 +216,10 @@ jobs:
             DerivedAlgGeo.AlgebraicGeometry.Numerical.Specializations.Surface \
             DerivedAlgGeo.AlgebraicGeometry.Numerical.Specializations.Threefold \
             DerivedAlgGeo.AlgebraicGeometry.Numerical.Specializations.Fourfold
-          lake env lean scripts/AlgebraicGeometryAudit.lean > algebraic-geometry-audit.txt 2>&1
+          : > algebraic-geometry-audit.txt
+          for f in scripts/AlgebraicGeometryAudit/*.lean; do
+            lake env lean "$f" >> algebraic-geometry-audit.txt 2>&1
+          done
           if grep -q 'sorryAx' algebraic-geometry-audit.txt; then
             echo "::error::sorryAx reached the algebraic-geometry audit"
             exit 1
@@ -225,11 +228,14 @@ jobs:
       - name: Stability-condition axiom audit
         run: |
           set -euo pipefail
-          lake env lean scripts/StabilityConditionAudit.lean > stability-condition-audit.txt 2>&1 || {
-            echo "::error::scripts/StabilityConditionAudit.lean failed to elaborate"
-            cat stability-condition-audit.txt
-            exit 1
-          }
+          : > stability-condition-audit.txt
+          for f in scripts/StabilityConditionAudit/*.lean; do
+            lake env lean "$f" >> stability-condition-audit.txt 2>&1 || {
+              echo "::error::$f failed to elaborate"
+              cat stability-condition-audit.txt
+              exit 1
+            }
+          done
           python3 scripts/check_audit.py stability-condition-audit.txt
 
       - name: DG axiom audit
