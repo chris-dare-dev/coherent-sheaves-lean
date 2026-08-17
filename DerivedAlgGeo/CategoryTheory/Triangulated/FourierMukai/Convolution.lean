@@ -44,9 +44,14 @@ available once it is.
   to be additive, exact, or even to send isomorphic kernels to isomorphic
   kernels — only to send them to kernels with *isomorphic transforms*, which
   is what `transformMapConvIso` proves and is strictly weaker.
-* Associativity of convolution is not stated.  It needs a second layer of
-  data relating the two ways of bracketing three correspondences, and no
-  result here depends on it.
+* Associativity of convolution **splits**.  At the transform level it is a
+  theorem, `convolutionTransformAssoc`, derived from the four `compIso`
+  families alone — no new input.  At the kernel level it is
+  `ConvolutionAssocData`, a second layer of *supplied* data: recovering the
+  kernel-level isomorphism from the transform-level one would need a kernel
+  to be determined by its transform (Orlov uniqueness), which is not
+  available here.  No result here depends on the kernel-level layer, and
+  nothing constructs it.
 * Triangulatedness does not transport across `compIso`.  Moving
   `IsTriangulated` along a natural isomorphism needs that isomorphism to
   commute with the shift (`NatTrans.CommShift`), which is an extra hypothesis
@@ -131,5 +136,66 @@ theorem transformMapConvIso_refl (D : ConvolutionData C₁ C₂ C₃) (P : 𝒲�
   simp [transformMapConvIso]
 
 end ConvolutionData
+
+section Assoc
+
+universe v₄ u₄ w₁₂ w₂₃ w₀ t₁₂ t₂₃ t₀
+
+variable {𝒱 : Type u₄} [Category.{v₄} 𝒱]
+  {𝒲₁₂ : Type t₁₂} {𝒲₂₃ : Type t₂₃} {𝒲 : Type t₀}
+  [Category.{w₁₂} 𝒲₁₂] [Category.{w₂₃} 𝒲₂₃] [Category.{w₀} 𝒲]
+  {C₁ : Correspondence 𝒳 𝒴 𝒲₁} {C₂ : Correspondence 𝒴 𝒵 𝒲₂}
+  {C₃ : Correspondence 𝒵 𝒱 𝒲₃}
+  {C₁₂ : Correspondence 𝒳 𝒵 𝒲₁₂} {C₂₃ : Correspondence 𝒴 𝒱 𝒲₂₃}
+  {C : Correspondence 𝒳 𝒱 𝒲}
+
+/-- **Associativity of convolution at the transform level — a theorem, not
+data.**
+
+For three composable correspondences with convolution data for both
+bracketings landing in a common outer correspondence, the transforms of the
+two associated kernels are isomorphic: each side is isomorphic to
+`Φ_P ⋙ Φ_Q ⋙ Φ_R` by Prop. 5.10 twice.  No input beyond the four `compIso`
+families is consumed.
+
+What this does **not** give is an isomorphism of the kernels themselves; that
+is `ConvolutionAssocData`, and the gap between the two is genuine — see its
+docstring. -/
+def convolutionTransformAssoc
+    (D₁₂ : ConvolutionData C₁ C₂ C₁₂) (D₂₃ : ConvolutionData C₂ C₃ C₂₃)
+    (Dl : ConvolutionData C₁₂ C₃ C) (Dr : ConvolutionData C₁ C₂₃ C)
+    (P : 𝒲₁) (Q : 𝒲₂) (R : 𝒲₃) :
+    C.transform (Dl.conv (D₁₂.conv P Q) R) ≅
+      C.transform (Dr.conv P (D₂₃.conv Q R)) :=
+  (Dl.compIso (D₁₂.conv P Q) R).symm ≪≫
+    Functor.isoWhiskerRight (D₁₂.compIso P Q).symm (C₃.transform R) ≪≫
+      Functor.associator (C₁.transform P) (C₂.transform Q) (C₃.transform R) ≪≫
+        Functor.isoWhiskerLeft (C₁.transform P) (D₂₃.compIso Q R) ≪≫
+          Dr.compIso P (D₂₃.conv Q R)
+
+/-- **Associativity of convolution at the kernel level — supplied data.**
+
+An isomorphism `(P ∗ Q) ∗ R ≅ P ∗ (Q ∗ R)` between the two bracketings, in
+the kernel category of the common outer correspondence.
+
+Strictly stronger than `convolutionTransformAssoc`, and the gap is Orlov's
+uniqueness statement: the transforms of the two kernels are always isomorphic
+(the theorem above), but recovering an isomorphism of the *kernels* from an
+isomorphism of their transforms needs a kernel to be determined by its
+transform, which nothing in this repository provides.
+
+Geometrically the classical proof works on the quadruple product, by the same
+projection-formula and base-change arguments that derive Prop. 5.10 on the
+triple product.  That derivation is the geometric ledger's future work, and
+this structure is the layer it would discharge.  Nothing here constructs one,
+and no result in this file depends on it. -/
+structure ConvolutionAssocData
+    (D₁₂ : ConvolutionData C₁ C₂ C₁₂) (D₂₃ : ConvolutionData C₂ C₃ C₂₃)
+    (Dl : ConvolutionData C₁₂ C₃ C) (Dr : ConvolutionData C₁ C₂₃ C) where
+  /-- The two bracketings of three kernels agree at the kernel level. -/
+  assocIso (P : 𝒲₁) (Q : 𝒲₂) (R : 𝒲₃) :
+    Dl.conv (D₁₂.conv P Q) R ≅ Dr.conv P (D₂₃.conv Q R)
+
+end Assoc
 
 end CategoryTheory.Triangulated.FourierMukai

@@ -3814,6 +3814,11 @@ says that the interface is consistent, not that any functor is of kernel type.
 `ConvolutionData` supplies Huybrechts' Prop. 5.10 rather than proving it, so a
 clean axiom list here says the supplied-data interface is consistent and that
 its consequences follow from it -- not that any convolution exists.
+
+Associativity splits: `convolutionTransformAssoc` is a THEOREM (transform
+level, derived from four compIso families alone), while
+`ConvolutionAssocData` is SUPPLIED (kernel level; deriving it would need
+Orlov uniqueness). Nothing constructs the latter.
 -/
 
 #print axioms CategoryTheory.Triangulated.FourierMukai.ConvolutionData
@@ -3825,6 +3830,11 @@ its consequences follow from it -- not that any convolution exists.
 #print axioms CategoryTheory.Triangulated.FourierMukai.ConvolutionData.isKernelFunctor_comp
 #print axioms CategoryTheory.Triangulated.FourierMukai.ConvolutionData.transformMapConvIso
 #print axioms CategoryTheory.Triangulated.FourierMukai.ConvolutionData.transformMapConvIso_refl
+#print axioms CategoryTheory.Triangulated.FourierMukai.convolutionTransformAssoc
+#print axioms CategoryTheory.Triangulated.FourierMukai.ConvolutionAssocData
+#print axioms CategoryTheory.Triangulated.FourierMukai.ConvolutionAssocData.mk.inj
+#print axioms CategoryTheory.Triangulated.FourierMukai.ConvolutionAssocData.mk.sizeOf_spec
+#print axioms CategoryTheory.Triangulated.FourierMukai.ConvolutionAssocData.assocIso
 
 /-! ## Fourier--Mukai lane -- the induced maps on K₀
 
