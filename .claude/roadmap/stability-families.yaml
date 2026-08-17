@@ -109,6 +109,7 @@ generations:
   - { rev: 47, at: "2026-08-17", note: "SF9.1 (#523) builds the reusable stack-in-groupoids substrate directly on Mathlib's Pseudofunctor, DescentData, IsPrestack, and IsStack APIs. Cover restriction is proved fully faithful and essentially surjective, the stack condition transports across explicit fiber/descent equivalences, and ordinary sheaves of types yield discrete stacks. Subcanonicity supplies a nonconstant big-Zariski stack represented by every scheme. Pullback-compatible and fiber-representability interfaces are separate from the stack condition; no algebraicity theorem is bundled or claimed." }
   - { rev: 48, at: "2026-08-17", note: "SF8.3 (#519) replaces the caller-selected boundedness switch by an actual geometric predicate: a locally-finite-type, quasi-compact scheme over the base, a universally-gluable relative-perfect universal family in the selected subfunctor, explicit geometric fibers, and coverage up to isomorphism after equality of the actual residue-field base changes. The predicate is monotone under enlarging admitted families and shrinking the target, and adapts directly to Definition 21.15(5). The identity parameter scheme and zero complex give a concrete inhabited model after every locally Noetherian base change. General residue pullback for nonzero families and semistable boundedness remain named inputs to SF8.4 rather than hidden propositions." }
   - { rev: 49, at: "2026-08-17", note: "SF8.4 (#520) introduces actual epimorphic module-sheaf quotient presentations, their commuting morphisms, target functor, and pullback functor; preservation of epimorphisms makes base change a theorem. Representability is never a name: RepresentableQuotientProblem requires a Yoneda isomorphism, and finite-type parameter spaces additionally require the actual structure morphism to be locally of finite type and quasi-compact. Since Mathlib has no general Quot scheme or Grassmannian at this pin, the supported zero-quotient functor is proved represented by the terminal identity scheme, maps to the concrete zero relative-perfect moduli problem, and inhabits SF8.3 boundedness. No nonzero Quot, semistable boundedness, or algebraicity claim is made." }
+  - { rev: 50, at: "2026-08-17", note: "SF8.0 (#528) gains its first honest affine realization layer. Mathlib's tilde equivalence transports finite products and an abelian structure to the actual full category of quasi-coherent sheaves on Spec R; its derived category is therefore genuinely triangulated. Derived tilde and Gamma functors and their degreewise cohomology comparisons are constructed. The functors are not called an equivalence until localization-level unit/counit data exist, and no unbounded essential-surjectivity, general-scheme coproduct, bounded-coherent, compact-equals-perfect, generator-closure, or S-linearity statement is claimed." }
 retired: []
 
 # GitHub milestones are roadmap phases. Epic issues live inside them, and
@@ -433,7 +434,7 @@ items:
     parent: stability-families-m8
     title: "Own relative-perfect moduli and boundedness"
     status: in_progress
-    summary: "#521, #518, #519, and #520 deliver the relative-perfect object, groupoid-valued moduli, finite-type boundedness, and supported Quot/parameter-space layers. The first Quot functor is the represented zero case and deliberately makes no nonzero semistable claim. #528 remains the independent general-scheme Dqc seam before SF8 can close."
+    summary: "#521, #518, #519, and #520 deliver the relative-perfect object, groupoid-valued moduli, finite-type boundedness, and supported Quot/parameter-space layers. #528 now has an honest affine quasi-coherent abelian/derived substrate, but the general unbounded Dqc equivalence, compact-equals-perfect, generator closure, and S-linearity remain before SF8 can close."
     priority: must
     size: XL
     tags: [relative-perfect, moduli, boundedness, quot]
@@ -444,8 +445,8 @@ items:
     kind: deliverable
     parent: stability-families-e14
     title: "Complete the general-scheme Dqc realization"
-    status: planned
-    summary: "Carry the deliberately unclaimed SF7 general-scheme obligations: inherited triangulated/coproduct structure, bounded-coherent equivalence, compact-equals-perfect, generator closure, and S-linearity."
+    status: in_progress
+    summary: "Constructed the genuine affine quasi-coherent sheaf category as abelian via Mathlib's tilde equivalence, its triangulated derived category, derived tilde/Gamma functors, and cohomology comparisons. General unbounded essential surjectivity into the honest Dqc locus, coproducts, bounded-coherent equivalence, compact-equals-perfect, generator closure, and S-linearity remain explicitly open."
     priority: must
     size: XL
     tags: [dqc, compact-generation, schemes]
