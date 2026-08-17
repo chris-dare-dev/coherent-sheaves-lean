@@ -63,6 +63,16 @@ Orlov uniqueness). Nothing constructs the latter.
 #print axioms CategoryTheory.Triangulated.FourierMukai.ConvolutionAssocData.mk.inj
 #print axioms CategoryTheory.Triangulated.FourierMukai.ConvolutionAssocData.mk.sizeOf_spec
 #print axioms CategoryTheory.Triangulated.FourierMukai.ConvolutionAssocData.assocIso
+#print axioms CategoryTheory.Triangulated.FourierMukai.convolutionTransformUnitLeft
+#print axioms CategoryTheory.Triangulated.FourierMukai.convolutionTransformUnitRight
+#print axioms CategoryTheory.Triangulated.FourierMukai.ConvolutionLeftUnitData
+#print axioms CategoryTheory.Triangulated.FourierMukai.ConvolutionLeftUnitData.mk.inj
+#print axioms CategoryTheory.Triangulated.FourierMukai.ConvolutionLeftUnitData.mk.sizeOf_spec
+#print axioms CategoryTheory.Triangulated.FourierMukai.ConvolutionLeftUnitData.leftUnitIso
+#print axioms CategoryTheory.Triangulated.FourierMukai.ConvolutionRightUnitData
+#print axioms CategoryTheory.Triangulated.FourierMukai.ConvolutionRightUnitData.mk.inj
+#print axioms CategoryTheory.Triangulated.FourierMukai.ConvolutionRightUnitData.mk.sizeOf_spec
+#print axioms CategoryTheory.Triangulated.FourierMukai.ConvolutionRightUnitData.rightUnitIso
 
 /-! ## Fourier--Mukai lane -- the induced maps on K₀
 
