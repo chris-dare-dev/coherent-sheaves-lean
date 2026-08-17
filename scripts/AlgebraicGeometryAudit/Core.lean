@@ -226,6 +226,25 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Proj.laurentHomotopy_laurentFace_comm'
 #print axioms AlgebraicGeometry.Proj.cechHomotopy_cechFace_zero
 #print axioms AlgebraicGeometry.Proj.cechHomotopy_cechFace_succ
+-- The primitive of a Cech cocycle (#340, step 3): the vanishing computation in cochain form.
+-- Per block a cone point is chosen and the block component of the cocycle is contracted
+-- through the homotopy; blocks with no cone point are empty because a nonnegative twist
+-- cannot have every exponent negative (the ONLY place d >= 0 is spent); and the per-block
+-- identities reassemble over the finitely many blocks of each tuple.
+-- cechPrimitive_isPrimitive is the homotopy computation d h + h d = id itself.
+#print axioms AlgebraicGeometry.Proj.laurentFilter_eq_zero_of_forall_mem
+#print axioms AlgebraicGeometry.Proj.blockProj_eq_zero_of_forall_mem
+#print axioms AlgebraicGeometry.Proj.cechBlockProj_eq_zero_of_forall_mem
+#print axioms AlgebraicGeometry.Proj.tupleExponent_support_succAbove
+#print axioms AlgebraicGeometry.Proj.subset_of_subset_cons
+#print axioms AlgebraicGeometry.Proj.cechTermCongr_symm_cechBlockProj
+#print axioms AlgebraicGeometry.Proj.cechBlockPrimitive
+#print axioms AlgebraicGeometry.Proj.cechBlockPrimitive_of_exists
+#print axioms AlgebraicGeometry.Proj.cechBlockPrimitive_of_forall
+#print axioms AlgebraicGeometry.Proj.cechBlockPrimitive_eq_zero_of_not_subset
+#print axioms AlgebraicGeometry.Proj.cechPrimitive
+#print axioms AlgebraicGeometry.Proj.cechBlockPrimitive_faces
+#print axioms AlgebraicGeometry.Proj.cechPrimitive_isPrimitive
 #print axioms AlgebraicGeometry.Proj.GradedLinearMap
 #print axioms AlgebraicGeometry.Proj.GradedLinearMap.map
 #print axioms AlgebraicGeometry.Proj.GradedLinearMap.map_mk
