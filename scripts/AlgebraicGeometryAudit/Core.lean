@@ -245,6 +245,14 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Proj.cechPrimitive
 #print axioms AlgebraicGeometry.Proj.cechBlockPrimitive_faces
 #print axioms AlgebraicGeometry.Proj.cechPrimitive_isPrimitive
+-- The headline of #340: H^n(P, O(d)) = 0 for n >= 1 and d >= 0, over an arbitrary --
+-- possibly infinite -- variable set. cechPrimitive_isPrimitive becomes exactness of the
+-- algebraic Cech complex through ab_exact_iff and the coordinate formula for the
+-- differential, exactness becomes vanishing homology, and the comparison of #495 carries
+-- the vanishing to the derived sections group. The HasExt witness is positional throughout.
+#print axioms AlgebraicGeometry.Proj.polynomialVariableCechComplex_exactAt
+#print axioms AlgebraicGeometry.Proj.polynomialVariableCechComplex_homology_isZero
+#print axioms AlgebraicGeometry.Proj.polynomialTwisting_H_subsingleton
 #print axioms AlgebraicGeometry.Proj.GradedLinearMap
 #print axioms AlgebraicGeometry.Proj.GradedLinearMap.map
 #print axioms AlgebraicGeometry.Proj.GradedLinearMap.map_mk
