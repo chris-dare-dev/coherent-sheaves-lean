@@ -4046,4 +4046,18 @@ results require `HomFiniteBounded`.
 #print axioms CategoryTheory.Triangulated.chiK₀_of
 #print axioms CategoryTheory.Triangulated.chiK₀_of_of
 
+/-! ## Affine quasi-coherent derived realization (#528) -/
+
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.AffineQuasicoherentDerivedCategory
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.AffineQuasicoherentSheaves
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.affineGammaDerivedFunctor
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.affineGammaDerivedHomologyIso
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.affineQuasicoherentDerivedCategory_isTriangulated
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.affineQuasicoherentSheavesAbelian
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.affineQuasicoherentSheavesEquiv
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.affineQuasicoherentSheavesEquiv_functor_additive
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.affineQuasicoherentSheavesEquiv_inverse_additive
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.affineQuasicoherentSheavesHasFiniteProducts
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.affineTildeDerivedFunctor
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.affineTildeDerivedHomologyIso
 
