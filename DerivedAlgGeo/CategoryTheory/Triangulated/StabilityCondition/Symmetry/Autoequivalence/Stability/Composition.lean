@@ -123,14 +123,14 @@ omit [IsTriangulated C] [Φ.functor.Additive] [Ψ.functor.Additive]
 The order is the one the quasi-inverse forces: `(Φ.trans Ψ).inverse` is
 `Ψ.inverse ⋙ Φ.inverse`, so `lam₂` acts first and `lam₁` last. -/
 theorem hlam_trans {lam₁ lam₂ : Λ →+ Λ}
-    (h₁ : ∀ x : K₀ C, v (K₀.mapF Φ.inverse x) = lam₁ (v x))
-    (h₂ : ∀ x : K₀ C, v (K₀.mapF Ψ.inverse x) = lam₂ (v x)) (x : K₀ C) :
-    v (K₀.mapF (Φ.trans Ψ).inverse x) = (lam₁.comp lam₂) (v x) := by
-  have hcomp : K₀.mapF (Φ.trans Ψ).inverse
-      = (K₀.mapF Φ.inverse).comp (K₀.mapF Ψ.inverse) :=
-    K₀.mapF_comp Ψ.inverse Φ.inverse
+    (h₁ : ∀ x : K₀ C, v (K₀.map Φ.inverse x) = lam₁ (v x))
+    (h₂ : ∀ x : K₀ C, v (K₀.map Ψ.inverse x) = lam₂ (v x)) (x : K₀ C) :
+    v (K₀.map (Φ.trans Ψ).inverse x) = (lam₁.comp lam₂) (v x) := by
+  have hcomp : K₀.map (Φ.trans Ψ).inverse
+      = (K₀.map Φ.inverse).comp (K₀.map Ψ.inverse) :=
+    K₀.map_comp Ψ.inverse Φ.inverse
   rw [hcomp]
-  simpa [h₂ x] using h₁ (K₀.mapF Ψ.inverse x)
+  simpa [h₂ x] using h₁ (K₀.map Ψ.inverse x)
 
 /-- **Transporting twice is transporting once along the composite.**
 
@@ -138,8 +138,8 @@ The associativity clause of an action, stated as a single equation. The
 lattice map of the composite is `lam₁.comp lam₂`, supplied by `hlam_trans`, so
 no new hypothesis enters. -/
 theorem actStabAut_trans {lam₁ lam₂ : Λ →+ Λ}
-    (h₁ : ∀ x : K₀ C, v (K₀.mapF Φ.inverse x) = lam₁ (v x))
-    (h₂ : ∀ x : K₀ C, v (K₀.mapF Ψ.inverse x) = lam₂ (v x))
+    (h₁ : ∀ x : K₀ C, v (K₀.map Φ.inverse x) = lam₁ (v x))
+    (h₂ : ∀ x : K₀ C, v (K₀.map Ψ.inverse x) = lam₂ (v x))
     (σ : StabilityCondition.WithClassMap C v) :
     actStabAut Ψ v lam₂ h₂ (actStabAut Φ v lam₁ h₁ σ)
       = actStabAut (Φ.trans Ψ) v (lam₁.comp lam₂) (hlam_trans v Φ Ψ h₁ h₂) σ := by

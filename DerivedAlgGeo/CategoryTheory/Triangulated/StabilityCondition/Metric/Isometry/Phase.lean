@@ -250,7 +250,7 @@ scope here. -/
 @[cites "stmt:a520a8d4f877:bridgeland2007.lem-8.2" (relation := no_claim)
         (note := "Same non-implication as mapEquiv_slicingDist: the distance is the foundational library's slicingDist, not Bridgeland's d, and d omits nothing while slicingDist omits the mass ratio. What this adds over that theorem is only the carrier -- the statement is now about stability conditions rather than bare slicings, matching the paper's Stab(D). It is still not the paper's isometry claim.")]
 theorem actStabAut_slicingDist (lam : Λ →+ Λ)
-    (hlam : ∀ x : K₀ C, v (K₀.mapF Φ.inverse x) = lam (v x))
+    (hlam : ∀ x : K₀ C, v (K₀.map Φ.inverse x) = lam (v x))
     (σ τ : StabilityCondition.WithClassMap C v) :
     slicingDist C (actStabAut Φ v lam hlam σ).slicing
         (actStabAut Φ v lam hlam τ).slicing

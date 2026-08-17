@@ -46,9 +46,9 @@ subcategories of `C`.
 ## The class-lattice datum
 
 An autoequivalence acts on `WithClassMap C v` only *together with* a
-`lam : Λ →+ Λ` satisfying `v ∘ K₀.mapF Φ⁻¹ = lam ∘ v`. That is not a
+`lam : Λ →+ Λ` satisfying `v ∘ K₀.map Φ⁻¹ = lam ∘ v`. That is not a
 technicality — `v` is arbitrary, and nothing forces `Φ` to respect it. When
-`v = id` the datum is forced (`lam = K₀.mapF Φ⁻¹`); in general it is extra
+`v = id` the datum is forced (`lam = K₀.map Φ⁻¹`); in general it is extra
 input, structurally exactly as `Compatible` is for `GLTilde`.
 
 With it, `compat'` costs nothing: the witness `m` is *unchanged*, because `Φ`
@@ -236,7 +236,7 @@ moving its phase. -/
 @[cites "stmt:a520a8d4f877:bridgeland2007.lem-8.2" (relation := one_way)
         (note := "The Aut half of Lemma 8.2, but this declaration is a map for a pair (Phi, lam), not the MulAction of bare Aut(D). Downstream HNMassUniqueness identifies the mass coordinate with Bridgeland's finite HN mass and AutFullIsometry proves exact preservation by AutPairQuot v; that quotient still carries extra compatible lattice data.")]
 noncomputable def actStabAut (lam : Λ →+ Λ)
-    (hlam : ∀ x : K₀ C, v (K₀.mapF Φ.inverse x) = lam (v x))
+    (hlam : ∀ x : K₀ C, v (K₀.map Φ.inverse x) = lam (v x))
     (σ : StabilityCondition.WithClassMap C v) : StabilityCondition.WithClassMap C v where
   toWithClassMap :=
     { slicing := CategoryTheory.Triangulated.Slicing.mapEquiv σ.slicing Φ
@@ -248,7 +248,7 @@ noncomputable def actStabAut (lam : Λ →+ Λ)
         obtain ⟨m, hm, hZ⟩ := σ.compatible φ (Φ.inverse.obj E) hP hE'
         refine ⟨m, hm, ?_⟩
         show σ.Z (lam (v (K₀.of C E))) = _
-        rw [← hlam, K₀.mapF_of]
+        rw [← hlam, K₀.map_of]
         exact hZ }
   locallyFinite := mapEquiv_isLocallyFinite Φ σ.slicing σ.locallyFinite
 
