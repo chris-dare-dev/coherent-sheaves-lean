@@ -2,7 +2,7 @@
 
 **Audience:** a working session (autonomous or interactive) picking up #340 / #491.
 Not a human summary.
-**Baseline:** `origin/main` at `844a4ae` (merge of PR #526). Everything below assumes
+**Baseline:** `origin/main` at `ab4d431` (merge of PR #539). Everything below assumes
 that commit. Ratchet ceilings at this baseline: AlgebraicGeometry **1098**,
 StabilityCondition **380**, DGCategory **0**
 (`scripts/check_audit_complete.py:CEILINGS`).
@@ -47,7 +47,7 @@ cd /tmp/<your-dir> && lake build && scripts/gates.sh
     unregistered; only `audit-complete` caught it. Verify with
     `grep -c '<new-name>' scripts/AlgebraicGeometryAudit.lean` after editing.
 - **The audit file is a single append-point and conflicts structurally** with every
-  concurrent PR. Four of this lane's seven PRs conflicted there. Resolution is
+  concurrent PR. Four of this lane's eight PRs conflicted there. Resolution is
   always "keep both blocks"; never take one side.
 - `grep -c` exits **1** when the count is 0, which short-circuits a `&&` chain and
   can skip a `git commit`. Do not chain a verification `grep -c` before a commit.
@@ -115,7 +115,7 @@ dévissage input at `intShift` with no new idea.
 
 ## 2. What is landed
 
-Seven PRs, all merged, all gated at 17/17, no `sorryAx`, no new axiom.
+Eight PRs, all merged, all gated at 17/17, no `sorryAx`, no new axiom.
 
 **#495** — `Cohomology/Finiteness/ProjectiveSpace.lean`.
 `polynomialVariableCechComplex_computesCohomology`: for every `n : ℕ` and `d : ℕ`,
@@ -193,6 +193,22 @@ form**: a map may be *defined* by its effect on monomial fractions.
 `γ' i₀ = 0` is required by `signProjection`'s **equations**, not by its definition —
 the definition is total either way; only independence of the choice needs it.
 
+**#539** — additivity and the `faceMap` square. **Not written in the same session as the
+rest of this lane**; read it before assuming §4 is untouched.
+- `signProjection_add`, `signProjectionHom` (`→+`), `signProjectionHom_apply` — `π` is
+  additive. Uses the new `exists_awayMk_pair` in `GradedLocalization.lean` to put two
+  elements over one denominator, which is the first use of `awayMk_shift` outside
+  `frac_project_raise`.
+- `signProjection_laurentFace_comm` — **the projection square.** Away from the retracted
+  face, `π` commutes with the Čech face. The four denominators are separate splitting
+  hypotheses because a Čech differential produces each separately.
+- The restriction is carried by `hδ'₀ : δ' i₀ = 0`, which with `hγ'` forces
+  `X_e ≠ X_{i₀}` unless `c' = 0` — exactly the disjointness
+  `divMonomial_monomial_mul_comm` needs. Its docstring records that the **unrestricted
+  square at `e = i₀` is false**; that face is the retraction
+  `signProjection_laurentFace`, not this square. That matches §1 step 3 and the failing
+  case in §4.
+
 ## 3. Review notes on what is landed
 
 Things a reviewer should look at, or a continuation should not undo:
@@ -205,11 +221,10 @@ Things a reviewer should look at, or a continuation should not undo:
    the definition, that is a sign the needed equation is missing, not that the
    definition is wrong.
 
-2. **`signProjection` is not yet known to be additive.** It is a bare function, not
-   an `AddMonoidHom`. The homotopy needs additivity. This is listed as work in §4
-   and is the most likely place to be surprised: it requires putting two elements
-   over a *common* denominator, which is the first genuine use of `awayMk_shift`
-   outside `frac_project_raise`.
+2. **Additivity arrived in #539, not with the rest.** `signProjectionHom` is the `→+`
+   form; prefer it over the bare `signProjection` wherever a homomorphism is wanted,
+   and use `signProjectionHom_apply` to move between them. `exists_awayMk_pair` (common
+   denominator for two elements) is the reusable part.
 
 3. **The `γ = X_{i₀}^c · γ'` splitting is a hypothesis, not `Finsupp.erase`.** The
    caller is a Čech face, which produces the pieces separately (`c = 1`, `γ'` the
@@ -235,53 +250,40 @@ Things a reviewer should look at, or a continuation should not undo:
 
 ## 4. Continuation, in order
 
-### Step 1 — the `faceMap` square (finishes #491)
+### Step 0 — DONE in #539 (was step 1 here)
 
-The last property the homotopy consumes. For a tuple `x`, a face index `j`, and
-`i₀ ∈ ι`:
-```
-π_{i₀::x → x} ∘ faceMap_{i₀::(x∘δⱼ) → i₀::x}
-  = faceMap_{x∘δⱼ → x} ∘ π_{i₀::(x∘δⱼ) → x∘δⱼ}
-```
-**restricted to the summands with `i₀ ∉ N α`.** The restriction is essential — the
-square does **not** commute unrestricted. Concretely it fails when `i₀ ∈ T x` but
-`i₀ ∉ T (x ∘ δⱼ)` (i.e. `x j = i₀` and `i₀` occurs nowhere else): then the left side
-keeps everything and the right side still requires `α i₀ ≥ 0`. This is exactly the
-`i₀ ∉ F` hypothesis of §1 step 3, and it is why the homotopy is built per-block.
+The `faceMap` square and additivity are landed; see §2. Do not redo them. The
+restriction hypothesis and the reason the unrestricted square fails are recorded on
+`signProjection_laurentFace_comm` itself.
 
-Inputs available: `laurentFace_awayMk`, `signProjection_awayMk`,
-`divMonomial_monomial_mul_comm` (the disjointness hypothesis is what encodes the
-restriction), `awayMk_deg_congr`.
-
-Also needed here, and not yet proved:
-- `signProjection` is additive (see §3.2) — promote it to `→+`.
-- A common-denominator lemma for two elements: given `z₁, z₂`, representatives at a
-  single shared `m`. This is `awayMk_shift` twice plus `exists_awayMk`.
-
-### Step 2 — the block decomposition (`∏_F C_F`)
+### Step 1 — the block decomposition (`∏_F C_F`)
 
 `Cⁿ ≅ ∏_{F : Finset ι} C_F ⁿ` **as cochain complexes**, not merely degreewise, and
 `Hⁿ(C) = ∏_F Hⁿ(C_F)`.
 
 The per-`x` finiteness of `{F | F ⊆ T x}` is what makes the map an isomorphism;
-#506 + #509 give the basis it is stated against. `polynomialVariableCechComplex_d_apply`
-is the differential to check preserves each block. Expect this to be the largest
-single step — it is where the complex-level bookkeeping lives.
+`exists_sum_awayMk_monomial` + `sum_awayMk_monomial_eq_zero_iff` give the basis it is
+stated against, and `polynomialVariableCechComplex_d_apply`
+(`Cohomology/Cech/ProjectiveSpace.lean`) is the differential to check preserves each
+block. Expect this to be the largest single step — it is where the complex-level
+bookkeeping lives, and it is now the **only** thing between the algebra and the
+vanishing theorem.
 
-### Step 3 — the homotopy and vanishing
+### Step 2 — the homotopy and vanishing
 
-`d ∘ h + h ∘ d = id` on `C_F ⁿ` for `n ≥ 1`, with `h` built from `signProjection` and
-`Fin.cons i₀`; then `Hⁿ(C_F) = 0`, then `C_ι = 0` for `d ≥ 0`, then
-`Hⁿ(Pⁿ, O(d)) = 0` for `n ≥ 1` through #495.
+`d ∘ h + h ∘ d = id` on `C_F ⁿ` for `n ≥ 1`, with `h` built from `signProjectionHom`
+and `Fin.cons i₀`; the two properties it consumes (`signProjection_laurentFace`,
+`signProjection_laurentFace_comm`) are both in hand. Then `Hⁿ(C_F) = 0`, then
+`C_ι = 0` for `d ≥ 0`, then `Hⁿ(Pⁿ, O(d)) = 0` for `n ≥ 1` through #495.
 
-### Step 4 — close out #340
+### Step 3 — close out #340
 
 - `H⁰` **must reuse** `polynomialTwistingGlobalSectionsModuleIso`
   (`Proj/Modules/ProjectiveSpace.lean`, `[Nontrivial ι]`), not be reproved. Note the
   `Nontrivial ι` hypothesis: `|ι| ≥ 2`. For `|ι| = 1` `Proj` is a point and for
   `ι` empty it is empty; state accordingly.
 - `Module.Finite k (Hⁱ(Pⁿ, O(d)))` for every `i`, `d`, **with no finiteness
-  hypothesis** — a corollary of steps 3 + 4, not an independent target. The first
+  hypothesis** — a corollary of steps 2 + 3, not an independent target. The first
   comment on #340 establishes why: every Čech cochain group is infinite-dimensional
   over `k`, so finiteness is never inherited from the terms.
 - Retitle/relabel #340 off `blocked` and close #491.
@@ -295,7 +297,14 @@ needs and a full grading is strictly more work.
 
 ## 5. Estimate
 
-Step 1 is one focused session. Step 2 is the risk — the product-of-blocks iso at
-complex level, plausibly 300–600 lines. Steps 3–4 are short *given* step 2. Whole
-remainder: roughly one to two weeks of focused Lean, not the "multi-week `ℤ^ι`
-grading development" the first #340 comment implied.
+Step 1 (the product-of-blocks iso at complex level) is the risk — plausibly 300–600
+lines, and it is now the only substantial unknown. Steps 2–3 are short *given* step 1.
+Whole remainder: roughly one week of focused Lean, not the "multi-week `ℤ^ι` grading
+development" the first #340 comment implied.
+
+### A note on concurrency
+
+#539 landed the previous step 1 while this document was being written, from a
+different session. This lane has more than one worker; **re-read `git log
+origin/main -- DerivedAlgGeo/AlgebraicGeometry/Proj/Modules/` before starting** rather
+than trusting §2 to be current.
