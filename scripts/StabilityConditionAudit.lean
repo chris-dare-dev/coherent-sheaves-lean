@@ -1175,6 +1175,19 @@ open CategoryTheory.Triangulated
 
 #print axioms Matrix.polarFactor
 
+-- `R`-linearity of the opposite category and of the opposite shift (#469).
+-- Each is the linear counterpart of an additive declaration Mathlib already
+-- has; `shiftFunctorOppositeLinear` is DERIVED from linearity of the shift on
+-- `C`, which stays a hypothesis because additivity does not imply linearity.
+#print axioms CategoryTheory.homModuleOpposite
+#print axioms CategoryTheory.linearOpposite
+#print axioms CategoryTheory.unop_smul
+#print axioms CategoryTheory.op_smul
+#print axioms CategoryTheory.Functor.op_linear
+#print axioms CategoryTheory.shiftFunctorOppositeLinear
+#print axioms CategoryTheory.ShiftedHom.opEquiv_symm_smul
+#print axioms CategoryTheory.ShiftedHom.opEquiv'_symm_smul
+
 -- Repository-owned heart results used by weak-tilting cohomology.
 #print axioms CategoryTheory.ObjectProperty.FullSubcategory.isZero_of_obj_isZero
 #print axioms CategoryTheory.Triangulated.TStructure.heart_hι
@@ -3815,13 +3828,22 @@ consequence applies to `KernelAutoequivalence.id`.
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.UnitKernelData.toDualKernel
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.UnitKernelData.toDualKernel_dual
 
-/-! ## The k-linear Yoneda functor is homological
+/-! ## The k-linear Yoneda functor is homological, and its shift sequence
 
 The `ModuleCat k` counterpart of Mathlib's `preadditiveYoneda` instance, and the
 one a `k`-dimension count can use — `finrank` is not statable in `AddCommGrpCat`.
-`ShiftSequence ℤ` is NOT here; see the module docstring for the three Mathlib
-gaps that block it.
+
+`ShiftSequence ℤ` is here as of #469, so the long exact Hom sequence is
+available. A clean axiom list on the three `homologySequence_exact` lemmas says
+they follow from Mathlib's generic homology-sequence API once the two instances
+are supplied — it does NOT say any Euler form exists. That still needs
+finiteness data nothing here provides.
 -/
 
 #print axioms CategoryTheory.Triangulated.linearYoneda_isHomological
 #print axioms CategoryTheory.Triangulated.linearYoneda_map_distinguished
+#print axioms CategoryTheory.Triangulated.linearYonedaShiftSequence
+#print axioms CategoryTheory.Triangulated.linearYoneda_homologySequence_exact₁
+#print axioms CategoryTheory.Triangulated.linearYoneda_homologySequence_exact₂
+#print axioms CategoryTheory.Triangulated.linearYoneda_homologySequence_exact₃
+
