@@ -623,6 +623,38 @@ theorem awayMk_shift {f : A} {e : ι} (hf : f ∈ 𝒜 e) (n t : ℕ) (p : M)
   rw [awayMk, awayMk, mk_eq_mk_iff]
   exact ⟨1, by simp [← mul_smul, ← pow_add]⟩
 
+/-- **Two fractions share a denominator.** Any two degree-zero fractions away from `f` have
+`awayMk` representatives over one common power `fⁿ`.
+
+This is `exists_awayMk` on each fraction followed by `awayMk_shift` to align the two exponents
+at their sum. It is the move every statement about a *sum* of fractions opens with — additivity
+of `awayMk` exists only at a fixed denominator — and it is what the additivity of the sign
+projection (#340's contracting homotopy) reduces to. Like `exists_awayMk`, it costs no domain
+or torsion-freeness hypothesis: no cancellation is performed. -/
+theorem exists_awayMk_pair {f : A} {e : ι} (hf : f ∈ 𝒜 e) (hf0 : ∀ n : ℕ, f ^ n ≠ 0)
+    (z₁ z₂ : DegreeZeroLocalization 𝒜 𝓜 (.powers f)) :
+    ∃ (n : ℕ) (p₁ p₂ : M) (hp₁ : p₁ ∈ 𝓜 (n • e)) (hp₂ : p₂ ∈ 𝓜 (n • e)),
+      z₁ = awayMk hf n p₁ hp₁ ∧ z₂ = awayMk hf n p₂ hp₂ := by
+  obtain ⟨n₁, q₁, hq₁, rfl⟩ := exists_awayMk hf hf0 z₁
+  obtain ⟨n₂, q₂, hq₂, rfl⟩ := exists_awayMk hf hf0 z₂
+  have hp₁ : f ^ n₂ • q₁ ∈ 𝓜 ((n₁ + n₂) • e) := by
+    have h := SetLike.GradedSMul.smul_mem (SetLike.pow_mem_graded n₂ hf) hq₁
+    rwa [vadd_eq_add, show n₂ • e + n₁ • e = (n₁ + n₂) • e by rw [add_nsmul, add_comm]] at h
+  have hp₂ : f ^ n₁ • q₂ ∈ 𝓜 ((n₁ + n₂) • e) := by
+    have h := SetLike.GradedSMul.smul_mem (SetLike.pow_mem_graded n₁ hf) hq₂
+    rwa [vadd_eq_add, show n₁ • e + n₂ • e = (n₁ + n₂) • e by rw [add_nsmul]] at h
+  -- Transport an `awayMk` across `n₂ + n₁ = n₁ + n₂`; the exponent sits in the membership
+  -- certificate, so `rw` cannot reach it and proof irrelevance has to do the move.
+  have hcongr : ∀ (a b : ℕ) (q : M) (hqa : q ∈ 𝓜 (a • e)) (hqb : q ∈ 𝓜 (b • e)), a = b →
+      awayMk hf a q hqa = awayMk hf b q hqb := by
+    rintro a b q hqa hqb rfl; rfl
+  refine ⟨n₁ + n₂, f ^ n₂ • q₁, f ^ n₁ • q₂, hp₁, hp₂,
+    (awayMk_shift hf n₁ n₂ q₁ hq₁ hp₁).symm, ?_⟩
+  have hp₂' : f ^ n₁ • q₂ ∈ 𝓜 ((n₂ + n₁) • e) := by
+    rwa [show (n₂ + n₁) • e = (n₁ + n₂) • e by rw [Nat.add_comm]]
+  exact ((awayMk_shift hf n₂ n₁ q₂ hq₂ hp₂').symm.trans
+    (hcongr (n₂ + n₁) (n₁ + n₂) _ hp₂' hp₂ (Nat.add_comm n₂ n₁)))
+
 /-- **A fraction vanishes exactly when its numerator does.**
 
 This is `awayMk_eq_awayMk_iff` against the zero fraction, and it is what makes the numerator a
