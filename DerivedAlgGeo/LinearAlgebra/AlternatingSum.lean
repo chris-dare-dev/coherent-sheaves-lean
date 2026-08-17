@@ -10,11 +10,15 @@ import Mathlib.Algebra.BigOperators.Intervals
 # The alternating sum of dimensions along an exact sequence
 
 The Euler characteristic of a bounded exact complex of finite-dimensional
-vector spaces vanishes.  This is the arithmetic fact underneath every
-"`χ` is additive on distinguished triangles" argument, and Mathlib does not
-have it: `Mathlib.Algebra.Homology.EulerCharacteristic` defines `eulerChar`
-and `homologyEulerChar` and converts a `finsum` to a finite sum, but proves no
-relation between them and nothing about exact complexes.
+vector spaces vanishes.
+
+**Mathlib does have the vanishing statement** — `Module.sum_neg_one_pow_finrank_eq_zero_of_exact`
+(`Mathlib/Algebra/Exact/Sequence.lean`), `Fin (n+2)`-indexed, under
+`[DivisionRing k]`.  An earlier version of this docstring denied that, citing
+only `Mathlib.Algebra.Homology.EulerCharacteristic`; the denial was false at the
+pin and is corrected here.  What Mathlib does **not** expose is the
+partial-sum-as-rank identity `sum_range_succ_smul_finrank` below, which is the
+statement that survives the induction.
 
 ## The shape of the statement
 
@@ -31,11 +35,18 @@ Vanishing is then the corollary `sum_range_succ_smul_finrank_eq_zero`, which
 needs only that the complex stops: `range dₙ = ⊥`, in practice because
 `V (n+1)` is trivial.
 
-Indices are `ℕ` deliberately.  With `ℤ` the exactness hypothesis reads
-`ker (d i) = range (d (i-1))`, whose right-hand side lives in `V (i - 1 + 1)`
-rather than in `V i`, and every proof then carries a transport along that
-equality.  A caller with a `ℤ`-indexed complex supported in `[a, b]`
-reindexes once, at the boundary, instead.
+Indices are `ℕ` because this is a **single-family** statement proved by
+*induction*, and an induction needs a base case.
+
+That is the real reason, and an earlier version of this docstring gave a wrong
+one: it claimed `ℤ` forces a transport, because the exactness hypothesis would
+read `ker (d i) = range (d (i-1))` with the right-hand side in `V (i - 1 + 1)`.
+Spelled `ker (d (i+1)) = range (d i)` the indices agree on the nose, and
+`(· + 1)` is surjective on `ℤ`, so no transport arises.  The *three-family*
+long-exact-sequence form is genuinely index-agnostic and is stated over `ℤ` with
+no boundary hypotheses at all — see `LinearAlgebra/AlternatingFinsum.lean`,
+which is what the categorical Euler form consumes.  This file is not on that
+path.
 
 ## What this file does not do
 
@@ -50,7 +61,7 @@ namespace DerivedAlgGeo.LinearAlgebra
 
 open Finset Module
 
-variable {k : Type u} [Field k] {V : ℕ → Type v}
+variable {k : Type u} [DivisionRing k] {V : ℕ → Type v}
   [∀ i, AddCommGroup (V i)] [∀ i, Module k (V i)]
   [∀ i, FiniteDimensional k (V i)]
 

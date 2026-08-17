@@ -136,6 +136,8 @@ invisible.
 import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition
 import DerivedAlgGeo.CategoryTheory.Triangulated.FourierMukai
 import DerivedAlgGeo.CategoryTheory.Triangulated.LinearYoneda
+import DerivedAlgGeo.CategoryTheory.Triangulated.LinearCoyoneda
+import DerivedAlgGeo.CategoryTheory.Triangulated.GrothendieckGroup.EulerForm
 import DerivedAlgGeo.LinearAlgebra
 
 open CategoryTheory.Triangulated
@@ -3934,3 +3936,64 @@ finiteness data nothing here provides.
 #print axioms CategoryTheory.Triangulated.linearYoneda_homologySequence_exact₁
 #print axioms CategoryTheory.Triangulated.linearYoneda_homologySequence_exact₂
 #print axioms CategoryTheory.Triangulated.linearYoneda_homologySequence_exact₃
+
+/-! ## The alternating sum along a `ℤ`-indexed long exact sequence
+
+The arithmetic under a Hom-built Euler form. Indexed by `ℤ` and carrying NO
+boundary hypotheses -- no injectivity, no surjectivity, no `Subsingleton` --
+because the three-family statement telescopes by a translation of the summation
+index rather than by induction. `k` is a `DivisionRing`: rank-nullity is what
+forces it and commutativity is used nowhere.
+-/
+
+#print axioms DerivedAlgGeo.LinearAlgebra.finrank_eq_range_add_range
+#print axioms DerivedAlgGeo.LinearAlgebra.altDim
+#print axioms DerivedAlgGeo.LinearAlgebra.support_altDim
+#print axioms DerivedAlgGeo.LinearAlgebra.support_range_subset
+#print axioms DerivedAlgGeo.LinearAlgebra.finsum_altDim_middle
+
+/-! ## The k-linear coyoneda functor is homological
+
+The second-variable companion of `linearYoneda`. Its shift sequence is
+tautological -- the functor is covariant with source `C` -- so unlike the
+Yoneda side it needs NO opposite-category linearity and NO
+`(shiftFunctor C n).Linear k` hypothesis.
+-/
+
+#print axioms CategoryTheory.Triangulated.linearCoyoneda_isHomological
+#print axioms CategoryTheory.Triangulated.linearCoyonedaShiftSequence
+#print axioms CategoryTheory.Triangulated.linearCoyoneda_homologySequence_exact₁
+#print axioms CategoryTheory.Triangulated.linearCoyoneda_homologySequence_exact₂
+#print axioms CategoryTheory.Triangulated.linearCoyoneda_homologySequence_exact₃
+
+/-! ## The Hom-built Euler form
+
+`chi(X,Y) = SUM (-1)^i dim_k Hom(X, Y[i])`, biadditive, descended to `K0`.
+`HomFiniteBounded` is the one supplied datum and every other declaration here is
+constructed from it plus the two long exact sequences. A clean axiom list is the
+claim that constructing the Euler form needs no assumption beyond Hom-finiteness
+-- in particular no Serre duality and no geometry.
+
+`chiHom` itself is junk-total: `finrank` is 0 on a non-finite module and `finsum`
+is 0 on infinite support, so it is defined everywhere and only the additivity
+results require `HomFiniteBounded`.
+-/
+
+#print axioms CategoryTheory.Triangulated.HomFiniteBounded
+#print axioms CategoryTheory.Triangulated.HomFiniteBounded.finite
+#print axioms CategoryTheory.Triangulated.HomFiniteBounded.support_finite
+#print axioms CategoryTheory.Triangulated.chiHom
+#print axioms CategoryTheory.Triangulated.chiHom_eq_finsum_altDim
+#print axioms CategoryTheory.Triangulated.exact_hom_of_shortComplex_exact
+#print axioms CategoryTheory.Triangulated.chiHom_additive_right
+#print axioms CategoryTheory.Triangulated.chiHom_additive_left
+#print axioms CategoryTheory.Triangulated.isTriangleAdditive_chiHom
+#print axioms CategoryTheory.Triangulated.chiRight
+#print axioms CategoryTheory.Triangulated.chiRight.congr_simp
+#print axioms CategoryTheory.Triangulated.chiRight_of
+#print axioms CategoryTheory.Triangulated.isTriangleAdditive_chiRight
+#print axioms CategoryTheory.Triangulated.chiK₀
+#print axioms CategoryTheory.Triangulated.chiK₀_of
+#print axioms CategoryTheory.Triangulated.chiK₀_of_of
+
+
