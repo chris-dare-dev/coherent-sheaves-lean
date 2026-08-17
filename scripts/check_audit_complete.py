@@ -113,6 +113,21 @@ def main(argv: list[str]) -> int:
     failed = False
     new_ceilings: dict[str, int] = {}
 
+    # Modules under the source root that `EnumDecls.libraryOf` classifies into
+    # no audit bucket. Before #508 these were silently invisible to the sweep,
+    # which made this gate pass vacuously for any new source directory; now
+    # the sweep emits them under a sentinel and any occurrence is a failure,
+    # named per module so the fix (a new branch in `libraryOf`) is actionable.
+    unclassified = env.pop("Unclassified", set())
+    if unclassified:
+        failed = True
+        print(f"::error::{len(unclassified)} module(s) under DerivedAlgGeo are "
+              "not classified by EnumDecls.libraryOf, so their declarations "
+              "are invisible to every audit. Add their directory to "
+              "libraryOf in scripts/EnumDecls.lean (see #508):")
+        for m in sorted(unclassified):
+            print(f"    {m}")
+
     for lib, (audit_path, prefixes) in AUDITS.items():
         declared = env.get(lib, set())
         if not declared:

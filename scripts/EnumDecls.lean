@@ -41,7 +41,17 @@ private def isAuthored (n : Name) : Bool := Id.run do
   if (s.splitOn ".eq_").length > 1 then return false
   return true
 
-/-- The mathematical subsystem owning a module under the unified source root. -/
+/-- The mathematical subsystem owning a module under the unified source root.
+
+`none` for a module under `DerivedAlgGeo` does **not** mean "skip quietly": the
+sweep emits such modules under the `Unclassified` sentinel and
+`scripts/check_audit_complete.py` fails on any of them. Before #508 `none`
+meant invisible — a new source directory's declarations were neither counted
+as public nor reported as missing, so the audit-complete gate passed
+vacuously. Adding a directory now means adding a branch here, and forgetting
+is a red gate rather than a silent hole. Modules outside `DerivedAlgGeo`
+(Mathlib and the other dependencies) are still skipped: they are not this
+repository's to audit. -/
 private def libraryOf (m : Name) : Option String :=
   let dg := `DerivedAlgGeo.CategoryTheory.DGCategory
   let triangulated := `DerivedAlgGeo.CategoryTheory.Triangulated
@@ -68,9 +78,16 @@ run_cmd do
     unless ci.isTheorem || ci.isDefinition || ci.isInductive || ci.isCtor do continue
     match env.getModuleIdxFor? n with
     | some idx =>
-      match libraryOf env.header.moduleNames[idx.toNat]! with
+      let m := env.header.moduleNames[idx.toNat]!
+      match libraryOf m with
       | some lib => rows := rows.push s!"{lib}\t{n}"
-      | none => pure ()
+      | none =>
+        -- A declaration under the source root whose module no prefix claims.
+        -- Emit the MODULE under a sentinel so the checker can fail loudly
+        -- naming it; anything outside `DerivedAlgGeo` is a dependency's and
+        -- stays out of the sweep.
+        if (`DerivedAlgGeo).isPrefixOf m then
+          rows := rows.push s!"Unclassified\t{m}"
     | none => pure ()
   for r in rows.qsort (· < ·) do
     IO.println r
