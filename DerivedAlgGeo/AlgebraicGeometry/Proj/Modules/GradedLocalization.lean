@@ -634,6 +634,33 @@ theorem awayMk_eq_zero_iff [IsDomain A] [Module.IsTorsionFree A M] {f : A} {e : 
     awayMk hf n p hp = 0 ↔ p = 0 := by
   rw [← awayMk_zero (𝓜 := 𝓜) hf 0, awayMk_eq_awayMk_iff hf hf0]
   simp
+/-- Two equal degree indices give the same `awayMk`.
+
+`awayMk` records the degree of its denominator in the `NumDenSameDeg` certificate, so two
+certificates that are propositionally equal still need transporting. Every caller that meets this
+has the same shape: one side names the degree as `(γ' + single i₀ c).degree` and the other as
+`c + γ'.degree`. -/
+theorem awayMk_deg_congr {f : A} {e₁ e₂ : ι} (h : e₁ = e₂) (hf₁ : f ∈ 𝒜 e₁) (hf₂ : f ∈ 𝒜 e₂)
+    (n : ℕ) (p : M) (hp₁ : p ∈ 𝓜 (n • e₁)) (hp₂ : p ∈ 𝓜 (n • e₂)) :
+    awayMk hf₁ n p hp₁ = awayMk hf₂ n p hp₂ := by
+  subst h; rfl
+
+set_option maxHeartbeats 1200000 in
+/-- **The face map in `awayMk` normal form.** Restricting `p / g₁ⁿ` along `g₁ * h = g₂` multiplies
+the numerator by `hⁿ` and leaves the exponent alone.
+
+This is `faceMap_mk` with the denominator already known to be a power, which is the shape every
+caller has: the face of a Čech intersection is a restriction between two `awayMk`s, not between
+two arbitrary `NumDenSameDeg`s. The target degree is written `e + e₁` rather than `e₁ + e` so that
+`n • (e + e₁)` matches the `n • e + n • e₁` that `faceMap_mk` produces. -/
+theorem faceMap_awayMk {g₁ g₂ h : A} {e e₁ : ι} (hh : h ∈ 𝒜 e) (hg₁ : g₁ ∈ 𝒜 e₁)
+    (hgh : g₁ * h ∈ Submonoid.powers g₂) (hg : g₁ * h = g₂)
+    (hg₂ : g₂ ∈ 𝒜 (e + e₁)) (n : ℕ) (p : M) (hp : p ∈ 𝓜 (n • e₁))
+    (hres : h ^ n • p ∈ 𝓜 (n • (e + e₁))) :
+    faceMap (𝓜 := 𝓜) hh hgh hg (awayMk hg₁ n p hp) = awayMk hg₂ n (h ^ n • p) hres := by
+  rw [awayMk, faceMap_mk (𝓜 := 𝓜) hh hgh hg _ n rfl, awayMk]
+  apply ext
+  simp only [coe_mk, NumDenSameDeg.embedding]
 
 end DegreeZeroLocalization
 
