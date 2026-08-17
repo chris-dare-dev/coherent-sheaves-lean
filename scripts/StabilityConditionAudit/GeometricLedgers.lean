@@ -121,4 +121,37 @@ constructible.
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.geometricUnitIso
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.geometricUnitKernelData
 
+/-! ## Associativity of the geometric convolution: the quadruple product
 
+INHABITANT-FREE. `geometricConvolutionAssoc` DERIVES the kernel-level
+`(P * Q) * R iso P * (Q * R)` for `convKernel` through a supplied quadruple
+product, consuming the existing comparison classes at new instance sites --
+including `HasDerivedTensorAssoc`, the consumption site #542 promised -- plus
+two new factorization classes whose `comm` triangle identities are unconsumed
+guards. `geometricConvolutionAssocData` then has zero supplied fields. A
+clean axiom line means the derivation adds nothing beyond its inputs; nothing
+constructs any input, and nothing states a pentagon. -/
+
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasPullbackFactorization
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasPullbackFactorization.comm
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasPullbackFactorization.iso
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasPushforwardFactorization
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasPushforwardFactorization.comm
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasPushforwardFactorization.iso
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.QuadrupleProductGeometry
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.QuadrupleProductGeometry.mk.inj
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.QuadrupleProductGeometry.mk.sizeOf_spec
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.QuadrupleProductGeometry.quad
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.QuadrupleProductGeometry.ρ₁₂
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.QuadrupleProductGeometry.ρ₂₃
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.QuadrupleProductGeometry.ρ₃₄
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.QuadrupleProductGeometry.ρ₁₄
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.QuadrupleProductGeometry.σ₁₂₃
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.QuadrupleProductGeometry.σ₂₃₄
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.QuadrupleProductGeometry.σ₁₃₄
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.QuadrupleProductGeometry.σ₁₂₄
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.quadKernel
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.leftAssocIso
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.rightAssocIso
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.geometricConvolutionAssoc
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.geometricConvolutionAssocData

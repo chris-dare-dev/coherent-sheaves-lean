@@ -1,9 +1,9 @@
 # Contract-v1 owner questions
 
-Q2 and Q3 are answered, Q4 is deliberately deferred, and Q1 is settled for the
-formalization but still open for corpus-version verification. The remaining
-owner choices stay linked to `gate:owner` issues and name what changes either
-way.
+Q2 and Q3 are answered, Q4 is deliberately deferred and its issue is now
+**closed** on that deferral, and Q1 is settled for the formalization but still
+open for corpus-version verification. The remaining owner choices stay linked
+to `gate:owner` issues and name what changes either way.
 
 Ranked by how much they block.
 
@@ -209,10 +209,39 @@ nothing above has to be rewritten when it lands.
   one that catches the thing this repo most fears". That is the argument for
   preferring **1 + 3** over the recommended 1 + 2 whenever this is reopened.
 
-**Cross-reference errors in the migrated tracker, for whoever picks this up:** #177 cites
-"#168" for the coverage census — that is **#179**; #168 is `@[discharges]`. #179
-cites "#166" for the sketch lane — that is `external_decls[]`, and no
-sketch-lane issue exists yet.
+**Cross-reference errors in the migrated tracker — checked against the tracker
+and now fixed at the source.** Both citing issues pointed at closed Layer-B
+mathematics issues, and the two earlier attempts to correct them were each
+wrong on one of the pair:
+
+| where | cited | is actually | corrected to |
+|---|---|---|---|
+| #177 → coverage census | `#41` | B5: Riemann–Roch for line bundles (closed) | **#179** |
+| #179 → sketch lane | `#39` | B5: canonical and dualizing sheaves (closed) | **#177**, the decision itself |
+
+No sketch-lane issue exists, and none should be opened while this is deferred —
+#179 now cites the decision rather than a lane that has not been chosen. For
+the record: #168 is `@[discharges]` and #166 is `external_decls[]`; neither was
+ever the census.
+
+### Status 2026-08-17 — CLOSED AS DEFERRED
+
+#177 is closed. The 2026-08-05 verdict stands unchanged and the question is no
+longer tracked as an open owner gate, because it gates nothing: the
+decision-independent half shipped, and `mfc validate` already puts a `sketch`
+lane through `lanes` today via `propertyNames` as a *pattern* rather than an
+enum, so even the lane's schema shape is not blocked on choosing it.
+
+**Reopen trigger, and only this one:** a second topic repository mints against
+the registry. That is the condition the deferral named, and the abstract
+version of the question against one repository should not be reopened without
+it.
+
+**What the reopening should decide, ranked.** Option 1 (documentary ceiling) is
+settled and needs no reopening. Between the other two, prefer **1 + 3** over
+the recommended 1 + 2: Option 3 is the only one that increases the number of
+entries carrying a real `faithfulness` verdict, and it needs no code — `J-03`
+already refuses to merge two disagreeing reviews of one statement.
 
 ---
 

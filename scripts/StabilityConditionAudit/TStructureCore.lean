@@ -3,6 +3,7 @@ TStructureCore slice of the StabilityCondition audit, split out so concurrent
 branches append to different files (#480). See the umbrella file for the contract and reading guide.
 -/
 import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition
+import DerivedAlgGeo.CategoryTheory.Triangulated.BoundedHomotopyCategory
 import DerivedAlgGeo.CategoryTheory.Triangulated.FourierMukai
 import DerivedAlgGeo.CategoryTheory.Triangulated.LinearYoneda
 import DerivedAlgGeo.CategoryTheory.Triangulated.LinearCoyoneda
@@ -298,3 +299,22 @@ open CategoryTheory.Triangulated
 #print axioms Matrix.eq_polarUnitary_of_mul
 #print axioms Matrix.existsUnique_polarDecomposition
 
+/-! ## ForMathlib — the bounded homotopy category (#543 substrate)
+
+`HomotopyCategory.Bounded C`, mirroring Mathlib's `HomotopyCategory.Plus`
+declaration by declaration; upstreamable as written. Category plumbing only:
+the `HomFiniteBounded` model built on it is audited with the Euler form. -/
+
+#print axioms CochainComplex.bounded
+#print axioms CochainComplex.bounded_iff
+#print axioms CochainComplex.isStrictlyLE_mappingCone
+#print axioms HomotopyCategory.bounded
+#print axioms HomotopyCategory.bounded_quotient_obj_iff
+#print axioms HomotopyCategory.bounded_iff_exists
+#print axioms HomotopyCategory.bounded_containsZero
+#print axioms HomotopyCategory.bounded_isStableUnderShift
+#print axioms HomotopyCategory.bounded_isTriangulatedClosed₃
+#print axioms HomotopyCategory.bounded_isTriangulated
+#print axioms HomotopyCategory.Bounded
+#print axioms HomotopyCategory.Bounded.ι
+#print axioms HomotopyCategory.Bounded.fullyFaithfulι
