@@ -83,6 +83,15 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Proj.awayMk_eq_sum_monomial
 #print axioms AlgebraicGeometry.Proj.exists_sum_awayMk_monomial
 #print axioms AlgebraicGeometry.Proj.laurentExponent_mem_index
+-- The numerator side of the sign projection (#491 -> #340). divMonomial_pow_mul is the
+-- well-definedness identity: projecting commutes with raising a representative to a higher power
+-- of the denominator, which is the move that relates any two representatives.
+#print axioms AlgebraicGeometry.Proj.degree_eq_weight_one_apply
+#print axioms AlgebraicGeometry.Proj.isHomogeneous_divMonomial
+#print axioms AlgebraicGeometry.Proj.divMonomial_monomial_mul_add
+#print axioms AlgebraicGeometry.Proj.divMonomial_monomial_mul_comm
+#print axioms AlgebraicGeometry.Proj.divMonomial_pow_mul
+#print axioms AlgebraicGeometry.Proj.divMonomial_mem_natShift
 #print axioms AlgebraicGeometry.Proj.GradedLinearMap
 #print axioms AlgebraicGeometry.Proj.GradedLinearMap.map
 #print axioms AlgebraicGeometry.Proj.GradedLinearMap.map_mk
