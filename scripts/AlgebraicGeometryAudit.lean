@@ -195,6 +195,42 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Proj.laurentHomotopy_awayMk
 #print axioms AlgebraicGeometry.Proj.laurentHomotopy_laurentFace_blockProj
 #print axioms AlgebraicGeometry.Proj.laurentHomotopy_laurentFace_comm
+-- The block homotopy carried onto the variable Cech cover (#340, step 3). powersCongr
+-- transports a degree-zero localization along an equality of denominators (the element never
+-- moves; every equation is subst plus proof irrelevance), tupleExponent names the Cech
+-- denominator as a monomial, and the Cech-level block projections and homotopy map are the
+-- monomial-level maps conjugated by that transport. cechTermCongr_apply_section is the whole
+-- of the dependent rewriting the vanishing computation needs; the three identities it runs on
+-- are cechFace_cechBlockProj, cechHomotopy_cechFace_zero and cechHomotopy_cechFace_succ.
+#print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.powersCongr
+#print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.powersCongr_awayMk
+#print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.powersCongr_trans
+#print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.powersCongr_symm_apply_apply
+#print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.powersCongr_symm_trans
+#print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.powersCongr_faceMap
+#print axioms AlgebraicGeometry.Proj.tupleExponent
+#print axioms AlgebraicGeometry.Proj.tupleDenominator_eq
+#print axioms AlgebraicGeometry.Proj.tupleExponent_cons
+#print axioms AlgebraicGeometry.Proj.tupleExponent_succAbove
+#print axioms AlgebraicGeometry.Proj.tupleDenominator_cons_eq
+#print axioms AlgebraicGeometry.Proj.cons_comp_succAbove_zero
+#print axioms AlgebraicGeometry.Proj.cons_comp_succAbove_succ
+#print axioms AlgebraicGeometry.Proj.cechTermEquiv
+#print axioms AlgebraicGeometry.Proj.cechTermEquiv_cechFace
+#print axioms AlgebraicGeometry.Proj.cechBlockProj
+#print axioms AlgebraicGeometry.Proj.cechBlockProj_apply
+#print axioms AlgebraicGeometry.Proj.sum_cechBlockProj
+#print axioms AlgebraicGeometry.Proj.cechBlockProj_eq_zero_of_not_subset
+#print axioms AlgebraicGeometry.Proj.cechFace_cechBlockProj
+#print axioms AlgebraicGeometry.Proj.cechHomotopy
+#print axioms AlgebraicGeometry.Proj.cechHomotopy_apply
+#print axioms AlgebraicGeometry.Proj.cechTermCongr
+#print axioms AlgebraicGeometry.Proj.cechTermCongr_apply_section
+#print axioms AlgebraicGeometry.Proj.cechTermCongr_symm_apply_section
+#print axioms AlgebraicGeometry.Proj.cechTermCongr_cechBlockProj
+#print axioms AlgebraicGeometry.Proj.laurentHomotopy_laurentFace_comm'
+#print axioms AlgebraicGeometry.Proj.cechHomotopy_cechFace_zero
+#print axioms AlgebraicGeometry.Proj.cechHomotopy_cechFace_succ
 #print axioms AlgebraicGeometry.Proj.GradedLinearMap
 #print axioms AlgebraicGeometry.Proj.GradedLinearMap.map
 #print axioms AlgebraicGeometry.Proj.GradedLinearMap.map_mk
