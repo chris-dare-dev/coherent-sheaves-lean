@@ -1,0 +1,241 @@
+/-
+PhaseTopology slice of the StabilityCondition audit, split out so concurrent
+branches append to different files (#480). See the umbrella file for the contract and reading guide.
+-/
+import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition
+import DerivedAlgGeo.CategoryTheory.Triangulated.FourierMukai
+import DerivedAlgGeo.CategoryTheory.Triangulated.LinearYoneda
+import DerivedAlgGeo.CategoryTheory.Triangulated.LinearCoyoneda
+import DerivedAlgGeo.CategoryTheory.Triangulated.GrothendieckGroup.EulerForm
+import DerivedAlgGeo.LinearAlgebra
+open CategoryTheory.Triangulated
+
+/-! ## Phase lane — slicing orders, Bayer bounds, and cofiltrations -/
+
+#print axioms CategoryTheory.Triangulated.Slicing.Precedes
+#print axioms CategoryTheory.Triangulated.Slicing.PrecedesWeak
+#print axioms CategoryTheory.Triangulated.Slicing.LiPrecedes
+#print axioms CategoryTheory.Triangulated.Slicing.LiPrecedesWeak
+#print axioms CategoryTheory.Triangulated.Slicing.liPrecedes_iff_precedes
+#print axioms CategoryTheory.Triangulated.Slicing.liPrecedesWeak_iff_precedesWeak
+#print axioms CategoryTheory.Triangulated.Slicing.precedes_iff_phiPlus_lt
+#print axioms CategoryTheory.Triangulated.Slicing.precedesWeak_iff_phiPlus_le
+#print axioms CategoryTheory.Triangulated.Slicing.Precedes.weak
+#print axioms CategoryTheory.Triangulated.Slicing.precedesWeak_refl
+#print axioms CategoryTheory.Triangulated.Slicing.precedes_phaseShift_one
+#print axioms CategoryTheory.Triangulated.Slicing.precedes_iff_lt_phiMinus
+#print axioms CategoryTheory.Triangulated.Slicing.precedesWeak_iff_le_phiMinus
+#print axioms CategoryTheory.Triangulated.Slicing.precedes_iff_extreme_phases_lt
+#print axioms CategoryTheory.Triangulated.Slicing.precedesWeak_iff_extreme_phases_le
+#print axioms CategoryTheory.Triangulated.Slicing.Precedes.trans
+#print axioms CategoryTheory.Triangulated.Slicing.PrecedesWeak.trans
+#print axioms CategoryTheory.Triangulated.Slicing.Precedes.trans_weak
+#print axioms CategoryTheory.Triangulated.Slicing.PrecedesWeak.trans_strict
+#print axioms CategoryTheory.Triangulated.Slicing.mapEquiv_ltProp_iff
+#print axioms CategoryTheory.Triangulated.Slicing.mapEquiv_leProp_iff
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.TriEquiv.precedes_act_iff
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.TriEquiv.precedesWeak_act_iff
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.AutQuot.precedes_smul_iff
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.AutQuot.precedesWeak_smul_iff
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.AutPairQuot.smul_slicing
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.AutPairQuot.precedes_smul_stability_iff
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.AutPairQuot.precedesWeak_smul_stability_iff
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.HasBayerProperty
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.SlicingBayerProperty
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.hasBayerProperty_iff
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.hasBayerProperty_one_zero
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.hasBayerProperty_smul_iff
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.BayerProperty
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.bayerProperty_iff
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.bayerProperty_one_zero
+#print axioms CategoryTheory.Triangulated.CofiltrationData
+#print axioms CategoryTheory.Triangulated.CofiltrationData.remainder
+#print axioms CategoryTheory.Triangulated.CofiltrationProperty
+#print axioms CategoryTheory.Triangulated.CofiltrationPropertyInfinity
+#print axioms CategoryTheory.Triangulated.CofiltrationPropertyInfinity.toCofiltrationProperty
+#print axioms CategoryTheory.Triangulated.Slicing.phaseShift_phiPlus
+#print axioms CategoryTheory.Triangulated.Slicing.phaseShift_phiMinus
+#print axioms CategoryTheory.Triangulated.SlicingOrderPreimageData
+#print axioms CategoryTheory.Triangulated.SlicingOrderPreimageData.precedes
+#print axioms CategoryTheory.Triangulated.SlicingOrderPreimageData.precedesWeak
+#print axioms CategoryTheory.Triangulated.Slicing.Precedes.pushforward_of_preimage
+#print axioms CategoryTheory.Triangulated.Slicing.PrecedesWeak.pushforward_of_preimage
+#print axioms CategoryTheory.Triangulated.Slicing.Precedes.pullback_of_preimage
+#print axioms CategoryTheory.Triangulated.Slicing.PrecedesWeak.pullback_of_preimage
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.bayerProperty_iff_phiPlus_le
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.bayerProperty_iff_le_phiMinus
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.bayerProperty_mk_iff_inverse_phiPlus_le
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.bayerProperty_mk_iff_inverse_le_phiMinus
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.bayerProperty_mk_iff_sub_le_functor_phiMinus
+
+/-! ## Phase lane — sound slicing-transfer boundary -/
+
+#print axioms CategoryTheory.Triangulated.PostnikovTower.mapF
+#print axioms CategoryTheory.Triangulated.HNFiltration.mapF
+#print axioms CategoryTheory.Triangulated.Slicing.preimagePhase
+#print axioms CategoryTheory.Triangulated.Slicing.pullbackPhaseCollection
+#print axioms CategoryTheory.Triangulated.Slicing.pushforwardPhaseCollection
+#print axioms CategoryTheory.Triangulated.Slicing.PreimageData
+#print axioms CategoryTheory.Triangulated.Slicing.preimageData_id
+#print axioms CategoryTheory.Triangulated.Slicing.PreimageData.comp
+#print axioms CategoryTheory.Triangulated.Slicing.PreimageData.ofIso
+#print axioms CategoryTheory.Triangulated.Slicing.preimage
+#print axioms CategoryTheory.Triangulated.Slicing.preimage_P
+#print axioms CategoryTheory.Triangulated.Slicing.preimage_id
+#print axioms CategoryTheory.Triangulated.Slicing.preimage_comp
+#print axioms CategoryTheory.Triangulated.Slicing.preimage_iso
+#print axioms CategoryTheory.Triangulated.Slicing.PreimageData.ofFaithful
+#print axioms CategoryTheory.Triangulated.Slicing.PreimageData.phaseShift
+#print axioms CategoryTheory.Triangulated.Slicing.pullback
+#print axioms CategoryTheory.Triangulated.Slicing.pushforward
+#print axioms CategoryTheory.Triangulated.ReflectsZeroObjects
+#print axioms CategoryTheory.Triangulated.Functor.reflectsZeroObjects_of_faithful
+#print axioms CategoryTheory.Triangulated.Functor.reflectsZeroObjects_of_conservative
+#print axioms CategoryTheory.Triangulated.HNFiltration.mapPreimage
+#print axioms CategoryTheory.Triangulated.HNFiltration.mapPreimage_n
+#print axioms CategoryTheory.Triangulated.HNFiltration.mapPreimage_phi
+#print axioms CategoryTheory.Triangulated.Slicing.preimage_phiPlus
+#print axioms CategoryTheory.Triangulated.Slicing.preimage_phiMinus
+#print axioms CategoryTheory.Triangulated.Slicing.preimage_ltProp_iff
+#print axioms CategoryTheory.Triangulated.Slicing.preimage_leProp_iff
+#print axioms CategoryTheory.Triangulated.Slicing.preimage_phaseShift
+#print axioms CategoryTheory.Triangulated.Slicing.preimage_phaseShift_self
+#print axioms CategoryTheory.Triangulated.Slicing.preimageOrderData
+#print axioms CategoryTheory.Triangulated.Slicing.Precedes.preimage
+#print axioms CategoryTheory.Triangulated.Slicing.PrecedesWeak.preimage
+#print axioms CategoryTheory.Triangulated.Slicing.preimage_mapEquiv
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.AutPair.preimage_representatives
+#print axioms CategoryTheory.Triangulated.Slicing.InducedTStructures
+#print axioms CategoryTheory.Triangulated.Slicing.InducedTStructures.mk.inj
+#print axioms CategoryTheory.Triangulated.Slicing.InducedTStructures.mk.sizeOf_spec
+#print axioms CategoryTheory.Triangulated.Slicing.InducedTStructures.tStructure
+#print axioms CategoryTheory.Triangulated.Slicing.InducedTStructures.le_zero_iff
+#print axioms CategoryTheory.Triangulated.Slicing.InducedTStructures.ge_one_iff
+#print axioms CategoryTheory.Triangulated.Slicing.InducedTStructures.ofIso
+#print axioms CategoryTheory.Triangulated.Slicing.InducedTStructures.hom_vanishing
+#print axioms CategoryTheory.Triangulated.Slicing.InducedTStructures.toPreimageData
+#print axioms CategoryTheory.Triangulated.Slicing.inducedTStructuresId
+#print axioms CategoryTheory.Triangulated.HNFiltration.exists_headTailFiltration
+#print axioms CategoryTheory.Triangulated.Slicing.inducedTStructuresId.congr_simp
+#print axioms CategoryTheory.Triangulated.Slicing.InducedTStructures.isZero_of_map_isZero
+#print axioms CategoryTheory.Triangulated.Slicing.InducedTStructures.hn_exists
+#print axioms CategoryTheory.Triangulated.Slicing.InducedTStructures.preimageData
+
+/-! ## Normalized quotient, combined action, and topological action layer -/
+
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.TriEquiv.inverseIsoOfFunctorIso
+
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.relabel_mapEquiv
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.gltilde_autPair_smul_comm
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.smulCommClassGLTildeAutPairQuot
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.combinedMulAction
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.prod_mk_smul_slicing
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.prod_mk_smul_Z
+
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.Slicing.mapEquiv_phiPlus
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.Slicing.mapEquiv_phiMinus
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.slicingDist_mapEquiv_le
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.stabSeminorm_aut_le
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.AutPair.mapsTo_basisNhd
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.AutPair.continuous_act
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.autPairQuotContinuousConstSMul
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.AutPairQuot.homeomorph
+
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.Slicing.relabel_phiPlus
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.Slicing.relabel_phiMinus
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.exists_slicingDist_relabel_control
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.actCCLM
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.actCCLM_apply
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.actC_inv_apply
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.actCCondition
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.actCCondition_pos
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.norm_actC_div_norm_actC_le
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.stabSeminorm_gltilde_le
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.exists_gltilde_basisNhd_control
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.GLTilde.continuous_const_smul_stability
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.gltildeContinuousConstSMulStability
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.combinedContinuousConstSMulStability
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.GLTilde.stabilityHomeomorph
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.combinedStabilityHomeomorph
+
+/-! ## Jointly continuous symmetry actions -/
+
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.GLTilde.continuous_shift_displacement
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.GLTilde.eventually_uniform_shift_displacement
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.slicingDist_smul_le_of_displacement
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.actCCLM_one
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.GLTilde.continuous_actCCLM
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.norm_actC_sub_div_le
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.stabSeminorm_near_identity_le
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.exists_identity_basisNhd_control
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.continuousAt_smul_identity
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.GLTilde.continuousAt_smul_stability
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.GLTilde.continuous_smul_stability
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.gltildeContinuousSMulStability
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.autPairQuotTopologicalSpace
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.autPairQuotDiscreteTopology
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.AutPairQuot.continuous_smul_stability
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.autPairQuotContinuousSMulStability
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.continuous_combined_smul_stability
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.combinedContinuousSMulStability
+
+/-! ## Components, equivariant periods, and the effective symmetry quotient -/
+
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.componentSmul
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.componentSmul_mk
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.componentMulAction
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.image_connectedComponent_smul
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.componentHomeomorph
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.componentHomeomorph_apply_coe
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.componentStabilizer
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.mem_componentStabilizer_iff
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.componentStabilizerMulAction
+
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.GLTilde.chargeAddEquiv
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.GLTilde.chargeAddEquiv_apply
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.AutPair.chargeAddEquiv
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.AutPair.chargeAddEquiv_apply
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.AutPairQuot.chargeAddEquiv
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.AutPairQuot.chargeAddEquiv_mk
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.combinedChargeAddEquiv
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.combinedChargeAddEquiv_mk_apply
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.GLTilde.centralCharge_equivariant
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.AutPairQuot.centralCharge_equivariant
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.combinedCentralCharge_equivariant
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.combinedCentralCharge_equivariant_apply
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.componentCentralCharge_equivariant
+
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.shiftFunctorCommShift
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.shiftTwoMapTriangleIso
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.shiftTwoIsTriangulated
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.shiftNegTwoMapTriangleIso
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.shiftNegTwoIsTriangulated
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.shiftTwoTriEquiv
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.K₀.map_shift_neg_two
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.shiftTwoPair
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.deckShift_neg_one_inv_apply
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.shiftTwoPair_act_eq_deck_neg_one
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.deck_mul_deck
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.deck_zero
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.deck_one_shiftTwo_combined_smul
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.combinedActionHom
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.combinedActionKernel
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.EffectiveCombinedSymmetry
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.effectiveCombinedPermHom
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.effectiveCombinedMulAction
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.effectiveCombinedFaithfulSMul
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.deck_one_shiftTwo_mem_combinedActionKernel
+#print axioms CategoryTheory.Triangulated.StabilityCondition.GroupAction.deck_one_shiftTwo_eq_one_in_effective
+
+/-! ## AutIsometry — the action preserves the foundational library's phase distance -/
+
+#print axioms CategoryTheory.Triangulated.Slicing.phiPlus_congr
+#print axioms CategoryTheory.Triangulated.Slicing.phiMinus_congr
+#print axioms CategoryTheory.Triangulated.isZero_inverse_iff
+#print axioms CategoryTheory.Triangulated.isZero_functor_iff
+#print axioms CategoryTheory.Triangulated.mapEquiv_phiPlus
+#print axioms CategoryTheory.Triangulated.mapEquiv_phiMinus
+#print axioms CategoryTheory.Triangulated.mapEquiv_slicingDist
+#print axioms CategoryTheory.Triangulated.actStabAut_slicingDist
+#print axioms CategoryTheory.Triangulated.AutPairQuot_smul_slicingDist
+
