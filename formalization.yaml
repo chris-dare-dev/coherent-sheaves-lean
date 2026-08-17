@@ -922,6 +922,19 @@ fidelity:
     followed by construction of the universal approximation maps, remain
     open in #477.
 
+    COUNT UPDATE (SF7.2 compact-source telescope Hom control), 2026-08-16.
+    The mapping-telescope layer now proves the two compact-source properties
+    required by the Brown tower. The `1 - shift` map is injective on Hom from
+    an `IsCompactObject.{0}` source; exactness then makes the telescope
+    connecting morphism vanish on that source. Consequently every map from a
+    compact object into the telescope factors through one finite stage, and a
+    stage map that is zero (or equal to another map) in the telescope is
+    already zero (or equal) after a finite later transition. The proof is
+    internal to the repository and uses the finite-support bridge, explicit
+    coproduct projections, triangulated exactness, and finite recurrence on
+    the sequence. Constructing the Brown approximation tower and its
+    universal map remains the next open part of #477.
+
     COUNT UPDATE (destination issue #226; owner-controlled Bridgeland
     foundation), 2026-08-12. The first Mathlib-only foundation slice adds
     repository-owned Postnikov towers, HN filtrations, slicings, elementary
