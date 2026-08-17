@@ -373,6 +373,11 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 -- of the quasi-coherent form to polynomialIntShift_isQuasicoherent.
 #print axioms AlgebraicGeometry.Proj.polynomialVariableIntShift_isCechAcyclicFor
 #print axioms AlgebraicGeometry.Proj.polynomialVariableIntShift_isCechAcyclicCover
+-- The integer-twist form of the same conclusion (#332 step 1, negative half). Not a corollary
+-- of the nonnegative statement: natShift and intShift are different graded families, so the two
+-- complexes are related by transport rather than definitional equality. This is the shape
+-- devissage consumes, which needs Hⁱ(Pⁿ, O(d)) as an explicit complex at negative d.
+#print axioms AlgebraicGeometry.Proj.polynomialVariableIntCechComplex_computesCohomology
 #print axioms AlgebraicGeometry.Proj.polynomialVariable_adjoin_eq_top
 #print axioms AlgebraicGeometry.Proj.natShiftQuasicoherentData
 #print axioms AlgebraicGeometry.Proj.natShift_isQuasicoherent
@@ -437,6 +442,22 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AddCommGrpCat.hom_sum_zsmul_apply
 #print axioms AlgebraicGeometry.Proj.cechCochainsDegreewiseAddEquiv_d
 #print axioms AlgebraicGeometry.Proj.polynomialVariableCechComplex_d_apply
+-- The whole layer again for a twist of either sign (#332 step 1, negative half). Nothing here
+-- knows about the sign: the three shape mismatches are statements about the cover, so
+-- piObj_polynomialVariableChart is reused rather than restated, and the only twist-dependent
+-- inputs are intCechTermSectionAddEquiv and its face compatibility.
+#print axioms AlgebraicGeometry.Proj.intTwistPresheaf
+#print axioms AlgebraicGeometry.Proj.intCechIndexEquiv
+#print axioms AlgebraicGeometry.Proj.intCechCochainsDegreewiseAddEquiv
+#print axioms AlgebraicGeometry.Proj.intCechCochainsDegreewiseAddEquiv_apply
+#print axioms AlgebraicGeometry.Proj.intCechCochainsDegreewiseAddEquiv_symm_apply
+#print axioms AlgebraicGeometry.Proj.intCechIndexEquiv_map_face
+#print axioms AlgebraicGeometry.Proj.intCechComplexOfTwist
+#print axioms AlgebraicGeometry.Proj.intCechCochainsIso
+#print axioms AlgebraicGeometry.Proj.intCechCochainsDegreewiseAddEquiv_d
+#print axioms AlgebraicGeometry.Proj.polynomialVariableIntCechComplex
+#print axioms AlgebraicGeometry.Proj.polynomialVariableIntCechComplexIso
+#print axioms AlgebraicGeometry.Proj.polynomialVariableIntCechComplex_d_apply
 #print axioms AlgebraicGeometry.Proj.AffineComparisonDataOn
 #print axioms AlgebraicGeometry.Proj.AffineComparisonDataOn.localQuasicoherentData
 #print axioms AlgebraicGeometry.Proj.AffineComparisonDataOn.associatedSheaf_isQuasicoherent
@@ -506,6 +527,11 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Proj.cechTermSectionAddEquiv_toAddMonoidHom
 -- The consumable form: the comparison carries polynomialVariableCechFace to restriction.
 #print axioms AlgebraicGeometry.Proj.cechTermSectionAddEquiv_res_face
+-- The same face compatibility for a twist of either sign (#332 step 1, negative half). Once
+-- intCechTermSectionAddEquiv_toAddMonoidHom has identified the five-step composite with the
+-- canonical fraction-to-section map, this is moduleAwayToSection_res_faceMap, which is generic
+-- in the graded module and never mentions the twist.
+#print axioms AlgebraicGeometry.Proj.intCechTermSectionAddEquiv_res_face
 #print axioms AlgebraicGeometry.Proj.moduleAwayToSection_cechDenominator_bijective
 #print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.natShiftLinearEquivOfMulMem_apply_mk
 #print axioms AlgebraicGeometry.Proj.natShiftSectionFromSelfOn_apply
