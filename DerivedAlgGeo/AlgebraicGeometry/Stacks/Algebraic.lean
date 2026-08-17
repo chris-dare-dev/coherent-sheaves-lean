@@ -233,6 +233,13 @@ abbrev StackMorphism.IsSmoothSurjective
     (f : StackMorphism F G) : Prop :=
   f.HasRepresentableProperty (@Smooth ⊓ @Surjective)
 
+/-- An open immersion of stacks is representable and is an open immersion
+on every actual scheme representing one of its fibers. -/
+abbrev StackMorphism.IsOpenImmersion
+    {F G : StackInGroupoids Scheme.{u} Scheme.zariskiTopology}
+    (f : StackMorphism F G) : Prop :=
+  f.HasRepresentableProperty @AlgebraicGeometry.IsOpenImmersion
+
 /-- The identity atlas of every representable stack is an actual
 smooth-surjective representable morphism. -/
 theorem representableZariskiStackMap_id_isSmoothSurjective
@@ -248,6 +255,14 @@ theorem representableZariskiStackMap_id_isLocallyOfFinitePresentation
     (representableZariskiStackMap (𝟙 X)).IsLocallyOfFinitePresentation :=
   representableZariskiStackMap_hasRepresentableProperty
     @LocallyOfFinitePresentation (𝟙 X) inferInstance
+
+/-- A scheme-theoretic open immersion induces an open immersion of its
+representable big-Zariski stacks, checked on the actual pullback schemes. -/
+theorem representableZariskiStackMap_isOpenImmersion
+    {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] :
+    (representableZariskiStackMap f).IsOpenImmersion :=
+  representableZariskiStackMap_hasRepresentableProperty
+    @AlgebraicGeometry.IsOpenImmersion f inferInstance
 
 /-! ## Diagonal representability and algebraic-stack presentations -/
 
