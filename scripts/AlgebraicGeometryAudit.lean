@@ -49,6 +49,10 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.awayMk_add
 #print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.awayMk_sum
 #print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.awayMk_shift
+-- Two fractions share a denominator (#491 -> #340): exists_awayMk twice plus awayMk_shift on
+-- each side. Every additivity statement about maps defined on awayMk representatives opens
+-- with this move.
+#print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.exists_awayMk_pair
 -- A fraction is zero exactly when its numerator is (#491). This is what makes the numerator a
 -- faithful record: independence of fractions reduces to independence of numerators.
 #print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.awayMk_eq_zero_iff
@@ -129,6 +133,16 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Proj.laurentFace
 #print axioms AlgebraicGeometry.Proj.laurentFace_awayMk
 #print axioms AlgebraicGeometry.Proj.signProjection_laurentFace
+-- Additivity of the projection (#491 -> #340): the homotopy applies it to an alternating sum
+-- of faces, so it consumes the bundled additive form. signProjection_laurentFace_comm is the
+-- second and last property the homotopy needs -- the projection commutes with every face other
+-- than the retracted one; the delta' i0 = 0 hypothesis is the per-block restriction of the
+-- proof plan, and the unrestricted square at e = i0 is false rather than unproved.
+#print axioms AlgebraicGeometry.Proj.signProjection_add
+#print axioms AlgebraicGeometry.Proj.signProjectionHom
+#print axioms AlgebraicGeometry.Proj.signProjectionHom_apply
+#print axioms AlgebraicGeometry.Proj.monomial_single_pow_smul_mem
+#print axioms AlgebraicGeometry.Proj.signProjection_laurentFace_comm
 #print axioms AlgebraicGeometry.Proj.GradedLinearMap
 #print axioms AlgebraicGeometry.Proj.GradedLinearMap.map
 #print axioms AlgebraicGeometry.Proj.GradedLinearMap.map_mk
