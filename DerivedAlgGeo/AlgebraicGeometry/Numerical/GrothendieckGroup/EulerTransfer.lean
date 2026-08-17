@@ -3,6 +3,7 @@ Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under the MIT license.
 -/
 import DerivedAlgGeo.AlgebraicGeometry.Numerical.GrothendieckGroup.Realization
+import DerivedAlgGeo.CategoryTheory.Triangulated.GrothendieckGroup.EulerForm
 
 /-!
 # Transferring Euler-form preservation across a realization
@@ -60,16 +61,17 @@ matter here.
 
 ## What this file does not assert
 
-* **Nothing constructs a `CategoricalEulerForm`.** Building `χ` from `Hom`
-  needs an alternating sum `Σᵢ (-1)ⁱ dim Hom(X, Y[i])`, which needs
-  Hom-finiteness, a bound making the sum finite, and additivity along
-  distinguished triangles via the long exact Hom sequence.  None of that
-  machinery exists in this repository; `Mathlib.CategoryTheory.Triangulated.Yoneda`
-  has the exactness input, and the rest would be a track of its own.
-* **Nothing proves `PreservesCategoricalEuler` for any functor.**  In
-  particular neither full faithfulness nor `k`-linearity is anywhere used,
-  because with the form supplied abstractly there is no `Hom` for either to act
-  on.  That implication is exactly what the construction above would unlock.
+* **A `CategoricalEulerForm` can now be constructed** — `ofLinear`, from
+  `Triangulated/GrothendieckGroup/EulerForm.lean`'s `chiK₀`.  What that costs is
+  `HomFiniteBounded`: finite-dimensionality of every `Hom(X, Y⟦i⟧)` and finite
+  support in `i`.  So the obligation is *moved*, from "produce a biadditive
+  pairing" to "produce Hom-finiteness", not eliminated.  A caller with an
+  abstract `𝒯` and no `k` still supplies the structure directly.
+* **Nothing proves `PreservesCategoricalEuler` for any functor.**  This is now
+  the sharper gap: with `ofLinear` there *is* a `Hom` for full faithfulness and
+  `k`-linearity to act on, so the classical argument — a fully faithful
+  `k`-linear shift-compatible functor matches the summands one by one — is
+  stateable for the first time.  It is still not proved here.
 * `IsRiemannRoch` is bilinear HRR, assumed.  No variety is shown to satisfy
   it, and `NumericalVariety.hirzebruch_riemannRoch` — the one-variable
   statement — is itself an axiom of the Layer A interface.
@@ -90,13 +92,56 @@ variable (𝒯 : Type u₁) [Category.{v₁} 𝒯] [HasZeroObject 𝒯] [HasShif
 
 /-- A **categorical Euler form**: a biadditive `ℤ`-valued pairing on `K₀ 𝒯`.
 
-Geometrically this is `χ(E,F) = Σᵢ (-1)ⁱ dim Hom(E, F[i])`.  It is supplied,
-not built: see the module docstring for what constructing it would require. -/
+Geometrically this is `χ(E,F) = Σᵢ (-1)ⁱ dim Hom(E, F[i])`.
+
+The structure remains an interface — it asks only for the pairing, and carries
+no `k` — but it is no longer *only* supplied: `ofLinear` below constructs one
+from `Hom` for a `k`-linear category with finite-dimensional, finitely-supported
+shifted Hom-spaces. A caller in that situation should use `ofLinear` rather than
+inventing a `chi`. -/
 structure CategoricalEulerForm where
   /-- The pairing. -/
   chi : K₀ 𝒯 →+ K₀ 𝒯 →+ ℤ
 
 end Form
+
+section OfLinear
+
+open CategoryTheory.Triangulated
+
+/-- **The Hom-built Euler form, packaged as a `CategoricalEulerForm`.**
+
+`Triangulated/GrothendieckGroup/EulerForm.lean` constructs
+`χ(X,Y) = Σᵢ (-1)ⁱ dimₖ Hom(X, Y⟦i⟧)` and proves it biadditive; this is that
+`chiK₀` in the shape the numerical track consumes.
+
+The constructor lives here rather than at the construction site because
+`CategoricalEulerForm` is stated over a merely-`Preadditive` `𝒯` with no `k` in
+its binders — the `k`-linear hypotheses cannot be attached to the structure
+without changing its signature and every consumer's.
+
+**What this does and does not discharge.** `EulerTransfer`'s conclusion rests on
+three supplied inputs; this retires the first of them for `k`-linear
+Hom-finite categories. `IsRiemannRoch` and `PreservesCategoricalEuler` remain
+supplied, and `HomFiniteBounded` is itself supplied — the obligation is moved
+from "produce a biadditive pairing" to "produce Hom-finiteness", which is a
+better place for it but is not nothing. -/
+noncomputable def CategoricalEulerForm.ofLinear (k : Type w₁) [DivisionRing k]
+    (𝒯 : Type u₁) [Category.{v₁} 𝒯] [HasZeroObject 𝒯] [HasShift 𝒯 ℤ]
+    [Preadditive 𝒯] [∀ n : ℤ, (shiftFunctor 𝒯 n).Additive] [Pretriangulated 𝒯]
+    [Linear k 𝒯] [∀ n : ℤ, (shiftFunctor 𝒯 n).Linear k]
+    [HomFiniteBounded k 𝒯] : CategoricalEulerForm 𝒯 :=
+  ⟨chiK₀ k 𝒯⟩
+
+@[simp]
+theorem CategoricalEulerForm.ofLinear_chi (k : Type w₁) [DivisionRing k]
+    (𝒯 : Type u₁) [Category.{v₁} 𝒯] [HasZeroObject 𝒯] [HasShift 𝒯 ℤ]
+    [Preadditive 𝒯] [∀ n : ℤ, (shiftFunctor 𝒯 n).Additive] [Pretriangulated 𝒯]
+    [Linear k 𝒯] [∀ n : ℤ, (shiftFunctor 𝒯 n).Linear k]
+    [HomFiniteBounded k 𝒯] :
+    (CategoricalEulerForm.ofLinear k 𝒯).chi = chiK₀ k 𝒯 := rfl
+
+end OfLinear
 
 section Transfer
 

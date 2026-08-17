@@ -136,6 +136,8 @@ invisible.
 import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition
 import DerivedAlgGeo.CategoryTheory.Triangulated.FourierMukai
 import DerivedAlgGeo.CategoryTheory.Triangulated.LinearYoneda
+import DerivedAlgGeo.CategoryTheory.Triangulated.LinearCoyoneda
+import DerivedAlgGeo.CategoryTheory.Triangulated.GrothendieckGroup.EulerForm
 import DerivedAlgGeo.LinearAlgebra
 
 open CategoryTheory.Triangulated
@@ -1166,6 +1168,71 @@ open CategoryTheory.Triangulated
 #print axioms CategoryTheory.Triangulated.TStructure.CompactGeneratorApproximation.tStructure_le_zero
 #print axioms CategoryTheory.Triangulated.TStructure.CompactGeneratorApproximation.tStructure_ge_one
 #print axioms CategoryTheory.Triangulated.TStructure.CompactGeneratorApproximation.isCompactlyGeneratedBy
+#print axioms CategoryTheory.Triangulated.TStructure.GeneratorApproximationMap
+#print axioms CategoryTheory.Triangulated.TStructure.GeneratorApproximationMap.mk.inj
+#print axioms CategoryTheory.Triangulated.TStructure.GeneratorApproximationMap.mk.sizeOf_spec
+#print axioms CategoryTheory.Triangulated.TStructure.GeneratorApproximationMap.left
+#print axioms CategoryTheory.Triangulated.TStructure.GeneratorApproximationMap.left_mem
+#print axioms CategoryTheory.Triangulated.TStructure.GeneratorApproximationMap.hom
+#print axioms CategoryTheory.Triangulated.TStructure.GeneratorApproximationMap.hom_surjective
+#print axioms CategoryTheory.Triangulated.TStructure.GeneratorApproximationMap.shift_hom_injective
+#print axioms CategoryTheory.Triangulated.TStructure.GeneratorApproximationMap.exists_triangle
+#print axioms CategoryTheory.Triangulated.TStructure.CompactGeneratorApproximation.ofGeneratorApproximationMaps
+#print axioms CategoryTheory.Triangulated.TStructure.CompactGeneratorBrown.GeneratorIndex
+#print axioms CategoryTheory.Triangulated.TStructure.CompactGeneratorBrown.generator
+#print axioms CategoryTheory.Triangulated.TStructure.CompactGeneratorBrown.generator_mem
+#print axioms CategoryTheory.Triangulated.TStructure.CompactGeneratorBrown.EvaluationIndex
+#print axioms CategoryTheory.Triangulated.TStructure.CompactGeneratorBrown.evaluationSource
+#print axioms CategoryTheory.Triangulated.TStructure.CompactGeneratorBrown.evaluationMap
+#print axioms CategoryTheory.Triangulated.TStructure.CompactGeneratorBrown.initialObject
+#print axioms CategoryTheory.Triangulated.TStructure.CompactGeneratorBrown.initialHom
+#print axioms CategoryTheory.Triangulated.TStructure.CompactGeneratorBrown.initialObject_mem
+#print axioms CategoryTheory.Triangulated.TStructure.CompactGeneratorBrown.initialHom_surjective
+#print axioms CategoryTheory.Triangulated.TStructure.CompactGeneratorBrown.Stage
+#print axioms CategoryTheory.Triangulated.TStructure.CompactGeneratorBrown.Stage.mk.inj
+#print axioms CategoryTheory.Triangulated.TStructure.CompactGeneratorBrown.Stage.mk.sizeOf_spec
+#print axioms CategoryTheory.Triangulated.TStructure.CompactGeneratorBrown.Stage.obj
+#print axioms CategoryTheory.Triangulated.TStructure.CompactGeneratorBrown.Stage.mem
+#print axioms CategoryTheory.Triangulated.TStructure.CompactGeneratorBrown.Stage.hom
+#print axioms CategoryTheory.Triangulated.TStructure.CompactGeneratorBrown.initialStage
+#print axioms CategoryTheory.Triangulated.TStructure.CompactGeneratorBrown.KernelIndex
+#print axioms CategoryTheory.Triangulated.TStructure.CompactGeneratorBrown.kernelSource
+#print axioms CategoryTheory.Triangulated.TStructure.CompactGeneratorBrown.kernelMap
+#print axioms CategoryTheory.Triangulated.TStructure.CompactGeneratorBrown.kernelObject
+#print axioms CategoryTheory.Triangulated.TStructure.CompactGeneratorBrown.kernelHom
+#print axioms CategoryTheory.Triangulated.TStructure.CompactGeneratorBrown.kernelHom_comp_stageHom
+#print axioms CategoryTheory.Triangulated.TStructure.CompactGeneratorBrown.kernelHom_comp_stageHom_assoc
+#print axioms CategoryTheory.Triangulated.TStructure.CompactGeneratorBrown.kernelObject_shift_mem
+#print axioms CategoryTheory.Triangulated.TStructure.CompactGeneratorBrown.StepData
+#print axioms CategoryTheory.Triangulated.TStructure.CompactGeneratorBrown.StepData.mk.inj
+#print axioms CategoryTheory.Triangulated.TStructure.CompactGeneratorBrown.StepData.mk.sizeOf_spec
+#print axioms CategoryTheory.Triangulated.TStructure.CompactGeneratorBrown.StepData.next
+#print axioms CategoryTheory.Triangulated.TStructure.CompactGeneratorBrown.StepData.transition
+#print axioms CategoryTheory.Triangulated.TStructure.CompactGeneratorBrown.StepData.connecting
+#print axioms CategoryTheory.Triangulated.TStructure.CompactGeneratorBrown.StepData.distinguished
+#print axioms CategoryTheory.Triangulated.TStructure.CompactGeneratorBrown.StepData.transition_hom
+#print axioms CategoryTheory.Triangulated.TStructure.CompactGeneratorBrown.StepData.kills
+#print axioms CategoryTheory.Triangulated.TStructure.CompactGeneratorBrown.stepData_nonempty
+#print axioms CategoryTheory.Triangulated.TStructure.CompactGeneratorBrown.step
+#print axioms CategoryTheory.Triangulated.TStructure.CompactGeneratorBrown.tower
+#print axioms CategoryTheory.Triangulated.TStructure.CompactGeneratorBrown.towerTransition
+#print axioms CategoryTheory.Triangulated.TStructure.CompactGeneratorBrown.towerTransition_comp_hom
+#print axioms CategoryTheory.Triangulated.TStructure.CompactGeneratorBrown.towerTransition_comp_hom_assoc
+#print axioms CategoryTheory.Triangulated.TStructure.CompactGeneratorBrown.towerTransition_kills
+#print axioms CategoryTheory.Triangulated.TStructure.CompactGeneratorBrown.towerObject
+#print axioms CategoryTheory.Triangulated.TStructure.CompactGeneratorBrown.telescope
+#print axioms CategoryTheory.Triangulated.TStructure.CompactGeneratorBrown.limitHom
+#print axioms CategoryTheory.Triangulated.TStructure.CompactGeneratorBrown.inclusion_comp_limitHom
+#print axioms CategoryTheory.Triangulated.TStructure.CompactGeneratorBrown.inclusion_comp_limitHom_assoc
+#print axioms CategoryTheory.Triangulated.TStructure.CompactGeneratorBrown.telescope_mem
+#print axioms CategoryTheory.Triangulated.TStructure.CompactGeneratorBrown.limitHom_surjective
+#print axioms CategoryTheory.Triangulated.TStructure.CompactGeneratorBrown.limitHom_shift_injective
+#print axioms CategoryTheory.Triangulated.TStructure.CompactGeneratorBrown.generatorApproximationMap
+#print axioms CategoryTheory.Triangulated.TStructure.CompactGeneratorBrown.compactGeneratorApproximation
+#print axioms CategoryTheory.Triangulated.TStructure.CompactGeneratorBrown.tStructure
+#print axioms CategoryTheory.Triangulated.TStructure.CompactGeneratorBrown.tStructure_isCompactlyGeneratedBy
+#print axioms CategoryTheory.Triangulated.TStructure.CompactGeneratorBrown.tStructure_le_zero
+#print axioms CategoryTheory.Triangulated.TStructure.CompactGeneratorBrown.tStructure_ge_one
 #print axioms CategoryTheory.Triangulated.TStructure.CompactGeneratorApproximation.ofApproximationMaps
 #print axioms CategoryTheory.Functor.isRightTExact_of_compactlyGenerated
 #print axioms CategoryTheory.Adjunction.isTExact_of_compactlyGenerated
@@ -1188,8 +1255,19 @@ open CategoryTheory.Triangulated
 #print axioms CategoryTheory.Triangulated.Polishchuk.InducedTStructureData.isGE_iff
 #print axioms CategoryTheory.Triangulated.Polishchuk.induce
 #print axioms CategoryTheory.Triangulated.Polishchuk.induceOfApproximation
+#print axioms CategoryTheory.Triangulated.Polishchuk.induceOfBrown
 #print axioms CategoryTheory.Triangulated.Polishchuk.induceOfApproximationMaps
+#print axioms CategoryTheory.Triangulated.TStructure.coprodBoundedAisle_rightOrthogonal_of_isGE
+#print axioms CategoryTheory.Triangulated.TStructure.boundedAisle_le_large
+#print axioms CategoryTheory.Triangulated.TStructure.large_isLE_zero_iff
+#print axioms CategoryTheory.Triangulated.TStructure.large_isGE_one_iff
+#print axioms CategoryTheory.Triangulated.TStructure.boundedAisle_le_shift
+#print axioms CategoryTheory.Triangulated.TStructure.large_isLE_iff
+#print axioms CategoryTheory.Triangulated.TStructure.large_isGE_iff
+#print axioms CategoryTheory.Triangulated.TStructure.hasInducedTStructure_of_largeAisle
+#print axioms CategoryTheory.Triangulated.TStructure.IndExtensionData.ofCompactGenerators
 #print axioms CategoryTheory.Triangulated.TStructure.IndExtensionData.ofApproximation
+#print axioms CategoryTheory.Triangulated.TStructure.IndExtensionData.ofBrown
 
 /-! ## Repository-owned t-structure heart bridges -/
 
@@ -3869,4 +3947,64 @@ finiteness data nothing here provides.
 #print axioms CategoryTheory.Triangulated.linearYoneda_homologySequence_exact₁
 #print axioms CategoryTheory.Triangulated.linearYoneda_homologySequence_exact₂
 #print axioms CategoryTheory.Triangulated.linearYoneda_homologySequence_exact₃
+
+/-! ## The alternating sum along a `ℤ`-indexed long exact sequence
+
+The arithmetic under a Hom-built Euler form. Indexed by `ℤ` and carrying NO
+boundary hypotheses -- no injectivity, no surjectivity, no `Subsingleton` --
+because the three-family statement telescopes by a translation of the summation
+index rather than by induction. `k` is a `DivisionRing`: rank-nullity is what
+forces it and commutativity is used nowhere.
+-/
+
+#print axioms DerivedAlgGeo.LinearAlgebra.finrank_eq_range_add_range
+#print axioms DerivedAlgGeo.LinearAlgebra.altDim
+#print axioms DerivedAlgGeo.LinearAlgebra.support_altDim
+#print axioms DerivedAlgGeo.LinearAlgebra.support_range_subset
+#print axioms DerivedAlgGeo.LinearAlgebra.finsum_altDim_middle
+
+/-! ## The k-linear coyoneda functor is homological
+
+The second-variable companion of `linearYoneda`. Its shift sequence is
+tautological -- the functor is covariant with source `C` -- so unlike the
+Yoneda side it needs NO opposite-category linearity and NO
+`(shiftFunctor C n).Linear k` hypothesis.
+-/
+
+#print axioms CategoryTheory.Triangulated.linearCoyoneda_isHomological
+#print axioms CategoryTheory.Triangulated.linearCoyonedaShiftSequence
+#print axioms CategoryTheory.Triangulated.linearCoyoneda_homologySequence_exact₁
+#print axioms CategoryTheory.Triangulated.linearCoyoneda_homologySequence_exact₂
+#print axioms CategoryTheory.Triangulated.linearCoyoneda_homologySequence_exact₃
+
+/-! ## The Hom-built Euler form
+
+`chi(X,Y) = SUM (-1)^i dim_k Hom(X, Y[i])`, biadditive, descended to `K0`.
+`HomFiniteBounded` is the one supplied datum and every other declaration here is
+constructed from it plus the two long exact sequences. A clean axiom list is the
+claim that constructing the Euler form needs no assumption beyond Hom-finiteness
+-- in particular no Serre duality and no geometry.
+
+`chiHom` itself is junk-total: `finrank` is 0 on a non-finite module and `finsum`
+is 0 on infinite support, so it is defined everywhere and only the additivity
+results require `HomFiniteBounded`.
+-/
+
+#print axioms CategoryTheory.Triangulated.HomFiniteBounded
+#print axioms CategoryTheory.Triangulated.HomFiniteBounded.finite
+#print axioms CategoryTheory.Triangulated.HomFiniteBounded.support_finite
+#print axioms CategoryTheory.Triangulated.chiHom
+#print axioms CategoryTheory.Triangulated.chiHom_eq_finsum_altDim
+#print axioms CategoryTheory.Triangulated.exact_hom_of_shortComplex_exact
+#print axioms CategoryTheory.Triangulated.chiHom_additive_right
+#print axioms CategoryTheory.Triangulated.chiHom_additive_left
+#print axioms CategoryTheory.Triangulated.isTriangleAdditive_chiHom
+#print axioms CategoryTheory.Triangulated.chiRight
+#print axioms CategoryTheory.Triangulated.chiRight.congr_simp
+#print axioms CategoryTheory.Triangulated.chiRight_of
+#print axioms CategoryTheory.Triangulated.isTriangleAdditive_chiRight
+#print axioms CategoryTheory.Triangulated.chiK₀
+#print axioms CategoryTheory.Triangulated.chiK₀_of
+#print axioms CategoryTheory.Triangulated.chiK₀_of_of
+
 

@@ -73,6 +73,16 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Proj.monomial_mem_natShift
 #print axioms AlgebraicGeometry.Proj.awayMk_monomial_eq_iff
 #print axioms AlgebraicGeometry.Proj.awayMk_monomial_eq_iff_laurentExponent
+-- Spanning (#491): the monomial fractions exhaust the localization. exists_sum_awayMk_monomial
+-- puts every element over ONE common denominator, so a map defined on monomial fractions extends
+-- with no further alignment; laurentExponent_mem_index says the exponents it contributes are
+-- exactly the admissible ones.
+#print axioms AlgebraicGeometry.Proj.monomial_one_pow_ne_zero
+#print axioms AlgebraicGeometry.Proj.degree_eq_of_mem_support
+#print axioms AlgebraicGeometry.Proj.monomial_coeff_mem_natShift
+#print axioms AlgebraicGeometry.Proj.awayMk_eq_sum_monomial
+#print axioms AlgebraicGeometry.Proj.exists_sum_awayMk_monomial
+#print axioms AlgebraicGeometry.Proj.laurentExponent_mem_index
 -- The numerator side of the sign projection (#491 -> #340). divMonomial_pow_mul is the
 -- well-definedness identity: projecting commutes with raising a representative to a higher power
 -- of the denominator, which is the move that relates any two representatives.
@@ -1732,6 +1742,11 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 -- than built from Hom. A clean axiom list here is a statement about the
 -- bookkeeping, not about any variety or any functor.
 #print axioms AlgebraicGeometry.Numerical.CategoricalEulerForm
+-- The Hom-built form, packaged. `ofLinear` is what retires the "nothing
+-- constructs a CategoricalEulerForm" claim; the obligation moves to
+-- HomFiniteBounded rather than disappearing.
+#print axioms AlgebraicGeometry.Numerical.CategoricalEulerForm.ofLinear
+#print axioms AlgebraicGeometry.Numerical.CategoricalEulerForm.ofLinear_chi
 #print axioms AlgebraicGeometry.Numerical.CategoricalEulerForm.mk.inj
 #print axioms AlgebraicGeometry.Numerical.CategoricalEulerForm.mk.sizeOf_spec
 #print axioms AlgebraicGeometry.Numerical.CategoricalEulerForm.chi
