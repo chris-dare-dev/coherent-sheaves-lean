@@ -2645,6 +2645,7 @@ this against the file by eye. -/
 #print axioms CategoryTheory.Triangulated.Slicing.InducedTStructures.tStructure
 #print axioms CategoryTheory.Triangulated.Slicing.InducedTStructures.le_zero_iff
 #print axioms CategoryTheory.Triangulated.Slicing.InducedTStructures.ge_one_iff
+#print axioms CategoryTheory.Triangulated.Slicing.InducedTStructures.ofIso
 #print axioms CategoryTheory.Triangulated.Slicing.InducedTStructures.hom_vanishing
 #print axioms CategoryTheory.Triangulated.Slicing.InducedTStructures.toPreimageData
 #print axioms CategoryTheory.Triangulated.Slicing.inducedTStructuresId
@@ -2653,8 +2654,6 @@ this against the file by eye. -/
 #print axioms CategoryTheory.Triangulated.Slicing.InducedTStructures.isZero_of_map_isZero
 #print axioms CategoryTheory.Triangulated.Slicing.InducedTStructures.hn_exists
 #print axioms CategoryTheory.Triangulated.Slicing.InducedTStructures.preimageData
-#print axioms CategoryTheory.Triangulated.Slicing.LeftAdjointInducingPremise
-#print axioms CategoryTheory.Triangulated.HasLeftAdjointInducingTheorem
 
 /-! ## Normalized quotient, combined action, and topological action layer -/
 
@@ -3449,8 +3448,8 @@ end SlicingChecks
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.DerivedPullbackInducingData
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.DerivedPullbackInducingData.mk.inj
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.DerivedPullbackInducingData.mk.sizeOf_spec
-#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.DerivedPullbackInducingData.leftAdjoint
-#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.DerivedPullbackInducingData.premise
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.DerivedPullbackInducingData.inducedTStructures
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.DerivedPullbackInducingData.identity
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.DerivedPullbackInducingData.toPreimageData
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.DerivedPullbackInducingData.toPreimageData_of_flat
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.RegularCurveBaseChange
@@ -3560,6 +3559,46 @@ geometric witness for every scheme morphism.
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.GeometricDerivedPullbackComposition.boundedIso
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.GeometricDerivedPullbackComposition.perfectIso
 
+/-! ## Honest Dqc, bounded coherent, and perfect loci
+
+`SchemeQuasicoherentDerivedCategory` is cut out inside the all-module-sheaf
+derived category by quasi-coherence of every homology sheaf.  The concrete
+coherent inclusion is proved to land in that locus.  The two final
+identification propositions are intentionally uninhabited here: they name the
+general-scheme equivalence and compact/perfect theorem still needed by A.14.
+-/
+
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.schemeQuasicoherentCohomology
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.instIsClosedUnderIsomorphismsSchemeDerivedCategorySchemeQuasicoherentCohomology
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeQuasicoherentDerivedCategory
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeQuasicoherentDerivedCategory.ι
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeQuasicoherentDerivedCategory.mem_iff
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.mapDerivedCategoryHomologyIso
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.coherentDerivedInclusion
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.coherentDerivedInclusion_mem_dqc
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.coherentDerivedToDqc
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.coherentDerivedToDqcCompInclusion
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.schemeBoundedQuasicoherent
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.instIsClosedUnderIsomorphismsSchemeQuasicoherentDerivedCategorySchemeBoundedQuasicoherent
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBoundedQuasicoherentDerivedCategory
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBoundedQuasicoherentDerivedCategory.ι
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBoundedQuasicoherentDerivedCategory.mem_iff
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.schemeBoundedCoherentCohomology
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.instIsClosedUnderIsomorphismsSchemeQuasicoherentDerivedCategorySchemeBoundedCoherentCohomology
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBoundedCoherentDqcCategory
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.schemeBoundedCoherentCohomology_le_bounded
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.boundedCoherentDerivedToDqc
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBoundedCoherentDqcCategory.ι
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.perfectDerivedToDqc
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.schemePerfectInDqc
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.BoundedCoherentDqcIdentification
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.BoundedCoherentDqcIdentification.mk.inj
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.BoundedCoherentDqcIdentification.mk.sizeOf_spec
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.BoundedCoherentDqcIdentification.equivalence
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.BoundedCoherentDqcIdentification.comparison
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasBoundedCoherentDqcIdentification
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.PerfectObjectsAreCompactInDqc
+
 /-! ## Geometric bounded-coherent base change
 
 This layer constructs the slicing preimage witness from the actual bounded
@@ -3599,8 +3638,8 @@ records below assert openness or relative-HN existence.
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.BoundedCoherentPullbackInducingData
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.BoundedCoherentPullbackInducingData.mk.inj
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.BoundedCoherentPullbackInducingData.mk.sizeOf_spec
-#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.BoundedCoherentPullbackInducingData.leftAdjoint
-#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.BoundedCoherentPullbackInducingData.premise
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.BoundedCoherentPullbackInducingData.inducedTStructures
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.BoundedCoherentPullbackInducingData.identity
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.BoundedCoherentPullbackInducingData.toPreimageData
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.BoundedCoherentDerivedRealization
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.BoundedCoherentDerivedRealization.mk.inj
@@ -4006,5 +4045,35 @@ results require `HomFiniteBounded`.
 #print axioms CategoryTheory.Triangulated.chiK₀
 #print axioms CategoryTheory.Triangulated.chiK₀_of
 #print axioms CategoryTheory.Triangulated.chiK₀_of_of
+#print axioms CategoryTheory.Triangulated.chiK₀.congr_simp
 
+/-! ## A fully faithful k-linear functor preserves the Euler form
+
+Step 6 of the Hom-built Euler form. The content is the term-by-term match of
+`Hom(X, Y[i])` with `Hom(PhiX, PhiY[i])`; `k`-linearity is what makes the
+matched summands equal as k-DIMENSIONS, which additivity alone would not give.
+A clean axiom list says preservation follows from full faithfulness plus
+k-linearity plus shift-compatibility, and from nothing else -- no Serre duality
+and no geometry.
+-/
+
+#print axioms CategoryTheory.Triangulated.homLinearEquivOfFullyFaithful
+#print axioms CategoryTheory.Triangulated.finrank_hom_shift_map
+#print axioms CategoryTheory.Triangulated.chiHom_map
+#print axioms CategoryTheory.Triangulated.chiK₀_map
+
+/-! ## Affine quasi-coherent derived realization (#528) -/
+
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.AffineQuasicoherentDerivedCategory
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.AffineQuasicoherentSheaves
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.affineGammaDerivedFunctor
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.affineGammaDerivedHomologyIso
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.affineQuasicoherentDerivedCategory_isTriangulated
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.affineQuasicoherentSheavesAbelian
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.affineQuasicoherentSheavesEquiv
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.affineQuasicoherentSheavesEquiv_functor_additive
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.affineQuasicoherentSheavesEquiv_inverse_additive
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.affineQuasicoherentSheavesHasFiniteProducts
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.affineTildeDerivedFunctor
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.affineTildeDerivedHomologyIso
 

@@ -49,6 +49,9 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.awayMk_add
 #print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.awayMk_sum
 #print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.awayMk_shift
+-- A fraction is zero exactly when its numerator is (#491). This is what makes the numerator a
+-- faithful record: independence of fractions reduces to independence of numerators.
+#print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.awayMk_eq_zero_iff
 -- The face map in awayMk normal form, and the degree-index transport its callers need.
 #print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.awayMk_deg_congr
 #print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.faceMap_awayMk
@@ -95,6 +98,11 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Proj.divMonomial_monomial_mul_comm
 #print axioms AlgebraicGeometry.Proj.divMonomial_pow_mul
 #print axioms AlgebraicGeometry.Proj.divMonomial_mem_natShift
+-- Independence (#491): a vanishing monomial combination at a fixed denominator has vanishing
+-- coefficients. With exists_sum_awayMk_monomial this is the basis statement in usable form -- a
+-- map may be DEFINED by its effect on monomial fractions.
+#print axioms AlgebraicGeometry.Proj.sum_monomial_eq_zero_iff
+#print axioms AlgebraicGeometry.Proj.sum_awayMk_monomial_eq_zero_iff
 -- The projection descends to the localization and retracts the face inclusion (#491 -> #340).
 -- signProjection is defined by choosing a representative; signProjection_awayMk is the equation
 -- that pins it down, and signProjection_laurentFace is the first of the two properties the
@@ -1776,6 +1784,9 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 -- HomFiniteBounded rather than disappearing.
 #print axioms AlgebraicGeometry.Numerical.CategoricalEulerForm.ofLinear
 #print axioms AlgebraicGeometry.Numerical.CategoricalEulerForm.ofLinear_chi
+-- Step 6: the second of EulerTransfer's three obligations, discharged for
+-- Hom-built forms. IsRiemannRoch remains supplied.
+#print axioms AlgebraicGeometry.Numerical.ofLinear_preservesCategoricalEuler
 #print axioms AlgebraicGeometry.Numerical.CategoricalEulerForm.mk.inj
 #print axioms AlgebraicGeometry.Numerical.CategoricalEulerForm.mk.sizeOf_spec
 #print axioms AlgebraicGeometry.Numerical.CategoricalEulerForm.chi
@@ -1783,3 +1794,316 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Numerical.PreservesCategoricalEuler
 #print axioms AlgebraicGeometry.Numerical.preservesEuler_of_descends
 #print axioms AlgebraicGeometry.Numerical.pairing_mukaiVector_eq_on_realized_of_categorical
+
+/-! ## Relative-perfect and universally-gluable scheme objects (#521) -/
+
+#print axioms AlgebraicGeometry.Scheme.Modules.IsFlatOver
+#print axioms AlgebraicGeometry.schemePseudoCoherent
+#print axioms AlgebraicGeometry.schemePseudoCoherent_isClosedUnderIsomorphisms
+#print axioms AlgebraicGeometry.relativeOpenBaseChange
+#print axioms AlgebraicGeometry.relativeOpenTo
+#print axioms AlgebraicGeometry.relativeOpenTo_left
+#print axioms AlgebraicGeometry.relativeOpenTo_isOpenImmersion
+#print axioms AlgebraicGeometry.LocalFiniteTorAmplitudeChart
+#print axioms AlgebraicGeometry.LocalFiniteTorAmplitudeChart.flatOverBase
+#print axioms AlgebraicGeometry.LocalFiniteTorAmplitudeChart.lower
+#print axioms AlgebraicGeometry.LocalFiniteTorAmplitudeChart.lower_le_upper
+#print axioms AlgebraicGeometry.LocalFiniteTorAmplitudeChart.mem_openSubset
+#print axioms AlgebraicGeometry.LocalFiniteTorAmplitudeChart.mk.inj
+#print axioms AlgebraicGeometry.LocalFiniteTorAmplitudeChart.mk.sizeOf_spec
+#print axioms AlgebraicGeometry.LocalFiniteTorAmplitudeChart.model
+#print axioms AlgebraicGeometry.LocalFiniteTorAmplitudeChart.openSubset
+#print axioms AlgebraicGeometry.LocalFiniteTorAmplitudeChart.represents
+#print axioms AlgebraicGeometry.LocalFiniteTorAmplitudeChart.strictlyGE
+#print axioms AlgebraicGeometry.LocalFiniteTorAmplitudeChart.strictlyLE
+#print axioms AlgebraicGeometry.LocalFiniteTorAmplitudeChart.upper
+#print axioms AlgebraicGeometry.schemeLocallyFiniteTorAmplitudeOver
+#print axioms AlgebraicGeometry.schemeLocallyFiniteTorAmplitudeOver_isClosedUnderIsomorphisms
+#print axioms AlgebraicGeometry.schemeRelativePerfect
+#print axioms AlgebraicGeometry.schemeRelativePerfect_isClosedUnderIsomorphisms
+#print axioms AlgebraicGeometry.SchemeRelativePerfectCategory
+#print axioms AlgebraicGeometry.GeometricFiberModel
+#print axioms AlgebraicGeometry.GeometricFiberModel.fiberComplex
+#print axioms AlgebraicGeometry.GeometricFiberModel.fiberObject
+#print axioms AlgebraicGeometry.GeometricFiberModel.flatOverBase
+#print axioms AlgebraicGeometry.GeometricFiberModel.mk.inj
+#print axioms AlgebraicGeometry.GeometricFiberModel.mk.sizeOf_spec
+#print axioms AlgebraicGeometry.GeometricFiberModel.represents
+#print axioms AlgebraicGeometry.GeometricFiberModel.totalModel
+#print axioms AlgebraicGeometry.UniversallyGluableData
+#print axioms AlgebraicGeometry.UniversallyGluableData.fiberModel
+#print axioms AlgebraicGeometry.UniversallyGluableData.mk.inj
+#print axioms AlgebraicGeometry.UniversallyGluableData.mk.sizeOf_spec
+#print axioms AlgebraicGeometry.UniversallyGluableData.negativeExtVanishes
+#print axioms AlgebraicGeometry.schemeUniversallyGluableRelativePerfect
+#print axioms AlgebraicGeometry.UniversallyGluableData.ofIso
+#print axioms AlgebraicGeometry.schemeUniversallyGluableRelativePerfect_isClosedUnderIsomorphisms
+#print axioms AlgebraicGeometry.SchemeUniversallyGluableCategory
+#print axioms AlgebraicGeometry.zeroModuleComplex
+#print axioms AlgebraicGeometry.zeroModuleComplex_isZero
+#print axioms AlgebraicGeometry.zeroSchemeDerivedObject
+#print axioms AlgebraicGeometry.zeroSchemeDerivedObject_isZero
+#print axioms AlgebraicGeometry.zeroCoherentComplex
+#print axioms AlgebraicGeometry.zeroCoherentDerivedObject
+#print axioms AlgebraicGeometry.zeroCoherentDerivedObject_isZero
+#print axioms AlgebraicGeometry.zeroBoundedCoherentDerivedObject
+#print axioms AlgebraicGeometry.zeroBoundedCoherentDerivedObject_isZero
+#print axioms AlgebraicGeometry.SchemeQuasicoherentDerivedCategory.zero
+#print axioms AlgebraicGeometry.schemeQuasicoherentDerivedCategory_zero_obj_isZero
+#print axioms AlgebraicGeometry.schemePseudoCoherent_zero
+#print axioms AlgebraicGeometry.zeroLocalFiniteTorAmplitudeChart
+#print axioms AlgebraicGeometry.schemeLocallyFiniteTorAmplitudeOver_zero
+#print axioms AlgebraicGeometry.schemeRelativePerfect_zero
+#print axioms AlgebraicGeometry.zeroGeometricFiberModel
+#print axioms AlgebraicGeometry.universallyGluableDataZero
+#print axioms AlgebraicGeometry.schemeUniversallyGluableRelativePerfect_zero
+
+/-! ## Groupoid-valued relative-perfect moduli problem (#518) -/
+
+#print axioms AlgebraicGeometry.RelativePerfectGeometricFiber
+#print axioms AlgebraicGeometry.RelativePerfectIsomorphismClasses
+#print axioms AlgebraicGeometry.RelativePerfectModuliFiber
+#print axioms AlgebraicGeometry.RelativePerfectModuliProblem
+#print axioms AlgebraicGeometry.RelativePerfectModuliProblem.ambientComparison
+#print axioms AlgebraicGeometry.RelativePerfectModuliProblem.base
+#print axioms AlgebraicGeometry.RelativePerfectModuliProblem.exactPullback
+#print axioms AlgebraicGeometry.RelativePerfectModuliProblem.fiberEquivalence
+#print axioms AlgebraicGeometry.RelativePerfectModuliProblem.mk.inj
+#print axioms AlgebraicGeometry.RelativePerfectModuliProblem.mk.sizeOf_spec
+#print axioms AlgebraicGeometry.RelativePerfectModuliProblem.presheaf
+#print axioms AlgebraicGeometry.RelativePerfectModuliProblem.presheaf_obj_isGroupoid
+#print axioms AlgebraicGeometry.constantRelativePerfectPresheaf
+#print axioms AlgebraicGeometry.identityBaseChangeDiagram
+#print axioms AlgebraicGeometry.identityRelativePerfectModuliProblem
+#print axioms AlgebraicGeometry.relativePerfectForget
+#print axioms AlgebraicGeometry.relativePerfectGeometricZeroObject
+#print axioms AlgebraicGeometry.relativePerfectIsomorphismClass
+#print axioms AlgebraicGeometry.relativePerfectModuliFiber_nonempty
+#print axioms AlgebraicGeometry.relativePerfectModuliForget
+#print axioms AlgebraicGeometry.relativePerfectZeroObject
+
+/-! ## Stacks in groupoids and scheme descent (#523) -/
+
+#print axioms AlgebraicGeometry.StackEquivalence
+#print axioms AlgebraicGeometry.StackEquivalence.comparison
+#print axioms AlgebraicGeometry.StackEquivalence.descent
+#print axioms AlgebraicGeometry.StackEquivalence.fiber
+#print axioms AlgebraicGeometry.StackEquivalence.isStack_iff
+#print axioms AlgebraicGeometry.StackEquivalence.mk.inj
+#print axioms AlgebraicGeometry.StackEquivalence.mk.sizeOf_spec
+#print axioms AlgebraicGeometry.StackInGroupoids
+#print axioms AlgebraicGeometry.StackInGroupoids.CechDescent
+#print axioms AlgebraicGeometry.StackInGroupoids.Cover
+#print axioms AlgebraicGeometry.StackInGroupoids.Cover.hom
+#print axioms AlgebraicGeometry.StackInGroupoids.Cover.index
+#print axioms AlgebraicGeometry.StackInGroupoids.Cover.mem
+#print axioms AlgebraicGeometry.StackInGroupoids.Cover.mk.inj
+#print axioms AlgebraicGeometry.StackInGroupoids.Cover.mk.sizeOf_spec
+#print axioms AlgebraicGeometry.StackInGroupoids.Cover.obj
+#print axioms AlgebraicGeometry.StackInGroupoids.cechDescentEquivalence
+#print axioms AlgebraicGeometry.StackInGroupoids.essSurjToCechDescent
+#print axioms AlgebraicGeometry.StackInGroupoids.fiberIsGroupoid
+#print axioms AlgebraicGeometry.StackInGroupoids.fullyFaithfulToCechDescent
+#print axioms AlgebraicGeometry.StackInGroupoids.presheaf_obj_isGroupoid
+#print axioms AlgebraicGeometry.StackInGroupoids.presheaf_isStack
+#print axioms AlgebraicGeometry.StackInGroupoids.isStack
+#print axioms AlgebraicGeometry.StackInGroupoids.mk.inj
+#print axioms AlgebraicGeometry.StackInGroupoids.mk.sizeOf_spec
+#print axioms AlgebraicGeometry.StackInGroupoids.ofEquivalence
+#print axioms AlgebraicGeometry.StackInGroupoids.presheaf
+#print axioms AlgebraicGeometry.StackInGroupoids.toCechDescent
+#print axioms AlgebraicGeometry.StackMorphism
+#print axioms AlgebraicGeometry.StackMorphism.FiberCategory
+#print axioms AlgebraicGeometry.StackMorphism.FiberRepresentation
+#print axioms AlgebraicGeometry.StackMorphism.FiberRepresentation.fiberEquivalence
+#print axioms AlgebraicGeometry.StackMorphism.FiberRepresentation.mk.inj
+#print axioms AlgebraicGeometry.StackMorphism.FiberRepresentation.mk.sizeOf_spec
+#print axioms AlgebraicGeometry.StackMorphism.FiberRepresentation.representing
+#print axioms AlgebraicGeometry.StackMorphism.IsRepresentable
+#print axioms AlgebraicGeometry.StackMorphism.IsRepresentable.representation
+#print axioms AlgebraicGeometry.StackMorphism.app
+#print axioms AlgebraicGeometry.StackMorphism.id
+#print axioms AlgebraicGeometry.StackMorphism.mk.inj
+#print axioms AlgebraicGeometry.StackMorphism.mk.sizeOf_spec
+#print axioms AlgebraicGeometry.StackMorphism.pullbackIso
+#print axioms AlgebraicGeometry.discretePseudofunctor
+#print axioms AlgebraicGeometry.discretePseudofunctor_isStack
+#print axioms AlgebraicGeometry.discretePseudofunctor_obj_isDiscrete
+#print axioms AlgebraicGeometry.discretePseudofunctor_obj_isGroupoid
+#print axioms AlgebraicGeometry.representableZariskiCechDescentEquivalence
+#print axioms AlgebraicGeometry.representableZariskiObject
+#print axioms AlgebraicGeometry.representableZariskiObject_injective
+#print axioms AlgebraicGeometry.representableZariskiStack
+#print axioms AlgebraicGeometry.stackInGroupoidsOfSheaf
+
+/-! ## Finite-type boundedness witnesses (#519) -/
+
+#print axioms AlgebraicGeometry.FiniteTypeBoundednessWitness
+#print axioms AlgebraicGeometry.FiniteTypeBoundednessWitness.covers
+#print axioms AlgebraicGeometry.FiniteTypeBoundednessWitness.finiteType
+#print axioms AlgebraicGeometry.FiniteTypeBoundednessWitness.geometricFiber
+#print axioms AlgebraicGeometry.FiniteTypeBoundednessWitness.mk.inj
+#print axioms AlgebraicGeometry.FiniteTypeBoundednessWitness.mk.sizeOf_spec
+#print axioms AlgebraicGeometry.FiniteTypeBoundednessWitness.monotone
+#print axioms AlgebraicGeometry.FiniteTypeBoundednessWitness.parameter
+#print axioms AlgebraicGeometry.FiniteTypeBoundednessWitness.universalFamily
+#print axioms AlgebraicGeometry.FiniteTypeBoundednessWitness.universalFamily_mem
+#print axioms AlgebraicGeometry.RelativePerfectModuliSubproblem
+#print axioms AlgebraicGeometry.RelativePerfectModuliSubproblem.MonotoneTo
+#print axioms AlgebraicGeometry.RelativePerfectModuliSubproblem.MonotoneTo.family
+#print axioms AlgebraicGeometry.RelativePerfectModuliSubproblem.MonotoneTo.geometric
+#print axioms AlgebraicGeometry.RelativePerfectModuliSubproblem.family
+#print axioms AlgebraicGeometry.RelativePerfectModuliSubproblem.family_isClosedUnderIsomorphisms
+#print axioms AlgebraicGeometry.RelativePerfectModuliSubproblem.family_iso
+#print axioms AlgebraicGeometry.RelativePerfectModuliSubproblem.geometric
+#print axioms AlgebraicGeometry.RelativePerfectModuliSubproblem.geometric_isClosedUnderIsomorphisms
+#print axioms AlgebraicGeometry.RelativePerfectModuliSubproblem.geometric_iso
+#print axioms AlgebraicGeometry.RelativePerfectModuliSubproblem.mk.inj
+#print axioms AlgebraicGeometry.RelativePerfectModuliSubproblem.mk.sizeOf_spec
+#print axioms AlgebraicGeometry.castRelativePerfectModuliObject
+#print axioms AlgebraicGeometry.identityRelativePerfectBaseChange
+#print axioms AlgebraicGeometry.relativePerfectGeometricBoundednessProblem
+#print axioms AlgebraicGeometry.relativePerfectZeroObject_mem_zeroFamily
+#print axioms AlgebraicGeometry.universalBoundedness_zeroRelativePerfect
+#print axioms AlgebraicGeometry.universalRelativePerfectBoundedness_of_witnesses
+#print axioms AlgebraicGeometry.zeroFiniteTypeBoundednessWitness
+#print axioms AlgebraicGeometry.zeroRelativePerfectBoundednessProblem
+#print axioms AlgebraicGeometry.zeroRelativePerfectBoundedness_afterBaseChange
+#print axioms AlgebraicGeometry.zeroRelativePerfectGeometricFiber
+#print axioms AlgebraicGeometry.zeroRelativePerfectModuliSubproblem
+#print axioms AlgebraicGeometry.zeroRelativePerfectModuliSubproblem_isBounded
+
+/-! ## Quotient presentations and parameter spaces (#520) -/
+
+#print axioms AlgebraicGeometry.FiniteTypeQuotientParameterSpace
+#print axioms AlgebraicGeometry.FiniteTypeQuotientParameterSpace.finiteType
+#print axioms AlgebraicGeometry.FiniteTypeQuotientParameterSpace.mk.inj
+#print axioms AlgebraicGeometry.FiniteTypeQuotientParameterSpace.mk.sizeOf_spec
+#print axioms AlgebraicGeometry.FiniteTypeQuotientParameterSpace.toRepresentableQuotientProblem
+#print axioms AlgebraicGeometry.ModuleQuotient
+#print axioms AlgebraicGeometry.ModuleQuotient.Hom
+#print axioms AlgebraicGeometry.ModuleQuotient.Hom.comm
+#print axioms AlgebraicGeometry.ModuleQuotient.Hom.ext
+#print axioms AlgebraicGeometry.ModuleQuotient.Hom.ext_iff
+#print axioms AlgebraicGeometry.ModuleQuotient.Hom.mk.congr_simp
+#print axioms AlgebraicGeometry.ModuleQuotient.Hom.mk.inj
+#print axioms AlgebraicGeometry.ModuleQuotient.Hom.mk.sizeOf_spec
+#print axioms AlgebraicGeometry.ModuleQuotient.Hom.right
+#print axioms AlgebraicGeometry.ModuleQuotient.category
+#print axioms AlgebraicGeometry.ModuleQuotient.comp_right
+#print axioms AlgebraicGeometry.ModuleQuotient.hom
+#print axioms AlgebraicGeometry.ModuleQuotient.hom_isEpi
+#print axioms AlgebraicGeometry.ModuleQuotient.id_right
+#print axioms AlgebraicGeometry.ModuleQuotient.identity
+#print axioms AlgebraicGeometry.ModuleQuotient.isEpi
+#print axioms AlgebraicGeometry.ModuleQuotient.mk.inj
+#print axioms AlgebraicGeometry.ModuleQuotient.mk.sizeOf_spec
+#print axioms AlgebraicGeometry.ModuleQuotient.pullback
+#print axioms AlgebraicGeometry.ModuleQuotient.pullbackFunctor
+#print axioms AlgebraicGeometry.ModuleQuotient.pullbackIdentityIso
+#print axioms AlgebraicGeometry.ModuleQuotient.pullbackZeroIso
+#print axioms AlgebraicGeometry.ModuleQuotient.target
+#print axioms AlgebraicGeometry.ModuleQuotient.targetFunctor
+#print axioms AlgebraicGeometry.ModuleQuotient.zero
+#print axioms AlgebraicGeometry.RepresentableQuotientProblem
+#print axioms AlgebraicGeometry.RepresentableQuotientProblem.mk.inj
+#print axioms AlgebraicGeometry.RepresentableQuotientProblem.mk.sizeOf_spec
+#print axioms AlgebraicGeometry.RepresentableQuotientProblem.parameter
+#print axioms AlgebraicGeometry.RepresentableQuotientProblem.problem
+#print axioms AlgebraicGeometry.RepresentableQuotientProblem.representation
+#print axioms AlgebraicGeometry.RepresentableQuotientProblem.universal
+#print axioms AlgebraicGeometry.zeroFiniteTypeQuotientParameterSpace
+#print axioms AlgebraicGeometry.zeroQuotientFiniteTypeBoundednessWitness
+#print axioms AlgebraicGeometry.zeroQuotientProblem
+#print axioms AlgebraicGeometry.zeroQuotientRealization
+#print axioms AlgebraicGeometry.zeroQuotientRelativePerfectModuliProblem
+#print axioms AlgebraicGeometry.zeroQuotientRepresentation
+#print axioms AlgebraicGeometry.zeroQuotientToRelativePerfect
+#print axioms AlgebraicGeometry.zeroQuotient_isGeometricallyBounded
+#print axioms AlgebraicGeometry.zeroQuotient_universal_eq
+
+/-! ## Algebraic-stack presentations (#522, partial) -/
+
+#print axioms AlgebraicGeometry.AlgebraicStack
+#print axioms AlgebraicGeometry.AlgebraicStack.atlas
+#print axioms AlgebraicGeometry.AlgebraicStack.atlasScheme
+#print axioms AlgebraicGeometry.AlgebraicStack.atlasSmoothSurjective
+#print axioms AlgebraicGeometry.AlgebraicStack.diagonal
+#print axioms AlgebraicGeometry.AlgebraicStack.mk.inj
+#print axioms AlgebraicGeometry.AlgebraicStack.mk.sizeOf_spec
+#print axioms AlgebraicGeometry.AlgebraicStack.toStackInGroupoids
+#print axioms AlgebraicGeometry.AlgebraicStackOver
+#print axioms AlgebraicGeometry.AlgebraicStackOver.locallyOfFinitePresentation
+#print axioms AlgebraicGeometry.AlgebraicStackOver.mk.inj
+#print axioms AlgebraicGeometry.AlgebraicStackOver.mk.sizeOf_spec
+#print axioms AlgebraicGeometry.AlgebraicStackOver.structureMorphism
+#print axioms AlgebraicGeometry.AlgebraicStackOver.toAlgebraicStack
+#print axioms AlgebraicGeometry.RepresentableZariskiStackMap.fiberFunctor
+#print axioms AlgebraicGeometry.RepresentableZariskiStackMap.fiberFunctor_essSurj
+#print axioms AlgebraicGeometry.RepresentableZariskiStackMap.fiberFunctor_faithful
+#print axioms AlgebraicGeometry.RepresentableZariskiStackMap.fiberFunctor_full
+#print axioms AlgebraicGeometry.RepresentableZariskiStackMap.fiberProduct
+#print axioms AlgebraicGeometry.RepresentableZariskiStackMap.fiberRepresentation
+#print axioms AlgebraicGeometry.StackInGroupoids.DiagonalFiberRepresentation
+#print axioms AlgebraicGeometry.StackInGroupoids.DiagonalFiberRepresentation.isomorphismEquiv
+#print axioms AlgebraicGeometry.StackInGroupoids.DiagonalFiberRepresentation.mk.inj
+#print axioms AlgebraicGeometry.StackInGroupoids.DiagonalFiberRepresentation.mk.sizeOf_spec
+#print axioms AlgebraicGeometry.StackInGroupoids.DiagonalFiberRepresentation.representing
+#print axioms AlgebraicGeometry.StackInGroupoids.HasRepresentableDiagonal
+#print axioms AlgebraicGeometry.StackInGroupoids.HasRepresentableDiagonal.representation
+#print axioms AlgebraicGeometry.StackMorphism.FiberRepresentationWithProperty
+#print axioms AlgebraicGeometry.StackMorphism.FiberRepresentationWithProperty.mk.inj
+#print axioms AlgebraicGeometry.StackMorphism.FiberRepresentationWithProperty.mk.sizeOf_spec
+#print axioms AlgebraicGeometry.StackMorphism.FiberRepresentationWithProperty.property
+#print axioms AlgebraicGeometry.StackMorphism.FiberRepresentationWithProperty.toFiberRepresentation
+#print axioms AlgebraicGeometry.StackMorphism.HasRepresentableProperty
+#print axioms AlgebraicGeometry.StackMorphism.HasRepresentableProperty.representation
+#print axioms AlgebraicGeometry.StackMorphism.IsLocallyOfFinitePresentation
+#print axioms AlgebraicGeometry.StackMorphism.IsSmoothSurjective
+#print axioms AlgebraicGeometry.StackMorphism.hasRepresentableProperty_mono
+#print axioms AlgebraicGeometry.StackMorphism.isRepresentable_of_hasRepresentableProperty
+#print axioms AlgebraicGeometry.affineLineAlgebraicStackOver
+#print axioms AlgebraicGeometry.representableAlgebraicStack
+#print axioms AlgebraicGeometry.representableAlgebraicStackOver
+#print axioms AlgebraicGeometry.representableZariskiDiagonalFiberRepresentation
+#print axioms AlgebraicGeometry.representableZariskiStackMap
+#print axioms AlgebraicGeometry.representableZariskiStackMap_hasRepresentableProperty
+#print axioms AlgebraicGeometry.representableZariskiStackMap_id_isLocallyOfFinitePresentation
+#print axioms AlgebraicGeometry.representableZariskiStackMap_id_isSmoothSurjective
+#print axioms AlgebraicGeometry.representableZariskiStackMap_isRepresentable
+#print axioms AlgebraicGeometry.representableZariskiStackMap_obj
+#print axioms AlgebraicGeometry.representableZariskiStack_hasRepresentableDiagonal
+
+/-! ## Relative-perfect algebraic presentations (#522, partial) -/
+
+#print axioms AlgebraicGeometry.BoundedRelativePerfectAlgebraicPresentation
+#print axioms AlgebraicGeometry.BoundedRelativePerfectAlgebraicPresentation.boundedness
+#print axioms AlgebraicGeometry.BoundedRelativePerfectAlgebraicPresentation.mk.inj
+#print axioms AlgebraicGeometry.BoundedRelativePerfectAlgebraicPresentation.mk.sizeOf_spec
+#print axioms AlgebraicGeometry.BoundedRelativePerfectAlgebraicPresentation.toRelativePerfectAlgebraicPresentation
+#print axioms AlgebraicGeometry.BoundedRelativePerfectAlgebraicPresentation.universalFamilyIso
+#print axioms AlgebraicGeometry.BoundedRelativePerfectAlgebraicPresentation.universalStackObject
+#print axioms AlgebraicGeometry.FiniteTypeBoundednessWitness.universalObject
+#print axioms AlgebraicGeometry.RelativePerfectAlgebraicPresentation
+#print axioms AlgebraicGeometry.RelativePerfectAlgebraicPresentation.algebraic
+#print axioms AlgebraicGeometry.RelativePerfectAlgebraicPresentation.fiberEquivalence
+#print axioms AlgebraicGeometry.RelativePerfectAlgebraicPresentation.locallyOfFinitePresentation
+#print axioms AlgebraicGeometry.RelativePerfectAlgebraicPresentation.mk.inj
+#print axioms AlgebraicGeometry.RelativePerfectAlgebraicPresentation.mk.sizeOf_spec
+#print axioms AlgebraicGeometry.RelativePerfectAlgebraicPresentation.stack
+#print axioms AlgebraicGeometry.RelativePerfectModuliSubproblem.Fiber
+#print axioms AlgebraicGeometry.RelativePerfectModuliSubproblem.fiber_isGroupoid
+#print axioms AlgebraicGeometry.RelativePerfectOpenSubstack
+#print axioms AlgebraicGeometry.RelativePerfectOpenSubstack.ambient
+#print axioms AlgebraicGeometry.RelativePerfectOpenSubstack.family_le
+#print axioms AlgebraicGeometry.RelativePerfectOpenSubstack.inclusion
+#print axioms AlgebraicGeometry.RelativePerfectOpenSubstack.isOpenImmersion
+#print axioms AlgebraicGeometry.RelativePerfectOpenSubstack.mk.inj
+#print axioms AlgebraicGeometry.RelativePerfectOpenSubstack.mk.sizeOf_spec
+#print axioms AlgebraicGeometry.RelativePerfectOpenSubstack.openPresentation
+#print axioms AlgebraicGeometry.RelativePerfectOpenSubstack.overBase
+#print axioms AlgebraicGeometry.StackMorphism.IsOpenImmersion
+#print axioms AlgebraicGeometry.integerZeroBoundedRelativePerfectAlgebraicPresentation
+#print axioms AlgebraicGeometry.representableZariskiStackMap_isOpenImmersion
+#print axioms AlgebraicGeometry.zeroBoundedRelativePerfectAlgebraicPresentation
+#print axioms AlgebraicGeometry.zeroRelativePerfectAlgebraicPresentation

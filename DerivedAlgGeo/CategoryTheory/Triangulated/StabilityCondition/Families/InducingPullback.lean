@@ -10,17 +10,12 @@ import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Phase.Transf
 # Inducing data for scheme-derived pullback
 
 This file connects the concrete exact derived pullback on scheme fibers to the
-honest preimage-slicing boundary.  A `DerivedPullbackInducingData` records a
-functor left adjoint to the detecting functor
-`SchemeBaseChange.derivedPullback f`, zero reflection, and the phase-monad
-condition from `Slicing.LeftAdjointInducingPremise`.
-
-Those bounded categorical premises do not prove the existence of the
-preimage slicing by themselves.  The conversion therefore still takes
-`HasLeftAdjointInducingTheorem` explicitly; this repository supplies no
-inhabitant until the presentable/Ind and boundedness-reflection argument has
-been formalized.  Flatness is used only to install exact derived pullback.
-It supplies none of the inducing premises.
+honest preimage-slicing boundary.  A `DerivedPullbackInducingData` records the
+actual phase-indexed t-structures produced by the owned A.17 theorem for
+`SchemeBaseChange.derivedPullback f`.  The owned Corollary-A.23 truncation
+argument then constructs the preimage slicing; no global theorem parameter or
+caller-supplied `Slicing.PreimageData` is accepted.  Flatness is used only to
+install exact derived pullback.
 
 Once explicit preimage data has been obtained, identity and composition use
 the coherence from `Phase.Transfer.Basic` and the exact derived-pullback unit
@@ -114,42 +109,40 @@ theorem preimage_comp {T U V : SchemeBaseChange S}
 
 end DerivedPullbackPreimageData
 
-/-- The bounded left-adjoint inducing premises specialized to the concrete
-exact derived pullback functor.
-
-The orientation is part of the type: `leftAdjoint` goes from the source
-derived fiber to the target derived fiber and satisfies
-`leftAdjoint ⊣ derivedPullback f`.  No existence claim is made. -/
+/-- The phase-indexed A.17 output specialized to concrete exact derived
+pullback.  This is the recognition-formula output consumed by the owned
+Corollary-A.23 theorem, not a preconstructed slicing witness. -/
 structure DerivedPullbackInducingData {T U : SchemeBaseChange S}
     (f : T ⟶ U) [IsExactPullback f]
     (s : Slicing T.DerivedFiber) where
-  /-- A proposed left adjoint to the derived pullback used to detect phases. -/
-  leftAdjoint : T.DerivedFiber ⥤ U.DerivedFiber
-  /-- Adjunction, zero reflection, and the phase-monad condition in the exact
-  functor orientation above. -/
-  premise : s.LeftAdjointInducingPremise (derivedPullback f) leftAdjoint
+  /-- The induced source t-structures with the A.8 recognition formulas. -/
+  inducedTStructures : s.InducedTStructures (derivedPullback f)
 
 namespace DerivedPullbackInducingData
 
 variable {T U : SchemeBaseChange S} {f : T ⟶ U} [IsExactPullback f]
   {s : Slicing T.DerivedFiber}
 
-/-- Convert the bounded inducing package to explicit preimage-slicing data
-only when the still-missing presentable/Ind theorem is supplied. -/
-theorem toPreimageData (h : DerivedPullbackInducingData f s)
-    (H : HasLeftAdjointInducingTheorem.{u + 1, u + 1, u + 1, u + 1}) :
+/-- The exact derived-pullback unit transports the inhabited identity A.17
+model to the concrete scheme-derived identity pullback. -/
+def identity (T : SchemeBaseChange S) (s : Slicing T.DerivedFiber) :
+    DerivedPullbackInducingData (𝟙 T) s where
+  inducedTStructures := s.inducedTStructuresId.ofIso
+    (derivedPullbackId T).symm
+
+/-- Apply the owned finite phase-truncation theorem to the actual A.17
+output. -/
+theorem toPreimageData (h : DerivedPullbackInducingData f s) :
     DerivedPullbackPreimageData f s where
-  preimageData := H s (derivedPullback f) h.leftAdjoint h.premise
+  preimageData := h.inducedTStructures.preimageData
 
 /-- For a flat scheme morphism, Mathlib flatness supplies exact derived
-pullback and nothing more.  The inducing package and the presentable/Ind
-theorem remain explicit inputs. -/
+pullback; the A.17 output remains the honest geometric input. -/
 theorem toPreimageData_of_flat {T U : SchemeBaseChange S}
     (f : T ⟶ U) [Flat f.left] (s : Slicing T.DerivedFiber)
-    (h : DerivedPullbackInducingData f s)
-    (H : HasLeftAdjointInducingTheorem.{u + 1, u + 1, u + 1, u + 1}) :
+    (h : DerivedPullbackInducingData f s) :
     DerivedPullbackPreimageData f s :=
-  h.toPreimageData H
+  h.toPreimageData
 
 end DerivedPullbackInducingData
 

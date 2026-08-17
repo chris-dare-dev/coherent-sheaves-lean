@@ -67,11 +67,10 @@ matter here.
   support in `i`.  So the obligation is *moved*, from "produce a biadditive
   pairing" to "produce Hom-finiteness", not eliminated.  A caller with an
   abstract `𝒯` and no `k` still supplies the structure directly.
-* **Nothing proves `PreservesCategoricalEuler` for any functor.**  This is now
-  the sharper gap: with `ofLinear` there *is* a `Hom` for full faithfulness and
-  `k`-linearity to act on, so the classical argument — a fully faithful
-  `k`-linear shift-compatible functor matches the summands one by one — is
-  stateable for the first time.  It is still not proved here.
+* **`PreservesCategoricalEuler` is now proved** for a fully faithful `k`-linear
+  shift-compatible functor between Hom-finite categories, against forms built by
+  `ofLinear` (`ofLinear_preservesCategoricalEuler`).  It stays a hypothesis for
+  *supplied* forms, where there is no `Hom` for the argument to run on.
 * `IsRiemannRoch` is bilinear HRR, assumed.  No variety is shown to satisfy
   it, and `NumericalVariety.hirzebruch_riemannRoch` — the one-variable
   statement — is itself an axiom of the Layer A interface.
@@ -172,8 +171,11 @@ def IsRiemannRoch (R : NumericalRealization 𝒳 N)
 For a fully faithful `k`-linear shift-commuting functor this is the classical
 fact, term by term in `Σᵢ (-1)ⁱ dim Hom(E, F[i])`; `k`-linearity is what makes
 the matched summands equal as `k`-dimensions, and additivity alone would not.
-With the form supplied abstractly there is no `Hom` to run that argument on, so
-here it is a hypothesis. -/
+
+It remains a *hypothesis* here, because the definition is stated for supplied
+forms on categories carrying no `k`.  For forms that come from `Hom` via
+`CategoricalEulerForm.ofLinear` it is now a **theorem** —
+`ofLinear_preservesCategoricalEuler` below. -/
 def PreservesCategoricalEuler (Φ : 𝒳 ⥤ 𝒴) [Φ.CommShift ℤ] [Φ.IsTriangulated]
     (E : CategoricalEulerForm 𝒳) (E' : CategoricalEulerForm 𝒴) : Prop :=
   ∀ x y : K₀ 𝒳, E'.chi (K₀.map Φ x) (K₀.map Φ y) = E.chi x y
@@ -199,6 +201,36 @@ theorem preservesEuler_of_descends {Φ : 𝒳 ⥤ 𝒴} [Φ.CommShift ℤ]
   rw [← hd x, ← hd y, ← hRR', hΦ, hRR]
 
 end Transfer
+
+section Preservation
+
+/-- **A fully faithful `k`-linear functor preserves the Hom-built Euler form.**
+
+The last of the three obligations this file named, discharged for forms that
+come from `Hom`.  The content is entirely `Triangulated.chiK₀_map`; what happens
+here is only that it is restated against `CategoricalEulerForm`.
+
+This is where the `k`-linearity caveat in this file's docstring stops being a
+caveat and becomes a hypothesis of a theorem: `Φ.Linear k` is what makes the
+matched summands equal as `k`-dimensions, and an additive fully faithful functor
+would not do.  Note `Φ.FullyFaithful` is data rather than a `Prop` class, so it
+is passed explicitly. -/
+theorem ofLinear_preservesCategoricalEuler (k : Type w₁) [DivisionRing k]
+    (𝒳 : Type u₁) (𝒴 : Type u₂) [Category.{v₁} 𝒳] [Category.{v₂} 𝒴]
+    [HasZeroObject 𝒳] [HasShift 𝒳 ℤ] [Preadditive 𝒳]
+    [∀ m : ℤ, (shiftFunctor 𝒳 m).Additive] [Pretriangulated 𝒳]
+    [HasZeroObject 𝒴] [HasShift 𝒴 ℤ] [Preadditive 𝒴]
+    [∀ m : ℤ, (shiftFunctor 𝒴 m).Additive] [Pretriangulated 𝒴]
+    [Linear k 𝒳] [Linear k 𝒴]
+    [∀ m : ℤ, (shiftFunctor 𝒳 m).Linear k] [∀ m : ℤ, (shiftFunctor 𝒴 m).Linear k]
+    [HomFiniteBounded k 𝒳] [HomFiniteBounded k 𝒴]
+    (Φ : 𝒳 ⥤ 𝒴) [Φ.Additive] [Φ.Linear k] [Φ.CommShift ℤ] [Φ.IsTriangulated]
+    (hΦ : Φ.FullyFaithful) :
+    PreservesCategoricalEuler Φ (CategoricalEulerForm.ofLinear k 𝒳)
+      (CategoricalEulerForm.ofLinear k 𝒴) :=
+  fun x y => chiK₀_map k 𝒳 𝒴 Φ hΦ x y
+
+end Preservation
 
 section KernelFunctor
 

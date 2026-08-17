@@ -36,6 +36,10 @@ Together these turn `DegreeZeroLocalization 𝒜 𝓜 (.powers f)` into fraction
 representative and a computable equality test, which is what any basis for it has to start from
 (see the Laurent monomial basis of #491).
 
+`awayMk_eq_zero_iff` specialises the equality test to the zero fraction, which is what makes the
+numerator a faithful record: any independence statement about fractions reduces to one about
+numerators.
+
 `awayMk_zero`, `awayMk_add`, `awayMk_sum` and `awayMk_shift` are the arithmetic that goes with
 the normal form: the first three are additivity in the numerator at a fixed denominator, and the
 last puts two fractions over a common denominator. Spanning arguments need exactly this pair —
@@ -619,6 +623,17 @@ theorem awayMk_shift {f : A} {e : ι} (hf : f ∈ 𝒜 e) (n t : ℕ) (p : M)
   rw [awayMk, awayMk, mk_eq_mk_iff]
   exact ⟨1, by simp [← mul_smul, ← pow_add]⟩
 
+/-- **A fraction vanishes exactly when its numerator does.**
+
+This is `awayMk_eq_awayMk_iff` against the zero fraction, and it is what makes the numerator a
+faithful record of the element: any independence statement about fractions reduces to one about
+numerators. The hypotheses are inherited from that lemma and are needed for the same reason —
+without torsion-freeness an `f`-torsion numerator is a nonzero numerator with a zero fraction. -/
+theorem awayMk_eq_zero_iff [IsDomain A] [Module.IsTorsionFree A M] {f : A} {e : ι}
+    (hf : f ∈ 𝒜 e) (hf0 : f ≠ 0) {n : ℕ} {p : M} (hp : p ∈ 𝓜 (n • e)) :
+    awayMk hf n p hp = 0 ↔ p = 0 := by
+  rw [← awayMk_zero (𝓜 := 𝓜) hf 0, awayMk_eq_awayMk_iff hf hf0]
+  simp
 /-- Two equal degree indices give the same `awayMk`.
 
 `awayMk` records the degree of its denominator in the `NumDenSameDeg` certificate, so two

@@ -972,6 +972,38 @@ fidelity:
     of the compact-generator/`Dᵇ≤0` closure equality for the claimed scheme
     fibers.
 
+    COUNT UPDATE (SF7.4 inducing-boundary cutover), 2026-08-17. The legacy
+    global inducing-theorem switch and its bounded left-adjoint surrogate are
+    deleted. Concrete derived and bounded-coherent pullback packages now
+    carry `Slicing.InducedTStructures`, the actual phase-indexed A.17/A.8
+    output; the owned Corollary-A.23 finite truncation theorem constructs
+    every downstream `PreimageData`. Geometric base change, finite-type
+    openness, and relative-HN consequences no longer accept the global
+    parameter or a caller-supplied preimage witness. Natural-isomorphism
+    transport of the phase-indexed output supplies concrete inducing data for
+    both unbounded and bounded-coherent identity pullback. The census reports 3460
+    authored declarations, 172 private declarations, and 236 ungated
+    structure-field projections. Audit issues 3174 commands: 2127 theorem
+    records, 115 structures, and 810 other non-theorems; the authored public
+    non-projection gap remains zero.
+
+    COUNT UPDATE (SF7.3 honest Dqc locus and coherent/perfect inclusions),
+    2026-08-17. `SchemeQuasicoherentDerivedCategory X` is now the full
+    subcategory of the all-module-sheaf derived category whose canonical
+    cohomology sheaves are all quasi-coherent; the ambient category is not
+    relabelled. Exact functors are proved to commute with derived homology via
+    an explicit representative-complex isomorphism. Consequently the exact
+    coherent-sheaf inclusion lifts constructively to Dqc, and `Dᵇ(Coh X)`
+    and the finite-locally-free perfect envelope map to the intrinsic bounded
+    coherent cohomology locus. The general-scheme essential-surjectivity
+    equivalence and compact-equals-perfect theorem are separately named,
+    uninhabited propositions. Constructing the inherited triangulated and
+    coproduct structure remains an explicit roadmap obligation. The census
+    reports 3464 authored declarations, 172 private
+    declarations, and 239 ungated structure-field projections. Audit issues
+    3175 commands: 2127 theorem records, 116 structures, and 810 other
+    non-theorems; the authored public non-projection gap remains zero.
+
     COUNT UPDATE (destination issue #226; owner-controlled Bridgeland
     foundation), 2026-08-12. The first Mathlib-only foundation slice adds
     repository-owned Postnikov towers, HN filtrations, slicings, elementary
