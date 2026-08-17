@@ -55,12 +55,12 @@ foundational library uses. Only the third is here.
 
 ## What this file still does not provide
 
-**No Euler form.** Having the long exact sequence is not having
-`Σᵢ (-1)ⁱ dim_k Hom(E, F⟦i⟧)`: that needs `FiniteDimensional k` of each term
-and a vanishing bound making the sum finite, both of which are genuine supplied
-data at this level of generality and neither of which is asserted anywhere in
-this file. `AlgebraicGeometry.Numerical.CategoricalEulerForm` therefore stays
-supplied rather than constructed, as its own docstring says.
+**No Euler form here.** Having the long exact sequence is not having
+`Σᵢ (-1)ⁱ dim_k Hom(E, F⟦i⟧)`: that needs each term finite-dimensional and the
+sum finitely supported, which is supplied data. The form is built in
+`Triangulated/GrothendieckGroup/EulerForm.lean` from this file's sequence
+together with `LinearCoyoneda.lean`'s — this one gives the sequence in the
+*first* variable only, and biadditivity needs both.
 
 **The shift functors on `C` are not shown `k`-linear.** `(shiftFunctor C n).Linear k`
 is a hypothesis of this file, not a consequence of `Linear k C`, and it cannot

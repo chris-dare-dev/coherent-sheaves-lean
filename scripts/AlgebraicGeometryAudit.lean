@@ -1733,6 +1733,11 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 -- than built from Hom. A clean axiom list here is a statement about the
 -- bookkeeping, not about any variety or any functor.
 #print axioms AlgebraicGeometry.Numerical.CategoricalEulerForm
+-- The Hom-built form, packaged. `ofLinear` is what retires the "nothing
+-- constructs a CategoricalEulerForm" claim; the obligation moves to
+-- HomFiniteBounded rather than disappearing.
+#print axioms AlgebraicGeometry.Numerical.CategoricalEulerForm.ofLinear
+#print axioms AlgebraicGeometry.Numerical.CategoricalEulerForm.ofLinear_chi
 #print axioms AlgebraicGeometry.Numerical.CategoricalEulerForm.mk.inj
 #print axioms AlgebraicGeometry.Numerical.CategoricalEulerForm.mk.sizeOf_spec
 #print axioms AlgebraicGeometry.Numerical.CategoricalEulerForm.chi
