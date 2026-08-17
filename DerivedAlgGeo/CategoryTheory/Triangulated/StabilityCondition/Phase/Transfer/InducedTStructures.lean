@@ -54,6 +54,19 @@ structure Slicing.InducedTStructures (s : Slicing D) (F : C ⥤ D) where
 
 namespace Slicing.InducedTStructures
 
+/-- Phase-indexed recognition formulas are invariant under a natural
+isomorphism of the detecting functor. -/
+def ofIso {s : Slicing D} {F G : C ⥤ D}
+    (h : s.InducedTStructures F) (e : F ≅ G) :
+    s.InducedTStructures G where
+  tStructure := h.tStructure
+  le_zero_iff phi E :=
+    (h.le_zero_iff phi E).trans
+      ((s.geProp D phi).prop_iff_of_iso (e.app E))
+  ge_one_iff phi E :=
+    (h.ge_one_iff phi E).trans
+      ((s.ltProp D phi).prop_iff_of_iso (e.app E))
+
 /-- Formula (A.8) supplies Hom-vanishing for the raw preimage phase
 collection.  This is the first non-formal slicing axiom in
 `Slicing.PreimageData`. -/

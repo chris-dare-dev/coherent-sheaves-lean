@@ -972,6 +972,21 @@ fidelity:
     of the compact-generator/`Dᵇ≤0` closure equality for the claimed scheme
     fibers.
 
+    COUNT UPDATE (SF7.4 inducing-boundary cutover), 2026-08-17. The legacy
+    global inducing-theorem switch and its bounded left-adjoint surrogate are
+    deleted. Concrete derived and bounded-coherent pullback packages now
+    carry `Slicing.InducedTStructures`, the actual phase-indexed A.17/A.8
+    output; the owned Corollary-A.23 finite truncation theorem constructs
+    every downstream `PreimageData`. Geometric base change, finite-type
+    openness, and relative-HN consequences no longer accept the global
+    parameter or a caller-supplied preimage witness. Natural-isomorphism
+    transport of the phase-indexed output supplies concrete inducing data for
+    both unbounded and bounded-coherent identity pullback. The census reports 3460
+    authored declarations, 172 private declarations, and 236 ungated
+    structure-field projections. Audit issues 3174 commands: 2127 theorem
+    records, 115 structures, and 810 other non-theorems; the authored public
+    non-projection gap remains zero.
+
     COUNT UPDATE (SF7.3 honest Dqc locus and coherent/perfect inclusions),
     2026-08-17. `SchemeQuasicoherentDerivedCategory X` is now the full
     subcategory of the all-module-sheaf derived category whose canonical
