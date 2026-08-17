@@ -57,8 +57,9 @@ of `chiHom` as evidence that a category has an Euler form.
 
 ## What this file does not assert
 
-* Nothing constructs a `HomFiniteBounded` instance. It is supplied data — see
-  its own docstring for why it is unprovable here.
+* Nothing *in this file* constructs a `HomFiniteBounded` instance; at this
+  generality it is unprovable, see its docstring. A concrete model lives in
+  `GrothendieckGroup/HomFiniteWitness.lean` (#543).
 * No relation to any geometric Euler characteristic, to `chi₂`, or to
   Riemann--Roch. `IsRiemannRoch` remains supplied in the numerical track; this
   file says nothing about it.
@@ -85,9 +86,10 @@ form without it.
 Genuinely supplied, and unprovable at this generality. In an arbitrary
 `k`-linear pretriangulated category the Hom-spaces are arbitrary `k`-modules and
 nothing in `Pretriangulated` bounds them; nor need `Hom(X, Y⟦i⟧)` vanish for
-large `|i|`, and it does not in an unbounded derived category. No concrete
-`k`-linear pretriangulated category exists in this repository for it to be
-proved about.
+large `|i|`, and it does not in an unbounded derived category. It is not
+vacuous either: `GrothendieckGroup/HomFiniteWitness.lean` proves it for the
+bounded homotopy category of any Hom-finite `k`-linear category, with
+`Kᵇ(FGModuleCat k)` the named concrete model (#543).
 
 The two fields are independent: `finrank` returns `0` for a non-finite module,
 so finiteness of the *rank support* says nothing about the modules themselves
