@@ -49,6 +49,9 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.awayMk_add
 #print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.awayMk_sum
 #print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.awayMk_shift
+-- The face map in awayMk normal form, and the degree-index transport its callers need.
+#print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.awayMk_deg_congr
+#print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.faceMap_awayMk
 -- Auto-generated, not hand-written: `awayMk` carries its membership certificate as a dependent
 -- argument, so the first `rw [coe_awayMk]` in this file makes Lean emit a congruence lemma for
 -- it. It is a public declaration and the completeness ratchet counts it, so it is recorded here
@@ -92,6 +95,32 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Proj.divMonomial_monomial_mul_comm
 #print axioms AlgebraicGeometry.Proj.divMonomial_pow_mul
 #print axioms AlgebraicGeometry.Proj.divMonomial_mem_natShift
+-- The projection descends to the localization and retracts the face inclusion (#491 -> #340).
+-- signProjection is defined by choosing a representative; signProjection_awayMk is the equation
+-- that pins it down, and signProjection_laurentFace is the first of the two properties the
+-- contracting homotopy consumes. AwayRep's auto-generated projections are recorded too, since
+-- the completeness ratchet counts them.
+#print axioms AlgebraicGeometry.Proj.AwayRep
+#print axioms AlgebraicGeometry.Proj.AwayRep.mk.inj
+#print axioms AlgebraicGeometry.Proj.AwayRep.mk.sizeOf_spec
+#print axioms AlgebraicGeometry.Proj.AwayRep.pow
+#print axioms AlgebraicGeometry.Proj.AwayRep.num
+#print axioms AlgebraicGeometry.Proj.AwayRep.num_mem
+#print axioms AlgebraicGeometry.Proj.AwayRep.frac
+#print axioms AlgebraicGeometry.Proj.AwayRep.frac_surjective
+#print axioms AlgebraicGeometry.Proj.AwayRep.project
+#print axioms AlgebraicGeometry.Proj.AwayRep.pow_mul_num_mem
+#print axioms AlgebraicGeometry.Proj.AwayRep.frac_project_raise
+#print axioms AlgebraicGeometry.Proj.AwayRep.frac_project_congr
+#print axioms AlgebraicGeometry.Proj.signProjection
+#print axioms AlgebraicGeometry.Proj.signProjection_frac
+#print axioms AlgebraicGeometry.Proj.signProjection_awayMk
+#print axioms AlgebraicGeometry.Proj.monomial_single_mem
+#print axioms AlgebraicGeometry.Proj.laurentFace_mul
+#print axioms AlgebraicGeometry.Proj.monomial_mem_add_degree
+#print axioms AlgebraicGeometry.Proj.laurentFace
+#print axioms AlgebraicGeometry.Proj.laurentFace_awayMk
+#print axioms AlgebraicGeometry.Proj.signProjection_laurentFace
 #print axioms AlgebraicGeometry.Proj.GradedLinearMap
 #print axioms AlgebraicGeometry.Proj.GradedLinearMap.map
 #print axioms AlgebraicGeometry.Proj.GradedLinearMap.map_mk
