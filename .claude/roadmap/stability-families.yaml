@@ -101,6 +101,7 @@ generations:
   - { rev: 39, at: "2026-08-16", note: "SF7.2 pushes the A.13 boundary from preconstructed triangles to Brown-style universal maps. ApproximationMap records the surjective Hom control and shifted injective Hom control; AisleData.ofApproximationMaps completes each map to a distinguished triangle and proves the cone right orthogonal by exactness. The compact-generator and Polishchuk constructors consume this map-level output directly. IndExtensionData.ofApproximation derives the large A.14 aisle and compact generation, leaving universal-map existence and the geometric restriction equivalences as the honest #477 boundary." }
   - { rev: 40, at: "2026-08-16", note: "SF7.2 begins the missing Brown construction with a native triangulated mapping-telescope API. For a sequence with a countable coproduct, MappingTelescope.map is 1 minus the transition shift, MappingTelescope.chosen completes it to a distinguished triangle, and Data.exists_desc proves compatible cocones factor through the telescope by triangulated exactness. This removes the first Mathlib API gap without asserting Brown representability; construction of the approximation tower and compact-source Hom computation remain next, followed by the geometric A.14 restriction equivalences." }
   - { rev: 41, at: "2026-08-16", note: "SF7.2 corrects the compact-object substrate before using it in the Brown tower. IsCompactObject now asks the additive coyoneda Hom-group functor to preserve coproducts, so the comparison target is the direct sum of Hom groups rather than the disjoint union of underlying Hom sets. The explicit coproductComparisonIso and injection compatibility theorem are proved, adjunction transport is rebuilt through the additive Hom equivalence, and all Polishchuk consumers compile. The telescope colimit computation is next." }
+  - { rev: 42, at: "2026-08-17", note: "SF7.2 is complete through the owned Brown tower, A.13, A.14 restriction, and Brown-backed A.17 constructors (#507, #510, #512); #477 is closed. SF7.3 now defines the honest quasi-coherent-cohomology locus inside the all-sheaf derived category, proves exact derived coherent inclusion lands there, and constructs bounded coherent and perfect inclusions. The general-scheme bounded-coherent equivalence, inherited triangulated/coproduct structure, compact-equals-perfect theorem, and compact-generator closure equality remain explicit uninhabited #476 obligations." }
 retired: []
 
 # GitHub milestones are roadmap phases. Epic issues live inside them, and
@@ -374,8 +375,8 @@ items:
     kind: deliverable
     parent: stability-families-e13
     title: "Compact generation, Ind-extension, and Polishchuk A.17"
-    status: in_progress
-    summary: "Compact objects, Coprod, A.13 assembly and (A.2), adjoint compactness, categorical A.17 Steps 1--4, bounded restriction, and A.3/A.4 are proved. Universal approximation maps are completed to triangles and their cones proved orthogonal. A native mapping telescope now supplies 1-shift cones and compatible-cocone factorization; the Brown approximation tower, compact-source Hom computation, and geometric A.14 restriction equivalences remain explicit."
+    status: done
+    summary: "Complete through #507, #510, and #512. The repository owns compact objects, Coprod, the mapping telescope, Brown approximation tower, A.13 and (A.2), the A.14 restriction theorem, adjoint compactness, categorical A.17 Steps 1--4, bounded restriction, and A.3/A.4. Scheme-specific Dqc realization remains isolated in #476."
     priority: must
     size: XL
     tags: [compact-generation, ind, t-structure]
@@ -386,8 +387,8 @@ items:
     kind: deliverable
     parent: stability-families-e13
     title: "Realize Appendix A on scheme-derived categories"
-    status: pending
-    summary: "Identify the large and bounded coherent/perfect scheme categories, construct the A.13/A.14 data, and prove the S-local geometric clause."
+    status: in_progress
+    summary: "The honest Dqc object locus and concrete coherent, bounded-coherent, and perfect inclusions are implemented. The inherited large triangulated/coproduct structure, the general-scheme bounded-coherent equivalence, compact-equals-perfect, the generator closure equality, and the S-local geometric clause remain explicit obligations."
     priority: must
     size: XL
     tags: [schemes, derived-category, locality]

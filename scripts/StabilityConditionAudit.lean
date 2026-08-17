@@ -3558,6 +3558,46 @@ geometric witness for every scheme morphism.
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.GeometricDerivedPullbackComposition.boundedIso
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.GeometricDerivedPullbackComposition.perfectIso
 
+/-! ## Honest Dqc, bounded coherent, and perfect loci
+
+`SchemeQuasicoherentDerivedCategory` is cut out inside the all-module-sheaf
+derived category by quasi-coherence of every homology sheaf.  The concrete
+coherent inclusion is proved to land in that locus.  The two final
+identification propositions are intentionally uninhabited here: they name the
+general-scheme equivalence and compact/perfect theorem still needed by A.14.
+-/
+
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.schemeQuasicoherentCohomology
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.instIsClosedUnderIsomorphismsSchemeDerivedCategorySchemeQuasicoherentCohomology
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeQuasicoherentDerivedCategory
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeQuasicoherentDerivedCategory.ι
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeQuasicoherentDerivedCategory.mem_iff
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.mapDerivedCategoryHomologyIso
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.coherentDerivedInclusion
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.coherentDerivedInclusion_mem_dqc
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.coherentDerivedToDqc
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.coherentDerivedToDqcCompInclusion
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.schemeBoundedQuasicoherent
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.instIsClosedUnderIsomorphismsSchemeQuasicoherentDerivedCategorySchemeBoundedQuasicoherent
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBoundedQuasicoherentDerivedCategory
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBoundedQuasicoherentDerivedCategory.ι
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBoundedQuasicoherentDerivedCategory.mem_iff
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.schemeBoundedCoherentCohomology
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.instIsClosedUnderIsomorphismsSchemeQuasicoherentDerivedCategorySchemeBoundedCoherentCohomology
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBoundedCoherentDqcCategory
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.schemeBoundedCoherentCohomology_le_bounded
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.boundedCoherentDerivedToDqc
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBoundedCoherentDqcCategory.ι
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.perfectDerivedToDqc
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.schemePerfectInDqc
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.BoundedCoherentDqcIdentification
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.BoundedCoherentDqcIdentification.mk.inj
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.BoundedCoherentDqcIdentification.mk.sizeOf_spec
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.BoundedCoherentDqcIdentification.equivalence
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.BoundedCoherentDqcIdentification.comparison
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasBoundedCoherentDqcIdentification
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.PerfectObjectsAreCompactInDqc
+
 /-! ## Geometric bounded-coherent base change
 
 This layer constructs the slicing preimage witness from the actual bounded
