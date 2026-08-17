@@ -189,6 +189,20 @@ open CategoryTheory.Triangulated
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.complexPullbackComp
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.identityDerivedPullback
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.compositeDerivedPullback
+
+/-! ## Arbitrary left-derived scheme pullback -/
+
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.LeftDerivedPullback
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.LeftDerivedPullback.counit
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.LeftDerivedPullback.functor
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.LeftDerivedPullback.isLeftDerived
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.LeftDerivedPullback.mk.inj
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.LeftDerivedPullback.mk.sizeOf_spec
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.LeftDerivedPullback.congr
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.LeftDerivedPullback.exactComparison
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.LeftDerivedPullback.identity
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.LeftDerivedPullback.ofExact
+
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.complexPullbackIdLocalized
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.derivedPullbackId
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemeBaseChange.complexPullbackCompLocalized
@@ -562,4 +576,3 @@ existence proposition is an input.
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.Theorem22_2SourceClauses
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.Theorem22_2DependencyContract
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.Theorem22_2DependencyContract.hasSourceClauses
-

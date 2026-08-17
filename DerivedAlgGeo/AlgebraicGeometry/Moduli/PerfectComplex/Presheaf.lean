@@ -6,26 +6,26 @@ import Mathlib.CategoryTheory.Bicategory.Functor.LocallyDiscrete
 import Mathlib.CategoryTheory.Core
 import Mathlib.CategoryTheory.IsomorphismClasses
 import Mathlib.CategoryTheory.PUnit
-import DerivedAlgGeo.AlgebraicGeometry.Moduli.PerfectComplex.Relative
-import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Families.DerivedPullbackLaws
+import DerivedAlgGeo.AlgebraicGeometry.Moduli.PerfectComplex.Pullback
 
 /-!
 # The relative-perfect moduli presheaf
 
 This file packages universally-gluable relative-perfect complexes and their
 isomorphisms as a groupoid-valued pseudofunctor on an actual diagram of scheme
-base changes.  A `RelativePerfectModuliProblem` does not choose unrelated
+base changes. A `RelativePerfectModuliProblem` does not choose unrelated
 fiber categories: its fiber over `T` is definitionally the core of
 `SchemeUniversallyGluableCategory T.hom`, and every transition functor comes
-with a natural comparison to the repository's exact derived pullback.
+with a natural comparison to an actual left-derived pullback.
 
-The explicit system boundary is necessary at the current stage.  Exact
-derived pullback has been constructed, but preservation of pseudo-coherence,
-finite Tor amplitude, and fiberwise negative Ext is not yet available for
-arbitrary scheme morphisms.  Thus this file neither installs such a theorem
-nor asserts descent or algebraicity.  It constructs the moduli pseudofunctor
-from proved restriction data and gives a concrete identity system and zero
-objects, including on geometric-point fibers.
+The explicit system boundary is necessary at the current stage. Exact and
+arbitrary left-derived pullback interfaces have been constructed, but
+preservation of pseudo-coherence, finite Tor amplitude, and fiberwise negative
+Ext is not yet available for arbitrary scheme morphisms. Thus this file
+neither installs such a theorem nor asserts descent or algebraicity. It
+constructs the moduli pseudofunctor from proved restriction data and gives a
+concrete identity system and zero objects, including on geometric-point
+fibers.
 -/
 
 namespace AlgebraicGeometry
@@ -44,26 +44,47 @@ abbrev RelativePerfectModuliFiber {S : Scheme.{u}}
     (T : SchemeBaseChange S) :=
   Core (SchemeUniversallyGluableCategory T.hom)
 
-/-- Forget a universally-gluable relative-perfect object to the ambient
-scheme-derived category. -/
-def relativePerfectForget {S : Scheme.{u}} (T : SchemeBaseChange S) :
-    SchemeUniversallyGluableCategory T.hom ⥤ T.DerivedFiber :=
-  ObjectProperty.ι _ ⋙ SchemeQuasicoherentDerivedCategory.ι T.left
-
 /-- Forget a relative-perfect moduli groupoid to the ambient derived
 category. -/
 def relativePerfectModuliForget {S : Scheme.{u}} (T : SchemeBaseChange S) :
     RelativePerfectModuliFiber T ⥤ T.DerivedFiber :=
   Core.inclusion _ ⋙ relativePerfectForget T
 
+namespace RelativePerfectPullback
+
+variable {S : Scheme.{u}} {T U : SchemeBaseChange S} {f : T ⟶ U}
+
+/-- The pullback induced on the cores of the relative-perfect loci. -/
+def coreFunctor (P : RelativePerfectPullback f) :
+    RelativePerfectModuliFiber U ⥤ RelativePerfectModuliFiber T :=
+  P.functor.core
+
+/-- On moduli groupoids, the core of a lifted relative-perfect pullback
+still agrees with ambient left-derived pullback after forgetting. -/
+def coreComparison (P : RelativePerfectPullback f) :
+    P.coreFunctor ⋙ relativePerfectModuliForget T ≅
+      relativePerfectModuliForget U ⋙ P.ambient.functor :=
+  (Functor.associator P.functor.core (Core.inclusion _)
+    (relativePerfectForget T)).symm ≪≫
+  Functor.isoWhiskerRight P.functor.coreCompInclusionIso
+    (relativePerfectForget T) ≪≫
+  Functor.associator (Core.inclusion _) P.functor
+    (relativePerfectForget T) ≪≫
+  Functor.isoWhiskerLeft (Core.inclusion _) P.comparison ≪≫
+  (Functor.associator (Core.inclusion _) (relativePerfectForget U)
+    P.ambient.functor).symm
+
+end RelativePerfectPullback
+
 /-- A groupoid-valued relative-perfect moduli problem on a contravariant
 diagram of actual scheme base changes.
 
 The pseudofunctor itself owns the unit, compositor, triangle, and pentagon
-laws.  `fiberEquivalence` identifies each of its fibers with the actual core
-of universally-gluable relative-perfect complexes.  `ambientComparison`
-forces every transition, through those equivalences, to be the repository's
-exact derived pullback on both objects and morphisms. -/
+laws. `fiberEquivalence` identifies each of its fibers with the actual core
+of universally-gluable relative-perfect complexes. `pullback` supplies the
+actual lifted relative-perfect pullback functor, while
+`transitionComparison` identifies its core with the pseudofunctor
+transition. -/
 structure RelativePerfectModuliProblem (S : Scheme.{u})
     (B : Type v) [Category.{w} B] where
   /-- The contravariant diagram of actual scheme base changes. -/
@@ -75,19 +96,14 @@ structure RelativePerfectModuliProblem (S : Scheme.{u})
   fiberEquivalence (X : B) :
     presheaf.obj (.mk X) ≌
       RelativePerfectModuliFiber (base.obj (Opposite.op X))
-  /-- Exactness of every pullback used by the diagram. -/
-  exactPullback {X Y : B} (f : X ⟶ Y) :
-    SchemeBaseChange.IsExactPullback (base.map f.op)
-  /-- The pseudofunctor transition is the actual exact derived pullback after
-  transport to the concrete moduli groupoids and forgetting to the ambient
-  derived categories. -/
-  ambientComparison {X Y : B} (f : X ⟶ Y) :
-    letI := exactPullback f
-    (fiberEquivalence X).functor ⋙
-        relativePerfectModuliForget (base.obj (Opposite.op X)) ⋙
-      SchemeBaseChange.derivedPullback (base.map f.op) ≅
-    (presheaf.map (.mk f)).toFunctor ⋙ (fiberEquivalence Y).functor ⋙
-      relativePerfectModuliForget (base.obj (Opposite.op Y))
+  /-- The actual lifted relative-perfect pullback attached to every arrow. -/
+  pullback {X Y : B} (f : X ⟶ Y) :
+    RelativePerfectPullback (base.map f.op)
+  /-- The lifted pullback on concrete moduli groupoids agrees with the
+  transition of the abstract pseudofunctor. -/
+  transitionComparison {X Y : B} (f : X ⟶ Y) :
+    (fiberEquivalence X).functor ⋙ (pullback f).coreFunctor ≅
+      (presheaf.map (.mk f)).toFunctor ⋙ (fiberEquivalence Y).functor
 
 namespace RelativePerfectModuliProblem
 
@@ -97,6 +113,54 @@ variable {S : Scheme.{u}} {B : Type v} [Category.{w} B]
 instance presheaf_obj_isGroupoid (M : RelativePerfectModuliProblem S B)
     (X : LocallyDiscrete B) : IsGroupoid (M.presheaf.obj X) :=
   isGroupoid_of_reflects_iso (M.fiberEquivalence X.as).functor
+
+/-- The pseudofunctor transition is the actual left-derived pullback after
+transport to the concrete moduli groupoids and forgetting to the ambient
+derived categories. -/
+def ambientComparison (M : RelativePerfectModuliProblem S B) {X Y : B}
+    (f : X ⟶ Y) :
+    (M.fiberEquivalence X).functor ⋙
+        relativePerfectModuliForget (M.base.obj (Opposite.op X)) ⋙
+      (M.pullback f).ambient.functor ≅
+    (M.presheaf.map (.mk f)).toFunctor ⋙
+      (M.fiberEquivalence Y).functor ⋙
+        relativePerfectModuliForget (M.base.obj (Opposite.op Y)) := by
+  exact
+    Functor.associator (M.fiberEquivalence X).functor
+        (relativePerfectModuliForget
+          (M.base.obj (Opposite.op X)))
+        (M.pullback f).ambient.functor ≪≫
+      Functor.isoWhiskerLeft (M.fiberEquivalence X).functor
+        (M.pullback f).coreComparison.symm ≪≫
+      (Functor.associator (M.fiberEquivalence X).functor
+        ((M.pullback f).coreFunctor)
+        (relativePerfectModuliForget
+          (M.base.obj (Opposite.op Y)))).symm ≪≫
+      Functor.isoWhiskerRight (M.transitionComparison f)
+        (relativePerfectModuliForget
+          (M.base.obj (Opposite.op Y)))
+
+/-- On an exact arrow, the transition comparison specializes canonically to
+the repository's exact derived pullback. -/
+def exactAmbientComparison (M : RelativePerfectModuliProblem S B) {X Y : B}
+    (f : X ⟶ Y) [SchemeBaseChange.IsExactPullback (M.base.map f.op)] :
+    (M.fiberEquivalence X).functor ⋙
+        relativePerfectModuliForget (M.base.obj (Opposite.op X)) ⋙
+      SchemeBaseChange.derivedPullback (M.base.map f.op) ≅
+    (M.presheaf.map (.mk f)).toFunctor ⋙
+      (M.fiberEquivalence Y).functor ⋙
+        relativePerfectModuliForget (M.base.obj (Opposite.op Y)) :=
+  Functor.associator (M.fiberEquivalence X).functor
+      (relativePerfectModuliForget (M.base.obj (Opposite.op X)))
+      (SchemeBaseChange.derivedPullback (M.base.map f.op)) ≪≫
+    Functor.isoWhiskerLeft (M.fiberEquivalence X).functor
+      (Functor.isoWhiskerLeft
+        (relativePerfectModuliForget (M.base.obj (Opposite.op X)))
+        (M.pullback f).ambient.exactComparison.symm) ≪≫
+    (Functor.associator (M.fiberEquivalence X).functor
+      (relativePerfectModuliForget (M.base.obj (Opposite.op X)))
+      (M.pullback f).ambient.functor).symm ≪≫
+    M.ambientComparison f
 
 end RelativePerfectModuliProblem
 
@@ -174,21 +238,16 @@ def identityRelativePerfectModuliProblem {S : Scheme.{u}}
   presheaf := constantRelativePerfectPresheaf T
   fiberEquivalence X :=
     CategoryTheory.Equivalence.refl (C := RelativePerfectModuliFiber T)
-  exactPullback f := by
-    change SchemeBaseChange.IsExactPullback (𝟙 T)
-    infer_instance
-  ambientComparison f := by
+  pullback f := by
+    change RelativePerfectPullback (𝟙 T)
+    exact RelativePerfectPullback.identity T
+  transitionComparison f := by
     change (𝟭 (RelativePerfectModuliFiber T)) ⋙
-          relativePerfectModuliForget T ⋙
-            SchemeBaseChange.derivedPullback (𝟙 T) ≅
+          (𝟭 (SchemeUniversallyGluableCategory T.hom)).core ≅
       (𝟭 (RelativePerfectModuliFiber T)) ⋙
-        (𝟭 (RelativePerfectModuliFiber T)) ⋙
-          relativePerfectModuliForget T
+        (𝟭 (RelativePerfectModuliFiber T))
     exact Functor.isoWhiskerLeft (𝟭 (RelativePerfectModuliFiber T))
-      (Functor.isoWhiskerLeft (relativePerfectModuliForget T)
-          (SchemeBaseChange.derivedPullbackId T) ≪≫
-        Functor.rightUnitor (relativePerfectModuliForget T) ≪≫
-        (Functor.leftUnitor (relativePerfectModuliForget T)).symm)
+      (Functor.coreId (SchemeUniversallyGluableCategory T.hom))
 
 end
 
