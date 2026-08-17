@@ -442,4 +442,172 @@ theorem signProjection_laurentFace [IsDomain R] {γ γ' : ι →₀ ℕ} {i₀ :
     rintro a b ha hb rfl; rfl
   exact hcongr _ _ _ hq hnum
 
+/-! ## Additivity of the projection
+
+The contracting homotopy applies the projection to an alternating sum of faces, so it consumes
+the projection as an additive map. Additivity is not free from the definition — `signProjection`
+is choice-based — but it reduces to the defining equation once the two summands are put over a
+common denominator, which is exactly what `DegreeZeroLocalization.exists_awayMk_pair` supplies.
+This is the first use of that lemma outside `frac_project_raise`'s single-element version. -/
+
+set_option maxHeartbeats 800000 in
+/-- **The sign projection is additive.** Align the two fractions at a common denominator
+(`exists_awayMk_pair`), where the projection is division of the numerator by a fixed monomial
+(`signProjection_awayMk`), and division by a monomial is additive (`add_divMonomial`). -/
+theorem signProjection_add [IsDomain R] {γ γ' : ι →₀ ℕ} {i₀ : ι} {c : ℕ}
+    (hγ : γ = Finsupp.single i₀ c + γ') (hγ' : γ' i₀ = 0) (d : ℕ)
+    (z₁ z₂ : DegreeZeroLocalization (polynomialGrading ι R)
+      (natShift (polynomialGrading ι R) d) (.powers (MvPolynomial.monomial γ (1 : R)))) :
+    signProjection hγ d (z₁ + z₂) = signProjection hγ d z₁ + signProjection hγ d z₂ := by
+  obtain ⟨m, p₁, p₂, hp₁, hp₂, rfl, rfl⟩ :=
+    DegreeZeroLocalization.exists_awayMk_pair
+      (monomial_one_mem_polynomialGrading (R := R) γ) (monomial_one_pow_ne_zero γ) z₁ z₂
+  rw [← DegreeZeroLocalization.awayMk_add
+      (monomial_one_mem_polynomialGrading (R := R) γ) m p₁ p₂ hp₁ hp₂,
+    signProjection_awayMk hγ hγ', signProjection_awayMk hγ hγ', signProjection_awayMk hγ hγ',
+    ← DegreeZeroLocalization.awayMk_add (monomial_one_mem_polynomialGrading (R := R) γ') m _ _
+      (divMonomial_mem_natShift hγ hp₁) (divMonomial_mem_natShift hγ hp₂)]
+  have hcongr : ∀ (a b : MvPolynomial ι R)
+      (ha : a ∈ natShift (polynomialGrading ι R) d (m • γ'.degree))
+      (hb : b ∈ natShift (polynomialGrading ι R) d (m • γ'.degree)), a = b →
+      DegreeZeroLocalization.awayMk (𝓜 := natShift (polynomialGrading ι R) d)
+          (monomial_one_mem_polynomialGrading (R := R) γ') m a ha =
+        DegreeZeroLocalization.awayMk (𝓜 := natShift (polynomialGrading ι R) d)
+          (monomial_one_mem_polynomialGrading (R := R) γ') m b hb := by
+    rintro a b ha hb rfl; rfl
+  exact hcongr _ _ _ _ (MvPolynomial.add_divMonomial p₁ p₂ _)
+
+/-- **The sign projection as an additive map.** The hypothesis `γ' i₀ = 0` is what additivity
+costs — see `signProjection` — so the bundled form carries it. `map_zero` comes with the
+bundling; callers should reach equations through `signProjectionHom_apply` and then
+`signProjection_awayMk`. -/
+noncomputable def signProjectionHom [IsDomain R] {γ γ' : ι →₀ ℕ} {i₀ : ι} {c : ℕ}
+    (hγ : γ = Finsupp.single i₀ c + γ') (hγ' : γ' i₀ = 0) (d : ℕ) :
+    DegreeZeroLocalization (polynomialGrading ι R)
+        (natShift (polynomialGrading ι R) d)
+        (.powers (MvPolynomial.monomial γ (1 : R))) →+
+      DegreeZeroLocalization (polynomialGrading ι R)
+        (natShift (polynomialGrading ι R) d)
+        (.powers (MvPolynomial.monomial γ' (1 : R))) :=
+  AddMonoidHom.mk' (signProjection hγ d) (signProjection_add hγ hγ' d)
+
+@[simp]
+theorem signProjectionHom_apply [IsDomain R] {γ γ' : ι →₀ ℕ} {i₀ : ι} {c : ℕ}
+    (hγ : γ = Finsupp.single i₀ c + γ') (hγ' : γ' i₀ = 0) (d : ℕ)
+    (z : DegreeZeroLocalization (polynomialGrading ι R)
+      (natShift (polynomialGrading ι R) d) (.powers (MvPolynomial.monomial γ (1 : R)))) :
+    signProjectionHom hγ hγ' d z = signProjection hγ d z :=
+  rfl
+
+/-! ## The projection commutes with the remaining faces
+
+`signProjection_laurentFace` handles the face that reinserts `X_{i₀}` itself — the `j = 0` face
+of the homotopy, which the projection retracts. Every other face of the Čech complex multiplies
+the denominator by a variable `X_e` that is **not** `X_{i₀}`, and for those the projection and
+the face commute. That square is the second and last property #340's contracting homotopy
+consumes.
+
+The restriction of §1 of the proof plan — the square only holds on the summands with
+`i₀ ∉ N α` — enters here as the hypothesis `δ' i₀ = 0`: the target denominator of the
+projection on the face side must not invert `X_{i₀}`, which encodes both `e ≠ i₀` (or the face
+is the retracted one) and the well-definedness hypothesis of each projection. The unrestricted
+square with `e = i₀` is false, and no statement of it appears. -/
+
+/-- Multiplying a numerator by `(X_e^{c'})ᵐ` raises its graded piece by `m·c'` and keeps the
+twist. This is the membership fact the face side of the projection square feeds
+`laurentFace_awayMk`, stated once because both columns of the square need it. -/
+theorem monomial_single_pow_smul_mem {γ : ι →₀ ℕ} {e : ι} {c' : ℕ} {d m : ℕ}
+    {p : MvPolynomial ι R}
+    (hp : p ∈ natShift (polynomialGrading ι R) d (m • γ.degree)) :
+    (MvPolynomial.monomial (Finsupp.single e c') (1 : R)) ^ m • p ∈
+      natShift (polynomialGrading ι R) d (m • (c' + γ.degree)) := by
+  have h1 : ((MvPolynomial.monomial (Finsupp.single e c') (1 : R)) ^ m).IsHomogeneous
+      (m * c') := by
+    rw [monomial_one_pow, Finsupp.smul_single, smul_eq_mul]
+    exact MvPolynomial.isHomogeneous_monomial 1 (by rw [Finsupp.degree_single])
+  have h2 : p.IsHomogeneous (m • γ.degree + d) := hp
+  have h3 := h1.mul h2
+  have hd : m * c' + (m • γ.degree + d) = m • (c' + γ.degree) + d := by
+    simp only [smul_eq_mul]; ring
+  rw [hd] at h3
+  exact h3
+
+set_option maxHeartbeats 1200000 in
+/-- **The projection square.** Away from the retracted face, the sign projection commutes with
+the Čech face: restricting along `X_e` and then projecting out `X_{i₀}` is projecting first and
+restricting after.
+
+The four denominators are supplied as separate splittings because the caller — a Čech
+differential — produces each of them separately and never has to take one apart. `hδ'₀`
+(`δ' i₀ = 0`) is the restriction of §1 of #340's proof plan in hypothesis form: with `hγ'` it
+forces `X_e ≠ X_{i₀}` unless `c' = 0`, which is exactly the disjointness
+`divMonomial_monomial_mul_comm` needs to pull the face's monomial through the projection's
+division. The unrestricted square at `e = i₀` is false — that face is the retraction
+`signProjection_laurentFace`, not this square. -/
+theorem signProjection_laurentFace_comm [IsDomain R] {γ γ' δ δ' : ι →₀ ℕ} {i₀ e : ι}
+    {c c' : ℕ} (hγ : γ = Finsupp.single i₀ c + γ') (hγ' : γ' i₀ = 0)
+    (hδγ : δ = Finsupp.single e c' + γ) (hδγ' : δ' = Finsupp.single e c' + γ')
+    (hδsplit : δ = Finsupp.single i₀ c + δ') (hδ'₀ : δ' i₀ = 0) (d : ℕ)
+    (z : DegreeZeroLocalization (polynomialGrading ι R)
+      (natShift (polynomialGrading ι R) d) (.powers (MvPolynomial.monomial γ (1 : R)))) :
+    signProjection hδsplit d (laurentFace hδγ d z) =
+      laurentFace hδγ' d (signProjection hγ d z) := by
+  obtain ⟨m, p, hp, rfl⟩ := DegreeZeroLocalization.exists_awayMk
+    (monomial_one_mem_polynomialGrading (R := R) γ) (monomial_one_pow_ne_zero γ) z
+  have hdegδ : δ.degree = c' + γ.degree := by rw [hδγ, map_add, Finsupp.degree_single]
+  have hdegδ' : δ'.degree = c' + γ'.degree := by rw [hδγ', map_add, Finsupp.degree_single]
+  have hres : (MvPolynomial.monomial (Finsupp.single e c') (1 : R)) ^ m • p ∈
+      natShift (polynomialGrading ι R) d (m • (c' + γ.degree)) :=
+    monomial_single_pow_smul_mem hp
+  have hresδ : (MvPolynomial.monomial (Finsupp.single e c') (1 : R)) ^ m • p ∈
+      natShift (polynomialGrading ι R) d (m • δ.degree) := by rw [hdegδ]; exact hres
+  have hres' : (MvPolynomial.monomial (Finsupp.single e c') (1 : R)) ^ m •
+      MvPolynomial.divMonomial p (Finsupp.single i₀ (m * c)) ∈
+      natShift (polynomialGrading ι R) d (m • (c' + γ'.degree)) :=
+    monomial_single_pow_smul_mem (divMonomial_mem_natShift hγ hp)
+  rw [laurentFace_awayMk hδγ hp hres,
+    DegreeZeroLocalization.awayMk_deg_congr hdegδ.symm (monomial_mem_add_degree hδγ)
+      (monomial_one_mem_polynomialGrading (R := R) δ) m _ hres hresδ,
+    signProjection_awayMk hδsplit hδ'₀,
+    signProjection_awayMk hγ hγ',
+    laurentFace_awayMk hδγ' (divMonomial_mem_natShift hγ hp) hres',
+    DegreeZeroLocalization.awayMk_deg_congr hdegδ'.symm (monomial_mem_add_degree hδγ')
+      (monomial_one_mem_polynomialGrading (R := R) δ') m _ hres'
+      (by rw [hdegδ']; exact hres')]
+  -- The face's monomial does not involve `i₀`: `δ' i₀ = 0` splits into `X_e`'s contribution
+  -- and `γ'`'s, both zero.
+  have hs : Finsupp.single e c' i₀ = 0 := by
+    have happ := congrArg (fun v : ι →₀ ℕ => v i₀) hδγ'
+    simp only [Finsupp.add_apply, hγ', add_zero] at happ
+    rw [← happ]; exact hδ'₀
+  have hdisj : ∀ j : ι,
+      (Finsupp.single e (m * c')) j = 0 ∨ (Finsupp.single i₀ (m * c)) j = 0 := by
+    classical
+    intro j
+    rcases eq_or_ne j i₀ with rfl | hj
+    · left
+      rw [Finsupp.single_apply] at hs ⊢
+      split_ifs at hs ⊢ with he
+      · rw [hs, Nat.mul_zero]
+      · rfl
+    · exact Or.inr (Finsupp.single_eq_of_ne hj)
+  have hmono : (MvPolynomial.monomial (Finsupp.single e c') (1 : R)) ^ m =
+      MvPolynomial.monomial (Finsupp.single e (m * c')) 1 := by
+    rw [monomial_one_pow, Finsupp.smul_single, smul_eq_mul]
+  have hnum : MvPolynomial.divMonomial
+      ((MvPolynomial.monomial (Finsupp.single e c') (1 : R)) ^ m • p)
+      (Finsupp.single i₀ (m * c)) =
+      (MvPolynomial.monomial (Finsupp.single e c') (1 : R)) ^ m •
+        MvPolynomial.divMonomial p (Finsupp.single i₀ (m * c)) := by
+    rw [hmono, smul_eq_mul, smul_eq_mul, divMonomial_monomial_mul_comm hdisj]
+  have hgen : ∀ (a b : MvPolynomial ι R)
+      (ha : a ∈ natShift (polynomialGrading ι R) d (m • δ'.degree))
+      (hb : b ∈ natShift (polynomialGrading ι R) d (m • δ'.degree)), a = b →
+      DegreeZeroLocalization.awayMk (𝓜 := natShift (polynomialGrading ι R) d)
+          (monomial_one_mem_polynomialGrading (R := R) δ') m a ha =
+        DegreeZeroLocalization.awayMk (𝓜 := natShift (polynomialGrading ι R) d)
+          (monomial_one_mem_polynomialGrading (R := R) δ') m b hb := by
+    rintro a b ha hb rfl; rfl
+  exact hgen _ _ _ _ hnum
+
 end AlgebraicGeometry.Proj
