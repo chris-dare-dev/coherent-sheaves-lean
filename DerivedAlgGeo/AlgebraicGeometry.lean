@@ -12,6 +12,7 @@ import DerivedAlgGeo.AlgebraicGeometry.Moduli
 import DerivedAlgGeo.AlgebraicGeometry.Numerical
 import DerivedAlgGeo.AlgebraicGeometry.Proj
 import DerivedAlgGeo.AlgebraicGeometry.RiemannRoch
+import DerivedAlgGeo.AlgebraicGeometry.Stacks
 import DerivedAlgGeo.AlgebraicGeometry.Variety
 
 /-! # Algebraic geometry
