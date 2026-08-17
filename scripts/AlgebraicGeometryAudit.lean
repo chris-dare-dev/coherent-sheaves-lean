@@ -1755,6 +1755,9 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 -- HomFiniteBounded rather than disappearing.
 #print axioms AlgebraicGeometry.Numerical.CategoricalEulerForm.ofLinear
 #print axioms AlgebraicGeometry.Numerical.CategoricalEulerForm.ofLinear_chi
+-- Step 6: the second of EulerTransfer's three obligations, discharged for
+-- Hom-built forms. IsRiemannRoch remains supplied.
+#print axioms AlgebraicGeometry.Numerical.ofLinear_preservesCategoricalEuler
 #print axioms AlgebraicGeometry.Numerical.CategoricalEulerForm.mk.inj
 #print axioms AlgebraicGeometry.Numerical.CategoricalEulerForm.mk.sizeOf_spec
 #print axioms AlgebraicGeometry.Numerical.CategoricalEulerForm.chi

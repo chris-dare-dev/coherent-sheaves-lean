@@ -5,6 +5,7 @@ Released under the MIT license.
 import DerivedAlgGeo.CategoryTheory.Triangulated.LinearYoneda
 import DerivedAlgGeo.CategoryTheory.Triangulated.LinearCoyoneda
 import DerivedAlgGeo.CategoryTheory.Triangulated.GrothendieckGroup.Basic
+import DerivedAlgGeo.CategoryTheory.Triangulated.GrothendieckGroup.Functorial
 import DerivedAlgGeo.LinearAlgebra.AlternatingFinsum
 
 /-!
@@ -64,7 +65,7 @@ of `chiHom` as evidence that a category has an Euler form.
 * Nothing about Serre duality, or about `χ` being symmetric, or non-degenerate.
 -/
 
-universe w u v
+universe w u v u' v'
 
 namespace CategoryTheory.Triangulated
 
@@ -245,5 +246,95 @@ theorem chiK₀_of_of (X Y : C) :
   rw [chiK₀_of, chiRight_of]
 
 end Descent
+
+section Preservation
+
+/-! ### A fully faithful `k`-linear functor preserves `χ`
+
+The classical argument, and the reason `k`-linearity is the hypothesis rather
+than additivity: a fully faithful functor matches the summands
+`Hom(X, Y⟦i⟧) ≅ Hom(ΦX, ΦY⟦i⟧)` one by one, and it is `k`-linearity that makes
+the matched summands equal as `k`-*dimensions*. An additive fully faithful
+functor gives a bijection of Hom-groups, which fixes `finrank ℤ` but not
+`finrank k`.
+
+Before the Euler form was constructed this argument had nothing to run on —
+`EulerTransfer.PreservesCategoricalEuler` was a hypothesis precisely because
+with the form supplied abstractly there is no `Hom` for full faithfulness to
+act on. That is no longer the case. -/
+
+variable {D : Type u'} [Category.{v'} D] [Preadditive D] [Linear k D]
+  [HasZeroObject D] [HasShift D ℤ] [∀ n : ℤ, (shiftFunctor D n).Additive]
+  [Pretriangulated D]
+
+/-- The Hom-bijection of a fully faithful `k`-linear functor, as a `k`-linear
+equivalence.
+
+Mathlib has `Functor.FullyFaithful.homEquiv` (a bare `Equiv`) and
+`Functor.Linear.map_smul`, but not the two combined. Written here in the
+`ForMathlib` pattern: nothing about it is specific to this development. -/
+noncomputable def homLinearEquivOfFullyFaithful (Φ : C ⥤ D) [Φ.Additive]
+    [Φ.Linear k] (hΦ : Φ.FullyFaithful) (X Y : C) :
+    (X ⟶ Y) ≃ₗ[k] (Φ.obj X ⟶ Φ.obj Y) where
+  toFun := Φ.map
+  map_add' _ _ := Φ.map_add
+  map_smul' r f := Φ.map_smul r f
+  invFun := hΦ.preimage
+  left_inv f := hΦ.preimage_map f
+  right_inv f := hΦ.map_preimage f
+
+omit [HasZeroObject C] [∀ n : ℤ, (shiftFunctor C n).Additive] [Pretriangulated C]
+  [HasZeroObject D] [∀ n : ℤ, (shiftFunctor D n).Additive] [Pretriangulated D] in
+/-- **The shifted Hom-spaces have the same `k`-dimension.**
+
+Two linear equivalences composed: full faithfulness moves `Hom(X, Y⟦i⟧)` to
+`Hom(ΦX, Φ(Y⟦i⟧))`, and the `CommShift` isomorphism moves that to
+`Hom(ΦX, (ΦY)⟦i⟧)`. -/
+theorem finrank_hom_shift_map (Φ : C ⥤ D) [Φ.Additive] [Φ.Linear k]
+    [Φ.CommShift ℤ] (hΦ : Φ.FullyFaithful) (X Y : C) (i : ℤ) :
+    finrank k (Φ.obj X ⟶ (Φ.obj Y)⟦i⟧) = finrank k (X ⟶ Y⟦i⟧) := by
+  have e : (X ⟶ Y⟦i⟧) ≃ₗ[k] (Φ.obj X ⟶ (Φ.obj Y)⟦i⟧) :=
+    (homLinearEquivOfFullyFaithful Φ hΦ X (Y⟦i⟧)).trans
+      (Linear.homCongr k (Iso.refl (Φ.obj X)) ((Φ.commShiftIso i).app Y))
+  exact (e.finrank_eq).symm
+
+omit [HasZeroObject C] [∀ n : ℤ, (shiftFunctor C n).Additive] [Pretriangulated C]
+  [HasZeroObject D] [∀ n : ℤ, (shiftFunctor D n).Additive] [Pretriangulated D] in
+/-- **`χ` is preserved on objects.**
+
+Term by term: `finrank_hom_shift_map` under the `finsum`. No finiteness
+hypothesis is needed — the two families are equal pointwise, so their `finsum`s
+agree whether or not either is finitely supported. -/
+theorem chiHom_map (Φ : C ⥤ D) [Φ.Additive] [Φ.Linear k] [Φ.CommShift ℤ]
+    (hΦ : Φ.FullyFaithful) (X Y : C) :
+    chiHom k D (Φ.obj X) (Φ.obj Y) = chiHom k C X Y :=
+  finsum_congr fun i => by rw [finrank_hom_shift_map Φ hΦ X Y i]
+
+variable [HomFiniteBounded k C] [HomFiniteBounded k D]
+  [∀ n : ℤ, (shiftFunctor C n).Linear k] [∀ n : ℤ, (shiftFunctor D n).Linear k]
+
+/-- **`χ` is preserved on `K₀`.**
+
+The object-level statement descended in both variables. `AddMonoidHom.compHom'`
+is precomposition-as-a-homomorphism, which is what lets the outer variable be
+handled by `K₀.hom_ext` rather than by hand. -/
+theorem chiK₀_map (k : Type w) [DivisionRing k] (C : Type u) [Category.{v} C]
+    [Preadditive C] [Linear k C] [HasZeroObject C] [HasShift C ℤ]
+    [∀ n : ℤ, (shiftFunctor C n).Additive] [Pretriangulated C]
+    (D : Type u') [Category.{v'} D] [Preadditive D] [Linear k D] [HasZeroObject D]
+    [HasShift D ℤ] [∀ n : ℤ, (shiftFunctor D n).Additive] [Pretriangulated D]
+    [HomFiniteBounded k C] [HomFiniteBounded k D]
+    [∀ n : ℤ, (shiftFunctor C n).Linear k] [∀ n : ℤ, (shiftFunctor D n).Linear k]
+    (Φ : C ⥤ D) [Φ.Additive] [Φ.Linear k] [Φ.CommShift ℤ]
+    [Φ.IsTriangulated] (hΦ : Φ.FullyFaithful) (x y : K₀ C) :
+    chiK₀ k D (K₀.map Φ x) (K₀.map Φ y) = chiK₀ k C x y := by
+  have outer :
+      (AddMonoidHom.compHom' (K₀.map Φ)).comp ((chiK₀ k D).comp (K₀.map Φ))
+        = chiK₀ k C := by
+    refine K₀.hom_ext C fun X => K₀.hom_ext C fun Y => ?_
+    simp [K₀.map_of, chiHom_map Φ hΦ X Y]
+  exact DFunLike.congr_fun (DFunLike.congr_fun outer x) y
+
+end Preservation
 
 end CategoryTheory.Triangulated
