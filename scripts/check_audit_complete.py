@@ -85,9 +85,14 @@ def load_env(path: Path) -> dict[str, set[str]]:
 
 
 def listed_names(path: Path) -> set[str]:
+    # Since #480 an audit may be split into `<stem>/*.lean` area files behind
+    # an imports-only umbrella; read the umbrella plus every area file. For an
+    # unsplit audit the glob is empty and this reads the one file, as before.
+    files = [path] + sorted((path.parent / path.stem).glob("*.lean"))
     return {
         line.split()[-1]
-        for line in path.read_text(encoding="utf-8").splitlines()
+        for f in files
+        for line in f.read_text(encoding="utf-8").splitlines()
         if line.startswith("#print axioms")
     }
 
@@ -112,6 +117,21 @@ def main(argv: list[str]) -> int:
     relax = "--relax" in argv
     failed = False
     new_ceilings: dict[str, int] = {}
+
+    # Modules under the source root that `EnumDecls.libraryOf` classifies into
+    # no audit bucket. Before #508 these were silently invisible to the sweep,
+    # which made this gate pass vacuously for any new source directory; now
+    # the sweep emits them under a sentinel and any occurrence is a failure,
+    # named per module so the fix (a new branch in `libraryOf`) is actionable.
+    unclassified = env.pop("Unclassified", set())
+    if unclassified:
+        failed = True
+        print(f"::error::{len(unclassified)} module(s) under DerivedAlgGeo are "
+              "not classified by EnumDecls.libraryOf, so their declarations "
+              "are invisible to every audit. Add their directory to "
+              "libraryOf in scripts/EnumDecls.lean (see #508):")
+        for m in sorted(unclassified):
+            print(f"    {m}")
 
     for lib, (audit_path, prefixes) in AUDITS.items():
         declared = env.get(lib, set())
