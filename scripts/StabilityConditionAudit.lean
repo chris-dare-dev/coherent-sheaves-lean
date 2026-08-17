@@ -4076,4 +4076,75 @@ and no geometry.
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.affineQuasicoherentSheavesHasFiniteProducts
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.affineTildeDerivedFunctor
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.affineTildeDerivedHomologyIso
+/-! ## The geometric Fourier--Mukai correspondence: a dependency ledger
+
+INHABITANT-FREE BY DESIGN. Nothing constructs a `HasDerivedPushforward` or a
+`HasDerivedTensor`, and no scheme is shown to admit either, so a clean axiom
+list here is emphatically NOT evidence that a geometric Fourier--Mukai
+transform exists in this repository. What it says is that
+`geometricCorrespondence` assembles a `Correspondence` from exactly three
+inputs -- the existing derived-pullback contract, a supplied derived tensor,
+and a supplied derived pushforward -- and from nothing else.
+
+Derived pushforward and derived tensor on `D^b(Coh)` do not exist anywhere in
+the repository; this file names them rather than building them. The middle
+scheme is deliberately NOT required to be a product: `Correspondence` does not
+consume that, and it is the composition law (`ConvolutionData`) that needs it.
+-/
+
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasDerivedPushforward
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasDerivedPushforward.derivedPushforward
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasDerivedPushforward.additive
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasDerivedPushforward.commShift
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasDerivedPushforward.isTriangulated
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.derivedPushforward
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasDerivedTensor
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasDerivedTensor.derivedTensor
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasDerivedTensor.additive
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasDerivedTensor.commShift
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasDerivedTensor.isTriangulated
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.derivedTensor
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.geometricCorrespondence
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.geometricCorrespondence_pull
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.geometricCorrespondence_tensor
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.geometricCorrespondence_push
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.derivedPushforward_additive
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.derivedPushforwardCommShift
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.derivedPushforward_isTriangulated
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.derivedTensor_additive
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.derivedTensorCommShift
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.derivedTensor_isTriangulated
+
+/-! ## Convolution of kernels: the second ledger
+
+INHABITANT-FREE, like the first. Nothing constructs a `HasProjectionFormula`,
+a `HasFlatBaseChange`, or a `HasConvolutionComparison`.
+
+What this ledger buys is that `conv` stops being supplied data: `convKernel` is
+the classical `R(pi_XW)_*(pi_XY^* P (x)^L pi_YW^* Q)` built from functors the
+first ledger already names, so `ConvolutionData` goes from two supplied fields
+to one. The survivor is `compIso` -- Prop. 5.10, a genuine theorem.
+
+The projection formula and flat base change are NAMED BUT NOT CONSUMED. They
+are what a proof of compIso would use; nothing here derives anything from them,
+and a clean axiom list must not be read as progress toward compIso.
+-/
+
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.TripleProductGeometry
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.TripleProductGeometry.mk.inj
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.TripleProductGeometry.mk.sizeOf_spec
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.TripleProductGeometry.triple
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.TripleProductGeometry.πXY
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.TripleProductGeometry.πYW
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.TripleProductGeometry.πXW
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.convKernel
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasProjectionFormula
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasProjectionFormula.iso
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasFlatBaseChange
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasFlatBaseChange.comm
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasFlatBaseChange.iso
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasConvolutionComparison
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasConvolutionComparison.compIso
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.geometricConvolutionData
+
 
