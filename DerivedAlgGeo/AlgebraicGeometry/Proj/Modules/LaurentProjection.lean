@@ -241,6 +241,24 @@ theorem IsPolynomialTwist.divMonomial_mem {σM : Type u} [SetLike σM (MvPolynom
   rw [Finsupp.degree_single]
   exact hesplit ▸ hhom
 
+/-- **Multiplying a numerator by a homogeneous factor** raises its graded piece by that factor's
+degree and leaves the twist alone.
+
+Three places need this — raising a representative to a higher power of the denominator, and the
+two columns of the projection square — and each of them read `natShift`'s membership as
+homogeneity directly. Through `IsPolynomialTwist` the reading is a case split, because the
+numerator may be zero in a degree the twist names no graded piece for. -/
+theorem IsPolynomialTwist.mul_mem_of_isHomogeneous {σM : Type u} [SetLike σM (MvPolynomial ι R)]
+    {𝓜 : ℕ → σM} {d : ℤ} (h𝓜 : IsPolynomialTwist 𝓜 d) {a : MvPolynomial ι R} {k n n' : ℕ}
+    (ha : a.IsHomogeneous k) (hn : n' = k + n) {p : MvPolynomial ι R} (hp : p ∈ 𝓜 n) :
+    a * p ∈ 𝓜 n' := by
+  rcases (h𝓜 n p).mp hp with rfl | ⟨e, he, hhom⟩
+  · exact (h𝓜 _ _).mpr (Or.inl (by rw [mul_zero]))
+  refine (h𝓜 _ _).mpr (Or.inr ⟨k + e, ?_, ha.mul hhom⟩)
+  rw [hn]
+  push_cast at he ⊢
+  linarith
+
 /-! ## The projection itself
 
 The numerator operation descends to a map on the localization. A representative is packaged as
@@ -248,52 +266,64 @@ The numerator operation descends to a map on the localization. A representative 
 same fraction, and `signProjection` is the resulting map, chosen through `Exists.choose` and
 pinned by `signProjection_awayMk`. -/
 
-/-- A representative `p / (Xᵞ)ᵐ` of a degree-zero fraction at twist `d`. -/
-structure AwayRep (ι R : Type u) [CommRing R] (γ : ι →₀ ℕ) (d : ℕ) where
+variable {σM : Type u} [SetLike σM (MvPolynomial ι R)]
+  [AddSubgroupClass σM (MvPolynomial ι R)]
+
+/-- A representative `p / (Xᵞ)ᵐ` of a degree-zero fraction of the twist `𝓜`.
+
+The twist is carried by the graded family rather than by a natural number, so that the whole
+projection layer is available at either sign; `IsPolynomialTwist 𝓜 d` is the hypothesis the
+degree bookkeeping consumes, and it is required only where a degree actually moves. -/
+structure AwayRep (ι R : Type u) [CommRing R] {σM : Type u} [SetLike σM (MvPolynomial ι R)]
+    (𝓜 : ℕ → σM) (γ : ι →₀ ℕ) where
   /-- The exponent of the denominator. -/
   pow : ℕ
   /-- The numerator. -/
   num : MvPolynomial ι R
   /-- The numerator sits in the graded piece the denominator forces. -/
-  num_mem : num ∈ natShift (polynomialGrading ι R) d (pow • γ.degree)
+  num_mem : num ∈ 𝓜 (pow • γ.degree)
+
+variable {𝓜 : ℕ → σM} [SetLike.GradedSMul (polynomialGrading ι R) 𝓜] {d : ℤ}
 
 /-- The fraction a representative names. -/
-noncomputable def AwayRep.frac {γ : ι →₀ ℕ} {d : ℕ} (r : AwayRep ι R γ d) :
-    DegreeZeroLocalization (polynomialGrading ι R)
-      (natShift (polynomialGrading ι R) d) (.powers (MvPolynomial.monomial γ (1 : R))) :=
-  DegreeZeroLocalization.awayMk (𝓜 := natShift (polynomialGrading ι R) d)
+noncomputable def AwayRep.frac {γ : ι →₀ ℕ} (r : AwayRep ι R 𝓜 γ) :
+    DegreeZeroLocalization (polynomialGrading ι R) 𝓜
+      (.powers (MvPolynomial.monomial γ (1 : R))) :=
+  DegreeZeroLocalization.awayMk (𝓜 := 𝓜)
     (monomial_one_mem_polynomialGrading (R := R) γ) r.pow r.num r.num_mem
 
 /-- Every fraction has a representative — this is `exists_awayMk`, repackaged. -/
-theorem AwayRep.frac_surjective [Nontrivial R] (γ : ι →₀ ℕ) (d : ℕ)
-    (z : DegreeZeroLocalization (polynomialGrading ι R)
-      (natShift (polynomialGrading ι R) d) (.powers (MvPolynomial.monomial γ (1 : R)))) :
-    ∃ r : AwayRep ι R γ d, r.frac = z := by
+theorem AwayRep.frac_surjective [Nontrivial R] (𝓜 : ℕ → σM)
+    [SetLike.GradedSMul (polynomialGrading ι R) 𝓜] (γ : ι →₀ ℕ)
+    (z : DegreeZeroLocalization (polynomialGrading ι R) 𝓜
+      (.powers (MvPolynomial.monomial γ (1 : R)))) :
+    ∃ r : AwayRep ι R 𝓜 γ, r.frac = z := by
   obtain ⟨m, p, hp, rfl⟩ :=
     DegreeZeroLocalization.exists_awayMk (monomial_one_mem_polynomialGrading (R := R) γ)
       (monomial_one_pow_ne_zero γ) z
   exact ⟨⟨m, p, hp⟩, rfl⟩
 
 /-- The projected representative: divide the numerator by `X_{i₀}^{m·c}`, keep the exponent. -/
-noncomputable def AwayRep.project {γ γ' : ι →₀ ℕ} {i₀ : ι} {c : ℕ}
-    (hγ : γ = Finsupp.single i₀ c + γ') {d : ℕ} (r : AwayRep ι R γ d) : AwayRep ι R γ' d where
+noncomputable def AwayRep.project (h𝓜 : IsPolynomialTwist 𝓜 d) {γ γ' : ι →₀ ℕ} {i₀ : ι} {c : ℕ}
+    (hγ : γ = Finsupp.single i₀ c + γ') (r : AwayRep ι R 𝓜 γ) : AwayRep ι R 𝓜 γ' where
   pow := r.pow
   num := MvPolynomial.divMonomial r.num (Finsupp.single i₀ (r.pow * c))
-  num_mem := divMonomial_mem_natShift hγ r.num_mem
+  num_mem := h𝓜.divMonomial_mem hγ r.num_mem
 
-/-- Raising a representative by `(Xᵞ)ᵗ` keeps it a legitimate numerator. -/
-theorem AwayRep.pow_mul_num_mem {γ : ι →₀ ℕ} {d : ℕ} (r : AwayRep ι R γ d) (t : ℕ) :
-    ((MvPolynomial.monomial γ (1 : R)) ^ t * r.num) ∈
-      natShift (polynomialGrading ι R) d ((r.pow + t) • γ.degree) := by
+omit [AddSubgroupClass σM (MvPolynomial ι R)]
+  [SetLike.GradedSMul (polynomialGrading ι R) 𝓜] in
+/-- Raising a representative by `(Xᵞ)ᵗ` keeps it a legitimate numerator.
+
+The nonnegative proof read `num_mem` as homogeneity directly. Here the reading goes through
+`IsPolynomialTwist`, which also supplies the zero case — a numerator may be zero in a degree
+where the twist names no graded piece at all. -/
+theorem AwayRep.pow_mul_num_mem (h𝓜 : IsPolynomialTwist 𝓜 d) {γ : ι →₀ ℕ}
+    (r : AwayRep ι R 𝓜 γ) (t : ℕ) :
+    ((MvPolynomial.monomial γ (1 : R)) ^ t * r.num) ∈ 𝓜 ((r.pow + t) • γ.degree) := by
   have h1 : ((MvPolynomial.monomial γ (1 : R)) ^ t).IsHomogeneous (t * γ.degree) := by
     rw [monomial_one_pow]
     exact MvPolynomial.isHomogeneous_monomial 1 (by rw [map_nsmul, smul_eq_mul])
-  have h2 : (r.num).IsHomogeneous (r.pow • γ.degree + d) := r.num_mem
-  have h3 := h1.mul h2
-  have hd : t * γ.degree + (r.pow • γ.degree + d) = (r.pow + t) • γ.degree + d := by
-    simp only [smul_eq_mul]; ring
-  rw [hd] at h3
-  exact h3
+  exact h𝓜.mul_mem_of_isHomogeneous h1 (by simp only [smul_eq_mul]; ring) r.num_mem
 
 set_option maxHeartbeats 1200000 in
 /-- Projecting a representative is the same as raising it first and then projecting.
@@ -301,34 +331,33 @@ set_option maxHeartbeats 1200000 in
 This is `divMonomial_pow_mul` on the numerator and `awayMk_shift` on the fraction, and it is the
 only place either is used. Well-definedness follows immediately: it lets both representatives of
 one element be moved to the *same* exponent before they are compared. -/
-theorem AwayRep.frac_project_raise {γ γ' : ι →₀ ℕ} {i₀ : ι} {c : ℕ}
-    (hγ : γ = Finsupp.single i₀ c + γ') (hγ' : γ' i₀ = 0) {d : ℕ}
-    (r : AwayRep ι R γ d) (t : ℕ) :
-    (r.project hγ).frac =
-      DegreeZeroLocalization.awayMk (𝓜 := natShift (polynomialGrading ι R) d)
+theorem AwayRep.frac_project_raise (h𝓜 : IsPolynomialTwist 𝓜 d) {γ γ' : ι →₀ ℕ} {i₀ : ι} {c : ℕ}
+    (hγ : γ = Finsupp.single i₀ c + γ') (hγ' : γ' i₀ = 0)
+    (r : AwayRep ι R 𝓜 γ) (t : ℕ) :
+    (r.project h𝓜 hγ).frac =
+      DegreeZeroLocalization.awayMk (𝓜 := 𝓜)
         (monomial_one_mem_polynomialGrading (R := R) γ') (r.pow + t)
         (MvPolynomial.divMonomial ((MvPolynomial.monomial γ (1 : R)) ^ t * r.num)
           (Finsupp.single i₀ ((r.pow + t) * c)))
-        (divMonomial_mem_natShift hγ (r.pow_mul_num_mem t)) := by
+        (h𝓜.divMonomial_mem hγ (r.pow_mul_num_mem h𝓜 t)) := by
   have hnum := divMonomial_pow_mul hγ hγ' r.pow t r.num
   have hmem2 : (MvPolynomial.monomial γ' (1 : R)) ^ t •
       MvPolynomial.divMonomial r.num (Finsupp.single i₀ (r.pow * c)) ∈
-      natShift (polynomialGrading ι R) d ((r.pow + t) • γ'.degree) := by
+      𝓜 ((r.pow + t) • γ'.degree) := by
     simp only [smul_eq_mul, ← hnum]
-    exact divMonomial_mem_natShift hγ (r.pow_mul_num_mem t)
+    exact h𝓜.divMonomial_mem hγ (r.pow_mul_num_mem h𝓜 t)
   have hcongr : ∀ (n : ℕ) (a b : MvPolynomial ι R)
-      (ha : a ∈ natShift (polynomialGrading ι R) d (n • γ'.degree))
-      (hb : b ∈ natShift (polynomialGrading ι R) d (n • γ'.degree)), a = b →
-      DegreeZeroLocalization.awayMk (𝓜 := natShift (polynomialGrading ι R) d)
+      (ha : a ∈ 𝓜 (n • γ'.degree)) (hb : b ∈ 𝓜 (n • γ'.degree)), a = b →
+      DegreeZeroLocalization.awayMk (𝓜 := 𝓜)
           (monomial_one_mem_polynomialGrading (R := R) γ') n a ha =
-        DegreeZeroLocalization.awayMk (𝓜 := natShift (polynomialGrading ι R) d)
+        DegreeZeroLocalization.awayMk (𝓜 := 𝓜)
           (monomial_one_mem_polynomialGrading (R := R) γ') n b hb := by
     rintro n a b ha hb rfl; rfl
   refine Eq.symm (Eq.trans (hcongr (r.pow + t) _ _ _ hmem2 hnum) ?_)
   exact DegreeZeroLocalization.awayMk_shift
     (monomial_one_mem_polynomialGrading (R := R) γ') r.pow t
     (MvPolynomial.divMonomial r.num (Finsupp.single i₀ (r.pow * c)))
-    (divMonomial_mem_natShift hγ r.num_mem) hmem2
+    (h𝓜.divMonomial_mem hγ r.num_mem) hmem2
 
 set_option maxHeartbeats 1200000 in
 /-- **Well-definedness.** Two representatives of one fraction project to the same fraction.
@@ -336,10 +365,11 @@ set_option maxHeartbeats 1200000 in
 `awayMk_eq_awayMk_iff` turns the hypothesis into a cross-multiplication of numerators, and
 `frac_project_raise` moves both projections to the common exponent `r₁.pow + r₂.pow` where that
 cross-multiplication is literally the equality of numerators. -/
-theorem AwayRep.frac_project_congr [IsDomain R] {γ γ' : ι →₀ ℕ} {i₀ : ι} {c : ℕ}
-    (hγ : γ = Finsupp.single i₀ c + γ') (hγ' : γ' i₀ = 0) {d : ℕ}
-    {r₁ r₂ : AwayRep ι R γ d} (h : r₁.frac = r₂.frac) :
-    (r₁.project hγ).frac = (r₂.project hγ).frac := by
+theorem AwayRep.frac_project_congr [IsDomain R] (h𝓜 : IsPolynomialTwist 𝓜 d)
+    {γ γ' : ι →₀ ℕ} {i₀ : ι} {c : ℕ}
+    (hγ : γ = Finsupp.single i₀ c + γ') (hγ' : γ' i₀ = 0)
+    {r₁ r₂ : AwayRep ι R 𝓜 γ} (h : r₁.frac = r₂.frac) :
+    (r₁.project h𝓜 hγ).frac = (r₂.project h𝓜 hγ).frac := by
   have hcross : (MvPolynomial.monomial γ (1 : R)) ^ r₂.pow * r₁.num =
       (MvPolynomial.monomial γ (1 : R)) ^ r₁.pow * r₂.num := by
     have hx := (DegreeZeroLocalization.awayMk_eq_awayMk_iff
@@ -347,17 +377,16 @@ theorem AwayRep.frac_project_congr [IsDomain R] {γ γ' : ι →₀ ℕ} {i₀ :
       (monomial_one_ne_zero (R := R) γ) r₁.num_mem r₂.num_mem).mp h
     simpa [smul_eq_mul] using hx
   have hgen : ∀ (n₁ n₂ : ℕ) (a b : MvPolynomial ι R)
-      (ha : a ∈ natShift (polynomialGrading ι R) d (n₁ • γ'.degree))
-      (hb : b ∈ natShift (polynomialGrading ι R) d (n₂ • γ'.degree)),
+      (ha : a ∈ 𝓜 (n₁ • γ'.degree)) (hb : b ∈ 𝓜 (n₂ • γ'.degree)),
       n₁ = n₂ → a = b →
-      DegreeZeroLocalization.awayMk (𝓜 := natShift (polynomialGrading ι R) d)
+      DegreeZeroLocalization.awayMk (𝓜 := 𝓜)
           (monomial_one_mem_polynomialGrading (R := R) γ') n₁ a ha =
-        DegreeZeroLocalization.awayMk (𝓜 := natShift (polynomialGrading ι R) d)
+        DegreeZeroLocalization.awayMk (𝓜 := 𝓜)
           (monomial_one_mem_polynomialGrading (R := R) γ') n₂ b hb := by
     rintro n₁ n₂ a b ha hb rfl rfl; rfl
-  refine (r₁.frac_project_raise hγ hγ' r₂.pow).trans
+  refine (r₁.frac_project_raise h𝓜 hγ hγ' r₂.pow).trans
     (Eq.trans (hgen _ _ _ _ _ _ (Nat.add_comm _ _) ?_)
-      (r₂.frac_project_raise hγ hγ' r₁.pow).symm)
+      (r₂.frac_project_raise h𝓜 hγ hγ' r₁.pow).symm)
   rw [Nat.add_comm r₁.pow r₂.pow, hcross]
 
 /-- **The sign projection**, as a map on the localization.
@@ -366,32 +395,34 @@ Defined by choosing a representative; `signProjection_awayMk` is the equation th
 and is what every caller should use. The hypothesis `γ' i₀ = 0` is not needed to *make* the
 definition — only to make it independent of the choice — so it is required by the equations rather
 than by the definition. -/
-noncomputable def signProjection [IsDomain R] {γ γ' : ι →₀ ℕ} {i₀ : ι} {c : ℕ}
-    (hγ : γ = Finsupp.single i₀ c + γ') (d : ℕ)
-    (z : DegreeZeroLocalization (polynomialGrading ι R)
-      (natShift (polynomialGrading ι R) d) (.powers (MvPolynomial.monomial γ (1 : R)))) :
-    DegreeZeroLocalization (polynomialGrading ι R)
-      (natShift (polynomialGrading ι R) d) (.powers (MvPolynomial.monomial γ' (1 : R))) :=
-  ((AwayRep.frac_surjective γ d z).choose.project hγ).frac
+noncomputable def signProjection [IsDomain R] (h𝓜 : IsPolynomialTwist 𝓜 d)
+    {γ γ' : ι →₀ ℕ} {i₀ : ι} {c : ℕ} (hγ : γ = Finsupp.single i₀ c + γ')
+    (z : DegreeZeroLocalization (polynomialGrading ι R) 𝓜
+      (.powers (MvPolynomial.monomial γ (1 : R)))) :
+    DegreeZeroLocalization (polynomialGrading ι R) 𝓜
+      (.powers (MvPolynomial.monomial γ' (1 : R))) :=
+  ((AwayRep.frac_surjective 𝓜 γ z).choose.project h𝓜 hγ).frac
 
-theorem signProjection_frac [IsDomain R] {γ γ' : ι →₀ ℕ} {i₀ : ι} {c : ℕ}
-    (hγ : γ = Finsupp.single i₀ c + γ') (hγ' : γ' i₀ = 0) {d : ℕ} (r : AwayRep ι R γ d) :
-    signProjection hγ d r.frac = (r.project hγ).frac :=
-  AwayRep.frac_project_congr hγ hγ' (AwayRep.frac_surjective γ d r.frac).choose_spec
+theorem signProjection_frac [IsDomain R] (h𝓜 : IsPolynomialTwist 𝓜 d)
+    {γ γ' : ι →₀ ℕ} {i₀ : ι} {c : ℕ}
+    (hγ : γ = Finsupp.single i₀ c + γ') (hγ' : γ' i₀ = 0) (r : AwayRep ι R 𝓜 γ) :
+    signProjection h𝓜 hγ r.frac = (r.project h𝓜 hγ).frac :=
+  AwayRep.frac_project_congr h𝓜 hγ hγ' (AwayRep.frac_surjective 𝓜 γ r.frac).choose_spec
 
 /-- **The defining equation of the sign projection**: on a representative it divides the numerator
 by `X_{i₀}^{m·c}` and keeps the exponent. -/
-theorem signProjection_awayMk [IsDomain R] {γ γ' : ι →₀ ℕ} {i₀ : ι} {c : ℕ}
-    (hγ : γ = Finsupp.single i₀ c + γ') (hγ' : γ' i₀ = 0) {d m : ℕ} {p : MvPolynomial ι R}
-    (hp : p ∈ natShift (polynomialGrading ι R) d (m • γ.degree)) :
-    signProjection hγ d
-        (DegreeZeroLocalization.awayMk (𝓜 := natShift (polynomialGrading ι R) d)
+theorem signProjection_awayMk [IsDomain R] (h𝓜 : IsPolynomialTwist 𝓜 d)
+    {γ γ' : ι →₀ ℕ} {i₀ : ι} {c : ℕ}
+    (hγ : γ = Finsupp.single i₀ c + γ') (hγ' : γ' i₀ = 0) {m : ℕ} {p : MvPolynomial ι R}
+    (hp : p ∈ 𝓜 (m • γ.degree)) :
+    signProjection h𝓜 hγ
+        (DegreeZeroLocalization.awayMk (𝓜 := 𝓜)
           (monomial_one_mem_polynomialGrading (R := R) γ) m p hp) =
-      DegreeZeroLocalization.awayMk (𝓜 := natShift (polynomialGrading ι R) d)
+      DegreeZeroLocalization.awayMk (𝓜 := 𝓜)
         (monomial_one_mem_polynomialGrading (R := R) γ') m
         (MvPolynomial.divMonomial p (Finsupp.single i₀ (m * c)))
-        (divMonomial_mem_natShift hγ hp) :=
-  signProjection_frac hγ hγ' ⟨m, p, hp⟩
+        (h𝓜.divMonomial_mem hγ hp) :=
+  signProjection_frac h𝓜 hγ hγ' ⟨m, p, hp⟩
 
 /-! ## The projection retracts the face inclusion -/
 
@@ -416,13 +447,13 @@ theorem monomial_mem_add_degree {γ γ' : ι →₀ ℕ} {i₀ : ι} {c : ℕ}
 /-- The face inclusion `(A(d)_{Xᵞ'})₀ → (A(d)_{Xᵞ})₀`, in the shape the sign projection
 retracts. This is `DegreeZeroLocalization.faceMap` at `g₁ * h = g₂` with `h = X_{i₀}^c`, which is
 exactly the Čech face of #340's complex. -/
-noncomputable def laurentFace {γ γ' : ι →₀ ℕ} {i₀ : ι} {c : ℕ}
-    (hγ : γ = Finsupp.single i₀ c + γ') (d : ℕ) :
+noncomputable def laurentFace (𝓜 : ℕ → σM) [SetLike.GradedSMul (polynomialGrading ι R) 𝓜]
+    {γ γ' : ι →₀ ℕ} {i₀ : ι} {c : ℕ} (hγ : γ = Finsupp.single i₀ c + γ') :
     DegreeZeroLocalization (polynomialGrading ι R)
-        (natShift (polynomialGrading ι R) d) (.powers (MvPolynomial.monomial γ' (1 : R))) →+
+        (𝓜) (.powers (MvPolynomial.monomial γ' (1 : R))) →+
       DegreeZeroLocalization (polynomialGrading ι R)
-        (natShift (polynomialGrading ι R) d) (.powers (MvPolynomial.monomial γ (1 : R))) :=
-  DegreeZeroLocalization.faceMap (𝓜 := natShift (polynomialGrading ι R) d)
+        (𝓜) (.powers (MvPolynomial.monomial γ (1 : R))) :=
+  DegreeZeroLocalization.faceMap (𝓜 := 𝓜)
     (monomial_single_mem i₀ c)
     ⟨1, by show (MvPolynomial.monomial γ (1 : R)) ^ 1 = _; rw [pow_one, laurentFace_mul hγ]⟩
     (laurentFace_mul hγ)
@@ -431,14 +462,14 @@ set_option maxHeartbeats 1200000 in
 /-- The face inclusion in `awayMk` normal form: it multiplies the numerator by
 `X_{i₀}^{m·c}`. -/
 theorem laurentFace_awayMk {γ γ' : ι →₀ ℕ} {i₀ : ι} {c : ℕ}
-    (hγ : γ = Finsupp.single i₀ c + γ') {d m : ℕ} {q : MvPolynomial ι R}
-    (hq : q ∈ natShift (polynomialGrading ι R) d (m • γ'.degree))
+    (hγ : γ = Finsupp.single i₀ c + γ') {m : ℕ} {q : MvPolynomial ι R}
+    (hq : q ∈ 𝓜 (m • γ'.degree))
     (hres : (MvPolynomial.monomial (Finsupp.single i₀ c) (1 : R)) ^ m • q ∈
-      natShift (polynomialGrading ι R) d (m • (c + γ'.degree))) :
-    laurentFace hγ d (DegreeZeroLocalization.awayMk
-        (𝓜 := natShift (polynomialGrading ι R) d)
+      𝓜 (m • (c + γ'.degree))) :
+    laurentFace 𝓜 hγ (DegreeZeroLocalization.awayMk
+        (𝓜 := 𝓜)
         (monomial_one_mem_polynomialGrading (R := R) γ') m q hq) =
-      DegreeZeroLocalization.awayMk (𝓜 := natShift (polynomialGrading ι R) d)
+      DegreeZeroLocalization.awayMk (𝓜 := 𝓜)
         (monomial_mem_add_degree hγ) m
         ((MvPolynomial.monomial (Finsupp.single i₀ c) (1 : R)) ^ m • q) hres :=
   DegreeZeroLocalization.faceMap_awayMk _ (monomial_one_mem_polynomialGrading (R := R) γ') _ _
@@ -452,11 +483,12 @@ multiplies the numerator by `X_{i₀}^{m·c}` and the projection divides it stra
 (`divMonomial_monomial_mul`), so nothing survives to check — the content is all in the degree
 bookkeeping, and in `awayMk_deg_congr` reconciling the two names `γ.degree` and `c + γ'.degree`
 for the same natural number. -/
-theorem signProjection_laurentFace [IsDomain R] {γ γ' : ι →₀ ℕ} {i₀ : ι} {c : ℕ}
-    (hγ : γ = Finsupp.single i₀ c + γ') (hγ' : γ' i₀ = 0) (d : ℕ)
+theorem signProjection_laurentFace [IsDomain R] (h𝓜 : IsPolynomialTwist 𝓜 d)
+    {γ γ' : ι →₀ ℕ} {i₀ : ι} {c : ℕ}
+    (hγ : γ = Finsupp.single i₀ c + γ') (hγ' : γ' i₀ = 0)
     (z : DegreeZeroLocalization (polynomialGrading ι R)
-      (natShift (polynomialGrading ι R) d) (.powers (MvPolynomial.monomial γ' (1 : R)))) :
-    signProjection hγ d (laurentFace hγ d z) = z := by
+      (𝓜) (.powers (MvPolynomial.monomial γ' (1 : R)))) :
+    signProjection h𝓜 hγ (laurentFace 𝓜 hγ z) = z := by
   obtain ⟨m, q, hq, rfl⟩ :=
     DegreeZeroLocalization.exists_awayMk (monomial_one_mem_polynomialGrading (R := R) γ')
       (monomial_one_pow_ne_zero γ') z
@@ -465,32 +497,28 @@ theorem signProjection_laurentFace [IsDomain R] {γ γ' : ι →₀ ℕ} {i₀ :
       MvPolynomial.monomial (Finsupp.single i₀ (m * c)) 1 := by
     rw [monomial_one_pow, Finsupp.smul_single, smul_eq_mul]
   have hres : (MvPolynomial.monomial (Finsupp.single i₀ c) (1 : R)) ^ m • q ∈
-      natShift (polynomialGrading ι R) d (m • (c + γ'.degree)) := by
+      𝓜 (m • (c + γ'.degree)) := by
     have h1 : ((MvPolynomial.monomial (Finsupp.single i₀ c) (1 : R)) ^ m).IsHomogeneous
         (m * c) := by
       rw [hmono]
       exact MvPolynomial.isHomogeneous_monomial 1 (by rw [Finsupp.degree_single])
-    have h2 : (q : MvPolynomial ι R).IsHomogeneous (m • γ'.degree + d) := hq
-    have h3 := h1.mul h2
-    have hd2 : m * c + (m • γ'.degree + d) = m • (c + γ'.degree) + d := by
-      simp only [smul_eq_mul]; ring
-    rw [hd2] at h3
-    exact h3
+    rw [smul_eq_mul]
+    exact h𝓜.mul_mem_of_isHomogeneous h1 (by simp only [smul_eq_mul]; ring) hq
   rw [laurentFace_awayMk hγ hq hres,
     DegreeZeroLocalization.awayMk_deg_congr hdeg.symm (monomial_mem_add_degree hγ)
       (monomial_one_mem_polynomialGrading (R := R) γ) m _ hres
       (by rw [hdeg]; exact hres),
-    signProjection_awayMk hγ hγ']
+    signProjection_awayMk h𝓜 hγ hγ']
   have hnum : MvPolynomial.divMonomial
       ((MvPolynomial.monomial (Finsupp.single i₀ c) (1 : R)) ^ m • q)
       (Finsupp.single i₀ (m * c)) = q := by
     rw [hmono, smul_eq_mul, MvPolynomial.divMonomial_monomial_mul]
   have hcongr : ∀ (a b : MvPolynomial ι R)
-      (ha : a ∈ natShift (polynomialGrading ι R) d (m • γ'.degree))
-      (hb : b ∈ natShift (polynomialGrading ι R) d (m • γ'.degree)), a = b →
-      DegreeZeroLocalization.awayMk (𝓜 := natShift (polynomialGrading ι R) d)
+      (ha : a ∈ 𝓜 (m • γ'.degree))
+      (hb : b ∈ 𝓜 (m • γ'.degree)), a = b →
+      DegreeZeroLocalization.awayMk (𝓜 := 𝓜)
           (monomial_one_mem_polynomialGrading (R := R) γ') m a ha =
-        DegreeZeroLocalization.awayMk (𝓜 := natShift (polynomialGrading ι R) d)
+        DegreeZeroLocalization.awayMk (𝓜 := 𝓜)
           (monomial_one_mem_polynomialGrading (R := R) γ') m b hb := by
     rintro a b ha hb rfl; rfl
   exact hcongr _ _ _ hq hnum
@@ -507,25 +535,27 @@ set_option maxHeartbeats 800000 in
 /-- **The sign projection is additive.** Align the two fractions at a common denominator
 (`exists_awayMk_pair`), where the projection is division of the numerator by a fixed monomial
 (`signProjection_awayMk`), and division by a monomial is additive (`add_divMonomial`). -/
-theorem signProjection_add [IsDomain R] {γ γ' : ι →₀ ℕ} {i₀ : ι} {c : ℕ}
-    (hγ : γ = Finsupp.single i₀ c + γ') (hγ' : γ' i₀ = 0) (d : ℕ)
+theorem signProjection_add [IsDomain R] (h𝓜 : IsPolynomialTwist 𝓜 d)
+    {γ γ' : ι →₀ ℕ} {i₀ : ι} {c : ℕ}
+    (hγ : γ = Finsupp.single i₀ c + γ') (hγ' : γ' i₀ = 0)
     (z₁ z₂ : DegreeZeroLocalization (polynomialGrading ι R)
-      (natShift (polynomialGrading ι R) d) (.powers (MvPolynomial.monomial γ (1 : R)))) :
-    signProjection hγ d (z₁ + z₂) = signProjection hγ d z₁ + signProjection hγ d z₂ := by
+      (𝓜) (.powers (MvPolynomial.monomial γ (1 : R)))) :
+    signProjection h𝓜 hγ (z₁ + z₂) = signProjection h𝓜 hγ z₁ + signProjection h𝓜 hγ z₂ := by
   obtain ⟨m, p₁, p₂, hp₁, hp₂, rfl, rfl⟩ :=
     DegreeZeroLocalization.exists_awayMk_pair
       (monomial_one_mem_polynomialGrading (R := R) γ) (monomial_one_pow_ne_zero γ) z₁ z₂
   rw [← DegreeZeroLocalization.awayMk_add
       (monomial_one_mem_polynomialGrading (R := R) γ) m p₁ p₂ hp₁ hp₂,
-    signProjection_awayMk hγ hγ', signProjection_awayMk hγ hγ', signProjection_awayMk hγ hγ',
+    signProjection_awayMk h𝓜 hγ hγ', signProjection_awayMk h𝓜 hγ hγ',
+    signProjection_awayMk h𝓜 hγ hγ',
     ← DegreeZeroLocalization.awayMk_add (monomial_one_mem_polynomialGrading (R := R) γ') m _ _
-      (divMonomial_mem_natShift hγ hp₁) (divMonomial_mem_natShift hγ hp₂)]
+      (h𝓜.divMonomial_mem hγ hp₁) (h𝓜.divMonomial_mem hγ hp₂)]
   have hcongr : ∀ (a b : MvPolynomial ι R)
-      (ha : a ∈ natShift (polynomialGrading ι R) d (m • γ'.degree))
-      (hb : b ∈ natShift (polynomialGrading ι R) d (m • γ'.degree)), a = b →
-      DegreeZeroLocalization.awayMk (𝓜 := natShift (polynomialGrading ι R) d)
+      (ha : a ∈ 𝓜 (m • γ'.degree))
+      (hb : b ∈ 𝓜 (m • γ'.degree)), a = b →
+      DegreeZeroLocalization.awayMk (𝓜 := 𝓜)
           (monomial_one_mem_polynomialGrading (R := R) γ') m a ha =
-        DegreeZeroLocalization.awayMk (𝓜 := natShift (polynomialGrading ι R) d)
+        DegreeZeroLocalization.awayMk (𝓜 := 𝓜)
           (monomial_one_mem_polynomialGrading (R := R) γ') m b hb := by
     rintro a b ha hb rfl; rfl
   exact hcongr _ _ _ _ (MvPolynomial.add_divMonomial p₁ p₂ _)
@@ -534,22 +564,24 @@ theorem signProjection_add [IsDomain R] {γ γ' : ι →₀ ℕ} {i₀ : ι} {c 
 costs — see `signProjection` — so the bundled form carries it. `map_zero` comes with the
 bundling; callers should reach equations through `signProjectionHom_apply` and then
 `signProjection_awayMk`. -/
-noncomputable def signProjectionHom [IsDomain R] {γ γ' : ι →₀ ℕ} {i₀ : ι} {c : ℕ}
-    (hγ : γ = Finsupp.single i₀ c + γ') (hγ' : γ' i₀ = 0) (d : ℕ) :
+noncomputable def signProjectionHom [IsDomain R] (h𝓜 : IsPolynomialTwist 𝓜 d)
+    {γ γ' : ι →₀ ℕ} {i₀ : ι} {c : ℕ}
+    (hγ : γ = Finsupp.single i₀ c + γ') (hγ' : γ' i₀ = 0) :
     DegreeZeroLocalization (polynomialGrading ι R)
-        (natShift (polynomialGrading ι R) d)
+        (𝓜)
         (.powers (MvPolynomial.monomial γ (1 : R))) →+
       DegreeZeroLocalization (polynomialGrading ι R)
-        (natShift (polynomialGrading ι R) d)
+        (𝓜)
         (.powers (MvPolynomial.monomial γ' (1 : R))) :=
-  AddMonoidHom.mk' (signProjection hγ d) (signProjection_add hγ hγ' d)
+  AddMonoidHom.mk' (signProjection h𝓜 hγ) (signProjection_add h𝓜 hγ hγ')
 
 @[simp]
-theorem signProjectionHom_apply [IsDomain R] {γ γ' : ι →₀ ℕ} {i₀ : ι} {c : ℕ}
-    (hγ : γ = Finsupp.single i₀ c + γ') (hγ' : γ' i₀ = 0) (d : ℕ)
+theorem signProjectionHom_apply [IsDomain R] (h𝓜 : IsPolynomialTwist 𝓜 d)
+    {γ γ' : ι →₀ ℕ} {i₀ : ι} {c : ℕ}
+    (hγ : γ = Finsupp.single i₀ c + γ') (hγ' : γ' i₀ = 0)
     (z : DegreeZeroLocalization (polynomialGrading ι R)
-      (natShift (polynomialGrading ι R) d) (.powers (MvPolynomial.monomial γ (1 : R)))) :
-    signProjectionHom hγ hγ' d z = signProjection hγ d z :=
+      (𝓜) (.powers (MvPolynomial.monomial γ (1 : R)))) :
+    signProjectionHom h𝓜 hγ hγ' z = signProjection h𝓜 hγ z :=
   rfl
 
 /-! ## The projection commutes with the remaining faces
@@ -566,24 +598,22 @@ projection on the face side must not invert `X_{i₀}`, which encodes both `e �
 is the retracted one) and the well-definedness hypothesis of each projection. The unrestricted
 square with `e = i₀` is false, and no statement of it appears. -/
 
+omit [AddSubgroupClass σM (MvPolynomial ι R)]
+  [SetLike.GradedSMul (polynomialGrading ι R) 𝓜] in
 /-- Multiplying a numerator by `(X_e^{c'})ᵐ` raises its graded piece by `m·c'` and keeps the
 twist. This is the membership fact the face side of the projection square feeds
 `laurentFace_awayMk`, stated once because both columns of the square need it. -/
-theorem monomial_single_pow_smul_mem {γ : ι →₀ ℕ} {e : ι} {c' : ℕ} {d m : ℕ}
-    {p : MvPolynomial ι R}
-    (hp : p ∈ natShift (polynomialGrading ι R) d (m • γ.degree)) :
+theorem monomial_single_pow_smul_mem (h𝓜 : IsPolynomialTwist 𝓜 d)
+    {γ : ι →₀ ℕ} {e : ι} {c' : ℕ} {m : ℕ} {p : MvPolynomial ι R}
+    (hp : p ∈ 𝓜 (m • γ.degree)) :
     (MvPolynomial.monomial (Finsupp.single e c') (1 : R)) ^ m • p ∈
-      natShift (polynomialGrading ι R) d (m • (c' + γ.degree)) := by
+      𝓜 (m • (c' + γ.degree)) := by
   have h1 : ((MvPolynomial.monomial (Finsupp.single e c') (1 : R)) ^ m).IsHomogeneous
       (m * c') := by
     rw [monomial_one_pow, Finsupp.smul_single, smul_eq_mul]
     exact MvPolynomial.isHomogeneous_monomial 1 (by rw [Finsupp.degree_single])
-  have h2 : p.IsHomogeneous (m • γ.degree + d) := hp
-  have h3 := h1.mul h2
-  have hd : m * c' + (m • γ.degree + d) = m • (c' + γ.degree) + d := by
-    simp only [smul_eq_mul]; ring
-  rw [hd] at h3
-  exact h3
+  rw [smul_eq_mul]
+  exact h𝓜.mul_mem_of_isHomogeneous h1 (by simp only [smul_eq_mul]; ring) hp
 
 set_option maxHeartbeats 1200000 in
 /-- **The projection square.** Away from the retracted face, the sign projection commutes with
@@ -597,33 +627,34 @@ forces `X_e ≠ X_{i₀}` unless `c' = 0`, which is exactly the disjointness
 `divMonomial_monomial_mul_comm` needs to pull the face's monomial through the projection's
 division. The unrestricted square at `e = i₀` is false — that face is the retraction
 `signProjection_laurentFace`, not this square. -/
-theorem signProjection_laurentFace_comm [IsDomain R] {γ γ' δ δ' : ι →₀ ℕ} {i₀ e : ι}
+theorem signProjection_laurentFace_comm [IsDomain R] (h𝓜 : IsPolynomialTwist 𝓜 d)
+    {γ γ' δ δ' : ι →₀ ℕ} {i₀ e : ι}
     {c c' : ℕ} (hγ : γ = Finsupp.single i₀ c + γ') (hγ' : γ' i₀ = 0)
     (hδγ : δ = Finsupp.single e c' + γ) (hδγ' : δ' = Finsupp.single e c' + γ')
-    (hδsplit : δ = Finsupp.single i₀ c + δ') (hδ'₀ : δ' i₀ = 0) (d : ℕ)
+    (hδsplit : δ = Finsupp.single i₀ c + δ') (hδ'₀ : δ' i₀ = 0)
     (z : DegreeZeroLocalization (polynomialGrading ι R)
-      (natShift (polynomialGrading ι R) d) (.powers (MvPolynomial.monomial γ (1 : R)))) :
-    signProjection hδsplit d (laurentFace hδγ d z) =
-      laurentFace hδγ' d (signProjection hγ d z) := by
+      (𝓜) (.powers (MvPolynomial.monomial γ (1 : R)))) :
+    signProjection h𝓜 hδsplit (laurentFace 𝓜 hδγ z) =
+      laurentFace 𝓜 hδγ' (signProjection h𝓜 hγ z) := by
   obtain ⟨m, p, hp, rfl⟩ := DegreeZeroLocalization.exists_awayMk
     (monomial_one_mem_polynomialGrading (R := R) γ) (monomial_one_pow_ne_zero γ) z
   have hdegδ : δ.degree = c' + γ.degree := by rw [hδγ, map_add, Finsupp.degree_single]
   have hdegδ' : δ'.degree = c' + γ'.degree := by rw [hδγ', map_add, Finsupp.degree_single]
   have hres : (MvPolynomial.monomial (Finsupp.single e c') (1 : R)) ^ m • p ∈
-      natShift (polynomialGrading ι R) d (m • (c' + γ.degree)) :=
-    monomial_single_pow_smul_mem hp
+      𝓜 (m • (c' + γ.degree)) :=
+    monomial_single_pow_smul_mem h𝓜 hp
   have hresδ : (MvPolynomial.monomial (Finsupp.single e c') (1 : R)) ^ m • p ∈
-      natShift (polynomialGrading ι R) d (m • δ.degree) := by rw [hdegδ]; exact hres
+      𝓜 (m • δ.degree) := by rw [hdegδ]; exact hres
   have hres' : (MvPolynomial.monomial (Finsupp.single e c') (1 : R)) ^ m •
       MvPolynomial.divMonomial p (Finsupp.single i₀ (m * c)) ∈
-      natShift (polynomialGrading ι R) d (m • (c' + γ'.degree)) :=
-    monomial_single_pow_smul_mem (divMonomial_mem_natShift hγ hp)
+      𝓜 (m • (c' + γ'.degree)) :=
+    monomial_single_pow_smul_mem h𝓜 (h𝓜.divMonomial_mem hγ hp)
   rw [laurentFace_awayMk hδγ hp hres,
     DegreeZeroLocalization.awayMk_deg_congr hdegδ.symm (monomial_mem_add_degree hδγ)
       (monomial_one_mem_polynomialGrading (R := R) δ) m _ hres hresδ,
-    signProjection_awayMk hδsplit hδ'₀,
-    signProjection_awayMk hγ hγ',
-    laurentFace_awayMk hδγ' (divMonomial_mem_natShift hγ hp) hres',
+    signProjection_awayMk h𝓜 hδsplit hδ'₀,
+    signProjection_awayMk h𝓜 hγ hγ',
+    laurentFace_awayMk hδγ' (h𝓜.divMonomial_mem hγ hp) hres',
     DegreeZeroLocalization.awayMk_deg_congr hdegδ'.symm (monomial_mem_add_degree hδγ')
       (monomial_one_mem_polynomialGrading (R := R) δ') m _ hres'
       (by rw [hdegδ']; exact hres')]
@@ -654,11 +685,11 @@ theorem signProjection_laurentFace_comm [IsDomain R] {γ γ' δ δ' : ι →₀ 
         MvPolynomial.divMonomial p (Finsupp.single i₀ (m * c)) := by
     rw [hmono, smul_eq_mul, smul_eq_mul, divMonomial_monomial_mul_comm hdisj]
   have hgen : ∀ (a b : MvPolynomial ι R)
-      (ha : a ∈ natShift (polynomialGrading ι R) d (m • δ'.degree))
-      (hb : b ∈ natShift (polynomialGrading ι R) d (m • δ'.degree)), a = b →
-      DegreeZeroLocalization.awayMk (𝓜 := natShift (polynomialGrading ι R) d)
+      (ha : a ∈ 𝓜 (m • δ'.degree))
+      (hb : b ∈ 𝓜 (m • δ'.degree)), a = b →
+      DegreeZeroLocalization.awayMk (𝓜 := 𝓜)
           (monomial_one_mem_polynomialGrading (R := R) δ') m a ha =
-        DegreeZeroLocalization.awayMk (𝓜 := natShift (polynomialGrading ι R) d)
+        DegreeZeroLocalization.awayMk (𝓜 := 𝓜)
           (monomial_one_mem_polynomialGrading (R := R) δ') m b hb := by
     rintro a b ha hb rfl; rfl
   exact hgen _ _ _ _ hnum

@@ -86,6 +86,12 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 -- signs behave differently: a negative twist can put the numerator's degree below m * c, and then
 -- the quotient is zero rather than a numerator of lower degree.
 #print axioms AlgebraicGeometry.Proj.IsPolynomialTwist.divMonomial_mem
+-- The other two readings the port needs: multiplying a numerator by a homogeneous factor, and
+-- filtering it to one block. Both are the same case split -- the numerator may be zero in a
+-- degree the twist names no graded piece for -- where the nonnegative versions read membership
+-- as homogeneity directly.
+#print axioms AlgebraicGeometry.Proj.IsPolynomialTwist.mul_mem_of_isHomogeneous
+#print axioms AlgebraicGeometry.Proj.IsPolynomialTwist.laurentFilter_mem
 #print axioms AlgebraicGeometry.Proj.degree_laurentExponent
 #print axioms AlgebraicGeometry.Proj.laurentExponent_nonneg_of_apply_eq_zero
 #print axioms AlgebraicGeometry.Proj.monomial_one_mem_polynomialGrading

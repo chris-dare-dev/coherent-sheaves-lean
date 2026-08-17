@@ -82,10 +82,10 @@ theorem blockProj_eq_zero_of_forall_mem [IsDomain R] (j₀ : ι) {F : Finset ι}
     (hF : ∀ j : ι, j ∈ F) (γ : ι →₀ ℕ) (d : ℕ)
     (z : DegreeZeroLocalization (polynomialGrading ι R)
       (natShift (polynomialGrading ι R) d) (.powers (MvPolynomial.monomial γ (1 : R)))) :
-    blockProj γ F d z = 0 := by
+    blockProj (isPolynomialTwist_natShift (R := R) d) γ F z = 0 := by
   obtain ⟨m, p, hp, rfl⟩ := DegreeZeroLocalization.exists_awayMk
     (monomial_one_mem_polynomialGrading (R := R) γ) (monomial_one_pow_ne_zero γ) z
-  rw [blockProj_awayMk γ F]
+  rw [blockProj_awayMk (isPolynomialTwist_natShift (R := R) d) γ F]
   have hcongr : ∀ (a : MvPolynomial ι R)
       (ha : a ∈ natShift (polynomialGrading ι R) d (m • γ.degree)), a = 0 →
       DegreeZeroLocalization.awayMk (𝓜 := natShift (polynomialGrading ι R) d)

@@ -187,7 +187,7 @@ noncomputable def cechTermEquiv (d : ℕ) {n : ℕ} (x : Fin (n + 1) → ι) :
 theorem cechTermEquiv_cechFace (d : ℕ) {n : ℕ} (x : Fin (n + 2) → ι) (j : Fin (n + 2))
     (z : polynomialVariableCechTerm ι k d n (x ∘ j.succAbove)) :
     cechTermEquiv ι k d x (polynomialVariableCechFace ι k d x j z) =
-      laurentFace (tupleExponent_succAbove x j) d
+      laurentFace (natShift (polynomialGrading ι k) d) (tupleExponent_succAbove x j)
         (cechTermEquiv ι k d (x ∘ j.succAbove) z) :=
   DegreeZeroLocalization.powersCongr_faceMap
     (tupleDenominator_eq ι k (x ∘ j.succAbove)) (tupleDenominator_eq ι k x) rfl
@@ -202,25 +202,25 @@ denominator comparison. -/
 noncomputable def cechBlockProj (d : ℕ) {n : ℕ} (x : Fin (n + 1) → ι) (F : Finset ι) :
     polynomialVariableCechTerm ι k d n x →+ polynomialVariableCechTerm ι k d n x :=
   ((cechTermEquiv ι k d x).symm.toAddMonoidHom.comp
-    (blockProjHom (tupleExponent ι x) F d)).comp
+    (blockProjHom (isPolynomialTwist_natShift (R := k) d) (tupleExponent ι x) F)).comp
     (cechTermEquiv ι k d x).toAddMonoidHom
 
 theorem cechBlockProj_apply (d : ℕ) {n : ℕ} (x : Fin (n + 1) → ι) (F : Finset ι)
     (z : polynomialVariableCechTerm ι k d n x) :
     cechBlockProj ι k d x F z =
       (cechTermEquiv ι k d x).symm
-        (blockProj (tupleExponent ι x) F d (cechTermEquiv ι k d x z)) :=
+        (blockProj (isPolynomialTwist_natShift (R := k) d) (tupleExponent ι x) F (cechTermEquiv ι k d x z)) :=
   rfl
 
 /-- The finitely many blocks of a tuple exhaust its term. -/
 theorem sum_cechBlockProj (d : ℕ) {n : ℕ} (x : Fin (n + 1) → ι)
     (z : polynomialVariableCechTerm ι k d n x) :
     ∑ F ∈ (tupleExponent ι x).support.powerset, cechBlockProj ι k d x F z = z := by
-  have h := sum_blockProj (tupleExponent ι x) d (cechTermEquiv ι k d x z)
+  have h := sum_blockProj (isPolynomialTwist_natShift (R := k) d) (tupleExponent ι x) (cechTermEquiv ι k d x z)
   calc ∑ F ∈ (tupleExponent ι x).support.powerset, cechBlockProj ι k d x F z
       = (cechTermEquiv ι k d x).symm
           (∑ F ∈ (tupleExponent ι x).support.powerset,
-            blockProj (tupleExponent ι x) F d (cechTermEquiv ι k d x z)) := by
+            blockProj (isPolynomialTwist_natShift (R := k) d) (tupleExponent ι x) F (cechTermEquiv ι k d x z)) := by
         rw [map_sum]
         rfl
     _ = z := by rw [h, AddEquiv.symm_apply_apply]
@@ -230,7 +230,7 @@ theorem cechBlockProj_eq_zero_of_not_subset (d : ℕ) {n : ℕ} (x : Fin (n + 1)
     {F : Finset ι} (h : ¬ F ⊆ (tupleExponent ι x).support)
     (z : polynomialVariableCechTerm ι k d n x) :
     cechBlockProj ι k d x F z = 0 := by
-  rw [cechBlockProj_apply, blockProj_eq_zero_of_not_subset h, map_zero]
+  rw [cechBlockProj_apply, blockProj_eq_zero_of_not_subset (isPolynomialTwist_natShift (R := k) d) h, map_zero]
 
 /-- **The Čech faces commute with the block projections.** The transported form of
 `laurentFace_blockProj`: the differential preserves every block. -/
@@ -241,7 +241,7 @@ theorem cechFace_cechBlockProj (d : ℕ) {n : ℕ} (x : Fin (n + 2) → ι) (j :
   apply (cechTermEquiv ι k d x).injective
   rw [cechTermEquiv_cechFace, cechBlockProj_apply, cechBlockProj_apply,
     AddEquiv.apply_symm_apply, cechTermEquiv_cechFace,
-    laurentFace_blockProj (tupleExponent_succAbove x j) F d,
+    laurentFace_blockProj (isPolynomialTwist_natShift (R := k) d) (tupleExponent_succAbove x j) F,
     AddEquiv.apply_symm_apply]
 
 /-! ## The homotopy map on Čech terms -/
@@ -252,14 +252,14 @@ noncomputable def cechHomotopy (d : ℕ) (i₀ : ι) {n : ℕ} (y : Fin (n + 1) 
     polynomialVariableCechTerm ι k d (n + 1) (Fin.cons i₀ y) →+
       polynomialVariableCechTerm ι k d n y :=
   ((cechTermEquiv ι k d y).symm.toAddMonoidHom.comp
-    (laurentHomotopy i₀ (tupleExponent ι y) d)).comp
+    (laurentHomotopy (isPolynomialTwist_natShift (R := k) d) i₀ (tupleExponent ι y))).comp
     (DegreeZeroLocalization.powersCongr (tupleDenominator_cons_eq k i₀ y)).toAddMonoidHom
 
 theorem cechHomotopy_apply (d : ℕ) (i₀ : ι) {n : ℕ} (y : Fin (n + 1) → ι)
     (z : polynomialVariableCechTerm ι k d (n + 1) (Fin.cons i₀ y)) :
     cechHomotopy ι k d i₀ y z =
       (cechTermEquiv ι k d y).symm
-        (laurentHomotopy i₀ (tupleExponent ι y) d
+        (laurentHomotopy (isPolynomialTwist_natShift (R := k) d) i₀ (tupleExponent ι y)
           (DegreeZeroLocalization.powersCongr (tupleDenominator_cons_eq k i₀ y) z)) :=
   rfl
 
@@ -310,10 +310,10 @@ theorem laurentHomotopy_laurentFace_comm' (i₀ e : ι) {γ₀ γx : ι →₀ �
     (z : DegreeZeroLocalization (polynomialGrading ι k)
       (natShift (polynomialGrading ι k) d)
       (.powers (MvPolynomial.monomial (Finsupp.single i₀ 1 + γ₀) (1 : k)))) :
-    laurentHomotopy i₀ γx d (laurentFace htop d z) =
-      laurentFace hbot d (laurentHomotopy i₀ γ₀ d z) := by
+    laurentHomotopy (isPolynomialTwist_natShift (R := k) d) i₀ γx (laurentFace (natShift (polynomialGrading ι k) d) htop z) =
+      laurentFace (natShift (polynomialGrading ι k) d) hbot (laurentHomotopy (isPolynomialTwist_natShift (R := k) d) i₀ γ₀ z) := by
   subst hγx
-  exact laurentHomotopy_laurentFace_comm i₀ e γ₀ d htop hbot z
+  exact laurentHomotopy_laurentFace_comm (isPolynomialTwist_natShift (R := k) d) i₀ e γ₀ htop hbot z
 
 variable (ι k)
 
@@ -334,8 +334,8 @@ theorem cechHomotopy_cechFace_zero (d : ℕ) (i₀ : ι) {F : Finset ι} (hi₀ 
       (polynomialVariableCechFace ι k d (Fin.cons i₀ y) 0
         ((cechTermCongr ι k d (cons_comp_succAbove_zero i₀ y)).symm
           (cechBlockProj ι k d y F z))) =
-      laurentFace (rfl : Finsupp.single i₀ 1 + tupleExponent ι y =
-          Finsupp.single i₀ 1 + tupleExponent ι y) d
+      laurentFace (natShift (polynomialGrading ι k) d) (rfl : Finsupp.single i₀ 1 + tupleExponent ι y =
+          Finsupp.single i₀ 1 + tupleExponent ι y)
         (DegreeZeroLocalization.powersCongr
           ((congrArg (polynomialVariableCechDenominator ι k)
             (cons_comp_succAbove_zero i₀ y)).trans (tupleDenominator_eq ι k y))
@@ -350,13 +350,13 @@ theorem cechHomotopy_cechFace_zero (d : ℕ) (i₀ : ι) {F : Finset ι} (hi₀ 
     DegreeZeroLocalization.powersCongr_symm_trans _ _ (tupleDenominator_eq ι k y),
     cechBlockProj_apply, DegreeZeroLocalization.powersCongr]
   show (cechTermEquiv ι k d y).symm
-      (laurentHomotopy i₀ (tupleExponent ι y) d
-        (laurentFace rfl d
+      (laurentHomotopy (isPolynomialTwist_natShift (R := k) d) i₀ (tupleExponent ι y)
+        (laurentFace (natShift (polynomialGrading ι k) d) rfl
           ((cechTermEquiv ι k d y)
             ((cechTermEquiv ι k d y).symm
-              (blockProj (tupleExponent ι y) F d (cechTermEquiv ι k d y z)))))) = _
+              (blockProj (isPolynomialTwist_natShift (R := k) d) (tupleExponent ι y) F (cechTermEquiv ι k d y z)))))) = _
   rw [AddEquiv.apply_symm_apply,
-    laurentHomotopy_laurentFace_blockProj hi₀ (tupleExponent ι y) d
+    laurentHomotopy_laurentFace_blockProj (isPolynomialTwist_natShift (R := k) d) hi₀ (tupleExponent ι y)
       (cechTermEquiv ι k d y z)]
 
 set_option maxHeartbeats 800000 in
@@ -378,7 +378,7 @@ theorem cechHomotopy_cechFace_succ (d : ℕ) (i₀ : ι) {n : ℕ} (x : Fin (n +
   have hface : DegreeZeroLocalization.powersCongr (tupleDenominator_cons_eq k i₀ x)
       (polynomialVariableCechFace ι k d (Fin.cons i₀ x) j.succ
         ((cechTermCongr ι k d (cons_comp_succAbove_succ i₀ x j)).symm z)) =
-      laurentFace hsplitTop d
+      laurentFace (natShift (polynomialGrading ι k) d) hsplitTop
         (DegreeZeroLocalization.powersCongr
           ((congrArg (polynomialVariableCechDenominator ι k)
             (cons_comp_succAbove_succ i₀ x j)).trans
@@ -394,7 +394,7 @@ theorem cechHomotopy_cechFace_succ (d : ℕ) (i₀ : ι) {n : ℕ} (x : Fin (n +
       (tupleDenominator_cons_eq k i₀ (x ∘ j.succAbove)),
     laurentHomotopy_laurentFace_comm' i₀ (x j)
       ((tupleExponent_succAbove x j).trans (add_comm _ _)) hsplitTop
-      (tupleExponent_succAbove x j) d]
+      (tupleExponent_succAbove x j)]
   apply (cechTermEquiv ι k d x).injective
   rw [AddEquiv.apply_symm_apply, cechTermEquiv_cechFace, cechHomotopy_apply,
     AddEquiv.apply_symm_apply]
