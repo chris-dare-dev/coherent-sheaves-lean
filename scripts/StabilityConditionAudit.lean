@@ -1076,6 +1076,8 @@ open CategoryTheory.Triangulated
 #print axioms CategoryTheory.IsCompactObject.coproductComparisonIso.congr_simp
 #print axioms CategoryTheory.IsCompactObject.map_ι_coproductComparisonIso_hom
 #print axioms CategoryTheory.IsCompactObject.map_ι_coproductComparisonIso_hom_assoc
+#print axioms CategoryTheory.IsCompactObject.exists_finite_sum
+#print axioms CategoryTheory.IsCompactObject.shift
 #print axioms CategoryTheory.ObjectProperty.compactObjects
 #print axioms CategoryTheory.ObjectProperty.isCompactObject_of_iso
 #print axioms CategoryTheory.ObjectProperty.coprodClosure
@@ -1107,6 +1109,20 @@ open CategoryTheory.Triangulated
 #print axioms CategoryTheory.Triangulated.MappingTelescope.map
 #print axioms CategoryTheory.Triangulated.MappingTelescope.ι_map
 #print axioms CategoryTheory.Triangulated.MappingTelescope.ι_map_assoc
+#print axioms CategoryTheory.Triangulated.MappingTelescope.projection
+#print axioms CategoryTheory.Triangulated.MappingTelescope.ι_projection
+#print axioms CategoryTheory.Triangulated.MappingTelescope.ι_projection_self
+#print axioms CategoryTheory.Triangulated.MappingTelescope.shiftMap_projection_zero
+#print axioms CategoryTheory.Triangulated.MappingTelescope.shiftMap_projection_succ
+#print axioms CategoryTheory.Triangulated.MappingTelescope.map_projection_zero
+#print axioms CategoryTheory.Triangulated.MappingTelescope.map_projection_succ
+#print axioms CategoryTheory.Triangulated.MappingTelescope.comp_projection_eq_zero_of_comp_map_eq_zero
+#print axioms CategoryTheory.Triangulated.MappingTelescope.eq_zero_of_comp_map_eq_zero
+#print axioms CategoryTheory.Triangulated.MappingTelescope.hom_map_injective
+#print axioms CategoryTheory.Triangulated.MappingTelescope.transition
+#print axioms CategoryTheory.Triangulated.MappingTelescope.transition.congr_simp
+#print axioms CategoryTheory.Triangulated.MappingTelescope.transition_self
+#print axioms CategoryTheory.Triangulated.MappingTelescope.transition_succ
 #print axioms CategoryTheory.Triangulated.MappingTelescope.Data
 #print axioms CategoryTheory.Triangulated.MappingTelescope.Data.mk.inj
 #print axioms CategoryTheory.Triangulated.MappingTelescope.Data.mk.sizeOf_spec
@@ -1117,6 +1133,14 @@ open CategoryTheory.Triangulated
 #print axioms CategoryTheory.Triangulated.MappingTelescope.chosen
 #print axioms CategoryTheory.Triangulated.MappingTelescope.Data.exists_desc
 #print axioms CategoryTheory.Triangulated.MappingTelescope.Data.exists_desc_comp_ι
+#print axioms CategoryTheory.Triangulated.MappingTelescope.Data.inclusion
+#print axioms CategoryTheory.Triangulated.MappingTelescope.Data.f_comp_inclusion
+#print axioms CategoryTheory.Triangulated.MappingTelescope.Data.transition_comp_inclusion
+#print axioms CategoryTheory.Triangulated.MappingTelescope.Data.comp_connecting_eq_zero
+#print axioms CategoryTheory.Triangulated.MappingTelescope.Data.exists_lift_coproduct
+#print axioms CategoryTheory.Triangulated.MappingTelescope.Data.exists_factor_stage
+#print axioms CategoryTheory.Triangulated.MappingTelescope.Data.exists_transition_comp_eq_zero
+#print axioms CategoryTheory.Triangulated.MappingTelescope.Data.exists_transition_comp_eq
 #print axioms CategoryTheory.Triangulated.TStructure.ApproximationMap
 #print axioms CategoryTheory.Triangulated.TStructure.ApproximationMap.left
 #print axioms CategoryTheory.Triangulated.TStructure.ApproximationMap.left_mem
@@ -1173,6 +1197,19 @@ open CategoryTheory.Triangulated
 /-! ## ForMathlib — results Mathlib lacks at the pin -/
 
 #print axioms Matrix.polarFactor
+
+-- `R`-linearity of the opposite category and of the opposite shift (#469).
+-- Each is the linear counterpart of an additive declaration Mathlib already
+-- has; `shiftFunctorOppositeLinear` is DERIVED from linearity of the shift on
+-- `C`, which stays a hypothesis because additivity does not imply linearity.
+#print axioms CategoryTheory.homModuleOpposite
+#print axioms CategoryTheory.linearOpposite
+#print axioms CategoryTheory.unop_smul
+#print axioms CategoryTheory.op_smul
+#print axioms CategoryTheory.Functor.op_linear
+#print axioms CategoryTheory.shiftFunctorOppositeLinear
+#print axioms CategoryTheory.ShiftedHom.opEquiv_symm_smul
+#print axioms CategoryTheory.ShiftedHom.opEquiv'_symm_smul
 
 -- Repository-owned heart results used by weak-tilting cohomology.
 #print axioms CategoryTheory.ObjectProperty.FullSubcategory.isZero_of_obj_isZero
@@ -3814,13 +3851,22 @@ consequence applies to `KernelAutoequivalence.id`.
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.UnitKernelData.toDualKernel
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Symmetry.UnitKernelData.toDualKernel_dual
 
-/-! ## The k-linear Yoneda functor is homological
+/-! ## The k-linear Yoneda functor is homological, and its shift sequence
 
 The `ModuleCat k` counterpart of Mathlib's `preadditiveYoneda` instance, and the
 one a `k`-dimension count can use — `finrank` is not statable in `AddCommGrpCat`.
-`ShiftSequence ℤ` is NOT here; see the module docstring for the three Mathlib
-gaps that block it.
+
+`ShiftSequence ℤ` is here as of #469, so the long exact Hom sequence is
+available. A clean axiom list on the three `homologySequence_exact` lemmas says
+they follow from Mathlib's generic homology-sequence API once the two instances
+are supplied — it does NOT say any Euler form exists. That still needs
+finiteness data nothing here provides.
 -/
 
 #print axioms CategoryTheory.Triangulated.linearYoneda_isHomological
 #print axioms CategoryTheory.Triangulated.linearYoneda_map_distinguished
+#print axioms CategoryTheory.Triangulated.linearYonedaShiftSequence
+#print axioms CategoryTheory.Triangulated.linearYoneda_homologySequence_exact₁
+#print axioms CategoryTheory.Triangulated.linearYoneda_homologySequence_exact₂
+#print axioms CategoryTheory.Triangulated.linearYoneda_homologySequence_exact₃
+
