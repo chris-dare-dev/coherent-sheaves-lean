@@ -4046,5 +4046,21 @@ results require `HomFiniteBounded`.
 #print axioms CategoryTheory.Triangulated.chiK₀
 #print axioms CategoryTheory.Triangulated.chiK₀_of
 #print axioms CategoryTheory.Triangulated.chiK₀_of_of
+#print axioms CategoryTheory.Triangulated.chiK₀.congr_simp
+
+/-! ## A fully faithful k-linear functor preserves the Euler form
+
+Step 6 of the Hom-built Euler form. The content is the term-by-term match of
+`Hom(X, Y[i])` with `Hom(PhiX, PhiY[i])`; `k`-linearity is what makes the
+matched summands equal as k-DIMENSIONS, which additivity alone would not give.
+A clean axiom list says preservation follows from full faithfulness plus
+k-linearity plus shift-compatibility, and from nothing else -- no Serre duality
+and no geometry.
+-/
+
+#print axioms CategoryTheory.Triangulated.homLinearEquivOfFullyFaithful
+#print axioms CategoryTheory.Triangulated.finrank_hom_shift_map
+#print axioms CategoryTheory.Triangulated.chiHom_map
+#print axioms CategoryTheory.Triangulated.chiK₀_map
 
 
