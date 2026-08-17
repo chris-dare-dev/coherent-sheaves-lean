@@ -138,6 +138,16 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Proj.signProjectionHom_apply
 #print axioms AlgebraicGeometry.Proj.monomial_single_pow_smul_mem
 #print axioms AlgebraicGeometry.Proj.signProjection_laurentFace_comm
+-- The sign projections are commuting idempotents (#491 -> #340). supp gamma is finite for every
+-- Cech denominator, so the block decomposition of the proof plan is assembled from this family
+-- by ordinary idempotent algebra -- no basis and no DirectSum on the localization.
+#print axioms AlgebraicGeometry.Proj.signIdem
+#print axioms AlgebraicGeometry.Proj.signIdem_apply
+#print axioms AlgebraicGeometry.Proj.signIdem_idem
+#print axioms AlgebraicGeometry.Proj.monomial_mul_divMonomial_mem
+#print axioms AlgebraicGeometry.Proj.signIdem_awayMk
+#print axioms AlgebraicGeometry.Proj.divMonomial_idem_comm
+#print axioms AlgebraicGeometry.Proj.signIdem_comm
 -- The block decomposition (#340, step 2). Each away localization is decomposed by the negative
 -- support N(alpha) of the Laurent exponent: laurentFilter selects one block of a numerator,
 -- blockProj descends it to the localization (choice-based, pinned by blockProj_awayMk, same

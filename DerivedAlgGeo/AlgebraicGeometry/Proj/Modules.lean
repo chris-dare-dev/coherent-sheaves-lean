@@ -2,6 +2,7 @@ import DerivedAlgGeo.AlgebraicGeometry.Proj.Modules.AssociatedSheaf
 import DerivedAlgGeo.AlgebraicGeometry.Proj.Modules.Finiteness
 import DerivedAlgGeo.AlgebraicGeometry.Proj.Modules.GradedLocalization
 import DerivedAlgGeo.AlgebraicGeometry.Proj.Modules.LaurentBasis
+import DerivedAlgGeo.AlgebraicGeometry.Proj.Modules.LaurentBlocks
 import DerivedAlgGeo.AlgebraicGeometry.Proj.Modules.LaurentBlock
 import DerivedAlgGeo.AlgebraicGeometry.Proj.Modules.LaurentProjection
 import DerivedAlgGeo.AlgebraicGeometry.Proj.Modules.ProjectiveSpace
