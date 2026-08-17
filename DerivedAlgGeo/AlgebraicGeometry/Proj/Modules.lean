@@ -1,6 +1,7 @@
 import DerivedAlgGeo.AlgebraicGeometry.Proj.Modules.AssociatedSheaf
 import DerivedAlgGeo.AlgebraicGeometry.Proj.Modules.Finiteness
 import DerivedAlgGeo.AlgebraicGeometry.Proj.Modules.GradedLocalization
+import DerivedAlgGeo.AlgebraicGeometry.Proj.Modules.LaurentBasis
 import DerivedAlgGeo.AlgebraicGeometry.Proj.Modules.ProjectiveSpace
 import DerivedAlgGeo.AlgebraicGeometry.Proj.Modules.Shift
 import DerivedAlgGeo.AlgebraicGeometry.Proj.Modules.StructureModule
