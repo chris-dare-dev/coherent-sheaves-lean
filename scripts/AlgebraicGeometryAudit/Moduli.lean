@@ -73,6 +73,21 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.universallyGluableDataZero
 #print axioms AlgebraicGeometry.schemeUniversallyGluableRelativePerfect_zero
 
+/-! ## Pullback of universally-gluable relative-perfect complexes -/
+
+#print axioms AlgebraicGeometry.RelativePerfectPullback
+#print axioms AlgebraicGeometry.RelativePerfectPullback.comparison
+#print axioms AlgebraicGeometry.RelativePerfectPullback.comp
+#print axioms AlgebraicGeometry.RelativePerfectPullback.compExact
+#print axioms AlgebraicGeometry.RelativePerfectPullback.congr
+#print axioms AlgebraicGeometry.RelativePerfectPullback.coreComparison
+#print axioms AlgebraicGeometry.RelativePerfectPullback.coreFunctor
+#print axioms AlgebraicGeometry.RelativePerfectPullback.ambient
+#print axioms AlgebraicGeometry.RelativePerfectPullback.functor
+#print axioms AlgebraicGeometry.RelativePerfectPullback.identity
+#print axioms AlgebraicGeometry.RelativePerfectPullback.mk.inj
+#print axioms AlgebraicGeometry.RelativePerfectPullback.mk.sizeOf_spec
+
 /-! ## Groupoid-valued relative-perfect moduli problem (#518) -/
 
 #print axioms AlgebraicGeometry.RelativePerfectGeometricFiber
@@ -81,12 +96,14 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.RelativePerfectModuliProblem
 #print axioms AlgebraicGeometry.RelativePerfectModuliProblem.ambientComparison
 #print axioms AlgebraicGeometry.RelativePerfectModuliProblem.base
-#print axioms AlgebraicGeometry.RelativePerfectModuliProblem.exactPullback
+#print axioms AlgebraicGeometry.RelativePerfectModuliProblem.exactAmbientComparison
 #print axioms AlgebraicGeometry.RelativePerfectModuliProblem.fiberEquivalence
 #print axioms AlgebraicGeometry.RelativePerfectModuliProblem.mk.inj
 #print axioms AlgebraicGeometry.RelativePerfectModuliProblem.mk.sizeOf_spec
 #print axioms AlgebraicGeometry.RelativePerfectModuliProblem.presheaf
+#print axioms AlgebraicGeometry.RelativePerfectModuliProblem.pullback
 #print axioms AlgebraicGeometry.RelativePerfectModuliProblem.presheaf_obj_isGroupoid
+#print axioms AlgebraicGeometry.RelativePerfectModuliProblem.transitionComparison
 #print axioms AlgebraicGeometry.constantRelativePerfectPresheaf
 #print axioms AlgebraicGeometry.identityBaseChangeDiagram
 #print axioms AlgebraicGeometry.identityRelativePerfectModuliProblem
@@ -96,6 +113,28 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.relativePerfectModuliFiber_nonempty
 #print axioms AlgebraicGeometry.relativePerfectModuliForget
 #print axioms AlgebraicGeometry.relativePerfectZeroObject
+
+/-! ## Relative-perfect moduli on the big Zariski site -/
+
+#print axioms AlgebraicGeometry.RelativePerfectBigZariskiPresheaf
+#print axioms AlgebraicGeometry.RelativePerfectBigZariskiPresheaf.ambientComparison
+#print axioms AlgebraicGeometry.RelativePerfectBigZariskiPresheaf.exactAmbientComparison
+#print axioms AlgebraicGeometry.RelativePerfectBigZariskiPresheaf.fiberEquivalence
+#print axioms AlgebraicGeometry.RelativePerfectBigZariskiPresheaf.fiber_isGroupoid
+#print axioms AlgebraicGeometry.RelativePerfectBigZariskiPresheaf.mk.inj
+#print axioms AlgebraicGeometry.RelativePerfectBigZariskiPresheaf.mk.sizeOf_spec
+#print axioms AlgebraicGeometry.RelativePerfectBigZariskiPresheaf.presheaf
+#print axioms AlgebraicGeometry.RelativePerfectBigZariskiPresheaf.pullback
+#print axioms AlgebraicGeometry.RelativePerfectBigZariskiPresheaf.transitionComparison
+#print axioms AlgebraicGeometry.RelativePerfectBigZariskiStack
+#print axioms AlgebraicGeometry.RelativePerfectBigZariskiStack.cechDescentEquivalence
+#print axioms AlgebraicGeometry.RelativePerfectBigZariskiStack.essSurjToCechDescent
+#print axioms AlgebraicGeometry.RelativePerfectBigZariskiStack.fullyFaithfulToCechDescent
+#print axioms AlgebraicGeometry.RelativePerfectBigZariskiStack.isStack
+#print axioms AlgebraicGeometry.RelativePerfectBigZariskiStack.mk.inj
+#print axioms AlgebraicGeometry.RelativePerfectBigZariskiStack.mk.sizeOf_spec
+#print axioms AlgebraicGeometry.RelativePerfectBigZariskiStack.toRelativePerfectBigZariskiPresheaf
+#print axioms AlgebraicGeometry.RelativePerfectBigZariskiStack.toStackInGroupoids
 
 /-! ## Stacks in groupoids and scheme descent (#523) -/
 

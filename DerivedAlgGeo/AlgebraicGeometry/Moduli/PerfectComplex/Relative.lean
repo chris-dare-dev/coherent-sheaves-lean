@@ -24,10 +24,12 @@ are flat over the base.  The bounds and the representing isomorphism are data,
 not an arbitrary proposition supplied by a caller.
 
 For the same reason, a geometric fiber is computed only from an explicit
-globally flat model.  No left-derived pullback along an arbitrary fiber
-inclusion is installed.  This is enough to define and inhabit the zero model
-and to state fiberwise negative-Ext vanishing honestly; comparison with a
-future general derived-pullback construction remains a separate theorem.
+globally flat model. The repository now has an interface characterizing
+arbitrary pullback by its left-derived universal property, but it does not yet
+construct that interface along arbitrary fiber inclusions. This is enough to
+define and inhabit the zero model and to state fiberwise negative-Ext
+vanishing honestly; comparison with a future K-flat construction remains a
+separate theorem.
 -/
 
 namespace AlgebraicGeometry
@@ -174,9 +176,9 @@ typeclass arguments in the category abbreviation. -/
 abbrev SchemeRelativePerfectCategory {X S : Scheme.{u}} (p : X ⟶ S) :=
   (schemeRelativePerfect p).FullSubcategory
 
-/-- A global stalkwise-flat model used to compute one geometric fiber.  This
-does not install a left-derived pullback functor: it records the precise model
-from which the displayed fiber object is computed. -/
+/-- A global stalkwise-flat model used to compute one geometric fiber. This
+does not inhabit the arbitrary left-derived pullback interface: it records the
+precise model from which the displayed fiber object is computed. -/
 structure GeometricFiberModel {X S : Scheme.{u}} (p : X ⟶ S)
     (E : SchemeQuasicoherentDerivedCategory X) (s : S) where
   /-- A complex representing the total object. -/
@@ -199,7 +201,8 @@ def fiberComplex {X S : Scheme.{u}} {p : X ⟶ S}
 
 /-- The geometric fiber object computed in the ambient derived category.
 No claim identifies the ambient category with `Dqc`; quasi-coherence of this
-object is a separate comparison theorem once general derived pullback exists. -/
+object is a separate comparison theorem once arbitrary left-derived pullback
+has been constructed. -/
 def fiberObject {X S : Scheme.{u}} {p : X ⟶ S}
     {E : SchemeQuasicoherentDerivedCategory X} {s : S}
     (M : GeometricFiberModel p E s) : SchemeDerivedCategory (p.fiber s) :=
