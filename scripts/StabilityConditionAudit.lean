@@ -4115,4 +4115,36 @@ consume that, and it is the composition law (`ConvolutionData`) that needs it.
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.derivedTensorCommShift
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.derivedTensor_isTriangulated
 
+/-! ## Convolution of kernels: the second ledger
+
+INHABITANT-FREE, like the first. Nothing constructs a `HasProjectionFormula`,
+a `HasFlatBaseChange`, or a `HasConvolutionComparison`.
+
+What this ledger buys is that `conv` stops being supplied data: `convKernel` is
+the classical `R(pi_XW)_*(pi_XY^* P (x)^L pi_YW^* Q)` built from functors the
+first ledger already names, so `ConvolutionData` goes from two supplied fields
+to one. The survivor is `compIso` -- Prop. 5.10, a genuine theorem.
+
+The projection formula and flat base change are NAMED BUT NOT CONSUMED. They
+are what a proof of compIso would use; nothing here derives anything from them,
+and a clean axiom list must not be read as progress toward compIso.
+-/
+
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.TripleProductGeometry
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.TripleProductGeometry.mk.inj
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.TripleProductGeometry.mk.sizeOf_spec
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.TripleProductGeometry.triple
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.TripleProductGeometry.πXY
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.TripleProductGeometry.πYW
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.TripleProductGeometry.πXW
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.convKernel
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasProjectionFormula
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasProjectionFormula.iso
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasFlatBaseChange
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasFlatBaseChange.comm
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasFlatBaseChange.iso
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasConvolutionComparison
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasConvolutionComparison.compIso
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.geometricConvolutionData
+
 
