@@ -110,6 +110,7 @@ generations:
   - { rev: 48, at: "2026-08-17", note: "SF8.3 (#519) replaces the caller-selected boundedness switch by an actual geometric predicate: a locally-finite-type, quasi-compact scheme over the base, a universally-gluable relative-perfect universal family in the selected subfunctor, explicit geometric fibers, and coverage up to isomorphism after equality of the actual residue-field base changes. The predicate is monotone under enlarging admitted families and shrinking the target, and adapts directly to Definition 21.15(5). The identity parameter scheme and zero complex give a concrete inhabited model after every locally Noetherian base change. General residue pullback for nonzero families and semistable boundedness remain named inputs to SF8.4 rather than hidden propositions." }
   - { rev: 49, at: "2026-08-17", note: "SF8.4 (#520) introduces actual epimorphic module-sheaf quotient presentations, their commuting morphisms, target functor, and pullback functor; preservation of epimorphisms makes base change a theorem. Representability is never a name: RepresentableQuotientProblem requires a Yoneda isomorphism, and finite-type parameter spaces additionally require the actual structure morphism to be locally of finite type and quasi-compact. Since Mathlib has no general Quot scheme or Grassmannian at this pin, the supported zero-quotient functor is proved represented by the terminal identity scheme, maps to the concrete zero relative-perfect moduli problem, and inhabits SF8.3 boundedness. No nonzero Quot, semistable boundedness, or algebraicity claim is made." }
   - { rev: 50, at: "2026-08-17", note: "SF8.0 (#528) gains its first honest affine realization layer. Mathlib's tilde equivalence transports finite products and an abelian structure to the actual full category of quasi-coherent sheaves on Spec R; its derived category is therefore genuinely triangulated. Derived tilde and Gamma functors and their degreewise cohomology comparisons are constructed. The functors are not called an equivalence until localization-level unit/counit data exist, and no unbounded essential-surjectivity, general-scheme coproduct, bounded-coherent, compact-equals-perfect, generator-closure, or S-linearity statement is claimed." }
+  - { rev: 51, at: "2026-08-17", note: "SF9.2 (#522) begins with an actual algebraic-stack presentation layer. Scheme maps induce pullback-compatible maps of representable big-Zariski stacks whose fibers are represented by scheme fiber products. Representable properties are checked on those actual structure morphisms; representable diagonals use scheme equalizers; and algebraic stacks carry an actual smooth-surjective scheme atlas. Representable stacks, stacks of locally finitely presented schemes, and the positive-dimensional affine-line stack inhabit the interface. The relative-perfect moduli stack, its atlas and diagonal, and its semistable open substack remain to be constructed, so #522 stays open." }
 retired: []
 
 # GitHub milestones are roadmap phases. Epic issues live inside them, and
@@ -518,7 +519,7 @@ items:
     parent: stability-families-m9
     title: "Build algebraic-stack and good-moduli infrastructure"
     status: in_progress
-    summary: "SF9.1 #523 delivers generic stacks in groupoids, effective Čech and morphism descent, equivalence transport, representable-morphism interfaces, and a representable big-Zariski example. Next prove algebraicity only in supported cases (#522), then formalize semistable reduction (#525) and good moduli spaces under explicit hypotheses (#524)."
+    summary: "SF9.1 #523 delivers generic stacks in groupoids, effective Čech and morphism descent, equivalence transport, representable-morphism interfaces, and a representable big-Zariski example. SF9.2 #522 now has its first actual presentation layer: scheme-induced representable morphisms, geometric representable properties, equalizer diagonals, and smooth-surjective atlases, with representable and affine-line cases. The relative-perfect application remains before semistable reduction (#525) and good moduli spaces (#524)."
     priority: must
     size: XL
     tags: [stacks, descent, semistable-reduction, good-moduli]
@@ -541,7 +542,8 @@ items:
     kind: deliverable
     parent: stability-families-e15
     title: "Prove algebraicity for supported relative-perfect moduli stack"
-    status: planned
+    status: in_progress
+    summary: "The reusable algebraicity layer is implemented with actual fiber-product representatives, scheme-morphism properties, representable diagonals, and scheme atlases. Representable stacks and the affine-line stack give inhabited cases. The supported relative-perfect moduli stack still needs arbitrary pullback/descent, an actual atlas and diagonal, and the semistable open-substack compatibility before this deliverable can close."
     priority: must
     size: XL
     tags: [algebraic-stack, relative-perfect]
