@@ -143,6 +143,42 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Proj.signProjectionHom_apply
 #print axioms AlgebraicGeometry.Proj.monomial_single_pow_smul_mem
 #print axioms AlgebraicGeometry.Proj.signProjection_laurentFace_comm
+-- The block decomposition (#340, step 2). Each away localization is decomposed by the negative
+-- support N(alpha) of the Laurent exponent: laurentFilter selects one block of a numerator,
+-- blockProj descends it to the localization (choice-based, pinned by blockProj_awayMk, same
+-- pattern as signProjection), sum_blockProj says the finitely many blocks of gamma.support's
+-- powerset exhaust every element, and laurentFace_blockProj says the Cech faces commute with
+-- every block projection -- the differential preserves N(alpha). Deliberately NOT packaged as a
+-- direct-sum iso or a product-indexed complex: the vanishing argument consumes exactly these
+-- projections, elementwise, and nothing categorical.
+#print axioms AlgebraicGeometry.Proj.intNegSupport
+#print axioms AlgebraicGeometry.Proj.mem_intNegSupport
+#print axioms AlgebraicGeometry.Proj.intNegSupport_laurentExponent_subset
+#print axioms AlgebraicGeometry.Proj.laurentExponent_sub_of_add_eq
+#print axioms AlgebraicGeometry.Proj.laurentFilter
+#print axioms AlgebraicGeometry.Proj.coeff_laurentFilter_of_eq
+#print axioms AlgebraicGeometry.Proj.coeff_laurentFilter_of_ne
+#print axioms AlgebraicGeometry.Proj.laurentFilter_add
+#print axioms AlgebraicGeometry.Proj.laurentFilter_mem_natShift
+#print axioms AlgebraicGeometry.Proj.sum_laurentFilter_powerset
+#print axioms AlgebraicGeometry.Proj.laurentFilter_laurentFilter_self
+#print axioms AlgebraicGeometry.Proj.laurentFilter_laurentFilter_of_ne
+#print axioms AlgebraicGeometry.Proj.laurentFilter_eq_zero_of_not_subset
+#print axioms AlgebraicGeometry.Proj.laurentFilter_monomial_mul
+#print axioms AlgebraicGeometry.Proj.AwayRep.blockFilter
+#print axioms AlgebraicGeometry.Proj.AwayRep.frac_blockFilter_raise
+#print axioms AlgebraicGeometry.Proj.AwayRep.frac_blockFilter_congr
+#print axioms AlgebraicGeometry.Proj.blockProj
+#print axioms AlgebraicGeometry.Proj.blockProj_frac
+#print axioms AlgebraicGeometry.Proj.blockProj_awayMk
+#print axioms AlgebraicGeometry.Proj.blockProj_add
+#print axioms AlgebraicGeometry.Proj.blockProjHom
+#print axioms AlgebraicGeometry.Proj.blockProjHom_apply
+#print axioms AlgebraicGeometry.Proj.sum_blockProj
+#print axioms AlgebraicGeometry.Proj.blockProj_blockProj_self
+#print axioms AlgebraicGeometry.Proj.blockProj_blockProj_of_ne
+#print axioms AlgebraicGeometry.Proj.blockProj_eq_zero_of_not_subset
+#print axioms AlgebraicGeometry.Proj.laurentFace_blockProj
 #print axioms AlgebraicGeometry.Proj.GradedLinearMap
 #print axioms AlgebraicGeometry.Proj.GradedLinearMap.map
 #print axioms AlgebraicGeometry.Proj.GradedLinearMap.map_mk
