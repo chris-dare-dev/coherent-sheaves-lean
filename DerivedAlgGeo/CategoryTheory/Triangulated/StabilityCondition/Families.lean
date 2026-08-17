@@ -18,6 +18,7 @@ import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Families.Bou
 import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Families.KernelCorrespondence
 import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Families.KernelConvolution
 import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Families.KernelUnit
+import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Families.KernelAssociativity
 import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Families.Dqc
 import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Families.Dqc.Affine
 import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Families.GeometricBaseChange
