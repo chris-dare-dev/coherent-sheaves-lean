@@ -155,3 +155,23 @@ constructs any input, and nothing states a pentagon. -/
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.rightAssocIso
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.geometricConvolutionAssoc
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.geometricConvolutionAssocData
+
+/-! ## The unit laws for the geometric convolution
+
+INHABITANT-FREE. Both kernel-level unit laws are DERIVED for `convKernel`
+with unit kernel `diagonalKernel`, each through a supplied section `tau` of
+the relevant triple product: the left law consumes `HasProjectionFormula` at
+`tau`, the right law `HasProjectionFormulaRight` at `tau` -- the standing
+slot separation -- plus the retraction classes of the third ledger at their
+second consumption site and one new pulled-unit unitor class per slot.
+Nothing constructs any input; no triangle identity relates the unit and
+associativity layers. -/
+
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasUnitPullbackRightUnitor
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasUnitPullbackRightUnitor.iso
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasUnitPullbackLeftUnitor
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasUnitPullbackLeftUnitor.iso
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.geometricConvUnitLeft
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.geometricConvUnitRight
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.geometricConvolutionLeftUnitData
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.geometricConvolutionRightUnitData
