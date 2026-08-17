@@ -224,7 +224,7 @@ items:
     kind: epic
     parent: dg-enhancements-m2
     title: "Dg-level shift and cone, and the pretriangulated predicate"
-    status: ready
+    status: done
     summary: "Twisted-complex-style shift and cone objects inside a dg category, and IsPretriangulated as a predicate. Where Mathlib's MappingCone already supplies the model case, consume it rather than re-proving it. Scope grew on measurement: this epic also owns the shift on Hom-complexes that e2's summary claimed and #343 did not land."
     priority: must
     size: L
