@@ -7,6 +7,7 @@ import DerivedAlgGeo.CategoryTheory.Triangulated.FourierMukai
 import DerivedAlgGeo.CategoryTheory.Triangulated.LinearYoneda
 import DerivedAlgGeo.CategoryTheory.Triangulated.LinearCoyoneda
 import DerivedAlgGeo.CategoryTheory.Triangulated.GrothendieckGroup.EulerForm
+import DerivedAlgGeo.CategoryTheory.Triangulated.GrothendieckGroup.HomFiniteWitness
 import DerivedAlgGeo.LinearAlgebra
 open CategoryTheory.Triangulated
 
@@ -299,3 +300,18 @@ and no geometry.
 #print axioms CategoryTheory.Triangulated.chiHom_map
 #print axioms CategoryTheory.Triangulated.chiK₀_map
 
+/-! ## A concrete HomFiniteBounded model (#543)
+
+The bounded homotopy category of a Hom-finite k-linear category satisfies
+`HomFiniteBounded`; `Kᵇ(FGModuleCat k)` is the named witness. Satisfiability
+only: nothing relates `chiHom` on it to homology, and nothing about `Dᵇ` is
+claimed or used. -/
+
+#print axioms CategoryTheory.Triangulated.HomFiniteWitness.homRestrict
+#print axioms CategoryTheory.Triangulated.HomFiniteWitness.module_finite_hom
+#print axioms CategoryTheory.Triangulated.HomFiniteWitness.subsingleton_hom_of_le_lt_ge
+#print axioms CategoryTheory.Triangulated.HomFiniteWitness.subsingleton_hom_of_ge_lt_le
+#print axioms CategoryTheory.Triangulated.HomFiniteWitness.boundedHomEquiv
+#print axioms CategoryTheory.Triangulated.instHomFiniteBoundedBounded
+#print axioms CategoryTheory.Triangulated.fgModuleCat_hom_finite
+#print axioms CategoryTheory.Triangulated.homFiniteBounded_fgModuleCat
