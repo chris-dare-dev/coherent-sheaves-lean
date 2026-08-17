@@ -17,20 +17,19 @@ The bridge has three layers.
 * `BoundedCoherentPullbackPreimageData` is the explicit preimage witness for
   one geometric pullback.  Its identity and composition constructors use the
   bounded derived-pullback unit and compositor.
-* `BoundedCoherentPullbackInducingData` records the left adjoint,
-  zero-reflection, and phase-monad premises for that actual pullback.  The
-  Appendix-A theorem converts these premises into preimage data.
+* `BoundedCoherentPullbackInducingData` records the actual phase-indexed A.17
+  output for that pullback.  The owned Corollary-A.23 theorem converts this
+  output into preimage data.
 * `BoundedCoherentDerivedRealization` identifies an abstract strict fiber
   family with the genuine `Dᵇ(Coh)` fibers and their pullbacks.
   `GeometricPreStabilityBaseChangeData.toFiberPreStabilityBaseChangeData`
   then exports the downstream witness without accepting `Slicing.PreimageData`
   from the caller.
 
-The presentable/Ind theorem remains the precisely named input
-`HasLeftAdjointInducingTheorem`.  This file does not manufacture that deep
-theorem, a left adjoint, or phase-monad control from flatness.  It also proves
-no openness or relative-HN existence statement; those are the next geometric
-milestone.
+This file does not manufacture the scheme-specific A.17 realization from
+flatness.  It does, however, consume its honest phase-indexed output directly:
+there is no global theorem switch and no preconstructed `Slicing.PreimageData`
+input.  Openness and relative-HN consequences are exported downstream.
 -/
 
 namespace CategoryTheory.Triangulated.StabilityCondition.Families
@@ -201,19 +200,16 @@ theorem preimage_comp {T U V : SchemeBaseChange S}
 
 end BoundedCoherentPullbackPreimageData
 
-/-- The Appendix-A inducing premises specialized to actual bounded coherent
+/-- The phase-indexed A.17 output specialized to actual bounded coherent
 derived pullback. -/
 structure BoundedCoherentPullbackInducingData
     {T U : SchemeBaseChange S} (f : T ⟶ U)
     [IsLocallyNoetherian T.left] [IsLocallyNoetherian U.left]
     [HasCoherentPullback f]
     (s : Slicing T.BoundedCoherentDerivedFiber) where
-  /-- A left adjoint to bounded coherent pullback. -/
-  leftAdjoint : T.BoundedCoherentDerivedFiber ⥤
-    U.BoundedCoherentDerivedFiber
-  /-- Adjunction, zero-reflection, and phase-monad control. -/
-  premise : s.LeftAdjointInducingPremise
-    (boundedCoherentDerivedPullback f) leftAdjoint
+  /-- The induced source t-structures with the A.8 recognition formulas. -/
+  inducedTStructures :
+    s.InducedTStructures (boundedCoherentDerivedPullback f)
 
 namespace BoundedCoherentPullbackInducingData
 
@@ -222,12 +218,22 @@ variable {T U : SchemeBaseChange S} {f : T ⟶ U}
   [HasCoherentPullback f]
   {s : Slicing T.BoundedCoherentDerivedFiber}
 
-/-- Apply the precisely named presentable/Ind theorem to the actual bounded
-coherent pullback. -/
-theorem toPreimageData (h : BoundedCoherentPullbackInducingData f s)
-    (H : HasLeftAdjointInducingTheorem.{u + 1, u + 1, u + 1, u + 1}) :
+/-- The bounded derived-pullback unit transports the inhabited identity A.17
+model to the concrete bounded-coherent identity pullback. -/
+def identity (T : SchemeBaseChange S)
+    [IsLocallyNoetherian T.left]
+    [HasCoherentPullback (𝟙 T)] [PreservesPerfectPullback (𝟙 T)]
+    [GeometricDerivedPullbackIdentity T]
+    (s : Slicing T.BoundedCoherentDerivedFiber) :
+    BoundedCoherentPullbackInducingData (𝟙 T) s where
+  inducedTStructures := s.inducedTStructuresId.ofIso
+    (GeometricDerivedPullbackIdentity.boundedIso (T := T)).symm
+
+/-- Apply the owned finite phase-truncation theorem to the actual A.17
+output. -/
+theorem toPreimageData (h : BoundedCoherentPullbackInducingData f s) :
     BoundedCoherentPullbackPreimageData f s where
-  preimageData := H s (boundedCoherentDerivedPullback f) h.leftAdjoint h.premise
+  preimageData := h.inducedTStructures.preimageData
 
 end BoundedCoherentPullbackInducingData
 
@@ -259,11 +265,10 @@ variable {S : Scheme.{u}} {F : SchemeTriangulatedFiberFamily S}
   [∀ {T U : SchemeBaseChange S} (f : T ⟶ U),
     SchemeBaseChange.HasCoherentPullback f]
 
-/-- Transport an inducing theorem for the genuine bounded coherent pullback
-through a bounded coherent realization.  The result is preimage data for the
-abstract family pullback, not a caller-supplied preimage witness. -/
+/-- Transport the genuine bounded coherent A.17 output through a bounded
+coherent realization.  The result is preimage data for the abstract family
+pullback, not a caller-supplied preimage witness. -/
 theorem preimageData (R : BoundedCoherentDerivedRealization F)
-    (H : HasLeftAdjointInducingTheorem.{u + 1, u + 1, u + 1, u + 1})
     {T U : SchemeBaseChange S} (f : T ⟶ U)
     (s : Slicing (F.Fiber T))
     (h : SchemeBaseChange.BoundedCoherentPullbackInducingData f
@@ -271,7 +276,7 @@ theorem preimageData (R : BoundedCoherentDerivedRealization F)
         ((R.fiberEquivalence T).preimageDataInverse s))) :
     s.PreimageData (F.pull f) := by
   let hT := (R.fiberEquivalence T).preimageDataInverse s
-  let hGeom := h.toPreimageData H
+  let hGeom := h.toPreimageData
   let hPost : s.PreimageData
       (SchemeBaseChange.boundedCoherentDerivedPullback f ⋙
         (R.fiberEquivalence T).e.inverse) :=
@@ -288,15 +293,13 @@ end BoundedCoherentDerivedRealization
 /-- Geometric inducing data for a pre-stability family.  Unlike
 `FiberPreStabilityBaseChangeData`, this structure does not contain a
 `Slicing.PreimageData` field: every such witness is constructed from the
-actual bounded coherent pullback, its inducing premises, and the named
-Appendix-A theorem. -/
+actual bounded coherent pullback and its phase-indexed A.17 output. -/
 structure GeometricPreStabilityBaseChangeData
     {S : Scheme.{u}} (F : SchemeTriangulatedFiberFamily S)
     [∀ T : SchemeBaseChange S, IsLocallyNoetherian T.left]
     [∀ {T U : SchemeBaseChange S} (f : T ⟶ U),
       SchemeBaseChange.HasCoherentPullback f]
     (R : BoundedCoherentDerivedRealization F)
-    (H : HasLeftAdjointInducingTheorem.{u + 1, u + 1, u + 1, u + 1})
     {V : Type uV} [AddCommGroup V]
     (classMap : ∀ T, K₀ (F.Fiber T) →+ V)
     (sigma : ∀ T, PreStabilityCondition.WithClassMap
@@ -316,7 +319,7 @@ structure GeometricPreStabilityBaseChangeData
   field of this structure. -/
   slicingCompatible : ∀ {T U} (f : T ⟶ U),
     (sigma U).slicing = (sigma T).slicing.preimage (F.pull f)
-      (R.preimageData H f (sigma T).slicing (inducing f))
+    (R.preimageData f (sigma T).slicing (inducing f))
 
 namespace GeometricPreStabilityBaseChangeData
 
@@ -325,7 +328,6 @@ variable {S : Scheme.{u}} {F : SchemeTriangulatedFiberFamily S}
   [∀ {T U : SchemeBaseChange S} (f : T ⟶ U),
     SchemeBaseChange.HasCoherentPullback f]
   {R : BoundedCoherentDerivedRealization F}
-  {H : HasLeftAdjointInducingTheorem.{u + 1, u + 1, u + 1, u + 1}}
   {V : Type uV} [AddCommGroup V]
   {classMap : ∀ T, K₀ (F.Fiber T) →+ V}
   {sigma : ∀ T, PreStabilityCondition.WithClassMap
@@ -334,17 +336,17 @@ variable {S : Scheme.{u}} {F : SchemeTriangulatedFiberFamily S}
 /-- Export the ordinary categorical base-change witness.  Its preimage field
 is built from bounded coherent geometry and the inducing theorem. -/
 theorem toFiberPreStabilityBaseChangeData
-    (h : GeometricPreStabilityBaseChangeData F R H classMap sigma) :
+    (h : GeometricPreStabilityBaseChangeData F R classMap sigma) :
     FiberPreStabilityBaseChangeData F classMap sigma where
   classMap_compatible := h.classMapCompatible
   charge_compatible := h.chargeCompatible
-  preimageData := fun f ↦ R.preimageData H f _ (h.inducing f)
+  preimageData := fun f ↦ R.preimageData f _ (h.inducing f)
   slicing_compatible := h.slicingCompatible
 
 /-- Phase membership is detected by the geometrically realized bounded
 coherent pullback. -/
 theorem phase_iff
-    (h : GeometricPreStabilityBaseChangeData F R H classMap sigma)
+    (h : GeometricPreStabilityBaseChangeData F R classMap sigma)
     {T U : SchemeBaseChange S} (f : T ⟶ U) (phi : ℝ) (E : F.Fiber U) :
     (sigma U).slicing.P phi E ↔
       (sigma T).slicing.P phi ((F.pull f).obj E) :=
@@ -354,7 +356,7 @@ theorem phase_iff
 from the strict fiber family after its pullbacks have been identified with
 bounded coherent derived pullback. -/
 theorem phase_iff_comp
-    (h : GeometricPreStabilityBaseChangeData F R H classMap sigma)
+    (h : GeometricPreStabilityBaseChangeData F R classMap sigma)
     {T U V' : SchemeBaseChange S} (f : T ⟶ U) (g : U ⟶ V')
     (phi : ℝ) (E : F.Fiber V') :
     (sigma V').slicing.P phi E ↔
