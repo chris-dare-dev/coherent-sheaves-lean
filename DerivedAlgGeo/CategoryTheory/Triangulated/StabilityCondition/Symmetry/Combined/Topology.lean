@@ -98,7 +98,7 @@ theorem stabSeminorm_aut_le (a : AutPair v)
   intro hE
   let hE' := Slicing.inverse_obj_nonzero a E hE
   have hcl : a.lam (classOf C v E) = classOf C v (a.Φ.e.inverse.obj E) := by
-    rw [classOf, ← a.compat, K₀.mapF_of]
+    rw [classOf, ← a.compat, K₀.map_of]
   have hcharge : (a.act σ).charge E = σ.charge (a.Φ.e.inverse.obj E) := by
     change σ.Z (a.lam (classOf C v E)) = _
     rw [hcl]

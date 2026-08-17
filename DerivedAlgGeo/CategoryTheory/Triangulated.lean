@@ -3,10 +3,31 @@ Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under the MIT license.
 -/
 import DerivedAlgGeo.CategoryTheory.Triangulated.TStructure
+import DerivedAlgGeo.CategoryTheory.Triangulated.CompactlyGenerated.Polishchuk
+import DerivedAlgGeo.CategoryTheory.Triangulated.PostnikovTower
+import DerivedAlgGeo.CategoryTheory.Triangulated.QuasiAbelian
+import DerivedAlgGeo.CategoryTheory.Triangulated.ExtensionClosure
+import DerivedAlgGeo.CategoryTheory.Triangulated.GrothendieckGroup
+import DerivedAlgGeo.CategoryTheory.Triangulated.GrothendieckGroup.EulerForm
+import DerivedAlgGeo.CategoryTheory.Triangulated.GrothendieckGroup.HomFiniteWitness
+import DerivedAlgGeo.CategoryTheory.Triangulated.FourierMukai
+import DerivedAlgGeo.CategoryTheory.Triangulated.BoundedHomotopyCategory
+import DerivedAlgGeo.CategoryTheory.Triangulated.LinearCoyoneda
+import DerivedAlgGeo.CategoryTheory.Triangulated.LinearOpposite
+import DerivedAlgGeo.CategoryTheory.Triangulated.LinearYoneda
 import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Foundation
 import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition
 
 /-! # Triangulated categories
 
-T-structures and stability conditions on triangulated categories.
+T-structures, compact generation, Postnikov towers, strict morphisms,
+extension closures, the Grothendieck group, Fourier--Mukai kernel functors, and
+stability conditions on triangulated categories.
+
+Everything above `StabilityCondition` in this list is generic: it mentions no
+stability condition, and a module that needs it does not have to import the
+stability track to get it. `QuasiAbelian` and `ExtensionClosure` joined that
+group in #488, on the same ground as `PostnikovTower` and `GrothendieckGroup`
+in #454 — their namespace was already `CategoryTheory.Triangulated` while their
+path said `StabilityCondition/Foundation/`.
 -/

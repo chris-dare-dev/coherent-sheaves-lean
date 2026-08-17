@@ -4,7 +4,7 @@ Released under the MIT license.
 -/
 import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Foundation.Deformation.DeformedPhaseControl
 import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Foundation.Deformation.DeformedCuts
-import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Foundation.ExtensionClosure
+import DerivedAlgGeo.CategoryTheory.Triangulated.ExtensionClosure
 import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Foundation.Slicing.CutoffTruncation
 
 /-!

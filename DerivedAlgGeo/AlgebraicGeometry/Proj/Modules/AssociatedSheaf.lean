@@ -353,6 +353,61 @@ theorem stalkEquiv_germ (U : Opens X) (x : X) (hx : x ∈ U)
       s.1 ⟨x, hx⟩ :=
   stalkToFiber_germ 𝒜 𝓜 U x hx s
 
+/-! ## Changing the grading by a membership equivalence
+
+The section-level counterpart of `DegreeZeroLocalization.linearEquivOfMemIff`. Applied
+pointwise, it moves nothing: the underlying dependent function and the local fraction's
+numerator and denominator are unchanged, and only the membership certificate is rebuilt. -/
+
+/-- Sections of the associated sheaf depend only on the membership predicates of the graded
+pieces. -/
+noncomputable def sectionAddEquivOfMemIff {σN : Type u} [SetLike σN M] [AddSubgroupClass σN M]
+    (𝓝 : ℕ → σN) [SetLike.GradedSMul 𝒜 𝓝]
+    (hmem : ∀ i (m : M), m ∈ 𝓜 i ↔ m ∈ 𝓝 i) (U : Opens X) :
+    (associatedSheafInType 𝒜 𝓜).1.obj (op U) ≃+
+      (associatedSheafInType 𝒜 𝓝).1.obj (op U) where
+  toFun s := by
+    refine ⟨fun x => DegreeZeroLocalization.linearEquivOfMemIff
+      (𝒜 := 𝒜) (𝓜 := 𝓜) 𝓝 hmem (s.1 x), ?_⟩
+    intro x
+    obtain ⟨V, hxV, i, e, r, t, ht, h⟩ := s.2 x
+    refine ⟨V, hxV, i, e, ⟨(r : M), (hmem e (r : M)).mp r.2⟩, t, ht, fun y => ?_⟩
+    have hy := h y
+    dsimp only at hy ⊢
+    rw [hy]
+    rfl
+  invFun s := by
+    refine ⟨fun x => DegreeZeroLocalization.linearEquivOfMemIff
+      (𝒜 := 𝒜) (𝓜 := 𝓝) 𝓜 (fun i m => (hmem i m).symm) (s.1 x), ?_⟩
+    intro x
+    obtain ⟨V, hxV, i, e, r, t, ht, h⟩ := s.2 x
+    refine ⟨V, hxV, i, e, ⟨(r : M), (hmem e (r : M)).mpr r.2⟩, t, ht, fun y => ?_⟩
+    have hy := h y
+    dsimp only at hy ⊢
+    rw [hy]
+    rfl
+  left_inv s := by
+    apply section_ext
+    funext x
+    rfl
+  right_inv s := by
+    apply section_ext
+    funext x
+    rfl
+  map_add' s t := by
+    apply section_ext
+    funext x
+    rfl
+
+@[simp]
+theorem sectionAddEquivOfMemIff_apply {σN : Type u} [SetLike σN M] [AddSubgroupClass σN M]
+    (𝓝 : ℕ → σN) [SetLike.GradedSMul 𝒜 𝓝]
+    (hmem : ∀ i (m : M), m ∈ 𝓜 i ↔ m ∈ 𝓝 i) (U : Opens X)
+    (s : (associatedSheafInType 𝒜 𝓜).1.obj (op U)) (x : U) :
+    (sectionAddEquivOfMemIff 𝒜 𝓜 𝓝 hmem U s).1 x =
+      DegreeZeroLocalization.linearEquivOfMemIff (𝒜 := 𝒜) (𝓜 := 𝓜) 𝓝 hmem (s.1 x) :=
+  rfl
+
 /-! ## Sections on a basic open -/
 
 /-- The canonical additive map from the degree-zero homogeneous localization away from `f` to
@@ -427,6 +482,54 @@ theorem moduleAwayToSection_unique (f : A)
   intro z
   obtain ⟨c, rfl⟩ := DegreeZeroLocalization.mk_surjective z
   exact hg c
+
+/-! ### Faces and restriction
+
+The Čech differential restricts a section from an intersection to a smaller one, and on the
+algebraic side that is `DegreeZeroLocalization.faceMap`. These two results say the basic-open
+comparison intertwines them, which is what lets the differential be transported. -/
+
+/-- Enlarging the denominators past both face denominators absorbs the face map.
+
+Once `f` and `g = f * h` are both inverted in `T`, the fraction `hⁿ m / gⁿ` produced by the face
+map is the same element as `m / fⁿ`: the two differ by the unit `hⁿ`. -/
+theorem mapOfLE_faceMap {f g h : A} {e : ℕ} (hh : h ∈ 𝒜 e)
+    (hgh : f * h ∈ Submonoid.powers g) (hg : f * h = g)
+    {T : Submonoid A} (hfT : Submonoid.powers f ≤ T) (hgT : Submonoid.powers g ≤ T)
+    (z : DegreeZeroLocalization 𝒜 𝓜 (.powers f)) :
+    DegreeZeroLocalization.mapOfLE (𝒜 := 𝒜) (𝓜 := 𝓜) hgT
+        (DegreeZeroLocalization.faceMap hh hgh hg z) =
+      DegreeZeroLocalization.mapOfLE (𝒜 := 𝒜) (𝓜 := 𝓜) hfT z := by
+  obtain ⟨c, rfl⟩ := DegreeZeroLocalization.mk_surjective z
+  obtain ⟨n, hn⟩ := c.den_mem
+  have hn' : f ^ n = (c.den : A) := hn
+  rw [DegreeZeroLocalization.faceMap_mk hh hgh hg c n hn',
+    DegreeZeroLocalization.mapOfLE_mk, DegreeZeroLocalization.mapOfLE_mk,
+    DegreeZeroLocalization.mk_eq_mk_iff]
+  refine ⟨1, ?_⟩
+  have hgn : g ^ n = (c.den : A) * h ^ n := by
+    rw [← hg, mul_pow, hn']
+  -- Reduce the structure projections first: `rw` cannot see through `den := ⟨g ^ n, _⟩`.
+  dsimp only
+  rw [hgn, mul_smul]
+
+/-- The basic-open comparison commutes with restriction along a face.
+
+This is the sheaf-level form of `mapOfLE_faceMap`. It holds pointwise and for a cheap reason:
+`moduleAwayToSection` is defined by enlarging denominators at each point, and restriction only
+reindexes the point, so nothing has to be pushed through a constructed equivalence. -/
+theorem moduleAwayToSection_res_faceMap {f g h : A} {e : ℕ} (hh : h ∈ 𝒜 e)
+    (hgh : f * h ∈ Submonoid.powers g) (hg : f * h = g)
+    (i : (op (ProjectiveSpectrum.basicOpen 𝒜 f) : (Opens X)ᵒᵖ) ⟶
+      op (ProjectiveSpectrum.basicOpen 𝒜 g))
+    (z : DegreeZeroLocalization 𝒜 𝓜 (.powers f)) :
+    (associatedSheafInType 𝒜 𝓜).1.map i (moduleAwayToSection 𝒜 𝓜 f z) =
+      moduleAwayToSection 𝒜 𝓜 g (DegreeZeroLocalization.faceMap hh hgh hg z) := by
+  apply section_ext
+  funext x
+  rw [associatedPresheaf_res_apply, moduleAwayToSection_apply, moduleAwayToSection_apply]
+  exact (mapOfLE_faceMap 𝒜 𝓜 hh hgh hg (Submonoid.powers_le.mpr (i.unop x).2)
+    (Submonoid.powers_le.mpr x.2) z).symm
 
 /-- Germ evaluation of the basic-open comparison is the canonical enlargement-of-denominators
 map into the homogeneous localization at the point. -/

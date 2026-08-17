@@ -671,7 +671,7 @@ theorem weakStabilityFunctionOnHeart_hasHN
           let FX : HNFiltration C σ.slicing.P
               (F.chain.obj ⟨F.n - 1, by lia⟩) :=
             CategoryTheory.Triangulated.HNFiltration.prefix
-              C F (F.n - 1) (by lia) (by lia)
+              C F (F.n - 1) (by lia)
           have hFXn : 0 < FX.n := by
             change 0 < F.n - 1
             lia

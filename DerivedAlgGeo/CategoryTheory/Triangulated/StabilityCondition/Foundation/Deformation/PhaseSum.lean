@@ -4,7 +4,7 @@ Released under the MIT license.
 -/
 import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Foundation.Deformation.PhaseArithmetic
 import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Foundation.Slicing.IntrinsicPhaseBounds
-import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Foundation.TriangulatedGrothendieck
+import DerivedAlgGeo.CategoryTheory.Triangulated.GrothendieckGroup.Basic
 
 /-!
 # Rotated charge sums along owner filtrations

@@ -18,6 +18,33 @@ whose module numerator and ring denominator lie in matching graded pieces.
 The construction is intentionally indexed by the same additive grading monoid on the ring and
 the module. Integer shifts, which require reconciling the natural grading used by `Proj` with an
 integer grading on modules, belong to the later twisting-sheaf layer.
+
+## Localizing away from one element
+
+`awayMk` writes the fraction `m / fⁿ`, and two statements make it a usable normal form:
+
+* `exists_awayMk` — every degree-zero fraction away from `f` *is* an `awayMk`. The denominator
+  is a power of `f` by construction; what has to be proved is that the `NumDenSameDeg` degree
+  certificate is forced to be `n • deg f`, which is `DirectSum.degree_eq_of_mem_mem` once `fⁿ`
+  is known to be nonzero.
+* `awayMk_eq_awayMk_iff` — two such fractions agree exactly when they cross-multiply, with no
+  residual `∃ u` from the localization. The `∃ u` is what the general
+  `mk_eq_mk_iff` leaves behind; cancelling it is where the domain and torsion-freeness
+  hypotheses are spent, and they are spent nowhere else.
+
+Together these turn `DegreeZeroLocalization 𝒜 𝓜 (.powers f)` into fractions with an explicit
+representative and a computable equality test, which is what any basis for it has to start from
+(see the Laurent monomial basis of #491).
+
+`awayMk_eq_zero_iff` specialises the equality test to the zero fraction, which is what makes the
+numerator a faithful record: any independence statement about fractions reduces to one about
+numerators.
+
+`awayMk_zero`, `awayMk_add`, `awayMk_sum` and `awayMk_shift` are the arithmetic that goes with
+the normal form: the first three are additivity in the numerator at a fixed denominator, and the
+last puts two fractions over a common denominator. Spanning arguments need exactly this pair —
+decompose a numerator into a sum, then align denominators — and none of the four costs a
+cancellation hypothesis.
 -/
 
 noncomputable section
@@ -305,6 +332,177 @@ theorem isUnit_algebraMap_end_of_mul_mem {g₁ g₂ h : A}
   · intro y
     exact ⟨(↑u⁻¹ : Localization (Submonoid.powers g₂)) • y, by simp [key, smul_smul]⟩
 
+/-- The map of ordinary localized modules along a Čech face.
+
+`g₁` is already invertible after inverting `g₂`, so the universal property of
+`LocalizedModule (Submonoid.powers g₁) M` produces this map without any inclusion of
+denominator submonoids. This is the underlying map of `faceMap`; it carries no grading. -/
+noncomputable def faceLift {g₁ g₂ h : A} (hgh : g₁ * h ∈ Submonoid.powers g₂) :
+    LocalizedModule (Submonoid.powers g₁) M →ₗ[A]
+      LocalizedModule (Submonoid.powers g₂) M :=
+  LocalizedModule.lift _ (LocalizedModule.mkLinearMap (Submonoid.powers g₂) M)
+    (isUnit_algebraMap_end_of_mul_mem (M := M) hgh)
+
+/-- Along a face, clearing the denominator `g₁ⁿ` multiplies numerator and denominator by `hⁿ`.
+
+This is the formula the graded face map is defined by: the abstract `LocalizedModule.lift` is
+inverted here into an explicit fraction, which is what the degree-zero certificate needs.
+
+Both sides are pinned by multiplying through by `g₁ ⁿ`, which acts invertibly on the target --
+that is the whole content of `isUnit_algebraMap_end_of_mul_mem`. -/
+theorem faceLift_mk {g₁ g₂ h : A} (hgh : g₁ * h ∈ Submonoid.powers g₂)
+    (hg : g₁ * h = g₂) (m : M) (n : ℕ) :
+    faceLift (M := M) hgh
+        (LocalizedModule.mk m (⟨g₁ ^ n, n, rfl⟩ : Submonoid.powers g₁)) =
+      LocalizedModule.mk (h ^ n • m) (⟨g₂ ^ n, n, rfl⟩ : Submonoid.powers g₂) := by
+  have hunit := isUnit_algebraMap_end_of_mul_mem (M := M) hgh
+    (⟨g₁ ^ n, n, rfl⟩ : Submonoid.powers g₁)
+  rw [Module.End.isUnit_iff] at hunit
+  apply hunit.1
+  rw [Module.algebraMap_end_apply, Module.algebraMap_end_apply]
+  have hleft : (g₁ ^ n) • faceLift (M := M) hgh
+      (LocalizedModule.mk m ⟨g₁ ^ n, n, rfl⟩) =
+      LocalizedModule.mk (S := Submonoid.powers g₂) m 1 := by
+    rw [← LinearMap.map_smul, LocalizedModule.smul'_mk]
+    have hcancel : LocalizedModule.mk ((g₁ ^ n) • m)
+        (⟨g₁ ^ n, n, rfl⟩ : Submonoid.powers g₁) =
+        LocalizedModule.mk (S := Submonoid.powers g₁) m 1 :=
+      LocalizedModule.mk_cancel (⟨g₁ ^ n, n, rfl⟩ : Submonoid.powers g₁) m
+    rw [hcancel, faceLift, LocalizedModule.lift_mk_one]
+    rfl
+  have hright : (g₁ ^ n) • LocalizedModule.mk (h ^ n • m)
+      (⟨g₂ ^ n, n, rfl⟩ : Submonoid.powers g₂) =
+      LocalizedModule.mk (S := Submonoid.powers g₂) m 1 := by
+    rw [LocalizedModule.smul'_mk, ← mul_smul, ← mul_pow, hg]
+    exact LocalizedModule.mk_cancel (⟨g₂ ^ n, n, rfl⟩ : Submonoid.powers g₂) m
+  rw [hleft, hright]
+
+omit [AddSubgroupClass σM M] in
+/-- A face map preserves the degree-zero condition.
+
+Clearing `g₁ⁿ` costs `hⁿ` in both numerator and denominator, so the matching-degree certificate
+survives with its degree raised by `n • e`. -/
+theorem isDegreeZero_faceLift {g₁ g₂ h : A} {e : ι} (hh : h ∈ 𝒜 e)
+    (hgh : g₁ * h ∈ Submonoid.powers g₂) (hg : g₁ * h = g₂)
+    {z : LocalizedModule (Submonoid.powers g₁) M}
+    (hz : IsDegreeZero 𝒜 𝓜 (Submonoid.powers g₁) z) :
+    IsDegreeZero 𝒜 𝓜 (Submonoid.powers g₂) (faceLift (M := M) hgh z) := by
+  obtain ⟨c, rfl⟩ := hz
+  obtain ⟨n, hn⟩ := c.den_mem
+  -- `Submonoid.powers` membership arrives unreduced; pin the beta-reduced form.
+  have hn' : g₁ ^ n = (c.den : A) := hn
+  have hden : (⟨(c.den : A), c.den_mem⟩ : Submonoid.powers g₁) = ⟨g₁ ^ n, n, rfl⟩ :=
+    Subtype.ext hn'.symm
+  have hpow : g₂ ^ n = h ^ n * (c.den : A) := by
+    rw [← hg, mul_pow, mul_comm (g₁ ^ n) (h ^ n), hn']
+  refine ⟨
+    { deg := n • e + c.deg
+      num := ⟨h ^ n • (c.num : M),
+        SetLike.GradedSMul.smul_mem (SetLike.pow_mem_graded n hh) c.num.2⟩
+      den := ⟨g₂ ^ n, hpow ▸ SetLike.mul_mem_graded (SetLike.pow_mem_graded n hh) c.den.2⟩
+      den_mem := ⟨n, rfl⟩ }, ?_⟩
+  show LocalizedModule.mk _ _ = _
+  rw [NumDenSameDeg.embedding, hden, faceLift_mk (M := M) hgh hg]
+
+/-- The Čech face map on degree-zero homogeneous localizations.
+
+`mapOfLE` cannot supply this: along a face the denominator submonoids are `Submonoid.powers g₁`
+and `Submonoid.powers g₂` with `g₁ * h = g₂`, and divisibility does not nest powers submonoids.
+The map exists anyway because `g₁` is invertible once `g₂` is. -/
+noncomputable def faceMap {g₁ g₂ h : A} {e : ι} (hh : h ∈ 𝒜 e)
+    (hgh : g₁ * h ∈ Submonoid.powers g₂) (hg : g₁ * h = g₂) :
+    DegreeZeroLocalization 𝒜 𝓜 (.powers g₁) →+
+      DegreeZeroLocalization 𝒜 𝓜 (.powers g₂) where
+  toFun z := ⟨faceLift (M := M) hgh (z : LocalizedModule (Submonoid.powers g₁) M),
+    isDegreeZero_faceLift hh hgh hg z.2⟩
+  map_zero' := by
+    apply ext
+    exact (faceLift (M := M) hgh).map_zero
+  map_add' x y := by
+    apply ext
+    exact (faceLift (M := M) hgh).map_add
+      (x : LocalizedModule (Submonoid.powers g₁) M)
+      (y : LocalizedModule (Submonoid.powers g₁) M)
+
+@[simp]
+theorem coe_faceMap {g₁ g₂ h : A} {e : ι} (hh : h ∈ 𝒜 e)
+    (hgh : g₁ * h ∈ Submonoid.powers g₂) (hg : g₁ * h = g₂)
+    (z : DegreeZeroLocalization 𝒜 𝓜 (.powers g₁)) :
+    ((faceMap (𝓜 := 𝓜) hh hgh hg z : DegreeZeroLocalization 𝒜 𝓜 (.powers g₂)) :
+        LocalizedModule (Submonoid.powers g₂) M) =
+      faceLift (M := M) hgh (z : LocalizedModule (Submonoid.powers g₁) M) :=
+  rfl
+
+/-- The face map in explicit fractions: `m / g₁ⁿ ↦ hⁿ m / g₂ⁿ`. -/
+theorem faceMap_mk {g₁ g₂ h : A} {e : ι} (hh : h ∈ 𝒜 e)
+    (hgh : g₁ * h ∈ Submonoid.powers g₂) (hg : g₁ * h = g₂)
+    (c : NumDenSameDeg 𝒜 𝓜 (.powers g₁)) (n : ℕ) (hn : g₁ ^ n = (c.den : A)) :
+    faceMap (𝓜 := 𝓜) hh hgh hg (mk c) =
+      mk ({ deg := n • e + c.deg
+            num := ⟨h ^ n • (c.num : M),
+              SetLike.GradedSMul.smul_mem (SetLike.pow_mem_graded n hh) c.num.2⟩
+            den := ⟨g₂ ^ n, by
+              rw [show g₂ ^ n = h ^ n * (c.den : A) by
+                rw [← hg, mul_pow, mul_comm (g₁ ^ n) (h ^ n), hn]]
+              exact SetLike.mul_mem_graded (SetLike.pow_mem_graded n hh) c.den.2⟩
+            den_mem := ⟨n, rfl⟩ } : NumDenSameDeg 𝒜 𝓜 (.powers g₂)) := by
+  apply ext
+  have hden : (⟨(c.den : A), c.den_mem⟩ : Submonoid.powers g₁) = ⟨g₁ ^ n, n, rfl⟩ :=
+    Subtype.ext hn.symm
+  show faceLift (M := M) hgh (NumDenSameDeg.embedding c) = _
+  rw [NumDenSameDeg.embedding, hden, faceLift_mk (M := M) hgh hg]
+  rfl
+
+/-! ### Changing the grading by a membership equivalence
+
+Two gradings with the same members present the same degree-zero localization. The underlying
+element of `LocalizedModule S M` does not move at all; only the certificate is rebuilt. This is
+the localization-level counterpart of `associatedIsoOfPiecewiseIff`, and it is what lets a
+statement about `intShift 𝒜 0` be read as one about `𝒜`. -/
+
+/-- Degree-zero localizations depend only on the membership predicates of the graded pieces. -/
+noncomputable def linearEquivOfMemIff {σN : Type*} [SetLike σN M] [AddSubgroupClass σN M]
+    (𝓝 : ι → σN) [SetLike.GradedSMul 𝒜 𝓝]
+    (hmem : ∀ i (m : M), m ∈ 𝓜 i ↔ m ∈ 𝓝 i) :
+    DegreeZeroLocalization 𝒜 𝓜 S ≃ₗ[HomogeneousLocalization 𝒜 S]
+      DegreeZeroLocalization 𝒜 𝓝 S where
+  toFun z := ⟨(z : LocalizedModule S M), by
+    obtain ⟨c, hc⟩ := z.property
+    exact ⟨{ deg := c.deg
+             num := ⟨(c.num : M), (hmem c.deg (c.num : M)).mp c.num.2⟩
+             den := c.den
+             den_mem := c.den_mem }, hc⟩⟩
+  invFun z := ⟨(z : LocalizedModule S M), by
+    obtain ⟨c, hc⟩ := z.property
+    exact ⟨{ deg := c.deg
+             num := ⟨(c.num : M), (hmem c.deg (c.num : M)).mpr c.num.2⟩
+             den := c.den
+             den_mem := c.den_mem }, hc⟩⟩
+  left_inv _ := rfl
+  right_inv _ := rfl
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+
+@[simp]
+theorem coe_linearEquivOfMemIff {σN : Type*} [SetLike σN M] [AddSubgroupClass σN M]
+    (𝓝 : ι → σN) [SetLike.GradedSMul 𝒜 𝓝]
+    (hmem : ∀ i (m : M), m ∈ 𝓜 i ↔ m ∈ 𝓝 i) (z : DegreeZeroLocalization 𝒜 𝓜 S) :
+    ((linearEquivOfMemIff (𝒜 := 𝒜) (𝓜 := 𝓜) (S := S) 𝓝 hmem z :
+        DegreeZeroLocalization 𝒜 𝓝 S) : LocalizedModule S M) =
+      (z : LocalizedModule S M) :=
+  rfl
+
+@[simp]
+theorem linearEquivOfMemIff_mk {σN : Type*} [SetLike σN M] [AddSubgroupClass σN M]
+    (𝓝 : ι → σN) [SetLike.GradedSMul 𝒜 𝓝]
+    (hmem : ∀ i (m : M), m ∈ 𝓜 i ↔ m ∈ 𝓝 i) (c : NumDenSameDeg 𝒜 𝓜 S) :
+    linearEquivOfMemIff (𝒜 := 𝒜) (𝓜 := 𝓜) (S := S) 𝓝 hmem (mk c) =
+      mk { deg := c.deg
+           num := ⟨(c.num : M), (hmem c.deg (c.num : M)).mp c.num.2⟩
+           den := c.den
+           den_mem := c.den_mem } :=
+  rfl
+
 /-! ### Localization away from one homogeneous element -/
 
 /-- The degree-zero fraction `m / fⁿ` when `f` has degree `d` and `m` has degree `n • d`. -/
@@ -323,6 +521,178 @@ theorem coe_awayMk {f : A} {d : ι} (hf : f ∈ 𝒜 d) (n : ℕ) (m : M)
       LocalizedModule (.powers f) M) =
         LocalizedModule.mk m (⟨f ^ n, ⟨n, rfl⟩⟩ : Submonoid.powers f) :=
   rfl
+
+/-- **`awayMk` is a normal form.** Every degree-zero fraction away from `f` is `m / fⁿ` for some
+`n` and some `m` of degree `n • deg f`.
+
+The denominator is a power of `f` because that is what `Submonoid.powers f` means; the content is
+that the `NumDenSameDeg` degree certificate has no freedom left. It is pinned by
+`DirectSum.degree_eq_of_mem_mem`: the denominator lies both in the certified piece and, as `fⁿ`,
+in `n • deg f`, and a nonzero homogeneous element lies in exactly one piece.
+
+The hypothesis is `∀ n, fⁿ ≠ 0` rather than `f ≠ 0` so that no domain assumption is needed here;
+in a domain `pow_ne_zero` supplies it. It cannot be dropped: over a ring where `f` is nilpotent
+the localization is trivial and the degree is genuinely unconstrained. -/
+theorem exists_awayMk {f : A} {e : ι} (hf : f ∈ 𝒜 e) (hf0 : ∀ n : ℕ, f ^ n ≠ 0)
+    (z : DegreeZeroLocalization 𝒜 𝓜 (.powers f)) :
+    ∃ (n : ℕ) (m : M) (hm : m ∈ 𝓜 (n • e)), z = awayMk hf n m hm := by
+  obtain ⟨c, rfl⟩ := mk_surjective z
+  obtain ⟨deg, num, den, den_mem⟩ := c
+  obtain ⟨n, hn⟩ := den_mem
+  have hden : (den : A) ∈ 𝒜 (n • e) := hn ▸ SetLike.pow_mem_graded n hf
+  have hdeg : deg = n • e :=
+    DirectSum.degree_eq_of_mem_mem 𝒜 den.2 hden (hn ▸ hf0 n)
+  subst hdeg
+  refine ⟨n, (num : M), num.2, ext ?_⟩
+  exact congrArg (fun s : Submonoid.powers f => LocalizedModule.mk (num : M) s)
+    (Subtype.ext hn.symm : (⟨(den : A), ⟨n, hn⟩⟩ : Submonoid.powers f) = ⟨f ^ n, ⟨n, rfl⟩⟩)
+
+/-- **Cross-multiplication decides equality of `awayMk`s.** `p / fⁿ = q / fᵐ` exactly when
+`fᵐ • p = fⁿ • q`, with no surviving `∃ u`.
+
+`mk_eq_mk_iff` is the general criterion and it leaves an unknown `u ∈ Submonoid.powers f`
+behind. Cancelling that `u` is the whole point of this lemma and the only place the two
+hypotheses are used: `IsDomain A` makes every `fᵗ` regular, and `Module.IsTorsionFree A M`
+turns a regular ring element into an injective scalar action on `M`. For `M = A` the latter is
+an instance, so the polynomial case needs neither supplied by hand.
+
+Without torsion-freeness the statement is false, not merely unproved: an `f`-torsion element of
+`M` is a nonzero numerator whose fraction is zero. -/
+theorem awayMk_eq_awayMk_iff [IsDomain A] [Module.IsTorsionFree A M] {f : A} {e : ι}
+    (hf : f ∈ 𝒜 e) (hf0 : f ≠ 0) {n m : ℕ} {p q : M} (hp : p ∈ 𝓜 (n • e))
+    (hq : q ∈ 𝓜 (m • e)) :
+    awayMk hf n p hp = awayMk hf m q hq ↔ f ^ m • p = f ^ n • q := by
+  rw [awayMk, awayMk, mk_eq_mk_iff]
+  constructor
+  · rintro ⟨⟨u, t, rfl⟩, hu⟩
+    exact Module.IsTorsionFree.isSMulRegular (M := M)
+      (IsRegular.of_ne_zero (pow_ne_zero t hf0)) hu
+  · intro h
+    exact ⟨1, by simpa using h⟩
+
+/-- The zero numerator gives the zero fraction. -/
+theorem awayMk_zero {f : A} {e : ι} (hf : f ∈ 𝒜 e) (n : ℕ) :
+    awayMk (𝓜 := 𝓜) hf n (0 : M) (zero_mem (𝓜 (n • e))) = 0 := by
+  apply ext
+  rw [coe_awayMk, coe_zero]
+  simp
+
+/-- `awayMk` is additive in the numerator at a fixed denominator. -/
+theorem awayMk_add {f : A} {e : ι} (hf : f ∈ 𝒜 e) (n : ℕ) (p q : M)
+    (hp : p ∈ 𝓜 (n • e)) (hq : q ∈ 𝓜 (n • e)) :
+    awayMk hf n (p + q) (add_mem hp hq) = awayMk hf n p hp + awayMk hf n q hq := by
+  apply ext
+  rw [coe_awayMk, coe_add, coe_awayMk, coe_awayMk, LocalizedModule.mk_add_mk,
+    LocalizedModule.mk_eq]
+  refine ⟨1, ?_⟩
+  simp only [Submonoid.smul_def, Submonoid.coe_mul, one_smul, smul_add, ← mul_smul]
+
+/-- `awayMk` is additive over a finite sum of numerators.
+
+The membership hypothesis is total (`∀ b`) rather than restricted to `s`, because the summands on
+the right have to carry their own certificates and a `∀ b ∈ s` hypothesis is not available inside
+`Finset.sum`. In practice the summands are monomials of a fixed degree, so nothing is lost.
+
+The proof descends into `LocalizedModule` before inducting. That is not incidental: the numerator
+appears in the type of `awayMk`'s membership argument, so rewriting `Finset.sum_insert` in the
+goal directly fails on a non-type-correct motive. `coe_awayMk` discharges the certificate first,
+and the induction then runs over an ordinary equation. -/
+theorem awayMk_sum {f : A} {e : ι} (hf : f ∈ 𝒜 e) (n : ℕ) {β : Type*} (s : Finset β)
+    (p : β → M) (hp : ∀ b, p b ∈ 𝓜 (n • e)) :
+    awayMk hf n (∑ b ∈ s, p b) (sum_mem fun b _ => hp b) =
+      ∑ b ∈ s, awayMk hf n (p b) (hp b) := by
+  classical
+  apply ext
+  rw [coe_awayMk]
+  induction s using Finset.induction_on with
+  | empty => simp
+  | insert b s hb ih =>
+      rw [Finset.sum_insert hb, Finset.sum_insert hb, coe_add, coe_awayMk, ← ih,
+        LocalizedModule.mk_add_mk, LocalizedModule.mk_eq]
+      exact ⟨1, by
+        simp only [Submonoid.smul_def, Submonoid.coe_mul, one_smul, smul_add, ← mul_smul]⟩
+
+/-- Raising the denominator by `fᵗ` and the numerator with it leaves the fraction alone.
+
+This is what puts two `awayMk`s over a common denominator, which every argument about sums of
+fractions with different denominators needs. It holds over any ring: no cancellation is
+performed, so neither `IsDomain` nor torsion-freeness appears. -/
+theorem awayMk_shift {f : A} {e : ι} (hf : f ∈ 𝒜 e) (n t : ℕ) (p : M)
+    (hp : p ∈ 𝓜 (n • e)) (hfp : f ^ t • p ∈ 𝓜 ((n + t) • e)) :
+    awayMk hf (n + t) (f ^ t • p) hfp = awayMk hf n p hp := by
+  rw [awayMk, awayMk, mk_eq_mk_iff]
+  exact ⟨1, by simp [← mul_smul, ← pow_add]⟩
+
+/-- **Two fractions share a denominator.** Any two degree-zero fractions away from `f` have
+`awayMk` representatives over one common power `fⁿ`.
+
+This is `exists_awayMk` on each fraction followed by `awayMk_shift` to align the two exponents
+at their sum. It is the move every statement about a *sum* of fractions opens with — additivity
+of `awayMk` exists only at a fixed denominator — and it is what the additivity of the sign
+projection (#340's contracting homotopy) reduces to. Like `exists_awayMk`, it costs no domain
+or torsion-freeness hypothesis: no cancellation is performed. -/
+theorem exists_awayMk_pair {f : A} {e : ι} (hf : f ∈ 𝒜 e) (hf0 : ∀ n : ℕ, f ^ n ≠ 0)
+    (z₁ z₂ : DegreeZeroLocalization 𝒜 𝓜 (.powers f)) :
+    ∃ (n : ℕ) (p₁ p₂ : M) (hp₁ : p₁ ∈ 𝓜 (n • e)) (hp₂ : p₂ ∈ 𝓜 (n • e)),
+      z₁ = awayMk hf n p₁ hp₁ ∧ z₂ = awayMk hf n p₂ hp₂ := by
+  obtain ⟨n₁, q₁, hq₁, rfl⟩ := exists_awayMk hf hf0 z₁
+  obtain ⟨n₂, q₂, hq₂, rfl⟩ := exists_awayMk hf hf0 z₂
+  have hp₁ : f ^ n₂ • q₁ ∈ 𝓜 ((n₁ + n₂) • e) := by
+    have h := SetLike.GradedSMul.smul_mem (SetLike.pow_mem_graded n₂ hf) hq₁
+    rwa [vadd_eq_add, show n₂ • e + n₁ • e = (n₁ + n₂) • e by rw [add_nsmul, add_comm]] at h
+  have hp₂ : f ^ n₁ • q₂ ∈ 𝓜 ((n₁ + n₂) • e) := by
+    have h := SetLike.GradedSMul.smul_mem (SetLike.pow_mem_graded n₁ hf) hq₂
+    rwa [vadd_eq_add, show n₁ • e + n₂ • e = (n₁ + n₂) • e by rw [add_nsmul]] at h
+  -- Transport an `awayMk` across `n₂ + n₁ = n₁ + n₂`; the exponent sits in the membership
+  -- certificate, so `rw` cannot reach it and proof irrelevance has to do the move.
+  have hcongr : ∀ (a b : ℕ) (q : M) (hqa : q ∈ 𝓜 (a • e)) (hqb : q ∈ 𝓜 (b • e)), a = b →
+      awayMk hf a q hqa = awayMk hf b q hqb := by
+    rintro a b q hqa hqb rfl; rfl
+  refine ⟨n₁ + n₂, f ^ n₂ • q₁, f ^ n₁ • q₂, hp₁, hp₂,
+    (awayMk_shift hf n₁ n₂ q₁ hq₁ hp₁).symm, ?_⟩
+  have hp₂' : f ^ n₁ • q₂ ∈ 𝓜 ((n₂ + n₁) • e) := by
+    rwa [show (n₂ + n₁) • e = (n₁ + n₂) • e by rw [Nat.add_comm]]
+  exact ((awayMk_shift hf n₂ n₁ q₂ hq₂ hp₂').symm.trans
+    (hcongr (n₂ + n₁) (n₁ + n₂) _ hp₂' hp₂ (Nat.add_comm n₂ n₁)))
+
+/-- **A fraction vanishes exactly when its numerator does.**
+
+This is `awayMk_eq_awayMk_iff` against the zero fraction, and it is what makes the numerator a
+faithful record of the element: any independence statement about fractions reduces to one about
+numerators. The hypotheses are inherited from that lemma and are needed for the same reason —
+without torsion-freeness an `f`-torsion numerator is a nonzero numerator with a zero fraction. -/
+theorem awayMk_eq_zero_iff [IsDomain A] [Module.IsTorsionFree A M] {f : A} {e : ι}
+    (hf : f ∈ 𝒜 e) (hf0 : f ≠ 0) {n : ℕ} {p : M} (hp : p ∈ 𝓜 (n • e)) :
+    awayMk hf n p hp = 0 ↔ p = 0 := by
+  rw [← awayMk_zero (𝓜 := 𝓜) hf 0, awayMk_eq_awayMk_iff hf hf0]
+  simp
+/-- Two equal degree indices give the same `awayMk`.
+
+`awayMk` records the degree of its denominator in the `NumDenSameDeg` certificate, so two
+certificates that are propositionally equal still need transporting. Every caller that meets this
+has the same shape: one side names the degree as `(γ' + single i₀ c).degree` and the other as
+`c + γ'.degree`. -/
+theorem awayMk_deg_congr {f : A} {e₁ e₂ : ι} (h : e₁ = e₂) (hf₁ : f ∈ 𝒜 e₁) (hf₂ : f ∈ 𝒜 e₂)
+    (n : ℕ) (p : M) (hp₁ : p ∈ 𝓜 (n • e₁)) (hp₂ : p ∈ 𝓜 (n • e₂)) :
+    awayMk hf₁ n p hp₁ = awayMk hf₂ n p hp₂ := by
+  subst h; rfl
+
+set_option maxHeartbeats 1200000 in
+/-- **The face map in `awayMk` normal form.** Restricting `p / g₁ⁿ` along `g₁ * h = g₂` multiplies
+the numerator by `hⁿ` and leaves the exponent alone.
+
+This is `faceMap_mk` with the denominator already known to be a power, which is the shape every
+caller has: the face of a Čech intersection is a restriction between two `awayMk`s, not between
+two arbitrary `NumDenSameDeg`s. The target degree is written `e + e₁` rather than `e₁ + e` so that
+`n • (e + e₁)` matches the `n • e + n • e₁` that `faceMap_mk` produces. -/
+theorem faceMap_awayMk {g₁ g₂ h : A} {e e₁ : ι} (hh : h ∈ 𝒜 e) (hg₁ : g₁ ∈ 𝒜 e₁)
+    (hgh : g₁ * h ∈ Submonoid.powers g₂) (hg : g₁ * h = g₂)
+    (hg₂ : g₂ ∈ 𝒜 (e + e₁)) (n : ℕ) (p : M) (hp : p ∈ 𝓜 (n • e₁))
+    (hres : h ^ n • p ∈ 𝓜 (n • (e + e₁))) :
+    faceMap (𝓜 := 𝓜) hh hgh hg (awayMk hg₁ n p hp) = awayMk hg₂ n (h ^ n • p) hres := by
+  rw [awayMk, faceMap_mk (𝓜 := 𝓜) hh hgh hg _ n rfl, awayMk]
+  apply ext
+  simp only [coe_mk, NumDenSameDeg.embedding]
 
 end DegreeZeroLocalization
 

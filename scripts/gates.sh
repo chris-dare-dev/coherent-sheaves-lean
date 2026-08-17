@@ -23,6 +23,24 @@ cd "$(dirname "$0")/.."
 MODE="${1:-full}"
 FAILED=()
 
+# Per-run scratch directory. These artifacts used to live at fixed /tmp paths,
+# which is wrong on this machine twice over: agent sessions run in worktrees
+# under /tmp, and two self-hosted CI runners share the host. Two concurrent
+# runs then read and write the same file, so a gate can pass or fail on another
+# branch's data with nothing in the output naming the branch that wrote it.
+# Observed 2026-08-16: audit-complete passed, then the same unchanged
+# /tmp/enum-decls.txt reported 73 declarations over ceiling, because a
+# concurrent worktree had regenerated it in between.
+gate_tmp_base="${TMPDIR:-/tmp}"
+GATE_TMP="$(mktemp -d "${gate_tmp_base%/}/dag-gates.XXXXXX")" || {
+  echo "could not create a scratch directory under ${gate_tmp_base%/}"
+  exit 1
+}
+# Kept on gate failure so the artifacts survive for inspection; the final
+# report prints the path. Removed on success and on interrupt.
+GATE_TMP_KEEP=0
+trap '[ "$GATE_TMP_KEEP" -eq 1 ] || rm -rf "$GATE_TMP"' EXIT
+
 gate() {
   local name="$1"; shift
   local log
@@ -39,7 +57,7 @@ gate() {
       # unattended run then reports a failure with no reason, which is worse
       # than the failure: say so rather than printing nothing.
       echo "(no output captured -- this gate redirects internally;"
-      echo " check /tmp/${name%%-*}-*.txt or run the command directly)"
+      echo " check $GATE_TMP/${name%%-*}-*.txt or run the command directly)"
     fi
     echo "--- end $name ---"
     FAILED+=("$name")
@@ -57,22 +75,28 @@ algebraic_geometry_audit() {
     DerivedAlgGeo.AlgebraicGeometry.Numerical.Specializations.Surface \
     DerivedAlgGeo.AlgebraicGeometry.Numerical.Specializations.Threefold \
     DerivedAlgGeo.AlgebraicGeometry.Numerical.Specializations.Fourfold || return 1
-  lake env lean scripts/AlgebraicGeometryAudit.lean > /tmp/algebraic-geometry-audit.txt 2>&1 || {
-    # Show the reason: this function redirects its own output, so without this
-    # the wrapper's log is empty and the gate fails silently.
-    tail -20 /tmp/algebraic-geometry-audit.txt
-    return 1
-  }
-  grep -q 'sorryAx' /tmp/algebraic-geometry-audit.txt && { echo "sorryAx reached the audit"; return 1; }
+  # Since #480 the records live in per-area files; `#print axioms` output does
+  # not replay across the import boundary, so each area file is run directly.
+  : > "$GATE_TMP"/algebraic-geometry-audit.txt
+  for f in scripts/AlgebraicGeometryAudit/*.lean; do
+    lake env lean "$f" >> "$GATE_TMP"/algebraic-geometry-audit.txt 2>&1 || {
+      # Show the reason: this function redirects its own output, so without
+      # this the wrapper's log is empty and the gate fails silently.
+      echo "failed: $f"
+      tail -20 "$GATE_TMP"/algebraic-geometry-audit.txt
+      return 1
+    }
+  done
+  grep -q 'sorryAx' "$GATE_TMP"/algebraic-geometry-audit.txt && { echo "sorryAx reached the audit"; return 1; }
   return 0
 }
 
 dg_audit() {
-  lake env lean scripts/DGCategoryAudit.lean > /tmp/dg-audit.txt 2>&1 || {
-    tail -20 /tmp/dg-audit.txt
+  lake env lean scripts/DGCategoryAudit.lean > "$GATE_TMP"/dg-audit.txt 2>&1 || {
+    tail -20 "$GATE_TMP"/dg-audit.txt
     return 1
   }
-  python3 scripts/check_audit.py /tmp/dg-audit.txt scripts/DGCategoryAudit.lean
+  python3 scripts/check_audit.py "$GATE_TMP"/dg-audit.txt scripts/DGCategoryAudit.lean
 }
 
 audit_complete() {
@@ -83,26 +107,31 @@ audit_complete() {
     DerivedAlgGeo.AlgebraicGeometry.Numerical.Specializations.Surface \
     DerivedAlgGeo.AlgebraicGeometry.Numerical.Specializations.Threefold \
     DerivedAlgGeo.AlgebraicGeometry.Numerical.Specializations.Fourfold || return 1
-  lake env lean scripts/EnumDecls.lean > /tmp/enum-decls.txt 2>&1 || {
-    tail -20 /tmp/enum-decls.txt
+  lake env lean scripts/EnumDecls.lean > "$GATE_TMP"/enum-decls.txt 2>&1 || {
+    tail -20 "$GATE_TMP"/enum-decls.txt
     return 1
   }
-  python3 scripts/check_audit_complete.py /tmp/enum-decls.txt
+  python3 scripts/check_audit_complete.py "$GATE_TMP"/enum-decls.txt
 }
 
 stability_condition_audit() {
-  lake env lean scripts/StabilityConditionAudit.lean > /tmp/stability-condition-audit.txt 2>&1 || {
-    tail -20 /tmp/stability-condition-audit.txt
-    return 1
-  }
-  python3 scripts/check_audit.py /tmp/stability-condition-audit.txt
+  # Per-area invocation, as above: the umbrella alone would emit no records.
+  : > "$GATE_TMP"/stability-condition-audit.txt
+  for f in scripts/StabilityConditionAudit/*.lean; do
+    lake env lean "$f" >> "$GATE_TMP"/stability-condition-audit.txt 2>&1 || {
+      echo "failed: $f"
+      tail -20 "$GATE_TMP"/stability-condition-audit.txt
+      return 1
+    }
+  done
+  python3 scripts/check_audit.py "$GATE_TMP"/stability-condition-audit.txt
 }
 
 exe_sorry() {
   # The one file the emitter cannot cover: an `lean_exe` root is not part of the
   # environment built from its own imports. CI runs the same loop; see the
   # "No declaration uses sorry" step in .github/workflows/ci.yml.
-  local log=/tmp/exe-sorry-check.txt
+  local log="$GATE_TMP"/exe-sorry-check.txt
   : > "$log"
   for f in exe/*.lean; do
     lake env lean "$f" >> "$log" 2>&1 || { tail -20 "$log"; return 1; }
@@ -167,12 +196,12 @@ if [ "$MODE" != "fast" ]; then
   # 11945 constants, same names, same counts; `emitted_at` is the only byte that
   # differs. Exit codes propagate through `--run`, which matters because this
   # non-zero exit IS the repository-wide sorry gate.
-  gate emit lake env lean --run exe/Emit.lean --out /tmp/derived-alg-geo-emission.json
+  gate emit lake env lean --run exe/Emit.lean --out "$GATE_TMP"/derived-alg-geo-emission.json
   # The emit gate above is the repository-wide sorry gate. This one checks that
   # it swept everything -- without it, a library root nobody imported into
   # DerivedAlgGeoSweep.lean drops out of coverage with every gate still green.
   gate emission-coverage python3 scripts/check_emission_coverage.py \
-    /tmp/derived-alg-geo-emission.json
+    "$GATE_TMP"/derived-alg-geo-emission.json
   gate exe-sorry exe_sorry
 fi
 
@@ -182,4 +211,6 @@ if [ ${#FAILED[@]} -eq 0 ]; then
   exit 0
 fi
 echo "FAILED: ${FAILED[*]}"
+GATE_TMP_KEEP=1
+echo "artifacts kept in $GATE_TMP"
 exit 1

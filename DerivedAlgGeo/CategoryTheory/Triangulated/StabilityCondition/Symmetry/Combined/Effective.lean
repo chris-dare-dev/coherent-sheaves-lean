@@ -147,10 +147,10 @@ noncomputable def shiftTwoTriEquiv : TriEquiv C where
   iTri := shiftNegTwoIsTriangulated
 
 /-- The inverse functor of `[2]` acts trivially on `K₀`. -/
-theorem K₀.mapF_shift_neg_two :
-    K₀.mapF (shiftFunctor C (-2 : ℤ)) = AddMonoidHom.id (K₀ C) := by
+theorem K₀.map_shift_neg_two :
+    K₀.map (shiftFunctor C (-2 : ℤ)) = AddMonoidHom.id (K₀ C) := by
   ext X
-  rw [K₀.mapF_of]
+  rw [K₀.map_of]
   change CategoryTheory.Triangulated.K₀.of C (X⟦(-2 : ℤ)⟧) =
     CategoryTheory.Triangulated.K₀.of C X
   rw [CategoryTheory.Triangulated.K₀.of_shift_int]
@@ -165,8 +165,8 @@ noncomputable def shiftTwoPair (v : K₀ C →+ Λ) : AutPair v where
   Φ := shiftTwoTriEquiv
   lam := AddEquiv.refl Λ
   compat x := by
-    change v (K₀.mapF (shiftFunctor C (-2 : ℤ)) x) = v x
-    rw [K₀.mapF_shift_neg_two]
+    change v (K₀.map (shiftFunctor C (-2 : ℤ)) x) = v x
+    rw [K₀.map_shift_neg_two]
     rfl
 
 theorem deckShift_neg_one_inv_apply (φ : ℝ) :

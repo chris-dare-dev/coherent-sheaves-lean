@@ -169,7 +169,7 @@ theorem HNFiltration.lastFactor_isZero_of_hom_eq_zero (s : Slicing C) {E : C}
       omega
     have hT₁ : IsZero T.obj₁ := F.base_isZero.of_iso (e₁.trans (eqToIso hleft))
     exact ((shiftFunctor C (1 : ℤ)).map_isZero hT₁).eq_of_src g 0
-  · let pfx := F.prefix C (F.n - 1) (by omega) (by omega)
+  · let pfx := F.prefix C (F.n - 1) (by omega)
     let shifted := pfx.shift C s (1 : ℤ)
     let e₁shift := (shiftFunctor C (1 : ℤ)).mapIso e₁
     let source := shifted.ofIso C e₁shift.symm

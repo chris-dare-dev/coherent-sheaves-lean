@@ -80,8 +80,15 @@ PRINT_AXIOMS = re.compile(r"^#print axioms ", re.MULTILINE)
 def main(path: str, audit_lean: str | None = None) -> int:
     source = (Path(audit_lean) if audit_lean
               else Path(__file__).resolve().parent / "StabilityConditionAudit.lean")
+    # Since #480 an audit may be split: the named file is an imports-only
+    # umbrella and the records live in `<stem>/*.lean` beside it. Count across
+    # the umbrella plus every area file; for an unsplit audit (DGCategory, and
+    # any fixture) the glob is empty and this is the old single-file count.
+    sources = [source] + sorted((source.parent / source.stem).glob("*.lean"))
     try:
-        commanded = len(PRINT_AXIOMS.findall(source.read_text(encoding="utf-8")))
+        commanded = sum(
+            len(PRINT_AXIOMS.findall(f.read_text(encoding="utf-8")))
+            for f in sources)
     except OSError as e:
         # Failing open here would resurrect exactly the blind spot this check
         # exists to close.

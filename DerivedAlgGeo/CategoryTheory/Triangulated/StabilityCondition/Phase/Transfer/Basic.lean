@@ -30,7 +30,7 @@ open CategoryTheory.Triangulated
 open CategoryTheory CategoryTheory.Limits CategoryTheory.Pretriangulated
 open scoped ZeroObject
 
-universe v₁ u₁ v₂ u₂
+universe v₁ u₁ v₂ u₂ v₃ u₃
 
 namespace CategoryTheory.Triangulated
 
@@ -38,6 +38,8 @@ variable {C : Type u₁} [Category.{v₁} C] [HasZeroObject C] [HasShift C ℤ]
   [Preadditive C] [∀ n : ℤ, (shiftFunctor C n).Additive] [Pretriangulated C]
 variable {D : Type u₂} [Category.{v₂} D] [HasZeroObject D] [HasShift D ℤ]
   [Preadditive D] [∀ n : ℤ, (shiftFunctor D n).Additive] [Pretriangulated D]
+variable {E : Type u₃} [Category.{v₃} E] [HasZeroObject E] [HasShift E ℤ]
+  [Preadditive E] [∀ n : ℤ, (shiftFunctor E n).Additive] [Pretriangulated E]
 
 /-- The raw inverse-image phase collection along a functor.
 
@@ -97,6 +99,36 @@ def Slicing.preimage (s : Slicing D) (F : C ⥤ D) [F.Additive]
   hom_vanishing := h.hom_vanishing
   hn_exists := h.hn_exists
 
+/-- Preimage witnesses compose in the same contravariant order as their
+functors.  The second witness is measured against the slicing constructed by
+the first stage, so its HN filtrations already have exactly the phases needed
+for the composite. -/
+theorem Slicing.PreimageData.comp {s : Slicing E} {G : D ⥤ E}
+    [G.Additive] [G.CommShift ℤ] [G.IsTriangulated]
+    (hG : s.PreimageData G) {F : C ⥤ D}
+    (hF : (s.preimage G hG).PreimageData F) :
+    s.PreimageData (F ⋙ G) where
+  hom_vanishing := hF.hom_vanishing
+  hn_exists := hF.hn_exists
+
+/-- A natural isomorphism of detecting functors transports the two non-formal
+preimage axioms.  In particular, the HN factors are unchanged because phase
+membership is invariant under the component isomorphisms. -/
+theorem Slicing.PreimageData.ofIso {s : Slicing D} {F G : C ⥤ D}
+    (hF : s.PreimageData F) (e : F ≅ G) : s.PreimageData G where
+  hom_vanishing phi₁ phi₂ A B hphi hA hB g :=
+    hF.hom_vanishing phi₁ phi₂ A B hphi
+      (ObjectProperty.prop_of_iso _ (e.app A).symm hA)
+      (ObjectProperty.prop_of_iso _ (e.app B).symm hB) g
+  hn_exists X := by
+    have hphase : s.preimagePhase G = s.preimagePhase F := by
+      funext phi Y
+      apply propext
+      exact ⟨ObjectProperty.prop_of_iso _ (e.app Y).symm,
+        ObjectProperty.prop_of_iso _ (e.app Y)⟩
+    rw [hphase]
+    exact hF.hn_exists X
+
 @[simp]
 theorem Slicing.preimage_P (s : Slicing D) (F : C ⥤ D) [F.Additive]
     [F.CommShift ℤ] [F.IsTriangulated] (h : s.PreimageData F)
@@ -109,6 +141,68 @@ theorem Slicing.preimage_id (s : Slicing C) :
     s.preimage (Functor.id C) s.preimageData_id = s := by
   apply Slicing.ext
   rfl
+
+/-- Constructing a preimage slicing in two stages agrees with constructing it
+along the composite functor.  The statement is independent of the proof terms
+used to witness the slicing axioms. -/
+@[simp]
+theorem Slicing.preimage_comp (s : Slicing E) (G : D ⥤ E)
+    [G.Additive] [G.CommShift ℤ] [G.IsTriangulated]
+    (hG : s.PreimageData G) (F : C ⥤ D)
+    [F.Additive] [F.CommShift ℤ] [F.IsTriangulated]
+    (hF : (s.preimage G hG).PreimageData F) :
+    s.preimage (F ⋙ G) (hG.comp hF) =
+      (s.preimage G hG).preimage F hF := by
+  apply Slicing.ext
+  rfl
+
+/-- Preimage slicings are invariant under a natural isomorphism of the
+detecting functors. -/
+theorem Slicing.preimage_iso (s : Slicing D) (F G : C ⥤ D)
+    [F.Additive] [F.CommShift ℤ] [F.IsTriangulated]
+    [G.Additive] [G.CommShift ℤ] [G.IsTriangulated]
+    (hF : s.PreimageData F) (e : F ≅ G) :
+    s.preimage G (hF.ofIso e) = s.preimage F hF := by
+  apply Slicing.ext
+  funext phi X
+  apply propext
+  exact ⟨ObjectProperty.prop_of_iso _ (e.app X).symm,
+    ObjectProperty.prop_of_iso _ (e.app X)⟩
+
+/-- A triangulated equivalence supplies the two non-formal preimage axioms.
+
+Unlike `Slicing.mapEquiv`, this theorem allows the source and target
+categories to differ.  HN filtrations are transported through the inverse
+functor and then identified with the original object by the unit isomorphism.
+-/
+theorem Slicing.preimageData_equivalence (s : Slicing D) (e : C ≌ D)
+    [e.inverse.Additive]
+    [e.functor.CommShift ℤ] [e.inverse.CommShift ℤ]
+    [e.functor.IsTriangulated] [e.inverse.IsTriangulated] :
+    s.PreimageData e.functor where
+  hom_vanishing phi₁ phi₂ A B hphi hA hB g := by
+    apply e.functor.map_injective
+    simpa using s.hom_vanishing phi₁ phi₂ (e.functor.obj A)
+      (e.functor.obj B) hphi hA hB (e.functor.map g)
+  hn_exists E := by
+    obtain ⟨Fil⟩ := s.hn_exists (e.functor.obj E)
+    exact ⟨CategoryTheory.Triangulated.HNFiltration.ofIso C
+      (HNFiltration.mapF
+        (P' := fun phi X => s.P phi (e.functor.obj X)) Fil e.inverse
+        (fun phi X h => ObjectProperty.prop_of_iso _
+          (e.counitIso.app X).symm h))
+      (e.unitIso.app E).symm⟩
+
+/-- The preimage slicing along a triangulated equivalence is detected exactly
+by the equivalence functor. -/
+theorem Slicing.preimage_equivalence_P (s : Slicing D) (e : C ≌ D)
+    [e.functor.Additive] [e.inverse.Additive]
+    [e.functor.CommShift ℤ] [e.inverse.CommShift ℤ]
+    [e.functor.IsTriangulated] [e.inverse.IsTriangulated]
+    (phi : ℝ) (X : C) :
+    (s.preimage e.functor (s.preimageData_equivalence e)).P phi X ↔
+      s.P phi (e.functor.obj X) :=
+  Iff.rfl
 
 /-- For a faithful functor, target Hom-vanishing supplies the Hom component of
 `PreimageData`; only HN existence remains to be proved. -/

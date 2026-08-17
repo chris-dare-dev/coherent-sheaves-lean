@@ -3,6 +3,8 @@ Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under the MIT license.
 -/
 import DerivedAlgGeo.CategoryTheory.Triangulated.TStructure.Exactness
+import DerivedAlgGeo.CategoryTheory.Triangulated.TStructure.Restriction
+import DerivedAlgGeo.CategoryTheory.Triangulated.TStructure.Aisle
 import DerivedAlgGeo.CategoryTheory.Triangulated.TStructure.Shift
 import DerivedAlgGeo.CategoryTheory.Triangulated.TStructure.ShiftNaturality
 

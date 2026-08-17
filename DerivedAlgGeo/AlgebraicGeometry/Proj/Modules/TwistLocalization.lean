@@ -199,7 +199,14 @@ private def twistInverseOfMem (hfS : f ∈ S) : Localization S :=
 private def twistForwardOfMem : Localization S :=
   Localization.mk (f ^ d) 1
 
-/-- Divide an `A(d)` fraction by `f ^ d` in any localization in which `f` is invertible. -/
+/-- Divide an `A(d)` fraction by `f ^ d`, given that `f` itself lies in `S`.
+
+Membership is genuinely the hypothesis consumed, not merely invertibility of `f` in
+`Localization S`: the graded representative below keeps every denominator inside `S` by
+multiplying `c.den` by `f ^ d`, which needs `f ^ d ∈ S`.  When `f` is only invertible — the
+Čech-intersection case, where the denominator submonoid contains no degree-one element at
+all — use `natShiftLinearEquivOfMulMem`, which asks instead for a homogeneous cofactor `h`
+with `f * h ∈ S`; taking `h = 1` recovers the membership hypothesis. -/
 noncomputable def natShiftToSelfLinearMapOfMem (hfS : f ∈ S) :
     DegreeZeroLocalization 𝒜 (natShift 𝒜 d) S →ₗ[
       HomogeneousLocalization 𝒜 S] DegreeZeroLocalization 𝒜 𝒜 S where
@@ -449,6 +456,529 @@ theorem natShiftLinearEquivOfMulMem_apply_mk {h : A} {e : ℕ} (h_deg : h ∈ �
   · exact mul_comm _ _
   · ext
     exact mul_comm _ _
+
+/-! ## Integer twists
+
+`intShift 𝒜 d` is the zero-extended integer shift: its degree-`n` piece asks for an element of
+`𝒜 k` with `(k : ℤ) = n + d`, and retains `0` when that integer is negative.
+
+Lowering the twist by `e` while raising the fraction's degree by `e` leaves that integer
+condition *identical* — `((n + e : ℕ) : ℤ) + (d - e) = (n : ℤ) + d`. So multiplying the
+denominator by `f ^ e` transports the whole disjunctive membership verbatim, and in particular
+the zero branch needs no separate treatment. That is what makes the integer case no harder than
+the natural one here, and it is the step a negative twist is built from: taking `d = 0` sends
+`A` to `A(-e)`.
+-/
+
+section IntShift
+
+variable {f : A} {S : Submonoid A}
+
+omit [GradedRing 𝒜] in
+/-- The integer-shift membership condition depends only on the integer `n + d`, so raising the
+degree by `e` and lowering the twist by `e` is the same condition. -/
+theorem mem_intShift_sub_natCast_add (d : ℤ) (e n : ℕ) (a : A) :
+    a ∈ intShift 𝒜 (d - e) (n + e) ↔ a ∈ intShift 𝒜 d n := by
+  simp only [intShift_apply, mem_intShiftPiece]
+  constructor
+  · rintro (rfl | ⟨k, hk, ha⟩)
+    · exact Or.inl rfl
+    · exact Or.inr ⟨k, by push_cast at hk ⊢; omega, ha⟩
+  · rintro (rfl | ⟨k, hk, ha⟩)
+    · exact Or.inl rfl
+    · exact Or.inr ⟨k, by push_cast at hk ⊢; omega, ha⟩
+
+/-- Divide an `A(d)` fraction by `f ^ e`, lowering the integer twist to `d - e`.
+
+Only membership of `f` in the denominator submonoid is used, exactly as in the nonnegative
+case; the twist `d` is unconstrained in sign. -/
+noncomputable def intShiftLowerLinearMap (hf : f ∈ 𝒜 1) (d : ℤ) (e : ℕ) (hfS : f ∈ S) :
+    DegreeZeroLocalization 𝒜 (intShift 𝒜 d) S →ₗ[
+      HomogeneousLocalization 𝒜 S] DegreeZeroLocalization 𝒜 (intShift 𝒜 (d - e)) S where
+  toFun z := by
+    refine ⟨twistInverseOfMem (f := f) e hfS • (z : LocalizedModule S A), ?_⟩
+    obtain ⟨c, hc⟩ := z.property
+    refine ⟨
+      { deg := c.deg + e
+        num := ⟨(c.num : A),
+          (mem_intShift_sub_natCast_add 𝒜 d e c.deg (c.num : A)).mpr c.num.2⟩
+        den := ⟨(c.den : A) * f ^ e, by
+          simpa using SetLike.mul_mem_graded c.den.2 (SetLike.pow_mem_graded e hf)⟩
+        den_mem := S.mul_mem c.den_mem (S.pow_mem hfS e) }, ?_⟩
+    rw [← hc]
+    change LocalizedModule.mk (c.num : A)
+        (⟨(c.den : A) * f ^ e, _⟩ : S) =
+      Localization.mk 1 (twistPowerOfMem (f := f) e hfS) •
+        LocalizedModule.mk (c.num : A) ⟨(c.den : A), c.den_mem⟩
+    rw [LocalizedModule.mk_smul_mk]
+    simp only [one_smul]
+    congr 1
+    ext
+    exact mul_comm _ _
+  map_add' x y := by
+    apply ext
+    simp only [coe_add]
+    exact smul_add (twistInverseOfMem (f := f) e hfS)
+      (x : LocalizedModule S A) y
+  map_smul' a z := by
+    apply ext
+    simp only [coe_smul]
+    exact smul_comm (twistInverseOfMem (f := f) e hfS) a
+      (z : LocalizedModule S A)
+
+/-- Multiplying the numerator by `f ^ e` raises an integer twist back by `e`. -/
+theorem mul_pow_mem_intShift (hf : f ∈ 𝒜 1) (d : ℤ) (e n : ℕ) (a : A)
+    (ha : a ∈ intShift 𝒜 (d - e) n) : a * f ^ e ∈ intShift 𝒜 d n := by
+  simp only [intShift_apply, mem_intShiftPiece] at ha ⊢
+  rcases ha with rfl | ⟨k, hk, ha⟩
+  · exact Or.inl (zero_mul _)
+  · refine Or.inr ⟨k + e, ?_, ?_⟩
+    · push_cast at hk ⊢; omega
+    · simpa using SetLike.mul_mem_graded ha (SetLike.pow_mem_graded e hf)
+
+/-- Multiply an `A(d - e)` fraction by `f ^ e`, raising the integer twist back to `d`. -/
+noncomputable def intShiftRaiseLinearMap (hf : f ∈ 𝒜 1) (d : ℤ) (e : ℕ) :
+    DegreeZeroLocalization 𝒜 (intShift 𝒜 (d - e)) S →ₗ[
+      HomogeneousLocalization 𝒜 S] DegreeZeroLocalization 𝒜 (intShift 𝒜 d) S where
+  toFun z := by
+    refine ⟨twistForwardOfMem (S := S) (f := f) e • (z : LocalizedModule S A), ?_⟩
+    obtain ⟨c, hc⟩ := z.property
+    refine ⟨
+      { deg := c.deg
+        num := ⟨(c.num : A) * f ^ e,
+          mul_pow_mem_intShift 𝒜 hf d e c.deg (c.num : A) c.num.2⟩
+        den := c.den
+        den_mem := c.den_mem }, ?_⟩
+    rw [← hc]
+    change LocalizedModule.mk ((c.num : A) * f ^ e) (⟨(c.den : A), c.den_mem⟩ : S) =
+      Localization.mk (f ^ e) 1 •
+        LocalizedModule.mk (c.num : A) ⟨(c.den : A), c.den_mem⟩
+    rw [LocalizedModule.mk_smul_mk]
+    congr 1
+    · exact mul_comm _ _
+    · ext
+      exact (one_mul _).symm
+  map_add' x y := by
+    apply ext
+    simp only [coe_add]
+    exact smul_add (twistForwardOfMem (S := S) (f := f) e)
+      (x : LocalizedModule S A) y
+  map_smul' a z := by
+    apply ext
+    simp only [coe_smul]
+    exact smul_comm (twistForwardOfMem (S := S) (f := f) e) a
+      (z : LocalizedModule S A)
+
+/-- Multiplication and division by `f ^ e` identify an integer twist with its lowering by `e`.
+
+Taking `d = 0` gives `A ≃ A(-e)` over any localization containing `f`, which is the negative
+twist the Serre-finiteness dévissage needs. The sign of `d` plays no role. -/
+noncomputable def intShiftLowerLinearEquiv (hf : f ∈ 𝒜 1) (d : ℤ) (e : ℕ) (hfS : f ∈ S) :
+    DegreeZeroLocalization 𝒜 (intShift 𝒜 d) S ≃ₗ[
+      HomogeneousLocalization 𝒜 S] DegreeZeroLocalization 𝒜 (intShift 𝒜 (d - e)) S where
+  toLinearMap := intShiftLowerLinearMap 𝒜 hf d e hfS
+  invFun := intShiftRaiseLinearMap 𝒜 hf d e
+  left_inv z := by
+    apply ext
+    change twistForwardOfMem (S := S) (f := f) e •
+      (twistInverseOfMem (f := f) e hfS • (z : LocalizedModule S A)) = z
+    rw [← mul_smul, mul_comm, twistInverseOfMem_mul_forward (f := f) e hfS, one_smul]
+  right_inv z := by
+    apply ext
+    change twistInverseOfMem (f := f) e hfS •
+      (twistForwardOfMem (S := S) (f := f) e • (z : LocalizedModule S A)) = z
+    rw [← mul_smul, twistInverseOfMem_mul_forward (f := f) e hfS, one_smul]
+
+@[simp]
+theorem intShiftLowerLinearEquiv_apply_mk (hf : f ∈ 𝒜 1) (d : ℤ) (e : ℕ) (hfS : f ∈ S)
+    (c : NumDenSameDeg 𝒜 (intShift 𝒜 d) S) :
+    intShiftLowerLinearEquiv 𝒜 hf d e hfS (DegreeZeroLocalization.mk c) =
+      DegreeZeroLocalization.mk
+        { deg := c.deg + e
+          num := ⟨(c.num : A),
+            (mem_intShift_sub_natCast_add 𝒜 d e c.deg (c.num : A)).mpr c.num.2⟩
+          den := ⟨(c.den : A) * f ^ e, by
+            simpa using SetLike.mul_mem_graded c.den.2 (SetLike.pow_mem_graded e hf)⟩
+          den_mem := S.mul_mem c.den_mem (S.pow_mem hfS e) } := by
+  apply ext
+  change Localization.mk 1 (twistPowerOfMem (f := f) e hfS) •
+      LocalizedModule.mk (c.num : A) ⟨(c.den : A), c.den_mem⟩ =
+    LocalizedModule.mk (c.num : A)
+      ⟨(c.den : A) * f ^ e, S.mul_mem c.den_mem (S.pow_mem hfS e)⟩
+  rw [LocalizedModule.mk_smul_mk]
+  simp only [one_smul]
+  congr 1
+  ext
+  exact mul_comm _ _
+
+/-! ### Reaching twist zero
+
+`intShiftLowerLinearEquiv` computes its target as `d - e`, which is awkward to aim at a
+prescribed twist: hitting `A(0)` from `A(d)` would need `d - e` to be *definitionally* zero. The
+hypothesis-carrying form below takes the target twist as a parameter instead, so a caller
+supplies the arithmetic as a proof rather than fighting a transport. -/
+
+/-- `intShiftLowerLinearEquiv` with the target twist named rather than computed. -/
+noncomputable def intShiftShiftLinearEquiv (hf : f ∈ 𝒜 1) (d d' : ℤ) (e : ℕ)
+    (hdd' : d' = d - e) (hfS : f ∈ S) :
+    DegreeZeroLocalization 𝒜 (intShift 𝒜 d) S ≃ₗ[
+      HomogeneousLocalization 𝒜 S] DegreeZeroLocalization 𝒜 (intShift 𝒜 d') S := by
+  subst hdd'
+  exact intShiftLowerLinearEquiv 𝒜 hf d e hfS
+
+/-! ### Trivializing an integer twist, without a sign split in the term
+
+Writing the trivialization as `if 0 ≤ d then … else …` type-checks, but it makes every
+downstream computation branch: a locally fractional section carries an explicit
+degree/numerator/denominator certificate, so a caller needs a formula for the image of `mk c`,
+and a definition by cases yields one formula per branch forever after.
+
+There is a single formula covering both signs. Multiplying by
+
+`f ^ (-d).toNat / f ^ d.toNat`
+
+divides by `f ^ d` when `d ≥ 0` and multiplies by `f ^ (-d)` when `d < 0`, because exactly one
+of `d.toNat` and `(-d).toNat` is nonzero. The sign of `d` then appears only inside the
+degree bookkeeping, discharged by `omega`, and never in the term. -/
+
+/-- The scalar trivializing an integer twist: `f ^ (-d)` over `f ^ d`, with both exponents
+truncated at zero so that exactly one of them is active. -/
+private def intTwistScalar (d : ℤ) (hfS : f ∈ S) : Localization S :=
+  Localization.mk (f ^ (-d).toNat) (twistPowerOfMem (f := f) d.toNat hfS)
+
+/-- The numerator of the trivialized fraction lies in the degree the denominator does. -/
+theorem mul_pow_toNat_mem_intShift_zero (hf : f ∈ 𝒜 1) (d : ℤ) (n : ℕ) (a : A)
+    (ha : a ∈ intShift 𝒜 d n) :
+    a * f ^ (-d).toNat ∈ intShift 𝒜 0 (n + d.toNat) := by
+  simp only [intShift_apply, mem_intShiftPiece] at ha ⊢
+  rcases ha with rfl | ⟨k, hk, ha⟩
+  · exact Or.inl (zero_mul _)
+  · refine Or.inr ⟨n + d.toNat, by push_cast; omega, ?_⟩
+    have hidx : k + (-d).toNat = n + d.toNat := by omega
+    have := SetLike.mul_mem_graded ha (SetLike.pow_mem_graded (-d).toNat hf)
+    simpa [hidx] using this
+
+/-- Every integer twist is trivial on a localization containing a degree-one element.
+
+One formula covers both signs; see the section comment. -/
+noncomputable def intShiftZeroLinearEquiv (hf : f ∈ 𝒜 1) (d : ℤ) (hfS : f ∈ S) :
+    DegreeZeroLocalization 𝒜 (intShift 𝒜 d) S ≃ₗ[
+      HomogeneousLocalization 𝒜 S] DegreeZeroLocalization 𝒜 (intShift 𝒜 0) S where
+  toFun z := by
+    refine ⟨intTwistScalar (f := f) d hfS • (z : LocalizedModule S A), ?_⟩
+    obtain ⟨c, hc⟩ := z.property
+    refine ⟨
+      { deg := c.deg + d.toNat
+        num := ⟨(c.num : A) * f ^ (-d).toNat,
+          mul_pow_toNat_mem_intShift_zero 𝒜 hf d c.deg (c.num : A) c.num.2⟩
+        den := ⟨(c.den : A) * f ^ d.toNat, by
+          simpa using SetLike.mul_mem_graded c.den.2
+            (SetLike.pow_mem_graded d.toNat hf)⟩
+        den_mem := S.mul_mem c.den_mem (S.pow_mem hfS d.toNat) }, ?_⟩
+    rw [← hc]
+    change LocalizedModule.mk ((c.num : A) * f ^ (-d).toNat)
+        (⟨(c.den : A) * f ^ d.toNat, _⟩ : S) =
+      Localization.mk (f ^ (-d).toNat) (twistPowerOfMem (f := f) d.toNat hfS) •
+        LocalizedModule.mk (c.num : A) ⟨(c.den : A), c.den_mem⟩
+    rw [LocalizedModule.mk_smul_mk]
+    congr 1
+    · exact mul_comm _ _
+    · ext
+      exact mul_comm _ _
+  map_add' x y := by
+    apply ext
+    simp only [coe_add]
+    exact smul_add (intTwistScalar (f := f) d hfS) (x : LocalizedModule S A) y
+  map_smul' a z := by
+    apply ext
+    simp only [coe_smul]
+    exact smul_comm (intTwistScalar (f := f) d hfS) a (z : LocalizedModule S A)
+  invFun z := by
+    refine ⟨Localization.mk (f ^ d.toNat)
+      (twistPowerOfMem (f := f) (-d).toNat hfS) • (z : LocalizedModule S A), ?_⟩
+    obtain ⟨c, hc⟩ := z.property
+    refine ⟨
+      { deg := c.deg + (-d).toNat
+        num := ⟨(c.num : A) * f ^ d.toNat, ?_⟩
+        den := ⟨(c.den : A) * f ^ (-d).toNat, by
+          simpa using SetLike.mul_mem_graded c.den.2
+            (SetLike.pow_mem_graded (-d).toNat hf)⟩
+        den_mem := S.mul_mem c.den_mem (S.pow_mem hfS (-d).toNat) }, ?_⟩
+    · simp only [intShift_apply, mem_intShiftPiece] at c ⊢
+      rcases c.num.2 with h0 | ⟨k, hk, ha⟩
+      · exact Or.inl (by rw [show (c.num : A) = 0 from h0]; exact zero_mul _)
+      · refine Or.inr ⟨k + d.toNat, by push_cast at hk ⊢; omega, ?_⟩
+        simpa using SetLike.mul_mem_graded ha (SetLike.pow_mem_graded d.toNat hf)
+    · rw [← hc]
+      change LocalizedModule.mk ((c.num : A) * f ^ d.toNat)
+          (⟨(c.den : A) * f ^ (-d).toNat, _⟩ : S) =
+        Localization.mk (f ^ d.toNat) (twistPowerOfMem (f := f) (-d).toNat hfS) •
+          LocalizedModule.mk (c.num : A) ⟨(c.den : A), c.den_mem⟩
+      rw [LocalizedModule.mk_smul_mk]
+      congr 1
+      · exact mul_comm _ _
+      · ext
+        exact mul_comm _ _
+  left_inv z := by
+    apply ext
+    change Localization.mk (f ^ d.toNat) (twistPowerOfMem (f := f) (-d).toNat hfS) •
+      (intTwistScalar (f := f) d hfS • (z : LocalizedModule S A)) = z
+    rw [← mul_smul, intTwistScalar, Localization.mk_mul]
+    rw [show Localization.mk (f ^ d.toNat * f ^ (-d).toNat)
+        (twistPowerOfMem (f := f) (-d).toNat hfS *
+          twistPowerOfMem (f := f) d.toNat hfS) = 1 from ?_, one_smul]
+    rw [mul_comm (f ^ d.toNat : A) (f ^ (-d).toNat)]
+    exact Localization.mk_self (twistPowerOfMem (f := f) (-d).toNat hfS *
+      twistPowerOfMem (f := f) d.toNat hfS)
+  right_inv z := by
+    apply ext
+    change intTwistScalar (f := f) d hfS •
+      (Localization.mk (f ^ d.toNat) (twistPowerOfMem (f := f) (-d).toNat hfS) •
+        (z : LocalizedModule S A)) = z
+    rw [← mul_smul, intTwistScalar, Localization.mk_mul]
+    rw [show Localization.mk (f ^ (-d).toNat * f ^ d.toNat)
+        (twistPowerOfMem (f := f) d.toNat hfS *
+          twistPowerOfMem (f := f) (-d).toNat hfS) = 1 from ?_, one_smul]
+    rw [mul_comm (f ^ (-d).toNat : A) (f ^ d.toNat)]
+    exact Localization.mk_self (twistPowerOfMem (f := f) d.toNat hfS *
+      twistPowerOfMem (f := f) (-d).toNat hfS)
+
+/-- The trivialization in explicit fractions, in one formula for both signs.
+
+This is what makes the uniform definition worth having: a locally fractional section carries a
+degree/numerator/denominator certificate, and rebuilding it downstream needs exactly this
+rule — once, not once per sign. -/
+@[simp]
+theorem intShiftZeroLinearEquiv_apply_mk (hf : f ∈ 𝒜 1) (d : ℤ) (hfS : f ∈ S)
+    (c : NumDenSameDeg 𝒜 (intShift 𝒜 d) S) :
+    intShiftZeroLinearEquiv 𝒜 hf d hfS (DegreeZeroLocalization.mk c) =
+      DegreeZeroLocalization.mk
+        { deg := c.deg + d.toNat
+          num := ⟨(c.num : A) * f ^ (-d).toNat,
+            mul_pow_toNat_mem_intShift_zero 𝒜 hf d c.deg (c.num : A) c.num.2⟩
+          den := ⟨(c.den : A) * f ^ d.toNat, by
+            simpa using SetLike.mul_mem_graded c.den.2
+              (SetLike.pow_mem_graded d.toNat hf)⟩
+          den_mem := S.mul_mem c.den_mem (S.pow_mem hfS d.toNat) } := by
+  apply ext
+  change Localization.mk (f ^ (-d).toNat) (twistPowerOfMem (f := f) d.toNat hfS) •
+      LocalizedModule.mk (c.num : A) ⟨(c.den : A), c.den_mem⟩ =
+    LocalizedModule.mk ((c.num : A) * f ^ (-d).toNat)
+      ⟨(c.den : A) * f ^ d.toNat, S.mul_mem c.den_mem (S.pow_mem hfS d.toNat)⟩
+  rw [LocalizedModule.mk_smul_mk]
+  congr 1
+  · exact mul_comm _ _
+  · ext
+    exact mul_comm _ _
+
+/-- The numerator of the inverse trivialization lies in the twist it should. -/
+theorem mul_pow_toNat_mem_intShift (hf : f ∈ 𝒜 1) (d : ℤ) (n : ℕ) (a : A)
+    (ha : a ∈ intShift 𝒜 0 n) : a * f ^ d.toNat ∈ intShift 𝒜 d (n + (-d).toNat) := by
+  simp only [intShift_apply, mem_intShiftPiece] at ha ⊢
+  rcases ha with rfl | ⟨k, hk, ha⟩
+  · exact Or.inl (zero_mul _)
+  · refine Or.inr ⟨k + d.toNat, by push_cast at hk ⊢; omega, ?_⟩
+    simpa using SetLike.mul_mem_graded ha (SetLike.pow_mem_graded d.toNat hf)
+
+/-- The inverse trivialization in explicit fractions, again in one formula for both signs. -/
+@[simp]
+theorem intShiftZeroLinearEquiv_symm_apply_mk (hf : f ∈ 𝒜 1) (d : ℤ) (hfS : f ∈ S)
+    (c : NumDenSameDeg 𝒜 (intShift 𝒜 0) S) :
+    (intShiftZeroLinearEquiv 𝒜 hf d hfS).symm (DegreeZeroLocalization.mk c) =
+      DegreeZeroLocalization.mk
+        { deg := c.deg + (-d).toNat
+          num := ⟨(c.num : A) * f ^ d.toNat,
+            mul_pow_toNat_mem_intShift 𝒜 hf d c.deg (c.num : A) c.num.2⟩
+          den := ⟨(c.den : A) * f ^ (-d).toNat, by
+            simpa using SetLike.mul_mem_graded c.den.2
+              (SetLike.pow_mem_graded (-d).toNat hf)⟩
+          den_mem := S.mul_mem c.den_mem (S.pow_mem hfS (-d).toNat) } := by
+  apply ext
+  change Localization.mk (f ^ d.toNat) (twistPowerOfMem (f := f) (-d).toNat hfS) •
+      LocalizedModule.mk (c.num : A) ⟨(c.den : A), c.den_mem⟩ =
+    LocalizedModule.mk ((c.num : A) * f ^ d.toNat)
+      ⟨(c.den : A) * f ^ (-d).toNat, S.mul_mem c.den_mem (S.pow_mem hfS (-d).toNat)⟩
+  rw [LocalizedModule.mk_smul_mk]
+  congr 1
+  · exact mul_comm _ _
+  · ext
+    exact mul_comm _ _
+
+/-! ### The cofactor form, for Čech intersections
+
+`intShiftZeroLinearEquiv` asks for `f ∈ S`. A Čech intersection cannot supply that: the
+denominator there is `∏ₐ X_{x a}`, homogeneous of degree `n + 1`, so for `n ≥ 1` its powers
+submonoid contains no degree-one element at all. What is available is a homogeneous cofactor `h`
+with `f * h ∈ S` — the product of the remaining variables.
+
+The scalar is parameterized by its two exponents rather than by `d` directly. That is not
+cosmetic: writing the inverse as the `-d` instance of the same definition puts `(- -d).toNat`
+in the term, which is only propositionally `d.toNat`, and every subsequent `change` fails on it.
+Naming the exponents makes the forward and inverse scalars the *same* definition with the pair
+swapped, and their product telescopes to `(f * h) ^ (a + b)` over itself. -/
+
+/-- The cofactor scalar `h ^ a * f ^ b / (f * h) ^ a`, which equals `f ^ (b - a)` in the
+localization while keeping every denominator inside `S`. -/
+private def cofactorScalar {h : A} (a b : ℕ) (hfh : f * h ∈ S) : Localization S :=
+  Localization.mk (h ^ a * f ^ b) (twistPowerOfMulMem (f := f) a hfh)
+
+omit [GradedRing 𝒜] in
+/-- Swapping the two exponents inverts the cofactor scalar. -/
+private theorem cofactorScalar_mul {h : A} (a b : ℕ) (hfh : f * h ∈ S) :
+    cofactorScalar (f := f) (h := h) a b hfh *
+      cofactorScalar (f := f) (h := h) b a hfh = 1 := by
+  unfold cofactorScalar twistPowerOfMulMem
+  rw [Localization.mk_mul]
+  have hnum : (h ^ a * f ^ b) * (h ^ b * f ^ a) = ((f * h) ^ (a + b) : A) := by
+    rw [mul_pow, pow_add, pow_add]
+    ring
+  have hden : ((⟨(f * h) ^ a, S.pow_mem hfh a⟩ : S) * ⟨(f * h) ^ b, S.pow_mem hfh b⟩) =
+      ⟨(f * h) ^ (a + b), S.pow_mem hfh (a + b)⟩ := by
+    ext
+    exact (pow_add _ _ _).symm
+  rw [hnum, hden]
+  exact Localization.mk_self (⟨(f * h) ^ (a + b), S.pow_mem hfh (a + b)⟩ : S)
+
+/-- Degrees for the cofactor trivialization: multiplying by `h ^ a * f ^ b` carries the twist
+`(a : ℤ) - b` to the twist zero. -/
+theorem mul_pow_mul_pow_mem_intShift_zero {h : A} {e : ℕ} (hf : f ∈ 𝒜 1) (h_deg : h ∈ 𝒜 e)
+    (a b : ℕ) (d : ℤ) (hd : d = (a : ℤ) - b) (n : ℕ) (x : A)
+    (hx : x ∈ intShift 𝒜 d n) :
+    x * h ^ a * f ^ b ∈ intShift 𝒜 0 (n + a * (1 + e)) := by
+  simp only [intShift_apply, mem_intShiftPiece] at hx ⊢
+  rcases hx with rfl | ⟨k, hk, hx⟩
+  · exact Or.inl (by simp)
+  · refine Or.inr ⟨n + a * (1 + e), by push_cast; omega, ?_⟩
+    have hkey : k + b = n + a := by subst hd; omega
+    have hidx : k + a * e + b = n + a * (1 + e) := by
+      rw [Nat.mul_add, Nat.mul_one]
+      omega
+    have hmul := SetLike.mul_mem_graded
+      (SetLike.mul_mem_graded hx (SetLike.pow_mem_graded a h_deg))
+      (SetLike.pow_mem_graded b hf)
+    simpa [hidx] using hmul
+
+/-- The same, in the direction that produces the twist rather than removing it. -/
+theorem mul_pow_mul_pow_mem_intShift {h : A} {e : ℕ} (hf : f ∈ 𝒜 1) (h_deg : h ∈ 𝒜 e)
+    (a b : ℕ) (d : ℤ) (hd : d = (a : ℤ) - b) (n : ℕ) (x : A)
+    (hx : x ∈ intShift 𝒜 0 n) :
+    x * h ^ b * f ^ a ∈ intShift 𝒜 d (n + b * (1 + e)) := by
+  simp only [intShift_apply, mem_intShiftPiece] at hx ⊢
+  rcases hx with rfl | ⟨k, hk, hx⟩
+  · exact Or.inl (by simp)
+  · refine Or.inr ⟨k + b * e + a, ?_, ?_⟩
+    · have hkn : k = n := by omega
+      have hexp : n + b * (1 + e) = n + b + b * e := by ring
+      rw [hexp, hkn]
+      push_cast
+      omega
+    · have hmul := SetLike.mul_mem_graded
+        (SetLike.mul_mem_graded hx (SetLike.pow_mem_graded b h_deg))
+        (SetLike.pow_mem_graded a hf)
+      simpa using hmul
+
+/-- Trivializing an integer twist when `f` is only invertible in `S`, via a homogeneous cofactor.
+
+This is the form the Čech intersections need: there `f` is one variable of the index and `h` is
+the product of the others. The twist is given as `(a : ℤ) - b` so that the caller chooses the
+exponents; `a = d.toNat`, `b = (-d).toNat` recovers an arbitrary `d`. -/
+noncomputable def intShiftZeroLinearEquivOfMulMem {h : A} {e : ℕ} (hf : f ∈ 𝒜 1)
+    (h_deg : h ∈ 𝒜 e) (a b : ℕ) (d : ℤ) (hd : d = (a : ℤ) - b) (hfh : f * h ∈ S) :
+    DegreeZeroLocalization 𝒜 (intShift 𝒜 d) S ≃ₗ[
+      HomogeneousLocalization 𝒜 S] DegreeZeroLocalization 𝒜 (intShift 𝒜 0) S where
+  toFun z := by
+    refine ⟨cofactorScalar (f := f) (h := h) a b hfh • (z : LocalizedModule S A), ?_⟩
+    obtain ⟨c, hc⟩ := z.property
+    refine ⟨
+      { deg := c.deg + a * (1 + e)
+        num := ⟨(c.num : A) * h ^ a * f ^ b,
+          mul_pow_mul_pow_mem_intShift_zero 𝒜 hf h_deg a b d hd c.deg (c.num : A) c.num.2⟩
+        den := ⟨(c.den : A) * (f * h) ^ a, by
+          simpa using SetLike.mul_mem_graded c.den.2
+            (SetLike.pow_mem_graded a (SetLike.mul_mem_graded hf h_deg))⟩
+        den_mem := S.mul_mem c.den_mem (S.pow_mem hfh a) }, ?_⟩
+    rw [← hc]
+    change LocalizedModule.mk ((c.num : A) * h ^ a * f ^ b)
+        (⟨(c.den : A) * (f * h) ^ a, S.mul_mem c.den_mem (S.pow_mem hfh a)⟩ : S) =
+      Localization.mk (h ^ a * f ^ b) (twistPowerOfMulMem (f := f) a hfh) •
+        LocalizedModule.mk (c.num : A) ⟨(c.den : A), c.den_mem⟩
+    rw [LocalizedModule.mk_smul_mk]
+    congr 1
+    · rw [mul_assoc]
+      exact mul_comm _ _
+    · ext
+      exact mul_comm _ _
+  map_add' x y := by
+    apply ext
+    simp only [coe_add]
+    exact smul_add (cofactorScalar (f := f) (h := h) a b hfh)
+      (x : LocalizedModule S A) y
+  map_smul' r z := by
+    apply ext
+    simp only [coe_smul]
+    exact smul_comm (cofactorScalar (f := f) (h := h) a b hfh) r
+      (z : LocalizedModule S A)
+  invFun z := by
+    refine ⟨cofactorScalar (f := f) (h := h) b a hfh • (z : LocalizedModule S A), ?_⟩
+    obtain ⟨c, hc⟩ := z.property
+    refine ⟨
+      { deg := c.deg + b * (1 + e)
+        num := ⟨(c.num : A) * h ^ b * f ^ a,
+          mul_pow_mul_pow_mem_intShift 𝒜 hf h_deg a b d hd c.deg (c.num : A) c.num.2⟩
+        den := ⟨(c.den : A) * (f * h) ^ b, by
+          simpa using SetLike.mul_mem_graded c.den.2
+            (SetLike.pow_mem_graded b (SetLike.mul_mem_graded hf h_deg))⟩
+        den_mem := S.mul_mem c.den_mem (S.pow_mem hfh b) }, ?_⟩
+    rw [← hc]
+    change LocalizedModule.mk ((c.num : A) * h ^ b * f ^ a)
+        (⟨(c.den : A) * (f * h) ^ b, S.mul_mem c.den_mem (S.pow_mem hfh b)⟩ : S) =
+      Localization.mk (h ^ b * f ^ a) (twistPowerOfMulMem (f := f) b hfh) •
+        LocalizedModule.mk (c.num : A) ⟨(c.den : A), c.den_mem⟩
+    rw [LocalizedModule.mk_smul_mk]
+    congr 1
+    · rw [mul_assoc]
+      exact mul_comm _ _
+    · ext
+      exact mul_comm _ _
+  left_inv z := by
+    apply ext
+    change cofactorScalar (f := f) (h := h) b a hfh •
+      (cofactorScalar (f := f) (h := h) a b hfh • (z : LocalizedModule S A)) = z
+    rw [← mul_smul, mul_comm, cofactorScalar_mul (f := f) (h := h) a b hfh, one_smul]
+  right_inv z := by
+    apply ext
+    change cofactorScalar (f := f) (h := h) a b hfh •
+      (cofactorScalar (f := f) (h := h) b a hfh • (z : LocalizedModule S A)) = z
+    rw [← mul_smul, cofactorScalar_mul (f := f) (h := h) a b hfh, one_smul]
+
+/-- The cofactor trivialization in explicit fractions. -/
+@[simp]
+theorem intShiftZeroLinearEquivOfMulMem_apply_mk {h : A} {e : ℕ} (hf : f ∈ 𝒜 1)
+    (h_deg : h ∈ 𝒜 e) (a b : ℕ) (d : ℤ) (hd : d = (a : ℤ) - b) (hfh : f * h ∈ S)
+    (c : NumDenSameDeg 𝒜 (intShift 𝒜 d) S) :
+    intShiftZeroLinearEquivOfMulMem 𝒜 hf h_deg a b d hd hfh
+        (DegreeZeroLocalization.mk c) =
+      DegreeZeroLocalization.mk
+        { deg := c.deg + a * (1 + e)
+          num := ⟨(c.num : A) * h ^ a * f ^ b,
+            mul_pow_mul_pow_mem_intShift_zero 𝒜 hf h_deg a b d hd c.deg (c.num : A) c.num.2⟩
+          den := ⟨(c.den : A) * (f * h) ^ a, by
+            simpa using SetLike.mul_mem_graded c.den.2
+              (SetLike.pow_mem_graded a (SetLike.mul_mem_graded hf h_deg))⟩
+          den_mem := S.mul_mem c.den_mem (S.pow_mem hfh a) } := by
+  apply ext
+  change Localization.mk (h ^ a * f ^ b) (twistPowerOfMulMem (f := f) a hfh) •
+      LocalizedModule.mk (c.num : A) ⟨(c.den : A), c.den_mem⟩ =
+    LocalizedModule.mk ((c.num : A) * h ^ a * f ^ b)
+      ⟨(c.den : A) * (f * h) ^ a, S.mul_mem c.den_mem (S.pow_mem hfh a)⟩
+  rw [LocalizedModule.mk_smul_mk]
+  congr 1
+  · rw [mul_assoc]
+    exact mul_comm _ _
+  · ext
+    exact mul_comm _ _
+
+end IntShift
 
 end DegreeZeroLocalization
 

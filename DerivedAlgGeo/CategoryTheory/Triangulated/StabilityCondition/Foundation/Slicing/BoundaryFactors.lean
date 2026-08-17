@@ -29,7 +29,7 @@ theorem HNFiltration.n_pos {P : ℝ → ObjectProperty C} {E : C}
     (F : HNFiltration C P E) (hE : ¬IsZero E) : 0 < F.n := by
   by_contra hn
   push Not at hn
-  exact hE (F.zero_isZero (by omega))
+  exact hE (F.isZero_of_length_zero (by omega))
 
 /-- Some factor of an HN filtration of a nonzero object is nonzero. -/
 theorem HNFiltration.exists_nonzero_factor {P : ℝ → ObjectProperty C} {E : C}
@@ -92,7 +92,6 @@ def HNFiltration.dropFirst {P : ℝ → ObjectProperty C} {E : C}
           ext
           simp only
           omega)).trans (Classical.choice F.top_iso)⟩
-      zero_isZero := fun h => by omega
       φ := fun i => F.φ ⟨i.val + 1, by omega⟩
       hφ := by
         intro i j hij
@@ -112,7 +111,7 @@ theorem Slicing.exists_hn_nonzero_first (s : Slicing C) {E : C} (hE : ¬IsZero E
   induction m with
   | zero =>
       intro G hG
-      exact absurd (G.zero_isZero (by omega)) hE
+      exact absurd (G.isZero_of_length_zero (by omega)) hE
   | succ m ih =>
       intro G hG
       have hn : 0 < G.n := G.n_pos C hE
@@ -138,7 +137,7 @@ def HNFiltration.dropLast {P : ℝ → ObjectProperty C} {E : C}
     (Triangle.isZero₃_iff_isIso₁ T (F.triangle_dist ⟨F.n - 1, by omega⟩)).mp hzero
   let e₁ := Classical.choice (F.triangle_obj₁ ⟨F.n - 1, by omega⟩)
   let e₂ := Classical.choice (F.triangle_obj₂ ⟨F.n - 1, by omega⟩)
-  let G := F.prefix C (F.n - 1) (by omega) (by omega)
+  let G := F.prefix C (F.n - 1) (by omega)
   exact
     { n := F.n - 1
       chain := G.chain
@@ -155,7 +154,6 @@ def HNFiltration.dropLast {P : ℝ → ObjectProperty C} {E : C}
             ext
             simp only
             omega)).trans (Classical.choice F.top_iso)))))⟩
-      zero_isZero := fun h => by omega
       φ := G.φ
       hφ := G.hφ
       semistable := G.semistable }
@@ -172,7 +170,7 @@ theorem Slicing.exists_hn_nonzero_last (s : Slicing C) {E : C} (hE : ¬IsZero E)
   induction m with
   | zero =>
       intro G hG
-      exact absurd (G.zero_isZero (by omega)) hE
+      exact absurd (G.isZero_of_length_zero (by omega)) hE
   | succ m ih =>
       intro G hG
       have hn : 0 < G.n := G.n_pos C hE

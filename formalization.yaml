@@ -817,13 +817,16 @@ fidelity:
     `HeartAbelian` instance plus three pre-existing declarations in the reverse
     heart-equivalence and weak Harder–Narasimhan lanes; no declaration introduced
     by source issue #141 is outside the hand audit. A new
-    version-pinned `coverage-2607.28411.json` is deliberately all `target`;
+    version-pinned `coverage-2607.28411.json` was initially all `target`;
     no `@[cites]` binding or coverage promotion is inferred from the Lean proofs.
     The definitions and section numbering were checked directly against
     arXiv:2601.22994v1, Definition 2.1/Lemma 2.2, and arXiv:2607.28411v1,
     Definition 3.12/Lemma 3.13 on 2026-08-11, but that engineering check is
-    not the independent source-faithfulness review required for registry
-    promotion.
+    not the independent source-faithfulness review required for a `reviewed`
+    or `formalized` status. A 2026-08-16 landing review checked Definition
+    3.12, Lemma 3.13, Remark 3.14, Definitions 3.16 and 3.22 directly against
+    the pinned PDF and proposes §3.4 as `mapped` only; the geometric
+    propositions remain excluded and mapped still counts as no coverage.
     COUNT UPDATE (destination issue #215, transferred from source issue #145;
     sound slicing-transfer boundary), 2026-08-12. The transfer lane separates
     raw phase preimages from the explicit Hom-vanishing and HN-existence data
@@ -836,6 +839,170 @@ fidelity:
     the pre-existing census gap described above and one is a generated
     proposition companion in `Phase.Transfer.Phase`; every named declaration
     migrated from source PR #155 is in the hand audit.
+
+    COUNT UPDATE (SF7.1 phase-indexed induced t-structures), 2026-08-16.
+    `Slicing.InducedTStructures` records the two formula-(A.8) recognition
+    equivalences produced by applying Appendix-A Theorem A.17 at each real
+    phase. Its `hom_vanishing` theorem derives the first non-formal
+    `PreimageData` field from t-structure orthogonality, while
+    `toPreimageData` leaves only the finite source-HN construction explicit.
+    `inducedTStructuresId` is an inhabited identity model. No adjunction,
+    presentability, Ind-extension, or HN-existence conclusion is stored in the
+    structure, and the legacy global theorem input remains uninhabited pending
+    the later SF7 slices.
+
+    COUNT UPDATE (SF7.1 finite phase-truncation theorem), 2026-08-16.
+    `HNFiltration.exists_headTailFiltration` extracts the charge-free
+    triangulated head/tail construction that was previously private inside
+    mass uniqueness and preserves the exact indexing of all tail phases.
+    `Slicing.InducedTStructures.isZero_of_map_isZero` proves the zero-length
+    base case directly from the two formula-(A.8) recognition equivalences.
+    `Slicing.InducedTStructures.hn_exists` identifies each mapped source
+    truncation triangle with the target HN head/tail triangle by t-structure
+    uniqueness and inducts on target filtration length. Finally,
+    `Slicing.InducedTStructures.preimageData` constructs both non-formal
+    transfer axioms without an HN-existence argument. The large-category
+    construction of the induced t-structures themselves remains #477.
+
+    COUNT UPDATE (SF7.2 compact-generation and A.17 core), 2026-08-16.
+    `IsCompactObject` is preservation of small coproducts by Hom, and the
+    inductive `ObjectProperty.coprodClosure` has the literal generator,
+    isomorphism, coproduct, and extension constructors of Definition A.11 plus
+    its least-closure theorem. Left adjoints to coproduct-preserving functors
+    preserve compact objects. Compactly generated aisles now prove the
+    functorial right-t-exactness argument of A.16 and Step 1 of A.17. T-exact
+    functors commute with both chosen truncations up to proved isomorphism;
+    zero reflection yields the two recognition equivalences, and target
+    boundedness yields source boundedness. `ObjectProperty` restriction proves
+    truncation stability rather than assuming it, and `Polishchuk.induce`
+    assembles categorical Steps 1--4 with formulas (A.3) and (A.4).
+    `TStructure.IndExtensionData` records clauses (i)--(iii) of A.14 as theorem
+    output. This slice did not assert A.13 or A.14 existence; the later
+    constructive Brown-tower slice now proves A.13 under explicit size and
+    coproduct hypotheses, and the later A.14 restriction slice derives
+    truncation stability and the restriction equivalences from the large aisle
+    equality. The scheme compact-generator comparison and S-locality layer
+    remain open in #476.
+
+    COUNT UPDATE (SF7.2 A.13 constructor), 2026-08-16.
+    `TStructure.AisleData` isolates the exact approximation-triangle output of
+    Brown representability and constructs a t-structure whose degree-zero aisle
+    is the supplied property and whose degree-one coaisle is its right
+    orthogonal. `ObjectProperty.coprodClosure_le_shift` proves that G[1] ⊆ G
+    propagates through arbitrary coproducts, isomorphisms, and extensions.
+    `CompactGeneratorApproximation.tStructure` therefore assembles the A.13
+    t-structure, proves formula (A.2), and proves compact generation once the
+    generators are compact. `Polishchuk.induceOfApproximation` passes that
+    construction directly into A.17 and obtains source-generator compactness
+    from the adjunction. At this assembly layer there is deliberately no
+    inhabitant of `CompactGeneratorApproximation` derived from compactness
+    alone; `CompactlyGenerated.Brown` now supplies one by constructing the
+    Brown tower under explicit universe-zero hypotheses.
+
+    COUNT UPDATE (SF7.2 Brown-map and A.14 assembly), 2026-08-16.
+    `TStructure.ApproximationMap` records the two map-level consequences used
+    from Brown representability: every map out of the aisle factors through the
+    approximation, and the shifted Hom map is injective. The repository now
+    completes each approximation map to a distinguished triangle and proves by
+    triangulated exactness that its cone is right orthogonal; neither the cone
+    nor orthogonality is supplied by the caller. The compact-generator and
+    Polishchuk constructors consume these universal maps directly.
+    `IndExtensionData.ofApproximation` also derives the large aisle formula and
+    compact generation from this A.13 output. This slice left universal-map
+    existence and the geometric A.14 restriction equivalences open; the later
+    Brown-tower and telescope slices now discharge the former internally, and
+    the later A.14 restriction slice derives the equivalences from the aisle
+    equality. The scheme compact-generator comparison remains the honest
+    geometric boundary.
+
+    COUNT UPDATE (SF7.2 compact finite-support bridge), 2026-08-16.
+    `IsCompactObject.exists_finite_sum` now proves the concrete additive
+    consequence needed by the Brown tower: every morphism from an
+    `IsCompactObject.{0}` object into a universe-zero small coproduct is a
+    finite sum of component morphisms followed by coproduct injections. The
+    proof identifies the additive-group coproduct in the definition of
+    compactness with a direct sum and extracts its finite support. This removes
+    the first prerequisite
+    for proving that compact sources see the mapping telescope as a sequential
+    direct limit; the telescope factorization and eventual-equality theorems,
+    followed by construction of the universal approximation maps, remain
+    open in #477.
+
+    COUNT UPDATE (SF7.2 compact-source telescope Hom control), 2026-08-16.
+    The mapping-telescope layer now proves the two compact-source properties
+    required by the Brown tower. The `1 - shift` map is injective on Hom from
+    an `IsCompactObject.{0}` source; exactness then makes the telescope
+    connecting morphism vanish on that source. Consequently every map from a
+    compact object into the telescope factors through one finite stage, and a
+    stage map that is zero (or equal to another map) in the telescope is
+    already zero (or equal) after a finite later transition. The proof is
+    internal to the repository and uses the finite-support bridge, explicit
+    coproduct projections, triangulated exactness, and finite recurrence on
+    the sequence. This compact-source result is the input used by the later
+    constructive Brown-tower slice to build the universal approximation map.
+
+    COUNT UPDATE (SF7.2 constructive Brown tower and Theorem A.13),
+    2026-08-16. For a universe-zero small generator property in a locally
+    small triangulated category with universe-zero coproducts, the repository
+    now constructs the Brown approximation tower internally. The initial stage
+    is the coproduct of all generator maps to the target; each successor
+    attaches all shifted-generator kernel maps, remains in `Coprod(G)`, and
+    kills those maps. Compact-source telescope factorization then proves Hom
+    surjectivity and shifted Hom injectivity for the limit map. Completing that
+    map to a triangle upgrades generator orthogonality to all of `Coprod(G)`
+    and yields the compactly generated t-structure of Theorem A.13, including
+    the nonpositive-aisle and degree-one-coaisle recognition formulas. No
+    global existence proposition or Brown-representability assumption remains
+    in this constructor; its smallness and universe reductions are explicit in
+    the theorem hypotheses. The following A.14 slice consumes this constructor.
+
+    COUNT UPDATE (SF7.2 A.14 restriction and Brown-backed A.17), 2026-08-16.
+    `coprodBoundedAisle_rightOrthogonal_of_isGE` formalizes Neeman's
+    orthogonality argument: the mapped degree-one coaisle is right orthogonal
+    to every coproduct and extension generated by the mapped bounded aisle.
+    Consequently `large_isLE_iff`, `large_isGE_iff`, and
+    `hasInducedTStructure_of_largeAisle` derive truncation stability and both
+    restriction formulas in every degree from clause (i) of A.14; callers no
+    longer supply any restriction witness. `IndExtensionData.ofCompactGenerators`
+    separates the compact generating property `G` from `Dᵇ≤0` and only asks
+    that their `Coprod` closures agree, so it does not falsely assert that all
+    bounded coherent complexes are compact. `IndExtensionData.ofBrown` and
+    `Polishchuk.induceOfBrown` connect the owned Brown tower directly to A.14
+    and A.17. The remaining SF7.3 geometry is the `Dqc` realization and proof
+    of the compact-generator/`Dᵇ≤0` closure equality for the claimed scheme
+    fibers.
+
+    COUNT UPDATE (SF7.4 inducing-boundary cutover), 2026-08-17. The legacy
+    global inducing-theorem switch and its bounded left-adjoint surrogate are
+    deleted. Concrete derived and bounded-coherent pullback packages now
+    carry `Slicing.InducedTStructures`, the actual phase-indexed A.17/A.8
+    output; the owned Corollary-A.23 finite truncation theorem constructs
+    every downstream `PreimageData`. Geometric base change, finite-type
+    openness, and relative-HN consequences no longer accept the global
+    parameter or a caller-supplied preimage witness. Natural-isomorphism
+    transport of the phase-indexed output supplies concrete inducing data for
+    both unbounded and bounded-coherent identity pullback. The census reports 3460
+    authored declarations, 172 private declarations, and 236 ungated
+    structure-field projections. Audit issues 3174 commands: 2127 theorem
+    records, 115 structures, and 810 other non-theorems; the authored public
+    non-projection gap remains zero.
+
+    COUNT UPDATE (SF7.3 honest Dqc locus and coherent/perfect inclusions),
+    2026-08-17. `SchemeQuasicoherentDerivedCategory X` is now the full
+    subcategory of the all-module-sheaf derived category whose canonical
+    cohomology sheaves are all quasi-coherent; the ambient category is not
+    relabelled. Exact functors are proved to commute with derived homology via
+    an explicit representative-complex isomorphism. Consequently the exact
+    coherent-sheaf inclusion lifts constructively to Dqc, and `Dᵇ(Coh X)`
+    and the finite-locally-free perfect envelope map to the intrinsic bounded
+    coherent cohomology locus. The general-scheme essential-surjectivity
+    equivalence and compact-equals-perfect theorem are separately named,
+    uninhabited propositions. Constructing the inherited triangulated and
+    coproduct structure remains an explicit roadmap obligation. The census
+    reports 3464 authored declarations, 172 private
+    declarations, and 239 ungated structure-field projections. Audit issues
+    3175 commands: 2127 theorem records, 116 structures, and 810 other
+    non-theorems; the authored public non-projection gap remains zero.
 
     COUNT UPDATE (destination issue #226; owner-controlled Bridgeland
     foundation), 2026-08-12. The first Mathlib-only foundation slice adds
@@ -895,6 +1062,17 @@ fidelity:
     structures, and 544 other constructions. The public audit gap is zero, and
     every audited declaration remains within `propext`, `Classical.choice`,
     and `Quot.sound` with no `sorryAx`.
+
+    COUNT UPDATE (destination issue #429; general flat-pullback exactness),
+    2026-08-15. A module-valued skyscraper adjunction identifies presheaf
+    pullback followed by a stalk with stalk followed by extension of scalars
+    along the induced map of local rings. Mathlib's flatness theorem for stalk
+    maps therefore supplies `IsExactPullback` for every flat scheme morphism.
+    The census reports 2966 authored declarations, 166 private declarations,
+    and 242 ungated structure-field projections. Audit issues 2600 commands
+    and covers 2558 distinct declarations: 1847 theorems, 81 structures, and
+    630 other constructions. The authored public non-projection audit gap is
+    zero, and no `sorryAx` reaches the audit.
 
     COUNT UPDATE (destination issue #236; owner deformation foundation),
     2026-08-13. The opening units of the sixth Mathlib-only foundation slice
