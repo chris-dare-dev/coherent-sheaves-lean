@@ -86,6 +86,15 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Proj.awayMk_eq_sum_monomial
 #print axioms AlgebraicGeometry.Proj.exists_sum_awayMk_monomial
 #print axioms AlgebraicGeometry.Proj.laurentExponent_mem_index
+-- The numerator side of the sign projection (#491 -> #340). divMonomial_pow_mul is the
+-- well-definedness identity: projecting commutes with raising a representative to a higher power
+-- of the denominator, which is the move that relates any two representatives.
+#print axioms AlgebraicGeometry.Proj.degree_eq_weight_one_apply
+#print axioms AlgebraicGeometry.Proj.isHomogeneous_divMonomial
+#print axioms AlgebraicGeometry.Proj.divMonomial_monomial_mul_add
+#print axioms AlgebraicGeometry.Proj.divMonomial_monomial_mul_comm
+#print axioms AlgebraicGeometry.Proj.divMonomial_pow_mul
+#print axioms AlgebraicGeometry.Proj.divMonomial_mem_natShift
 -- Independence (#491): a vanishing monomial combination at a fixed denominator has vanishing
 -- coefficients. With exists_sum_awayMk_monomial this is the basis statement in usable form -- a
 -- map may be DEFINED by its effect on monomial fractions.
@@ -1741,6 +1750,11 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 -- than built from Hom. A clean axiom list here is a statement about the
 -- bookkeeping, not about any variety or any functor.
 #print axioms AlgebraicGeometry.Numerical.CategoricalEulerForm
+-- The Hom-built form, packaged. `ofLinear` is what retires the "nothing
+-- constructs a CategoricalEulerForm" claim; the obligation moves to
+-- HomFiniteBounded rather than disappearing.
+#print axioms AlgebraicGeometry.Numerical.CategoricalEulerForm.ofLinear
+#print axioms AlgebraicGeometry.Numerical.CategoricalEulerForm.ofLinear_chi
 #print axioms AlgebraicGeometry.Numerical.CategoricalEulerForm.mk.inj
 #print axioms AlgebraicGeometry.Numerical.CategoricalEulerForm.mk.sizeOf_spec
 #print axioms AlgebraicGeometry.Numerical.CategoricalEulerForm.chi

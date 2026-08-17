@@ -1,0 +1,249 @@
+/-
+Copyright (c) 2026 Chris Dare. All rights reserved.
+Released under the MIT license.
+-/
+import DerivedAlgGeo.CategoryTheory.Triangulated.LinearYoneda
+import DerivedAlgGeo.CategoryTheory.Triangulated.LinearCoyoneda
+import DerivedAlgGeo.CategoryTheory.Triangulated.GrothendieckGroup.Basic
+import DerivedAlgGeo.LinearAlgebra.AlternatingFinsum
+
+/-!
+# The Hom-built Euler form
+
+`χ(X, Y) = Σᵢ (-1)ⁱ · dimₖ Hom(X, Y⟦i⟧)`, built from the long exact Hom
+sequences of `LinearYoneda` and `LinearCoyoneda` and the `ℤ`-indexed
+alternating-sum arithmetic of `LinearAlgebra/AlternatingFinsum`.
+
+This is the form `AlgebraicGeometry.Numerical.CategoricalEulerForm` supplies
+axiomatically; the adapter that discharges that structure lives in the numerical
+track, where the structure does.
+
+## Restrictions, stated up front
+
+**`k` is a division ring, not a field and not an arbitrary ring.** That is
+exactly what the arithmetic needs and no more: rank--nullity
+(`LinearMap.finrank_range_add_finrank_ker`) lives in a `section DivisionRing`,
+and the support bounds go through `LinearMap.finrank_range_le`, which needs
+`StrongRankCondition`. Commutativity is used nowhere, which is why `Field` is
+not assumed — Mathlib states the same alternating-sum corollary at
+`DivisionRing` (`Module.sum_neg_one_pow_finrank_eq_zero_of_exact`). The
+generality is deliberate and currently **unexercised**: nothing in this
+repository instantiates `k` at a noncommutative division ring, and
+`IsRiemannRoch` lands in a `ℚ`-algebra, so every intended instantiation is a
+field. Mathlib's weaker `HasRankNullity` is declined — it does not supply
+`StrongRankCondition`, its universe parameter would have to be threaded against
+the category's morphism universe, and over a domain `finrank` is torsion-blind,
+so the resulting pairing would be additive but not the `χ` that
+Hirzebruch--Riemann--Roch compares against.
+
+**The two variables carry different hypotheses, deliberately.** Additivity in
+the second variable needs no linearity of the shift; additivity in the first
+does. This is not an oversight: `linearCoyoneda` is covariant with source `C`
+and its shift sequence is `Functor.ShiftSequence.tautological`, whereas
+`linearYoneda` is contravariant and its shift sequence has to cross `op`, which
+is what requires `[∀ n, (shiftFunctor C n).Linear k]`. `chiHom` itself carries
+neither hypothesis; `chiK₀` carries the shift-linearity one.
+
+## `chiHom` is junk-total, and that is deliberate
+
+`Module.finrank` is `0` on a module that is not finite, and `finsum` is `0` on a
+family with infinite support. So `chiHom` is a plain function defined for
+*every* pair of objects in *any* `k`-linear pretriangulated category, carrying
+no data and no well-definedness obligation — and returning a meaningless number
+when `HomFiniteBounded` fails. Only the additivity theorems and everything
+downstream of them require that hypothesis. A reader must not take availability
+of `chiHom` as evidence that a category has an Euler form.
+
+## What this file does not assert
+
+* Nothing constructs a `HomFiniteBounded` instance. It is supplied data — see
+  its own docstring for why it is unprovable here.
+* No relation to any geometric Euler characteristic, to `chi₂`, or to
+  Riemann--Roch. `IsRiemannRoch` remains supplied in the numerical track; this
+  file says nothing about it.
+* Nothing about Serre duality, or about `χ` being symmetric, or non-degenerate.
+-/
+
+universe w u v
+
+namespace CategoryTheory.Triangulated
+
+open CategoryTheory CategoryTheory.Limits CategoryTheory.Pretriangulated
+open Opposite Module DerivedAlgGeo.LinearAlgebra
+
+variable (k : Type w) [DivisionRing k] (C : Type u) [Category.{v} C] [Preadditive C]
+  [Linear k C] [HasZeroObject C] [HasShift C ℤ]
+  [∀ n : ℤ, (shiftFunctor C n).Additive] [Pretriangulated C]
+
+/-- **Hom-finiteness and finite Ext-amplitude.**
+
+Every `Hom(X, Y⟦i⟧)` is a finite-dimensional `k`-module, and for each pair only
+finitely many `i` contribute. This is the "properness" input: there is no Euler
+form without it.
+
+Genuinely supplied, and unprovable at this generality. In an arbitrary
+`k`-linear pretriangulated category the Hom-spaces are arbitrary `k`-modules and
+nothing in `Pretriangulated` bounds them; nor need `Hom(X, Y⟦i⟧)` vanish for
+large `|i|`, and it does not in an unbounded derived category. No concrete
+`k`-linear pretriangulated category exists in this repository for it to be
+proved about.
+
+The two fields are independent: `finrank` returns `0` for a non-finite module,
+so finiteness of the *rank support* says nothing about the modules themselves
+without `finite`.
+
+**On the spelling of `support_finite`.** Given `finite`, this is *equivalent* to
+a vanishing bound `∃ N, ∀ |i| > N, Subsingleton (X ⟶ Y⟦i⟧)` — over a division
+ring `finrank = 0 ↔ Subsingleton` for a finite module, and a finite subset of
+`ℤ` is bounded. Finite support is chosen for ergonomics, not generality: it is
+the form `finsum_add_distrib` consumes directly, and it avoids the
+`max`-of-three-bounds bookkeeping a common window forces at every triangle. It
+is not a weaker hypothesis and is not claimed to be. -/
+class HomFiniteBounded : Prop where
+  /-- Each shifted Hom-space is a finite-dimensional `k`-module. -/
+  finite : ∀ (X Y : C) (i : ℤ), Module.Finite k (X ⟶ Y⟦i⟧)
+  /-- For each pair, only finitely many shifts contribute. -/
+  support_finite : ∀ X Y : C,
+    (Function.support fun i : ℤ => (finrank k (X ⟶ Y⟦i⟧) : ℤ)).Finite
+
+attribute [instance] HomFiniteBounded.finite
+
+/-- **The Euler form on objects**, `Σᵢ (-1)ⁱ dimₖ Hom(X, Y⟦i⟧)`.
+
+Junk-total: see the module docstring. Carries no hypothesis beyond the ambient
+`k`-linear pretriangulated structure. -/
+noncomputable def chiHom (X Y : C) : ℤ :=
+  ∑ᶠ i : ℤ, (i.negOnePow : ℤ) * finrank k (X ⟶ Y⟦i⟧)
+
+variable {k C}
+
+omit [HasZeroObject C] [∀ n : ℤ, (shiftFunctor C n).Additive] [Pretriangulated C] in
+theorem chiHom_eq_finsum_altDim (X Y : C) :
+    chiHom k C X Y = ∑ᶠ i : ℤ, altDim (k := k) (fun i => X ⟶ Y⟦i⟧) i :=
+  rfl
+
+/-- A `ShortComplex` exact in `ModuleCat k` gives `Function.Exact` of the
+underlying linear maps.  The bridge from the categorical homology sequence to
+the arithmetic of `AlternatingFinsum`. -/
+theorem exact_hom_of_shortComplex_exact {S : ShortComplex (ModuleCat k)}
+    (hS : S.Exact) : Function.Exact S.f.hom S.g.hom :=
+  LinearMap.exact_iff.mpr hS.moduleCat_range_eq_ker.symm
+
+section Additivity
+
+variable [HomFiniteBounded k C]
+
+/-- **The Euler form is additive in its second variable.**
+
+No linearity of the shift is required: `linearCoyoneda` is covariant with source
+`C`, so its shift sequence is tautological. See the module docstring on the
+deliberate asymmetry with `chiHom_additive_left`. -/
+theorem chiHom_additive_right (X : C) (T : Triangle C) (hT : T ∈ distTriang C) :
+    chiHom k C X T.obj₂ = chiHom k C X T.obj₁ + chiHom k C X T.obj₃ := by
+  set F := (linearCoyoneda k C).obj (op X) with hF
+  refine finsum_altDim_middle (k := k)
+    (A := fun i => X ⟶ T.obj₁⟦i⟧) (B := fun i => X ⟶ T.obj₂⟦i⟧)
+    (C := fun i => X ⟶ T.obj₃⟦i⟧)
+    (fun i => ((F.shift i).map T.mor₁).hom)
+    (fun i => ((F.shift i).map T.mor₂).hom)
+    (fun i => (F.homologySequenceδ T i (i + 1) rfl).hom)
+    (fun i => exact_hom_of_shortComplex_exact
+      (linearCoyoneda_homologySequence_exact₂ (op X) T hT i))
+    (fun i => exact_hom_of_shortComplex_exact
+      (linearCoyoneda_homologySequence_exact₃ (op X) T hT i (i + 1) rfl))
+    (fun i => exact_hom_of_shortComplex_exact
+      (linearCoyoneda_homologySequence_exact₁ (op X) T hT i (i + 1) rfl))
+    (HomFiniteBounded.support_finite X T.obj₁)
+    (HomFiniteBounded.support_finite X T.obj₂)
+    (HomFiniteBounded.support_finite X T.obj₃)
+
+variable [∀ n : ℤ, (shiftFunctor C n).Linear k]
+
+/-- **The Euler form is additive in its first variable.**
+
+Unlike `chiHom_additive_right` this needs `[∀ n, (shiftFunctor C n).Linear k]`,
+because `linearYoneda` is contravariant and its shift sequence has to cross
+`op`. See the module docstring.
+
+Note the wiring: `triangleOpEquivalence` sends `X ⟶ Y ⟶ Z` to
+`op Z ⟶ op Y ⟶ op X`, so the arithmetic's `A` family is `Hom(T.obj₃, −)` and
+its `C` family is `Hom(T.obj₁, −)` — reversed relative to the statement. The
+closing `add_comm` is that reversal and nothing else; a swapped wiring would
+still typecheck against the symmetric-looking goal, so it is worth saying. -/
+theorem chiHom_additive_left (Y : C) (T : Triangle C) (hT : T ∈ distTriang C) :
+    chiHom k C T.obj₂ Y = chiHom k C T.obj₁ Y + chiHom k C T.obj₃ Y := by
+  set F := (linearYoneda k C).obj Y with hF
+  set T' := (triangleOpEquivalence C).functor.obj (op T) with hT'
+  have hT'd : T' ∈ distTriang Cᵒᵖ := op_distinguished T hT
+  have key : chiHom k C T.obj₂ Y = chiHom k C T.obj₃ Y + chiHom k C T.obj₁ Y :=
+    finsum_altDim_middle (k := k)
+      (A := fun i => T.obj₃ ⟶ Y⟦i⟧) (B := fun i => T.obj₂ ⟶ Y⟦i⟧)
+      (C := fun i => T.obj₁ ⟶ Y⟦i⟧)
+      (fun i => ((F.shift i).map T'.mor₁).hom)
+      (fun i => ((F.shift i).map T'.mor₂).hom)
+      (fun i => (F.homologySequenceδ T' i (i + 1) rfl).hom)
+      (fun i => exact_hom_of_shortComplex_exact
+        (linearYoneda_homologySequence_exact₂ Y T' hT'd i))
+      (fun i => exact_hom_of_shortComplex_exact
+        (linearYoneda_homologySequence_exact₃ Y T' hT'd i (i + 1) rfl))
+      (fun i => exact_hom_of_shortComplex_exact
+        (linearYoneda_homologySequence_exact₁ Y T' hT'd i (i + 1) rfl))
+      (HomFiniteBounded.support_finite T.obj₃ Y)
+      (HomFiniteBounded.support_finite T.obj₂ Y)
+      (HomFiniteBounded.support_finite T.obj₁ Y)
+  rw [key, add_comm]
+
+end Additivity
+
+section Descent
+
+variable (k C)
+variable [HomFiniteBounded k C]
+
+/-- Additivity in the second variable, as the class `K₀.lift` consumes. -/
+instance isTriangleAdditive_chiHom (X : C) :
+    IsTriangleAdditive (chiHom k C X) :=
+  ⟨fun T hT => chiHom_additive_right X T hT⟩
+
+/-- **`χ(X, −)` on the Grothendieck group.**
+
+The second variable descends with no linearity-of-shift hypothesis; see the
+module docstring. -/
+noncomputable def chiRight (X : C) : K₀ C →+ ℤ :=
+  K₀.lift C (chiHom k C X)
+
+@[simp]
+theorem chiRight_of (X Y : C) : chiRight k C X (K₀.of C Y) = chiHom k C X Y :=
+  K₀.lift_of C _ Y
+
+variable [∀ n : ℤ, (shiftFunctor C n).Linear k]
+
+/-- Additivity in the first variable, now valued in `K₀ C →+ ℤ`.  This is the
+step that needs the shift to be `k`-linear. -/
+instance isTriangleAdditive_chiRight :
+    IsTriangleAdditive (chiRight k C) :=
+  ⟨fun T hT => K₀.hom_ext C fun Y => by
+    simpa using chiHom_additive_left Y T hT⟩
+
+/-- **The Euler form on `K₀`.**
+
+`χ : K₀ C →+ K₀ C →+ ℤ`, biadditive by construction: the second variable
+descended in `chiRight`, the first descends here. This is the object
+`AlgebraicGeometry.Numerical.CategoricalEulerForm` axiomatises. -/
+noncomputable def chiK₀ : K₀ C →+ K₀ C →+ ℤ :=
+  K₀.lift C (chiRight k C)
+
+@[simp]
+theorem chiK₀_of (X : C) : chiK₀ k C (K₀.of C X) = chiRight k C X :=
+  K₀.lift_of C _ X
+
+/-- Not `@[simp]`: `chiK₀_of` and `chiRight_of` already rewrite the left-hand
+side, so marking this fails `simpNF`.  Kept as the readable two-object
+statement, which is the form every consumer reasons with. -/
+theorem chiK₀_of_of (X Y : C) :
+    chiK₀ k C (K₀.of C X) (K₀.of C Y) = chiHom k C X Y := by
+  rw [chiK₀_of, chiRight_of]
+
+end Descent
+
+end CategoryTheory.Triangulated
