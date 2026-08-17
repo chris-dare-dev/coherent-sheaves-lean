@@ -107,6 +107,7 @@ generations:
   - { rev: 45, at: "2026-08-17", note: "SF3 and its ownership gate are closed: #460--#462 delivered the concrete derived fibers, geometric base-change witness, finite-type openness, and relative-HN package, while ADR-0013 selects the monorepo and unblocks SF8/SF9. SF8.1 (#521) delivers the relative-perfect and universally-gluable object layer with a concrete zero model; algebraicity, boundedness, and arbitrary derived pullback remain unclaimed." }
   - { rev: 46, at: "2026-08-17", note: "SF8.2 (#518) constructs a groupoid-valued relative-perfect moduli problem on diagrams of actual scheme base changes. Mathlib's Pseudofunctor owns the coherence laws, every abstract fiber is equivalent to the core of the universally-gluable relative-perfect category, and each transition is compared naturally with the repository's exact derived pullback. Isomorphism classes, geometric fibers, and a nonempty identity model are concrete; preservation along arbitrary base changes, descent, and algebraicity remain unclaimed." }
   - { rev: 47, at: "2026-08-17", note: "SF9.1 (#523) builds the reusable stack-in-groupoids substrate directly on Mathlib's Pseudofunctor, DescentData, IsPrestack, and IsStack APIs. Cover restriction is proved fully faithful and essentially surjective, the stack condition transports across explicit fiber/descent equivalences, and ordinary sheaves of types yield discrete stacks. Subcanonicity supplies a nonconstant big-Zariski stack represented by every scheme. Pullback-compatible and fiber-representability interfaces are separate from the stack condition; no algebraicity theorem is bundled or claimed." }
+  - { rev: 48, at: "2026-08-17", note: "SF8.3 (#519) replaces the caller-selected boundedness switch by an actual geometric predicate: a locally-finite-type, quasi-compact scheme over the base, a universally-gluable relative-perfect universal family in the selected subfunctor, explicit geometric fibers, and coverage up to isomorphism after equality of the actual residue-field base changes. The predicate is monotone under enlarging admitted families and shrinking the target, and adapts directly to Definition 21.15(5). The identity parameter scheme and zero complex give a concrete inhabited model after every locally Noetherian base change. General residue pullback for nonzero families and semistable boundedness remain named inputs to SF8.4 rather than hidden propositions." }
 retired: []
 
 # GitHub milestones are roadmap phases. Epic issues live inside them, and
@@ -431,7 +432,7 @@ items:
     parent: stability-families-m8
     title: "Own relative-perfect moduli and boundedness"
     status: in_progress
-    summary: "Active in dependency order: #528 completes the remaining general Dqc seam; #521 constructs the relative-perfect and universally-gluable object layer; #518 builds the groupoid-valued moduli problem; #519 replaces abstract boundedness by finite-type witnesses; #520 owns Quot and bounded-complex parameter spaces."
+    summary: "#521 and #518 deliver the relative-perfect object and groupoid-valued moduli layers. SF8.3 #519 now supplies honest finite-type boundedness witnesses, monotonicity, a Definition 21.15(5) adapter, and a concrete zero-family model. Next #520 constructs supported Quot/parameter spaces; #528 remains the independent general-scheme Dqc seam."
     priority: must
     size: XL
     tags: [relative-perfect, moduli, boundedness, quot]
@@ -478,7 +479,8 @@ items:
     kind: deliverable
     parent: stability-families-e14
     title: "Formalize finite-type boundedness witnesses for semistable complexes"
-    status: planned
+    status: done
+    summary: "Replaced abstract boundedness by a finite-type parameter-scheme witness with an admitted universal relative-perfect family, explicit geometric fibers, and coverage up to isomorphism. Added isomorphism invariance, monotonicity, the Definition 21.15(5) adapter, base-change availability for the supported zero case, and a concrete identity/zero witness. General nonzero residue pullback and semistable coverage remain explicit SF8.4 work."
     priority: must
     size: XL
     tags: [boundedness, finite-type, semistable]
