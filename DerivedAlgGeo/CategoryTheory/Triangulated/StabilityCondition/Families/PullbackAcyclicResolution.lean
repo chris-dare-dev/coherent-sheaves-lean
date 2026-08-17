@@ -69,6 +69,30 @@ namespace PullbackAcyclicResolution
 
 variable {S : Scheme.{u}} {T U : SchemeBaseChange S} {f : T ⟶ U}
 
+/-- For exact pullback, the identity functor on complexes is already a
+pullback-acyclic resolution. This is the normalization case against which
+genuinely derived resolutions can be compared. -/
+def ofExact (f : T ⟶ U) [IsExactPullback f] :
+    PullbackAcyclicResolution f where
+  resolution := 𝟭 (CochainComplex U.left.Modules ℤ)
+  comparison := 𝟙 (𝟭 (CochainComplex U.left.Modules ℤ))
+  comparison_quasiIso K := by
+    rw [HomologicalComplex.mem_quasiIso_iff]
+    infer_instance
+  pullback_inverts := by
+    intro K L g hg
+    change IsIso ((SchemeDerivedCategory.Q T.left).map
+      ((complexPullback f).map g))
+    apply Localization.inverts (SchemeDerivedCategory.Q T.left)
+      (HomologicalComplex.quasiIso T.left.Modules (ComplexShape.up ℤ))
+    rw [HomologicalComplex.mem_quasiIso_iff] at hg ⊢
+    letI := hg
+    infer_instance
+  resolved_comparison_isIso K := by
+    simp only [Functor.id_obj, NatTrans.id_app, Functor.comp_map,
+      Functor.map_id]
+    exact IsIso.id _
+
 /-- The functor on derived categories obtained by resolving, pulling back, and
 using the universal property of localization. -/
 def derivedFunctor (R : PullbackAcyclicResolution f) :
@@ -336,6 +360,38 @@ def toLeftDerivedPullback (R : PullbackAcyclicResolution f) :
   functor := R.derivedFunctor
   counit := R.counit
   isLeftDerived := R.isLeftDerived
+
+/-- The functor obtained from the identity resolution for exact pullback is
+canonically isomorphic to Mathlib's exact derived functor. -/
+def exactComparison (f : T ⟶ U) [IsExactPullback f] :
+    (ofExact f).derivedFunctor ≅ derivedPullback f :=
+  (ofExact f).toLeftDerivedPullback.exactComparison
+
+/-- The exact comparison intertwines the two transformations to ordinary
+degreewise pullback. -/
+@[reassoc]
+lemma exactComparison_hom_counit (f : T ⟶ U) [IsExactPullback f] :
+    Functor.whiskerLeft (SchemeDerivedCategory.Q U.left)
+        (exactComparison f).hom ≫
+      (derivedPullbackFactors f).hom =
+        (ofExact f).counit := by
+  letI : (derivedPullback f).IsLeftDerivedFunctor
+      (derivedPullbackFactors f).hom
+      (HomologicalComplex.quasiIso U.left.Modules (ComplexShape.up ℤ)) :=
+    (LeftDerivedPullback.ofExact f).isLeftDerived
+  change Functor.whiskerLeft (SchemeDerivedCategory.Q U.left)
+      (Functor.leftDerivedNatTrans (ofExact f).derivedFunctor
+        (derivedPullback f) (ofExact f).counit
+        (derivedPullbackFactors f).hom
+        (HomologicalComplex.quasiIso U.left.Modules (ComplexShape.up ℤ))
+        (𝟙 (complexPullback f ⋙ SchemeDerivedCategory.Q T.left))) ≫
+    (derivedPullbackFactors f).hom = (ofExact f).counit
+  simpa only [Category.comp_id] using
+    (Functor.leftDerivedNatTrans_fac
+      (ofExact f).derivedFunctor (derivedPullback f)
+      (ofExact f).counit (derivedPullbackFactors f).hom
+      (HomologicalComplex.quasiIso U.left.Modules (ComplexShape.up ℤ))
+      (𝟙 (complexPullback f ⋙ SchemeDerivedCategory.Q T.left)))
 
 end PullbackAcyclicResolution
 
