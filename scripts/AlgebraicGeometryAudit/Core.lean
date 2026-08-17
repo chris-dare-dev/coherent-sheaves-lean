@@ -174,6 +174,77 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Proj.blockProj_blockProj_of_ne
 #print axioms AlgebraicGeometry.Proj.blockProj_eq_zero_of_not_subset
 #print axioms AlgebraicGeometry.Proj.laurentFace_blockProj
+-- The contracting homotopy of a block (#340, step 3). laurentHomotopy projects out ALL of the
+-- cone variable and reinserts the surplus by a face, which makes it well defined whatever the
+-- tuple contains and buys the two identities the homotopy computation d h + h d = id consumes:
+-- an UNRESTRICTED square with every face (laurentHomotopy_laurentFace_comm -- including the
+-- face in the cone variable itself, where the surplus shifts by one and rebalances), and the
+-- retraction of the cone face on a block (laurentHomotopy_laurentFace_blockProj), which is the
+-- only identity that sees the block and the only place i0 not-in F is spent.
+#print axioms AlgebraicGeometry.Proj.monomial_mul_divMonomial_cancel
+#print axioms AlgebraicGeometry.Proj.laurentFilter_apply_ge
+#print axioms AlgebraicGeometry.Proj.laurentHomotopy_split
+#print axioms AlgebraicGeometry.Proj.laurentHomotopy_back
+#print axioms AlgebraicGeometry.Proj.laurentHomotopy
+#print axioms AlgebraicGeometry.Proj.laurentHomotopy_numerator_mem
+#print axioms AlgebraicGeometry.Proj.laurentHomotopy_awayMk
+#print axioms AlgebraicGeometry.Proj.laurentHomotopy_laurentFace_blockProj
+#print axioms AlgebraicGeometry.Proj.laurentHomotopy_laurentFace_comm
+-- The block homotopy carried onto the variable Cech cover (#340, step 3). powersCongr
+-- transports a degree-zero localization along an equality of denominators (the element never
+-- moves; every equation is subst plus proof irrelevance), tupleExponent names the Cech
+-- denominator as a monomial, and the Cech-level block projections and homotopy map are the
+-- monomial-level maps conjugated by that transport. cechTermCongr_apply_section is the whole
+-- of the dependent rewriting the vanishing computation needs; the three identities it runs on
+-- are cechFace_cechBlockProj, cechHomotopy_cechFace_zero and cechHomotopy_cechFace_succ.
+#print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.powersCongr
+#print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.powersCongr_awayMk
+#print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.powersCongr_trans
+#print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.powersCongr_symm_apply_apply
+#print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.powersCongr_symm_trans
+#print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.powersCongr_faceMap
+#print axioms AlgebraicGeometry.Proj.tupleExponent
+#print axioms AlgebraicGeometry.Proj.tupleDenominator_eq
+#print axioms AlgebraicGeometry.Proj.tupleExponent_cons
+#print axioms AlgebraicGeometry.Proj.tupleExponent_succAbove
+#print axioms AlgebraicGeometry.Proj.tupleDenominator_cons_eq
+#print axioms AlgebraicGeometry.Proj.cons_comp_succAbove_zero
+#print axioms AlgebraicGeometry.Proj.cons_comp_succAbove_succ
+#print axioms AlgebraicGeometry.Proj.cechTermEquiv
+#print axioms AlgebraicGeometry.Proj.cechTermEquiv_cechFace
+#print axioms AlgebraicGeometry.Proj.cechBlockProj
+#print axioms AlgebraicGeometry.Proj.cechBlockProj_apply
+#print axioms AlgebraicGeometry.Proj.sum_cechBlockProj
+#print axioms AlgebraicGeometry.Proj.cechBlockProj_eq_zero_of_not_subset
+#print axioms AlgebraicGeometry.Proj.cechFace_cechBlockProj
+#print axioms AlgebraicGeometry.Proj.cechHomotopy
+#print axioms AlgebraicGeometry.Proj.cechHomotopy_apply
+#print axioms AlgebraicGeometry.Proj.cechTermCongr
+#print axioms AlgebraicGeometry.Proj.cechTermCongr_apply_section
+#print axioms AlgebraicGeometry.Proj.cechTermCongr_symm_apply_section
+#print axioms AlgebraicGeometry.Proj.cechTermCongr_cechBlockProj
+#print axioms AlgebraicGeometry.Proj.laurentHomotopy_laurentFace_comm'
+#print axioms AlgebraicGeometry.Proj.cechHomotopy_cechFace_zero
+#print axioms AlgebraicGeometry.Proj.cechHomotopy_cechFace_succ
+-- The primitive of a Cech cocycle (#340, step 3): the vanishing computation in cochain form.
+-- Per block a cone point is chosen and the block component of the cocycle is contracted
+-- through the homotopy; blocks with no cone point are empty because a nonnegative twist
+-- cannot have every exponent negative (the ONLY place d >= 0 is spent); and the per-block
+-- identities reassemble over the finitely many blocks of each tuple.
+-- cechPrimitive_isPrimitive is the homotopy computation d h + h d = id itself.
+#print axioms AlgebraicGeometry.Proj.laurentFilter_eq_zero_of_forall_mem
+#print axioms AlgebraicGeometry.Proj.blockProj_eq_zero_of_forall_mem
+#print axioms AlgebraicGeometry.Proj.cechBlockProj_eq_zero_of_forall_mem
+#print axioms AlgebraicGeometry.Proj.tupleExponent_support_succAbove
+#print axioms AlgebraicGeometry.Proj.subset_of_subset_cons
+#print axioms AlgebraicGeometry.Proj.cechTermCongr_symm_cechBlockProj
+#print axioms AlgebraicGeometry.Proj.cechBlockPrimitive
+#print axioms AlgebraicGeometry.Proj.cechBlockPrimitive_of_exists
+#print axioms AlgebraicGeometry.Proj.cechBlockPrimitive_of_forall
+#print axioms AlgebraicGeometry.Proj.cechBlockPrimitive_eq_zero_of_not_subset
+#print axioms AlgebraicGeometry.Proj.cechPrimitive
+#print axioms AlgebraicGeometry.Proj.cechBlockPrimitive_faces
+#print axioms AlgebraicGeometry.Proj.cechPrimitive_isPrimitive
 #print axioms AlgebraicGeometry.Proj.GradedLinearMap
 #print axioms AlgebraicGeometry.Proj.GradedLinearMap.map
 #print axioms AlgebraicGeometry.Proj.GradedLinearMap.map_mk
