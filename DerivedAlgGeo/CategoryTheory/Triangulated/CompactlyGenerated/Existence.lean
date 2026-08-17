@@ -17,9 +17,10 @@ constructor produces the compactly generated t-structure and formula (A.2).
 
 The structure `CompactGeneratorApproximation` contains those approximation
 triangles, while `ofApproximationMaps` constructs them from Brown-style
-universal maps and proves the required orthogonality. No instance is
-manufactured merely from compactness: existence of the universal maps is the
-Brown-representability step that remains to be formalized.
+universal maps and proves the required orthogonality. This file isolates the
+assembly interface; `CompactlyGenerated.Brown` constructs the universal maps
+from compact generators under explicit universe-zero smallness,
+local-smallness, coproduct, compactness, and shift-closure hypotheses.
 -/
 
 noncomputable section

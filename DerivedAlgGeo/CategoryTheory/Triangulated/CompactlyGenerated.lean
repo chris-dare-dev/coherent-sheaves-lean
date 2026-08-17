@@ -27,9 +27,10 @@ The definitions here follow A.9--A.11 literally:
   already constructed t-structure.
 
 Theorem A.13, which constructs a t-structure from compact generators, is not
-smuggled into a typeclass or an existence hypothesis here. Its missing
-Brown-representability construction remains a theorem to prove on top of this
-substrate.
+smuggled into a typeclass or a global existence hypothesis here. Its
+constructive Brown-tower proof lives in `CompactlyGenerated.Brown`, with the
+smallness, local-smallness, coproduct, compactness, and shift-closure
+hypotheses stated explicitly.
 -/
 
 noncomputable section
