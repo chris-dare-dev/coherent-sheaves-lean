@@ -198,4 +198,53 @@ structure ConvolutionAssocData
 
 end Assoc
 
+section Unit
+
+/-- **The left unit law at the transform level — a theorem, not data.**
+
+Given convolution data composing a self-correspondence with `C₂`, and a
+kernel presenting the identity as a transform of the self-correspondence, the
+transform of `conv U P` is the transform of `P`. Free from `compIso` and the
+unit witness; no constraint on the outer correspondence. -/
+def convolutionTransformUnitLeft {C₁ : Correspondence 𝒳 𝒳 𝒲₁}
+    {C₂ : Correspondence 𝒳 𝒴 𝒲₂} {C₃ : Correspondence 𝒳 𝒴 𝒲₃}
+    (D : ConvolutionData C₁ C₂ C₃) (U : 𝒲₁)
+    (unitIso : 𝟭 𝒳 ≅ C₁.transform U) (P : 𝒲₂) :
+    C₃.transform (D.conv U P) ≅ C₂.transform P :=
+  (D.compIso U P).symm ≪≫
+    Functor.isoWhiskerRight unitIso.symm (C₂.transform P) ≪≫
+      (C₂.transform P).leftUnitor
+
+/-- **The right unit law at the transform level — a theorem, not data.**
+The mirror of `convolutionTransformUnitLeft`. -/
+def convolutionTransformUnitRight {C₁ : Correspondence 𝒴 𝒴 𝒲₁}
+    {C₂ : Correspondence 𝒳 𝒴 𝒲₂} {C₃ : Correspondence 𝒳 𝒴 𝒲₃}
+    (D : ConvolutionData C₂ C₁ C₃) (U : 𝒲₁)
+    (unitIso : 𝟭 𝒴 ≅ C₁.transform U) (P : 𝒲₂) :
+    C₃.transform (D.conv P U) ≅ C₂.transform P :=
+  (D.compIso P U).symm ≪≫
+    Functor.isoWhiskerLeft (C₂.transform P) unitIso.symm ≪≫
+      (C₂.transform P).rightUnitor
+
+/-- **The left unit law at the kernel level — supplied data.**
+
+`conv U P ≅ P` for a convolution datum whose outer correspondence *is* `C₂`.
+Strictly stronger than `convolutionTransformUnitLeft` for the same Orlov gap
+as `ConvolutionAssocData`: the transforms are always isomorphic, but
+recovering an isomorphism of kernels needs a kernel to be determined by its
+transform. Nothing here constructs one, and no result depends on it. -/
+structure ConvolutionLeftUnitData {C₁ : Correspondence 𝒳 𝒳 𝒲₁}
+    {C₂ : Correspondence 𝒳 𝒴 𝒲₂} (D : ConvolutionData C₁ C₂ C₂) (U : 𝒲₁) where
+  /-- Convolving with the unit kernel on the left is the identity. -/
+  leftUnitIso (P : 𝒲₂) : D.conv U P ≅ P
+
+/-- **The right unit law at the kernel level — supplied data.**
+The mirror of `ConvolutionLeftUnitData`; same gap, same caveats. -/
+structure ConvolutionRightUnitData {C₁ : Correspondence 𝒴 𝒴 𝒲₁}
+    {C₂ : Correspondence 𝒳 𝒴 𝒲₂} (D : ConvolutionData C₂ C₁ C₂) (U : 𝒲₁) where
+  /-- Convolving with the unit kernel on the right is the identity. -/
+  rightUnitIso (P : 𝒲₂) : D.conv P U ≅ P
+
+end Unit
+
 end CategoryTheory.Triangulated.FourierMukai
