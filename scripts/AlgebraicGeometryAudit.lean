@@ -73,6 +73,16 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Proj.monomial_mem_natShift
 #print axioms AlgebraicGeometry.Proj.awayMk_monomial_eq_iff
 #print axioms AlgebraicGeometry.Proj.awayMk_monomial_eq_iff_laurentExponent
+-- Spanning (#491): the monomial fractions exhaust the localization. exists_sum_awayMk_monomial
+-- puts every element over ONE common denominator, so a map defined on monomial fractions extends
+-- with no further alignment; laurentExponent_mem_index says the exponents it contributes are
+-- exactly the admissible ones.
+#print axioms AlgebraicGeometry.Proj.monomial_one_pow_ne_zero
+#print axioms AlgebraicGeometry.Proj.degree_eq_of_mem_support
+#print axioms AlgebraicGeometry.Proj.monomial_coeff_mem_natShift
+#print axioms AlgebraicGeometry.Proj.awayMk_eq_sum_monomial
+#print axioms AlgebraicGeometry.Proj.exists_sum_awayMk_monomial
+#print axioms AlgebraicGeometry.Proj.laurentExponent_mem_index
 #print axioms AlgebraicGeometry.Proj.GradedLinearMap
 #print axioms AlgebraicGeometry.Proj.GradedLinearMap.map
 #print axioms AlgebraicGeometry.Proj.GradedLinearMap.map_mk

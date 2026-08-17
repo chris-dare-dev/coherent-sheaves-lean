@@ -35,6 +35,9 @@ exponent and proves the three facts that make it an index: it determines the fra
 * `laurentExponent_nonneg_of_apply_eq_zero` — off the support of `γ` the exponent is
   nonnegative. Together with the previous statement this is the index set
   `{α | Finsupp.degree α = d ∧ ∀ j ∉ γ.support, 0 ≤ α j}` that #491's basis is indexed by.
+* `exists_sum_awayMk_monomial` — **the monomial fractions span.** Every degree-zero fraction away
+  from `Xᵞ` is a finite sum of monomial fractions over one common denominator, and
+  `laurentExponent_mem_index` says the exponents they contribute are exactly the admissible ones.
 
 ## Implementation notes
 
@@ -193,5 +196,106 @@ theorem awayMk_monomial_eq_iff_laurentExponent [IsDomain R] (γ : ι →₀ ℕ)
         (monomial_one_mem_polynomialGrading (R := R) γ) m' (MvPolynomial.monomial β' 1) hβ' ↔
       laurentExponent γ m β = laurentExponent γ m' β' :=
   (awayMk_monomial_eq_iff γ d hβ hβ').trans (laurentExponent_eq_iff γ m m' β β').symm
+
+/-! ## Spanning
+
+`awayMk_monomial_eq_iff_laurentExponent` says the monomial fractions are indexed by their Laurent
+exponents. This section says they exhaust the localization: every degree-zero fraction away from
+`Xᵞ` is a *finite* sum of monomial fractions **over one common denominator**.
+
+The route is short because both halves are already available. `exists_awayMk` puts an arbitrary
+element in the form `p / (Xᵞ)ᵐ`, `MvPolynomial.as_sum` splits the numerator, and `awayMk_sum`
+distributes the fraction over that splitting. No denominators have to be aligned afterwards:
+splitting a numerator never touches `m`. -/
+
+/-- `(Xᵞ)ⁿ` is never zero, which is the hypothesis `exists_awayMk` consumes. -/
+theorem monomial_one_pow_ne_zero [Nontrivial R] (γ : ι →₀ ℕ) (n : ℕ) :
+    (MvPolynomial.monomial γ (1 : R)) ^ n ≠ 0 := by
+  rw [monomial_one_pow]; simp
+
+/-- Every exponent occurring in a numerator of the twist `d` over `(Xᵞ)ᵐ` has total degree
+`m • γ.degree + d`. This is homogeneity read on the support. -/
+theorem degree_eq_of_mem_support {d m : ℕ} {γ : ι →₀ ℕ} {p : MvPolynomial ι R}
+    (hp : p ∈ natShift (polynomialGrading ι R) d (m • γ.degree)) {β : ι →₀ ℕ}
+    (hβ : β ∈ p.support) : β.degree = m • γ.degree + d := by
+  by_contra h
+  exact (MvPolynomial.mem_support_iff.mp hβ) (MvPolynomial.IsHomogeneous.coeff_eq_zero hp h)
+
+/-- Each monomial of a legitimate numerator is itself a legitimate numerator.
+
+The statement is for *every* `β`, not only those in the support, because `awayMk_sum` takes a
+total membership hypothesis. Off the support the monomial is zero, which lies in every graded
+piece, so nothing is lost. -/
+theorem monomial_coeff_mem_natShift {d m : ℕ} {γ : ι →₀ ℕ} {p : MvPolynomial ι R}
+    (hp : p ∈ natShift (polynomialGrading ι R) d (m • γ.degree)) (β : ι →₀ ℕ) :
+    MvPolynomial.monomial β (p.coeff β) ∈
+      natShift (polynomialGrading ι R) d (m • γ.degree) := by
+  by_cases h : p.coeff β = 0
+  · rw [h]; simp
+  · exact MvPolynomial.isHomogeneous_monomial _
+      (degree_eq_of_mem_support hp (MvPolynomial.mem_support_iff.mpr h))
+
+set_option maxHeartbeats 800000 in
+/-- **A fraction splits over the monomials of its numerator**, at a fixed denominator.
+
+The local `hcongr` step is not decoration. `MvPolynomial.as_sum` rewrites `p`, which appears in
+the type of `awayMk`'s membership argument, so rewriting it in the goal fails on a
+non-type-correct motive. Substituting the equation and appealing to proof irrelevance sidesteps
+that; the same obstruction is why `awayMk_sum` itself descends into `LocalizedModule`. -/
+theorem awayMk_eq_sum_monomial {d m : ℕ} (γ : ι →₀ ℕ) (p : MvPolynomial ι R)
+    (hp : p ∈ natShift (polynomialGrading ι R) d (m • γ.degree)) :
+    DegreeZeroLocalization.awayMk (𝓜 := natShift (polynomialGrading ι R) d)
+        (monomial_one_mem_polynomialGrading (R := R) γ) m p hp =
+      ∑ β ∈ p.support, DegreeZeroLocalization.awayMk
+        (𝓜 := natShift (polynomialGrading ι R) d)
+        (monomial_one_mem_polynomialGrading (R := R) γ) m
+        (MvPolynomial.monomial β (p.coeff β)) (monomial_coeff_mem_natShift hp β) := by
+  have hcongr : ∀ (q : MvPolynomial ι R)
+      (hq : q ∈ natShift (polynomialGrading ι R) d (m • γ.degree)), p = q →
+      DegreeZeroLocalization.awayMk (𝓜 := natShift (polynomialGrading ι R) d)
+        (monomial_one_mem_polynomialGrading (R := R) γ) m p hp =
+      DegreeZeroLocalization.awayMk (𝓜 := natShift (polynomialGrading ι R) d)
+        (monomial_one_mem_polynomialGrading (R := R) γ) m q hq := by
+    rintro q hq rfl; rfl
+  refine (hcongr _ (sum_mem fun b _ => monomial_coeff_mem_natShift hp b)
+    (MvPolynomial.as_sum p)).trans ?_
+  exact DegreeZeroLocalization.awayMk_sum
+    (monomial_one_mem_polynomialGrading (R := R) γ) m p.support
+    (fun β => MvPolynomial.monomial β (p.coeff β)) (monomial_coeff_mem_natShift hp)
+
+set_option maxHeartbeats 800000 in
+/-- **The monomial fractions span.** Every degree-zero fraction away from `Xᵞ` is a finite sum of
+monomial fractions over a single common denominator `(Xᵞ)ᵐ`.
+
+The denominator is shared across the whole sum, which is what makes this usable: a map defined by
+its effect on monomial fractions extends without any further alignment. -/
+theorem exists_sum_awayMk_monomial [Nontrivial R] (γ : ι →₀ ℕ) (d : ℕ)
+    (z : DegreeZeroLocalization (polynomialGrading ι R)
+      (natShift (polynomialGrading ι R) d)
+      (.powers (MvPolynomial.monomial γ (1 : R)))) :
+    ∃ (m : ℕ) (p : MvPolynomial ι R)
+      (hp : p ∈ natShift (polynomialGrading ι R) d (m • γ.degree)),
+      z = ∑ β ∈ p.support, DegreeZeroLocalization.awayMk
+        (𝓜 := natShift (polynomialGrading ι R) d)
+        (monomial_one_mem_polynomialGrading (R := R) γ) m
+        (MvPolynomial.monomial β (p.coeff β)) (monomial_coeff_mem_natShift hp β) := by
+  obtain ⟨m, p, hp, rfl⟩ :=
+    DegreeZeroLocalization.exists_awayMk (monomial_one_mem_polynomialGrading (R := R) γ)
+      (monomial_one_pow_ne_zero γ) z
+  exact ⟨m, p, hp, awayMk_eq_sum_monomial γ p hp⟩
+
+/-- Every exponent occurring in a spanning decomposition lands in the index set: total degree the
+twist, and nonnegative off the support of `γ`.
+
+Together with `exists_sum_awayMk_monomial` and `awayMk_monomial_eq_iff_laurentExponent` this is
+the spanning half of #491's basis — the monomial fractions exhaust the localization, and the
+exponents they contribute are exactly the admissible ones. -/
+theorem laurentExponent_mem_index {d m : ℕ} {γ : ι →₀ ℕ} {p : MvPolynomial ι R}
+    (hp : p ∈ natShift (polynomialGrading ι R) d (m • γ.degree)) {β : ι →₀ ℕ}
+    (hβ : β ∈ p.support) :
+    (laurentExponent γ m β).degree = d ∧
+      ∀ j, γ j = 0 → 0 ≤ laurentExponent γ m β j :=
+  ⟨degree_laurentExponent γ β m d (degree_eq_of_mem_support hp hβ),
+    fun _ hj => laurentExponent_nonneg_of_apply_eq_zero γ m β hj⟩
 
 end AlgebraicGeometry.Proj
