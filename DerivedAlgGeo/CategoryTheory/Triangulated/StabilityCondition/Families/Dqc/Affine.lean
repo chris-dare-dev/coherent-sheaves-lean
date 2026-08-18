@@ -83,9 +83,8 @@ noncomputable def affineTildeDerivedFunctor (R : CommRingCat.{u}) :
       AffineQuasicoherentDerivedCategory R :=
   (affineQuasicoherentSheavesEquiv R).functor.mapDerivedCategory
 
-/-- The derived global-sections functor in the opposite direction.  At this
-stage these two functors are not called an equivalence: proving that the
-induced localization functors are quasi-inverse is a separate theorem. -/
+/-- The derived global-sections functor in the opposite direction.  The
+quasi-inverse theorem is proved in `Dqc.AffineDerivedEquivalence`. -/
 noncomputable def affineGammaDerivedFunctor (R : CommRingCat.{u}) :
     AffineQuasicoherentDerivedCategory R ⥤
       DerivedCategory (ModuleCat R) :=
