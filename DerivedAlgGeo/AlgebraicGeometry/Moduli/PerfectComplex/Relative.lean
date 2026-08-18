@@ -5,8 +5,8 @@ Released under the MIT license.
 import Mathlib.AlgebraicGeometry.Fiber
 import Mathlib.AlgebraicGeometry.Morphisms.FinitePresentation
 import Mathlib.RingTheory.Flat.Basic
-import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Families.Dqc
-import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Families.OpenImmersionPullback
+import DerivedAlgGeo.AlgebraicGeometry.StabilityCondition.Families.Dqc
+import DerivedAlgGeo.AlgebraicGeometry.StabilityCondition.Families.OpenImmersionPullback
 
 /-!
 # Relative-perfect and universally-gluable complexes

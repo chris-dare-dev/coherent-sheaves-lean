@@ -1,0 +1,27 @@
+/-
+Scheme-derived slice of the AlgebraicGeometry audit. The declarations keep
+their established stability-condition namespace while the owning modules and
+audit records live in the geometry layer.
+-/
+import DerivedAlgGeo.AlgebraicGeometry.StabilityCondition.Families
+import DerivedAlgGeo.CategoryTheory.Triangulated.FourierMukai
+import DerivedAlgGeo.CategoryTheory.Triangulated.LinearYoneda
+import DerivedAlgGeo.CategoryTheory.Triangulated.LinearCoyoneda
+import DerivedAlgGeo.CategoryTheory.Triangulated.GrothendieckGroup.EulerForm
+import DerivedAlgGeo.LinearAlgebra
+open CategoryTheory.Triangulated
+
+/-! ## Affine quasi-coherent derived realization (#528) -/
+
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.AffineQuasicoherentDerivedCategory
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.AffineQuasicoherentSheaves
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.affineGammaDerivedFunctor
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.affineGammaDerivedHomologyIso
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.affineQuasicoherentDerivedCategory_isTriangulated
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.affineQuasicoherentSheavesAbelian
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.affineQuasicoherentSheavesEquiv
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.affineQuasicoherentSheavesEquiv_functor_additive
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.affineQuasicoherentSheavesEquiv_inverse_additive
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.affineQuasicoherentSheavesHasFiniteProducts
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.affineTildeDerivedFunctor
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.affineTildeDerivedHomologyIso
