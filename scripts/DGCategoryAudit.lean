@@ -269,3 +269,21 @@ import DerivedAlgGeo.CategoryTheory.DGCategory
 #print axioms CategoryTheory.IsShiftBy.mapShift_mem_coboundaries
 #print axioms CategoryTheory.IsShiftBy.mapShift_self
 #print axioms CategoryTheory.IsShiftBy.self_inv
+
+-- The maps *out* of a dg cone (dg-enhancements-e6). `IsConeOf` gives the universal
+-- property for maps into the cone; the triangle needs the projections, and the
+-- projection to the source is closed for a reason -- uniqueness of the splitting --
+-- rather than by assumption.
+#print axioms CategoryTheory.IsConeOf.splitId
+#print axioms CategoryTheory.IsConeOf.fst
+#print axioms CategoryTheory.IsConeOf.snd
+#print axioms CategoryTheory.IsConeOf.fst_inl_add_snd_inr
+#print axioms CategoryTheory.IsConeOf.delta_splitId_key
+#print axioms CategoryTheory.IsConeOf.delta_fst
+#print axioms CategoryTheory.IsConeOf.inr_comp_fst_and_snd
+#print axioms CategoryTheory.IsConeOf.inr_comp_fst
+#print axioms CategoryTheory.IsConeOf.inr_comp_snd
+#print axioms CategoryTheory.IsConeOf.toShift
+#print axioms CategoryTheory.IsConeOf.toShift_closed
+#print axioms CategoryTheory.IsConeOf.toShift_mem_cocycles
+#print axioms CategoryTheory.IsConeOf.inr_comp_toShift
