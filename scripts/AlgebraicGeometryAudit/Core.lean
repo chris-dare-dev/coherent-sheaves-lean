@@ -381,6 +381,15 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Proj.natShift
 #print axioms AlgebraicGeometry.Proj.intShift
 #print axioms AlgebraicGeometry.Proj.mem_intShift_ofNat_iff
+-- Integer shifts compose only where the intermediate degree exists (#584). The unrestricted
+-- statement is false: an inner shift by a negative e asks for degree n + e, and when that integer
+-- is negative the zero extension supplies 0 while the single shift by d + e may still land in a
+-- genuine piece. eq_zero_of_mem_intShift_intShift_of_neg makes that failure a theorem rather than
+-- a remark. It is a fact about the algebraic model only -- associatedSheaf reads these pieces
+-- through homogeneous localizations, where the missing degrees are inverted back in -- so the
+-- sheaf-level O(d)(e) = O(d+e) is not obstructed, but it cannot be transported from here.
+#print axioms AlgebraicGeometry.Proj.mem_intShift_add_iff_of_nonneg
+#print axioms AlgebraicGeometry.Proj.eq_zero_of_mem_intShift_intShift_of_neg
 #print axioms AlgebraicGeometry.Proj.sheafTwist
 #print axioms AlgebraicGeometry.Proj.sheafTwistZeroIso
 #print axioms AlgebraicGeometry.Proj.sheafNatTwistAddIso
