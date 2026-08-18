@@ -27,7 +27,7 @@ goal:
     - "The absolute stability topology no longer accepts HN-mass subadditivity as an external premise, and the recovered proof has current CI plus independent mathematical review."
     - "The HRS t-structure is reviewed, its heart is related to the textbook extension closure under explicit hypotheses, and §14 weak-stability tilting is formalized without geometric assumptions."
     - "Support is expressed by a genuine bundled quadratic form on semistable classes and has an explicitly separate uniform-in-families layer."
-    - "The five conditions in Definitions 20.5 and 21.15 are represented separately and have a concrete constant-family nonvacuity witness before Theorem 22.2 is targeted."
+    - "The five conditions in Definitions 20.5 and 21.15 are represented separately; stable declarations bind useful categorical or geometric data, while constant/full/PUnit inhabitance checks remain development-only scaffolding."
     - "Every result mapped to this program is pinned to 1902.08184v4 and defaults to target/no-claim until its statement and proof have been reviewed."
     - "Coherent-sheaf and derived work is integrated through the monorepo's explicit package boundaries; Quot, boundedness, stack, and good-moduli work remains assigned to a named owner and is never hidden behind an axiom."
   assumptions:
@@ -39,7 +39,7 @@ goal:
       validation: "Validated in the source repository by PRs #76/#93/#97 and transferred with their history. The destination tracker records the tilted-heart extension work as closed issue #204."
     - tier: should
       text: "Useful relative-HN interfaces can be stated abstractly before the full geometric substrate exists."
-      validation: "Require a constant-family model and explicit type-level premises; a structure with no inhabitant does not count."
+      validation: "Require explicit type-level premises and concrete categorical or geometric realization for stable results. Logical inhabitance checks may live under Development but do not count as mathematical progress."
     - tier: should
       text: "Quot, algebraic stacks, and good-moduli foundations should be reusable beyond this paper."
       validation: "The parked cross-repo epic must select an upstream or separate-package owner before implementation begins."
@@ -113,6 +113,7 @@ generations:
   - { rev: 51, at: "2026-08-17", note: "SF9.2 (#522) begins with an actual algebraic-stack presentation layer. Scheme maps induce pullback-compatible maps of representable big-Zariski stacks whose fibers are represented by scheme fiber products. Representable properties are checked on those actual structure morphisms; representable diagonals use scheme equalizers; and algebraic stacks carry an actual smooth-surjective scheme atlas. Representable stacks, stacks of locally finitely presented schemes, and the positive-dimensional affine-line stack inhabit the interface. The relative-perfect moduli stack, its atlas and diagonal, and its semistable open substack remain to be constructed, so #522 stays open." }
   - { rev: 52, at: "2026-08-17", note: "SF9.2 (#522) now connects the SF8 relative-perfect layer to actual algebraic stacks. A relative-perfect algebraic presentation identifies every supported locally Noetherian fiber of its structure morphism with the selected full M_pug subgroupoid; the bounded refinement lifts the finite-type witness's universal family to an actual stack-fiber object. Open presentations carry an actual representable open immersion and structural triangle. The zero subproblem is proved contractible and presented by the identity stack, with its finite-type witness and a positive-dimensional Spec Z case. The full M_pug stack still needs arbitrary pullback/descent, diagonal and atlas constructions, so #522 remains open." }
   - { rev: 53, at: "2026-08-18", note: "Architecture review #598 corrects the rev-51/rev-52 terminology. The implemented data is now named ZariskiStackPresentation: it has big-Zariski descent, a scheme-representable diagonal, and a smooth-surjective scheme atlas, but no fppf or etale descent theorem. Relative-perfect and bounded interfaces are correspondingly named big-Zariski presentations. No declaration named AlgebraicStack remains until the standard stack condition and representability level are formalized." }
+  - { rev: 54, at: "2026-08-18", note: "Architecture review #599 corrects the early logical-nonvacuity strategy. Constant, full-locus, constant-true, and PUnit constructors are removed from the stable family API and retained only as compile-only Development scaffolding. The theorem-numbered arbitrary-Prop dependency contract is removed from Lean; Theorem 22.2 gaps now live in theorem22-2-dependencies.yaml as explicitly non-mathematical planning metadata. Stable adapters project theorem-neutral OrdinaryDeformationInputConditions instead." }
 retired: []
 
 # GitHub milestones are roadmap phases. Epic issues live inside them, and
@@ -194,8 +195,8 @@ items:
     acceptance:
       - "A genuine quadratic form controls semistable classes and is packaged uniformly over an indexed family."
       - "Definitions 20.5 and 21.15 are decomposed into separately auditable fields."
-      - "A concrete constant-family model prevents vacuity."
-      - "Theorem 22.2 remains conditional on every named geometric and moduli premise until those premises exist."
+      - "Logical constant-family models are quarantined under Development and are not exposed as stable mathematical constructors."
+      - "Theorem 22.2 remains absent from Lean; its geometric and moduli prerequisites are tracked as explicitly non-mathematical roadmap metadata."
 
   - id: stability-families-e4
     gh_issue: 193
