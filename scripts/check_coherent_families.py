@@ -5,7 +5,7 @@ The narrow classes remain source-compatible views of the coherent roots, but
 new consumers must depend on `HasCoherentDerivedTensor` and
 `HasMonoidalDerivedPullback`. This gate rejects legacy capability assumptions
 outside the two compatibility declarations that define the old pulled-unit
-views.
+views. Geometric family implementations are owned by AlgebraicGeometry.
 """
 
 from __future__ import annotations
@@ -15,11 +15,10 @@ import sys
 
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-FAMILIES = (
+GEOMETRIC_FAMILIES = (
     ROOT
     / "DerivedAlgGeo"
-    / "CategoryTheory"
-    / "Triangulated"
+    / "AlgebraicGeometry"
     / "StabilityCondition"
     / "Families"
 )
@@ -36,7 +35,7 @@ def main() -> int:
     failures: list[str] = []
     unit_compatibility_lines = 0
 
-    for path in sorted(FAMILIES.rglob("*.lean")):
+    for path in sorted(GEOMETRIC_FAMILIES.rglob("*.lean")):
         for line_number, line in enumerate(
             path.read_text(encoding="utf-8").splitlines(), 1
         ):
