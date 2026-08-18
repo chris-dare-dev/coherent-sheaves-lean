@@ -9,9 +9,9 @@ import Mathlib.LinearAlgebra.Basis.Basic
 import Mathlib.LinearAlgebra.Basis.Defs
 
 /-!
-# Constructing a `NumericalRing` from a graded basis
+# Constructing a `NumericalRingData` from a graded basis
 
-`NumericalRing.isInternal` is the one field of `NumericalRing` that is real work, and it is
+`NumericalRingData.isInternal` is the one field of `NumericalRingData` that is real work, and it is
 the same work every time: exhibit `A` as the direct sum of the spans of the graded pieces of
 a basis. This file does it once.
 
@@ -22,14 +22,14 @@ gradedPiece b w k = span ℚ (b '' (w ⁻¹' {k}))
 ```
 
 — the span of the basis vectors in codimension `k`. Then `gradedPiece` is internal, vanishes
-above `n`, and `NumericalRing.ofGradedBasis` assembles a `NumericalRing n A` from it. The
+above `n`, and `NumericalRingData.ofGradedBasis` assembles a `NumericalRingData n A` from it. The
 grading being multiplicative is left as a hypothesis, checked on **basis vectors only**:
 that is a finite check per model rather than a statement about arbitrary elements.
 
 ## Main definitions
 
 * `gradedPiece` — the span of the weight-`k` basis vectors.
-* `NumericalRing.ofGradedBasis` — the constructor.
+* `NumericalRingData.ofGradedBasis` — the constructor.
 
 ## Design
 
@@ -113,21 +113,21 @@ theorem gradedPiece_mul_mem (hmul : ∀ p q : ι, b p * b q ∈ gradedPiece b w 
     exact hmul p q
   exact hle (Submodule.mul_mem_mul hx hy)
 
-/-- **Build a `NumericalRing` from a graded basis.**
+/-- **Build a `NumericalRingData` from a graded basis.**
 
 The caller supplies the basis, the weight function, and three finite checks: that `1` sits in
 codimension zero, that products of basis vectors respect the grading, and that the degree map
 kills every piece but the top one. Everything structural — internality, vanishing above the
 dimension — is discharged here. -/
 @[reducible]
-noncomputable def NumericalRing.ofGradedBasis (n : ℕ) (b : Module.Basis ι ℚ A) (w : ι → ℕ)
+noncomputable def NumericalRingData.ofGradedBasis (n : ℕ) (b : Module.Basis ι ℚ A) (w : ι → ℕ)
     (hw : ∀ i, w i ≤ n)
     (hone : (1 : A) ∈ gradedPiece (b : ι → A) w 0)
     (hmul : ∀ p q : ι, (b : ι → A) p * (b : ι → A) q ∈
       gradedPiece (b : ι → A) w (w p + w q))
     (deg : A →ₗ[ℚ] ℚ)
     (hdeg : ∀ i : ι, w i ≠ n → deg (b i) = 0) :
-    NumericalRing n A where
+    NumericalRingData n A where
   piece := gradedPiece (b : ι → A) w
   isInternal := gradedPiece_isInternal b.linearIndependent b.span_eq
   piece_eq_bot_of_lt _ hk := gradedPiece_eq_bot hw hk
@@ -151,7 +151,7 @@ A constructor nobody has called is not known to work. This exercises every hypot
 a point, one basis vector in codimension zero — and so checks that the five side conditions
 are dischargeable in practice, not merely well-typed.
 
-The exported point instance lives in
+The exported point presentation lives in
 `DerivedAlgGeo/AlgebraicGeometry/Numerical/Examples/DimensionZero/Point.lean` and is built
 directly; this is deliberately a second, independent construction of the same object. -/
 section SmokeTest
@@ -165,8 +165,8 @@ private theorem pointGradedPiece_zero :
   rw [gradedPiece, hpre, image_univ, pointBasis.span_eq]
 
 @[reducible]
-private noncomputable def pointRingViaGradedBasis : NumericalRing 0 ℚ :=
-  NumericalRing.ofGradedBasis 0 pointBasis (fun _ => 0) (fun _ => le_refl 0)
+private noncomputable def pointRingViaGradedBasis : NumericalRingData 0 ℚ :=
+  NumericalRingData.ofGradedBasis 0 pointBasis (fun _ => 0) (fun _ => le_refl 0)
     (by rw [pointGradedPiece_zero]; trivial)
     (fun p q => by
       -- the weight index is `(fun _ => 0) p + (fun _ => 0) q`, defeq to `0` but not

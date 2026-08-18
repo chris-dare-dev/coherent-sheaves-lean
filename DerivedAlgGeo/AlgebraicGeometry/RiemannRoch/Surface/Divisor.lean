@@ -14,7 +14,7 @@ This file proves the geometric surface formula
 `χ(O_X(D)) = χ(O_X) + (D · (D - K_X)) / 2`
 
 from the degree-two Snapper intersection pairing and the Picard Euler symmetry supplied by
-Serre duality.  It does not import or invoke the Layer A Hirzebruch--Riemann--Roch field.
+Serre duality. It does not import or invoke the Layer A Hirzebruch--Riemann--Roch property.
 
 The proof is first carried out intrinsically on `Pic X`.  The numerator is shown to be even over
 `ℤ`, before division by two in `ℚ`.  It is then specialized to Cartier divisors, where

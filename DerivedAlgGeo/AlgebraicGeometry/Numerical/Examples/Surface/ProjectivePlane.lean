@@ -7,7 +7,7 @@ import DerivedAlgGeo.AlgebraicGeometry.Numerical.Examples.Surface.RankOne
 /-!
 # The projective-plane numerical model
 
-A second model of `NumericalVariety` in dimension two, with a **nontrivial canonical class**.
+A second model of `NumericalVarietyData` in dimension two, with a **nontrivial canonical class**.
 
 That is the point of it. The K3 model has `td₁ = 0`, so the `∫_X c₁(E)·td₁(X)` term of
 `Surface.chi_eq` is multiplied by zero there and a sign error in it would go undetected. On
@@ -94,8 +94,8 @@ def p2Chi (E : SurfaceNum) : ℤ := E.1 + 2 * E.2.1 + E.2.2
 
 /-- **The model.** `ℙ²`, with `H² = 1` and `td = 1 + (3/2)H + H²`. -/
 @[reducible]
-noncomputable def p2NumericalVariety : NumericalVariety 2 SurfaceRing SurfaceNum where
-  toNumericalRing := surfaceNumericalRing 1
+noncomputable def p2NumericalVariety : NumericalVarietyData 2 SurfaceRing SurfaceNum where
+  ring := surfaceNumericalRing 1
   rank := { toFun := fun E => E.1, map_zero' := rfl, map_add' := fun _ _ => rfl }
   chComp := surfaceCh p2ChCoeff
   chComp_mem := surfaceCh_mem p2ChCoeff
@@ -112,14 +112,16 @@ noncomputable def p2NumericalVariety : NumericalVariety 2 SurfaceRing SurfaceNum
         show a.1 + b.1 + 2 * (a.2.1 + b.2.1) + (a.2.2 + b.2.2)
           = (a.1 + 2 * a.2.1 + a.2.2) + (b.1 + 2 * b.2.1 + b.2.2)
         ring }
-  hirzebruch_riemannRoch := by
-    intro E
-    show ((p2Chi E : ℤ) : ℚ) = surfaceDegree 1 _
-    rw [surfaceCh_sum, p2Todd_sum, surfaceDegree_ch_mul_todd]
-    show ((E.1 + 2 * E.2.1 + E.2.2 : ℤ) : ℚ)
-      = 1 * ((E.1 : ℚ) * 1 + (E.2.1 : ℚ) * (3 / 2) + ((E.2.1 : ℚ) / 2 + (E.2.2 : ℚ)))
-    push_cast
-    ring
+
+/-- The explicit projective-plane presentation satisfies Hirzebruch--Riemann--Roch. -/
+theorem p2NumericalVariety_satisfiesHRR : p2NumericalVariety.SatisfiesHRR := by
+  refine ⟨fun E => ?_⟩
+  show ((p2Chi E : ℤ) : ℚ) = surfaceDegree 1 _
+  rw [surfaceCh_sum, p2Todd_sum, surfaceDegree_ch_mul_todd]
+  show ((E.1 + 2 * E.2.1 + E.2.2 : ℤ) : ℚ)
+    = 1 * ((E.1 : ℚ) * 1 + (E.2.1 : ℚ) * (3 / 2) + ((E.2.1 : ℚ) / 2 + (E.2.2 : ℚ)))
+  push_cast
+  ring
 
 /-- **Riemann–Roch on `ℙ²` reproduces `χ(O(nH)) = (n+1)(n+2)/2`.**
 

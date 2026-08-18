@@ -8,10 +8,10 @@ import DerivedAlgGeo.AlgebraicGeometry.Numerical.Examples.Surface.RankOne
 /-!
 # A K3 surface of Picard rank one
 
-The first model of `NumericalVariety` in dimension two. Before it, every statement in
+The first model of `NumericalVarietyData` in dimension two. Before it, every statement in
 `DerivedAlgGeo/AlgebraicGeometry/Numerical/Specializations/Surface.lean` and
 `DerivedAlgGeo/AlgebraicGeometry/Numerical/K3.lean` was conditional on a
-`NumericalVariety 2 A N` existing at all — only the dimension-zero point had been exhibited.
+`NumericalVarietyData 2 A N` existing at all — only the dimension-zero point had been exhibited.
 
 The surface is a K3 `X` with `Pic X = ℤ·H` and `H² = 2d`. The ring, grading and degree map
 come from `Examples/RankOneSurface.lean`; all this file supplies is the Todd class
@@ -77,9 +77,9 @@ theorem k3Todd_sum (d : ℚ) :
 
 /-- **The model.** A K3 surface of degree `H² = 2d`, `d > 0`. -/
 @[reducible]
-noncomputable def k3NumericalVariety (d : ℕ) (hd : d ≠ 0) :
-    NumericalVariety 2 SurfaceRing SurfaceNum where
-  toNumericalRing := surfaceNumericalRing (2 * (d : ℚ))
+noncomputable def k3NumericalVariety (d : ℕ) :
+    NumericalVarietyData 2 SurfaceRing SurfaceNum where
+  ring := surfaceNumericalRing (2 * (d : ℚ))
   rank := { toFun := fun E => E.1, map_zero' := rfl, map_add' := fun _ _ => rfl }
   chComp := surfaceCh k3ChCoeff
   chComp_mem := surfaceCh_mem k3ChCoeff
@@ -92,26 +92,26 @@ noncomputable def k3NumericalVariety (d : ℕ) (hd : d ≠ 0) :
     { toFun := fun E => 2 * E.1 + 2 * (d : ℤ) * E.2.2
       map_zero' := by simp
       map_add' := by intro a b; show 2 * (a.1 + b.1) + 2 * (d : ℤ) * (a.2.2 + b.2.2) = _; ring }
-  hirzebruch_riemannRoch := by
-    intro E
-    show ((2 * E.1 + 2 * (d : ℤ) * E.2.2 : ℤ) : ℚ) = surfaceDegree (2 * (d : ℚ)) _
-    rw [surfaceCh_sum, k3Todd_sum, surfaceDegree_ch_mul_todd]
-    have hdq : (d : ℚ) ≠ 0 := Nat.cast_ne_zero.mpr hd
-    show _ = 2 * (d : ℚ) * ((E.1 : ℚ) * (1 / (d : ℚ)) + (E.2.1 : ℚ) * 0 + (E.2.2 : ℚ))
-    push_cast
-    field_simp
-    ring
+
+/-- The explicit K3 presentation satisfies Hirzebruch--Riemann--Roch. -/
+theorem k3NumericalVariety_satisfiesHRR (d : ℕ) (hd : d ≠ 0) :
+    (k3NumericalVariety d).SatisfiesHRR := by
+  refine ⟨fun E => ?_⟩
+  show ((2 * E.1 + 2 * (d : ℤ) * E.2.2 : ℤ) : ℚ) = surfaceDegree (2 * (d : ℚ)) _
+  rw [surfaceCh_sum, k3Todd_sum, surfaceDegree_ch_mul_todd]
+  have hdq : (d : ℚ) ≠ 0 := Nat.cast_ne_zero.mpr hd
+  show _ = 2 * (d : ℚ) * ((E.1 : ℚ) * (1 / (d : ℚ)) + (E.2.1 : ℚ) * 0 + (E.2.2 : ℚ))
+  push_cast
+  field_simp
+  ring
 
 /-- The model really is a K3: `td₁ = 0` and `∫_X td₂ = χ(O_X) = 2`.
 
-With this instance every theorem in `DerivedAlgGeo/AlgebraicGeometry/Numerical/K3.lean` —
-Riemann–Roch, the Mukai
+With this presentation and its two property witnesses, every theorem in
+`DerivedAlgGeo/AlgebraicGeometry/Numerical/K3.lean` — Riemann–Roch, the Mukai
 self-pairing, `⟨v,v⟩ = ∫Δ − 2r²` — is a statement about an object that exists. -/
 theorem k3_isK3 (d : ℕ) (hd : d ≠ 0) :
-    letI := k3NumericalVariety d hd
-    K3.IsK3 SurfaceRing SurfaceNum := by
-  -- the `letI` in the statement is zeta-reduced away, so re-establish the instance here
-  letI := k3NumericalVariety d hd
+    K3.IsK3 (k3NumericalVariety d) := by
   refine ⟨rfl, ?_⟩
   show surfaceDegree (2 * (d : ℚ)) (algebraMap ℚ SurfaceRing (1 / (d : ℚ)) * H ^ 2) = 2
   rw [surfaceDegree_algebraMap_mul, surfaceDegree_Hsq]

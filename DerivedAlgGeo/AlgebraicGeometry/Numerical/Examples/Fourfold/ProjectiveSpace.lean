@@ -8,7 +8,7 @@ import DerivedAlgGeo.AlgebraicGeometry.Numerical.Specializations.Fourfold
 /-!
 # The numerical model of `ℙ⁴`
 
-The first model of `NumericalVariety` in dimension four, and the one that exercises every
+The first model of `NumericalVarietyData` in dimension four, and the one that exercises every
 term of `Fourfold.chi_eq`: all five Todd coefficients of `ℙ⁴` are nonzero, so no term is
 multiplied by zero and an error anywhere in the display formula is visible here.
 
@@ -61,24 +61,27 @@ def p4Chi : FourfoldNum →+ ℤ where
 
 /-- **The model.** `ℙ⁴`, with `∫H⁴ = 1` and `td = 1 + (5/2)H + (35/12)H² + (25/12)H³ + H⁴`. -/
 @[reducible]
-noncomputable def p4NumericalVariety : NumericalVariety 4 (RankOneRing 4) FourfoldNum :=
+noncomputable def p4NumericalVariety : NumericalVarietyData 4 (RankOneRing 4) FourfoldNum :=
   rankOneNumericalVariety 4 1 fourfoldRank p4Chi (fourfoldChCoeff 1) p4Todd
+    (fourfoldChCoeff_zero 1) (fourfoldChCoeff_add 1) rfl
+
+/-- The explicit projective-four-space presentation satisfies HRR. -/
+theorem p4NumericalVariety_satisfiesHRR : p4NumericalVariety.SatisfiesHRR :=
+  rankOneNumericalVariety_satisfiesHRR 4 1 fourfoldRank p4Chi (fourfoldChCoeff 1) p4Todd
     (fourfoldChCoeff_zero 1) (fourfoldChCoeff_add 1) rfl (fun E => by
-      rw [fourfoldChi_sum]
-      show ((E.1 + E.2.1 + E.2.2.1 + E.2.2.2.1 + E.2.2.2.2 : ℤ) : ℚ)
-        = 1 * ((E.1 : ℚ) * 1 + (E.2.1 : ℚ) * (25 / 12)
-          + (-(E.2.1 : ℚ) / 2 + (E.2.2.1 : ℚ)) * (35 / 12)
-          + ((E.2.1 : ℚ) / 6 - (E.2.2.1 : ℚ) + (E.2.2.2.1 : ℚ)) * (5 / 2)
-          + (-(E.2.1 : ℚ) / 24 + 7 * (E.2.2.1 : ℚ) / 12 - 3 * (E.2.2.2.1 : ℚ) / 2
-              + (E.2.2.2.2 : ℚ) / 1) * 1)
-      push_cast
-      ring)
+    rw [fourfoldChi_sum]
+    show ((E.1 + E.2.1 + E.2.2.1 + E.2.2.2.1 + E.2.2.2.2 : ℤ) : ℚ)
+      = 1 * ((E.1 : ℚ) * 1 + (E.2.1 : ℚ) * (25 / 12)
+        + (-(E.2.1 : ℚ) / 2 + (E.2.2.1 : ℚ)) * (35 / 12)
+        + ((E.2.1 : ℚ) / 6 - (E.2.2.1 : ℚ) + (E.2.2.2.1 : ℚ)) * (5 / 2)
+        + (-(E.2.1 : ℚ) / 24 + 7 * (E.2.2.1 : ℚ) / 12 - 3 * (E.2.2.2.1 : ℚ) / 2
+            + (E.2.2.2.2 : ℚ) / 1) * 1)
+    push_cast
+    ring)
 
 /-- `∫_{ℙ⁴} td₄ = χ(O_{ℙ⁴}) = 1`. -/
 theorem p4ChiStructureSheaf :
-    letI := p4NumericalVariety
-    Fourfold.chiStructureSheaf (RankOneRing 4) FourfoldNum = 1 := by
-  letI := p4NumericalVariety
+    Fourfold.chiStructureSheaf p4NumericalVariety = 1 := by
   show rankOneDegree 4 1 (rankOneTodd 4 p4Todd 4) = 1
   rw [rankOneTodd, rankOneDegree_algebraMap_mul_pow]
   norm_num [p4Todd]

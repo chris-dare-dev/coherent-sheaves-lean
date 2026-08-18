@@ -21,7 +21,7 @@ numerical rather than cycle-valued:
 * the top identity `degree (tau_d(F)) = chi(F)` proves HRR.
 
 The construction is valid in every positive dimension at most four.  In particular it gives
-scheme-derived `NumericalVariety` bridges in dimensions three and four and makes the existing
+scheme-derived `NumericalVarietyData` bridges in dimensions three and four and makes the existing
 Layer A display formulas unconditional once the explicit reconstruction packages below are
 supplied.
 
@@ -60,7 +60,7 @@ variable {X : Variety k}
 variable {D : FiniteCohomology X}
 variable {C : D.LinearConnectingSystem}
 variable {d : ℕ}
-variable {A : Type v} [CommRing A] [Algebra ℚ A] [NumericalRing d A]
+variable {A : Type v} [CommRing A] [Algebra ℚ A]
 variable {P : PairingContext D C d A}
 variable {O : Coh X.toScheme}
 
@@ -107,13 +107,13 @@ theorem reconstruction_eulerPic_one {F : Coh X.toScheme}
 coherent Euler characteristic. -/
 theorem degree_tauComponent_top_eq_eulerCharacteristic
     {F : Coh X.toScheme} (Q : P.ReconstructionData F) :
-    NumericalRing.degree (n := d) (Q.tauComponent d) =
+    P.ring.degree (Q.tauComponent d) =
       (D.eulerCharacteristic F : ℚ) := by
   have h := Q.degree_tauComponent_mul_divisorProduct d (by omega) [] (by simp)
   rw [divisorProduct_nil, mul_one, PairingContext.twistPairing,
     homogeneousPicardCoefficient_nil] at h
   calc
-    NumericalRing.degree (n := d) (Q.tauComponent d) =
+    P.ring.degree (Q.tauComponent d) =
         (Q.twists.eulerPic 1 : ℚ) := h
     _ = (D.eulerCharacteristic F : ℚ) := by
       exact_mod_cast reconstruction_eulerPic_one Q
@@ -149,7 +149,7 @@ invariant valued in the certified graded piece. -/
 noncomputable def chernCharacterInvariant (R : ReconstructionSystem (P := P))
     (RO : P.ReconstructionData O) (i : ℕ) :
     CoherentAdditiveInvariant X
-      (NumericalRing.piece (n := d) (A := A) i) where
+      (P.ring.piece i) where
   obj F := ⟨chernCharacterComponent RO (R.reconstruction F) i,
     chernCharacterComponent_mem RO (R.reconstruction F) i⟩
   map_iso := by
@@ -173,7 +173,7 @@ noncomputable def rankHom (R : ReconstructionSystem (P := P)) :
 noncomputable def chernCharacterHom (R : ReconstructionSystem (P := P))
     (RO : P.ReconstructionData O) (i : ℕ) :
     CoherentGrothendieckGroup X →+ A :=
-  (NumericalRing.piece (n := d) (A := A) i).subtype.toAddMonoidHom.comp
+  (P.ring.piece i).subtype.toAddMonoidHom.comp
     (R.chernCharacterInvariant RO i).grothendieckHom
 
 @[simp]
@@ -192,7 +192,7 @@ theorem chernCharacterHom_class (R : ReconstructionSystem (P := P))
 theorem chernCharacterHom_mem (R : ReconstructionSystem (P := P))
     (RO : P.ReconstructionData O)
     (E : CoherentGrothendieckGroup X) (i : ℕ) :
-    R.chernCharacterHom RO i E ∈ NumericalRing.piece (n := d) i :=
+    R.chernCharacterHom RO i E ∈ P.ring.piece i :=
   ((R.chernCharacterInvariant RO i).grothendieckHom E).property
 
 /-- The rational algebra map restricted to integral ranks. -/
@@ -238,27 +238,27 @@ theorem reconstructedToddComponent_succ (RO : P.ReconstructionData O) (i : ℕ) 
     reconstructedToddComponent RO (i + 1) = toddComponent RO (i + 1) := rfl
 
 theorem reconstructedToddComponent_mem (RO : P.ReconstructionData O) (i : ℕ) :
-    reconstructedToddComponent RO i ∈ NumericalRing.piece (n := d) i := by
+    reconstructedToddComponent RO i ∈ P.ring.piece i := by
   cases i with
-  | zero => exact NumericalRing.one_mem_piece_zero
+  | zero => exact P.ring.one_mem_piece_zero
   | succ i => exact PairingContext.ReconstructionData.tauComponent_mem RO (i + 1)
 
 private theorem degree_sum_mul_sum_eq_antidiagonal
     (ch td : ℕ → A)
-    (hch : ∀ i, ch i ∈ NumericalRing.piece (n := d) i)
-    (htd : ∀ i, td i ∈ NumericalRing.piece (n := d) i) :
-    NumericalRing.degree (n := d)
+    (hch : ∀ i, ch i ∈ P.ring.piece i)
+    (htd : ∀ i, td i ∈ P.ring.piece i) :
+    P.ring.degree
         ((∑ i ∈ Finset.range (d + 1), ch i) *
           (∑ j ∈ Finset.range (d + 1), td j)) =
       ∑ i ∈ Finset.range (d + 1),
-        NumericalRing.degree (n := d) (ch i * td (d - i)) := by
+        P.ring.degree (ch i * td (d - i)) := by
   rw [Finset.sum_mul_sum, map_sum]
   refine Finset.sum_congr rfl fun i hi ↦ ?_
   have hid : i ≤ d := Nat.lt_succ_iff.mp (Finset.mem_range.mp hi)
   rw [map_sum]
   refine Finset.sum_eq_single (d - i) (fun b _ hb ↦ ?_) (fun hmem ↦ ?_)
-  · refine NumericalRing.degree_eq_zero_of_mem (fun hib ↦ hb ?_)
-      (NumericalRing.mul_mem_piece (hch i) (htd b))
+  · refine P.ring.degree_eq_zero_of_mem (fun hib ↦ hb ?_)
+      (P.ring.mul_mem_piece (hch i) (htd b))
     omega
   · exact absurd (Finset.mem_range.mpr (by omega)) hmem
 
@@ -267,9 +267,9 @@ private theorem degree_antidiagonal_eq_tauComponent
     (Q : P.ReconstructionData F)
     (hdpos : 1 ≤ d) (hd4 : d ≤ 4) :
     (∑ i ∈ Finset.range (d + 1),
-        NumericalRing.degree (n := d)
+        P.ring.degree
           (chernCharacterComponent RO Q i * reconstructedToddComponent RO (d - i))) =
-      NumericalRing.degree (n := d) (Q.tauComponent d) := by
+      P.ring.degree (Q.tauComponent d) := by
   interval_cases d <;>
     simp [Finset.sum_range_succ, reconstructedToddComponent] <;> ring
 
@@ -279,7 +279,7 @@ theorem sheaf_hirzebruch_riemannRoch
     (R : ReconstructionSystem (P := P))
     (hdpos : 1 ≤ d) (hd4 : d ≤ 4)
     (F : Coh X.toScheme) :
-    (D.eulerCharacteristic F : ℚ) = NumericalRing.degree (n := d)
+    (D.eulerCharacteristic F : ℚ) = P.ring.degree
       ((∑ i ∈ Finset.range (d + 1),
           chernCharacterComponent RO (R.reconstruction F) i) *
         (∑ j ∈ Finset.range (d + 1), reconstructedToddComponent RO j)) := by
@@ -305,7 +305,7 @@ noncomputable def totalTodd (RO : P.ReconstructionData O) : A :=
 noncomputable def riemannRochHom
     (RO : P.ReconstructionData O) (R : ReconstructionSystem (P := P)) :
     CoherentGrothendieckGroup X →+ ℚ where
-  toFun E := NumericalRing.degree (n := d)
+  toFun E := P.ring.degree
     (totalChernCharacterHom RO R E * totalTodd RO)
   map_zero' := by simp [totalChernCharacterHom]
   map_add' E F := by
@@ -331,7 +331,7 @@ theorem riemannRochHom_class
     (RO : P.ReconstructionData O) (R : ReconstructionSystem (P := P))
     (F : Coh X.toScheme) :
     riemannRochHom RO R (coherentGrothendieckClass F) =
-      NumericalRing.degree (n := d)
+      P.ring.degree
         ((∑ i ∈ Finset.range (d + 1),
             chernCharacterComponent RO (R.reconstruction F) i) *
           (∑ j ∈ Finset.range (d + 1), reconstructedToddComponent RO j)) := by
@@ -348,7 +348,7 @@ theorem hirzebruch_riemannRoch
     (RO : P.ReconstructionData O) (R : ReconstructionSystem (P := P))
     (hdpos : 1 ≤ d) (hd4 : d ≤ 4)
     (E : CoherentGrothendieckGroup X) :
-    (D.grothendieckEulerHom C E : ℚ) = NumericalRing.degree (n := d)
+    (D.grothendieckEulerHom C E : ℚ) = P.ring.degree
       ((∑ i ∈ Finset.range (d + 1), R.chernCharacterHom RO i E) *
         (∑ j ∈ Finset.range (d + 1), reconstructedToddComponent RO j)) := by
   have hhom : rationalEulerHom (D := D) (C := C) = riemannRochHom RO R := by
@@ -361,14 +361,13 @@ theorem hirzebruch_riemannRoch
 
 /-- The scheme-derived numerical variety reconstructed from Picard Euler polynomials.
 
-The two inequalities are proofs, not mathematical input fields: they record the current
-positive-dimension and codimension-four implementation bounds. -/
+This constructor only selects data. The positive-dimension and codimension-four implementation
+bounds occur on `toNumericalVariety_satisfiesHRR`, where they are actually needed. -/
 @[reducible]
 noncomputable def toNumericalVariety
-    (RO : P.ReconstructionData O) (R : ReconstructionSystem (P := P))
-    (hdpos : 1 ≤ d) (hd4 : d ≤ 4) :
-    NumericalVariety d A (CoherentGrothendieckGroup X) where
-  toNumericalRing := inferInstance
+    (RO : P.ReconstructionData O) (R : ReconstructionSystem (P := P)) :
+    NumericalVarietyData d A (CoherentGrothendieckGroup X) where
+  ring := P.ring
   rank := R.rankHom
   chComp E i := R.chernCharacterHom RO i E
   chComp_mem := R.chernCharacterHom_mem RO
@@ -378,23 +377,26 @@ noncomputable def toNumericalVariety
   toddComp_mem := reconstructedToddComponent_mem RO
   toddComp_zero := reconstructedToddComponent_zero RO
   chi := D.grothendieckEulerHom C
-  hirzebruch_riemannRoch := hirzebruch_riemannRoch RO R hdpos hd4
 
-@[simp]
+/-- The reconstructed numerical presentation satisfies HRR. -/
+theorem toNumericalVariety_satisfiesHRR
+    (RO : P.ReconstructionData O) (R : ReconstructionSystem (P := P))
+    (hdpos : 1 ≤ d) (hd4 : d ≤ 4) :
+    (toNumericalVariety RO R).SatisfiesHRR :=
+  ⟨hirzebruch_riemannRoch RO R hdpos hd4⟩
+
 theorem toNumericalVariety_rank_class
     (RO : P.ReconstructionData O) (R : ReconstructionSystem (P := P))
-    (hdpos : 1 ≤ d) (hd4 : d ≤ 4) (F : Coh X.toScheme) :
-    (toNumericalVariety RO R hdpos hd4).rank (coherentGrothendieckClass F) =
+    (F : Coh X.toScheme) :
+    (toNumericalVariety RO R).rank (coherentGrothendieckClass F) =
       (R.reconstruction F).rank := by
   change R.rankHom (coherentGrothendieckClass F) = (R.reconstruction F).rank
   exact R.rankHom_class F
 
-@[simp]
 theorem toNumericalVariety_chComp_class
     (RO : P.ReconstructionData O) (R : ReconstructionSystem (P := P))
-    (hdpos : 1 ≤ d) (hd4 : d ≤ 4)
     (F : Coh X.toScheme) (i : ℕ) :
-    (toNumericalVariety RO R hdpos hd4).chComp (coherentGrothendieckClass F) i =
+    (toNumericalVariety RO R).chComp (coherentGrothendieckClass F) i =
       chernCharacterComponent RO (R.reconstruction F) i := by
   change R.chernCharacterHom RO i (coherentGrothendieckClass F) =
     chernCharacterComponent RO (R.reconstruction F) i
@@ -403,15 +405,14 @@ theorem toNumericalVariety_chComp_class
 @[simp]
 theorem toNumericalVariety_toddComp
     (RO : P.ReconstructionData O) (R : ReconstructionSystem (P := P))
-    (hdpos : 1 ≤ d) (hd4 : d ≤ 4) (i : ℕ) :
-    (toNumericalVariety RO R hdpos hd4).toddComp i =
+    (i : ℕ) :
+    (toNumericalVariety RO R).toddComp i =
       reconstructedToddComponent RO i := rfl
 
-@[simp]
 theorem toNumericalVariety_chi_class
     (RO : P.ReconstructionData O) (R : ReconstructionSystem (P := P))
-    (hdpos : 1 ≤ d) (hd4 : d ≤ 4) (F : Coh X.toScheme) :
-    (toNumericalVariety RO R hdpos hd4).chi (coherentGrothendieckClass F) =
+    (F : Coh X.toScheme) :
+    (toNumericalVariety RO R).chi (coherentGrothendieckClass F) =
       D.eulerCharacteristic F := by
   change D.grothendieckEulerHom C (coherentGrothendieckClass F) =
     D.eulerCharacteristic F
@@ -420,80 +421,78 @@ theorem toNumericalVariety_chi_class
 /-- The numerical class of a coherent sheaf in the Euler-radical quotient fixed by Layer A. -/
 noncomputable def numericalClass
     (RO : P.ReconstructionData O) (R : ReconstructionSystem (P := P))
-    (hdpos : 1 ≤ d) (hd4 : d ≤ 4) (F : Coh X.toScheme) :
-    letI := toNumericalVariety RO R hdpos hd4
-    NumericalVariety.NumericalQuotient d A (CoherentGrothendieckGroup X) := by
-  letI := toNumericalVariety RO R hdpos hd4
-  exact Submodule.Quotient.mk (coherentGrothendieckClass F)
+    (F : Coh X.toScheme) :
+    NumericalVarietyData.NumericalQuotient (toNumericalVariety RO R) :=
+  Submodule.Quotient.mk (coherentGrothendieckClass F)
 
 /-! ### Explicit threefold and fourfold constructors -/
 
 /-- The scheme-derived dimension-three bridge requested by issue #45. -/
 @[reducible]
 noncomputable def toThreefoldNumericalVariety
-    {A : Type v} [CommRing A] [Algebra ℚ A] [NumericalRing 3 A]
+    {A : Type v} [CommRing A] [Algebra ℚ A]
     {P : PairingContext D C 3 A} {O : Coh X.toScheme}
     (RO : P.ReconstructionData O) (R : ReconstructionSystem (P := P)) :
-    NumericalVariety 3 A (CoherentGrothendieckGroup X) :=
-  toNumericalVariety RO R (by omega) (by omega)
+    NumericalVarietyData 3 A (CoherentGrothendieckGroup X) :=
+  toNumericalVariety RO R
 
 /-- The scheme-derived dimension-four bridge requested by issue #45. -/
 @[reducible]
 noncomputable def toFourfoldNumericalVariety
-    {A : Type v} [CommRing A] [Algebra ℚ A] [NumericalRing 4 A]
+    {A : Type v} [CommRing A] [Algebra ℚ A]
     {P : PairingContext D C 4 A} {O : Coh X.toScheme}
     (RO : P.ReconstructionData O) (R : ReconstructionSystem (P := P)) :
-    NumericalVariety 4 A (CoherentGrothendieckGroup X) :=
-  toNumericalVariety RO R (by omega) (by omega)
+    NumericalVarietyData 4 A (CoherentGrothendieckGroup X) :=
+  toNumericalVariety RO R
 
 /-- The existing Layer A threefold display, evaluated on a genuine coherent sheaf through the
 scheme-derived bridge. -/
 theorem threefold_eulerCharacteristic_eq
-    {B : Type v} [CommRing B] [Algebra ℚ B] [NumericalRing 3 B]
+    {B : Type v} [CommRing B] [Algebra ℚ B]
     {P3 : PairingContext D C 3 B} {O3 : Coh X.toScheme}
     (RO : P3.ReconstructionData O3) (R : ReconstructionSystem (P := P3))
     (F : Coh X.toScheme) :
     (D.eulerCharacteristic F : ℚ) =
       ((R.reconstruction F).rank : ℚ) *
-          NumericalRing.degree (n := 3) (reconstructedToddComponent RO 3) +
-        NumericalRing.degree (n := 3)
+          P3.ring.degree (reconstructedToddComponent RO 3) +
+        P3.ring.degree
           (chernCharacterComponent RO (R.reconstruction F) 1 *
             reconstructedToddComponent RO 2) +
-        NumericalRing.degree (n := 3)
+        P3.ring.degree
           (chernCharacterComponent RO (R.reconstruction F) 2 *
             reconstructedToddComponent RO 1) +
-        NumericalRing.degree (n := 3)
+        P3.ring.degree
           (chernCharacterComponent RO (R.reconstruction F) 3) := by
-  letI : NumericalVariety 3 B (CoherentGrothendieckGroup X) :=
-    toThreefoldNumericalVariety RO R
   simpa [toThreefoldNumericalVariety, toNumericalVariety] using
-    (Threefold.chi_eq (A := B) (coherentGrothendieckClass F))
+    (Threefold.chi_eq (toThreefoldNumericalVariety RO R)
+      (toNumericalVariety_satisfiesHRR RO R (by omega) (by omega))
+      (coherentGrothendieckClass F))
 
 /-- The existing Layer A fourfold display, evaluated on a genuine coherent sheaf through the
 scheme-derived bridge. -/
 theorem fourfold_eulerCharacteristic_eq
-    {B : Type v} [CommRing B] [Algebra ℚ B] [NumericalRing 4 B]
+    {B : Type v} [CommRing B] [Algebra ℚ B]
     {P4 : PairingContext D C 4 B} {O4 : Coh X.toScheme}
     (RO : P4.ReconstructionData O4) (R : ReconstructionSystem (P := P4))
     (F : Coh X.toScheme) :
     (D.eulerCharacteristic F : ℚ) =
       ((R.reconstruction F).rank : ℚ) *
-          NumericalRing.degree (n := 4) (reconstructedToddComponent RO 4) +
-        NumericalRing.degree (n := 4)
+          P4.ring.degree (reconstructedToddComponent RO 4) +
+        P4.ring.degree
           (chernCharacterComponent RO (R.reconstruction F) 1 *
             reconstructedToddComponent RO 3) +
-        NumericalRing.degree (n := 4)
+        P4.ring.degree
           (chernCharacterComponent RO (R.reconstruction F) 2 *
             reconstructedToddComponent RO 2) +
-        NumericalRing.degree (n := 4)
+        P4.ring.degree
           (chernCharacterComponent RO (R.reconstruction F) 3 *
             reconstructedToddComponent RO 1) +
-        NumericalRing.degree (n := 4)
+        P4.ring.degree
           (chernCharacterComponent RO (R.reconstruction F) 4) := by
-  letI : NumericalVariety 4 B (CoherentGrothendieckGroup X) :=
-    toFourfoldNumericalVariety RO R
   simpa [toFourfoldNumericalVariety, toNumericalVariety] using
-    (Fourfold.chi_eq (A := B) (coherentGrothendieckClass F))
+    (Fourfold.chi_eq (toFourfoldNumericalVariety RO R)
+      (toNumericalVariety_satisfiesHRR RO R (by omega) (by omega))
+      (coherentGrothendieckClass F))
 
 end
 

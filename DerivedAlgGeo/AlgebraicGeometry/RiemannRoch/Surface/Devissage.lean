@@ -45,7 +45,7 @@ variable {k : Type u} [Field k]
 variable {X : SmoothProperVariety k}
 variable {D : FiniteCohomology X.toVariety}
 variable {C : D.LinearConnectingSystem}
-variable {A : Type v} [CommRing A] [Algebra ℚ A] [NumericalRing 2 A]
+variable {A : Type v} [CommRing A] [Algebra ℚ A]
 variable {P : PairingContext D C 2 A}
 variable {K : SmoothProperVariety.CanonicalSheafData X 2}
 
@@ -283,53 +283,51 @@ explicitly perfect coherent sheaf.  Each term of `Numerical.Surface.chi_eq` is c
 separately; no equality of characteristic classes is inferred from equality of Euler numbers. -/
 structure NumericalVarietyComparison
     {B : Type v} [CommRing B] [Algebra ℚ B]
-    {N : Type w} [AddCommGroup N] [NumericalVariety 2 B N]
+    {N : Type w} [AddCommGroup N] (V : NumericalVarietyData 2 B N)
     {PB : PairingContext D C 2 B}
     {KB : SmoothProperVariety.CanonicalSheafData X 2}
     {F : Coh X.toVariety.toScheme}
     (Q : Coh.TwoTermPerfectDeterminantData F) (E : N) : Prop where
-  euler_eq : NumericalVariety.chi (A := B) E = D.eulerCharacteristic F
-  rank_eq : NumericalVariety.rank (A := B) E = virtualRank Q
-  toddTwo_degree : NumericalRing.degree (n := 2)
-      (NumericalVariety.toddComp (A := B) (N := N) 2) =
+  euler_eq : V.chi E = D.eulerCharacteristic F
+  rank_eq : V.rank E = virtualRank Q
+  toddTwo_degree : V.ring.degree (V.toddComp 2) =
     (PB.intersection.eulerPic 1 : ℚ)
-  toddOne_degree : NumericalRing.degree (n := 2)
-      (NumericalVariety.chComp (A := B) E 1 *
-        NumericalVariety.toddComp (A := B) (N := N) 1) =
+  toddOne_degree : V.ring.degree (V.chComp E 1 * V.toddComp 1) =
     toddOnePairing PB.intersection (picardFirstChernClass Q)
-  chTwo_degree : NumericalRing.degree (n := 2)
-      (NumericalVariety.chComp (A := B) E 2) =
+  chTwo_degree : V.ring.degree (V.chComp E 2) =
     chernCharacterTwoDegree PB.intersection Q
 
 namespace NumericalVarietyComparison
 
 variable {B : Type v} [CommRing B] [Algebra ℚ B]
-variable {N : Type w} [AddCommGroup N] [NumericalVariety 2 B N]
+variable {N : Type w} [AddCommGroup N]
+variable (V : NumericalVarietyData 2 B N)
 variable {PB : PairingContext D C 2 B}
 variable {KB : SmoothProperVariety.CanonicalSheafData X 2}
 variable {F : Coh X.toVariety.toScheme}
 variable {Q : Coh.TwoTermPerfectDeterminantData F} {E : N}
 
 /-- The Layer A surface expansion becomes exactly the geometric rank/Todd/`ch₂` expansion. -/
-theorem chi_eq_geometric_terms (R : NumericalVarietyComparison (PB := PB) (KB := KB) Q E) :
-    (NumericalVariety.chi (A := B) E : ℚ) =
+theorem chi_eq_geometric_terms (hV : V.SatisfiesHRR)
+    (R : NumericalVarietyComparison V (PB := PB) (KB := KB) Q E) :
+    (V.chi E : ℚ) =
       (virtualRank Q : ℚ) * (PB.intersection.eulerPic 1 : ℚ) +
         toddOnePairing PB.intersection (picardFirstChernClass Q) +
           chernCharacterTwoDegree PB.intersection Q := by
-  rw [AlgebraicGeometry.Numerical.Surface.chi_eq E, R.rank_eq,
+  rw [AlgebraicGeometry.Numerical.Surface.chi_eq V hV E, R.rank_eq,
     R.toddTwo_degree, R.toddOne_degree, R.chTwo_degree]
 
 /-- The compared Layer A Euler homomorphism agrees with the geometric one on this class. -/
-theorem chi_eq_geometric (R : NumericalVarietyComparison (PB := PB) (KB := KB) Q E) :
-    NumericalVariety.chi (A := B) E = D.eulerCharacteristic F :=
+theorem chi_eq_geometric (R : NumericalVarietyComparison V (PB := PB) (KB := KB) Q E) :
+    V.chi E = D.eulerCharacteristic F :=
   R.euler_eq
 
 /-- After the explicit term comparisons, Layer A and geometric surface Riemann--Roch give the
 same classical rank/`c₁`/`c₂` formula. -/
 theorem chi_eq_classical
     (T : ToddData.Data PB KB)
-    (R : NumericalVarietyComparison (PB := PB) (KB := KB) Q E) :
-    (NumericalVariety.chi (A := B) E : ℚ) =
+    (R : NumericalVarietyComparison V (PB := PB) (KB := KB) Q E) :
+    (V.chi E : ℚ) =
       (virtualRank Q : ℚ) * (PB.intersection.eulerPic 1 : ℚ) +
         ((PB.intersection.surfaceIntersectionPairing (picardFirstChernClass Q)
               (picardFirstChernClass Q) : ℤ) -

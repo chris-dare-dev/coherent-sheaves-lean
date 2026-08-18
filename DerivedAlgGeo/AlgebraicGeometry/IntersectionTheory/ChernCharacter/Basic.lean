@@ -10,7 +10,7 @@ import Mathlib.LinearAlgebra.Lagrange
 # Numerical Chern-character reconstruction from twist polynomials
 
 This file is the bounded, no-Chow reconstruction layer between Snapper polynomials and the
-components consumed by `NumericalVariety`.  There are two deliberately separate steps.
+components consumed by `NumericalVarietyData`.  There are two deliberately separate steps.
 
 First, `homogeneousPicardCoefficient` extracts the ordinary rational homogeneous coefficient of
 a Picard Euler polynomial.  Raw finite differences below top degree are not sufficient: they
@@ -18,7 +18,7 @@ mix the desired term with higher-degree terms.  We remove that mixing by interpo
 scaled mixed coefficient and taking its lowest possible ordinary coefficient.
 
 Second, `PairingContext` and `ReconstructionData` state exactly when those divisor-tested
-functionals are represented by elements of a chosen `NumericalRing`.  Representability gives
+functionals are represented by elements of a chosen `NumericalRingData`.  Representability gives
 existence; `divisorPairing_ext` gives uniqueness.  Neither is inferred from the intersection
 numbers.  In particular, on a higher-dimensional variety products of divisors need not separate
 all middle-codimension numerical classes.
@@ -139,7 +139,7 @@ theorem homogeneousPicardCoefficient_eq_of_perm
 /-! ## Explicit realization in a numerical ring -/
 
 variable {D : FiniteCohomology X} {C : D.LinearConnectingSystem}
-variable {d : ℕ} {A : Type v} [CommRing A] [Algebra ℚ A] [NumericalRing d A]
+variable {d : ℕ} {A : Type v} [CommRing A] [Algebra ℚ A]
 
 /-- The product of the degree-one realizations of a list of Picard classes. -/
 def divisorProduct (divisorClass : Additive (Pic X.toScheme) →+ A)
@@ -156,19 +156,21 @@ omit [Algebra ℚ A] in
 `divisorPairing_ext` is the required nondegeneracy statement: divisor products separate the
 chosen graded pieces.  It is intentionally a field rather than an instance or theorem. -/
 structure PairingContext (D : FiniteCohomology X) (C : D.LinearConnectingSystem)
-    (d : ℕ) (A : Type v) [CommRing A] [Algebra ℚ A] [NumericalRing d A] where
+    (d : ℕ) (A : Type v) [CommRing A] [Algebra ℚ A] where
+  /-- The selected numerical-ring presentation. -/
+  ring : NumericalRingData d A
   intersection : IntersectionContext D C d
   divisorClass : Additive (Pic X.toScheme) →+ A
-  divisorClass_mem : ∀ L, divisorClass L ∈ NumericalRing.piece (n := d) 1
+  divisorClass_mem : ∀ L, divisorClass L ∈ ring.piece 1
   degree_divisorProduct : ∀ (L : Fin d → Pic X.toScheme),
-    NumericalRing.degree (n := d) (divisorProduct divisorClass (List.ofFn L)) =
+    ring.degree (divisorProduct divisorClass (List.ofFn L)) =
       (intersection.picardIntersectionNumber L : ℚ)
   divisorPairing_ext : ∀ (i : ℕ), i ≤ d → ∀ {x y : A},
-    x ∈ NumericalRing.piece (n := d) i →
-    y ∈ NumericalRing.piece (n := d) i →
+    x ∈ ring.piece i →
+    y ∈ ring.piece i →
     (∀ classes : List (Pic X.toScheme), classes.length = d - i →
-      NumericalRing.degree (n := d) (x * divisorProduct divisorClass classes) =
-        NumericalRing.degree (n := d) (y * divisorProduct divisorClass classes)) →
+      ring.degree (x * divisorProduct divisorClass classes) =
+        ring.degree (y * divisorProduct divisorClass classes)) →
     x = y
 
 namespace PairingContext
@@ -188,9 +190,9 @@ structure ReconstructionData (F : Coh X.toScheme) where
   twists : TwistContext D F d
   rank : ℤ
   representable : ∀ (i : ℕ), i ≤ d → ∃ x : A,
-    x ∈ NumericalRing.piece (n := d) i ∧
+    x ∈ P.ring.piece i ∧
       ∀ classes : List (Pic X.toScheme), classes.length = d - i →
-        NumericalRing.degree (n := d) (x * divisorProduct P.divisorClass classes) =
+        P.ring.degree (x * divisorProduct P.divisorClass classes) =
           twistPairing twists i classes
 
 namespace ReconstructionData
@@ -203,7 +205,7 @@ noncomputable def tauComponent (R : P.ReconstructionData F) (i : ℕ) : A :=
   if hi : i ≤ d then Classical.choose (R.representable i hi) else 0
 
 theorem tauComponent_mem (R : P.ReconstructionData F) (i : ℕ) :
-    R.tauComponent i ∈ NumericalRing.piece (n := d) i := by
+    R.tauComponent i ∈ P.ring.piece i := by
   by_cases hi : i ≤ d
   · rw [tauComponent, dif_pos hi]
     exact (Classical.choose_spec (R.representable i hi)).1
@@ -213,7 +215,7 @@ theorem tauComponent_mem (R : P.ReconstructionData F) (i : ℕ) :
 theorem degree_tauComponent_mul_divisorProduct (R : P.ReconstructionData F)
     (i : ℕ) (hi : i ≤ d) (classes : List (Pic X.toScheme))
     (hlength : classes.length = d - i) :
-    NumericalRing.degree (n := d)
+    P.ring.degree
         (R.tauComponent i * divisorProduct P.divisorClass classes) =
       twistPairing R.twists i classes := by
   rw [tauComponent, dif_pos hi]
@@ -328,44 +330,44 @@ noncomputable def chernCharacterComponent (R : P.ReconstructionData F) : ℕ →
     simp [chernCharacterComponent] at hi ⊢
 
 theorem chernCharacterComponent_mem (R : P.ReconstructionData F) (i : ℕ) :
-    chernCharacterComponent RO R i ∈ NumericalRing.piece (n := d) i := by
-  have h0 : chernCharacterComponent RO R 0 ∈ NumericalRing.piece (n := d) 0 := by
-    simpa using NumericalRing.algebraMap_mem_piece_zero (n := d) (A := A) (R.rank : ℚ)
-  have h1 : chernCharacterComponent RO R 1 ∈ NumericalRing.piece (n := d) 1 := by
+    chernCharacterComponent RO R i ∈ P.ring.piece i := by
+  have h0 : chernCharacterComponent RO R 0 ∈ P.ring.piece 0 := by
+    simpa using P.ring.algebraMap_mem_piece_zero (R.rank : ℚ)
+  have h1 : chernCharacterComponent RO R 1 ∈ P.ring.piece 1 := by
     simpa [chernCharacterComponent, toddComponent] using
       Submodule.sub_mem _ (tauComponent_mem R 1)
-        (NumericalRing.mul_mem_piece
-          (NumericalRing.algebraMap_mem_piece_zero (n := d) (A := A) (R.rank : ℚ))
+        (P.ring.mul_mem_piece
+          (P.ring.algebraMap_mem_piece_zero (R.rank : ℚ))
           (tauComponent_mem RO 1))
-  have h2 : chernCharacterComponent RO R 2 ∈ NumericalRing.piece (n := d) 2 := by
+  have h2 : chernCharacterComponent RO R 2 ∈ P.ring.piece 2 := by
     simpa [chernCharacterComponent, toddComponent] using
       Submodule.sub_mem _
         (Submodule.sub_mem _ (tauComponent_mem R 2)
-          (NumericalRing.mul_mem_piece h1 (tauComponent_mem RO 1)))
-        (NumericalRing.mul_mem_piece
-          (NumericalRing.algebraMap_mem_piece_zero (n := d) (A := A) (R.rank : ℚ))
+          (P.ring.mul_mem_piece h1 (tauComponent_mem RO 1)))
+        (P.ring.mul_mem_piece
+          (P.ring.algebraMap_mem_piece_zero (R.rank : ℚ))
           (tauComponent_mem RO 2))
-  have h3 : chernCharacterComponent RO R 3 ∈ NumericalRing.piece (n := d) 3 := by
+  have h3 : chernCharacterComponent RO R 3 ∈ P.ring.piece 3 := by
     simpa [chernCharacterComponent, toddComponent] using
       Submodule.sub_mem _
         (Submodule.sub_mem _
           (Submodule.sub_mem _ (tauComponent_mem R 3)
-            (NumericalRing.mul_mem_piece h2 (tauComponent_mem RO 1)))
-          (NumericalRing.mul_mem_piece h1 (tauComponent_mem RO 2)))
-        (NumericalRing.mul_mem_piece
-          (NumericalRing.algebraMap_mem_piece_zero (n := d) (A := A) (R.rank : ℚ))
+            (P.ring.mul_mem_piece h2 (tauComponent_mem RO 1)))
+          (P.ring.mul_mem_piece h1 (tauComponent_mem RO 2)))
+        (P.ring.mul_mem_piece
+          (P.ring.algebraMap_mem_piece_zero (R.rank : ℚ))
           (tauComponent_mem RO 3))
-  have h4 : chernCharacterComponent RO R 4 ∈ NumericalRing.piece (n := d) 4 := by
+  have h4 : chernCharacterComponent RO R 4 ∈ P.ring.piece 4 := by
     simpa [chernCharacterComponent, toddComponent] using
       Submodule.sub_mem _
         (Submodule.sub_mem _
           (Submodule.sub_mem _
             (Submodule.sub_mem _ (tauComponent_mem R 4)
-              (NumericalRing.mul_mem_piece h3 (tauComponent_mem RO 1)))
-            (NumericalRing.mul_mem_piece h2 (tauComponent_mem RO 2)))
-          (NumericalRing.mul_mem_piece h1 (tauComponent_mem RO 3)))
-        (NumericalRing.mul_mem_piece
-          (NumericalRing.algebraMap_mem_piece_zero (n := d) (A := A) (R.rank : ℚ))
+              (P.ring.mul_mem_piece h3 (tauComponent_mem RO 1)))
+            (P.ring.mul_mem_piece h2 (tauComponent_mem RO 2)))
+          (P.ring.mul_mem_piece h1 (tauComponent_mem RO 3)))
+        (P.ring.mul_mem_piece
+          (P.ring.algebraMap_mem_piece_zero (R.rank : ℚ))
           (tauComponent_mem RO 4))
   rcases i with _ | _ | _ | _ | _ | i
   · exact h0
@@ -378,7 +380,7 @@ theorem chernCharacterComponent_mem (R : P.ReconstructionData F) (i : ℕ) :
 theorem chernCharacterComponent_eq_zero_of_dimension_lt
     (R : P.ReconstructionData F) {i : ℕ} (hi : d < i) :
     chernCharacterComponent RO R i = 0 :=
-  NumericalRing.eq_zero_of_mem_piece_of_lt hi (chernCharacterComponent_mem RO R i)
+  P.ring.eq_zero_of_mem_piece_of_lt hi (chernCharacterComponent_mem RO R i)
 
 /-! ## The triangular extraction principle -/
 
@@ -498,11 +500,11 @@ structure LineBundleComparison (R : P.ReconstructionData F) (L : Pic X.toScheme)
   rank_eq_one : R.rank = 1
   candidate_mem : ∀ (i : ℕ), i ≤ d → i ≤ 4 →
     lineTauCandidate RO (P.divisorClass (Additive.ofMul L)) i ∈
-      NumericalRing.piece (n := d) i
+      P.ring.piece i
   coefficient_formula : ∀ (i : ℕ), i ≤ d → i ≤ 4 →
     ∀ classes : List (Pic X.toScheme), classes.length = d - i →
       PairingContext.twistPairing R.twists i classes =
-        NumericalRing.degree (n := d)
+        P.ring.degree
           (lineTauCandidate RO (P.divisorClass (Additive.ofMul L)) i *
             divisorProduct P.divisorClass classes)
 
@@ -606,24 +608,24 @@ chosen rank, determinant class, and Todd-weighted representatives are explicitly
 This does not turn the degree-level surface class into an unconditional element of `A`. -/
 theorem degree_chernCharacterComponent_two_eq_surface
     {D : FiniteCohomology X} {C : D.LinearConnectingSystem}
-    {A : Type v} [CommRing A] [Algebra ℚ A] [NumericalRing 2 A]
+    {A : Type v} [CommRing A] [Algebra ℚ A]
     (P : PairingContext D C 2 A) {O F : Coh X.toScheme}
     (RO : P.ReconstructionData O) (R : P.ReconstructionData F)
     (Qdet : Coh.TwoTermPerfectDeterminantData F)
     (hrank : R.rank = virtualRank Qdet)
-    (htauTop : NumericalRing.degree (n := 2) (R.tauComponent 2) =
+    (htauTop : P.ring.degree (R.tauComponent 2) =
       (D.eulerCharacteristic F : ℚ))
     (hfirst : chernCharacterComponent RO R 1 =
       P.divisorClass (picardFirstChernClass Qdet))
-    (htoddOne : NumericalRing.degree (n := 2)
+    (htoddOne : P.ring.degree
         (P.divisorClass (picardFirstChernClass Qdet) * toddComponent RO 1) =
       toddOnePairing P.intersection (picardFirstChernClass Qdet))
-    (htoddTop : NumericalRing.degree (n := 2) (toddComponent RO 2) =
+    (htoddTop : P.ring.degree (toddComponent RO 2) =
       toddTwoDegree P.intersection) :
-    NumericalRing.degree (n := 2) (chernCharacterComponent RO R 2) =
+    P.ring.degree (chernCharacterComponent RO R 2) =
       chernCharacterTwoDegree P.intersection Qdet := by
   rw [chernCharacterComponent_two, map_sub, map_sub, htauTop, hfirst, htoddOne,
-    NumericalRing.degree_algebraMap_mul, hrank, htoddTop]
+    P.ring.degree_algebraMap_mul, hrank, htoddTop]
   simp only [chernCharacterTwoDegree]
   ring
 
