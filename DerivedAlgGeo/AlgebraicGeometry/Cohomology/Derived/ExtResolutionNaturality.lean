@@ -58,6 +58,36 @@ lemma mk_comp_mk₀ [HasSmallLocalizedShiftedHom.{w} W M X Y]
 
 end CategoryTheory.Localization.SmallShiftedHom
 
+namespace CochainComplex.HomComplex
+
+variable {C : Type u} [Category.{v} C] [Preadditive C]
+
+/-- Post-composition with a morphism of complexes, as a morphism of Hom complexes.
+
+Mathlib builds `HomComplex A L` but leaves it un-functorial in `L`; this is the map a
+comparison argument needs when the target complex varies. -/
+noncomputable def postcompMap (A : CochainComplex C ℤ) {L L' : CochainComplex C ℤ}
+    (g : L ⟶ L') : HomComplex A L ⟶ HomComplex A L' where
+  f n := AddCommGrpCat.ofHom
+    { toFun := fun z ↦ z.comp (Cochain.ofHom g) (add_zero n)
+      map_zero' := by
+        ext p q hpq
+        simp
+      map_add' := fun z z' ↦ by
+        ext p q hpq
+        simp [Cochain.add_comp] }
+  comm' n m _ := by
+    ext z
+    exact δ_comp_ofHom z g m
+
+@[simp]
+lemma postcompMap_f_apply (A : CochainComplex C ℤ) {L L' : CochainComplex C ℤ}
+    (g : L ⟶ L') (n : ℤ) (z : Cochain A L n) :
+    ((postcompMap A g).f n).hom z = z.comp (Cochain.ofHom g) (add_zero n) :=
+  rfl
+
+end CochainComplex.HomComplex
+
 namespace CochainComplex.HomComplex.CohomologyClass
 
 variable {C : Type u} [Category.{v} C] [Abelian C]

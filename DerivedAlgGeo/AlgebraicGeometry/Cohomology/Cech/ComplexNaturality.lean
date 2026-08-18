@@ -3,6 +3,7 @@ Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under the MIT license.
 -/
 import DerivedAlgGeo.AlgebraicGeometry.Cohomology.Cech.GlobalComparison
+import DerivedAlgGeo.AlgebraicGeometry.Cohomology.Derived.ExtResolutionNaturality
 import DerivedAlgGeo.AlgebraicGeometry.Cohomology.SpectralSequence.ExtendHomologyNaturality
 import DerivedAlgGeo.AlgebraicGeometry.Cohomology.SpectralSequence.TotalFlipNaturality
 
@@ -415,6 +416,132 @@ lemma HPrimeAddEquivH_naturality {T : C} (hT : IsTerminal T)
   exact h
 
 end Augmentation
+
+section HomComplexSections
+
+/-- Sections over `X` of a cochain complex of sheaves, lifted to the universe in which
+morphisms of sheaves live. -/
+noncomputable abbrev sectionsComplexLifted (X : C)
+    (K : CochainComplex (Sheaf J AddCommGrpCat.{a}) ℤ) :
+    CochainComplex AddCommGrpCat.{max a u} ℤ :=
+  ((AddCommGrpCat.uliftFunctor.{u, a}).mapHomologicalComplex (ComplexShape.up ℤ)).obj
+    (sectionsComplexUnlifted X K)
+
+/-- In each degree, cochains from the free abelian representable sheaf are sections. -/
+noncomputable def yonedaHomComplexXIso (X : C)
+    (K : CochainComplex (Sheaf J AddCommGrpCat.{a}) ℤ) (n : ℤ) :
+    (CochainComplex.HomComplex
+      ((CochainComplex.singleFunctor (Sheaf J AddCommGrpCat.{a}) 0).obj
+        (freeAbelianYonedaSheaf J X)) K).X n ≅
+      (sectionsComplexLifted X K).X n :=
+  ((CochainComplex.HomComplex.Cochain.fromSingleEquiv
+      (X := freeAbelianYonedaSheaf J X) (K := K) (zero_add n)).trans
+    ((freeAbelianYonedaSheafHomAddEquiv X (K.X n)).trans
+      AddEquiv.ulift.symm)).toAddCommGrpIso
+
+lemma freeAbelianYonedaHomComplexXIso_eq {F : Sheaf J AddCommGrpCat.{a}}
+    (X : C) (I : InjectiveResolution F) (n : ℤ) :
+    freeAbelianYonedaHomComplexXIso X I n = yonedaHomComplexXIso X I.cochainComplex n :=
+  rfl
+
+/-- The Hom complex from the free abelian representable sheaf is the sections complex. -/
+noncomputable def yonedaHomComplexIsoSections (X : C)
+    (K : CochainComplex (Sheaf J AddCommGrpCat.{a}) ℤ) :
+    CochainComplex.HomComplex
+      ((CochainComplex.singleFunctor (Sheaf J AddCommGrpCat.{a}) 0).obj
+        (freeAbelianYonedaSheaf J X)) K ≅
+      sectionsComplexLifted X K :=
+  HomologicalComplex.Hom.isoOfComponents (yonedaHomComplexXIso X K) (by
+    intro i j hij
+    apply AddCommGrpCat.hom_ext
+    apply AddMonoidHom.ext
+    intro α
+    obtain ⟨f, rfl⟩ :=
+      CochainComplex.HomComplex.Cochain.fromSingleMk_surjective
+        (X := freeAbelianYonedaSheaf J X) (K := K) α i (zero_add i)
+    change i + 1 = j at hij
+    simp only [CategoryTheory.comp_apply, yonedaHomComplexXIso,
+      AddEquiv.toAddCommGrpIso_hom, AddCommGrpCat.ofHom_apply, AddEquiv.coe_trans,
+      Function.comp_apply,
+      CochainComplex.HomComplex.Cochain.fromSingleEquiv_fromSingleMk]
+    dsimp [sectionsAtFunctorUnlifted]
+    simp only [AddEquiv.apply_symm_apply, AddEquiv.symm_apply_apply,
+      CochainComplex.HomComplex.Cochain.fromSingleEquiv_fromSingleMk]
+    change ULift.up
+        ((K.d i j).hom.app (op X)
+          (freeAbelianYonedaSheafHomAddEquiv X (K.X i) f)) =
+      ULift.up
+        (freeAbelianYonedaSheafHomAddEquiv X (K.X j)
+          (CochainComplex.HomComplex.Cochain.fromSingleEquiv (zero_add j)
+            (CochainComplex.HomComplex.δ i j
+              (CochainComplex.HomComplex.Cochain.fromSingleMk f (zero_add i)))))
+    apply ULift.ext
+    change (K.d i j).hom.app (op X)
+        (freeAbelianYonedaSheafHomAddEquiv X (K.X i) f) =
+      freeAbelianYonedaSheafHomAddEquiv X (K.X j)
+        (CochainComplex.HomComplex.Cochain.fromSingleEquiv (zero_add j)
+          (CochainComplex.HomComplex.δ i j
+            (CochainComplex.HomComplex.Cochain.fromSingleMk f (zero_add i))))
+    rw [CochainComplex.HomComplex.Cochain.δ_fromSingleMk f (zero_add i) j j (zero_add j)]
+    rw [CochainComplex.HomComplex.Cochain.fromSingleEquiv_fromSingleMk]
+    exact (freeAbelianYonedaSheafHomAddEquiv_comp X f (K.d i j)).symm)
+
+lemma freeAbelianYonedaHomComplexIsoSections_eq {F : Sheaf J AddCommGrpCat.{a}}
+    (X : C) (I : InjectiveResolution F) :
+    freeAbelianYonedaHomComplexIsoSections X I =
+      yonedaHomComplexIsoSections X I.cochainComplex :=
+  rfl
+
+/-- Post-composing a cochain out of a single complex with a morphism of complexes. -/
+lemma fromSingleMk_comp_ofHom {X : C}
+    (K L : CochainComplex (Sheaf J AddCommGrpCat.{a}) ℤ) (n : ℤ)
+    (f : freeAbelianYonedaSheaf J X ⟶ K.X n) (Φ : K ⟶ L) :
+    (CochainComplex.HomComplex.Cochain.fromSingleMk
+        (X := freeAbelianYonedaSheaf J X) f (zero_add n)).comp
+        (CochainComplex.HomComplex.Cochain.ofHom Φ) (add_zero n) =
+      CochainComplex.HomComplex.Cochain.fromSingleMk (f ≫ Φ.f n) (zero_add n) := by
+  ext p q hpq
+  by_cases hp : p = 0
+  · subst hp
+    obtain rfl : q = n := by omega
+    rw [CochainComplex.HomComplex.Cochain.comp_zero_cochain_v,
+      CochainComplex.HomComplex.Cochain.fromSingleMk_v,
+      CochainComplex.HomComplex.Cochain.fromSingleMk_v,
+      CochainComplex.HomComplex.Cochain.ofHom_v, Category.assoc]
+  · rw [CochainComplex.HomComplex.Cochain.fromSingleMk_v_eq_zero _ (zero_add n) p q hpq hp,
+      CochainComplex.HomComplex.Cochain.comp_zero_cochain_v,
+      CochainComplex.HomComplex.Cochain.fromSingleMk_v_eq_zero _ (zero_add n) p q hpq hp,
+      Limits.zero_comp]
+
+/-- The identification of the Hom complex with the sections complex is natural in the
+complex. -/
+lemma yonedaHomComplexIsoSections_naturality (X : C) (Φ : K ⟶ L) :
+    CochainComplex.HomComplex.postcompMap _ Φ ≫ (yonedaHomComplexIsoSections X L).hom =
+      (yonedaHomComplexIsoSections X K).hom ≫
+        ((AddCommGrpCat.uliftFunctor.{u, a}).mapHomologicalComplex
+          (ComplexShape.up ℤ)).map (sectionsComplexMap X Φ) := by
+  apply HomologicalComplex.Hom.ext
+  funext n
+  apply AddCommGrpCat.hom_ext
+  apply AddMonoidHom.ext
+  intro α
+  obtain ⟨f, rfl⟩ :=
+    CochainComplex.HomComplex.Cochain.fromSingleMk_surjective
+      (X := freeAbelianYonedaSheaf J X) (K := K) α n (zero_add n)
+  simp only [HomologicalComplex.comp_f, CategoryTheory.comp_apply,
+    HomologicalComplex.Hom.isoOfComponents_hom_f, yonedaHomComplexIsoSections,
+    yonedaHomComplexXIso, AddEquiv.toAddCommGrpIso_hom, AddCommGrpCat.ofHom_apply,
+    AddEquiv.coe_trans, Function.comp_apply,
+    CochainComplex.HomComplex.postcompMap_f_apply,
+    fromSingleMk_comp_ofHom,
+    CochainComplex.HomComplex.Cochain.fromSingleEquiv_fromSingleMk]
+  apply ULift.ext
+  dsimp [sectionsAtFunctorUnlifted]
+  simp only [CochainComplex.HomComplex.Cochain.fromSingleEquiv_fromSingleMk,
+    AddEquiv.apply_symm_apply]
+  exact freeAbelianYonedaSheafHomAddEquiv_comp X f (Φ.f n)
+
+end HomComplexSections
 
 
 end CategoryTheory.Sheaf
