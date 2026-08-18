@@ -47,3 +47,6 @@ open AlgebraicGeometry
 #print axioms AlgebraicGeometry.gammaPushforwardIso
 #print axioms AlgebraicGeometry.moduleFinite_gammaPushforward
 #print axioms AlgebraicGeometry.isCoherent_pushforward_of_surjective
+
+-- The restriction square on opens (#572 step 2, base-change half).
+#print axioms AlgebraicGeometry.restrictSquareOpensIso
