@@ -382,6 +382,38 @@ lemma cechCochainFunctorIntHomologyIso_naturality
   exact HomologicalComplex.extendHomologyIso_naturality
     ((cechComplexFunctor U).map φ.hom) ComplexShape.embeddingUpNat rfl
 
+/-- The universe-lifting identification of sections complexes is natural in the complex. -/
+lemma injectiveResolutionSectionsComplexUnliftedIso_naturality
+    {X : TopCat.{u}} {T : Opens X} {F₁ F₂ : TopCat.Sheaf AddCommGrpCat.{u} X}
+    (I₁ : InjectiveResolution F₁) (I₂ : InjectiveResolution F₂)
+    (Φ : I₁.cochainComplex ⟶ I₂.cochainComplex) :
+    sectionsComplexMap T Φ ≫ (injectiveResolutionSectionsComplexUnliftedIso I₂).hom =
+      (injectiveResolutionSectionsComplexUnliftedIso I₁).hom ≫
+        ((AddCommGrpCat.uliftFunctor.{u, u}).mapHomologicalComplex
+          (ComplexShape.up ℤ)).map (sectionsComplexMap T Φ) := by
+  apply HomologicalComplex.Hom.ext
+  funext q
+  apply AddCommGrpCat.hom_ext
+  apply AddMonoidHom.ext
+  intro x
+  rfl
+
+/-- The terminal-object comparison between `H'` and `H` is natural in the sheaf. -/
+lemma HPrimeAddEquivH_naturality {T : C} (hT : IsTerminal T)
+    [HasExt.{h} (Sheaf J AddCommGrpCat.{a})] (φ : F ⟶ G) (n : ℕ) (x : F.H' n T) :
+    HPrimeAddEquivH (J := J) hT G n
+        (((cohomologyPresheafFunctor J n).map φ).app (op T) x) =
+      Sheaf.H.map φ n (HPrimeAddEquivH (J := J) hT F n x) := by
+  have h := congrFun (congrArg (fun m => (ConcreteCategory.hom m : _ → _))
+    ((HPrimeNatIsoH (J := J) hT n).hom.naturality φ)) x
+  rw [ConcreteCategory.comp_apply, ConcreteCategory.comp_apply] at h
+  show (ConcreteCategory.hom ((HPrimeNatIsoH (J := J) hT n).hom.app G))
+      ((ConcreteCategory.hom ((cohomologyPresheafFunctor J n ⋙
+        (evaluation Cᵒᵖ AddCommGrpCat.{h}).obj (op T)).map φ)) x) =
+    (ConcreteCategory.hom ((functorH J n).map φ))
+      ((ConcreteCategory.hom ((HPrimeNatIsoH (J := J) hT n).hom.app F)) x)
+  exact h
+
 end Augmentation
 
 
