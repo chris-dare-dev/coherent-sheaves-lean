@@ -252,4 +252,123 @@ lemma sectionsToCechTotalMap_naturality
     HomologicalComplex₂.totalFlipIso_inv_naturality_assoc, reassoc_of% h₂,
     Category.assoc, HomologicalComplex₂.totalFlipIso_naturality, Category.assoc]
 
+section Augmentation
+
+variable {F G : Sheaf J AddCommGrpCat.{a}}
+
+/-- The bicomplex augmentation induced by an augmentation of a cochain complex of sheaves. -/
+noncomputable abbrev cechAugmentationMap (U : index → C)
+    (ε : (CochainComplex.singleFunctor (Sheaf J AddCommGrpCat.{a}) 0).obj F ⟶ K) :
+    cechBicomplexOfComplex U
+        ((CochainComplex.singleFunctor (Sheaf J AddCommGrpCat.{a}) 0).obj F) ⟶
+      cechBicomplexOfComplex U K :=
+  cechBicomplexMap U ε
+
+/-- The augmentation source of the Čech bicomplex is the Čech bicomplex of the complex
+concentrated in degree zero. -/
+lemma cechInjectiveBicomplexAugmentationSource_eq (U : index → C)
+    (F : Sheaf J AddCommGrpCat.{a}) :
+    cechInjectiveBicomplexAugmentationSource U F =
+      cechBicomplexOfComplex U
+        ((CochainComplex.singleFunctor (Sheaf J AddCommGrpCat.{a}) 0).obj F) :=
+  rfl
+
+/-- The augmentation of the Čech bicomplex of an injective resolution is the augmentation
+induced by `I.ι'`. -/
+lemma cechInjectiveBicomplexAugmentation_eq (U : index → C) (I : InjectiveResolution F) :
+    cechInjectiveBicomplexAugmentation U I = cechAugmentationMap U I.ι' :=
+  rfl
+
+/-- The identification of the total complex of the augmentation source with the ordinary Čech
+complex is natural in the sheaf. -/
+lemma cechInjectiveBicomplexAugmentationSourceTotalIso_naturality
+    (U : index → C) (φ : F ⟶ G) :
+    HomologicalComplex₂.total.map
+          (cechBicomplexMap U
+            ((CochainComplex.singleFunctor (Sheaf J AddCommGrpCat.{a}) 0).map φ))
+          (ComplexShape.up ℤ) ≫
+        (cechInjectiveBicomplexAugmentationSourceTotalIso U G).hom =
+      (cechInjectiveBicomplexAugmentationSourceTotalIso U F).hom ≫
+        (cechCochainFunctorInt U).map φ := by
+  dsimp only [cechInjectiveBicomplexAugmentationSourceTotalIso, Iso.trans_hom]
+  rw [HomologicalComplex₂.totalFlipIso_naturality_assoc]
+  simp only [HomologicalComplex₂.total.mapIso_hom, Category.assoc, Iso.app_hom]
+  have hnat : ((cechCochainFunctorInt (J := J) U).mapHomologicalComplex
+          (ComplexShape.up ℤ)).map
+        ((CochainComplex.singleFunctor (Sheaf J AddCommGrpCat.{a}) 0).map φ) ≫
+      (HomologicalComplex.singleMapHomologicalComplex
+        (cechCochainFunctorInt (J := J) U) (ComplexShape.up ℤ) 0).hom.app G =
+    (HomologicalComplex.singleMapHomologicalComplex
+        (cechCochainFunctorInt (J := J) U) (ComplexShape.up ℤ) 0).hom.app F ≫
+      (CochainComplex.singleFunctor (CochainComplex AddCommGrpCat.{a} ℤ) 0).map
+        ((cechCochainFunctorInt U).map φ) :=
+    (HomologicalComplex.singleMapHomologicalComplex
+      (cechCochainFunctorInt (J := J) U) (ComplexShape.up ℤ) 0).hom.naturality φ
+  rw [← HomologicalComplex₂.total.map_comp_assoc, hnat,
+    HomologicalComplex₂.total.map_comp_assoc]
+  exact congrArg (fun m => (HomologicalComplex₂.totalFlipIso
+        (((cechCochainFunctorInt U).mapHomologicalComplex (ComplexShape.up ℤ)).obj
+          ((CochainComplex.singleFunctor (Sheaf J AddCommGrpCat.{a}) 0).obj F))
+        (ComplexShape.up ℤ)).hom ≫
+      HomologicalComplex₂.total.map
+        ((HomologicalComplex.singleMapHomologicalComplex
+          (cechCochainFunctorInt (J := J) U) (ComplexShape.up ℤ) 0).hom.app F)
+        (ComplexShape.up ℤ) ≫ m)
+    (HomologicalComplex₂.singleZeroTotalIso_naturality
+      ((cechCochainFunctorInt U).map φ))
+
+/-- The induced map of Čech bicomplexes is functorial. -/
+lemma cechBicomplexMap_comp (U : index → C) {M : CochainComplex (Sheaf J AddCommGrpCat.{a}) ℤ}
+    (Φ : K ⟶ L) (Ψ : L ⟶ M) :
+    cechBicomplexMap U (Φ ≫ Ψ) = cechBicomplexMap U Φ ≫ cechBicomplexMap U Ψ := by
+  dsimp only [cechBicomplexMap]
+  rw [Functor.map_comp, Functor.map_comp]
+
+/-- Inverse form of `cechInjectiveBicomplexAugmentationSourceTotalIso_naturality`. -/
+lemma cechInjectiveBicomplexAugmentationSourceTotalIso_inv_naturality
+    (U : index → C) (φ : F ⟶ G) :
+    (cechCochainFunctorInt U).map φ ≫
+        (cechInjectiveBicomplexAugmentationSourceTotalIso U G).inv =
+      (cechInjectiveBicomplexAugmentationSourceTotalIso U F).inv ≫
+        HomologicalComplex₂.total.map
+          (cechBicomplexMap U
+            ((CochainComplex.singleFunctor (Sheaf J AddCommGrpCat.{a}) 0).map φ))
+          (ComplexShape.up ℤ) := by
+  rw [Iso.eq_inv_comp, ← Category.assoc, Iso.comp_inv_eq,
+    cechInjectiveBicomplexAugmentationSourceTotalIso_naturality]
+
+/-- The comparison from the ordinary Čech complex into the Čech total complex of an augmented
+cochain complex of sheaves. -/
+noncomputable def cechToTotalMap (U : index → C)
+    (ε : (CochainComplex.singleFunctor (Sheaf J AddCommGrpCat.{a}) 0).obj F ⟶ K) :
+    (cechCochainFunctorInt U).obj F ⟶
+      (cechBicomplexOfComplex U K).total (ComplexShape.up ℤ) :=
+  (cechInjectiveBicomplexAugmentationSourceTotalIso U F).inv ≫
+    HomologicalComplex₂.total.map (cechAugmentationMap U ε) (ComplexShape.up ℤ)
+
+/-- The Čech-to-total comparison of an injective resolution reads it only through the
+underlying complex and its augmentation. -/
+lemma cechToInjectiveTotalMap_eq (U : index → C) (I : InjectiveResolution F) :
+    cechToInjectiveTotalMap U I = cechToTotalMap U I.ι' :=
+  rfl
+
+/-- The Čech-to-total comparison commutes with a morphism of augmented complexes. -/
+lemma cechToTotalMap_naturality (U : index → C) (φ : F ⟶ G)
+    (εF : (CochainComplex.singleFunctor (Sheaf J AddCommGrpCat.{a}) 0).obj F ⟶ K)
+    (εG : (CochainComplex.singleFunctor (Sheaf J AddCommGrpCat.{a}) 0).obj G ⟶ L)
+    (Φ : K ⟶ L)
+    (hΦ : εF ≫ Φ =
+      (CochainComplex.singleFunctor (Sheaf J AddCommGrpCat.{a}) 0).map φ ≫ εG) :
+    (cechCochainFunctorInt U).map φ ≫ cechToTotalMap U εG =
+      cechToTotalMap U εF ≫
+        HomologicalComplex₂.total.map (cechBicomplexMap U Φ) (ComplexShape.up ℤ) := by
+  dsimp only [cechToTotalMap, cechAugmentationMap]
+  rw [← Category.assoc,
+    cechInjectiveBicomplexAugmentationSourceTotalIso_inv_naturality,
+    Category.assoc, Category.assoc, ← HomologicalComplex₂.total.map_comp,
+    ← HomologicalComplex₂.total.map_comp, ← cechBicomplexMap_comp,
+    ← cechBicomplexMap_comp, ← hΦ]
+
+end Augmentation
+
 end CategoryTheory.Sheaf
