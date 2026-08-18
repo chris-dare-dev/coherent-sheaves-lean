@@ -106,16 +106,29 @@ lemma delta_splitId_key :
 what forces it is uniqueness of the splitting, applied to the differentiated
 identity. `fst` and the correction term are the unique pair splitting `0`, and
 the pair of zeros splits it too. -/
-lemma delta_fst : ((dgHom Z X).d 1 2).hom hc.fst = 0 := by
+lemma delta_fst_and_snd : ((dgHom Z X).d 1 2).hom hc.fst = 0 ∧
+    ((dgHom Z Y).d 0 1).hom hc.snd = -dgComp 1 0 1 (by omega) hc.fst f := by
   have hpair := (hc.bijective Z 1 2 (by omega)).injective
     (a₁ := (((dgHom Z X).d 1 2).hom hc.fst,
       -(dgComp 1 0 1 (by omega) hc.fst f + ((dgHom Z Y).d 0 1).hom hc.snd)))
     (a₂ := (0, 0)) ?_
-  · exact congrArg (fun ab => ab.1) hpair
+  · refine ⟨congrArg (fun ab => ab.1) hpair, ?_⟩
+    have h2 := congrArg (fun ab => ab.2) hpair
+    simp only [neg_eq_zero] at h2
+    exact eq_neg_of_add_eq_zero_right h2
   · show dgComp 2 (-1) 1 (by omega) _ hc.inl + dgComp 1 0 1 (by omega) _ hc.inr =
       dgComp 2 (-1) 1 (by omega) 0 hc.inl + dgComp 1 0 1 (by omega) 0 hc.inr
     rw [hc.delta_splitId_key]
     simp [map_neg, map_add]
+
+/-- The projection onto the source is closed. -/
+lemma delta_fst : ((dgHom Z X).d 1 2).hom hc.fst = 0 := hc.delta_fst_and_snd.1
+
+/-- The projection onto the target is *not* closed, and this is by how much. The
+term is what makes the triangle rotate. -/
+lemma delta_snd :
+    ((dgHom Z Y).d 0 1).hom hc.snd = -dgComp 1 0 1 (by omega) hc.fst f :=
+  hc.delta_fst_and_snd.2
 
 /-- `inr` followed by the two projections: the splitting of `inr` itself. Both
 halves come from one application of uniqueness, so they are proved together. -/
@@ -171,6 +184,35 @@ lemma inr_comp_toShift :
   simp
 
 end ToShift
+
+section Contractible
+
+/-- **The cone on an identity is contractible.** `snd ≫ inl` is a primitive for
+the cone's identity, so the cone becomes a zero object in `H⁰`.
+
+Both corrections conspire: `δ inl = f ≫ inr` contributes the `snd ≫ inr` half,
+and `δ snd = -(fst ≫ f)` — the failure of `snd` to be closed — contributes the
+`fst ≫ inl` half with the sign the Leibniz rule supplies. At `f = dgId` the two
+halves are exactly the splitting of `dgId Z`. -/
+lemma dgId_mem_coboundaries_of_dgId {X Z : C} (hc : IsConeOf (dgId X) Z) :
+    dgId Z ∈ coboundaries Z Z := by
+  refine ⟨dgComp 0 (-1) (-1) (by omega) hc.snd hc.inl, ?_⟩
+  -- The Leibniz rule, restated at normalized degrees: it produces `-1 + 1` and
+  -- `0 + 1` where `δ_inl` and `delta_snd` are stated at `0` and `1`.
+  have hleib : ((dgHom Z Z).d (-1) 0).hom
+        (dgComp 0 (-1) (-1) (by omega) hc.snd hc.inl) =
+      dgComp 0 0 0 (by omega) hc.snd (((dgHom X Z).d (-1) 0).hom hc.inl) +
+        (-1 : ℤ).negOnePow •
+          dgComp 1 (-1) 0 (by omega) (((dgHom Z X).d 0 1).hom hc.snd) hc.inl :=
+    dgComp_leibniz (X := Z) (Y := X) (Z := Z) 0 (-1) (-1) 0 (by omega) (by omega)
+      hc.snd hc.inl
+  have hneg : (-1 : ℤ).negOnePow = -1 := by decide
+  rw [hleib, hc.δ_inl, hc.delta_snd, dgComp_id, dgId_comp, hneg]
+  simp only [Units.neg_smul, one_smul, map_neg, AddMonoidHom.neg_apply, neg_neg]
+  rw [← hc.fst_inl_add_snd_inr]
+  abel
+
+end Contractible
 
 end IsConeOf
 
