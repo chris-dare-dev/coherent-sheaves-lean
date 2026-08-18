@@ -222,3 +222,50 @@ import DerivedAlgGeo.CategoryTheory.DGCategory
 #print axioms CategoryTheory.prodComplex_X_coe
 #print axioms CategoryTheory.prodComplex_d
 #print axioms CategoryTheory.prodD
+
+-- dg-enhancements-e6: the shift functor on H0, its zero and add comparison
+-- isomorphisms, all three ShiftMkCore coherence identities, and the resulting
+-- HasShift (H0 C) instance.
+#print axioms CategoryTheory.H0.compareIso
+#print axioms CategoryTheory.H0.hasShift
+#print axioms CategoryTheory.H0.shiftCompWitness
+#print axioms CategoryTheory.H0.shiftCompWitness'
+#print axioms CategoryTheory.H0.shiftFunctor
+#print axioms CategoryTheory.H0.shiftFunctorAddIso
+#print axioms CategoryTheory.H0.shiftFunctorAddIso'
+#print axioms CategoryTheory.H0.shiftFunctorAddIso'_assoc
+#print axioms CategoryTheory.H0.shiftFunctorAddIso'_hom_app_congr
+#print axioms CategoryTheory.H0.shiftFunctorAddIso'_hom_app_zero_left
+#print axioms CategoryTheory.H0.shiftFunctorAddIso'_hom_app_zero_right
+#print axioms CategoryTheory.H0.shiftFunctorZeroIso
+#print axioms CategoryTheory.H0.shiftFunctor_additive
+#print axioms CategoryTheory.H0.shiftFunctor_map_mk
+#print axioms CategoryTheory.H0.shiftMkCore
+#print axioms CategoryTheory.IsPretriangulated.shiftObj
+#print axioms CategoryTheory.IsPretriangulated.shiftWitness
+#print axioms CategoryTheory.IsShiftBy.comp'
+#print axioms CategoryTheory.IsShiftBy.comp'.congr_simp
+#print axioms CategoryTheory.IsShiftBy.comp'_assoc_hom
+#print axioms CategoryTheory.IsShiftBy.comp'_hom
+#print axioms CategoryTheory.IsShiftBy.comp'_inv
+#print axioms CategoryTheory.IsShiftBy.comp'_self_left_inv
+#print axioms CategoryTheory.IsShiftBy.comp'_self_right_inv
+#print axioms CategoryTheory.IsShiftBy.comp_eq_comp'
+#print axioms CategoryTheory.IsShiftBy.comp_hom
+#print axioms CategoryTheory.IsShiftBy.comp_inv
+#print axioms CategoryTheory.IsShiftBy.compare_comp'_right
+#print axioms CategoryTheory.IsShiftBy.compare_congr
+#print axioms CategoryTheory.IsShiftBy.compare_self
+#print axioms CategoryTheory.IsShiftBy.compare_trans
+#print axioms CategoryTheory.IsShiftBy.inv_unique
+#print axioms CategoryTheory.IsShiftBy.mapShiftHom
+#print axioms CategoryTheory.IsShiftBy.mapShiftHom_apply
+#print axioms CategoryTheory.IsShiftBy.mapShift_add
+#print axioms CategoryTheory.IsShiftBy.mapShift_comp'_shift
+#print axioms CategoryTheory.IsShiftBy.mapShift_comp_shift
+#print axioms CategoryTheory.IsShiftBy.mapShift_compare
+#print axioms CategoryTheory.IsShiftBy.mapShift_compare_comp
+#print axioms CategoryTheory.IsShiftBy.mapShift_compare_comp'
+#print axioms CategoryTheory.IsShiftBy.mapShift_mem_coboundaries
+#print axioms CategoryTheory.IsShiftBy.mapShift_self
+#print axioms CategoryTheory.IsShiftBy.self_inv

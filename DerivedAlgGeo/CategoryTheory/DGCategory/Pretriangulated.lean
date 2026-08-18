@@ -190,7 +190,7 @@ end Inverse
 
 section Uniqueness
 
-variable {X Y Y' : C} {n : ℤ}
+variable {X Y Y' Y'' : C} {n : ℤ}
 
 /-- The comparison between two shifts of `X` by `n`: go back along one and out
 along the other. -/
@@ -217,46 +217,128 @@ lemma compare_comp_compare (s : IsShiftBy X n Y) (s' : IsShiftBy X n Y') :
     ← dgComp_assoc (-n) n (-n) 0 0 (-n) (by omega) (by omega) (by omega),
     hom_inv, dgId_comp, inv_hom]
 
+/-- Comparing a shift with itself gives the identity. -/
+lemma compare_self (s : IsShiftBy X n Y) : compare s s = dgId Y := by
+  rw [compare, inv_hom]
+
+/-- Comparisons compose. Together with `compare_self` and
+`compare_comp_compare` this makes the shifts of `X` by `n` into a contractible
+groupoid inside `Z⁰`, which is what every coherence statement about the shift
+functor ultimately reduces to. -/
+lemma compare_trans (s : IsShiftBy X n Y) (t : IsShiftBy X n Y')
+    (w : IsShiftBy X n Y'') :
+    dgComp 0 0 0 (by omega) (compare s t) (compare t w) = compare s w := by
+  rw [compare, compare, compare,
+    dgComp_assoc n (-n) 0 0 (-n) 0 (by omega) (by omega) (by omega),
+    ← dgComp_assoc (-n) n (-n) 0 0 (-n) (by omega) (by omega) (by omega),
+    hom_inv, dgId_comp]
+
 end Uniqueness
 
 section Comp
 
 variable {X Y Z : C} {n m : ℤ}
 
-/-- Shifts compose: a shift by `m` of a shift by `n` is a shift by `n + m`.
+/-- Shifts compose, with the resulting degree carried as a free variable.
 
-The degree works out because `-n + -m` and `-(n + m)` are the same integer, and
-`dgComp` is given the target degree explicitly rather than being asked to
-normalise one into the other in a dependent position. -/
-noncomputable def comp (s : IsShiftBy X n Y) (t : IsShiftBy Y m Z) :
-    IsShiftBy X (n + m) Z where
-  hom := dgComp (-n) (-m) (-(n + m)) (by omega) s.hom t.hom
-  hom_closed := by
-    have key := dgComp_leibniz (C := C) (-n) (-m) (-(n + m)) (-(n + m) + 1)
-      (by omega) (by omega) s.hom t.hom
-    rw [key, s.hom_closed, t.hom_closed]
-    simp
+The free `nm` is not decoration. Every coherence statement about a shift
+functor compares objects indexed by `n + 0`, `0 + n` or `(a + b) + c` against
+ones indexed by `n`, `n` and `a + (b + c)`, and those are propositionally but
+not definitionally equal. With the degree fixed as `n + m` the mismatch can
+only be crossed by an `eqToHom` that no rewrite normalises; with it free, the
+equation `n + m = nm` is a hypothesis about a *variable*, and `subst` removes
+the problem outright. Mathlib carries `CochainComplex.shiftFunctorAdd'` for the
+same reason.
+
+The degree of the composite element is handed to `dgComp` as `-nm` directly,
+rather than asking it to normalise `-n + -m` in a dependent position. -/
+noncomputable def comp' (s : IsShiftBy X n Y) (u : IsShiftBy Y m Z) (nm : ℤ)
+    (hnm : n + m = nm) : IsShiftBy X nm Z where
+  hom := dgComp (-n) (-m) (-nm) (by omega) s.hom u.hom
+  hom_closed :=
+    dgComp_closed (by omega) (by omega) s.hom_closed u.hom_closed
   bijective W p q h := by
     -- Right composition with the composite is the composite of the two right
     -- compositions, by associativity.
     have factor : ∀ f : (dgHom W X).X p,
-        compRight W (dgComp (-n) (-m) (-(n + m)) (by omega) s.hom t.hom) p q h f =
-          compRight W t.hom (p + -n) q (by omega)
+        compRight W (dgComp (-n) (-m) (-nm) (by omega) s.hom u.hom) p q h f =
+          compRight W u.hom (p + -n) q (by omega)
             (compRight W s.hom p (p + -n) (by omega) f) := fun f => by
       simpa using
-        (dgComp_assoc p (-n) (-m) (p + -n) (-(n + m)) q (by omega) (by omega) (by omega)
-          f s.hom t.hom).symm
-    have : ⇑(compRight W (dgComp (-n) (-m) (-(n + m)) (by omega) s.hom t.hom) p q h) =
-        ⇑(compRight W t.hom (p + -n) q (by omega)) ∘
+        (dgComp_assoc p (-n) (-m) (p + -n) (-nm) q (by omega) (by omega) (by omega)
+          f s.hom u.hom).symm
+    have : ⇑(compRight W (dgComp (-n) (-m) (-nm) (by omega) s.hom u.hom) p q h) =
+        ⇑(compRight W u.hom (p + -n) q (by omega)) ∘
           ⇑(compRight W s.hom p (p + -n) (by omega)) := funext factor
     rw [this]
-    exact (t.bijective W (p + -n) q (by omega)).comp (s.bijective W p (p + -n) (by omega))
+    exact (u.bijective W (p + -n) q (by omega)).comp (s.bijective W p (p + -n) (by omega))
+
+/-- Shifts compose, at the definitional degree `n + m`. -/
+noncomputable def comp (s : IsShiftBy X n Y) (u : IsShiftBy Y m Z) :
+    IsShiftBy X (n + m) Z :=
+  comp' s u (n + m) rfl
+
+lemma comp_eq_comp' (s : IsShiftBy X n Y) (u : IsShiftBy Y m Z) :
+    comp s u = comp' s u (n + m) rfl := rfl
+
+@[simp]
+lemma comp'_hom (s : IsShiftBy X n Y) (u : IsShiftBy Y m Z) (nm : ℤ) (hnm : n + m = nm) :
+    (comp' s u nm hnm).hom = dgComp (-n) (-m) (-nm) (by omega) s.hom u.hom := rfl
+
+@[simp]
+lemma comp_hom (s : IsShiftBy X n Y) (u : IsShiftBy Y m Z) :
+    (comp s u).hom = dgComp (-n) (-m) (-(n + m)) (by omega) s.hom u.hom := rfl
+
+/-- The inverse is determined by its defining equation, because right
+composition with `s.hom` is injective. -/
+lemma inv_unique (s : IsShiftBy X n Y) {a : (dgHom Y X).X n}
+    (ha : dgComp n (-n) 0 (by omega) a s.hom = dgId Y) : a = s.inv := by
+  refine (s.bijective Y n 0 (by omega)).injective ?_
+  show dgComp n (-n) 0 _ a s.hom = dgComp n (-n) 0 _ s.inv s.hom
+  rw [ha, inv_hom]
+
+/-- The inverse of a composite shift is the composite of the inverses, in the
+other order. Proved by `inv_unique` rather than by unfolding: both `inv`s are
+`Classical.choice`, so the only handle on them is their defining equation. -/
+lemma comp'_inv (s : IsShiftBy X n Y) (u : IsShiftBy Y m Z) (nm : ℤ) (hnm : n + m = nm) :
+    dgComp m n nm (by omega) u.inv s.inv = (comp' s u nm hnm).inv := by
+  refine inv_unique _ ?_
+  show dgComp nm (-nm) 0 _ (dgComp m n nm (by omega) u.inv s.inv)
+    (dgComp (-n) (-m) (-nm) (by omega) s.hom u.hom) = dgId Z
+  rw [dgComp_assoc m n (-nm) nm (-m) 0 (by omega) (by omega) (by omega),
+    ← dgComp_assoc n (-n) (-m) 0 (-nm) (-m) (by omega) (by omega) (by omega),
+    inv_hom, dgId_comp, inv_hom]
+
+/-- The unprimed form, at the definitional degree. -/
+lemma comp_inv (s : IsShiftBy X n Y) (u : IsShiftBy Y m Z) :
+    dgComp m n (n + m) (by omega) u.inv s.inv = (comp s u).inv :=
+  comp'_inv s u (n + m) rfl
+
+/-- Prefixing with the zero shift changes nothing: the composite's element is
+`dgId ≫ u.hom`, so its inverse is `u`'s. Stated on `inv` rather than as an
+equality of `IsShiftBy` structures because the `bijective` field depends on
+`hom`, which would make a structure `ext` produce a `HEq` goal for no gain. -/
+lemma comp'_self_left_inv (u : IsShiftBy X m Z) (h : 0 + m = m) :
+    (comp' (self X) u m h).inv = u.inv := by
+  refine (inv_unique _ ?_).symm
+  -- `-0` is definitionally `0`, so `show` may state the composite at `0`, where
+  -- `dgId_comp` matches syntactically. `rw` alone cannot cross that gap.
+  show dgComp m (-m) 0 _ u.inv (dgComp 0 (-m) (-m) (by omega) (dgId X) u.hom) = dgId Z
+  rw [dgId_comp, inv_hom]
+
+/-- And suffixing with it: the composite's element is `s.hom ≫ dgId`. -/
+lemma comp'_self_right_inv (s : IsShiftBy X n Y) (h : n + 0 = n) :
+    (comp' s (self Y) n h).inv = s.inv := by
+  refine (inv_unique _ ?_).symm
+  show dgComp n (-n) 0 _ s.inv (dgComp (-n) 0 (-n) (by omega) s.hom (dgId Y)) = dgId Y
+  rw [dgComp_id, inv_hom]
+
 
 end Comp
 
 section Map
 
-variable {X X' X'' Y Y' Y'' : C} {n : ℤ}
+variable {X X' X'' Y Y' Y'' Y''' : C} {n : ℤ}
 
 /-- The map induced on shifts: go back along the source's shift, across, and out
 along the target's. `compare` is the case `f = dgId`.
@@ -303,7 +385,170 @@ lemma compare_eq_mapShift (s : IsShiftBy X n Y) (s' : IsShiftBy X n Y') :
     compare s s' = mapShift s s' (dgId X) := by
   rw [compare, mapShift, dgComp_id]
 
+/-- `mapShift` is additive in the morphism, because `dgComp` is biadditive.
+Needed before it can descend to `H⁰`, where morphisms are cosets. -/
+lemma mapShift_add (s : IsShiftBy X n Y) (s' : IsShiftBy X' n Y')
+    (f g : (dgHom X X').X 0) :
+    mapShift s s' (f + g) = mapShift s s' f + mapShift s s' g := by
+  simp [mapShift, map_add]
+
+/-- `mapShift` of a coboundary is a coboundary, so it descends to `H⁰`.
+
+The primitive is the obvious one, `s.inv ≫ h ≫ s'.hom`, and its differential
+picks up a single sign: `s'.hom` and `s.inv` are both closed, so of the four
+Leibniz terms only one survives.
+
+## Why `n` is replaced by `m + 1` first
+
+`dgComp_leibniz` states the shifted degrees as `p + 1` and `q + 1`, and those
+are not free parameters. Writing the primitive's inner factor at degree `n - 1`
+makes the rule produce `n - 1 + 1`, which is propositionally but not
+definitionally `n`, and the two then sit in different `dgHom` fibres with no
+rewrite available that keeps the motive type-correct.
+
+Substituting `n = m + 1` fixes it at the source: the inner factor is written at
+degree `m`, the rule produces `m + 1`, and that *is* `n` syntactically. The only
+remaining shift, `-1 + 1` against `0`, is definitional for integer literals and
+`rfl` closes it. -/
+lemma mapShift_mem_coboundaries (s : IsShiftBy X n Y) (s' : IsShiftBy X' n Y')
+    {f : (dgHom X X').X 0} (hf : f ∈ coboundaries X X') :
+    mapShift s s' f ∈ coboundaries Y Y' := by
+  obtain ⟨h, rfl⟩ := hf
+  obtain ⟨m, rfl⟩ : ∃ m : ℤ, n = m + 1 := ⟨n - 1, by omega⟩
+  refine ⟨(-(m + 1)).negOnePow • dgComp m (-(m + 1)) (-1) (by omega)
+    (dgComp (m + 1) (-1) m (by omega) s.inv h) s'.hom, ?_⟩
+  rw [Units.smul_def, map_zsmul]
+  -- The outer Leibniz step: `s'.hom` is closed, so only the second term lives.
+  rw [dgComp_leibniz m (-(m + 1)) (-1) 0 (by omega) (by omega)
+    (dgComp (m + 1) (-1) m (by omega) s.inv h) s'.hom, s'.hom_closed]
+  -- The inner one: `s.inv` is closed, so only the first term lives.
+  rw [dgComp_leibniz (m + 1) (-1) m (m + 1) (by omega) (by omega) s.inv h,
+    s.inv_closed]
+  simp only [map_zero, AddMonoidHom.zero_apply, smul_zero, add_zero, zero_add]
+  rw [mapShift, ← Units.smul_def, smul_smul, Int.units_mul_self, one_smul]
+  -- only `-1 + 1` against `0` is left, and for integer literals that is `rfl`
+  rfl
+
+/-- `mapShift` bundled as an additive map, so that `map_neg` and `map_sub` are
+available when it descends to the quotient defining `H⁰`. -/
+noncomputable def mapShiftHom (s : IsShiftBy X n Y) (s' : IsShiftBy X' n Y') :
+    (dgHom X X').X 0 →+ (dgHom Y Y').X 0 :=
+  AddMonoidHom.mk' (mapShift s s') (mapShift_add s s')
+
+@[simp]
+lemma mapShiftHom_apply (s : IsShiftBy X n Y) (s' : IsShiftBy X' n Y')
+    (f : (dgHom X X').X 0) : mapShiftHom s s' f = mapShift s s' f := rfl
+
+/-- Naturality of `compare`, and it costs nothing: both sides are `mapShift`
+of the same morphism, by `mapShift_comp` and a unit law.
+
+This is the payoff of stating `IsShiftBy` as representability. A shift functor
+on `H⁰` needs its comparison isomorphisms to be natural, and here that is not a
+diagram to chase -- it is `f ≫ 𝟙 = 𝟙 ≫ f` transported through one lemma. -/
+lemma mapShift_compare (s : IsShiftBy X n Y) (t : IsShiftBy X n Y'')
+    (s' : IsShiftBy X' n Y') (t' : IsShiftBy X' n Y''') (f : (dgHom X X').X 0) :
+    dgComp 0 0 0 (by omega) (mapShift s s' f) (compare s' t') =
+      dgComp 0 0 0 (by omega) (compare s t) (mapShift t t' f) := by
+  rw [compare_eq_mapShift, compare_eq_mapShift, mapShift_comp, mapShift_comp,
+    dgComp_id, dgId_comp]
+
+/-- The zero shift's inverse is the identity. Forced, not chosen: `inv` is
+`Classical.choice` on a surjectivity, but `inv_hom` pins it down. -/
+lemma self_inv (X : C) : (self X).inv = dgId X :=
+  (dgComp_id 0 (self X).inv).symm.trans (self X).inv_hom
+
+/-- `mapShift` along the zero shift is the identity on morphisms. This is what
+makes `shiftFunctor 0` naturally isomorphic to the identity functor. -/
+lemma mapShift_self (X X' : C) (f : (dgHom X X').X 0) :
+    mapShift (self X) (self X') f = f := by
+  rw [mapShift, self_inv]
+  exact (congrArg (fun z => dgComp 0 (-0) 0 (by omega) z (dgId X')) (dgId_comp 0 f)).trans
+    (dgComp_id 0 f)
+
 end Map
+
+section CompMap
+
+variable {X X' Y Y' Z Z' : C} {n m : ℤ}
+
+/-- `mapShift` along a composite shift is `mapShift` twice. Everything in sight
+is a composite of the same five factors; the proof is four applications of
+`dgComp_assoc` moving the brackets from one side's shape to the other's.
+
+This is the naturality obligation of `shiftFunctorAdd` in disguise, and it is
+where `comp_inv` is needed: the composite shift's inverse has to be recognised
+as the composite of the inverses before either side can be reassociated. -/
+lemma mapShift_comp'_shift (s : IsShiftBy X n Y) (u : IsShiftBy Y m Z)
+    (s' : IsShiftBy X' n Y') (u' : IsShiftBy Y' m Z') (nm : ℤ) (hnm : n + m = nm)
+    (f : (dgHom X X').X 0) :
+    mapShift (comp' s u nm hnm) (comp' s' u' nm hnm) f = mapShift u u' (mapShift s s' f) := by
+  simp only [mapShift, comp'_hom]
+  rw [← comp'_inv s u nm hnm,
+    dgComp_assoc m n 0 nm n nm (by omega) (by omega) (by omega),
+    dgComp_assoc m n (-nm) nm (-m) 0 (by omega) (by omega) (by omega),
+    ← dgComp_assoc n (-n) (-m) 0 (-nm) (-m) (by omega) (by omega) (by omega),
+    ← dgComp_assoc m 0 (-m) m (-m) 0 (by omega) (by omega) (by omega)]
+
+/-- The unprimed form, at the definitional degree. -/
+lemma mapShift_comp_shift (s : IsShiftBy X n Y) (u : IsShiftBy Y m Z)
+    (s' : IsShiftBy X' n Y') (u' : IsShiftBy Y' m Z') (f : (dgHom X X').X 0) :
+    mapShift (comp s u) (comp s' u') f = mapShift u u' (mapShift s s' f) :=
+  mapShift_comp'_shift s u s' u' (n + m) rfl f
+
+/-- Shifting a comparison is the comparison of the composites. This is
+`mapShift_comp_shift` at the identity, and it is what lets the coherence
+statements for the shift functor be read entirely in terms of `compare`. -/
+lemma mapShift_compare_comp' (s : IsShiftBy X n Y) (t : IsShiftBy X n Y')
+    (u : IsShiftBy Y m Z) (u' : IsShiftBy Y' m Z') (nm : ℤ) (hnm : n + m = nm) :
+    mapShift u u' (compare s t) = compare (comp' s u nm hnm) (comp' t u' nm hnm) := by
+  rw [compare_eq_mapShift s t,
+    compare_eq_mapShift (comp' s u nm hnm) (comp' t u' nm hnm),
+    mapShift_comp'_shift]
+
+/-- The unprimed form, at the definitional degree. -/
+lemma mapShift_compare_comp (s : IsShiftBy X n Y) (t : IsShiftBy X n Y')
+    (u : IsShiftBy Y m Z) (u' : IsShiftBy Y' m Z') :
+    mapShift u u' (compare s t) = compare (comp s u) (comp t u') :=
+  mapShift_compare_comp' s t u u' (n + m) rfl
+
+section Assoc
+
+variable {W X Y Z Y' Z' : C} {a b d : ℤ}
+
+/-- `compare s t` reads `t` only through `t.hom`, so two witnesses with the same
+element compare the same way. This is the whole of what the associativity
+coherence needs, once both sides are reduced to a single comparison. -/
+lemma compare_congr {n : ℤ} (s : IsShiftBy X n Y) (t t' : IsShiftBy X n Y')
+    (h : t.hom = t'.hom) : compare s t = compare s t' := by
+  rw [compare, compare, h]
+
+/-- The two bracketings of a threefold composite shift carry the same element.
+This is `dgComp_assoc` on the three `hom`s, and nothing more -- which is why
+the associativity coherence is not a diagram chase either. -/
+lemma comp'_assoc_hom (s : IsShiftBy X a Y) (u : IsShiftBy Y b Z) (w : IsShiftBy Z d W)
+    (ab bd abd : ℤ) (hab : a + b = ab) (hbd : b + d = bd) (habd : ab + d = abd) :
+    (comp' (comp' s u ab hab) w abd habd).hom =
+      (comp' s (comp' u w bd hbd) abd (by omega)).hom := by
+  simp only [comp'_hom]
+  exact dgComp_assoc (-a) (-b) (-d) (-ab) (-bd) (-abd) (by omega) (by omega) (by omega)
+    s.hom u.hom w.hom
+
+/-- Composing a comparison-into-a-composite with a comparison of the composite's
+second factor replaces that factor. The middle `v.hom ≫ v.inv` collapses by
+`hom_inv`, which is the only step with content. -/
+lemma compare_comp'_right {k : ℤ} (s : IsShiftBy X k Y') (t : IsShiftBy X a Y)
+    (v : IsShiftBy Y b Z) (v' : IsShiftBy Y b Z') (hk : a + b = k) :
+    dgComp 0 0 0 (by omega) (compare s (comp' t v k hk)) (compare v v') =
+      compare s (comp' t v' k hk) := by
+  simp only [compare, comp'_hom]
+  rw [dgComp_assoc k (-k) 0 0 (-k) 0 (by omega) (by omega) (by omega),
+    dgComp_assoc (-a) (-b) 0 (-k) (-b) (-k) (by omega) (by omega) (by omega),
+    ← dgComp_assoc (-b) b (-b) 0 0 (-b) (by omega) (by omega) (by omega),
+    hom_inv, dgId_comp]
+
+end Assoc
+
+end CompMap
 
 end IsShiftBy
 
