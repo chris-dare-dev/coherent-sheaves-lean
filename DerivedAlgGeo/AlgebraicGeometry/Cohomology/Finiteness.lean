@@ -1,4 +1,5 @@
 import DerivedAlgGeo.AlgebraicGeometry.Cohomology.Finiteness.FiniteDimensional
+import DerivedAlgGeo.AlgebraicGeometry.Cohomology.Finiteness.LinearCech
 import DerivedAlgGeo.AlgebraicGeometry.Cohomology.Finiteness.ProjectiveSpace
 import DerivedAlgGeo.AlgebraicGeometry.Cohomology.Finiteness.Boundedness
 

@@ -236,7 +236,7 @@ private noncomputable def singleColumnBicomplexMap (f : K ⟶ L) (p : ℤ) :
 variable {A B : CochainComplex AddCommGrpCat.{w} ℤ}
 
 /-- Naturality map for a bicomplex supported in horizontal degree zero. -/
-private noncomputable def singleZeroBicomplexMap (f : A ⟶ B) :
+noncomputable def singleZeroBicomplexMap (f : A ⟶ B) :
     singleZeroBicomplex A ⟶ singleZeroBicomplex B :=
   (CochainComplex.singleFunctor (CochainComplex AddCommGrpCat.{w} ℤ) 0).map f
 
@@ -245,7 +245,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The total-complex identification for a bicomplex supported in horizontal degree zero is
 natural. -/
 @[reassoc]
-private lemma singleZeroTotalIso_naturality (f : A ⟶ B) :
+lemma singleZeroTotalIso_naturality (f : A ⟶ B) :
     total.map (singleZeroBicomplexMap f) (ComplexShape.up ℤ) ≫
         (singleZeroTotalIso B).hom =
       (singleZeroTotalIso A).hom ≫ f := by
