@@ -37,18 +37,41 @@ representable big-Zariski stacks by postcomposition on every test scheme. -/
 def representableZariskiStackMap {X Y : Scheme.{u}} (f : X ⟶ Y) :
     StackMorphism (representableZariskiStack X)
       (representableZariskiStack Y) where
-  app T := Discrete.functor (Discrete.mk ∘ fun g : T ⟶ X ↦ g ≫ f)
-  pullbackIso {S T} g := by
-    exact NatIso.ofComponents
-      (fun h ↦ Discrete.eqToIso (by
-        change (g ≫ h.as) ≫ f = g ≫ (h.as ≫ f)
+  app T := Discrete.functor
+    (Discrete.mk ∘ fun g : T.as.unop ⟶ X ↦ g ≫ f) |>.toCatHom
+  naturality {S T} g := by
+    exact Cat.Hom.isoMk (NatIso.ofComponents
+      (fun h : Discrete (S.as.unop ⟶ X) ↦ Discrete.eqToIso (by
+        change (g.as.unop ≫ h.as) ≫ f =
+          g.as.unop ≫ (h.as ≫ f)
         simp))
       (by
         intro A B h
         letI : IsDiscrete
-            ((representableZariskiStack Y).presheaf.obj (.mk (op T))) := by
-          exact discretePseudofunctor_obj_isDiscrete (yoneda.obj Y) _
-        apply Subsingleton.elim)
+            ((representableZariskiStack Y).presheaf.obj T) := by
+          exact discretePseudofunctor_obj_isDiscrete (yoneda.obj Y) T
+        apply Subsingleton.elim))
+  naturality_naturality {S T} {g h} η := by
+    letI : IsDiscrete
+        ((representableZariskiStack Y).presheaf.obj T) :=
+      discretePseudofunctor_obj_isDiscrete (yoneda.obj Y) T
+    apply Cat.Hom₂.ext
+    ext
+    apply Subsingleton.elim
+  naturality_id S := by
+    letI : IsDiscrete
+        ((representableZariskiStack Y).presheaf.obj S) :=
+      discretePseudofunctor_obj_isDiscrete (yoneda.obj Y) S
+    apply Cat.Hom₂.ext
+    ext
+    apply Subsingleton.elim
+  naturality_comp {S T U} _ _ := by
+    letI : IsDiscrete
+        ((representableZariskiStack Y).presheaf.obj U) :=
+      discretePseudofunctor_obj_isDiscrete (yoneda.obj Y) U
+    apply Cat.Hom₂.ext
+    ext
+    apply Subsingleton.elim
 
 @[simp]
 theorem representableZariskiStackMap_obj {X Y T : Scheme.{u}}
@@ -56,6 +79,21 @@ theorem representableZariskiStackMap_obj {X Y T : Scheme.{u}}
     ((representableZariskiStackMap f).app T).obj
         (representableZariskiObject g) =
       representableZariskiObject (g ≫ f) :=
+  rfl
+
+/-- Three scheme-induced stack morphisms compose through Mathlib's strong
+transformation composition, with the expected pointwise action.  The
+associator and unitors for this composition are the ones supplied by the
+pseudofunctor bicategory. -/
+@[simp]
+theorem representableZariskiStackMap_tripleComp_obj
+    {W X Y Z T : Scheme.{u}} (f : W ⟶ X) (g : X ⟶ Y) (h : Y ⟶ Z)
+    (x : T ⟶ W) :
+    ((((representableZariskiStackMap f).comp
+      (representableZariskiStackMap g)).comp
+        (representableZariskiStackMap h)).app T).obj
+          (representableZariskiObject x) =
+      representableZariskiObject (((x ≫ f) ≫ g) ≫ h) :=
   rfl
 
 namespace RepresentableZariskiStackMap
