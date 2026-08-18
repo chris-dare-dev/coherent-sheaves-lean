@@ -137,6 +137,141 @@ lemma rotateBwd_closed : ((dgHom X' W).d 0 1).hom (hc.rotateBwd hd s) = 0 := by
       (dgComp 1 0 1 (by omega) s.inv f) hc.inr hd.inr]
   abel
 
+section Composites
+
+/-- `inl_W` followed by the forward comparison vanishes: `inl_W ≫ snd_W = 0`. -/
+lemma inl_comp_rotateFwd :
+    dgComp (-1) 0 (-1) (by omega) hd.inl (hc.rotateFwd hd s) = 0 := by
+  rw [rotateFwd, ← dgComp_assoc (-1) 0 0 (-1) 0 (-1) (by omega) (by omega) (by omega),
+    hd.inl_comp_snd]
+  simp
+
+/-- `inr_W` followed by the forward comparison is the connecting morphism:
+`inr_W ≫ snd_W = dgId`. -/
+lemma inr_comp_rotateFwd :
+    dgComp 0 0 0 (by omega) hd.inr (hc.rotateFwd hd s) = hc.toShift s := by
+  rw [rotateFwd, ← dgComp_assoc 0 0 0 0 0 0 (by omega) (by omega) (by omega),
+    hd.inr_comp_snd, dgId_comp]
+
+/-- **One composite is the identity on the nose.** No homotopy is needed in this
+direction: the `inl_W`-component of `rotateBwd` dies against `snd_W`, and what
+survives is `s.inv ≫ (inl ≫ fst) ≫ s.hom`, which is `s.inv ≫ s.hom`. -/
+lemma rotateBwd_comp_rotateFwd :
+    dgComp 0 0 0 (by omega) (hc.rotateBwd hd s) (hc.rotateFwd hd s) = dgId X' := by
+  rw [rotateBwd, map_add, AddMonoidHom.add_apply,
+    dgComp_assoc 1 (-1) 0 0 (-1) 0 (by omega) (by omega) (by omega),
+    dgComp_assoc 0 0 0 0 0 0 (by omega) (by omega) (by omega),
+    hc.inl_comp_rotateFwd hd s, hc.inr_comp_rotateFwd hd s]
+  simp only [map_zero, zero_add]
+  rw [toShift,
+    dgComp_assoc 1 (-1) 0 0 (-1) 0 (by omega) (by omega) (by omega) s.inv hc.inl
+      (dgComp 1 (-1) 0 (by omega) hc.fst s.hom),
+    ← dgComp_assoc (-1) 1 (-1) 0 0 (-1) (by omega) (by omega) (by omega) hc.inl hc.fst s.hom,
+    hc.inl_comp_fst, dgId_comp, s.inv_hom]
+
+/-- The connecting morphism absorbs the shift out of `rotateBwd`'s
+`inl_W`-component: `s.hom ≫ s.inv = dgId`. -/
+lemma rotateFwd_absorb_inl :
+    dgComp 0 1 1 (by omega) (hc.toShift s) (dgComp 1 0 1 (by omega) s.inv f) =
+      dgComp 1 0 1 (by omega) hc.fst f := by
+  rw [toShift,
+    dgComp_assoc 1 (-1) 1 0 0 1 (by omega) (by omega) (by omega) hc.fst s.hom
+      (dgComp 1 0 1 (by omega) s.inv f),
+    ← dgComp_assoc (-1) 1 0 0 1 0 (by omega) (by omega) (by omega) s.hom s.inv f,
+    s.hom_inv, dgId_comp]
+
+/-- And out of its `inr_W`-component. -/
+lemma rotateFwd_absorb_inr :
+    dgComp 0 0 0 (by omega) (hc.toShift s) (dgComp 1 (-1) 0 (by omega) s.inv hc.inl) =
+      dgComp 1 (-1) 0 (by omega) hc.fst hc.inl := by
+  rw [toShift,
+    dgComp_assoc 1 (-1) 0 0 (-1) 0 (by omega) (by omega) (by omega) hc.fst s.hom
+      (dgComp 1 (-1) 0 (by omega) s.inv hc.inl),
+    ← dgComp_assoc (-1) 1 (-1) 0 0 (-1) (by omega) (by omega) (by omega) s.hom s.inv hc.inl,
+    s.hom_inv, dgId_comp]
+
+/-- The homotopy's core computation. `snd_W ≫ snd` is not closed, and its
+differential is exactly the `inl_W`-coefficient the composite has to correct:
+both cones contribute their own failure, and `inr ≫ snd = dgId` turns the second
+contribution into `fst_W` on the nose. -/
+lemma delta_sndComp :
+    ((dgHom W Y).d 0 1).hom (dgComp 0 0 0 (by omega) hd.snd hc.snd) =
+      -dgComp 0 1 1 (by omega) hd.snd (dgComp 1 0 1 (by omega) hc.fst f) - hd.fst := by
+  have hleib : ((dgHom W Y).d 0 1).hom (dgComp 0 0 0 (by omega) hd.snd hc.snd) =
+      dgComp 0 1 1 (by omega) hd.snd (((dgHom Z Y).d 0 1).hom hc.snd) +
+        (0 : ℤ).negOnePow •
+          dgComp 1 0 1 (by omega) (((dgHom W Z).d 0 1).hom hd.snd) hc.snd :=
+    dgComp_leibniz (X := W) (Y := Z) (Z := Y) 0 0 0 1 (by omega) (by omega) hd.snd hc.snd
+  rw [hleib, hc.delta_snd, hd.delta_snd, Int.negOnePow_zero, one_smul]
+  simp only [map_neg, AddMonoidHom.neg_apply]
+  rw [dgComp_assoc 1 0 0 1 0 1 (by omega) (by omega) (by omega) hd.fst hc.inr hc.snd,
+    hc.inr_comp_snd, dgComp_id]
+  abel
+
+/-- The composite in the other order, split along the cone's two inclusions. -/
+lemma rotateFwd_comp_rotateBwd_eq :
+    dgComp 0 0 0 (by omega) (hc.rotateFwd hd s) (hc.rotateBwd hd s) =
+      dgComp 1 (-1) 0 (by omega)
+          (-dgComp 0 1 1 (by omega) hd.snd (dgComp 1 0 1 (by omega) hc.fst f)) hd.inl +
+        dgComp 0 0 0 (by omega)
+          (dgComp 0 0 0 (by omega) hd.snd (dgComp 1 (-1) 0 (by omega) hc.fst hc.inl))
+          hd.inr := by
+  rw [rotateBwd, rotateFwd, map_add]
+  congr 1
+  · rw [dgComp_assoc 0 0 0 0 0 0 (by omega) (by omega) (by omega) hd.snd (hc.toShift s)
+        (dgComp 1 (-1) 0 (by omega) (-dgComp 1 0 1 (by omega) s.inv f) hd.inl),
+      ← dgComp_assoc 0 1 (-1) 1 0 0 (by omega) (by omega) (by omega) (hc.toShift s)
+        (-dgComp 1 0 1 (by omega) s.inv f) hd.inl]
+    simp only [map_neg, AddMonoidHom.neg_apply]
+    rw [hc.rotateFwd_absorb_inl s, ← dgComp_assoc 0 1 (-1) 1 0 0 (by omega) (by omega)
+        (by omega) hd.snd (dgComp 1 0 1 (by omega) hc.fst f) hd.inl]
+  · rw [dgComp_assoc 0 0 0 0 0 0 (by omega) (by omega) (by omega) hd.snd (hc.toShift s)
+        (dgComp 0 0 0 (by omega) (dgComp 1 (-1) 0 (by omega) s.inv hc.inl) hd.inr),
+      ← dgComp_assoc 0 0 0 0 0 0 (by omega) (by omega) (by omega) (hc.toShift s)
+        (dgComp 1 (-1) 0 (by omega) s.inv hc.inl) hd.inr,
+      hc.rotateFwd_absorb_inr s,
+      ← dgComp_assoc 0 0 0 0 0 0 (by omega) (by omega) (by omega) hd.snd
+        (dgComp 1 (-1) 0 (by omega) hc.fst hc.inl) hd.inr]
+
+/-- **The other composite is the identity up to homotopy.** The primitive is
+`-(snd_W ≫ snd) ≫ inl_W`, and `delta_sndComp` is why: its differential is the
+`inl_W`-coefficient the composite has to correct, while the `inr_W`-coefficient
+is corrected by the original cone's splitting of `dgId`. -/
+lemma rotateFwd_comp_rotateBwd_sub_dgId :
+    dgComp 0 0 0 (by omega) (hc.rotateFwd hd s) (hc.rotateBwd hd s) - dgId W ∈
+      coboundaries W W := by
+  refine ⟨dgComp 0 (-1) (-1) (by omega)
+    (-dgComp 0 0 0 (by omega) hd.snd hc.snd) hd.inl, ?_⟩
+  have hleib : ((dgHom W W).d (-1) 0).hom
+        (dgComp 0 (-1) (-1) (by omega)
+          (-dgComp 0 0 0 (by omega) hd.snd hc.snd) hd.inl) =
+      dgComp 0 0 0 (by omega) (-dgComp 0 0 0 (by omega) hd.snd hc.snd)
+          (((dgHom Y W).d (-1) 0).hom hd.inl) +
+        (-1 : ℤ).negOnePow • dgComp 1 (-1) 0 (by omega)
+          (((dgHom W Y).d 0 1).hom (-dgComp 0 0 0 (by omega) hd.snd hc.snd)) hd.inl :=
+    dgComp_leibniz (X := W) (Y := Y) (Z := W) 0 (-1) (-1) 0 (by omega) (by omega) _ hd.inl
+  have hneg : (-1 : ℤ).negOnePow = -1 := by decide
+  rw [hleib, hd.δ_inl, hneg]
+  simp only [map_neg, AddMonoidHom.neg_apply, Units.neg_smul, one_smul, neg_neg]
+  rw [hc.delta_sndComp hd, hc.rotateFwd_comp_rotateBwd_eq hd s]
+  simp only [map_sub, AddMonoidHom.sub_apply, map_neg, AddMonoidHom.neg_apply]
+  rw [← hd.fst_inl_add_snd_inr]
+  have key : dgComp 0 0 0 (by omega) (dgComp 0 0 0 (by omega) hd.snd hc.snd)
+        (dgComp 0 0 0 (by omega) hc.inr hd.inr) +
+      dgComp 0 0 0 (by omega)
+        (dgComp 0 0 0 (by omega) hd.snd (dgComp 1 (-1) 0 (by omega) hc.fst hc.inl))
+        hd.inr =
+      dgComp 0 0 0 (by omega) hd.snd hd.inr := by
+    rw [← dgComp_assoc 0 0 0 0 0 0 (by omega) (by omega) (by omega)
+        (dgComp 0 0 0 (by omega) hd.snd hc.snd) hc.inr hd.inr,
+      dgComp_assoc 0 0 0 0 0 0 (by omega) (by omega) (by omega) hd.snd hc.snd hc.inr,
+      ← AddMonoidHom.add_apply, ← map_add, ← map_add, add_comm
+        (dgComp 0 0 0 (by omega) hc.snd hc.inr), hc.fst_inl_add_snd_inr, dgComp_id]
+  rw [← key]
+  abel
+
+end Composites
+
 end IsConeOf
 
 end CategoryTheory

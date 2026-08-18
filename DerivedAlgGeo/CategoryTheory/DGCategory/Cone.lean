@@ -146,6 +146,32 @@ lemma inr_comp_fst_and_snd :
       ← map_add, hc.fst_inl_add_snd_inr, dgComp_id]
     simp [dgId_comp]
 
+/-- `inl` followed by the two projections: the splitting of `inl` itself, and the
+other half of the biproduct-like orthogonality. -/
+lemma inl_comp_fst_and_snd :
+    dgComp (-1) 1 0 (by omega) hc.inl hc.fst = dgId X ∧
+      dgComp (-1) 0 (-1) (by omega) hc.inl hc.snd = 0 := by
+  have hpair := (hc.bijective X (-1) 0 (by omega)).injective
+    (a₁ := (dgComp (-1) 1 0 (by omega) hc.inl hc.fst,
+      dgComp (-1) 0 (-1) (by omega) hc.inl hc.snd))
+    (a₂ := (dgId X, 0)) ?_
+  · exact ⟨congrArg (fun ab => ab.1) hpair, congrArg (fun ab => ab.2) hpair⟩
+  · show dgComp 0 (-1) (-1) (by omega) _ hc.inl + dgComp (-1) 0 (-1) (by omega) _ hc.inr =
+      dgComp 0 (-1) (-1) (by omega) (dgId X) hc.inl +
+        dgComp (-1) 0 (-1) (by omega) 0 hc.inr
+    rw [dgComp_assoc (-1) 1 (-1) 0 0 (-1) (by omega) (by omega) (by omega),
+      dgComp_assoc (-1) 0 0 (-1) 0 (-1) (by omega) (by omega) (by omega),
+      ← map_add, hc.fst_inl_add_snd_inr, dgComp_id]
+    simp [dgId_comp]
+
+/-- The source's inclusion is a section of the cone's projection to it. -/
+lemma inl_comp_fst : dgComp (-1) 1 0 (by omega) hc.inl hc.fst = dgId X :=
+  hc.inl_comp_fst_and_snd.1
+
+/-- And it is orthogonal to the projection onto the target. -/
+lemma inl_comp_snd : dgComp (-1) 0 (-1) (by omega) hc.inl hc.snd = 0 :=
+  hc.inl_comp_fst_and_snd.2
+
 /-- The cone's projection to the source is orthogonal to the target's inclusion.
 This is the `g ≫ h = 0` of the triangle, before the shift is applied. -/
 lemma inr_comp_fst : dgComp 0 1 1 (by omega) hc.inr hc.fst = 0 :=
