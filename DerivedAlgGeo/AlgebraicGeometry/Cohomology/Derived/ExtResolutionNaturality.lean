@@ -3,6 +3,7 @@ Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under the MIT license.
 -/
 import Mathlib.CategoryTheory.Abelian.Injective.Ext
+import Mathlib.CategoryTheory.Abelian.Injective.Resolution
 import Mathlib.Algebra.Homology.DerivedCategory.SmallShiftedHom
 
 /-!
@@ -228,6 +229,23 @@ open CochainComplex CochainComplex.HomComplex Abelian
 
 variable {C : Type u} [Category.{v} C] [Abelian C] [HasExt.{w} C]
   {X Y Y' : C} {n : ℕ}
+
+/-- The canonical lift of a morphism to chosen injective resolutions.
+
+`InjectiveResolution.desc` produces the map of `ℕ`-indexed resolutions; this packages it with
+its degree-zero commutation, so that `Hom.hom'` and `Hom.ι'_comp_hom'` supply the lifted chain
+map and the square it satisfies. -/
+noncomputable def descHom {Y Y' : C} (φ : Y ⟶ Y')
+    (R : InjectiveResolution Y) (R' : InjectiveResolution Y') :
+    R.Hom R' φ :=
+  ⟨InjectiveResolution.desc φ R' R, by
+    simpa using InjectiveResolution.desc_commutes_zero φ R' R⟩
+
+@[simp]
+lemma descHom_hom {Y Y' : C} (φ : Y ⟶ Y')
+    (R : InjectiveResolution Y) (R' : InjectiveResolution Y') :
+    (descHom φ R R').hom = InjectiveResolution.desc φ R' R :=
+  rfl
 
 /-- The injective-resolution presentation of `Ext` is compatible with a morphism in the second
 variable, once that morphism is lifted to the resolutions.
