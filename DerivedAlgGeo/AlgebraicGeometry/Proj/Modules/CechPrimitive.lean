@@ -235,39 +235,27 @@ noncomputable def cechPrimitive (h𝓜 : IsPolynomialTwist 𝓜 d) {n : ℕ}
 /-! ## The homotopy computation -/
 
 set_option maxHeartbeats 1600000 in
-/-- **The per-block homotopy identity.** For each block `F` of the tuple `x`, the alternating
-sum of the faces of the per-block primitive is the block-`F` component of `s x`.
+/-- **The per-block homotopy identity, on a block with a cone point.** The alternating sum of the
+faces of the per-block primitive is the block-`F` component of `s x`.
 
-With a cone point `i₀ ∉ F`: apply the block projection and the homotopy map to the cocycle
-identity at `i₀ :: x`; the `j = 0` face returns `(s x)_F` through the retraction, and the
-`j.succ` faces are exactly the faces of the per-block primitive, with one sign lost, through
-the square. Without a cone point both sides vanish, by `hfull`.
+Apply the block projection and the homotopy map to the cocycle identity at `i₀ :: x`: the `j = 0`
+face returns `(s x)_F` through the retraction, and the `j.succ` faces are exactly the faces of the
+per-block primitive, with one sign lost, through the square.
 
-`hfull` is the **only** place this argument ever cared about the sign of the twist, and taking it
-as a hypothesis is what makes the computation available at either sign. Two things discharge it,
-for different reasons:
-
-* a nonnegative twist — `cechBlockProj_eq_zero_of_forall_mem`. Every Laurent exponent in such a
-  block is negative in every variable while their total is `d ≥ 0`, so the block is empty;
-* a tuple too short to meet every variable — `cechBlockProj_eq_zero_of_not_subset`. A tuple of
-  length `n + 2` has support of at most that size, so over a variable set with more elements the
-  full block is not contained in it, whatever the twist.
-
-The second is what carries the negative case, and it is why finiteness of the variable set enters
-the lane here and nowhere earlier. -/
-theorem cechBlockPrimitive_faces (h𝓜 : IsPolynomialTwist 𝓜 d) {n : ℕ}
+**No hypothesis on the twist appears here, and none is needed.** Every block except the one
+containing every variable has a cone point, so this alone says the cohomology of the Čech complex
+is carried entirely by the full block — which is what makes both the vanishing below the top
+degree and the finiteness of the top group statements about a single block. -/
+theorem cechBlockPrimitive_faces_of_exists (h𝓜 : IsPolynomialTwist 𝓜 d) {n : ℕ}
     (s : ∀ x : Fin (n + 2) → ι, cechTerm ι k 𝓜 x)
     (hs : ∀ x : Fin (n + 3) → ι,
       ∑ j : Fin (n + 3), (-1 : ℤ) ^ (j : ℕ) •
         cechFace ι k 𝓜 x j (s (x ∘ j.succAbove)) = 0)
-    (hfull : ∀ {G : Finset ι}, (∀ j : ι, j ∈ G) →
-      ∀ (y : Fin (n + 2) → ι) (z : cechTerm ι k 𝓜 y), cechBlockProj ι k h𝓜 y G z = 0)
-    (x : Fin (n + 2) → ι) (F : Finset ι) :
+    (x : Fin (n + 2) → ι) {F : Finset ι} (hF : ∃ i₀, i₀ ∉ F) :
     ∑ j : Fin (n + 2), (-1 : ℤ) ^ (j : ℕ) •
         cechFace ι k 𝓜 x j
           (cechBlockPrimitive ι k h𝓜 F s (x ∘ j.succAbove)) =
       cechBlockProj ι k h𝓜 x F (s x) := by
-  by_cases hF : ∃ i₀, i₀ ∉ F
   · obtain hi₀ := hF.choose_spec
     have happlied := congrArg
       (fun z => cechHomotopy ι k h𝓜 hF.choose x
@@ -311,8 +299,39 @@ theorem cechBlockPrimitive_faces (h𝓜 : IsPolynomialTwist 𝓜 d) {n : ℕ}
     have h0 : ((0 : Fin (n + 3)) : ℕ) = 0 := rfl
     rw [h0, pow_zero, one_smul] at happlied
     exact (add_neg_eq_zero.mp happlied).symm
-  · have hall : ∀ j : ι, j ∈ F := by
-      intro j
+
+/-- **The per-block homotopy identity**, for every block.
+
+With a cone point this is `cechBlockPrimitive_faces_of_exists`; without one both sides vanish, the
+left because the per-block primitive is `0` by construction and the right by `hfull`.
+
+`hfull` is the **only** place this argument ever cared about the sign of the twist, and taking it
+as a hypothesis is what makes the computation available at either sign. Two things discharge it,
+for different reasons:
+
+* a nonnegative twist — `cechBlockProj_eq_zero_of_forall_mem`. Every Laurent exponent in such a
+  block is negative in every variable while their total is `d ≥ 0`, so the block is empty;
+* a tuple too short to meet every variable — `cechBlockProj_eq_zero_of_card_lt`. A tuple of
+  length `n + 2` has support of at most that size, so over a variable set with more elements the
+  full block is not contained in it, whatever the twist.
+
+The second is what carries the negative case, and it is why finiteness of the variable set enters
+the lane here and nowhere earlier. -/
+theorem cechBlockPrimitive_faces (h𝓜 : IsPolynomialTwist 𝓜 d) {n : ℕ}
+    (s : ∀ x : Fin (n + 2) → ι, cechTerm ι k 𝓜 x)
+    (hs : ∀ x : Fin (n + 3) → ι,
+      ∑ j : Fin (n + 3), (-1 : ℤ) ^ (j : ℕ) •
+        cechFace ι k 𝓜 x j (s (x ∘ j.succAbove)) = 0)
+    (hfull : ∀ {G : Finset ι}, (∀ j : ι, j ∈ G) →
+      ∀ (y : Fin (n + 2) → ι) (z : cechTerm ι k 𝓜 y), cechBlockProj ι k h𝓜 y G z = 0)
+    (x : Fin (n + 2) → ι) (F : Finset ι) :
+    ∑ j : Fin (n + 2), (-1 : ℤ) ^ (j : ℕ) •
+        cechFace ι k 𝓜 x j
+          (cechBlockPrimitive ι k h𝓜 F s (x ∘ j.succAbove)) =
+      cechBlockProj ι k h𝓜 x F (s x) := by
+  by_cases hF : ∃ i₀, i₀ ∉ F
+  · exact cechBlockPrimitive_faces_of_exists ι k h𝓜 s hs x hF
+  · have hall : ∀ j : ι, j ∈ F := fun j => by
       by_contra hj
       exact hF ⟨j, hj⟩
     rw [hfull hall x (s x)]

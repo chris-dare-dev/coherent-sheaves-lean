@@ -288,6 +288,10 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Proj.cechBlockPrimitive_of_forall
 #print axioms AlgebraicGeometry.Proj.cechBlockPrimitive_eq_zero_of_not_subset
 #print axioms AlgebraicGeometry.Proj.cechPrimitive
+-- The cone-point case, separated out because it needs no hypothesis on the twist at all. Every
+-- block except the one containing every variable has a cone point, so this alone says the
+-- cohomology is carried entirely by the full block.
+#print axioms AlgebraicGeometry.Proj.cechBlockPrimitive_faces_of_exists
 #print axioms AlgebraicGeometry.Proj.cechBlockPrimitive_faces
 #print axioms AlgebraicGeometry.Proj.cechPrimitive_isPrimitive
 -- The headline of #340: H^n(P, O(d)) = 0 for n >= 1 and d >= 0, over an arbitrary --
