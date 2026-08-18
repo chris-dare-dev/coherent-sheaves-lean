@@ -194,6 +194,11 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Proj.intNegSupport
 #print axioms AlgebraicGeometry.Proj.mem_intNegSupport
 #print axioms AlgebraicGeometry.Proj.intNegSupport_laurentExponent_subset
+-- The finite index set of the full block (#568 step 6.1). An exponent negative in every
+-- coordinate whose coordinates sum to d has each coordinate trapped in [d + card - 1, -1], so
+-- the exponents form a subset of a finite box. This is the finiteness the top cohomology rests
+-- on; it is empty unless d <= -(card iota), which is Serre's vanishing in exponent form.
+#print axioms AlgebraicGeometry.Proj.finite_setOf_degree_eq_of_neg
 #print axioms AlgebraicGeometry.Proj.laurentExponent_sub_of_add_eq
 #print axioms AlgebraicGeometry.Proj.laurentFilter
 #print axioms AlgebraicGeometry.Proj.coeff_laurentFilter_of_eq

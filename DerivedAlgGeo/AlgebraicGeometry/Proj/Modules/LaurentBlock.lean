@@ -3,6 +3,7 @@ Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under the MIT license.
 -/
 import DerivedAlgGeo.AlgebraicGeometry.Proj.Modules.LaurentProjection
+import Mathlib.Data.Int.Interval
 
 /-!
 # The block decomposition of an away localization
@@ -89,6 +90,51 @@ theorem intNegSupport_laurentExponent_subset (γ : ι →₀ ℕ) (m : ℕ) (β 
   rw [Finsupp.mem_support_iff]
   intro h0
   exact absurd hj (not_lt.mpr (laurentExponent_nonneg_of_apply_eq_zero γ m β h0))
+
+/-- **The full block is indexed by finitely many Laurent exponents.**
+
+An exponent in the block of *every* variable is negative in every coordinate, and its coordinates
+sum to the twist. Each coordinate is therefore trapped between `-1` above and
+`d + (card ι) - 1` below — the latter because the other `card ι - 1` coordinates contribute at most
+`-1` each — so the exponents form a subset of a finite box.
+
+This is the finiteness the top cohomology of `Pⁿ` rests on. Below the top degree the full block is
+empty for a counting reason (`cechBlockProj_eq_zero_of_card_lt`); in the top degree it is not, and
+this says it is at least small. Note the set is empty unless `d ≤ -(card ι)`, which is Serre's
+`Hⁿ(Pⁿ, O(d)) = 0` for `d > -(n+1)` in exponent form — but that is a consequence, not what is
+proved here. -/
+theorem finite_setOf_degree_eq_of_neg [Fintype ι] (d : ℤ) :
+    {α : ι →₀ ℤ | α.degree = d ∧ ∀ j : ι, α j < 0}.Finite := by
+  classical
+  refine Set.Finite.of_finite_image
+    (f := (Finsupp.equivFunOnFinite : (ι →₀ ℤ) ≃ (ι → ℤ))) ?_
+    (Finsupp.equivFunOnFinite.injective.injOn)
+  refine Set.Finite.subset
+    (Set.Finite.pi fun _ : ι =>
+      Set.finite_Icc (d + (Fintype.card ι : ℤ) - 1) (-1)) ?_
+  rintro f ⟨α, ⟨hdeg, hneg⟩, rfl⟩ j -
+  simp only [Finsupp.equivFunOnFinite_apply]
+  -- Over a fintype the total degree is the sum over all coordinates.
+  have hsum : ∑ i : ι, α i = d := by
+    rw [← hdeg, Finsupp.degree_apply]
+    exact (Finset.sum_subset (Finset.subset_univ _) fun i _ hi => by
+      simpa using Finsupp.notMem_support_iff.mp hi).symm
+  have hle : ∀ i : ι, α i ≤ -1 := fun i => by have := hneg i; omega
+  have hsplit : α j + ∑ i ∈ Finset.univ.erase j, α i = d :=
+    (Finset.add_sum_erase Finset.univ α (Finset.mem_univ j)).trans hsum
+  have hcard : (Finset.univ.erase j).card = Fintype.card ι - 1 := by
+    rw [Finset.card_erase_of_mem (Finset.mem_univ j), Finset.card_univ]
+  have hpos : 1 ≤ Fintype.card ι := Fintype.card_pos_iff.mpr ⟨j⟩
+  have hupper : ∑ i ∈ Finset.univ.erase j, α i ≤ -((Fintype.card ι : ℤ) - 1) := by
+    calc ∑ i ∈ Finset.univ.erase j, α i
+        ≤ ∑ _i ∈ Finset.univ.erase j, (-1 : ℤ) := Finset.sum_le_sum fun i _ => hle i
+      _ = -((Fintype.card ι : ℤ) - 1) := by
+          rw [Finset.sum_const, hcard, nsmul_eq_mul]
+          have : ((Fintype.card ι - 1 : ℕ) : ℤ) = (Fintype.card ι : ℤ) - 1 := by
+            omega
+          rw [this]
+          ring
+  exact ⟨by omega, hle j⟩
 
 /-- **The shift identity for Laurent exponents.** Multiplying a numerator exponent by `Xᵟ` while
 the denominator data moves from `(γ, m)` to `(γ', m')` fixes the Laurent exponent as soon as
