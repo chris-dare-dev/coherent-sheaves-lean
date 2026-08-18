@@ -543,5 +543,75 @@ lemma yonedaHomComplexIsoSections_naturality (X : C) (Φ : K ⟶ L) :
 
 end HomComplexSections
 
+section HPrime
+
+variable [HasExt.{h} (Sheaf J AddCommGrpCat.{a})] {F G : Sheaf J AddCommGrpCat.{a}}
+
+/-- The lifted sections complex of an injective resolution reads it only through the underlying
+complex. -/
+lemma injectiveResolutionSectionsComplex_eq (X : C) (I : InjectiveResolution F) :
+    injectiveResolutionSectionsComplex X I = sectionsComplexLifted X I.cochainComplex :=
+  rfl
+
+/-- The map on `H'` induced by a morphism of sheaves is post-composition in `Ext`. -/
+lemma cohomologyPresheafFunctor_map_app_apply (X : C) (φ : F ⟶ G) (n : ℕ) (y : F.H' n X) :
+    ((cohomologyPresheafFunctor J n).map φ).app (op X) y =
+      y.comp (Abelian.Ext.mk₀ φ) (add_zero n) :=
+  rfl
+
+/-- The identification of the cohomology of the sections of an injective resolution with `H'`
+commutes with a morphism of sheaves, once that morphism is lifted to the resolutions. -/
+lemma injectiveResolutionSectionsCohomologyAddEquivHPrime_naturality
+    (X : C) (φ : F ⟶ G) (I : InjectiveResolution F) (I' : InjectiveResolution G)
+    (Φ : I.cochainComplex ⟶ I'.cochainComplex)
+    (hΦ : I.ι' ≫ Φ =
+      (CochainComplex.singleFunctor (Sheaf J AddCommGrpCat.{a}) 0).map φ ≫ I'.ι')
+    (n : ℕ) (x : (injectiveResolutionSectionsComplex X I).homology (n : ℤ)) :
+    injectiveResolutionSectionsCohomologyAddEquivHPrime X I' n
+        (HomologicalComplex.homologyMap
+          (((AddCommGrpCat.uliftFunctor.{u, a}).mapHomologicalComplex
+            (ComplexShape.up ℤ)).map (sectionsComplexMap X Φ)) (n : ℤ) x) =
+      ((cohomologyPresheafFunctor J n).map φ).app (op X)
+        (injectiveResolutionSectionsCohomologyAddEquivHPrime X I n x) := by
+  -- the Hom-complex identification, in the direction the comparison uses
+  have hsq : (freeAbelianYonedaHomComplexIsoSections X I).inv ≫
+      CochainComplex.HomComplex.postcompMap _ Φ =
+    ((AddCommGrpCat.uliftFunctor.{u, a}).mapHomologicalComplex
+        (ComplexShape.up ℤ)).map (sectionsComplexMap X Φ) ≫
+      (freeAbelianYonedaHomComplexIsoSections X I').inv := by
+    rw [freeAbelianYonedaHomComplexIsoSections_eq,
+      freeAbelianYonedaHomComplexIsoSections_eq, Iso.inv_comp_eq, ← Category.assoc,
+      Iso.eq_comp_inv, yonedaHomComplexIsoSections_naturality]
+  have h1 := ConcreteCategory.congr_hom
+    (show HomologicalComplex.homologyMap
+          (((AddCommGrpCat.uliftFunctor.{u, a}).mapHomologicalComplex
+            (ComplexShape.up ℤ)).map (sectionsComplexMap X Φ)) (n : ℤ) ≫
+        HomologicalComplex.homologyMap
+          (freeAbelianYonedaHomComplexIsoSections X I').inv (n : ℤ) =
+      HomologicalComplex.homologyMap
+          (freeAbelianYonedaHomComplexIsoSections X I).inv (n : ℤ) ≫
+        HomologicalComplex.homologyMap
+          (CochainComplex.HomComplex.postcompMap _ Φ) (n : ℤ) from by
+      rw [← HomologicalComplex.homologyMap_comp, ← HomologicalComplex.homologyMap_comp, hsq]) x
+  rw [ConcreteCategory.comp_apply, ConcreteCategory.comp_apply] at h1
+  -- the Ext identification, in the direction the comparison uses
+  have h3 : ∀ c : CochainComplex.HomComplex.CohomologyClass
+        ((CochainComplex.singleFunctor (Sheaf J AddCommGrpCat.{a}) 0).obj
+          (freeAbelianYonedaSheaf J X)) I.cochainComplex (n : ℤ),
+      I'.extEquivCohomologyClass.symm
+          (CochainComplex.HomComplex.CohomologyClass.postcomp Φ c) =
+        (I.extEquivCohomologyClass.symm c).comp (Abelian.Ext.mk₀ φ) (add_zero n) := by
+    intro c
+    refine (I'.extEquivCohomologyClass.symm_apply_eq).2 ?_
+    rw [CategoryTheory.InjectiveResolution.extEquivCohomologyClass_naturality
+      I I' φ Φ hΦ, Equiv.apply_symm_apply]
+  exact (congrArg (fun z ↦ I'.extAddEquivCohomologyClass.symm
+        (CochainComplex.HomComplex.homologyAddEquiv _ I'.cochainComplex (n : ℤ) z)) h1).trans
+    ((congrArg I'.extAddEquivCohomologyClass.symm
+        (CochainComplex.HomComplex.CohomologyClass.homologyAddEquiv_naturality
+          _ Φ (n : ℤ) _)).trans (h3 _))
+
+end HPrime
+
 
 end CategoryTheory.Sheaf
