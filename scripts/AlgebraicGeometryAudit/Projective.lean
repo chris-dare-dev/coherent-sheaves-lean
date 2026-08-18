@@ -20,27 +20,32 @@ open AlgebraicGeometry
 #print axioms AlgebraicGeometry.projectiveSpaceToSpec
 #print axioms AlgebraicGeometry.isProper_projectiveSpaceToSpec
 
--- The projective bundle `Variety/Basic.lean` said was missing: genuine projective data, not
--- properness renamed. Properness, noetherianity and separatedness are consequences here.
+-- A presentation is genuine projective data on one fixed variety; projectivity forgets the
+-- chosen embedding, and properness follows from the resulting proposition.
+#print axioms AlgebraicGeometry.ProjectivePresentation
+#print axioms AlgebraicGeometry.ProjectivePresentation.instFiniteIndex
+#print axioms AlgebraicGeometry.ProjectivePresentation.instIsClosedImmersionEmbedding
+#print axioms AlgebraicGeometry.ProjectivePresentation.isProper_structureMorphism
+#print axioms AlgebraicGeometry.Variety.IsProjective
+#print axioms AlgebraicGeometry.Variety.IsProjective.ofPresentation
+#print axioms AlgebraicGeometry.Variety.isProper_of_isProjective
 #print axioms AlgebraicGeometry.ProjectiveVariety
-#print axioms AlgebraicGeometry.ProjectiveVariety.instFiniteIndex
-#print axioms AlgebraicGeometry.ProjectiveVariety.instIsClosedImmersionEmbedding
-#print axioms AlgebraicGeometry.ProjectiveVariety.isProper_structureMorphism
-#print axioms AlgebraicGeometry.ProjectiveVariety.isNoetherian
-#print axioms AlgebraicGeometry.ProjectiveVariety.isSeparated
+#print axioms AlgebraicGeometry.ProjectiveVariety.toVariety
+#print axioms AlgebraicGeometry.ProjectiveVariety.instIsProjective
+#print axioms AlgebraicGeometry.ProjectiveVariety.ofPresentation
 
--- The structure's own fields and elaborator artifacts. Listed rather than left to the ceiling:
+-- The presentation's fields and elaborator artifacts. Listed rather than left to the ceiling:
 -- the fields *are* the trust boundary here — `embedding`, `isClosedImmersion` and `overBase` are
 -- what "projective" means in this repository — so they should be visible in the audit alongside
 -- the theorems that consume them.
-#print axioms AlgebraicGeometry.ProjectiveVariety.toVariety
-#print axioms AlgebraicGeometry.ProjectiveVariety.index
-#print axioms AlgebraicGeometry.ProjectiveVariety.finiteIndex
-#print axioms AlgebraicGeometry.ProjectiveVariety.embedding
-#print axioms AlgebraicGeometry.ProjectiveVariety.isClosedImmersion
-#print axioms AlgebraicGeometry.ProjectiveVariety.overBase
-#print axioms AlgebraicGeometry.ProjectiveVariety.mk.inj
-#print axioms AlgebraicGeometry.ProjectiveVariety.mk.sizeOf_spec
+#print axioms AlgebraicGeometry.ProjectivePresentation.index
+#print axioms AlgebraicGeometry.ProjectivePresentation.finiteIndex
+#print axioms AlgebraicGeometry.ProjectivePresentation.embedding
+#print axioms AlgebraicGeometry.ProjectivePresentation.isClosedImmersion
+#print axioms AlgebraicGeometry.ProjectivePresentation.overBase
+#print axioms AlgebraicGeometry.ProjectivePresentation.mk.inj
+#print axioms AlgebraicGeometry.ProjectivePresentation.mk.sizeOf_spec
+#print axioms AlgebraicGeometry.Variety.IsProjective.presentation
 
 -- Step 2 of #572, affine case: coherence survives pushforward along `Spec.map` of a surjection.
 -- The tilde identification is the content; the finiteness is a tower argument.
