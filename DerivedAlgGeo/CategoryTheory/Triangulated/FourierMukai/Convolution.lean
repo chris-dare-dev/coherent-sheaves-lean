@@ -37,8 +37,9 @@ triangle together. It forgets one-way to `ConvolutionData`.
 
 ## What this file does not assert
 
-* Nothing constructs a `ConvolutionData` or `CoherentConvolutionData`, and no example is exhibited. That
-  is not an omission for want of trying: `compIso` is required to hold
+* Nothing constructs a `ConvolutionData` or `CoherentConvolutionData`, and no
+  example is exhibited. That is not an omission for want of trying: `compIso`
+  is required to hold
   *uniformly in* `Q`, so the cheap degenerate constructions — fold the middle
   transform into `C₃.push`, or take `conv P Q = P` — all fail, because they
   produce a `C₃` whose transform has one fixed `Q` baked into it and so cannot
