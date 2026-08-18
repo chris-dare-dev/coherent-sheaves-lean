@@ -101,7 +101,7 @@ items:
 
   - id: contract-v1-e1
     gh_issue: 128
-    gh_sub_issues: [139, 140, 141, 142, 143]
+    gh_sub_issues: [139, 140, 141, 142, 143, 187]
     kind: epic
     parent: contract-v1-m0
     title: "Close the false claims in the trust record and the contract prose"
@@ -211,7 +211,7 @@ items:
 
   - id: contract-v1-e8
     gh_issue: 135
-    gh_sub_issues: [173, 174, 175, 176]
+    gh_sub_issues: [173, 174, 175, 176, 618]
     kind: epic
     parent: contract-v1-m2
     title: "First release, and the consumer side that reads it"
