@@ -242,6 +242,9 @@ open CategoryTheory.Triangulated
 
 /-! ## Affine K-projective pullback -/
 
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.affineQuasicoherentDerivedEquivalence
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.affineQuasicoherentDerivedEquivalence_functor
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.affineQuasicoherentDerivedEquivalence_inverse
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.affineExtendScalars_additive
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.kProjectiveHomotopy
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.KProjectiveHomotopyCategory
