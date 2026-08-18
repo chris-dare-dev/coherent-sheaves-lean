@@ -3,6 +3,7 @@ Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under the MIT license.
 -/
 import DerivedAlgGeo.AlgebraicGeometry.Cohomology.Cech.GlobalComparison
+import DerivedAlgGeo.AlgebraicGeometry.Cohomology.SpectralSequence.ExtendHomologyNaturality
 import DerivedAlgGeo.AlgebraicGeometry.Cohomology.SpectralSequence.TotalFlipNaturality
 
 /-!
@@ -369,6 +370,19 @@ lemma cechToTotalMap_naturality (U : index → C) (φ : F ⟶ G)
     ← HomologicalComplex₂.total.map_comp, ← cechBicomplexMap_comp,
     ← cechBicomplexMap_comp, ← hΦ]
 
+/-- The degreewise identification between the integer-extended Čech complex and ordinary Čech
+cohomology is natural in the sheaf. -/
+lemma cechCochainFunctorIntHomologyIso_naturality
+    (U : index → C) (φ : F ⟶ G) (n : ℕ) :
+    HomologicalComplex.homologyMap ((cechCochainFunctorInt U).map φ) (n : ℤ) ≫
+        (cechCochainFunctorIntHomologyIso U n).hom =
+      (cechCochainFunctorIntHomologyIso U n).hom ≫
+        HomologicalComplex.homologyMap ((cechComplexFunctor U).map φ.hom) n := by
+  dsimp only [cechCochainFunctorIntHomologyIso]
+  exact HomologicalComplex.extendHomologyIso_naturality
+    ((cechComplexFunctor U).map φ.hom) ComplexShape.embeddingUpNat rfl
+
 end Augmentation
+
 
 end CategoryTheory.Sheaf
