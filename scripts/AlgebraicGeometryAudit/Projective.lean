@@ -2,6 +2,7 @@
 Projective-variety slice of the AlgebraicGeometry audit, split out so concurrent
 branches append to different files (#480). See the umbrella file for the contract.
 -/
+import DerivedAlgGeo.AlgebraicGeometry.CoherentSheaf.Pushforward
 import DerivedAlgGeo.AlgebraicGeometry.Variety.Projective
 open AlgebraicGeometry
 
@@ -40,3 +41,9 @@ open AlgebraicGeometry
 #print axioms AlgebraicGeometry.ProjectiveVariety.overBase
 #print axioms AlgebraicGeometry.ProjectiveVariety.mk.inj
 #print axioms AlgebraicGeometry.ProjectiveVariety.mk.sizeOf_spec
+
+-- Step 2 of #572, affine case: coherence survives pushforward along `Spec.map` of a surjection.
+-- The tilde identification is the content; the finiteness is a tower argument.
+#print axioms AlgebraicGeometry.gammaPushforwardIso
+#print axioms AlgebraicGeometry.moduleFinite_gammaPushforward
+#print axioms AlgebraicGeometry.isCoherent_pushforward_of_surjective
