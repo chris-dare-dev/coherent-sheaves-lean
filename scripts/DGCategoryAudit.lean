@@ -304,3 +304,28 @@ import DerivedAlgGeo.CategoryTheory.DGCategory
 #print axioms CategoryTheory.H0.distinguished_cocone_triangle
 #print axioms CategoryTheory.H0.isZero_of_dgId_mem_coboundaries
 #print axioms CategoryTheory.H0.contractible_distinguished
+
+-- Rotation groundwork (dg-enhancements-e6): the morphism a cone is built on is
+-- automatically closed, and the two comparison maps between a cone on `inr` and
+-- the shift, each closed for a reason the source records.
+#print axioms CategoryTheory.IsConeOf.delta_f
+#print axioms CategoryTheory.IsConeOf.rotateFwd
+#print axioms CategoryTheory.IsConeOf.rotateFwd_closed
+#print axioms CategoryTheory.IsConeOf.rotateBwd
+#print axioms CategoryTheory.IsConeOf.delta_shiftInvComp
+#print axioms CategoryTheory.IsConeOf.delta_shiftInvComp_inl
+#print axioms CategoryTheory.IsConeOf.rotateBwd_closed
+
+-- The comparison is a homotopy equivalence: one composite is the identity on the
+-- nose, the other only up to a primitive the source exhibits.
+#print axioms CategoryTheory.IsConeOf.inl_comp_fst_and_snd
+#print axioms CategoryTheory.IsConeOf.inl_comp_fst
+#print axioms CategoryTheory.IsConeOf.inl_comp_snd
+#print axioms CategoryTheory.IsConeOf.inl_comp_rotateFwd
+#print axioms CategoryTheory.IsConeOf.inr_comp_rotateFwd
+#print axioms CategoryTheory.IsConeOf.rotateBwd_comp_rotateFwd
+#print axioms CategoryTheory.IsConeOf.rotateFwd_absorb_inl
+#print axioms CategoryTheory.IsConeOf.rotateFwd_absorb_inr
+#print axioms CategoryTheory.IsConeOf.delta_sndComp
+#print axioms CategoryTheory.IsConeOf.rotateFwd_comp_rotateBwd_eq
+#print axioms CategoryTheory.IsConeOf.rotateFwd_comp_rotateBwd_sub_dgId
