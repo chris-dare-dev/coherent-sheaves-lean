@@ -304,3 +304,14 @@ import DerivedAlgGeo.CategoryTheory.DGCategory
 #print axioms CategoryTheory.H0.distinguished_cocone_triangle
 #print axioms CategoryTheory.H0.isZero_of_dgId_mem_coboundaries
 #print axioms CategoryTheory.H0.contractible_distinguished
+
+-- Rotation groundwork (dg-enhancements-e6): the morphism a cone is built on is
+-- automatically closed, and the two comparison maps between a cone on `inr` and
+-- the shift, each closed for a reason the source records.
+#print axioms CategoryTheory.IsConeOf.delta_f
+#print axioms CategoryTheory.IsConeOf.rotateFwd
+#print axioms CategoryTheory.IsConeOf.rotateFwd_closed
+#print axioms CategoryTheory.IsConeOf.rotateBwd
+#print axioms CategoryTheory.IsConeOf.delta_shiftInvComp
+#print axioms CategoryTheory.IsConeOf.delta_shiftInvComp_inl
+#print axioms CategoryTheory.IsConeOf.rotateBwd_closed

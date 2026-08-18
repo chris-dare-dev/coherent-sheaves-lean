@@ -185,6 +185,31 @@ lemma inr_comp_toShift :
 
 end ToShift
 
+include hc in
+/-- **The morphism a cone is built on is automatically closed.** `IsConeOf` does
+not ask for it: what it asks is `δ inl = f ≫ inr`, and applying `δ` twice turns
+that into `(δ f) ≫ inr = 0`. Uniqueness of the splitting then reads off `δ f = 0`.
+
+So `exists_cone`'s cocycle hypothesis is needed to *produce* a cone, not to use
+one. -/
+lemma delta_f : ((dgHom X Y).d 0 1).hom f = 0 := by
+  have hd2 : ((dgHom X Z).d 0 1).hom (dgComp 0 0 0 (by omega) f hc.inr) = 0 := by
+    rw [← hc.δ_inl, ← ConcreteCategory.comp_apply, HomologicalComplex.d_comp_d]
+    simp
+  have hleib : ((dgHom X Z).d 0 1).hom (dgComp 0 0 0 (by omega) f hc.inr) =
+      dgComp 0 1 1 (by omega) f (((dgHom Y Z).d 0 1).hom hc.inr) +
+        (0 : ℤ).negOnePow •
+          dgComp 1 0 1 (by omega) (((dgHom X Y).d 0 1).hom f) hc.inr :=
+    dgComp_leibniz (X := X) (Y := Y) (Z := Z) 0 0 0 1 (by omega) (by omega) f hc.inr
+  rw [hleib, hc.inr_closed, Int.negOnePow_zero, one_smul] at hd2
+  simp only [map_zero, zero_add] at hd2
+  have hpair := (hc.bijective X 1 2 (by omega)).injective
+    (a₁ := (0, ((dgHom X Y).d 0 1).hom f)) (a₂ := (0, 0)) ?_
+  · exact congrArg (fun ab => ab.2) hpair
+  · show dgComp 2 (-1) 1 (by omega) 0 hc.inl + dgComp 1 0 1 (by omega) _ hc.inr =
+      dgComp 2 (-1) 1 (by omega) 0 hc.inl + dgComp 1 0 1 (by omega) 0 hc.inr
+    simpa using hd2
+
 section Contractible
 
 /-- **The cone on an identity is contractible.** `snd ≫ inl` is a primitive for
