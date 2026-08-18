@@ -287,3 +287,20 @@ import DerivedAlgGeo.CategoryTheory.DGCategory
 #print axioms CategoryTheory.IsConeOf.toShift_closed
 #print axioms CategoryTheory.IsConeOf.toShift_mem_cocycles
 #print axioms CategoryTheory.IsConeOf.inr_comp_toShift
+
+-- The cone on an identity is contractible: the primitive is `snd` composed with
+-- `inl`, and both of the cone's differential corrections are consumed exactly.
+#print axioms CategoryTheory.IsConeOf.delta_fst_and_snd
+#print axioms CategoryTheory.IsConeOf.delta_snd
+#print axioms CategoryTheory.IsConeOf.dgId_mem_coboundaries_of_dgId
+
+-- The distinguished triangles of H⁰, and three of the six Pretriangulated fields.
+#print axioms CategoryTheory.H0.homMk
+#print axioms CategoryTheory.H0.shiftFunctor_additive'
+#print axioms CategoryTheory.H0.coneTriangle
+#print axioms CategoryTheory.H0.distinguishedTriangles
+#print axioms CategoryTheory.H0.coneTriangle_mem
+#print axioms CategoryTheory.H0.isomorphic_distinguished
+#print axioms CategoryTheory.H0.distinguished_cocone_triangle
+#print axioms CategoryTheory.H0.isZero_of_dgId_mem_coboundaries
+#print axioms CategoryTheory.H0.contractible_distinguished
