@@ -4,6 +4,9 @@ Released under the MIT license.
 -/
 import DerivedAlgGeo.AlgebraicGeometry.Proj.Integral
 import DerivedAlgGeo.AlgebraicGeometry.Proj.Modules.Finiteness
+import DerivedAlgGeo.AlgebraicGeometry.Proj.Modules.ProjectiveSpace
+import DerivedAlgGeo.AlgebraicGeometry.Proj.Modules.TwistCoherence
+import DerivedAlgGeo.AlgebraicGeometry.CoherentSheaf.Basic.Definitions
 import DerivedAlgGeo.AlgebraicGeometry.Variety.Basic
 import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.Proper
 import Mathlib.RingTheory.FiniteType
@@ -105,6 +108,30 @@ noncomputable def projectiveSpaceVariety [Finite ι] [Nonempty ι] : Variety k w
 @[simp]
 lemma projectiveSpaceVariety_toScheme [Finite ι] [Nonempty ι] :
     (projectiveSpaceVariety ι k).toScheme = Proj (polynomialGrading ι k) :=
+  rfl
+
+/-- The twisting sheaf `O(d)` on polynomial projective space is coherent. -/
+theorem polynomialIntShift_isCoherent (d : ℤ) :
+    AlgebraicGeometry.Scheme.Modules.IsCoherent
+      (AlgebraicGeometry.Proj (polynomialGrading ι k))
+      (associatedSheaf (polynomialGrading ι k) (intShift (polynomialGrading ι k) d)) :=
+  intShift_isCoherent (polynomialGrading ι k)
+    (fun i => ⟨MvPolynomial.X i, MvPolynomial.isHomogeneous_X k i⟩) d
+    (polynomialVariable_adjoin_eq_top ι k)
+
+/-- **`O(d)` as a coherent sheaf on projective space as a variety over `k`.**
+
+This is the object `coherentScalarAction` and `linearCoherentH` are stated about, so with it the
+finiteness interface can name `Hⁱ(Pⁿ, O(d))` as a `k`-vector space. -/
+noncomputable def projectiveSpaceTwist [Finite ι] [Nonempty ι] (d : ℤ) :
+    Coh (projectiveSpaceVariety ι k).toScheme :=
+  ⟨associatedSheaf (polynomialGrading ι k) (intShift (polynomialGrading ι k) d),
+    polynomialIntShift_isCoherent ι k d⟩
+
+@[simp]
+lemma projectiveSpaceTwist_obj [Finite ι] [Nonempty ι] (d : ℤ) :
+    (Coh.ι (projectiveSpaceVariety ι k).toScheme).obj (projectiveSpaceTwist ι k d) =
+      associatedSheaf (polynomialGrading ι k) (intShift (polynomialGrading ι k) d) :=
   rfl
 
 end AlgebraicGeometry.Proj
