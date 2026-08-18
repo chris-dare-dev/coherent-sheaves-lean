@@ -8,13 +8,14 @@ import DerivedAlgGeo.AlgebraicGeometry.Moduli.PerfectComplex.Boundedness
 import DerivedAlgGeo.AlgebraicGeometry.Stacks.Algebraic
 
 /-!
-# Algebraic presentations of selected relative-perfect moduli problems
+# Big-Zariski presentations of selected relative-perfect moduli problems
 
 This file connects the SF8 relative-perfect and boundedness layers to the
-SF9 algebraic-stack layer without postulating an Artin representability
-theorem.  A presentation contains an actual algebraic stack over the base and
+SF9 stack-presentation layer without postulating an Artin representability
+theorem.  A presentation contains big-Zariski stack data over the base and
 equivalences from its geometric fibers to the selected full subgroupoids of
-universally-gluable relative-perfect complexes.
+universally-gluable relative-perfect complexes.  It is not an algebraic-stack
+structure: fppf or étale descent has not yet been proved.
 
 The bounded refinement turns the universal family of an SF8 finite-type
 boundedness witness into an actual object of the corresponding stack fiber.
@@ -23,9 +24,9 @@ immersion and a commuting structural triangle.
 
 The supported zero subproblem is constructed explicitly: the identity stack
 over a locally Noetherian base has contractible fibers, as does the full
-groupoid of zero relative-perfect objects.  This is a genuine algebraic and
-bounded presentation, but it is not claimed to be the full relative-perfect
-moduli stack.
+groupoid of zero relative-perfect objects.  This is a genuine bounded
+big-Zariski presentation, but it is not claimed to be an algebraic stack or
+the full relative-perfect moduli stack.
 -/
 
 namespace AlgebraicGeometry
@@ -67,59 +68,61 @@ def universalObject (W : FiniteTypeBoundednessWitness P) : P.Fiber W.parameter :
 
 end FiniteTypeBoundednessWitness
 
-/-- An algebraic presentation of a selected relative-perfect moduli problem.
+/-- A big-Zariski presentation of a selected relative-perfect moduli problem.
 
 For every locally Noetherian base change `T ⟶ S`, the fiber of the actual
 structure morphism over that map is equivalent to the selected full
 subgroupoid of universally-gluable relative-perfect complexes on `T`.
 Restricting this field to the currently supported locally Noetherian locus
 keeps the unresolved arbitrary-scheme Dqc comparison visible. -/
-structure RelativePerfectAlgebraicPresentation (S : Scheme.{u})
+structure RelativePerfectZariskiPresentation (S : Scheme.{u})
     (P : RelativePerfectModuliSubproblem S) where
-  /-- The actual algebraic stack locally of finite presentation over `S`. -/
-  algebraic : AlgebraicStackOver S
+  /-- The big-Zariski presentation locally of finite presentation over `S`. -/
+  presentation : ZariskiStackPresentationOver S
   /-- Identification of each supported stack fiber with the selected
   relative-perfect moduli groupoid. -/
   fiberEquivalence (T : SchemeBaseChange S) [IsLocallyNoetherian T.left] :
-    algebraic.structureMorphism.FiberCategory
+    presentation.structureMorphism.FiberCategory
         (representableZariskiObject T.hom) (Over.mk (𝟙 T.left)) ≌
       P.Fiber T
 
-namespace RelativePerfectAlgebraicPresentation
+namespace RelativePerfectZariskiPresentation
 
 variable {S : Scheme.{u}} {P : RelativePerfectModuliSubproblem S}
 
-/-- The algebraic stack underlying a relative-perfect presentation. -/
-abbrev stack (A : RelativePerfectAlgebraicPresentation S P) : AlgebraicStack :=
-  A.algebraic.toAlgebraicStack
+/-- The big-Zariski stack presentation underlying a relative-perfect
+presentation. -/
+abbrev stack (A : RelativePerfectZariskiPresentation S P) :
+    ZariskiStackPresentation :=
+  A.presentation.toZariskiStackPresentation
 
 /-- The actual locally-finitely-presented structure morphism underlying a
-relative-perfect algebraic presentation. -/
+relative-perfect big-Zariski presentation. -/
 theorem locallyOfFinitePresentation
-    (A : RelativePerfectAlgebraicPresentation S P) :
-    A.algebraic.structureMorphism.IsLocallyOfFinitePresentation :=
-  A.algebraic.locallyOfFinitePresentation
+    (A : RelativePerfectZariskiPresentation S P) :
+    A.presentation.structureMorphism.IsLocallyOfFinitePresentation :=
+  A.presentation.locallyOfFinitePresentation
 
-end RelativePerfectAlgebraicPresentation
+end RelativePerfectZariskiPresentation
 
-/-- A bounded algebraic presentation co-locates an actual finite-type SF8
+/-- A bounded big-Zariski presentation co-locates an actual finite-type SF8
 boundedness witness with the SF9 stack presentation of the same selected
 relative-perfect moduli problem. -/
-structure BoundedRelativePerfectAlgebraicPresentation (S : Scheme.{u})
+structure BoundedRelativePerfectZariskiPresentation (S : Scheme.{u})
     (P : RelativePerfectModuliSubproblem S)
-    extends RelativePerfectAlgebraicPresentation S P where
+    extends RelativePerfectZariskiPresentation S P where
   /-- The actual finite-type parameter scheme and its universal family. -/
   boundedness : FiniteTypeBoundednessWitness P
 
-namespace BoundedRelativePerfectAlgebraicPresentation
+namespace BoundedRelativePerfectZariskiPresentation
 
 variable {S : Scheme.{u}} {P : RelativePerfectModuliSubproblem S}
-  (A : BoundedRelativePerfectAlgebraicPresentation S P)
+  (A : BoundedRelativePerfectZariskiPresentation S P)
 
 /-- The SF8 universal family, lifted through the proved fiber equivalence to
-an actual object of the SF9 algebraic stack over the parameter scheme. -/
+an actual object of the SF9 big-Zariski stack over the parameter scheme. -/
 def universalStackObject [IsLocallyNoetherian A.boundedness.parameter.left] :
-    A.algebraic.structureMorphism.FiberCategory
+    A.presentation.structureMorphism.FiberCategory
       (representableZariskiObject A.boundedness.parameter.hom)
       (Over.mk (𝟙 A.boundedness.parameter.left)) :=
   (A.fiberEquivalence A.boundedness.parameter).inverse.obj
@@ -134,18 +137,18 @@ def universalFamilyIso [IsLocallyNoetherian A.boundedness.parameter.left] :
   (A.fiberEquivalence A.boundedness.parameter).counitIso.app
     A.boundedness.universalObject
 
-end BoundedRelativePerfectAlgebraicPresentation
+end BoundedRelativePerfectZariskiPresentation
 
 /-- An open relative-perfect presentation keeps both moduli interpretations,
-an actual representable open immersion of their algebraic stacks, and the
+an actual representable open immersion of their big-Zariski stacks, and the
 commuting triangle over the base.  `family_le` states that the open locus
 selects only objects of the ambient problem. -/
-structure RelativePerfectOpenSubstack (S : Scheme.{u})
+structure RelativePerfectOpenZariskiPresentation (S : Scheme.{u})
     (ambientProblem openProblem : RelativePerfectModuliSubproblem S) where
-  /-- Algebraic presentation of the ambient selected problem. -/
-  ambient : RelativePerfectAlgebraicPresentation S ambientProblem
-  /-- Algebraic presentation of the open selected problem. -/
-  openPresentation : RelativePerfectAlgebraicPresentation S openProblem
+  /-- Big-Zariski presentation of the ambient selected problem. -/
+  ambient : RelativePerfectZariskiPresentation S ambientProblem
+  /-- Big-Zariski presentation of the open selected problem. -/
+  openPresentation : RelativePerfectZariskiPresentation S openProblem
   /-- The open family predicate is contained in the ambient predicate. -/
   family_le {T : SchemeBaseChange S} {E : RelativePerfectModuliFiber T} :
     openProblem.family T E → ambientProblem.family T E
@@ -158,8 +161,8 @@ structure RelativePerfectOpenSubstack (S : Scheme.{u})
   isOpenImmersion : inclusion.IsOpenImmersion
   /-- The inclusion commutes with the actual structure morphisms to `S`. -/
   overBase (T : Scheme.{u}) :
-    inclusion.app T ⋙ ambient.algebraic.structureMorphism.app T ≅
-      openPresentation.algebraic.structureMorphism.app T
+    inclusion.app T ⋙ ambient.presentation.structureMorphism.app T ≅
+      openPresentation.presentation.structureMorphism.app T
 
 /-! ## The supported zero presentation -/
 
@@ -244,34 +247,34 @@ private def zeroRelativePerfectFiberEquivPUnit {S : Scheme.{u}}
       exact E.property.eq_of_src _ _
     exact ⟨@uniqueOfSubsingleton _ homSubsingleton f⟩
 
-/-- The zero relative-perfect subproblem has an actual algebraic presentation:
-the identity stack over `S`.  Its fibers and the groupoids of selected zero
-objects are both proved contractible. -/
-def zeroRelativePerfectAlgebraicPresentation (S : Scheme.{u}) :
-    RelativePerfectAlgebraicPresentation S
+/-- The zero relative-perfect subproblem has an actual big-Zariski
+presentation: the identity stack over `S`.  Its fibers and the groupoids of
+selected zero objects are both proved contractible. -/
+def zeroRelativePerfectZariskiPresentation (S : Scheme.{u}) :
+    RelativePerfectZariskiPresentation S
       (zeroRelativePerfectModuliSubproblem S) where
-  algebraic := representableAlgebraicStackOver (𝟙 S)
+  presentation := representableZariskiStackPresentationOver (𝟙 S)
   fiberEquivalence T :=
     (identityStackFiberEquivPUnit T).trans
       (zeroRelativePerfectFiberEquivPUnit T).symm
 
-/-- The identity parameter scheme and universal zero family make the
-supported zero algebraic presentation genuinely finite-type bounded. -/
-def zeroBoundedRelativePerfectAlgebraicPresentation
+/-- The identity parameter scheme and universal zero family make the supported
+zero big-Zariski presentation genuinely finite-type bounded. -/
+def zeroBoundedRelativePerfectZariskiPresentation
     (S : Scheme.{u}) [IsLocallyNoetherian S] :
-    BoundedRelativePerfectAlgebraicPresentation S
+    BoundedRelativePerfectZariskiPresentation S
       (zeroRelativePerfectModuliSubproblem S) where
-  toRelativePerfectAlgebraicPresentation :=
-    zeroRelativePerfectAlgebraicPresentation S
+  toRelativePerfectZariskiPresentation :=
+    zeroRelativePerfectZariskiPresentation S
   boundedness := zeroFiniteTypeBoundednessWitness S
 
 /-- A concrete positive-dimensional supported case: `Spec ℤ` carries the
-bounded algebraic presentation of its zero relative-perfect subproblem. -/
-def integerZeroBoundedRelativePerfectAlgebraicPresentation :
-    BoundedRelativePerfectAlgebraicPresentation
+bounded big-Zariski presentation of its zero relative-perfect subproblem. -/
+def integerZeroBoundedRelativePerfectZariskiPresentation :
+    BoundedRelativePerfectZariskiPresentation
       (Spec (.of ℤ))
       (zeroRelativePerfectModuliSubproblem (Spec (.of ℤ))) :=
-  zeroBoundedRelativePerfectAlgebraicPresentation (Spec (.of ℤ))
+  zeroBoundedRelativePerfectZariskiPresentation (Spec (.of ℤ))
 
 end
 
