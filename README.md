@@ -45,6 +45,8 @@ requesting review.
   intersection theory, Proj, and Riemann--Roch.
 - `DerivedAlgGeo/CategoryTheory` — dg categories, t-structures, and stability
   conditions.
+- `DerivedAlgGeo/Compatibility` — temporary leaf imports for staged module
+  migrations; stable subjects never depend on it.
 - `DerivedAlgGeo/LinearAlgebra` — integral and Mukai lattices and matrix tools.
 - `DerivedAlgGeo/Algebra` and `DerivedAlgGeo/Topology` — reusable supporting
   mathematics.
@@ -54,6 +56,9 @@ Generated API documentation is published at
 [chris-dare-dev.github.io/derived-alg-geo-lean](https://chris-dare-dev.github.io/derived-alg-geo-lean/).
 See [CONTRIBUTING.md](CONTRIBUTING.md) for placement, proof, audit, and review
 requirements.
+
+The enforced subject dependency DAG is documented in
+[docs/architecture/layers.md](docs/architecture/layers.md).
 
 ## License
 

@@ -16,5 +16,8 @@ it to the area file its module belongs to.
 -/
 
 import AlgebraicGeometryAudit.Core
+import AlgebraicGeometryAudit.GeometricLedgers
 import AlgebraicGeometryAudit.Moduli
 import AlgebraicGeometryAudit.Projective
+import AlgebraicGeometryAudit.SchemeDerived
+import AlgebraicGeometryAudit.StabilityConditionFamilies

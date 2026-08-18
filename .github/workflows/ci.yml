@@ -307,6 +307,9 @@ jobs:
       - name: Stability source independence
         run: python3 scripts/check_source_independence.py
 
+      - name: Subject ownership layering
+        run: python3 scripts/check_layering.py
+
       - name: Coherent families architecture
         run: python3 scripts/check_coherent_families.py
 
