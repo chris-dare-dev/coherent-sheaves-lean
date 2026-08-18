@@ -44,7 +44,30 @@ v4.32.1 and adapted to the repository-owned stability-condition API. No
 separately versioned source, vendor tree, compatibility root, or runtime
 dependency on that repository remains.
 
-Those files are Copyright (c) 2026 Mathlib Contributors. Their license follows.
+Those files are Copyright (c) 2026 Mathlib Contributors. Their license follows
+at the end of this section.
+
+Retained upstream headers refer to "the file LICENSE"; in this repository that
+reference resolves to this `LICENSE.md`.
+
+### Files with adapted Apache-2.0 origins
+
+Five foundation modules began as textual adaptations of the same upstream
+revision, taken while that source was vendored in this repository's history as
+the comparison oracle for the ownership migration, and have since been
+substantially rewritten against the repository-owned API:
+
+- `DerivedAlgGeo/CategoryTheory/Triangulated/PostnikovTower.lean`
+- `DerivedAlgGeo/CategoryTheory/Triangulated/StabilityCondition/Foundation/Slicing.lean`
+- `DerivedAlgGeo/CategoryTheory/Triangulated/StabilityCondition/Foundation/IntervalCategory.lean`
+- `DerivedAlgGeo/CategoryTheory/Triangulated/StabilityCondition/Foundation/PreStabilityCondition.lean`
+- `DerivedAlgGeo/CategoryTheory/Triangulated/StabilityCondition/Foundation/StabilityCondition.lean`
+
+Their MIT headers cover the repository's own contributions. Portions
+originating in the upstream work remain Copyright (c) 2026 Mathlib
+Contributors under the Apache-2.0 license reproduced below. This paragraph is
+the retained attribution notice and the Apache-2.0 §4(b) statement that these
+files were changed from the upstream form; each file's header points here.
 
                                  Apache License
                            Version 2.0, January 2004
