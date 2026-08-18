@@ -614,4 +614,149 @@ lemma injectiveResolutionSectionsCohomologyAddEquivHPrime_naturality
 end HPrime
 
 
+
+section Comparison
+
+open TopologicalSpace
+
+variable {Y : TopCat.{u}} {T : Opens Y} {ind : Type u}
+  {F G : TopCat.Sheaf AddCommGrpCat.{u} Y}
+
+/-- The Čech-to-sections half of the comparison commutes with a morphism of sheaves, once that
+morphism is lifted to the resolutions.
+
+Each of the four factors is the homology of an explicit chain map or its inverse, so each
+square is the image under `homologyMap` of a square of chain maps proved earlier in this
+file. -/
+lemma cechToSectionsHomologyIso_hom_naturality
+    (hT : IsTerminal T) (U : ind → Opens Y) (φ : F ⟶ G)
+    (I : InjectiveResolution F) (I' : InjectiveResolution G)
+    (Φ : I.cochainComplex ⟶ I'.cochainComplex)
+    (hΦ : I.ι' ≫ Φ =
+      (CochainComplex.singleFunctor (TopCat.Sheaf AddCommGrpCat.{u} Y) 0).map φ ≫ I'.ι')
+    (hExt : HasExt.{h} (TopCat.Sheaf AddCommGrpCat.{u} Y))
+    (hcover : @IsCechAcyclicCover (Opens Y) _
+      (Opens.grothendieckTopology Y) _ hExt ind _ U F)
+    (hcover' : @IsCechAcyclicCover (Opens Y) _
+      (Opens.grothendieckTopology Y) _ hExt ind _ U G) (n : ℕ) :
+    HomologicalComplex.homologyMap ((cechComplexFunctor U).map φ.hom) n ≫
+        (cechToSectionsHomologyIso hT U I' hExt hcover' n).hom =
+      (cechToSectionsHomologyIso hT U I hExt hcover n).hom ≫
+        HomologicalComplex.homologyMap
+          (((AddCommGrpCat.uliftFunctor.{u, u}).mapHomologicalComplex
+            (ComplexShape.up ℤ)).map (sectionsComplexMap T Φ)) (n : ℤ) := by
+  letI : QuasiIso (injectiveResolutionSectionsToCechTotalMap hT U I) :=
+    injectiveResolutionSectionsToCechTotalMap_quasiIso hT U hcover.1 I
+  letI : QuasiIso (injectiveResolutionSectionsToCechTotalMap hT U I') :=
+    injectiveResolutionSectionsToCechTotalMap_quasiIso hT U hcover'.1 I'
+  letI : QuasiIso (cechToInjectiveTotalMap U I) :=
+    @cechToInjectiveTotalMap_quasiIso (Opens Y) _ (Opens.grothendieckTopology Y) _ _
+      ind F U I hExt hcover.2
+  letI : QuasiIso (cechToInjectiveTotalMap U I') :=
+    @cechToInjectiveTotalMap_quasiIso (Opens Y) _ (Opens.grothendieckTopology Y) _ _
+      ind G U I' hExt hcover'.2
+  -- the underlying squares of chain maps, restated in the local types
+  have hs1 : HomologicalComplex.homologyMap ((cechCochainFunctorInt U).map φ) (n : ℤ) ≫
+      (cechCochainFunctorIntHomologyIso U n (F := G)).hom =
+    (cechCochainFunctorIntHomologyIso U n (F := F)).hom ≫
+      HomologicalComplex.homologyMap ((cechComplexFunctor U).map φ.hom) n :=
+    cechCochainFunctorIntHomologyIso_naturality U φ n
+  have hs2 : (cechCochainFunctorInt U).map φ ≫ cechToInjectiveTotalMap U I' =
+      cechToInjectiveTotalMap U I ≫
+        HomologicalComplex₂.total.map (cechBicomplexMap U Φ) (ComplexShape.up ℤ) :=
+    cechToTotalMap_naturality U φ I.ι' I'.ι' Φ hΦ
+  have hs3 : sectionsComplexMap T Φ ≫ injectiveResolutionSectionsToCechTotalMap hT U I' =
+      injectiveResolutionSectionsToCechTotalMap hT U I ≫
+        HomologicalComplex₂.total.map (cechBicomplexMap U Φ) (ComplexShape.up ℤ) :=
+    sectionsToCechTotalMap_naturality hT U Φ
+  have hs4 : sectionsComplexMap T Φ ≫
+      (injectiveResolutionSectionsComplexUnliftedIso I').hom =
+    (injectiveResolutionSectionsComplexUnliftedIso I).hom ≫
+      ((AddCommGrpCat.uliftFunctor.{u, u}).mapHomologicalComplex
+        (ComplexShape.up ℤ)).map (sectionsComplexMap T Φ) :=
+    injectiveResolutionSectionsComplexUnliftedIso_naturality I I' Φ
+  -- their images under `homologyMap`
+  have S1 : HomologicalComplex.homologyMap ((cechComplexFunctor U).map φ.hom) n ≫
+        (cechCochainFunctorIntHomologyIso U n (F := G)).inv =
+      (cechCochainFunctorIntHomologyIso U n (F := F)).inv ≫
+        HomologicalComplex.homologyMap ((cechCochainFunctorInt U).map φ) (n : ℤ) := by
+    rw [Iso.comp_inv_eq, Category.assoc, Iso.eq_inv_comp, hs1]
+  have S2 : HomologicalComplex.homologyMap ((cechCochainFunctorInt U).map φ) (n : ℤ) ≫
+        (isoOfQuasiIsoAt (cechToInjectiveTotalMap U I') (n : ℤ)).hom =
+      (isoOfQuasiIsoAt (cechToInjectiveTotalMap U I) (n : ℤ)).hom ≫
+        HomologicalComplex.homologyMap
+          (HomologicalComplex₂.total.map (cechBicomplexMap U Φ) (ComplexShape.up ℤ))
+          (n : ℤ) := by
+    simp only [isoOfQuasiIsoAt, asIso_hom]
+    rw [← HomologicalComplex.homologyMap_comp, ← HomologicalComplex.homologyMap_comp, hs2]
+  have S3 : HomologicalComplex.homologyMap
+          (HomologicalComplex₂.total.map (cechBicomplexMap U Φ) (ComplexShape.up ℤ))
+          (n : ℤ) ≫
+        (isoOfQuasiIsoAt
+          (injectiveResolutionSectionsToCechTotalMap hT U I') (n : ℤ)).inv =
+      (isoOfQuasiIsoAt
+          (injectiveResolutionSectionsToCechTotalMap hT U I) (n : ℤ)).inv ≫
+        HomologicalComplex.homologyMap (sectionsComplexMap T Φ) (n : ℤ) := by
+    rw [Iso.comp_inv_eq, Category.assoc, Iso.eq_inv_comp]
+    simp only [isoOfQuasiIsoAt, asIso_hom]
+    rw [← HomologicalComplex.homologyMap_comp, ← HomologicalComplex.homologyMap_comp, hs3]
+  have S4 : HomologicalComplex.homologyMap (sectionsComplexMap T Φ) (n : ℤ) ≫
+        HomologicalComplex.homologyMap
+          (injectiveResolutionSectionsComplexUnliftedIso I').hom (n : ℤ) =
+      HomologicalComplex.homologyMap
+          (injectiveResolutionSectionsComplexUnliftedIso I).hom (n : ℤ) ≫
+        HomologicalComplex.homologyMap
+          (((AddCommGrpCat.uliftFunctor.{u, u}).mapHomologicalComplex
+            (ComplexShape.up ℤ)).map (sectionsComplexMap T Φ)) (n : ℤ) := by
+    rw [← HomologicalComplex.homologyMap_comp, ← HomologicalComplex.homologyMap_comp, hs4]
+  dsimp only [cechToSectionsHomologyIso, Iso.trans_hom, Iso.symm_hom,
+    HomologicalComplex.homologyMapIso, cechCohomologyIsoInjectiveTotalHomology]
+  rw [← Category.assoc, S1, Category.assoc, Category.assoc, Category.assoc,
+    ← Category.assoc (HomologicalComplex.homologyMap
+      ((cechCochainFunctorInt U).map φ) (n : ℤ)), S2, Category.assoc,
+    ← Category.assoc (HomologicalComplex.homologyMap
+      (HomologicalComplex₂.total.map (cechBicomplexMap U Φ) (ComplexShape.up ℤ))
+      (n : ℤ)), S3, Category.assoc, S4]
+  simp only [Category.assoc]
+
+/-- **The Čech-to-derived comparison commutes with a morphism of sheaves.**
+
+This is what the bare existential form cannot state. A scalar action on cohomology is the map
+induced by an endomorphism of the sheaf, so `k`-linearity of the comparison is this square at
+`φ = ` multiplication by a scalar, with `Φ` any lift of it to the resolutions.
+
+The `HasExt` witness is passed positionally throughout, for the reason recorded across this
+lane: `HasExt.{u}` and `HasExt.{u + 1}` name different groups, and instance search must not be
+allowed to choose. -/
+theorem cechComparisonAddEquiv_naturality
+    (hT : IsTerminal T) (U : ind → Opens Y) (φ : F ⟶ G)
+    (I : InjectiveResolution F) (I' : InjectiveResolution G)
+    (Φ : I.cochainComplex ⟶ I'.cochainComplex)
+    (hΦ : I.ι' ≫ Φ =
+      (CochainComplex.singleFunctor (TopCat.Sheaf AddCommGrpCat.{u} Y) 0).map φ ≫ I'.ι')
+    (hExt : HasExt.{h} (TopCat.Sheaf AddCommGrpCat.{u} Y))
+    (hcover : @IsCechAcyclicCover (Opens Y) _
+      (Opens.grothendieckTopology Y) _ hExt ind _ U F)
+    (hcover' : @IsCechAcyclicCover (Opens Y) _
+      (Opens.grothendieckTopology Y) _ hExt ind _ U G) (n : ℕ)
+    (x : (cechCohomology U F.obj n : AddCommGrpCat.{u})) :
+    cechComparisonAddEquiv hT U I' hExt hcover' n
+        (HomologicalComplex.homologyMap ((cechComplexFunctor U).map φ.hom) n x) =
+      @Sheaf.H.map (Opens Y) _ (Opens.grothendieckTopology Y) _ hExt F G φ n
+        (cechComparisonAddEquiv hT U I hExt hcover n x) := by
+  have h1 := ConcreteCategory.congr_hom
+    (cechToSectionsHomologyIso_hom_naturality hT U φ I I' Φ hΦ hExt hcover hcover' n) x
+  rw [ConcreteCategory.comp_apply, ConcreteCategory.comp_apply] at h1
+  exact (congrArg (fun z ↦
+        @HPrimeAddEquivH (Opens Y) _ (Opens.grothendieckTopology Y) _ hExt T hT G n
+          (@injectiveResolutionSectionsCohomologyAddEquivHPrime (Opens Y) _
+            (Opens.grothendieckTopology Y) _ hExt G T I' n z)) h1).trans
+    ((congrArg (@HPrimeAddEquivH (Opens Y) _ (Opens.grothendieckTopology Y) _ hExt T hT G n)
+        (@injectiveResolutionSectionsCohomologyAddEquivHPrime_naturality (Opens Y) _
+          (Opens.grothendieckTopology Y) _ _ hExt F G T φ I I' Φ hΦ n _)).trans
+      (@HPrimeAddEquivH_naturality (Opens Y) _ (Opens.grothendieckTopology Y) _ _ F G T hT
+        hExt φ n _))
+
+end Comparison
+
 end CategoryTheory.Sheaf

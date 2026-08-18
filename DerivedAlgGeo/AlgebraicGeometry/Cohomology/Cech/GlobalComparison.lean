@@ -803,12 +803,59 @@ noncomputable def injectiveResolutionSectionsComplexUnliftedIso
       change ULift.up _ = ULift.up _
       rfl)
 
+/-- The Cech-to-sections half of the comparison, as a named isomorphism.
+
+The four factors are each the homology of an explicit chain map, or its inverse; the acyclicity
+hypothesis enters only through the proofs that two of them are quasi-isomorphisms, never through
+the construction.  That is what makes the comparison compatible with a morphism of sheaves --
+see `cechComparisonAddEquiv_naturality`. -/
+noncomputable def cechToSectionsHomologyIso
+    {X : TopCat.{u}} {T : Opens X} (hT : IsTerminal T)
+    {index : Type u} (U : index → Opens X)
+    {F : TopCat.Sheaf AddCommGrpCat.{u} X} (I : InjectiveResolution F)
+    (hExt : HasExt.{h} (TopCat.Sheaf AddCommGrpCat.{u} X))
+    (hcover : @IsCechAcyclicCover (Opens X) _
+      (Opens.grothendieckTopology X) _ hExt index _ U F) (n : ℕ) :
+    (cechCohomology U F.obj n : AddCommGrpCat.{u}) ≅
+      (injectiveResolutionSectionsComplex T I).homology (n : ℤ) := by
+  letI : QuasiIso (injectiveResolutionSectionsToCechTotalMap hT U I) :=
+    injectiveResolutionSectionsToCechTotalMap_quasiIso hT U hcover.1 I
+  exact (cechCochainFunctorIntHomologyIso U n).symm ≪≫
+    (@cechCohomologyIsoInjectiveTotalHomology (Opens X) _
+      (Opens.grothendieckTopology X) _ _ index F U I hExt hcover.2 (n : ℤ)) ≪≫
+    (isoOfQuasiIsoAt (injectiveResolutionSectionsToCechTotalMap hT U I) (n : ℤ)).symm ≪≫
+    HomologicalComplex.homologyMapIso
+      (injectiveResolutionSectionsComplexUnliftedIso I) (n : ℤ)
+
+/-- **The Cech-to-derived comparison, as a named additive equivalence.**
+
+The existential form below records only that some isomorphism exists, which is enough for a
+vanishing statement and not enough for anything else: a scalar action on cohomology arrives as
+the map induced by an endomorphism of the sheaf, and an unnamed isomorphism cannot be asked to
+commute with it.  This is the comparison itself. -/
+noncomputable def cechComparisonAddEquiv
+    {X : TopCat.{u}} {T : Opens X} (hT : IsTerminal T)
+    {index : Type u} (U : index → Opens X)
+    {F : TopCat.Sheaf AddCommGrpCat.{u} X} (I : InjectiveResolution F)
+    (hExt : HasExt.{h} (TopCat.Sheaf AddCommGrpCat.{u} X))
+    (hcover : @IsCechAcyclicCover (Opens X) _
+      (Opens.grothendieckTopology X) _ hExt index _ U F) (n : ℕ) :
+    (cechCohomology U F.obj n : AddCommGrpCat.{u}) ≃+
+      @Sheaf.H (Opens X) _ (Opens.grothendieckTopology X) F _ hExt n :=
+  (cechToSectionsHomologyIso hT U I hExt hcover n).addCommGroupIsoToAddEquiv |>.trans
+    (@injectiveResolutionSectionsCohomologyAddEquivHPrime (Opens X) _
+      (Opens.grothendieckTopology X) _ hExt F T I n) |>.trans
+    (@HPrimeAddEquivH (Opens X) _ (Opens.grothendieckTopology X) _ hExt T hT F n)
+
 /-- A Cech-acyclic open cover computes derived sheaf cohomology, relative to an explicit
 injective resolution and an explicit `HasExt` witness.
 
 Both stay explicit here because the statement is universe-general in the `HasExt` parameter `h`.
 For the small site `Opens X` at `h = u`, see
-`isCechAcyclicCover_cechComputesDerivedCohomology_opens`, which supplies both. -/
+`isCechAcyclicCover_cechComputesDerivedCohomology_opens`, which supplies both.
+
+The isomorphism is `cechComparisonAddEquiv`; this states only that one exists, which is all a
+vanishing argument needs. -/
 theorem isCechAcyclicCover_cechComputesDerivedCohomology
     {X : TopCat.{u}} {T : Opens X} (hT : IsTerminal T)
     {index : Type u} (U : index → Opens X)
@@ -817,23 +864,8 @@ theorem isCechAcyclicCover_cechComputesDerivedCohomology
     (hcover : @IsCechAcyclicCover (Opens X) _
       (Opens.grothendieckTopology X) _ hExt index _ U F) :
     @CechComputesDerivedCohomology (Opens X) _
-      (Opens.grothendieckTopology X) _ hExt index _ U F := by
-  intro n
-  let f := injectiveResolutionSectionsToCechTotalMap hT U I
-  letI : QuasiIso f :=
-    injectiveResolutionSectionsToCechTotalMap_quasiIso hT U hcover.1 I
-  let e : (cechCohomology U F.obj n : AddCommGrpCat.{u}) ≅
-      (injectiveResolutionSectionsComplex T I).homology (n : ℤ) :=
-    (cechCochainFunctorIntHomologyIso U n).symm ≪≫
-      (@cechCohomologyIsoInjectiveTotalHomology (Opens X) _
-        (Opens.grothendieckTopology X) _ _ index F U I hExt hcover.2 (n : ℤ)) ≪≫
-      (isoOfQuasiIsoAt f (n : ℤ)).symm ≪≫
-      HomologicalComplex.homologyMapIso
-        (injectiveResolutionSectionsComplexUnliftedIso I) (n : ℤ)
-  exact ⟨e.addCommGroupIsoToAddEquiv |>.trans
-    (@injectiveResolutionSectionsCohomologyAddEquivHPrime (Opens X) _
-      (Opens.grothendieckTopology X) _ hExt F T I n) |>.trans
-    (@HPrimeAddEquivH (Opens X) _ (Opens.grothendieckTopology X) _ hExt T hT F n)⟩
+      (Opens.grothendieckTopology X) _ hExt index _ U F :=
+  fun n ↦ ⟨cechComparisonAddEquiv hT U I hExt hcover n⟩
 
 /-- A Cech-acyclic open cover computes derived sheaf cohomology, with no injective resolution
 supplied.  The site `Opens X` is small, so Mathlib's Grothendieck-abelian chain gives enough
