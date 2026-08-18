@@ -80,6 +80,20 @@ noncomputable def postcompMap (A : CochainComplex C ℤ) {L L' : CochainComplex 
     ext z
     exact δ_comp_ofHom z g m
 
+/-- Post-composition of cocycles with a morphism of complexes, as an additive map. -/
+@[simps]
+def Cocycle.postcompAddMonoidHom (A : CochainComplex C ℤ) {L L' : CochainComplex C ℤ}
+    (g : L ⟶ L') (n : ℤ) : Cocycle A L n →+ Cocycle A L' n where
+  toFun z := z.postcomp g
+  map_zero' := by
+    apply Cocycle.ext
+    ext p q hpq
+    simp
+  map_add' z z' := by
+    apply Cocycle.ext
+    ext p q hpq
+    simp [Cochain.add_comp]
+
 @[simp]
 lemma postcompMap_f_apply (A : CochainComplex C ℤ) {L L' : CochainComplex C ℤ}
     (g : L ⟶ L') (n : ℤ) (z : Cochain A L n) :
@@ -141,6 +155,70 @@ lemma toSmallShiftedHom_postcomp (x : CohomologyClass K L n) (g : L ⟶ L') :
     SmallShiftedHom.mk_comp_mk₀, Cocycle.equivHomShift_symm_postcomp]
 
 end Abelian
+
+section HomologyNaturality
+
+open ShortComplex
+
+/-- The short-complex morphism induced by post-composition, in a fixed degree. -/
+noncomputable abbrev postcompSc (A : CochainComplex C ℤ) (g : L ⟶ L') (n : ℤ) :
+    (HomComplex A L).sc n ⟶ (HomComplex A L').sc n :=
+  (HomologicalComplex.shortComplexFunctor AddCommGrpCat.{v}
+    (ComplexShape.up ℤ) n).map (postcompMap A g)
+
+/-- Post-composition on cocycles, typed against the left-homology data of the Hom complex. -/
+noncomputable def cocyclePostcomp (A : CochainComplex C ℤ) (g : L ⟶ L') (n : ℤ) :
+    (leftHomologyData A L n).K ⟶ (leftHomologyData A L' n).K :=
+  AddCommGrpCat.ofHom (Cocycle.postcompAddMonoidHom A g n)
+
+/-- Post-composition on cohomology classes, typed against the left-homology data. -/
+noncomputable def classPostcomp (A : CochainComplex C ℤ) (g : L ⟶ L') (n : ℤ) :
+    (leftHomologyData A L n).H ⟶ (leftHomologyData A L' n).H :=
+  AddCommGrpCat.ofHom (CohomologyClass.postcomp (n := n) g)
+
+/-- On cocycles, post-composition is the restriction of post-composition on cochains. -/
+lemma postcompAddMonoidHom_comp_i (A : CochainComplex C ℤ) (g : L ⟶ L') (n : ℤ) :
+    cocyclePostcomp A g n ≫ (leftHomologyData A L' n).i =
+      (leftHomologyData A L n).i ≫ (postcompSc A g n).τ₂ :=
+  rfl
+
+/-- Passing from cocycles to classes commutes with post-composition. -/
+lemma cocyclePostcomp_comp_π (A : CochainComplex C ℤ) (g : L ⟶ L') (n : ℤ) :
+    cocyclePostcomp A g n ≫ (leftHomologyData A L' n).π =
+      (leftHomologyData A L n).π ≫ classPostcomp A g n :=
+  rfl
+
+/-- The cycles of the Hom complex are the cocycles, naturally in the target complex. -/
+lemma cyclesIso_hom_naturality (A : CochainComplex C ℤ) (g : L ⟶ L') (n : ℤ) :
+    cyclesMap (postcompSc A g n) ≫ (leftHomologyData A L' n).cyclesIso.hom =
+      (leftHomologyData A L n).cyclesIso.hom ≫ cocyclePostcomp A g n := by
+  rw [← cancel_mono (leftHomologyData A L' n).i]
+  simp only [Category.assoc, LeftHomologyData.cyclesIso_hom_comp_i,
+    cyclesMap_i, postcompAddMonoidHom_comp_i]
+  rw [← Category.assoc, LeftHomologyData.cyclesIso_hom_comp_i]
+
+/-- The homology of the Hom complex is the group of cohomology classes, naturally in the
+target complex. -/
+lemma homologyIso_hom_naturality (A : CochainComplex C ℤ) (g : L ⟶ L') (n : ℤ) :
+    homologyMap (postcompSc A g n) ≫ (leftHomologyData A L' n).homologyIso.hom =
+      (leftHomologyData A L n).homologyIso.hom ≫ classPostcomp A g n := by
+  rw [← cancel_epi (((HomComplex A L).sc n).homologyπ)]
+  simp only [homologyπ_naturality_assoc, Category.assoc,
+    LeftHomologyData.homologyπ_comp_homologyIso_hom,
+    LeftHomologyData.homologyπ_comp_homologyIso_hom_assoc]
+  rw [← Category.assoc, cyclesIso_hom_naturality, Category.assoc,
+    cocyclePostcomp_comp_π]
+
+/-- Elementwise form: the identification of the homology of a Hom complex with cohomology
+classes carries the map induced by post-composition to post-composition of classes. -/
+lemma homologyAddEquiv_naturality (A : CochainComplex C ℤ) (g : L ⟶ L') (n : ℤ)
+    (x : (HomComplex A L).homology n) :
+    homologyAddEquiv A L' n
+        (HomologicalComplex.homologyMap (postcompMap A g) n x) =
+      CohomologyClass.postcomp (n := n) g (homologyAddEquiv A L n x) :=
+  ConcreteCategory.congr_hom (homologyIso_hom_naturality A g n) x
+
+end HomologyNaturality
 
 end CochainComplex.HomComplex.CohomologyClass
 
