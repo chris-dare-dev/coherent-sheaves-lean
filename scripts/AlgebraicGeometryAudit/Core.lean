@@ -1338,6 +1338,12 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Cohomology.AffineTildeCechDerivedComparisonAt
 #print axioms AlgebraicGeometry.Cohomology.AffineTildeCechDerivedComparison
 #print axioms AlgebraicGeometry.Cohomology.affineTildeCechDerivedComparisonAt_of_pos
+-- The denominator-clearing step behind "a section over a basic open extends after multiplying by
+-- a power of the defining element" (#585). It was a private lemma inside the Cech affine file,
+-- where it was used once; it is pure commutative algebra with no Cech content, so it now lives in
+-- DerivedAlgGeo/Algebra/Module/LocalizedRadical.lean and the Cech file imports it. Nothing about
+-- the proof changed in the move. Not in Mathlib at the pin; upstream-candidate.
+#print axioms Submodule.exists_pow_smul_mem_of_isLocalized_radical
 #print axioms AlgebraicGeometry.Cohomology.tilde_H_subsingleton_of_comparisonAt
 #print axioms AlgebraicGeometry.Cohomology.tilde_H_subsingleton_of_comparison
 #print axioms AlgebraicGeometry.Cohomology.H_subsingleton_of_iso_tilde_of_comparisonAt
