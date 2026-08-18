@@ -329,3 +329,21 @@ import DerivedAlgGeo.CategoryTheory.DGCategory
 #print axioms CategoryTheory.IsConeOf.delta_sndComp
 #print axioms CategoryTheory.IsConeOf.rotateFwd_comp_rotateBwd_eq
 #print axioms CategoryTheory.IsConeOf.rotateFwd_comp_rotateBwd_sub_dgId
+
+-- The rotation axiom, forward direction (dg-enhancements-e6): the two squares of
+-- the rotated triangle -- one strict, one up to an exhibited primitive -- and the
+-- comparison assembled as an isomorphism of triangles in H⁰.
+#print axioms CategoryTheory.IsConeOf.rotateBwd_comp_toShift
+#print axioms CategoryTheory.IsConeOf.toShift_comp_rotateBwd_eq
+#print axioms CategoryTheory.IsConeOf.toShift_comp_rotateBwd_sub_inr
+#print axioms CategoryTheory.H0.homMk_eq_homMk
+#print axioms CategoryTheory.H0.homMk_neg
+#print axioms CategoryTheory.H0.homMk_comp
+#print axioms CategoryTheory.H0.coneTriangle_mor₁
+#print axioms CategoryTheory.H0.coneTriangle_mor₂
+#print axioms CategoryTheory.H0.coneTriangle_mor₃
+#print axioms CategoryTheory.H0.rotateIso
+#print axioms CategoryTheory.H0.rotateIso_hom
+#print axioms CategoryTheory.H0.rotateIso_inv
+#print axioms CategoryTheory.H0.rotateConeTriangleIso
+#print axioms CategoryTheory.H0.rotate_mem_of_mem

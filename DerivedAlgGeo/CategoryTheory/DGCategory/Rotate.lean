@@ -270,6 +270,76 @@ lemma rotateFwd_comp_rotateBwd_sub_dgId :
   rw [← key]
   abel
 
+section TriangleMaps
+
+variable {Y' : C} (s' : IsShiftBy Y 1 Y')
+
+/-- **The rotated triangle's third map, on the nose.** `rotateBwd` followed by the
+cone-on-`inr`'s connecting morphism is `-f⟦1⟧`, with no homotopy: the
+`inr_W`-component dies against `fst_W`, the `inl_W`-component survives through
+`inl_W ≫ fst_W = dgId`, and what is left is literally `mapShift`'s definition.
+
+This is the third commuting square of the rotation isomorphism, and that it holds
+strictly is why the sign of `rotateBwd` had to be what it is. -/
+lemma rotateBwd_comp_toShift :
+    dgComp 0 0 0 (by omega) (hc.rotateBwd hd s) (hd.toShift s') =
+      -IsShiftBy.mapShift s s' f := by
+  rw [rotateBwd, toShift, map_add, AddMonoidHom.add_apply,
+    dgComp_assoc 1 (-1) 0 0 (-1) 0 (by omega) (by omega) (by omega)
+      (-dgComp 1 0 1 (by omega) s.inv f) hd.inl (dgComp 1 (-1) 0 (by omega) hd.fst s'.hom),
+    dgComp_assoc 0 0 0 0 0 0 (by omega) (by omega) (by omega)
+      (dgComp 1 (-1) 0 (by omega) s.inv hc.inl) hd.inr
+      (dgComp 1 (-1) 0 (by omega) hd.fst s'.hom),
+    ← dgComp_assoc (-1) 1 (-1) 0 0 (-1) (by omega) (by omega) (by omega) hd.inl hd.fst s'.hom,
+    ← dgComp_assoc 0 1 (-1) 1 0 0 (by omega) (by omega) (by omega) hd.inr hd.fst s'.hom,
+    hd.inl_comp_fst, hd.inr_comp_fst, dgId_comp]
+  simp only [map_zero, AddMonoidHom.zero_apply, map_neg, AddMonoidHom.neg_apply, add_zero]
+  rw [IsShiftBy.mapShift, dgComp_assoc 1 0 (-1) 1 (-1) 0 (by omega) (by omega) (by omega)]
+
+/-- The rotated triangle's second map, split along the cone's two inclusions. -/
+lemma toShift_comp_rotateBwd_eq :
+    dgComp 0 0 0 (by omega) (hc.toShift s) (hc.rotateBwd hd s) =
+      dgComp 1 (-1) 0 (by omega) (-dgComp 1 0 1 (by omega) hc.fst f) hd.inl +
+        dgComp 0 0 0 (by omega) (dgComp 1 (-1) 0 (by omega) hc.fst hc.inl) hd.inr := by
+  rw [rotateBwd, map_add,
+    ← dgComp_assoc 0 1 (-1) 1 0 0 (by omega) (by omega) (by omega) (hc.toShift s)
+      (-dgComp 1 0 1 (by omega) s.inv f) hd.inl,
+    ← dgComp_assoc 0 0 0 0 0 0 (by omega) (by omega) (by omega) (hc.toShift s)
+      (dgComp 1 (-1) 0 (by omega) s.inv hc.inl) hd.inr]
+  simp only [map_neg, AddMonoidHom.neg_apply]
+  rw [hc.rotateFwd_absorb_inl s, hc.rotateFwd_absorb_inr s]
+
+/-- **The rotated triangle's second square, up to homotopy.** The primitive is
+`-(snd ≫ inl_W)`: its differential supplies the `inl_W`-coefficient through the
+original cone's `δ snd = -(fst ≫ f)`, and the `inr_W`-coefficient through the
+cone's splitting of `dgId Z`. -/
+lemma toShift_comp_rotateBwd_sub_inr :
+    dgComp 0 0 0 (by omega) (hc.toShift s) (hc.rotateBwd hd s) - hd.inr ∈
+      coboundaries Z W := by
+  refine ⟨-dgComp 0 (-1) (-1) (by omega) hc.snd hd.inl, ?_⟩
+  have hleib : ((dgHom Z W).d (-1) 0).hom (dgComp 0 (-1) (-1) (by omega) hc.snd hd.inl) =
+      dgComp 0 0 0 (by omega) hc.snd (((dgHom Y W).d (-1) 0).hom hd.inl) +
+        (-1 : ℤ).negOnePow • dgComp 1 (-1) 0 (by omega)
+          (((dgHom Z Y).d 0 1).hom hc.snd) hd.inl :=
+    dgComp_leibniz (X := Z) (Y := Y) (Z := W) 0 (-1) (-1) 0 (by omega) (by omega)
+      hc.snd hd.inl
+  have hneg : (-1 : ℤ).negOnePow = -1 := by decide
+  rw [map_neg, hleib, hd.δ_inl, hneg, hc.delta_snd]
+  simp only [map_neg, AddMonoidHom.neg_apply, Units.neg_smul, one_smul, neg_neg, neg_add]
+  rw [hc.toShift_comp_rotateBwd_eq hd s]
+  -- Stated with the *composite* on the left, not `hd.inr`: that term occurs exactly
+  -- once in the goal, so the rewrite has no other place to fire.
+  have key : dgComp 0 0 0 (by omega) (dgComp 1 (-1) 0 (by omega) hc.fst hc.inl) hd.inr =
+      hd.inr - dgComp 0 0 0 (by omega) hc.snd (dgComp 0 0 0 (by omega) hc.inr hd.inr) := by
+    refine eq_sub_of_add_eq ?_
+    rw [← dgComp_assoc 0 0 0 0 0 0 (by omega) (by omega) (by omega) hc.snd hc.inr hd.inr,
+      ← AddMonoidHom.add_apply, ← map_add, hc.fst_inl_add_snd_inr, dgId_comp]
+  rw [key]
+  simp only [neg_smul, one_smul, map_neg, AddMonoidHom.neg_apply]
+  abel
+
+end TriangleMaps
+
 end Composites
 
 end IsConeOf
