@@ -274,14 +274,16 @@ theorem coherentScalarAction_naturality (Y : Variety k)
   apply ObjectProperty.hom_ext
   exact varietyScalarAction_naturality Y f.hom r
 
-private noncomputable def additiveMapEndRingHom {C : Type u} {D : Type v}
+/-- An additive functor induces a ring homomorphism on endomorphism rings. -/
+noncomputable def additiveMapEndRingHom {C : Type u} {D : Type v}
     [Category.{w} C] [Category.{x} D] [Preadditive C] [Preadditive D]
     (H : C ⥤ D) [H.Additive] (A : C) : End A →+* End (H.obj A) where
   __ := H.mapEnd A
   map_zero' := H.map_zero A A
   map_add' _ _ := H.map_add
 
-private noncomputable def addCommGrpEndRingHom (A : AddCommGrpCat) :
+/-- Endomorphisms of an abelian group in `AddCommGrpCat` are additive-monoid endomorphisms. -/
+noncomputable def addCommGrpEndRingHom (A : AddCommGrpCat) :
     End A →+* AddMonoid.End A where
   toFun f := f.hom
   map_one' := rfl
@@ -302,8 +304,9 @@ noncomputable def coherentHScalarAction (Y : Variety k) (i : ℕ)
     ((additiveMapEndRingHom (coherentH Y.toScheme i) F).comp
       (coherentScalarAction Y F))
 
+/-- The canonical base-field module structure on a derived coherent cohomology group. -/
 @[reducible]
-private noncomputable def coherentHModule (Y : Variety k) (i : ℕ)
+noncomputable def coherentHModule (Y : Variety k) (i : ℕ)
     (F : Coh Y.toScheme) : Module k ((coherentH Y.toScheme i).obj F) :=
   Module.compHom _ (coherentHScalarAction Y i F)
 
