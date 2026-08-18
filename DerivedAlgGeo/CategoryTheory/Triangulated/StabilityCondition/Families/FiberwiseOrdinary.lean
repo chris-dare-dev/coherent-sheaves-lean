@@ -3,7 +3,7 @@ Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under the MIT license.
 -/
 import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Families.FiberwiseSupport
-import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Families.Theorem22
+import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Families.Ordinary
 
 /-!
 # The ordinary families interface on actual fiber categories
@@ -84,9 +84,9 @@ theorem OrdinaryFiberStabilityInFamiliesData.toOrdinaryStabilityInFamiliesData
       (ordinaryFiberSemistableClasses σ) boundedness :=
   ⟨h.definition20_5, h.uniformSupport, h.bounded⟩
 
-/-- Project exactly the four source clauses consumed by the dependency
-contract for Theorem 22.2.  This does not produce any geometric conclusion. -/
-theorem OrdinaryFiberStabilityInFamiliesData.toTheorem22_2SourceClauses
+/-- Project the geometric and numerical conditions used by deformation
+arguments.  This does not produce a geometric or analytic conclusion. -/
+theorem OrdinaryFiberStabilityInFamiliesData.toDeformationInputConditions
     {charge : JCharge → ChargeProbe ℂ}
     {stable : JOpen → OpenLocusProbe} {dedekind : DedekindHNProblem D}
     {V₀ : Submodule ℝ V} {Z : V →ₗ[ℝ] ℂ}
@@ -95,7 +95,7 @@ theorem OrdinaryFiberStabilityInFamiliesData.toTheorem22_2SourceClauses
     {boundedness : BoundednessProblem M}
     (h : OrdinaryFiberStabilityInFamiliesData charge stable dedekind
       V₀ Z hV₀ σ boundedness) :
-    Theorem22_2SourceClauses stable dedekind V₀ Z hV₀
+    OrdinaryDeformationInputConditions stable dedekind V₀ Z hV₀
       (ordinaryFiberSemistableClasses σ) boundedness :=
   ⟨h.definition20_5.opennessOfGeometricStability,
     h.definition20_5.dedekindHN, h.uniformSupport, h.bounded⟩
@@ -129,40 +129,6 @@ theorem OrdinaryFiberStabilityInFamiliesData.quotientCharge_mkQ
     quotientCharge V₀ Z hV₀ (V₀.mkQ x) = (σ i).Z x := by
   rw [CategoryTheory.Triangulated.StabilityCondition.Support.quotientCharge_mkQ]
   exact h.charge_compatible i x
-
-/-- A single supported pre-stability condition gives a fully inhabited
-constant fiber-family model of the adapter.
-
-The topological, Dedekind-HN, and boundedness inputs are manifest constant
-probes.  This witnesses logical nonvacuity, not a geometric family over a
-scheme. -/
-theorem OrdinaryFiberStabilityInFamiliesData.punit
-    {C₀ : Type u} [Category C₀] [Preadditive C₀] [HasZeroObject C₀]
-    [HasShift C₀ ℤ] [∀ n : ℤ, (shiftFunctor C₀ n).Additive]
-    [Pretriangulated C₀] {v₀ : K₀ C₀ →+ V}
-    (a : ℂ) (V₀ : Submodule ℝ V) (Z : V →ₗ[ℝ] ℂ)
-    (hV₀ : V₀ ≤ LinearMap.ker Z)
-    {σ : PreStabilityCondition.WithClassMap C₀ v₀}
-    (hZ : ∀ x : V, Z x = σ.Z x)
-    (hQ : HasQuadraticSupportProperty (quotientCharge V₀ Z hV₀)
-      (V₀.mkQ '' σ.semistableClasses)) :
-    OrdinaryFiberStabilityInFamiliesData
-      (I := PUnit.{1}) (C := fun _ ↦ C₀) (v := fun _ ↦ v₀)
-      (fun _ : PUnit.{1} ↦ ChargeProbe.constant PUnit.{1} a)
-      (fun _ : PUnit.{1} ↦ OpenLocusProbe.full PUnit.{1})
-      (DedekindHNProblem.constant PUnit.{1} PUnit.{1})
-      V₀ Z hV₀ (fun _ ↦ σ)
-      (BoundednessProblem.trivial PUnit.{1}) where
-  definition20_5 :=
-    { locallyConstantCharge :=
-        universallyLocallyConstantCharge_constant PUnit.{1}
-          (fun _ : PUnit.{1} ↦ a)
-      opennessOfGeometricStability := universalOpenness_full PUnit.{1}
-      dedekindHN :=
-        integratesAfterDedekindBaseChange_constant PUnit.{1} PUnit.{1} }
-  charge_compatible := fun _ ↦ hZ
-  uniformSupport := hQ.constant_modulo V₀ Z hV₀ PUnit.{1}
-  bounded := universalBoundedness_trivial PUnit.{1}
 
 end
 

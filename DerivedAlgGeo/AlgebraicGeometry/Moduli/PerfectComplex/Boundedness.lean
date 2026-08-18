@@ -233,7 +233,7 @@ def zeroFiniteTypeBoundednessWitness (S : Scheme.{u})
         ((identityRelativePerfectBaseChange S).residue x).hom) eDqc
 
 /-- The zero subproblem is geometrically bounded by an inhabited finite-type
-witness, not by `BoundednessProblem.trivial`. -/
+witness, not by a constant-true predicate. -/
 theorem zeroRelativePerfectModuliSubproblem_isBounded
     (S : Scheme.{u}) [IsLocallyNoetherian S] :
     (relativePerfectGeometricBoundednessProblem S).IsBounded

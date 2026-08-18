@@ -27,7 +27,8 @@ The fields of `WeakStabilityInFamiliesData` record:
 
 No field asserts the existence of base changes, relative hearts, moduli
 spaces, or bounded families.  Those remain data which a geometric client must
-supply.
+supply.  Constant and `PUnit` inhabitants used to test logical consistency
+live in the development scaffolding rather than this stable module.
 -/
 
 namespace CategoryTheory.Triangulated.StabilityCondition.Families
@@ -82,26 +83,6 @@ def WeakChargeProbe.toChargeProbe {t : TStructure C}
   topology := P.topology
   value := fun x ↦ (W (P.fiber x)).Z (P.klass x)
 
-/-- A constant fixed-fiber, fixed-class charge probe. -/
-def WeakChargeProbe.constant
-    (X : Type u) [TopologicalSpace X] (i : I) { Λ : Type* } (k : Λ) :
-    WeakChargeProbe I Λ where
-  Point := X
-  topology := inferInstance
-  fiber := Function.const X i
-  klass := Function.const X k
-
-omit [IsTriangulated C] in
-/-- A constant weak charge probe is locally constant. -/
-theorem WeakChargeProbe.constant_isLocallyConstant {t : TStructure C}
-    (W : I → WeakStabilityFunction t)
-    (X : Type u) [TopologicalSpace X] (i : I) (k : K₀ C) :
-    ((WeakChargeProbe.constant X i k).toChargeProbe W).IsLocallyConstant := by
-  unfold ChargeProbe.IsLocallyConstant WeakChargeProbe.toChargeProbe
-  change _root_.IsLocallyConstant
-    (Function.const X ((W i).Z k))
-  exact _root_.IsLocallyConstant.const _
-
 /-- A semistability probe bound to actual objects and actual weak stability
 functions in the fixed-category model. -/
 structure WeakSemistabilityProbe (I C : Type*) where
@@ -125,31 +106,6 @@ def WeakSemistabilityProbe.toGenericProbe {t : TStructure C}
   genericPoint := P.genericPoint
   semistableLocus := {x | (W (P.fiber x)).IsSemistable (P.object x)}
 
-/-- A constant fixed-fiber, fixed-object semistability probe. -/
-def WeakSemistabilityProbe.constant
-    (X : Type u) [TopologicalSpace X] (genericPoint : X)
-    (i : I) (E : C) : WeakSemistabilityProbe I C where
-  Point := X
-  topology := inferInstance
-  genericPoint := genericPoint
-  fiber := Function.const X i
-  object := Function.const X E
-
-omit [IsTriangulated C] in
-/-- A constant semistability probe is generically open: its locus is either
-the whole space or empty. -/
-theorem WeakSemistabilityProbe.constant_isGenericallyOpen
-    {t : TStructure C} (W : I → WeakStabilityFunction t)
-    (X : Type u) [TopologicalSpace X] (genericPoint : X)
-    (i : I) (E : C) :
-    GenericSemistabilityProbe.IsGenericallyOpen
-      ((WeakSemistabilityProbe.constant X genericPoint i E).toGenericProbe W) := by
-  intro hgeneric
-  refine ⟨Set.univ, ?_, Set.mem_univ _, ?_⟩
-  · exact @isOpen_univ X inferInstance
-  · intro x _
-    exact hgeneric
-
 /-- Definition 20.5(0), bound to actual weak stability functions. -/
 structure WeakDefinition20_5ClauseZero {t : TStructure C}
     (W : I → WeakStabilityFunction t) : Prop where
@@ -168,24 +124,13 @@ theorem WeakDefinition20_5ClauseZero.reindex {J : Type*}
   ⟨fun j ↦ h.gaussianRationalCharge (f j),
     fun j ↦ h.zeroChargeNoetherian (f j)⟩
 
-omit [IsTriangulated C] in
-/-- One fiber satisfying clause (0) gives a constant family satisfying it. -/
-theorem weakDefinition20_5ClauseZero_constant {t : TStructure C}
-    (W : WeakStabilityFunction t)
-    (hZ : HasGaussianRationalValues W.Z)
-    (hN : IsNoetherianTorsionSubcategory t W.zeroCharge)
-    (I : Type*) :
-    WeakDefinition20_5ClauseZero (fun _ : I ↦ W) :=
-  ⟨fun _ ↦ hZ, fun _ ↦ hN⟩
-
-/-- Single-fiber quotient support data, introduced only to state the honest
-constant-family constructor below. -/
+/-- A local closedness instance used to state quotient support data. -/
 private local instance quotientSubmoduleClosed (V₀ : Submodule ℝ V) :
     IsClosed (V₀ : Set V) :=
   V₀.closed_of_finiteDimensional
 
 /-- The actual one-fiber charge, zero-class, and quotient-quadratic-support
-package used to build a uniform constant family. -/
+package. -/
 structure WeakQuotientQuadraticSupportData {t : TStructure C}
     (W : WeakStabilityFunction t) (v : K₀ C →+ V)
     (V₀ : Submodule ℝ V) (Zlin : V →ₗ[ℝ] ℂ)
@@ -198,20 +143,6 @@ structure WeakQuotientQuadraticSupportData {t : TStructure C}
   quadratic : HasQuadraticSupportProperty
     (quotientCharge V₀ Zlin hV₀)
     (V₀.mkQ '' W.semistableClasses v)
-
-omit [IsTriangulated C] in
-/-- Single-fiber quotient support gives the same fixed form on every member
-of a constant indexed family. -/
-theorem WeakQuotientQuadraticSupportData.constant {t : TStructure C}
-    {W : WeakStabilityFunction t} {V₀ : Submodule ℝ V}
-    {Zlin : V →ₗ[ℝ] ℂ} {hV₀ : V₀ ≤ LinearMap.ker Zlin}
-    (h : WeakQuotientQuadraticSupportData W v V₀ Zlin hV₀)
-    (I : Type*) :
-    WeakStabilityFunction.QuotientUniformQuadraticSupportData
-      (fun _ : I ↦ W) v V₀ Zlin hV₀ :=
-  ⟨fun _ ↦ h.charge_compatible,
-    fun _ ↦ h.zero_class_mem,
-    h.quadratic.constant_modulo V₀ Zlin hV₀ I⟩
 
 omit [IsTriangulated C] in
 /-- Quotient-uniform weak support is preserved by reindexing. -/
@@ -255,66 +186,6 @@ structure WeakStabilityInFamiliesData
       W v V₀ Zlin hV₀
   /-- Definition 21.15(5), retained as a geometric premise. -/
   bounded : UniversalBoundedness boundedness
-
-omit [IsTriangulated C] in
-/-- A fully explicit constant-family witness for the abstract interface.
-
-It starts from one weak function satisfying clause (0) and one single-fiber
-quotient support package.  Charge and semistability probes are constant on
-`PUnit`; the relative HN witness type is `PUnit`; boundedness is the true
-predicate.  This proves logical nonvacuity without claiming that `PUnit`
-models a nontrivial geometric family. -/
-theorem WeakStabilityInFamiliesData.constant
-    {JCharge JGeneric D M : Type u} {t : TStructure C}
-    (W : WeakStabilityFunction t)
-    (hZ : HasGaussianRationalValues W.Z)
-    (hN : IsNoetherianTorsionSubcategory t W.zeroCharge)
-    (V₀ : Submodule ℝ V) (Zlin : V →ₗ[ℝ] ℂ)
-    (hV₀ : V₀ ≤ LinearMap.ker Zlin)
-    (hQ : WeakQuotientQuadraticSupportData W v V₀ Zlin hV₀)
-    (I : Type*) (i₀ : I) (k : JCharge → K₀ C) (E : JGeneric → C) :
-    WeakStabilityInFamiliesData (v := v)
-      (fun _ : I ↦ W)
-      (fun j ↦ WeakChargeProbe.constant PUnit i₀ (k j))
-      (fun j ↦ WeakSemistabilityProbe.constant PUnit PUnit.unit i₀ (E j))
-      (WeakDedekindHNProblem.constant D PUnit)
-      V₀ Zlin hV₀ (BoundednessProblem.trivial M) where
-  clauseZero := weakDefinition20_5ClauseZero_constant W hZ hN I
-  definition20_5 :=
-    { locallyConstantCharge := fun j ↦
-        WeakChargeProbe.constant_isLocallyConstant
-          (fun _ : I ↦ W) PUnit i₀ (k j)
-      genericOpennessOfSemistability := fun j ↦
-        WeakSemistabilityProbe.constant_isGenericallyOpen
-          (fun _ : I ↦ W) PUnit PUnit.unit i₀ (E j)
-      dedekindWeakHN :=
-        weakIntegratesAfterDedekindBaseChange_constant D PUnit }
-  uniformSupport := hQ.constant I
-  bounded := universalBoundedness_trivial M
-
-omit [IsTriangulated C] in
-/-- The fully inhabited `PUnit` specialization of `constant`.  Every
-universal index in the returned interface has an element, so its clauses are
-not discharged by empty-index quantification. -/
-theorem WeakStabilityInFamiliesData.punit
-    {t : TStructure C} (W : WeakStabilityFunction t)
-    (hZ : HasGaussianRationalValues W.Z)
-    (hN : IsNoetherianTorsionSubcategory t W.zeroCharge)
-    (V₀ : Submodule ℝ V) (Zlin : V →ₗ[ℝ] ℂ)
-    (hV₀ : V₀ ≤ LinearMap.ker Zlin)
-    (hQ : WeakQuotientQuadraticSupportData W v V₀ Zlin hV₀)
-    (k : K₀ C) (E : C) :
-    WeakStabilityInFamiliesData (v := v)
-      (fun _ : PUnit.{1} ↦ W)
-      (fun _ : PUnit.{1} ↦
-        WeakChargeProbe.constant PUnit.{1} PUnit.unit k)
-      (fun _ : PUnit.{1} ↦
-        WeakSemistabilityProbe.constant PUnit.{1} PUnit.unit PUnit.unit E)
-      (WeakDedekindHNProblem.constant PUnit.{1} PUnit.{1})
-      V₀ Zlin hV₀ (BoundednessProblem.trivial PUnit.{1}) :=
-  WeakStabilityInFamiliesData.constant W hZ hN V₀ Zlin hV₀ hQ
-    PUnit.{1} PUnit.unit (fun _ : PUnit.{1} ↦ k)
-      (fun _ : PUnit.{1} ↦ E)
 
 end
 
