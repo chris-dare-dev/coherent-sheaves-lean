@@ -3,6 +3,7 @@ import DerivedAlgGeo.AlgebraicGeometry.Cohomology.Cech.AffineBasisComparison
 import DerivedAlgGeo.AlgebraicGeometry.Cohomology.Cech.BasisComparison
 import DerivedAlgGeo.AlgebraicGeometry.Cohomology.Cech.Bicomplex
 import DerivedAlgGeo.AlgebraicGeometry.Cohomology.Cech.Comparison
+import DerivedAlgGeo.AlgebraicGeometry.Cohomology.Cech.ComplexNaturality
 import DerivedAlgGeo.AlgebraicGeometry.Cohomology.Cech.Differential
 import DerivedAlgGeo.AlgebraicGeometry.Cohomology.Cech.GlobalComparison
 import DerivedAlgGeo.AlgebraicGeometry.Cohomology.Cech.InitialPage

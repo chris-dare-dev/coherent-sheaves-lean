@@ -329,3 +329,38 @@ import DerivedAlgGeo.CategoryTheory.DGCategory
 #print axioms CategoryTheory.IsConeOf.delta_sndComp
 #print axioms CategoryTheory.IsConeOf.rotateFwd_comp_rotateBwd_eq
 #print axioms CategoryTheory.IsConeOf.rotateFwd_comp_rotateBwd_sub_dgId
+
+-- The rotation axiom, forward direction (dg-enhancements-e6): the two squares of
+-- the rotated triangle -- one strict, one up to an exhibited primitive -- and the
+-- comparison assembled as an isomorphism of triangles in H⁰.
+#print axioms CategoryTheory.IsConeOf.rotateBwd_comp_toShift
+#print axioms CategoryTheory.IsConeOf.toShift_comp_rotateBwd_eq
+#print axioms CategoryTheory.IsConeOf.toShift_comp_rotateBwd_sub_inr
+#print axioms CategoryTheory.H0.homMk_eq_homMk
+#print axioms CategoryTheory.H0.homMk_neg
+#print axioms CategoryTheory.H0.homMk_comp
+#print axioms CategoryTheory.H0.coneTriangle_mor₁
+#print axioms CategoryTheory.H0.coneTriangle_mor₂
+#print axioms CategoryTheory.H0.coneTriangle_mor₃
+#print axioms CategoryTheory.H0.rotateIso
+#print axioms CategoryTheory.H0.rotateIso_hom
+#print axioms CategoryTheory.H0.rotateIso_inv
+#print axioms CategoryTheory.H0.rotateConeTriangleIso
+#print axioms CategoryTheory.H0.rotate_mem_of_mem
+
+-- The lifting axiom (dg-enhancements-e6): a square commuting in H⁰ extends to the
+-- cones. The homotopy is folded into the map -- that is the axiom's content -- and
+-- both of the extension's own squares then hold strictly.
+#print axioms CategoryTheory.IsConeOf.lift
+#print axioms CategoryTheory.IsConeOf.inr_comp_lift
+#print axioms CategoryTheory.IsConeOf.lift_closed
+#print axioms CategoryTheory.IsConeOf.lift_comp_toShift
+#print axioms CategoryTheory.H0.exists_lift_of_comm
+
+-- The instance itself (dg-enhancements-e6, #377): the completion axiom for
+-- arbitrary distinguished triangles, the five axioms H⁰ proves, and the
+-- `Pretriangulated (H0 C)` they assemble into.
+#print axioms CategoryTheory.H0.complete_distinguished_triangle_morphism
+#print axioms CategoryTheory.H0.pretriangulatedAxioms
+#print axioms CategoryTheory.H0.pretriangulated
+#print axioms CategoryTheory.H0.mem_distTriang_iff

@@ -11,6 +11,7 @@ import DerivedAlgGeo.AlgebraicGeometry.Proj.Modules.ProjectiveSpace
 import DerivedAlgGeo.AlgebraicGeometry.Proj.Modules.Shift
 import DerivedAlgGeo.AlgebraicGeometry.Proj.Modules.StructureModule
 import DerivedAlgGeo.AlgebraicGeometry.Proj.Modules.TwistChart
+import DerivedAlgGeo.AlgebraicGeometry.Proj.Modules.TwistCoherence
 import DerivedAlgGeo.AlgebraicGeometry.Proj.Modules.TwistLocalization
 import DerivedAlgGeo.AlgebraicGeometry.Proj.Modules.TwistingSheaf
 

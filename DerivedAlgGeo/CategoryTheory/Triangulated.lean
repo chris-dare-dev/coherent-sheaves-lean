@@ -2,6 +2,7 @@
 Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under the MIT license.
 -/
+import DerivedAlgGeo.CategoryTheory.Triangulated.PretriangulatedAxioms
 import DerivedAlgGeo.CategoryTheory.Triangulated.TStructure
 import DerivedAlgGeo.CategoryTheory.Triangulated.CompactlyGenerated.Polishchuk
 import DerivedAlgGeo.CategoryTheory.Triangulated.PostnikovTower
@@ -20,7 +21,8 @@ import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition
 
 /-! # Triangulated categories
 
-T-structures, compact generation, Postnikov towers, strict morphisms,
+The pretriangulated axioms with rotation only forward, t-structures, compact
+generation, Postnikov towers, strict morphisms,
 extension closures, the Grothendieck group, Fourier--Mukai kernel functors, and
 stability conditions on triangulated categories.
 

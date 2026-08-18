@@ -3,7 +3,10 @@ Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under the MIT license.
 -/
 import Mathlib.CategoryTheory.Triangulated.Pretriangulated
+import DerivedAlgGeo.CategoryTheory.Triangulated.PretriangulatedAxioms
 import DerivedAlgGeo.CategoryTheory.DGCategory.Cone
+import DerivedAlgGeo.CategoryTheory.DGCategory.Lift
+import DerivedAlgGeo.CategoryTheory.DGCategory.Rotate
 import DerivedAlgGeo.CategoryTheory.DGCategory.Enhancement
 import DerivedAlgGeo.CategoryTheory.DGCategory.H0Shift
 
@@ -81,6 +84,23 @@ noncomputable def coneTriangle {X Y : C} (f : cocycles X Y) {Z : C}
     (homMk ⟨hc.toShift (IsPretriangulated.shiftWitness C X 1),
       hc.toShift_mem_cocycles _⟩)
 
+/-- The cone triangle's first map. Stated so that the rotation proofs can rewrite
+with it instead of unfolding `coneTriangle`, whose `dsimp` normal form breaks
+type-correctness at `instances` transparency: `H0 C` reduces to `C`, and the
+`Triangle.mk` in the unfolded term then reads its objects at the wrong type. -/
+@[simp] lemma coneTriangle_mor₁ {X Y : C} (f : cocycles X Y) {Z : C}
+    (hc : IsConeOf (f : (dgHom X Y).X 0) Z) : (coneTriangle f hc).mor₁ = homMk f := rfl
+
+@[simp] lemma coneTriangle_mor₂ {X Y : C} (f : cocycles X Y) {Z : C}
+    (hc : IsConeOf (f : (dgHom X Y).X 0) Z) :
+    (coneTriangle f hc).mor₂ = homMk ⟨hc.inr, hc.inr_mem_cocycles⟩ := rfl
+
+@[simp] lemma coneTriangle_mor₃ {X Y : C} (f : cocycles X Y) {Z : C}
+    (hc : IsConeOf (f : (dgHom X Y).X 0) Z) :
+    (coneTriangle f hc).mor₃ =
+      homMk ⟨hc.toShift (IsPretriangulated.shiftWitness C X 1),
+        hc.toShift_mem_cocycles _⟩ := rfl
+
 variable (C) in
 /-- The distinguished triangles of `H⁰`: those isomorphic to a cone triangle. -/
 def distinguishedTriangles : Set (Triangle (H0 C)) :=
@@ -147,6 +167,213 @@ lemma contractible_distinguished (X : H0 C) :
   · exact (Category.comp_id _).trans (Category.id_comp _).symm
   · exact hZ.eq_of_tgt _ _
   · exact (isZero_zero (H0 C)).eq_of_src _ _
+
+omit [IsPretriangulated C] in
+/-- Two cocycles represent the same morphism of `H⁰` when they differ by a
+coboundary. The quotient's own `eq_iff_sub_mem` says so; this restates it on the
+underlying elements, which is the form every homotopy in the track produces. -/
+lemma homMk_eq_homMk {X Y : C} {a b : cocycles X Y}
+    (h : (a : (dgHom X Y).X 0) - (b : (dgHom X Y).X 0) ∈ coboundaries X Y) :
+    homMk a = homMk b := by
+  refine QuotientAddGroup.eq_iff_sub_mem.2 ?_
+  show ((a - b : cocycles X Y) : (dgHom X Y).X 0) ∈ coboundaries X Y
+  rw [AddSubgroupClass.coe_sub]
+  exact h
+
+omit [IsPretriangulated C] in
+/-- Negation of an `H⁰` morphism is negation of a representative. -/
+lemma homMk_neg {X Y : C} (a : cocycles X Y) : homMk (-a) = -homMk a := rfl
+
+omit [IsPretriangulated C] in
+/-- Composition of `H⁰` morphisms is `dgComp` of representatives. -/
+lemma homMk_comp {X Y Z : C} (a : cocycles X Y) (b : cocycles Y Z) :
+    homMk a ≫ homMk b =
+      homMk ⟨dgComp 0 0 0 (by omega) (a : (dgHom X Y).X 0) (b : (dgHom Y Z).X 0),
+        Z0.comp_mem a.2 b.2⟩ :=
+  rfl
+
+section Rotate
+
+variable {X Y Z W : C} {f : cocycles X Y} (hc : IsConeOf (f : (dgHom X Y).X 0) Z)
+  (hd : IsConeOf hc.inr W)
+
+/-- The comparison of `dg-enhancements-e6`'s rotation, as an isomorphism of `H⁰`.
+
+Both composites were proved in `DGCategory/Rotate.lean`: one on the nose, one up
+to the primitive exhibited there. In `H⁰` that difference disappears, which is
+the whole reason the rotation axiom is a statement about `H⁰` and not about the
+dg category. -/
+noncomputable def rotateIso :
+    (show H0 C from IsPretriangulated.shiftObj C X 1) ≅ (show H0 C from W) where
+  hom := homMk ⟨hc.rotateBwd hd (IsPretriangulated.shiftWitness C X 1),
+    hc.rotateBwd_closed hd _⟩
+  inv := homMk ⟨hc.rotateFwd hd (IsPretriangulated.shiftWitness C X 1),
+    hc.rotateFwd_closed hd _⟩
+  hom_inv_id := by
+    rw [homMk_comp]
+    exact congrArg _ (Subtype.ext (hc.rotateBwd_comp_rotateFwd hd _))
+  inv_hom_id := by
+    rw [homMk_comp]
+    exact homMk_eq_homMk (hc.rotateFwd_comp_rotateBwd_sub_dgId hd _)
+
+@[simp] lemma rotateIso_hom :
+    (rotateIso hc hd).hom = homMk ⟨hc.rotateBwd hd (IsPretriangulated.shiftWitness C X 1),
+      hc.rotateBwd_closed hd _⟩ := rfl
+
+@[simp] lemma rotateIso_inv :
+    (rotateIso hc hd).inv = homMk ⟨hc.rotateFwd hd (IsPretriangulated.shiftWitness C X 1),
+      hc.rotateFwd_closed hd _⟩ := rfl
+
+/-- The rotation of a cone triangle is the cone triangle on its second map. -/
+noncomputable def rotateConeTriangleIso :
+    (coneTriangle f hc).rotate ≅ coneTriangle ⟨hc.inr, hc.inr_mem_cocycles⟩ hd :=
+  Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (rotateIso hc hd)
+    -- Term mode throughout: `rw` on these goals unfolds `H0 C` to `C`, and the
+    -- categorical rewrites then fail as not type-correct at `instances`
+    -- transparency. `exact` elaborates against the stated goal and never does.
+    (by exact (Category.comp_id _).trans (Category.id_comp _).symm)
+    (by
+      exact ((homMk_comp _ _).trans
+        (homMk_eq_homMk (hc.toShift_comp_rotateBwd_sub_inr hd _))).trans
+        (Category.id_comp _).symm)
+    (by
+      have key : (rotateIso hc hd).hom ≫
+            (coneTriangle ⟨hc.inr, hc.inr_mem_cocycles⟩ hd).mor₃ =
+          -(CategoryTheory.shiftFunctor (H0 C) (1 : ℤ)).map (homMk f) :=
+        (homMk_comp _ _).trans
+          ((congrArg (@homMk C _ _ _) (Subtype.ext
+            (hc.rotateBwd_comp_toShift hd (IsPretriangulated.shiftWitness C X 1)
+              (IsPretriangulated.shiftWitness C Y 1)))).trans
+            ((homMk_neg (C := C) _).trans
+              (congrArg Neg.neg (H0.shiftFunctor_map_mk (C := C) 1 f).symm)))
+      exact ((congrArg _ (Functor.map_id _ _)).trans (Category.comp_id _)).trans key.symm)
+
+/-- **`rotate_distinguished_triangle`, forward direction.** The rotation of a
+distinguished triangle is distinguished. -/
+lemma rotate_mem_of_mem (T : Triangle (H0 C)) (hT : T ∈ distinguishedTriangles C) :
+    T.rotate ∈ distinguishedTriangles C := by
+  obtain ⟨X, Y, f, Z, hc, ⟨e⟩⟩ := hT
+  obtain ⟨W, ⟨hd⟩⟩ := IsPretriangulated.exists_cone (C := C) hc.inr hc.inr_mem_cocycles
+  exact isomorphic_distinguished _
+    (coneTriangle_mem (C := C) ⟨hc.inr, hc.inr_mem_cocycles⟩ hd) _
+    ((Pretriangulated.rotate (H0 C)).mapIso e ≪≫ rotateConeTriangleIso hc hd)
+
+end Rotate
+
+section Lift
+
+variable {X₁ Y₁ Z₁ X₂ Y₂ Z₂ : C} {f₁ : cocycles X₁ Y₁} {f₂ : cocycles X₂ Y₂}
+  (hc₁ : IsConeOf (f₁ : (dgHom X₁ Y₁).X 0) Z₁)
+  (hc₂ : IsConeOf (f₂ : (dgHom X₂ Y₂).X 0) Z₂)
+
+/-- **The lifting axiom, for cone triangles.** A square commuting in `H⁰` extends
+to the cones, and both of the extension's squares hold on the nose.
+
+The hypothesis is an equation in `H⁰`, so it says only that `f₁ ≫ b - a ≫ f₂` is a
+coboundary. Extracting the primitive is the first step, and folding it into the
+lift is what `IsConeOf.lift` does; `lift_closed` is where it is consumed. -/
+lemma exists_lift_of_comm (a : cocycles X₁ X₂) (b : cocycles Y₁ Y₂)
+    (comm : homMk f₁ ≫ homMk b = homMk a ≫ homMk f₂) :
+    ∃ c : cocycles Z₁ Z₂,
+      homMk ⟨hc₁.inr, hc₁.inr_mem_cocycles⟩ ≫ homMk c =
+          homMk b ≫ homMk ⟨hc₂.inr, hc₂.inr_mem_cocycles⟩ ∧
+        homMk ⟨hc₁.toShift (IsPretriangulated.shiftWitness C X₁ 1),
+            hc₁.toShift_mem_cocycles _⟩ ≫
+              (CategoryTheory.shiftFunctor (H0 C) (1 : ℤ)).map (homMk a) =
+          homMk c ≫ homMk ⟨hc₂.toShift (IsPretriangulated.shiftWitness C X₂ 1),
+            hc₂.toShift_mem_cocycles _⟩ := by
+  -- The square gives a coboundary; a coboundary gives the homotopy.
+  have hsub : dgComp 0 0 0 (by omega) (f₁ : (dgHom X₁ Y₁).X 0) (b : (dgHom Y₁ Y₂).X 0) -
+      dgComp 0 0 0 (by omega) (a : (dgHom X₁ X₂).X 0) (f₂ : (dgHom X₂ Y₂).X 0) ∈
+      coboundaries X₁ Y₂ := by
+    have h := QuotientAddGroup.eq_iff_sub_mem.1
+      (((homMk_comp f₁ b).symm.trans comm).trans (homMk_comp a f₂))
+    rw [coboundariesIn, AddSubgroup.mem_addSubgroupOf] at h
+    exact h
+  obtain ⟨k, hk⟩ := hsub
+  refine ⟨⟨hc₁.lift hc₂ (a : (dgHom X₁ X₂).X 0) (b : (dgHom Y₁ Y₂).X 0) k,
+    hc₁.lift_closed hc₂ _ _ _ a.2 b.2 hk⟩, ?_, ?_⟩
+  · exact (homMk_comp _ _).trans
+      ((congrArg (@homMk C _ _ _) (Subtype.ext (hc₁.inr_comp_lift hc₂ _ _ _))).trans
+        (homMk_comp _ _).symm)
+  · have h1 : homMk ⟨hc₁.lift hc₂ (a : (dgHom X₁ X₂).X 0) (b : (dgHom Y₁ Y₂).X 0) k,
+          hc₁.lift_closed hc₂ _ _ _ a.2 b.2 hk⟩ ≫
+        homMk ⟨hc₂.toShift (IsPretriangulated.shiftWitness C X₂ 1),
+          hc₂.toShift_mem_cocycles _⟩ =
+      homMk ⟨dgComp 0 0 0 (by omega)
+          (hc₁.toShift (IsPretriangulated.shiftWitness C X₁ 1))
+          (IsShiftBy.mapShift (IsPretriangulated.shiftWitness C X₁ 1)
+            (IsPretriangulated.shiftWitness C X₂ 1) (a : (dgHom X₁ X₂).X 0)),
+        Z0.comp_mem (hc₁.toShift_mem_cocycles _)
+          (IsShiftBy.mapShift_mem_cocycles _ _ a.2)⟩ :=
+      (homMk_comp _ _).trans (congrArg (@homMk C _ _ _) (Subtype.ext
+        (hc₁.lift_comp_toShift hc₂ (a : (dgHom X₁ X₂).X 0) (b : (dgHom Y₁ Y₂).X 0) k
+          (IsPretriangulated.shiftWitness C X₁ 1)
+          (IsPretriangulated.shiftWitness C X₂ 1))))
+    exact ((congrArg _ (H0.shiftFunctor_map_mk (C := C) 1 a)).trans
+      (homMk_comp _ _)).trans h1.symm
+
+end Lift
+
+section Instance
+
+/-- **`complete_distinguished_triangle_morphism`.** A square commuting between
+the first two vertices of two distinguished triangles extends to the third.
+
+Both triangles are isomorphic to cone triangles, and `exists_lift_of_comm` is
+this statement for those; `Pretriangulated.exists_lift_of_iso` conjugates the
+square into them and the lift back. The two `Quotient.ind`s are what turn the
+`H⁰`-morphisms `a` and `b` into the cocycles the dg construction needs -- a
+different representative gives a different lift, which is why the axiom asks
+only for existence. -/
+lemma complete_distinguished_triangle_morphism (T₁ T₂ : Triangle (H0 C))
+    (hT₁ : T₁ ∈ distinguishedTriangles C) (hT₂ : T₂ ∈ distinguishedTriangles C)
+    (a : T₁.obj₁ ⟶ T₂.obj₁) (b : T₁.obj₂ ⟶ T₂.obj₂)
+    (comm : T₁.mor₁ ≫ b = a ≫ T₂.mor₁) :
+    ∃ c : T₁.obj₃ ⟶ T₂.obj₃, T₁.mor₂ ≫ c = b ≫ T₂.mor₂ ∧
+      T₁.mor₃ ≫ (CategoryTheory.shiftFunctor (H0 C) (1 : ℤ)).map a = c ≫ T₂.mor₃ := by
+  obtain ⟨X₁, Y₁, f₁, Z₁, hc₁, ⟨e₁⟩⟩ := hT₁
+  obtain ⟨X₂, Y₂, f₂, Z₂, hc₂, ⟨e₂⟩⟩ := hT₂
+  refine Pretriangulated.exists_lift_of_iso e₁ e₂ ?_ a b comm
+  intro a' b'
+  induction a' using Quotient.ind with
+  | _ a' =>
+    induction b' using Quotient.ind with
+    | _ b' =>
+      intro comm'
+      obtain ⟨c, h₁, h₂⟩ := exists_lift_of_comm hc₁ hc₂ a' b' comm'
+      exact ⟨@homMk C _ Z₁ Z₂ c, h₁, h₂⟩
+
+variable (C) in
+/-- **The five axioms `H⁰` proves.** Isomorphism-closure, the contractible
+triangles, a cone on every morphism, the *forward* rotation, and the completion
+of a square. The rotation axiom's reverse direction is not among them: it is a
+theorem about these five, proved once and generically in
+`Triangulated/PretriangulatedAxioms.lean`. -/
+theorem pretriangulatedAxioms : Pretriangulated.Axioms (distinguishedTriangles C) where
+  isomorphic := isomorphic_distinguished
+  contractible := contractible_distinguished
+  cocone := distinguished_cocone_triangle
+  rotate := rotate_mem_of_mem
+  complete := complete_distinguished_triangle_morphism
+
+/-- **`H⁰` of a pretriangulated dg category is pretriangulated**
+(`dg-enhancements-e6`). The distinguished triangles are `distinguishedTriangles C`
+-- those isomorphic to a dg cone triangle -- and every field is one of the five
+lemmas above, with the reverse rotation supplied by `Axioms.mem_of_rotate_mem`. -/
+noncomputable instance pretriangulated : Pretriangulated (H0 C) :=
+  (pretriangulatedAxioms C).pretriangulated
+
+variable (C) in
+/-- The instance's distinguished triangles are the ones this file defined, and
+`Iff.rfl` is the proof: `Axioms.pretriangulated` is reducible, so
+`distTriang (H0 C)` and `distinguishedTriangles C` are the same set rather than
+two sets with a comparison between them. Downstream code can therefore reach a
+cone triangle through `coneTriangle_mem`. -/
+lemma mem_distTriang_iff (T : Triangle (H0 C)) :
+    T ∈ distTriang (H0 C) ↔ T ∈ distinguishedTriangles C := Iff.rfl
+
+end Instance
 
 end H0
 
