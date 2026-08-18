@@ -176,9 +176,9 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.StackMorphism.IsRepresentable
 #print axioms AlgebraicGeometry.StackMorphism.IsRepresentable.representation
 #print axioms AlgebraicGeometry.StackMorphism.app
+#print axioms AlgebraicGeometry.StackMorphism.comp
 #print axioms AlgebraicGeometry.StackMorphism.id
-#print axioms AlgebraicGeometry.StackMorphism.mk.inj
-#print axioms AlgebraicGeometry.StackMorphism.mk.sizeOf_spec
+#print axioms AlgebraicGeometry.StackMorphism.Modification
 #print axioms AlgebraicGeometry.StackMorphism.pullbackIso
 #print axioms AlgebraicGeometry.discretePseudofunctor
 #print axioms AlgebraicGeometry.discretePseudofunctor_isStack
@@ -326,6 +326,7 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.representableZariskiStackMap_id_isSmoothSurjective
 #print axioms AlgebraicGeometry.representableZariskiStackMap_isRepresentable
 #print axioms AlgebraicGeometry.representableZariskiStackMap_obj
+#print axioms AlgebraicGeometry.representableZariskiStackMap_tripleComp_obj
 #print axioms AlgebraicGeometry.representableZariskiStack_hasRepresentableDiagonal
 
 /-! ## Relative-perfect algebraic presentations (#522, partial) -/
