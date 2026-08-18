@@ -602,8 +602,9 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Proj.natShiftSectionFromSelfOn_selfBasicOpenSectionAddEquiv_mk
 #print axioms AlgebraicGeometry.Proj.basicOpen_polynomialVariableCechDenominator
 
--- The geometric source object is a bundle of explicit data, not an axiom identifying schemes
--- with their numerical realizations.
+-- The geometric source has one over-scheme object and proof-irrelevant adjective layers.
+#print axioms SchemeOverField
+#print axioms SchemeOverField.IsVariety
 #print axioms Variety
 #print axioms SmoothProperVariety
 #print axioms ChernClassData.chernCharacterFour

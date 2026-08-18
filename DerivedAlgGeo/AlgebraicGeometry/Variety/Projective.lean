@@ -11,25 +11,21 @@ import Mathlib.RingTheory.MvPolynomial.Homogeneous
 /-!
 # Projective varieties
 
-`Variety/Basic.lean` says in as many words that this repository has no projective variety:
+This file separates the proposition that a variety is projective from a chosen projective
+presentation. A `ProjectivePresentation X` is a finite-coordinate closed immersion of the fixed
+variety `X` into projective space over its base field. `Variety.IsProjective X` merely asserts
+that such a presentation exists.
 
-> Mathlib currently has proper and smooth morphisms but no general projective-morphism API. The
-> `SmoothProperVariety` bundle below therefore records the geometric hypotheses currently
-> expressible without pretending that properness is the definition of projectivity. A later
-> projective bundle should extend `Variety` with genuine projective data.
-
-This file supplies that bundle. A `ProjectiveVariety k` is a `Variety k` together with a finite
-variable set, a closed immersion into the `Proj` of the standard graded polynomial ring on those
-variables, and the compatibility making the immersion a morphism over `Spec k`.
+Consequently, two embeddings are two presentations of the same variety, not two bundled
+varieties. `ProjectiveVariety` remains as a proof-irrelevant compatibility subtype and contains
+no chosen embedding.
 
 ## Properness is derived here, not assumed
 
-`SmoothProperVariety` takes properness as a *field*, because nothing in the tree produced it.
-Here it is a theorem: `Proj.toSpecZero` is proper once the graded ring is of finite type over its
-degree-zero part, a closed immersion is finite and hence proper, and properness is stable under
-composition. That is the direction the two structures should differ in — a projective variety is
-proper *because* it is projective — and it is why `ProjectiveVariety` does not extend
-`SmoothProperVariety`.
+Properness is derived from any presentation: `Proj.toSpecZero` is proper once the graded ring is
+of finite type over its degree-zero part, a closed immersion is finite and hence proper, and
+properness is stable under composition. The resulting instance depends only on the
+proposition-valued `Variety.IsProjective`, not on a globally selected embedding.
 
 ## The degree-zero identification is a construction, not a coincidence
 
@@ -134,60 +130,92 @@ instance isProper_projectiveSpaceToSpec [Finite ι] : IsProper (projectiveSpaceT
 
 end ProjectiveSpace
 
-/-- A projective variety over `k`: a variety with a closed immersion into a projective space over
-`k`, compatible with the two structure morphisms.
+/-- A projective presentation of `X`: a closed immersion into a projective space over `k`,
+compatible with the two structure morphisms.
 
 The variable set is data rather than a natural number because the ambient projective space is
 `Proj` of a polynomial ring on an index *type*, which is how the Proj lane in this repository
 states everything else. `Finite ι` is what makes the ambient space proper, and it is an instance
 field so that the properness instance below fires without an explicit argument. -/
-structure ProjectiveVariety (k : Type u) [Field k] extends Variety k where
+structure ProjectivePresentation {k : Type u} [Field k] (X : Variety k) where
   /-- The homogeneous coordinates of the ambient projective space. -/
   index : Type u
   /-- Finitely many of them. -/
   [finiteIndex : Finite index]
   /-- The projective embedding. -/
-  embedding : toVariety.toScheme ⟶ projectiveSpace index k
+  embedding : X.toScheme ⟶ projectiveSpace index k
   /-- It is a closed immersion: this is the projectivity, and it is data. -/
   [isClosedImmersion : IsClosedImmersion embedding]
   /-- The embedding is a morphism over the base field. -/
-  overBase : embedding ≫ projectiveSpaceToSpec index k = toVariety.structureMorphism
+  overBase : embedding ≫ projectiveSpaceToSpec index k = X.structureMorphism
+
+namespace ProjectivePresentation
+
+variable {k : Type u} [Field k] {X : Variety k}
+
+attribute [instance] finiteIndex isClosedImmersion
+
+instance instFiniteIndex (P : ProjectivePresentation X) : Finite P.index := P.finiteIndex
+
+instance instIsClosedImmersionEmbedding (P : ProjectivePresentation X) :
+    IsClosedImmersion P.embedding := P.isClosedImmersion
+
+/-- A projective variety is proper over the base field.
+
+Not a field of the variety, and not an appeal to a projective-morphism API that does not exist:
+the closed immersion is finite hence proper, the ambient projective space is proper over `Spec k`
+because the polynomial ring is of finite type over its degree-zero part, and `overBase` says the
+structure morphism *is* their composite. -/
+theorem isProper_structureMorphism (P : ProjectivePresentation X) :
+    IsProper X.structureMorphism := by
+  rw [← P.overBase]
+  infer_instance
+
+end ProjectivePresentation
+
+namespace Variety
+
+variable {k : Type u} [Field k]
+
+/-- Projectivity of a fixed variety, expressed as the mere existence of a projective
+presentation. The chosen embedding remains separate data. -/
+class IsProjective (X : Variety k) : Prop where
+  presentation : Nonempty (ProjectivePresentation X)
+
+namespace IsProjective
+
+/-- A chosen presentation proves the proposition that the variety is projective. -/
+theorem ofPresentation {X : Variety k} (P : ProjectivePresentation X) : X.IsProjective :=
+  ⟨⟨P⟩⟩
+
+end IsProjective
+
+/-- A projective variety is proper, independently of which presentation witnesses
+projectivity. -/
+noncomputable instance isProper_of_isProjective (X : Variety k) [X.IsProjective] :
+    IsProper X.structureMorphism := by
+  obtain ⟨P⟩ := IsProjective.presentation (X := X)
+  exact P.isProper_structureMorphism
+
+end Variety
+
+/-- Compatibility view of a projective variety. It stores only proof-irrelevant existence of a
+presentation, never a chosen embedding. -/
+abbrev ProjectiveVariety (k : Type u) [Field k] :=
+  { X : Variety k // X.IsProjective }
 
 namespace ProjectiveVariety
 
 variable {k : Type u} [Field k]
 
-attribute [instance] finiteIndex isClosedImmersion
+/-- Forget the compatibility projective view without changing the underlying variety. -/
+abbrev toVariety (X : ProjectiveVariety k) : Variety k := X.1
 
-instance instFiniteIndex (X : ProjectiveVariety k) : Finite X.index := X.finiteIndex
+instance instIsProjective (X : ProjectiveVariety k) : X.toVariety.IsProjective := X.2
 
-instance instIsClosedImmersionEmbedding (X : ProjectiveVariety k) :
-    IsClosedImmersion X.embedding := X.isClosedImmersion
-
-/-- A projective variety is proper over the base field.
-
-Not a field of the structure, and not an appeal to a projective-morphism API that does not exist:
-the closed immersion is finite hence proper, the ambient projective space is proper over `Spec k`
-because the polynomial ring is of finite type over its degree-zero part, and `overBase` says the
-structure morphism *is* their composite. -/
-instance isProper_structureMorphism (X : ProjectiveVariety k) :
-    IsProper X.toVariety.structureMorphism := by
-  rw [← X.overBase]
-  infer_instance
-
-/-- A projective variety is Noetherian: finite type gives local Noetherianity and properness gives
-quasi-compactness over the compact point `Spec k`. -/
-noncomputable instance isNoetherian (X : ProjectiveVariety k) :
-    IsNoetherian X.toVariety.toScheme where
-  toIsLocallyNoetherian := inferInstance
-  toCompactSpace :=
-    QuasiCompact.compactSpace_of_compactSpace X.toVariety.structureMorphism
-
-/-- A projective variety is separated as an absolute scheme. -/
-instance isSeparated (X : ProjectiveVariety k) : X.toVariety.toScheme.IsSeparated where
-  isSeparated_terminal_from := by
-    rw [← CategoryTheory.Limits.terminal.comp_from X.toVariety.structureMorphism]
-    infer_instance
+/-- Regard a chosen presentation as the compatibility projective view of its variety. -/
+def ofPresentation {X : Variety k} (P : ProjectivePresentation X) : ProjectiveVariety k :=
+  ⟨X, Variety.IsProjective.ofPresentation P⟩
 
 end ProjectiveVariety
 

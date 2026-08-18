@@ -40,13 +40,16 @@ noncomputable def finiteCohomology (X : SmoothProperVariety k)
   D.toFiniteCohomology
 
 /-- The smooth proper point over `k`. It provides the zero-dimensional shift test below. -/
-noncomputable def point (k : Type u) [Field k] : SmoothProperVariety k where
-  toVariety.toScheme := Spec (CommRingCat.of k)
-  toVariety.structureMorphism := 𝟙 _
-  toVariety.isIntegral := inferInstance
-  toVariety.locallyOfFiniteType := inferInstance
-  smooth := inferInstance
-  proper := inferInstance
+noncomputable def point (k : Type u) [Field k] : SmoothProperVariety k :=
+  ⟨
+    ⟨
+      { toScheme := Spec (CommRingCat.of k)
+        structureMorphism := 𝟙 _ },
+      { isIntegral := inferInstance
+        locallyOfFiniteType := inferInstance }
+    ⟩,
+    ⟨inferInstance, inferInstance⟩
+  ⟩
 
 namespace CanonicalSheafData
 
