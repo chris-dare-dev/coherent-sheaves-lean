@@ -269,3 +269,38 @@ import DerivedAlgGeo.CategoryTheory.DGCategory
 #print axioms CategoryTheory.IsShiftBy.mapShift_mem_coboundaries
 #print axioms CategoryTheory.IsShiftBy.mapShift_self
 #print axioms CategoryTheory.IsShiftBy.self_inv
+
+-- The maps *out* of a dg cone (dg-enhancements-e6). `IsConeOf` gives the universal
+-- property for maps into the cone; the triangle needs the projections, and the
+-- projection to the source is closed for a reason -- uniqueness of the splitting --
+-- rather than by assumption.
+#print axioms CategoryTheory.IsConeOf.splitId
+#print axioms CategoryTheory.IsConeOf.fst
+#print axioms CategoryTheory.IsConeOf.snd
+#print axioms CategoryTheory.IsConeOf.fst_inl_add_snd_inr
+#print axioms CategoryTheory.IsConeOf.delta_splitId_key
+#print axioms CategoryTheory.IsConeOf.delta_fst
+#print axioms CategoryTheory.IsConeOf.inr_comp_fst_and_snd
+#print axioms CategoryTheory.IsConeOf.inr_comp_fst
+#print axioms CategoryTheory.IsConeOf.inr_comp_snd
+#print axioms CategoryTheory.IsConeOf.toShift
+#print axioms CategoryTheory.IsConeOf.toShift_closed
+#print axioms CategoryTheory.IsConeOf.toShift_mem_cocycles
+#print axioms CategoryTheory.IsConeOf.inr_comp_toShift
+
+-- The cone on an identity is contractible: the primitive is `snd` composed with
+-- `inl`, and both of the cone's differential corrections are consumed exactly.
+#print axioms CategoryTheory.IsConeOf.delta_fst_and_snd
+#print axioms CategoryTheory.IsConeOf.delta_snd
+#print axioms CategoryTheory.IsConeOf.dgId_mem_coboundaries_of_dgId
+
+-- The distinguished triangles of H⁰, and three of the six Pretriangulated fields.
+#print axioms CategoryTheory.H0.homMk
+#print axioms CategoryTheory.H0.shiftFunctor_additive'
+#print axioms CategoryTheory.H0.coneTriangle
+#print axioms CategoryTheory.H0.distinguishedTriangles
+#print axioms CategoryTheory.H0.coneTriangle_mem
+#print axioms CategoryTheory.H0.isomorphic_distinguished
+#print axioms CategoryTheory.H0.distinguished_cocone_triangle
+#print axioms CategoryTheory.H0.isZero_of_dgId_mem_coboundaries
+#print axioms CategoryTheory.H0.contractible_distinguished

@@ -4,6 +4,7 @@ Released under the MIT license.
 -/
 import Mathlib.AlgebraicGeometry.Sites.BigZariski
 import Mathlib.CategoryTheory.Bicategory.Functor.LocallyDiscrete
+import Mathlib.CategoryTheory.Bicategory.FunctorBicategory.Pseudo
 import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
 import Mathlib.CategoryTheory.Core
 import Mathlib.CategoryTheory.Groupoid.Discrete
@@ -145,30 +146,48 @@ def stackInGroupoidsOfSheaf
   fiberIsGroupoid _ := inferInstance
   isStack := discretePseudofunctor_isStack hP
 
-/-! ## Pullback-compatible and representable morphism interfaces -/
+/-! ## Coherent and representable morphism interfaces -/
 
-/-- The pointwise functors and pullback comparison needed to discuss a
-morphism between stacks.  No algebraicity property is part of this data. -/
-structure StackMorphism {C : Type u} [Category.{v} C]
-    {J : GrothendieckTopology C} (F G : StackInGroupoids C J) where
-  /-- The functor on each fiber. -/
-  app (S : C) : Functor (F.presheaf.obj (.mk (op S)))
-    (G.presheaf.obj (.mk (op S)))
-  /-- Compatibility with restriction along a morphism of the site. -/
-  pullbackIso {S T : C} (f : T ⟶ S) :
-    (F.presheaf.map f.op.toLoc).toFunctor ⋙ app T ≅
-      app S ⋙ (G.presheaf.map f.op.toLoc).toFunctor
+/-- A morphism of stacks is a strong transformation between their underlying
+pseudofunctors.  Thus the pullback comparison is pseudonatural: its naturality,
+identity, and composition laws are part of Mathlib's
+`Pseudofunctor.StrongTrans`, rather than additional unchecked data. -/
+abbrev StackMorphism {C : Type u} [Category.{v} C]
+    {J : GrothendieckTopology C} (F G : StackInGroupoids C J) :=
+  Pseudofunctor.StrongTrans F.presheaf G.presheaf
 
 namespace StackMorphism
 
 variable {C : Type u} [Category.{v} C] {J : GrothendieckTopology C}
-  {F G : StackInGroupoids C J}
+  {F G H I : StackInGroupoids C J}
 
-/-- The identity pullback-compatible morphism. -/
-def id (F : StackInGroupoids C J) : StackMorphism F F where
-  app S := Functor.id (F.presheaf.obj (.mk (op S))).1
-  pullbackIso _ :=
-    Functor.rightUnitor _ ≪≫ (Functor.leftUnitor _).symm
+open scoped Pseudofunctor.StrongTrans
+
+/-- The functor induced by a stack morphism on the fiber over `S`. -/
+abbrev app (f : StackMorphism F G) (S : C) :
+    Functor (F.presheaf.obj (.mk (op S)))
+      (G.presheaf.obj (.mk (op S))) :=
+  (Pseudofunctor.StrongTrans.app f (.mk (op S))).toFunctor
+
+/-- The pseudonatural pullback comparison of a stack morphism along a site
+morphism. -/
+abbrev pullbackIso (f : StackMorphism F G) {S T : C} (g : T ⟶ S) :
+    (F.presheaf.map g.op.toLoc).toFunctor ⋙ f.app T ≅
+      f.app S ⋙ (G.presheaf.map g.op.toLoc).toFunctor :=
+  Cat.Hom.toNatIso (f.naturality g.op.toLoc)
+
+/-- The identity stack morphism, including its pseudonaturality coherence. -/
+abbrev id (F : StackInGroupoids C J) : StackMorphism F F :=
+  Pseudofunctor.StrongTrans.id F.presheaf
+
+/-- Composition of stack morphisms. -/
+abbrev comp (f : StackMorphism F G) (g : StackMorphism G H) :
+    StackMorphism F H :=
+  Pseudofunctor.StrongTrans.vcomp f g
+
+/-- A 2-morphism between stack morphisms is a modification. -/
+abbrev Modification (f g : StackMorphism F G) :=
+  Pseudofunctor.StrongTrans.Modification f g
 
 /-- The groupoid fiber of a stack morphism over a test object and a chosen
 target object. Objects are lifts together with an isomorphism to the pulled

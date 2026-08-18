@@ -42,16 +42,18 @@ it. Mathlib carries `CochainComplex.shiftFunctorAdd'` for exactly this reason.
 
 ## What is proved, and what is not
 
-Two of `ShiftMkCore`'s three coherence identities are proved here, in that
-general form: `shiftFunctorAddIso'_hom_app_zero_right` and
-`..._zero_left`.
+All three of `ShiftMkCore`'s coherence identities are proved here, in that
+general form: `shiftFunctorAddIso'_hom_app_zero_right`, `..._zero_left`, and
+`shiftFunctorAddIso'_assoc`. The last one reduces, by `compare_trans` and
+`mapShift_compare_comp'`, to `compare` from the chosen shift by `m₁ + m₂ + m₃`
+to a threefold composite, and the two threefold composites have equal `hom`
+fields by `comp'_assoc_hom`.
 
-`assoc_hom_app` is not. Its shape is understood -- both sides reduce, by
-`compare_trans` and `mapShift_compare_comp'`, to `compare` from the chosen
-shift by `m₁ + m₂ + m₃` to a threefold composite, and the two threefold
-composites have equal `hom` fields by `dgComp_assoc`. What is missing is the
-lemma that `compare s t` depends on `t` only through `t.hom`, plus the
-bookkeeping to apply it. Until it lands, no `HasShift` instance is claimed.
+So `HasShift (H0 C) ℤ` is an instance, not an aspiration: `hasShift` at the
+foot of this file. What `dg-enhancements-e6` still owes after it is the
+transport theorem itself, `IsPretriangulated C → Pretriangulated (H0 C)`, whose
+remaining clauses are the six fields of `Pretriangulated` rather than anything
+about the shift.
 -/
 
 set_option autoImplicit false

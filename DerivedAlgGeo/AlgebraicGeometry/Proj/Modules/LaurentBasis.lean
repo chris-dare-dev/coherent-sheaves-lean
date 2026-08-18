@@ -127,6 +127,19 @@ theorem laurentExponent_nonneg_of_apply_eq_zero (γ : ι →₀ ℕ) (m : ℕ) (
     (hj : γ j = 0) : 0 ≤ laurentExponent γ m β j := by
   simp [hj]
 
+/-- **The Laurent exponent has total degree the twist**, for a twist of either sign.
+
+This is `degree_laurentExponent` with the numerator's degree hypothesis read in `ℤ`, which is the
+only form available once the twist may be negative: `m • γ.degree + d` is an integer that happens
+to be a natural number, and the numerator's degree is the natural number it equals. -/
+theorem degree_laurentExponent_int (γ β : ι →₀ ℕ) (m : ℕ) (d : ℤ)
+    (hβ : (β.degree : ℤ) = m • (γ.degree : ℤ) + d) :
+    (laurentExponent γ m β).degree = d := by
+  rw [laurentExponent, map_sub, map_nsmul, degree_natToIntExponent,
+    degree_natToIntExponent, hβ]
+  push_cast
+  ring
+
 /-! ## Monomials as homogeneous denominators and numerators -/
 
 variable {R : Type u} [CommRing R]
@@ -212,6 +225,85 @@ splitting a numerator never touches `m`. -/
 theorem monomial_one_pow_ne_zero [Nontrivial R] (γ : ι →₀ ℕ) (n : ℕ) :
     (MvPolynomial.monomial γ (1 : R)) ^ n ≠ 0 := by
   rw [monomial_one_pow]; simp
+
+/-! ## Twists of either sign, abstractly
+
+The Laurent argument reads a numerator in exactly one way: an element of `𝓜 n` is a homogeneous
+polynomial whose degree exceeds `n` by the twist. `IsPolynomialTwist` isolates that reading, so
+that the whole stack above it can be stated once and instantiated at `natShift` for `d : ℕ` and at
+`intShift` for `d : ℤ`. Nothing else about the graded module is used, and in particular no step
+below needs the twist to be nonnegative.
+
+The `p = 0` disjunct is what makes `intShift` fit: it carries zero in every degree, including the
+degrees where `n + d` is negative and there is no graded piece to name. For `natShift` the
+disjunct is redundant — zero lies in every homogeneous piece anyway — so the two instances have
+the same content. -/
+
+/-- `𝓜` presents the degree-`d` twist of the polynomial grading: membership in `𝓜 n` is
+homogeneity in degree `n + d`, read in `ℤ` so that either sign of `d` is expressible. -/
+def IsPolynomialTwist {σM : Type u} [SetLike σM (MvPolynomial ι R)]
+    (𝓜 : ℕ → σM) (d : ℤ) : Prop :=
+  ∀ (n : ℕ) (p : MvPolynomial ι R),
+    p ∈ 𝓜 n ↔ p = 0 ∨ ∃ e : ℕ, (e : ℤ) = (n : ℤ) + d ∧ p ∈ polynomialGrading ι R e
+
+/-- A nonnegative twist is a twist: `natShift 𝒜 d n` is literally `𝒜 (n + d)`. -/
+theorem isPolynomialTwist_natShift (d : ℕ) :
+    IsPolynomialTwist (natShift (polynomialGrading ι R) d) (d : ℤ) := by
+  intro n p
+  constructor
+  · exact fun hp => Or.inr ⟨n + d, by push_cast; ring, hp⟩
+  · rintro (rfl | ⟨e, he, hp⟩)
+    · exact zero_mem _
+    · obtain rfl : e = n + d := by exact_mod_cast he
+      exact hp
+
+/-- An integer twist is a twist, by definition of `intShiftPiece`. -/
+theorem isPolynomialTwist_intShift (d : ℤ) :
+    IsPolynomialTwist (intShift (polynomialGrading ι R) d) d := fun _ _ => Iff.rfl
+
+namespace IsPolynomialTwist
+
+variable {σM : Type u} [SetLike σM (MvPolynomial ι R)] {𝓜 : ℕ → σM} {d : ℤ}
+
+/-- Every exponent occurring in a numerator over `(Xᵞ)ᵐ` has total degree `m • γ.degree + d`,
+read in `ℤ`. This is homogeneity on the support, for a twist of either sign. -/
+theorem degree_eq_of_mem_support (h𝓜 : IsPolynomialTwist 𝓜 d) {n : ℕ}
+    {p : MvPolynomial ι R} (hp : p ∈ 𝓜 n) {β : ι →₀ ℕ} (hβ : β ∈ p.support) :
+    (β.degree : ℤ) = (n : ℤ) + d := by
+  rcases (h𝓜 n p).mp hp with rfl | ⟨e, he, hhom⟩
+  · simp at hβ
+  · refine he ▸ ?_
+    by_contra hne
+    exact (MvPolynomial.mem_support_iff.mp hβ)
+      (MvPolynomial.IsHomogeneous.coeff_eq_zero hhom
+        (fun hde => hne (by exact_mod_cast congrArg (Nat.cast (R := ℤ)) hde)))
+
+/-- Each monomial of a numerator is itself a numerator, for a twist of either sign.
+
+The statement is for *every* `β`, not only those in the support, because the splitting lemmas
+take a total membership hypothesis. Off the support the monomial is zero, which the `p = 0`
+disjunct covers. -/
+theorem monomial_coeff_mem (h𝓜 : IsPolynomialTwist 𝓜 d) {n : ℕ} {p : MvPolynomial ι R}
+    (hp : p ∈ 𝓜 n) (β : ι →₀ ℕ) :
+    MvPolynomial.monomial β (p.coeff β) ∈ 𝓜 n := by
+  by_cases h : p.coeff β = 0
+  · rw [h]
+    exact (h𝓜 n _).mpr (Or.inl (by simp))
+  · have hdeg := h𝓜.degree_eq_of_mem_support hp (MvPolynomial.mem_support_iff.mpr h)
+    refine (h𝓜 n _).mpr (Or.inr ⟨β.degree, hdeg, ?_⟩)
+    exact MvPolynomial.isHomogeneous_monomial _ rfl
+
+/-- The Laurent exponent of a monomial of a numerator has total degree the twist. -/
+theorem degree_laurentExponent_of_mem_support (h𝓜 : IsPolynomialTwist 𝓜 d)
+    {γ : ι →₀ ℕ} {m : ℕ} {p : MvPolynomial ι R} (hp : p ∈ 𝓜 (m • γ.degree))
+    {β : ι →₀ ℕ} (hβ : β ∈ p.support) :
+    (laurentExponent γ m β).degree = d :=
+  degree_laurentExponent_int γ β m d (by
+    rw [h𝓜.degree_eq_of_mem_support hp hβ, nsmul_eq_mul, nsmul_eq_mul]
+    push_cast [Nat.cast_mul]
+    ring)
+
+end IsPolynomialTwist
 
 /-- Every exponent occurring in a numerator of the twist `d` over `(Xᵞ)ᵐ` has total degree
 `m • γ.degree + d`. This is homogeneity read on the support. -/
