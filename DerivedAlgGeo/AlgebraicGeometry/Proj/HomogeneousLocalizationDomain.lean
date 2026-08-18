@@ -28,7 +28,7 @@ variable {ι σ A : Type*} [AddCommMonoid ι] [DecidableEq ι] [CommRing A]
 /-- A homogeneous localization at a multiplicative set of nonzerodivisors is a domain, provided
 it is nontrivial. -/
 theorem isDomain_of_le_nonZeroDivisors [IsDomain A] (S : Submonoid A)
-    (hS : S ≤ A⁰) [Nontrivial (HomogeneousLocalization 𝒜 S)] :
+    (hS : S ≤ A⁰) :
     IsDomain (HomogeneousLocalization 𝒜 S) := by
   haveI : IsDomain (Localization S) := IsLocalization.isDomain_localization hS
   exact Function.Injective.isDomain
@@ -45,18 +45,22 @@ theorem nontrivial_of_le_nonZeroDivisors [IsDomain A] (S : Submonoid A) (hS : S 
   rw [val_zero, val_one] at h0
   exact zero_ne_one (α := Localization S) h0
 
-/-- The degree-zero homogeneous localization away from a nonzero element of a graded domain is
-nontrivial. -/
+/-- Away from a nonzero element of a graded domain the homogeneous localization is nontrivial.
+
+Nonzero is needed and not cosmetic: away from `0` the localization is the zero ring, since
+`0 = 0 ^ 1` lies in the powers of `0`. -/
 theorem Away.nontrivial [IsDomain A] {f : A} (hf : f ≠ 0) :
     Nontrivial (HomogeneousLocalization.Away 𝒜 f) := by
   refine nontrivial_of_le_nonZeroDivisors 𝒜 (Submonoid.powers f) ?_
   rintro _ ⟨n, rfl⟩
   exact pow_mem (mem_nonZeroDivisors_of_ne_zero hf) n
 
-/-- The degree-zero homogeneous localization away from a nonzero element of a graded domain is a
-domain, provided it is nontrivial. -/
-theorem Away.isDomain [IsDomain A] {f : A} (hf : f ≠ 0)
-    [Nontrivial (HomogeneousLocalization.Away 𝒜 f)] :
+/-- Away from a nonzero element of a graded domain, the degree-zero homogeneous localization is
+a domain.
+
+Nonzero is what puts the powers of `f` among the nonzerodivisors; away from `0` the ring is
+trivial instead. -/
+theorem Away.isDomain [IsDomain A] {f : A} (hf : f ≠ 0) :
     IsDomain (HomogeneousLocalization.Away 𝒜 f) := by
   refine isDomain_of_le_nonZeroDivisors 𝒜 (Submonoid.powers f) ?_
   rintro _ ⟨n, rfl⟩
@@ -71,8 +75,7 @@ theorem Away.isReduced [IsDomain A] (f : A) :
     haveI : Subsingleton (HomogeneousLocalization.Away 𝒜 (0 : A)) :=
       HomogeneousLocalization.subsingleton 𝒜 ⟨1, pow_one 0⟩
     infer_instance
-  · haveI := Away.nontrivial 𝒜 hf
-    haveI := Away.isDomain 𝒜 hf
+  · haveI := Away.isDomain 𝒜 hf
     infer_instance
 
 end HomogeneousLocalization

@@ -43,8 +43,10 @@ theorem isPreirreducible_univ_of_cover {ind : Type*} (U : ind → Set X)
     hirred j (V ∩ U i) W (hV.inter (hopen i)) hW ⟨p, hpUj, hpV, hpUi⟩ ⟨w, hj, hwW⟩
   exact ⟨q, mem_univ q, hqV, hqW⟩
 
-/-- A nonempty space covered by preirreducible open sets that pairwise intersect is an
-irreducible space. -/
+/-- The bundled form, adding the nonemptiness `IrreducibleSpace` demands.
+
+Nonemptiness does not follow from the hypotheses: an empty cover over an empty index type
+satisfies all of them vacuously. -/
 theorem irreducibleSpace_of_cover {ind : Type*} [Nonempty X] (U : ind → Set X)
     (hopen : ∀ i, IsOpen (U i)) (hcover : ∀ x : X, ∃ i, x ∈ U i)
     (hirred : ∀ i, IsPreirreducible (U i))

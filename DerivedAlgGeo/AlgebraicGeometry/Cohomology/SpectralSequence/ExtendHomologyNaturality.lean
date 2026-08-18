@@ -29,7 +29,11 @@ variable {C : Type*} [Category* C] [Preadditive C] [HasZeroObject C]
   [(K.extend e).HasHomology j'] [(L.extend e).HasHomology j']
 
 set_option backward.isDefEq.respectTransparency false in
-/-- The cycles isomorphism for an extended complex is natural. -/
+omit [e.IsRelIff] in
+/-- The cycles isomorphism for an extended complex commutes with induced maps.
+
+The cycles of an extension are the cycles of the original in the corresponding degree, and both
+sides agree after cancelling the mono `iCycles`. -/
 @[reassoc]
 lemma extendCyclesIso_naturality :
     cyclesMap (extendMap φ e) j' ≫ (L.extendCyclesIso e hj').hom =
@@ -39,8 +43,12 @@ lemma extendCyclesIso_naturality :
     extendCyclesIso_hom_iCycles_assoc, extendMap_f φ e hj']
   simp
 
+omit [e.IsRelIff] in
 set_option backward.isDefEq.respectTransparency false in
-/-- The homology isomorphism for an extended complex is natural. -/
+/-- The homology isomorphism for an extended complex commutes with induced maps.
+
+This is the statement the Čech comparison needs, since the Čech complex is `ℕ`-indexed and the
+comparison chain is `ℤ`-indexed. It follows from the cycles version by cancelling `homologyπ`. -/
 @[reassoc]
 lemma extendHomologyIso_naturality :
     homologyMap (extendMap φ e) j' ≫ (L.extendHomologyIso e hj').hom =

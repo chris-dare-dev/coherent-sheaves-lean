@@ -29,8 +29,6 @@ open CategoryTheory Category Limits Opposite TopologicalSpace
 
 namespace CategoryTheory.Sheaf
 
-set_option maxHeartbeats 4000000
-set_option synthInstance.maxHeartbeats 800000
 set_option maxRecDepth 10000
 set_option backward.defeqAttrib.useBackward true
 set_option backward.isDefEq.respectTransparency false
@@ -57,6 +55,7 @@ lemma cechInjectiveBicomplex_eq_cechBicomplexOfComplex
     cechInjectiveBicomplex U I = cechBicomplexOfComplex U I.cochainComplex :=
   rfl
 
+omit [HasFiniteProducts C] in
 /-- The sections complex of an injective resolution reads it only through the underlying
 complex. -/
 lemma injectiveResolutionSectionsComplexUnlifted_eq
@@ -319,6 +318,7 @@ lemma cechInjectiveBicomplexAugmentationSourceTotalIso_naturality
     (HomologicalComplex₂.singleZeroTotalIso_naturality
       ((cechCochainFunctorInt U).map φ))
 
+omit [HasSheafify J AddCommGrpCat.{a}] in
 /-- The induced map of Čech bicomplexes is functorial. -/
 lemma cechBicomplexMap_comp (U : index → C) {M : CochainComplex (Sheaf J AddCommGrpCat.{a}) ℤ}
     (Φ : K ⟶ L) (Ψ : L ⟶ M) :
@@ -371,6 +371,7 @@ lemma cechToTotalMap_naturality (U : index → C) (φ : F ⟶ G)
     ← HomologicalComplex₂.total.map_comp, ← cechBicomplexMap_comp,
     ← cechBicomplexMap_comp, ← hΦ]
 
+omit [HasSheafify J AddCommGrpCat.{a}] in
 /-- The degreewise identification between the integer-extended Čech complex and ordinary Čech
 cohomology is natural in the sheaf. -/
 lemma cechCochainFunctorIntHomologyIso_naturality
@@ -399,6 +400,7 @@ lemma injectiveResolutionSectionsComplexUnliftedIso_naturality
   intro x
   rfl
 
+omit [HasFiniteProducts C] in
 /-- The terminal-object comparison between `H'` and `H` is natural in the sheaf. -/
 lemma HPrimeAddEquivH_naturality {T : C} (hT : IsTerminal T)
     [HasExt.{h} (Sheaf J AddCommGrpCat.{a})] (φ : F ⟶ G) (n : ℕ) (x : F.H' n T) :
@@ -439,6 +441,9 @@ noncomputable def yonedaHomComplexXIso (X : C)
     ((freeAbelianYonedaSheafHomAddEquiv X (K.X n)).trans
       AddEquiv.ulift.symm)).toAddCommGrpIso
 
+omit [HasFiniteProducts C] in
+/-- Degreewise, the resolution-specific identification is the general one: the construction
+never sees the resolution, only its underlying complex. -/
 lemma freeAbelianYonedaHomComplexXIso_eq {F : Sheaf J AddCommGrpCat.{a}}
     (X : C) (I : InjectiveResolution F) (n : ℤ) :
     freeAbelianYonedaHomComplexXIso X I n = yonedaHomComplexXIso X I.cochainComplex n :=
@@ -486,12 +491,16 @@ noncomputable def yonedaHomComplexIsoSections (X : C)
     rw [CochainComplex.HomComplex.Cochain.fromSingleEquiv_fromSingleMk]
     exact (freeAbelianYonedaSheafHomAddEquiv_comp X f (K.d i j)).symm)
 
+omit [HasFiniteProducts C] in
+/-- The same at the level of complexes, which is what the naturality square below is stated
+against. -/
 lemma freeAbelianYonedaHomComplexIsoSections_eq {F : Sheaf J AddCommGrpCat.{a}}
     (X : C) (I : InjectiveResolution F) :
     freeAbelianYonedaHomComplexIsoSections X I =
       yonedaHomComplexIsoSections X I.cochainComplex :=
   rfl
 
+omit [HasFiniteProducts C] in
 /-- Post-composing a cochain out of a single complex with a morphism of complexes. -/
 lemma fromSingleMk_comp_ofHom {X : C}
     (K L : CochainComplex (Sheaf J AddCommGrpCat.{a}) ℤ) (n : ℤ)
@@ -513,6 +522,7 @@ lemma fromSingleMk_comp_ofHom {X : C}
       CochainComplex.HomComplex.Cochain.fromSingleMk_v_eq_zero _ (zero_add n) p q hpq hp,
       Limits.zero_comp]
 
+omit [HasFiniteProducts C] in
 /-- The identification of the Hom complex with the sections complex is natural in the
 complex. -/
 lemma yonedaHomComplexIsoSections_naturality (X : C) (Φ : K ⟶ L) :
@@ -547,18 +557,21 @@ section HPrime
 
 variable [HasExt.{h} (Sheaf J AddCommGrpCat.{a})] {F G : Sheaf J AddCommGrpCat.{a}}
 
+omit [HasFiniteProducts C] [HasExt.{h} (Sheaf J AddCommGrpCat.{a})] in
 /-- The lifted sections complex of an injective resolution reads it only through the underlying
 complex. -/
 lemma injectiveResolutionSectionsComplex_eq (X : C) (I : InjectiveResolution F) :
     injectiveResolutionSectionsComplex X I = sectionsComplexLifted X I.cochainComplex :=
   rfl
 
+omit [HasFiniteProducts C] in
 /-- The map on `H'` induced by a morphism of sheaves is post-composition in `Ext`. -/
 lemma cohomologyPresheafFunctor_map_app_apply (X : C) (φ : F ⟶ G) (n : ℕ) (y : F.H' n X) :
     ((cohomologyPresheafFunctor J n).map φ).app (op X) y =
       y.comp (Abelian.Ext.mk₀ φ) (add_zero n) :=
   rfl
 
+omit [HasFiniteProducts C] in
 /-- The identification of the cohomology of the sections of an injective resolution with `H'`
 commutes with a morphism of sheaves, once that morphism is lifted to the resolutions. -/
 lemma injectiveResolutionSectionsCohomologyAddEquivHPrime_naturality
@@ -753,8 +766,8 @@ theorem cechComparisonAddEquiv_naturality
             (Opens.grothendieckTopology Y) _ hExt G T I' n z)) h1).trans
     ((congrArg (@HPrimeAddEquivH (Opens Y) _ (Opens.grothendieckTopology Y) _ hExt T hT G n)
         (@injectiveResolutionSectionsCohomologyAddEquivHPrime_naturality (Opens Y) _
-          (Opens.grothendieckTopology Y) _ _ hExt F G T φ I I' Φ hΦ n _)).trans
-      (@HPrimeAddEquivH_naturality (Opens Y) _ (Opens.grothendieckTopology Y) _ _ F G T hT
+          (Opens.grothendieckTopology Y) _ hExt F G T φ I I' Φ hΦ n _)).trans
+      (@HPrimeAddEquivH_naturality (Opens Y) _ (Opens.grothendieckTopology Y) _ F G T hT
         hExt φ n _))
 
 end Comparison

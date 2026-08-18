@@ -81,7 +81,10 @@ noncomputable def postcompMap (A : CochainComplex C ℤ) {L L' : CochainComplex 
     ext z
     exact δ_comp_ofHom z g m
 
-/-- Post-composition of cocycles with a morphism of complexes, as an additive map. -/
+/-- Post-composition of cocycles with a morphism of complexes, as an additive map.
+
+Cocycles rather than cochains because this is what the left-homology data of the Hom complex
+names as its cycles object, and the naturality square below has to be typed against that. -/
 @[simps]
 def Cocycle.postcompAddMonoidHom (A : CochainComplex C ℤ) {L L' : CochainComplex C ℤ}
     (g : L ⟶ L') (n : ℤ) : Cocycle A L n →+ Cocycle A L' n where
@@ -95,6 +98,8 @@ def Cocycle.postcompAddMonoidHom (A : CochainComplex C ℤ) {L L' : CochainCompl
     ext p q hpq
     simp [Cochain.add_comp]
 
+/-- Post-composition acts on a cochain by composing with the morphism, which is what makes the
+differential square commute. -/
 @[simp]
 lemma postcompMap_f_apply (A : CochainComplex C ℤ) {L L' : CochainComplex C ℤ}
     (g : L ⟶ L') (n : ℤ) (z : Cochain A L n) :
@@ -133,6 +138,8 @@ def postcomp (g : L ⟶ L') : CohomologyClass K L n →+ CohomologyClass K L' n 
     rw [δ_comp_ofHom]
     exact congrArg (fun w : Cochain K L n => w.comp (Cochain.ofHom g) (add_zero n)) hβ)
 
+/-- Post-composition is computed on a representing cocycle, which is how every statement about
+it is proved: `mk` is surjective. -/
 @[simp]
 lemma postcomp_mk (g : L ⟶ L') (z : Cocycle K L n) :
     postcomp (n := n) g (mk z) = mk (z.postcomp g) :=
@@ -177,19 +184,25 @@ noncomputable def classPostcomp (A : CochainComplex C ℤ) (g : L ⟶ L') (n : �
     (leftHomologyData A L n).H ⟶ (leftHomologyData A L' n).H :=
   AddCommGrpCat.ofHom (CohomologyClass.postcomp (n := n) g)
 
-/-- On cocycles, post-composition is the restriction of post-composition on cochains. -/
+/-- The cocycle and cochain forms of post-composition agree under the inclusion of cycles.
+
+This is the whole content of the cycles-level naturality: both sides become the same cochain
+composition once the mono `i` is cancelled. -/
 lemma postcompAddMonoidHom_comp_i (A : CochainComplex C ℤ) (g : L ⟶ L') (n : ℤ) :
     cocyclePostcomp A g n ≫ (leftHomologyData A L' n).i =
       (leftHomologyData A L n).i ≫ (postcompSc A g n).τ₂ :=
   rfl
 
-/-- Passing from cocycles to classes commutes with post-composition. -/
+/-- Post-composition descends to classes, which is what lets the epi `homologyπ` be cancelled in
+the homology-level statement. -/
 lemma cocyclePostcomp_comp_π (A : CochainComplex C ℤ) (g : L ⟶ L') (n : ℤ) :
     cocyclePostcomp A g n ≫ (leftHomologyData A L' n).π =
       (leftHomologyData A L n).π ≫ classPostcomp A g n :=
   rfl
 
-/-- The cycles of the Hom complex are the cocycles, naturally in the target complex. -/
+/-- The cycles of the Hom complex are the cocycles, compatibly with post-composition.
+
+Proved by cancelling the mono `i` and reducing to the cochain level. -/
 lemma cyclesIso_hom_naturality (A : CochainComplex C ℤ) (g : L ⟶ L') (n : ℤ) :
     cyclesMap (postcompSc A g n) ≫ (leftHomologyData A L' n).cyclesIso.hom =
       (leftHomologyData A L n).cyclesIso.hom ≫ cocyclePostcomp A g n := by
@@ -198,8 +211,11 @@ lemma cyclesIso_hom_naturality (A : CochainComplex C ℤ) (g : L ⟶ L') (n : �
     cyclesMap_i, postcompAddMonoidHom_comp_i]
   rw [← Category.assoc, LeftHomologyData.cyclesIso_hom_comp_i]
 
-/-- The homology of the Hom complex is the group of cohomology classes, naturally in the
-target complex. -/
+/-- The homology of the Hom complex is the group of cohomology classes, compatibly with
+post-composition.
+
+Both sides are determined by their restriction along the epi `homologyπ`, on which the statement
+becomes the cycles-level one. -/
 lemma homologyIso_hom_naturality (A : CochainComplex C ℤ) (g : L ⟶ L') (n : ℤ) :
     homologyMap (postcompSc A g n) ≫ (leftHomologyData A L' n).homologyIso.hom =
       (leftHomologyData A L n).homologyIso.hom ≫ classPostcomp A g n := by
@@ -241,6 +257,9 @@ noncomputable def descHom {Y Y' : C} (φ : Y ⟶ Y')
   ⟨InjectiveResolution.desc φ R' R, by
     simpa using InjectiveResolution.desc_commutes_zero φ R' R⟩
 
+omit [HasExt.{w} C] in
+/-- The underlying map of resolutions is Mathlib's `desc`; this is stated so that later rewrites
+never need to unfold `descHom`. -/
 @[simp]
 lemma descHom_hom {Y Y' : C} (φ : Y ⟶ Y')
     (R : InjectiveResolution Y) (R' : InjectiveResolution Y') :

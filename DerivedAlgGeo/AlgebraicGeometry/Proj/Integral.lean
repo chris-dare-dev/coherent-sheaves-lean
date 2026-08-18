@@ -68,7 +68,10 @@ lemma isPreirreducible_basicOpen {m : ℕ} {f : A} (f_deg : f ∈ 𝒜 m) (hm : 
       (Proj.opensRange_awayι 𝒜 f f_deg hm)
   rwa [hrange] at h
 
-/-- A basic open of `Proj` at a nonzero homogeneous element of positive degree is nonempty. -/
+/-- A basic open of `Proj` at a nonzero homogeneous element of positive degree is nonempty.
+
+This is what makes two charts meet, and it is where the domain hypothesis is used a second time:
+the chart ring is nontrivial exactly because the element is not nilpotent. -/
 lemma basicOpen_nonempty {m : ℕ} {f : A} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) (hf : f ≠ 0) :
     (Proj.basicOpen 𝒜 f : Set (Proj 𝒜)).Nonempty := by
   haveI := HomogeneousLocalization.Away.nontrivial 𝒜 hf

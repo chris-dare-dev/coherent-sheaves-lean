@@ -86,8 +86,10 @@ instance locallyOfFiniteType_projectiveSpaceToSpec [Finite ι] :
     exact RingHom.FiniteType.of_surjective _ hsurj
   exact MorphismProperty.comp_mem _ _ _ inferInstance inferInstance
 
-/-- Polynomial projective space is nonempty once there is a variable: the basic open of a
-variable is a nonempty chart. -/
+/-- Polynomial projective space is nonempty once there is a variable.
+
+Nonemptiness is a hypothesis of `Proj.isIntegral` rather than a consequence: `Proj` of a graded
+ring concentrated in degree zero is empty. A variable supplies the missing point. -/
 instance nonempty_projectiveSpace [Nonempty ι] :
     Nonempty (Proj (polynomialGrading ι k)) := by
   obtain ⟨i⟩ := ‹Nonempty ι›
@@ -105,7 +107,8 @@ noncomputable def projectiveSpaceVariety [Finite ι] [Nonempty ι] : Variety k w
   isIntegral := Proj.isIntegral (polynomialGrading ι k)
   locallyOfFiniteType := inferInstance
 
-@[simp]
+/-- The variety bundle changes nothing about the underlying scheme, so results proved about
+`Proj` apply to it directly. -/
 lemma projectiveSpaceVariety_toScheme [Finite ι] [Nonempty ι] :
     (projectiveSpaceVariety ι k).toScheme = Proj (polynomialGrading ι k) :=
   rfl
@@ -128,7 +131,8 @@ noncomputable def projectiveSpaceTwist [Finite ι] [Nonempty ι] (d : ℤ) :
   ⟨associatedSheaf (polynomialGrading ι k) (intShift (polynomialGrading ι k) d),
     polynomialIntShift_isCoherent ι k d⟩
 
-@[simp]
+/-- The coherent-sheaf bundle changes nothing about the underlying module sheaf, so the Čech
+lane's results about the twist apply to it directly. -/
 lemma projectiveSpaceTwist_obj [Finite ι] [Nonempty ι] (d : ℤ) :
     (Coh.ι (projectiveSpaceVariety ι k).toScheme).obj (projectiveSpaceTwist ι k d) =
       associatedSheaf (polynomialGrading ι k) (intShift (polynomialGrading ι k) d) :=

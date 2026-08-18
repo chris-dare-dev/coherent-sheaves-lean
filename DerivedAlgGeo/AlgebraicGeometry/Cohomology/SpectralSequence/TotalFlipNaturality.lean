@@ -32,14 +32,17 @@ variable {C I₁ I₂ J : Type*} [Category* C] [Preadditive C]
 than as values of `flipFunctor`. -/
 noncomputable abbrev flipMap : K.flip ⟶ L.flip := (flipFunctor C c₁ c₂).map φ
 
-/-- `flipFunctor` and `flip` agree on objects, so the flipped bicomplex has a total complex
-whenever the original does. -/
+/-- Instance bridging the two spellings of the flip: `flipFunctor` is a `def`, so a total-complex
+instance stated for `M.flip` is not found for `(flipFunctor _ _ _).obj M` without this. -/
 instance flipFunctor_hasTotal (M : HomologicalComplex₂ C c₁ c₂) [M.HasTotal c] :
     ((flipFunctor C c₁ c₂).obj M).HasTotal c :=
   inferInstanceAs (M.flip.HasTotal c)
 
 set_option backward.isDefEq.respectTransparency false in
-/-- The total-complex symmetry isomorphism is natural in the bicomplex. -/
+/-- The total-complex symmetry isomorphism commutes with morphisms of bicomplexes.
+
+Both sides are determined by their restrictions along the canonical inclusions `ιTotal`, where
+the flip is a signed inclusion and the induced total map is componentwise. -/
 @[reassoc]
 lemma totalFlipIso_naturality :
     total.map (flipMap φ) c ≫ (L.totalFlipIso c).hom =
