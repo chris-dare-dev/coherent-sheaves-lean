@@ -49,17 +49,38 @@ consume that, and it is the composition law (`ConvolutionData`) that needs it.
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.derivedTensorCommShift
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.derivedTensor_isTriangulated
 
+/-! `HasDerivedTensor` above remains the intentionally raw first-ledger input.
+Stable convolution consumers now pass through the coherent monoidal root below;
+its parent structures own associator/unitor naturality, pentagon, triangle, and
+strong-monoidal pullback laws together. The adapters are one-way only. -/
+
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasCoherentDerivedTensor
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasCoherentDerivedTensor.additive
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasCoherentDerivedTensor.commShift
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasCoherentDerivedTensor.isTriangulated
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.hasDerivedTensorOfCoherent
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.coherentDerivedTensorAssoc
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.coherentDerivedTensorUnit
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.coherentDerivedTensorLeftUnitor
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.coherentDerivedTensorRightUnitor
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.coherentDerivedTensor_pentagon
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.coherentDerivedTensor_triangle
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasMonoidalDerivedPullback
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.monoidalDerivedPullbackTensorIso
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.monoidalDerivedPullbackLeftUnitor
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.monoidalDerivedPullbackRightUnitor
+
 /-! ## Convolution of kernels: the second ledger
 
-INHABITANT-FREE, like the first. Nothing constructs an instance of any of the
-seven input classes.
+INHABITANT-FREE, like the first. Nothing constructs an instance of the
+comparison or coherent-root inputs.
 
 What this ledger buys is that BOTH fields of `ConvolutionData` stop being
 supplied: `convKernel` is the classical
 `R(pi_XW)_*(pi_XY^* P (x)^L pi_YW^* Q)` built from functors the first ledger
-already names, and `geometricCompIso` DERIVES Prop. 5.10 from seven named
-inputs -- projection formula (both slots), flat base change, monoidality of
-pullback, tensor associativity, and the two route-agreement classes. The old
+already names, and `geometricCompIso` DERIVES Prop. 5.10 from projection
+formulas (both slots), flat base change, strong-monoidal pullback, coherent
+tensor associativity, and the two route-agreement classes. The old
 `HasConvolutionComparison`, which supplied compIso whole, is deleted.
 
 A clean axiom line on `geometricCompIso` means the derivation adds nothing
@@ -81,8 +102,10 @@ nothing here constructs a `Correspondence`. -/
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasFlatBaseChange.iso
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasDerivedPullbackTensor
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasDerivedPullbackTensor.iso
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.hasDerivedPullbackTensorOfMonoidal
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasDerivedTensorAssoc
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasDerivedTensorAssoc.iso
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.hasDerivedTensorAssocOfCoherent
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasProjectionFormulaRight
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasProjectionFormulaRight.iso
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasCommonPullbackRoute
@@ -98,9 +121,9 @@ nothing here constructs a `Correspondence`. -/
 
 INHABITANT-FREE, like the first two. `diagonalKernel` is a DEFINITION
 (`Rdelta_*` of the tensor unit) and `geometricUnitIso` DERIVES that its
-transform is the identity from four inputs: `HasProjectionFormulaRight` at
-the diagonal (an existing class, consumed at a second site), `HasTensorUnit`,
-and the two retraction classes, whose `comm` triangle identities are guards
+transform is the identity from `HasProjectionFormulaRight` at the diagonal,
+the coherent tensor root, and the two retraction classes, whose `comm`
+triangle identities are guards
 the derivation deliberately does not consume. `DualKernel` remains a named
 absence: its classical formula needs derived duals and a dualizing complex,
 which have no substrate here. A clean axiom line on `geometricUnitIso` means
@@ -111,6 +134,7 @@ constructible.
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasTensorUnit
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasTensorUnit.unit
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasTensorUnit.iso
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.hasTensorUnitOfCoherent
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasPullbackRetraction
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasPullbackRetraction.comm
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasPullbackRetraction.iso
@@ -125,12 +149,13 @@ constructible.
 
 INHABITANT-FREE. `geometricConvolutionAssoc` DERIVES the kernel-level
 `(P * Q) * R iso P * (Q * R)` for `convKernel` through a supplied quadruple
-product, consuming the existing comparison classes at new instance sites --
-including `HasDerivedTensorAssoc`, the consumption site #542 promised -- plus
+product, consuming the strong-monoidal pullback and coherent tensor roots at
+new instance sites, plus
 two new factorization classes whose `comm` triangle identities are unconsumed
 guards. `geometricConvolutionAssocData` then has zero supplied fields. A
 clean axiom line means the derivation adds nothing beyond its inputs; nothing
-constructs any input, and nothing states a pentagon. -/
+constructs any input. The abstract coherent convolution root states a
+pentagon; this geometric layer has not yet assembled `convKernel` into it. -/
 
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasPullbackFactorization
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasPullbackFactorization.comm
@@ -164,13 +189,16 @@ the relevant triple product: the left law consumes `HasProjectionFormula` at
 `tau`, the right law `HasProjectionFormulaRight` at `tau` -- the standing
 slot separation -- plus the retraction classes of the third ledger at their
 second consumption site and one new pulled-unit unitor class per slot.
-Nothing constructs any input; no triangle identity relates the unit and
-associativity layers. -/
+Nothing constructs any input. The tensor and pullback triangle laws now come
+from coherent roots; the remaining seam is promotion of `convKernel` itself
+to abstract coherent convolution data. -/
 
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasUnitPullbackRightUnitor
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasUnitPullbackRightUnitor.iso
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasUnitPullbackLeftUnitor
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.HasUnitPullbackLeftUnitor.iso
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.hasUnitPullbackRightUnitorOfMonoidal
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.hasUnitPullbackLeftUnitorOfMonoidal
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.geometricConvUnitLeft
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.geometricConvUnitRight
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.geometricConvolutionLeftUnitData

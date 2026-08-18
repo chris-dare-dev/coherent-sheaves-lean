@@ -43,6 +43,11 @@ says that the interface is consistent, not that any functor is of kernel type.
 clean axiom list here says the supplied-data interface is consistent and that
 its consequences follow from it -- not that any convolution exists.
 
+`CoherentConvolutionData` is the stronger endocorrespondence root. It carries
+an explicit monoidal presentation, so associator, unitors, pentagon, and
+triangle cannot be chosen independently; it forgets one-way to the legacy
+interface. Nothing constructs this root either.
+
 Associativity splits: `convolutionTransformAssoc` is a THEOREM (transform
 level, derived from four compIso families alone), while
 `ConvolutionAssocData` is SUPPLIED (kernel level; deriving it would need
@@ -54,6 +59,21 @@ Orlov uniqueness). Nothing constructs the latter.
 #print axioms CategoryTheory.Triangulated.FourierMukai.ConvolutionData.mk.sizeOf_spec
 #print axioms CategoryTheory.Triangulated.FourierMukai.ConvolutionData.conv
 #print axioms CategoryTheory.Triangulated.FourierMukai.ConvolutionData.compIso
+#print axioms CategoryTheory.Triangulated.FourierMukai.CoherentConvolutionData
+#print axioms CategoryTheory.Triangulated.FourierMukai.CoherentConvolutionData.mk.inj
+#print axioms CategoryTheory.Triangulated.FourierMukai.CoherentConvolutionData.mk.sizeOf_spec
+#print axioms CategoryTheory.Triangulated.FourierMukai.CoherentConvolutionData.monoidal
+#print axioms CategoryTheory.Triangulated.FourierMukai.CoherentConvolutionData.compIso
+#print axioms CategoryTheory.Triangulated.FourierMukai.CoherentConvolutionData.conv
+#print axioms CategoryTheory.Triangulated.FourierMukai.CoherentConvolutionData.unit
+#print axioms CategoryTheory.Triangulated.FourierMukai.CoherentConvolutionData.assocIso
+#print axioms CategoryTheory.Triangulated.FourierMukai.CoherentConvolutionData.leftUnitIso
+#print axioms CategoryTheory.Triangulated.FourierMukai.CoherentConvolutionData.rightUnitIso
+#print axioms CategoryTheory.Triangulated.FourierMukai.CoherentConvolutionData.Pentagon
+#print axioms CategoryTheory.Triangulated.FourierMukai.CoherentConvolutionData.pentagon
+#print axioms CategoryTheory.Triangulated.FourierMukai.CoherentConvolutionData.Triangle
+#print axioms CategoryTheory.Triangulated.FourierMukai.CoherentConvolutionData.triangle
+#print axioms CategoryTheory.Triangulated.FourierMukai.CoherentConvolutionData.toConvolutionData
 #print axioms CategoryTheory.Triangulated.FourierMukai.ConvolutionData.isKernelFunctor_transform_comp
 #print axioms CategoryTheory.Triangulated.FourierMukai.ConvolutionData.isKernelFunctor_comp
 #print axioms CategoryTheory.Triangulated.FourierMukai.ConvolutionData.transformMapConvIso
@@ -73,6 +93,9 @@ Orlov uniqueness). Nothing constructs the latter.
 #print axioms CategoryTheory.Triangulated.FourierMukai.ConvolutionRightUnitData.mk.inj
 #print axioms CategoryTheory.Triangulated.FourierMukai.ConvolutionRightUnitData.mk.sizeOf_spec
 #print axioms CategoryTheory.Triangulated.FourierMukai.ConvolutionRightUnitData.rightUnitIso
+#print axioms CategoryTheory.Triangulated.FourierMukai.CoherentConvolutionData.toConvolutionAssocData
+#print axioms CategoryTheory.Triangulated.FourierMukai.CoherentConvolutionData.toConvolutionLeftUnitData
+#print axioms CategoryTheory.Triangulated.FourierMukai.CoherentConvolutionData.toConvolutionRightUnitData
 
 /-! ## Fourier--Mukai lane -- the induced maps on K₀
 
