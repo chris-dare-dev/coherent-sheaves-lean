@@ -3,7 +3,7 @@ Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under the MIT license.
 -/
 import DerivedAlgGeo.AlgebraicGeometry.Moduli.PerfectComplex.Presheaf
-import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Families.FiniteTypeGeometry
+import DerivedAlgGeo.AlgebraicGeometry.StabilityCondition.Families.FiniteTypeGeometry
 
 /-!
 # Finite-type boundedness witnesses for relative-perfect complexes

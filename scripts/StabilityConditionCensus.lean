@@ -23,7 +23,7 @@ component starts with `_`, so `isInternal` swallows every private declaration
 and reports zero of them. The generated-name test therefore runs on the
 DEMANGLED user name, not on the raw one.
 -/
-import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition
+import DerivedAlgGeo.Compatibility.StabilityConditionFamilies
 import DerivedAlgGeo.LinearAlgebra.Lattice
 
 open Lean

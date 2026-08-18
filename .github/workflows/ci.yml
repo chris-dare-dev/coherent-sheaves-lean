@@ -307,6 +307,12 @@ jobs:
       - name: Stability source independence
         run: python3 scripts/check_source_independence.py
 
+      - name: Subject ownership layering
+        run: python3 scripts/check_layering.py
+
+      - name: Coherent families architecture
+        run: python3 scripts/check_coherent_families.py
+
       - name: No declaration uses sorry
         run: |
           set -euo pipefail
@@ -397,6 +403,106 @@ jobs:
       # job wrote a macOS entry that the lane needing it could never read. The
       # writer has to be a runner of the platform the cache is for; see the
       # `Cache warm` workflow, in .github/workflows/cache-warm.yml.
+
+      # The mfc gates. #156 specifies seven steps; this lands 3, 4 and 6.
+      #
+      # Verified before landing, against THIS repo's own CI emission (run
+      # 32086611934, 15346 constants) rather than against fixtures:
+      # `mfc lint` reports 7 passed, 0 failed, 5 not_run -- every not_run a
+      # missing input (no registry yet, no closed-lanes config), none of them a
+      # rule that could have fired and did not.
+      #
+      # Two defects surfaced doing that, both fixed upstream first:
+      # `counts.foreign` (8 constants attributed to Mathlib modules) and the
+      # repeatable `--lib`, without which coverage scopes to DerivedAlgGeoSweep
+      # alone and reports "1 in-scope module of 488 built; 0 built
+      # declarations" -- green, having compared nothing.
+      - name: Contract gates
+        run: |
+          set -euo pipefail
+          # Its own venv, in the workspace. The self-hosted lane is the owner's
+          # daily-driver Mac and this must not touch its system python.
+          #
+          # The interpreter is CHOSEN, not inherited. `python3` on that Mac is
+          # 3.9.6, and `mfc` needs 3.11+ because `mfc env` reads lakefile.toml
+          # with `tomllib`. Inheriting it cost a full 20-minute build followed
+          # by ModuleNotFoundError -- and the same commit was simultaneously
+          # green on the hosted lane, whose `python3` is newer, which is the
+          # worst shape a CI failure can take.
+          PY311=""
+          for c in python3.13 python3.12 python3.11 python3; do
+            if command -v "$c" >/dev/null 2>&1 && \
+               "$c" -c 'import sys; raise SystemExit(0 if sys.version_info >= (3,11) else 1)'; then
+              PY311="$c"; break
+            fi
+          done
+          if [ -z "$PY311" ]; then
+            echo "::error::no python >= 3.11 on this runner. mfc needs tomllib," \
+                 "which is stdlib from 3.11; python3 here is $(python3 -V 2>&1)."
+            exit 1
+          fi
+          echo "using $PY311 ($("$PY311" -V 2>&1))"
+          "$PY311" -m venv .mfc-venv
+          .mfc-venv/bin/pip install --quiet \
+            "mfc[yaml] @ git+https://github.com/chris-dare-dev/math-formal-contract-lean@d3df38183164d86ea5661ff3c26942c2c04c39fc#subdirectory=contract"
+          MFC=.mfc-venv/bin/mfc
+
+          "$MFC" validate attest/lean-emission.json
+
+          "$MFC" env --repo . --out attest/environment.json \
+            --axiom-allowlist propext,Quot.sound,Classical.choice \
+            --emitter-version mfc-emit/1.0.0
+          "$MFC" validate attest/environment.json
+
+          "$MFC" bundle --emission attest/lean-emission.json \
+                        --environment attest/environment.json \
+                        --out attest/declarations.json
+
+          # --require-all is deliberately NOT passed: E-04, E-09, E-11 and E-12
+          # need a registry and a closed-lanes config this repo has not minted
+          # yet, and they print as not_run rather than hiding in a count.
+          "$MFC" lint --emission attest/lean-emission.json \
+                      --environment attest/environment.json
+
+          # BOTH roots. The emitter sweeps DerivedAlgGeoSweep plus DerivedAlgGeo
+          # (exe/Emit.lean), and a single root makes this check vacuous rather
+          # than wrong -- see the note above.
+          "$MFC" check-ilean-coverage --emission attest/lean-emission.json \
+            --lib DerivedAlgGeoSweep --lib DerivedAlgGeo
+
+          # Step 5 of #156. It runs when there is something to run it on, and
+          # says so when there is not -- arXMCP produces resolution.json and
+          # that is M2/e7 (#134), so today this prints the notice.
+          if [ -f attest/resolution.json ]; then
+            "$MFC" check-resolution attest/resolution.json
+          else
+            echo "::notice::check-resolution did NOT run: no attest/resolution.json yet (arXMCP-side, #134)"
+          fi
+
+      # Step 6 of #156: the determinism assertion. Two runs over an unchanged
+      # environment must be byte-identical except for `emitted_at`.
+      #
+      # This is the gate that makes `builds_clean` mean something a second
+      # machine could reproduce, and it costs a second interpreted sweep --
+      # which is why it is here, after the artifact everything else needs has
+      # already been produced.
+      - name: Emitter reproducibility
+        run: |
+          set -euo pipefail
+          lake env lean --run exe/Emit.lean --out attest/lean-emission-2.json
+          python3 - <<'PY'
+          import json
+          a = json.load(open("attest/lean-emission.json", encoding="utf-8"))
+          b = json.load(open("attest/lean-emission-2.json", encoding="utf-8"))
+          # `emitted_at` is the ONLY field permitted to differ, and it is named
+          # rather than filtered by pattern: a second volatile field appearing
+          # later must fail here, loudly, instead of being absorbed.
+          a.pop("emitted_at"); b.pop("emitted_at")
+          if a != b:
+              differing = sorted(k for k in set(a) | set(b) if a.get(k) != b.get(k))
+              raise SystemExit(f"::error::emitter is not deterministic; fields differ: {differing}")
+          print("ok: two sweeps byte-identical modulo emitted_at")
+          PY
 
       - name: Upload trust artifacts
         if: always()
