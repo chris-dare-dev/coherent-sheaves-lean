@@ -2,7 +2,7 @@
 Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under the MIT license.
 -/
-import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Families.KernelCorrespondence
+import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Families.DerivedTensorCoherence
 import DerivedAlgGeo.CategoryTheory.Triangulated.FourierMukai.Convolution
 
 /-!
@@ -26,13 +26,14 @@ triple product with its three projections, `convKernel` is a **definition**.
 (`geometricCompIso`) from seven named inputs: the projection formula on each
 slot (`HasProjectionFormula`, `HasProjectionFormulaRight`), flat base change
 (`HasFlatBaseChange`), monoidality of derived pullback
-(`HasDerivedPullbackTensor`), associativity of the derived tensor
-(`HasDerivedTensorAssoc`), and agreement of the two pullback and the two
+(`HasMonoidalDerivedPullback`), the coherent derived-tensor root
+(`HasCoherentDerivedTensor`), and agreement of the two pullback and the two
 pushforward routes across the triple product (`HasCommonPullbackRoute`,
 `HasCommonPushforwardRoute`). The honest statement of this ledger's effect:
 
 > Both fields of `ConvolutionData` are now constructed; what is supplied is
-> the seven classical isomorphisms above, each named as a class with the
+> the classical comparison data above, rooted in coherent functorial
+> structures with the
 > geometry it encodes stated in its docstring.
 
 The earlier form of this file supplied `compIso` whole, as a
@@ -188,12 +189,10 @@ class HasFlatBaseChange {T T' U U' : SchemeBaseChange S}
   iso : derivedPushforward q ⋙ boundedCoherentDerivedPullback v ≅
     boundedCoherentDerivedPullback u ⋙ derivedPushforward q'
 
-/-- **Monoidality of derived pullback**, `Lf^*(K ⊗^L −) ≅ Lf^*K ⊗^L Lf^*(−)`.
+/-- Compatibility record containing only the tensorator of derived pullback.
 
-Stated as a family in the twist `K`, natural in the remaining variable, which
-is exactly what the derivation consumes. A full `MonoidalFunctor` structure
-would add unitors and coherence that nothing here touches; `HasDerivedTensor`
-does not even provide a monoidal category for one to be stated over. -/
+New stable convolution APIs require `HasMonoidalDerivedPullback`, which also
+states tensorator associativity, unitality, naturality, and invertibility. -/
 class HasDerivedPullbackTensor {T U : SchemeBaseChange S}
     [IsLocallyNoetherian T.left] [IsLocallyNoetherian U.left] (f : T ⟶ U)
     [HasCoherentPullback f] [HasDerivedTensor T] [HasDerivedTensor U] where
@@ -203,7 +202,19 @@ class HasDerivedPullbackTensor {T U : SchemeBaseChange S}
       boundedCoherentDerivedPullback f ⋙
         (derivedTensor T).obj ((boundedCoherentDerivedPullback f).obj K)
 
-/-- **Associativity of the derived tensor.** No pentagon, no unit, no braiding.
+/-- Forget strong monoidality to the old tensorator-only capability. -/
+noncomputable instance hasDerivedPullbackTensorOfMonoidal
+    {T U : SchemeBaseChange S} (f : T ⟶ U)
+    [IsLocallyNoetherian T.left] [IsLocallyNoetherian U.left]
+    [HasCoherentPullback f] [HasCoherentDerivedTensor T]
+    [HasCoherentDerivedTensor U] [HasMonoidalDerivedPullback f] :
+    HasDerivedPullbackTensor f where
+  iso := monoidalDerivedPullbackTensorIso f
+
+/-- Compatibility record for callers that have only a chosen tensor
+associator. New stable convolution APIs require `HasCoherentDerivedTensor`,
+whose Mathlib `MonoidalCategory` parent also supplies naturality, the pentagon,
+and the triangle.
 
 Braiding is genuinely not needed, and that is a fact about this repository's
 conventions rather than a general one: `Correspondence.transform` pins the
@@ -216,6 +227,15 @@ class HasDerivedTensorAssoc (Z : SchemeBaseChange S)
   iso : ∀ A B : SchemeBoundedCoherentDerivedCategory Z.left,
     (derivedTensor Z).obj B ⋙ (derivedTensor Z).obj A ≅
       (derivedTensor Z).obj (((derivedTensor Z).obj A).obj B)
+
+/-- Forget the coherent root to the old single-associator capability.
+
+This adapter is retained for raw intermediate consumers. There is deliberately
+no instance in the opposite direction. -/
+noncomputable instance hasDerivedTensorAssocOfCoherent (Z : SchemeBaseChange S)
+    [IsLocallyNoetherian Z.left] [HasCoherentDerivedTensor Z] :
+    HasDerivedTensorAssoc Z where
+  iso := coherentDerivedTensorAssoc Z
 
 /-- **The projection formula on the other slot**, `Rq_*(Lq^* E ⊗^L A) ≅ Rq_* A`-twisted:
 as a functor in `E`, `Lq^* ⋙ (A ⊗ −) ⋙ Rq_* ≅ (Rq_* A) ⊗ −`.
@@ -293,9 +313,9 @@ each naming the single input it consumes:
 | step | rewrites | input |
 |---|---|---|
 | 1 | `q₁_* ⋙ p₂^*` → `πXY^* ⋙ πYW_*` | `HasFlatBaseChange` |
-| 2 | `(⊗P) ⋙ πXY^*` → `πXY^* ⋙ (⊗πXY^*P)` | `HasDerivedPullbackTensor` |
+| 2 | `(⊗P) ⋙ πXY^*` → `πXY^* ⋙ (⊗πXY^*P)` | `HasMonoidalDerivedPullback` |
 | 3 | `πYW_* ⋙ (⊗Q)` → `(⊗πYW^*Q) ⋙ πYW_*` | `HasProjectionFormula` (symm) |
-| 4 | `(⊗a) ⋙ (⊗b)` → `(⊗(b ⊗ a))` | `HasDerivedTensorAssoc` |
+| 4 | `(⊗a) ⋙ (⊗b)` → `(⊗(b ⊗ a))` | `HasCoherentDerivedTensor` |
 | 5 | `πYW_* ⋙ q₂_*` → `πXW_* ⋙ q₃_*` | `HasCommonPushforwardRoute` |
 | 6 | `p₁^* ⋙ πXY^*` → `p₃^* ⋙ πXW^*` | `HasCommonPullbackRoute` |
 | 7 | `πXW^* ⋙ (⊗M) ⋙ πXW_*` → `(⊗ Rπ_{XW*} M)` | `HasProjectionFormulaRight` |
@@ -360,15 +380,15 @@ noncomputable def geometricCompIso
     [IsLocallyNoetherian Z₂.left] [IsLocallyNoetherian Z₃.left]
     (p₁ : Z₁ ⟶ X) (q₁ : Z₁ ⟶ Y) (p₂ : Z₂ ⟶ Y) (q₂ : Z₂ ⟶ W)
     (p₃ : Z₃ ⟶ X) (q₃ : Z₃ ⟶ W)
-    [HasCoherentPullback p₁] [HasDerivedTensor Z₁] [HasDerivedPushforward q₁]
+    [HasCoherentPullback p₁] [HasCoherentDerivedTensor Z₁] [HasDerivedPushforward q₁]
     [HasCoherentPullback p₂] [HasDerivedTensor Z₂] [HasDerivedPushforward q₂]
     [HasCoherentPullback p₃] [HasDerivedTensor Z₃] [HasDerivedPushforward q₃]
     (G : TripleProductGeometry Z₁ Z₂ Z₃) [IsLocallyNoetherian G.triple.left]
     [HasCoherentPullback G.πXY] [HasCoherentPullback G.πYW]
-    [HasCoherentPullback G.πXW] [HasDerivedTensor G.triple]
+    [HasCoherentPullback G.πXW] [HasCoherentDerivedTensor G.triple]
     [HasDerivedPushforward G.πYW] [HasDerivedPushforward G.πXW]
     [HasFlatBaseChange q₁ G.πYW G.πXY p₂] [HasProjectionFormula G.πYW]
-    [HasDerivedPullbackTensor G.πXY] [HasDerivedTensorAssoc G.triple]
+    [HasMonoidalDerivedPullback G.πXY]
     [HasProjectionFormulaRight G.πXW]
     [HasCommonPullbackRoute p₁ G.πXY p₃ G.πXW]
     [HasCommonPushforwardRoute G.πYW q₂ G.πXW q₃]
@@ -440,7 +460,7 @@ noncomputable def geometricCompIso
       (pairCongr
         (derivedPushforward G.πYW ⋙ (derivedTensor Z₂).obj Q ⋙
           derivedPushforward q₂)
-        (HasDerivedPullbackTensor.iso (f := G.πXY) P))
+        (monoidalDerivedPullbackTensorIso G.πXY P))
   -- Step 3, the projection formula along `πYW` at the twist `Q`, reversed.
   let s₃ : E₂ ≅ E₃ :=
     Functor.isoWhiskerLeft (boundedCoherentDerivedPullback p₁)
@@ -453,7 +473,7 @@ noncomputable def geometricCompIso
     Functor.isoWhiskerLeft (boundedCoherentDerivedPullback p₁)
       (Functor.isoWhiskerLeft (boundedCoherentDerivedPullback G.πXY)
         (pairCollapse (derivedPushforward G.πYW ⋙ derivedPushforward q₂)
-          (HasDerivedTensorAssoc.iso (Z := G.triple) b a)))
+          (coherentDerivedTensorAssoc G.triple b a)))
   -- Step 5, the two pushforward routes agree; tail whisker only.
   let s₅ : E₄ ≅ E₅ :=
     Functor.isoWhiskerLeft (boundedCoherentDerivedPullback p₁)
@@ -509,15 +529,15 @@ the whole content of this ledger. -/
 noncomputable def geometricConvolutionData
     (p₁ : Z₁ ⟶ X) (q₁ : Z₁ ⟶ Y) (p₂ : Z₂ ⟶ Y) (q₂ : Z₂ ⟶ W)
     (p₃ : Z₃ ⟶ X) (q₃ : Z₃ ⟶ W)
-    [HasCoherentPullback p₁] [HasDerivedTensor Z₁] [HasDerivedPushforward q₁]
+    [HasCoherentPullback p₁] [HasCoherentDerivedTensor Z₁] [HasDerivedPushforward q₁]
     [HasCoherentPullback p₂] [HasDerivedTensor Z₂] [HasDerivedPushforward q₂]
     [HasCoherentPullback p₃] [HasDerivedTensor Z₃] [HasDerivedPushforward q₃]
     (G : TripleProductGeometry Z₁ Z₂ Z₃) [IsLocallyNoetherian G.triple.left]
     [HasCoherentPullback G.πXY] [HasCoherentPullback G.πYW]
-    [HasCoherentPullback G.πXW] [HasDerivedTensor G.triple]
+    [HasCoherentPullback G.πXW] [HasCoherentDerivedTensor G.triple]
     [HasDerivedPushforward G.πYW] [HasDerivedPushforward G.πXW]
     [HasFlatBaseChange q₁ G.πYW G.πXY p₂] [HasProjectionFormula G.πYW]
-    [HasDerivedPullbackTensor G.πXY] [HasDerivedTensorAssoc G.triple]
+    [HasMonoidalDerivedPullback G.πXY]
     [HasProjectionFormulaRight G.πXW]
     [HasCommonPullbackRoute p₁ G.πXY p₃ G.πXW]
     [HasCommonPushforwardRoute G.πYW q₂ G.πXW q₃] :
@@ -540,9 +560,9 @@ For a geometric Fourier--Mukai theory with composition, a caller must supply:
 3. `HasCoherentPullback` along each pullback used — an *existing* contract from
    #460--462, so no new kind of obligation;
 4. a `TripleProductGeometry` — the objects and projections;
-5. the seven classical isomorphisms: `HasProjectionFormula`,
+5. the classical comparison structures: `HasProjectionFormula`,
    `HasProjectionFormulaRight`, `HasFlatBaseChange`,
-   `HasDerivedPullbackTensor`, `HasDerivedTensorAssoc`,
+   `HasMonoidalDerivedPullback`, `HasCoherentDerivedTensor`,
    `HasCommonPullbackRoute`, `HasCommonPushforwardRoute` — where the product
    structure of the `TripleProductGeometry` finally does its work.
 

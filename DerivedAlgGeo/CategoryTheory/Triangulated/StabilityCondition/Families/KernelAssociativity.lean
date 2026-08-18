@@ -28,8 +28,9 @@ seven-input vocabulary as `geometricCompIso`, evaluated at objects rather
 than whiskered as functors: two `HasFlatBaseChange` squares, one
 `HasProjectionFormula` and one `HasProjectionFormulaRight` (again at
 *different* morphisms, which is again why they are separate classes), two
-`HasDerivedPullbackTensor`s, and one `HasDerivedTensorAssoc` — the class #542
-predicted would be consumed by exactly this derivation, now consumed.
+`HasMonoidalDerivedPullback` roots, and `HasCoherentDerivedTensor`. The
+tensorator and associator used here therefore belong to structures that also
+state their associativity, unitality, pentagon, and triangle laws.
 
 Two classes are new, because no existing shape covers a one-step route:
 
@@ -50,10 +51,10 @@ consumed by the derivation, in the pattern of the route classes.
   scheme is shown to admit one. `QuadrupleProductGeometry` carries the
   quadruple object and its projections as data and does not assert that
   anything is a product; the guards state the intended instantiation.
-* Nothing relates `quadKernel` to anything besides the two bracketings; no
-  pentagon, no compatibility with more than three kernels.
-* The unit laws for convolution are untouched — see `KernelUnit.lean` for
-  what exists and what is absent on that side.
+* This file does not assemble the geometric construction into abstract
+  `CoherentConvolutionData`; that requires functoriality of `convKernel` on
+  kernel morphisms and comparison of the geometric associator/unitors with
+  the coherent root. The tensor and pullback inputs themselves are coherent.
 -/
 
 universe u
@@ -162,14 +163,14 @@ variable {Z₁₂ Z₂₃ Z₃₄ Z₁₃ Z₂₄ Z₁₄ : SchemeBaseChange S}
   [HasCoherentPullback Q4.ρ₁₂] [HasCoherentPullback Q4.ρ₂₃]
   [HasCoherentPullback Q4.ρ₃₄] [HasDerivedPushforward Q4.ρ₁₄]
   [HasCoherentPullback G₁₂₃.πXY] [HasCoherentPullback G₁₂₃.πYW]
-  [HasDerivedTensor G₁₂₃.triple] [HasDerivedPushforward G₁₂₃.πXW]
+  [HasCoherentDerivedTensor G₁₂₃.triple] [HasDerivedPushforward G₁₂₃.πXW]
   [HasCoherentPullback G₂₃₄.πXY] [HasCoherentPullback G₂₃₄.πYW]
-  [HasDerivedTensor G₂₃₄.triple] [HasDerivedPushforward G₂₃₄.πXW]
+  [HasCoherentDerivedTensor G₂₃₄.triple] [HasDerivedPushforward G₂₃₄.πXW]
   [HasCoherentPullback G₁₃₄.πXY] [HasCoherentPullback G₁₃₄.πYW]
-  [HasDerivedTensor G₁₃₄.triple] [HasDerivedPushforward G₁₃₄.πXW]
+  [HasCoherentDerivedTensor G₁₃₄.triple] [HasDerivedPushforward G₁₃₄.πXW]
   [HasCoherentPullback G₁₂₄.πXY] [HasCoherentPullback G₁₂₄.πYW]
-  [HasDerivedTensor G₁₂₄.triple] [HasDerivedPushforward G₁₂₄.πXW]
-  [HasDerivedTensor Q4.quad]
+  [HasCoherentDerivedTensor G₁₂₄.triple] [HasDerivedPushforward G₁₂₄.πXW]
+  [HasCoherentDerivedTensor Q4.quad]
   [HasCoherentPullback Q4.σ₁₂₃] [HasCoherentPullback Q4.σ₂₃₄]
   [HasCoherentPullback Q4.σ₁₃₄] [HasCoherentPullback Q4.σ₁₂₄]
   [HasDerivedPushforward Q4.σ₁₃₄] [HasDerivedPushforward Q4.σ₁₂₄]
@@ -192,9 +193,8 @@ variable
   [HasFlatBaseChange G₂₃₄.πXW Q4.σ₁₂₄ Q4.σ₂₃₄ G₁₂₄.πYW]
   [HasProjectionFormula Q4.σ₁₃₄]
   [HasProjectionFormulaRight Q4.σ₁₂₄]
-  [HasDerivedPullbackTensor Q4.σ₁₂₃]
-  [HasDerivedPullbackTensor Q4.σ₂₃₄]
-  [HasDerivedTensorAssoc Q4.quad]
+  [HasMonoidalDerivedPullback Q4.σ₁₂₃]
+  [HasMonoidalDerivedPullback Q4.σ₂₃₄]
   [HasPullbackFactorization Q4.σ₁₂₃ G₁₂₃.πXY Q4.ρ₁₂]
   [HasPullbackFactorization Q4.σ₁₂₃ G₁₂₃.πYW Q4.ρ₂₃]
   [HasPullbackFactorization Q4.σ₁₃₄ G₁₃₄.πYW Q4.ρ₃₄]
@@ -210,7 +210,7 @@ variable
 /-- **The left bracketing meets the quadruple kernel.** Five steps: flat base
 change across the `(πXW, πXY)` square, the projection formula at `σ₁₃₄`, and
 three factorizations, with the pullback of the inner convolution computed by
-`HasDerivedPullbackTensor` at `σ₁₂₃`. Every step is an isomorphism between
+`HasMonoidalDerivedPullback` at `σ₁₂₃`. Every step is an isomorphism between
 objects of `Dᵇ(Coh Z₁₄)`, obtained by evaluating a class isomorphism at an
 object and transporting with `mapIso` — no whiskering. -/
 noncomputable def leftAssocIso :
@@ -256,7 +256,7 @@ noncomputable def leftAssocIso :
           (r := Q4.ρ₃₄)).app R)).app N))
   -- step 4: the pulled-back integrand is `ρ₂₃^*Q ⊗ ρ₁₂^*P`
   let e₄ : N ≅ ((derivedTensor Q4.quad).obj b).obj a :=
-    (HasDerivedPullbackTensor.iso (f := Q4.σ₁₂₃)
+    (monoidalDerivedPullbackTensorIso Q4.σ₁₂₃
         ((boundedCoherentDerivedPullback G₁₂₃.πYW).obj Q)).app
       ((boundedCoherentDerivedPullback G₁₂₃.πXY).obj P) ≪≫
     ((derivedTensor Q4.quad).mapIso
@@ -286,7 +286,7 @@ noncomputable def leftAssocIso :
   s₁ ≪≫ s₂ ≪≫ s₃ ≪≫ s₄ ≪≫ s₅
 
 /-- **The right bracketing meets the quadruple kernel.** Six steps this time:
-the extra one is `HasDerivedTensorAssoc` — the convolved kernel sits in the
+the extra one is the associator from `HasCoherentDerivedTensor` — the convolved kernel sits in the
 twist slot on this side, so after base change, the *right*-slot projection
 formula at `σ₁₂₄`, and the factorizations, the tensors arrive bracketed the
 other way and associativity of the derived tensor is what reconciles them.
@@ -332,7 +332,7 @@ noncomputable def rightAssocIso :
           (r := Q4.ρ₁₂)).app P)))
   -- step 4: the pulled-back twist is `ρ₃₄^*R ⊗ ρ₂₃^*Q`
   let e₄ : N ≅ ((derivedTensor Q4.quad).obj c).obj b :=
-    (HasDerivedPullbackTensor.iso (f := Q4.σ₂₃₄)
+    (monoidalDerivedPullbackTensorIso Q4.σ₂₃₄
         ((boundedCoherentDerivedPullback G₂₃₄.πYW).obj R)).app
       ((boundedCoherentDerivedPullback G₂₃₄.πXY).obj Q) ≪≫
     ((derivedTensor Q4.quad).mapIso
@@ -365,7 +365,7 @@ noncomputable def rightAssocIso :
           (((derivedTensor Q4.quad).obj c).obj b)).obj a) ≅
       quadKernel Q4 P Q R :=
     (derivedPushforward Q4.ρ₁₄).mapIso
-      ((HasDerivedTensorAssoc.iso (Z := Q4.quad) c b).symm.app a)
+      ((coherentDerivedTensorAssoc Q4.quad c b).symm.app a)
   s₁ ≪≫ s₂ ≪≫ s₃ ≪≫ s₄ ≪≫ s₅ ≪≫ s₆
 
 /-- **Associativity of the geometric convolution, derived.**
@@ -406,10 +406,10 @@ noncomputable def geometricConvolutionAssocData
     (p₃₄ : Z₃₄ ⟶ Z) (q₃₄ : Z₃₄ ⟶ W)
     (p₁₃ : Z₁₃ ⟶ X) (q₁₃ : Z₁₃ ⟶ Z) (p₂₄ : Z₂₄ ⟶ Y) (q₂₄ : Z₂₄ ⟶ W)
     (p₁₄ : Z₁₄ ⟶ X) (q₁₄ : Z₁₄ ⟶ W)
-    [HasCoherentPullback p₁₂] [HasDerivedTensor Z₁₂] [HasDerivedPushforward q₁₂]
-    [HasCoherentPullback p₂₃] [HasDerivedTensor Z₂₃] [HasDerivedPushforward q₂₃]
+    [HasCoherentPullback p₁₂] [HasCoherentDerivedTensor Z₁₂] [HasDerivedPushforward q₁₂]
+    [HasCoherentPullback p₂₃] [HasCoherentDerivedTensor Z₂₃] [HasDerivedPushforward q₂₃]
     [HasCoherentPullback p₃₄] [HasDerivedTensor Z₃₄] [HasDerivedPushforward q₃₄]
-    [HasCoherentPullback p₁₃] [HasDerivedTensor Z₁₃] [HasDerivedPushforward q₁₃]
+    [HasCoherentPullback p₁₃] [HasCoherentDerivedTensor Z₁₃] [HasDerivedPushforward q₁₃]
     [HasCoherentPullback p₂₄] [HasDerivedTensor Z₂₄] [HasDerivedPushforward q₂₄]
     [HasCoherentPullback p₁₄] [HasDerivedTensor Z₁₄] [HasDerivedPushforward q₁₄]
     {G₁₂₃ : TripleProductGeometry Z₁₂ Z₂₃ Z₁₃}
@@ -419,34 +419,34 @@ noncomputable def geometricConvolutionAssocData
     [IsLocallyNoetherian G₁₂₃.triple.left] [IsLocallyNoetherian G₂₃₄.triple.left]
     [IsLocallyNoetherian G₁₃₄.triple.left] [IsLocallyNoetherian G₁₂₄.triple.left]
     [HasCoherentPullback G₁₂₃.πXY] [HasCoherentPullback G₁₂₃.πYW]
-    [HasCoherentPullback G₁₂₃.πXW] [HasDerivedTensor G₁₂₃.triple]
+    [HasCoherentPullback G₁₂₃.πXW] [HasCoherentDerivedTensor G₁₂₃.triple]
     [HasDerivedPushforward G₁₂₃.πYW] [HasDerivedPushforward G₁₂₃.πXW]
     [HasCoherentPullback G₂₃₄.πXY] [HasCoherentPullback G₂₃₄.πYW]
-    [HasCoherentPullback G₂₃₄.πXW] [HasDerivedTensor G₂₃₄.triple]
+    [HasCoherentPullback G₂₃₄.πXW] [HasCoherentDerivedTensor G₂₃₄.triple]
     [HasDerivedPushforward G₂₃₄.πYW] [HasDerivedPushforward G₂₃₄.πXW]
     [HasCoherentPullback G₁₃₄.πXY] [HasCoherentPullback G₁₃₄.πYW]
-    [HasCoherentPullback G₁₃₄.πXW] [HasDerivedTensor G₁₃₄.triple]
+    [HasCoherentPullback G₁₃₄.πXW] [HasCoherentDerivedTensor G₁₃₄.triple]
     [HasDerivedPushforward G₁₃₄.πYW] [HasDerivedPushforward G₁₃₄.πXW]
     [HasCoherentPullback G₁₂₄.πXY] [HasCoherentPullback G₁₂₄.πYW]
-    [HasCoherentPullback G₁₂₄.πXW] [HasDerivedTensor G₁₂₄.triple]
+    [HasCoherentPullback G₁₂₄.πXW] [HasCoherentDerivedTensor G₁₂₄.triple]
     [HasDerivedPushforward G₁₂₄.πYW] [HasDerivedPushforward G₁₂₄.πXW]
     [HasFlatBaseChange q₁₂ G₁₂₃.πYW G₁₂₃.πXY p₂₃] [HasProjectionFormula G₁₂₃.πYW]
-    [HasDerivedPullbackTensor G₁₂₃.πXY] [HasDerivedTensorAssoc G₁₂₃.triple]
+    [HasMonoidalDerivedPullback G₁₂₃.πXY]
     [HasProjectionFormulaRight G₁₂₃.πXW]
     [HasCommonPullbackRoute p₁₂ G₁₂₃.πXY p₁₃ G₁₂₃.πXW]
     [HasCommonPushforwardRoute G₁₂₃.πYW q₂₃ G₁₂₃.πXW q₁₃]
     [HasFlatBaseChange q₂₃ G₂₃₄.πYW G₂₃₄.πXY p₃₄] [HasProjectionFormula G₂₃₄.πYW]
-    [HasDerivedPullbackTensor G₂₃₄.πXY] [HasDerivedTensorAssoc G₂₃₄.triple]
+    [HasMonoidalDerivedPullback G₂₃₄.πXY]
     [HasProjectionFormulaRight G₂₃₄.πXW]
     [HasCommonPullbackRoute p₂₃ G₂₃₄.πXY p₂₄ G₂₃₄.πXW]
     [HasCommonPushforwardRoute G₂₃₄.πYW q₃₄ G₂₃₄.πXW q₂₄]
     [HasFlatBaseChange q₁₃ G₁₃₄.πYW G₁₃₄.πXY p₃₄] [HasProjectionFormula G₁₃₄.πYW]
-    [HasDerivedPullbackTensor G₁₃₄.πXY] [HasDerivedTensorAssoc G₁₃₄.triple]
+    [HasMonoidalDerivedPullback G₁₃₄.πXY]
     [HasProjectionFormulaRight G₁₃₄.πXW]
     [HasCommonPullbackRoute p₁₃ G₁₃₄.πXY p₁₄ G₁₃₄.πXW]
     [HasCommonPushforwardRoute G₁₃₄.πYW q₃₄ G₁₃₄.πXW q₁₄]
     [HasFlatBaseChange q₁₂ G₁₂₄.πYW G₁₂₄.πXY p₂₄] [HasProjectionFormula G₁₂₄.πYW]
-    [HasDerivedPullbackTensor G₁₂₄.πXY] [HasDerivedTensorAssoc G₁₂₄.triple]
+    [HasMonoidalDerivedPullback G₁₂₄.πXY]
     [HasProjectionFormulaRight G₁₂₄.πXW]
     [HasCommonPullbackRoute p₁₂ G₁₂₄.πXY p₁₄ G₁₂₄.πXW]
     [HasCommonPushforwardRoute G₁₂₄.πYW q₂₄ G₁₂₄.πXW q₁₄]
@@ -454,15 +454,14 @@ noncomputable def geometricConvolutionAssocData
     [IsLocallyNoetherian Q4.quad.left]
     [HasCoherentPullback Q4.ρ₁₂] [HasCoherentPullback Q4.ρ₂₃]
     [HasCoherentPullback Q4.ρ₃₄] [HasDerivedPushforward Q4.ρ₁₄]
-    [HasDerivedTensor Q4.quad]
+    [HasCoherentDerivedTensor Q4.quad]
     [HasCoherentPullback Q4.σ₁₂₃] [HasCoherentPullback Q4.σ₂₃₄]
     [HasCoherentPullback Q4.σ₁₃₄] [HasCoherentPullback Q4.σ₁₂₄]
     [HasDerivedPushforward Q4.σ₁₃₄] [HasDerivedPushforward Q4.σ₁₂₄]
     [HasFlatBaseChange G₁₂₃.πXW Q4.σ₁₃₄ Q4.σ₁₂₃ G₁₃₄.πXY]
     [HasFlatBaseChange G₂₃₄.πXW Q4.σ₁₂₄ Q4.σ₂₃₄ G₁₂₄.πYW]
     [HasProjectionFormula Q4.σ₁₃₄] [HasProjectionFormulaRight Q4.σ₁₂₄]
-    [HasDerivedPullbackTensor Q4.σ₁₂₃] [HasDerivedPullbackTensor Q4.σ₂₃₄]
-    [HasDerivedTensorAssoc Q4.quad]
+    [HasMonoidalDerivedPullback Q4.σ₁₂₃] [HasMonoidalDerivedPullback Q4.σ₂₃₄]
     [HasPullbackFactorization Q4.σ₁₂₃ G₁₂₃.πXY Q4.ρ₁₂]
     [HasPullbackFactorization Q4.σ₁₂₃ G₁₂₃.πYW Q4.ρ₂₃]
     [HasPullbackFactorization Q4.σ₁₃₄ G₁₃₄.πYW Q4.ρ₃₄]
@@ -485,9 +484,10 @@ end Assembly
 At the transform level associativity is a theorem for any convolution data
 (#542). At the kernel level it is now *derived* for the geometric convolution
 from the quadruple-product inputs above. What remains supplied is exactly
-those inputs; the pentagon (comparing the five bracketings of four kernels)
-is not stated at any level, and no unit laws relate `convKernel` to
-`diagonalKernel`.
+those inputs. The abstract `CoherentConvolutionData` root states the pentagon
+and triangle; this geometric file has not yet promoted `convKernel` to that
+functorial root, so it deliberately exports only the derived three-kernel
+comparison.
 -/
 
 end CategoryTheory.Triangulated.StabilityCondition.Families
