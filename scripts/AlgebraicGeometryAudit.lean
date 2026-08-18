@@ -17,3 +17,4 @@ it to the area file its module belongs to.
 
 import AlgebraicGeometryAudit.Core
 import AlgebraicGeometryAudit.Moduli
+import AlgebraicGeometryAudit.Projective
