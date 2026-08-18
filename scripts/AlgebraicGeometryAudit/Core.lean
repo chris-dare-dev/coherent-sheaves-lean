@@ -70,6 +70,51 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Proj.laurentExponent
 #print axioms AlgebraicGeometry.Proj.laurentExponent_apply
 #print axioms AlgebraicGeometry.Proj.laurentExponent_eq_iff
+-- The twist abstraction (#568). IsPolynomialTwist isolates the only reading of a numerator the
+-- Laurent argument makes -- an element of 𝓜 n is homogeneous of degree n + d -- so the stack can
+-- be stated once and instantiated at natShift for d : N and intShift for d : Z. The p = 0
+-- disjunct is what makes intShift fit: it carries zero in degrees where n + d is negative and
+-- there is no graded piece to name.
+#print axioms AlgebraicGeometry.Proj.IsPolynomialTwist
+#print axioms AlgebraicGeometry.Proj.isPolynomialTwist_natShift
+#print axioms AlgebraicGeometry.Proj.isPolynomialTwist_intShift
+#print axioms AlgebraicGeometry.Proj.degree_laurentExponent_int
+#print axioms AlgebraicGeometry.Proj.IsPolynomialTwist.degree_eq_of_mem_support
+#print axioms AlgebraicGeometry.Proj.IsPolynomialTwist.monomial_coeff_mem
+#print axioms AlgebraicGeometry.Proj.IsPolynomialTwist.degree_laurentExponent_of_mem_support
+-- The degree bookkeeping at either sign. The by_cases on the quotient is the only place the two
+-- signs behave differently: a negative twist can put the numerator's degree below m * c, and then
+-- the quotient is zero rather than a numerator of lower degree.
+#print axioms AlgebraicGeometry.Proj.IsPolynomialTwist.divMonomial_mem
+-- The other two readings the port needs: multiplying a numerator by a homogeneous factor, and
+-- filtering it to one block. Both are the same case split -- the numerator may be zero in a
+-- degree the twist names no graded piece for -- where the nonnegative versions read membership
+-- as homogeneity directly.
+#print axioms AlgebraicGeometry.Proj.IsPolynomialTwist.mul_mem_of_isHomogeneous
+#print axioms AlgebraicGeometry.Proj.IsPolynomialTwist.laurentFilter_mem
+-- The Cech term, cochains and face over an arbitrary twist, with the two instances recorded as
+-- definitional. Naming the construction once is what lets the contracting-homotopy layer above
+-- it be stated once instead of duplicated per twist.
+#print axioms AlgebraicGeometry.Proj.cechTerm
+#print axioms AlgebraicGeometry.Proj.cechCochains
+#print axioms AlgebraicGeometry.Proj.cechFace
+#print axioms AlgebraicGeometry.Proj.cechFace_natShift
+#print axioms AlgebraicGeometry.Proj.cechFace_intShift
+-- The short-tuple vanishing input (#568). A block containing every variable has Fintype.card
+-- elements while a tuple of length n + 2 supports at most n + 2, so over a larger variable set
+-- the block cannot sit inside the tuple's support -- whatever the twist. This is what replaces
+-- the degree argument at a negative twist, and the first place the lane needs iota finite.
+#print axioms AlgebraicGeometry.Proj.tupleExponent_support_card_le
+#print axioms AlgebraicGeometry.Proj.cechBlockProj_eq_zero_of_card_lt
+-- cechBlockProj and cechHomotopy now take the twist hypothesis, which is a Prop, so Lean emits
+-- congruence lemmas for them; recorded here for the same reason AwayRep's projections are.
+#print axioms AlgebraicGeometry.Proj.cechBlockProj.congr_simp
+#print axioms AlgebraicGeometry.Proj.cechHomotopy.congr_simp
+-- Vanishing below the top degree, either sign (#568). The nonnegative companion is stronger
+-- where it applies -- no finiteness, every positive degree -- and is not a corollary.
+#print axioms AlgebraicGeometry.Proj.polynomialVariableIntCechComplex_exactAt
+#print axioms AlgebraicGeometry.Proj.polynomialVariableIntCechComplex_homology_isZero
+#print axioms AlgebraicGeometry.Proj.polynomialIntTwisting_H_subsingleton
 #print axioms AlgebraicGeometry.Proj.degree_laurentExponent
 #print axioms AlgebraicGeometry.Proj.laurentExponent_nonneg_of_apply_eq_zero
 #print axioms AlgebraicGeometry.Proj.monomial_one_mem_polynomialGrading
@@ -149,6 +194,11 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Proj.intNegSupport
 #print axioms AlgebraicGeometry.Proj.mem_intNegSupport
 #print axioms AlgebraicGeometry.Proj.intNegSupport_laurentExponent_subset
+-- The finite index set of the full block (#568 step 6.1). An exponent negative in every
+-- coordinate whose coordinates sum to d has each coordinate trapped in [d + card - 1, -1], so
+-- the exponents form a subset of a finite box. This is the finiteness the top cohomology rests
+-- on; it is empty unless d <= -(card iota), which is Serre's vanishing in exponent form.
+#print axioms AlgebraicGeometry.Proj.finite_setOf_degree_eq_of_neg
 #print axioms AlgebraicGeometry.Proj.laurentExponent_sub_of_add_eq
 #print axioms AlgebraicGeometry.Proj.laurentFilter
 #print axioms AlgebraicGeometry.Proj.coeff_laurentFilter_of_eq
@@ -243,6 +293,10 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Proj.cechBlockPrimitive_of_forall
 #print axioms AlgebraicGeometry.Proj.cechBlockPrimitive_eq_zero_of_not_subset
 #print axioms AlgebraicGeometry.Proj.cechPrimitive
+-- The cone-point case, separated out because it needs no hypothesis on the twist at all. Every
+-- block except the one containing every variable has a cone point, so this alone says the
+-- cohomology is carried entirely by the full block.
+#print axioms AlgebraicGeometry.Proj.cechBlockPrimitive_faces_of_exists
 #print axioms AlgebraicGeometry.Proj.cechBlockPrimitive_faces
 #print axioms AlgebraicGeometry.Proj.cechPrimitive_isPrimitive
 -- The headline of #340: H^n(P, O(d)) = 0 for n >= 1 and d >= 0, over an arbitrary --
