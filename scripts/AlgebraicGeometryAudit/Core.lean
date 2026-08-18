@@ -92,6 +92,29 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 -- as homogeneity directly.
 #print axioms AlgebraicGeometry.Proj.IsPolynomialTwist.mul_mem_of_isHomogeneous
 #print axioms AlgebraicGeometry.Proj.IsPolynomialTwist.laurentFilter_mem
+-- The Cech term, cochains and face over an arbitrary twist, with the two instances recorded as
+-- definitional. Naming the construction once is what lets the contracting-homotopy layer above
+-- it be stated once instead of duplicated per twist.
+#print axioms AlgebraicGeometry.Proj.cechTerm
+#print axioms AlgebraicGeometry.Proj.cechCochains
+#print axioms AlgebraicGeometry.Proj.cechFace
+#print axioms AlgebraicGeometry.Proj.cechFace_natShift
+#print axioms AlgebraicGeometry.Proj.cechFace_intShift
+-- The short-tuple vanishing input (#568). A block containing every variable has Fintype.card
+-- elements while a tuple of length n + 2 supports at most n + 2, so over a larger variable set
+-- the block cannot sit inside the tuple's support -- whatever the twist. This is what replaces
+-- the degree argument at a negative twist, and the first place the lane needs iota finite.
+#print axioms AlgebraicGeometry.Proj.tupleExponent_support_card_le
+#print axioms AlgebraicGeometry.Proj.cechBlockProj_eq_zero_of_card_lt
+-- cechBlockProj and cechHomotopy now take the twist hypothesis, which is a Prop, so Lean emits
+-- congruence lemmas for them; recorded here for the same reason AwayRep's projections are.
+#print axioms AlgebraicGeometry.Proj.cechBlockProj.congr_simp
+#print axioms AlgebraicGeometry.Proj.cechHomotopy.congr_simp
+-- Vanishing below the top degree, either sign (#568). The nonnegative companion is stronger
+-- where it applies -- no finiteness, every positive degree -- and is not a corollary.
+#print axioms AlgebraicGeometry.Proj.polynomialVariableIntCechComplex_exactAt
+#print axioms AlgebraicGeometry.Proj.polynomialVariableIntCechComplex_homology_isZero
+#print axioms AlgebraicGeometry.Proj.polynomialIntTwisting_H_subsingleton
 #print axioms AlgebraicGeometry.Proj.degree_laurentExponent
 #print axioms AlgebraicGeometry.Proj.laurentExponent_nonneg_of_apply_eq_zero
 #print axioms AlgebraicGeometry.Proj.monomial_one_mem_polynomialGrading
