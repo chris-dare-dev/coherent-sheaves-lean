@@ -418,7 +418,7 @@ jobs:
           # daily-driver Mac and this must not touch its system python.
           python3 -m venv .mfc-venv
           .mfc-venv/bin/pip install --quiet \
-            "mfc[yaml] @ git+https://github.com/chris-dare-dev/math-formal-contract-lean6faed8d27ff7d69ab1e76fd25d1cadd691d17fba#subdirectory=contract"
+            "mfc[yaml] @ git+https://github.com/chris-dare-dev/math-formal-contract-lean@6faed8d27ff7d69ab1e76fd25d1cadd691d17fba#subdirectory=contract"
           MFC=.mfc-venv/bin/mfc
 
           "$MFC" validate attest/lean-emission.json
