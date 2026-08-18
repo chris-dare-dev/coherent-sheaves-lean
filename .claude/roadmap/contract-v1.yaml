@@ -80,9 +80,18 @@ retired: []          # tombstoned item ids; ids are write-once, never deleted
 # useful burndown granularity alongside the repository's other tracks.
 #
 # Here, GitHub milestones are the track's PHASES (m0..m4 below) and epics are
-# issues assigned to them. `kind: milestone` items carry `parent: <epic-id>`
-# exactly as in arXMCP. If this track ever moves into arXMCP's tracker, collapse
-# m0..m4 into one milestone named by `title:` above. See ADR-0006.
+# issues assigned to them. `kind: epic` items carry `parent: <milestone-id>`;
+# milestones carry no parent. (This note previously said the reverse, which no
+# entry in the file has ever matched.) If this track ever moves into arXMCP's
+# tracker, collapse m0..m4 into one milestone named by `title:` above. See
+# ADR-0006.
+#
+# `kind: task` is a leaf hanging off a MILESTONE rather than an epic. It exists
+# because an issue with no epic otherwise has no representation here at all --
+# and an unparented issue is invisible to a parent/child reconciliation by
+# construction, so the gap would not even surface as drift. `kind: deliverable`
+# in stability-families.yaml is the leaf-under-an-EPIC kind; all thirteen of
+# those parent to an epic, so it does not cover this case. See #620.
 # ---------------------------------------------------------------------------
 
 items:
@@ -230,6 +239,29 @@ items:
     priority: must
     size: M
     tags: [value, trust, gate-owner]
+
+  # `kind: task` — a leaf that hangs off a MILESTONE rather than an epic.
+  #
+  # `deliverable` in stability-families.yaml is the existing leaf kind and does
+  # not fit: all thirteen of them parent to an epic. This is the first entry
+  # that belongs to a milestone directly, and it exists because #618 was
+  # deliberately unparented from e8 -- its siblings there are arXMCP's half of
+  # the epic, and the release decision must not hold that epic open.
+  #
+  # Without this kind the file would simply have no record of #618, and an
+  # unparented issue is invisible to any parent/child reconciliation by
+  # construction -- so the gap would not even show up as drift. See #620.
+  - id: contract-v1-m2-t1
+    gh_issue: 618
+    gh_sub_issues: []
+    kind: task
+    parent: contract-v1-m2
+    title: "Tag v0.1.0 — the decision #173 could not make"
+    status: blocked
+    summary: "#173 asked for a release and turned out to be three things: two missing producers, a wrong asset name, and a decision. The producers landed (mfc build, mfc seal, and build/1.0's `measured` block; CI now runs the twelve conformance rules on every commit at 10 passed, 0 failed, 2 not_run). The asset name was wrong -- bindings.json is not an artifact this contract defines. What is left is the decision: tagging before #134 and #178 land freezes C-08 and C-10 as not_run in a published bundle, against a corpus resolution nobody computed and a review nobody performed. Wait-and-tag-seven or tag-now-at-six are both defensible; tagging without choosing is not. Blocked by #134 and #178."
+    priority: must
+    size: S
+    tags: [value, release, gate-owner]
 
   # ===================== M3 — generalization =====================
   - id: contract-v1-m3
