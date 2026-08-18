@@ -336,19 +336,15 @@ theorem discriminantDegree_eq_numericalVariety
     (I : IntersectionContext D C 2) {F : Coh X.toScheme}
     (P : Coh.TwoTermPerfectDeterminantData F)
     {A : Type v} {N : Type w} [CommRing A] [Algebra ℚ A]
-    [AddCommGroup N] [NumericalVariety 2 A N] (E : N)
-    (hrank : NumericalVariety.rank (A := A) E = virtualRank P)
-    (hc₁ : NumericalRing.degree (n := 2)
-        (NumericalVariety.chComp (A := A) E 1 *
-          NumericalVariety.chComp (A := A) E 1) =
+    [AddCommGroup N] (V : NumericalVarietyData 2 A N) (E : N)
+    (hrank : V.rank E = virtualRank P)
+    (hc₁ : V.ring.degree (V.chComp E 1 * V.chComp E 1) =
       (I.surfaceIntersectionPairing (picardFirstChernClass P)
         (picardFirstChernClass P) : ℤ))
-    (hch₂ : NumericalRing.degree (n := 2)
-        (NumericalVariety.chComp (A := A) E 2) =
+    (hch₂ : V.ring.degree (V.chComp E 2) =
       chernCharacterTwoDegree I P) :
-    discriminantDegree I P = NumericalRing.degree (n := 2)
-      (NumericalVariety.discriminant (A := A) E) := by
-  rw [NumericalVariety.degree_discriminant, hrank, hc₁, hch₂]
+    discriminantDegree I P = V.ring.degree (V.discriminant E) := by
+  rw [V.degree_discriminant, hrank, hc₁, hch₂]
   simp only [discriminantDegree]
 
 end

@@ -171,6 +171,7 @@ echo "== gates ($MODE) =="
 # checks. In `fast` mode too, for the same reason.
 gate workflows scripts/check_workflows.sh
 gate mathlib-style mathlib_style
+gate explicit-numerical-data python3 scripts/check_explicit_numerical_data.py
 gate build lake build
 gate algebraic-geometry-audit algebraic_geometry_audit
 gate stability-condition-audit stability_condition_audit

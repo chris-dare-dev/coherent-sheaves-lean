@@ -313,6 +313,9 @@ jobs:
       - name: Coherent families architecture
         run: python3 scripts/check_coherent_families.py
 
+      - name: Explicit numerical data architecture
+        run: python3 scripts/check_explicit_numerical_data.py
+
       - name: No declaration uses sorry
         run: |
           set -euo pipefail

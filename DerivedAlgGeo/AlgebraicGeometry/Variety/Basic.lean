@@ -12,12 +12,12 @@ import Mathlib.AlgebraicGeometry.Properties
 
 This module bundles the geometric source object that the numerical layer is eventually meant
 to receive data from. A `Variety k` is an integral scheme equipped with a finite-type morphism
-to `Spec k`; it is not a synonym for `NumericalVariety`.
+to `Spec k`; it is not a synonym for `NumericalVarietyData`.
 
 The two notions intentionally remain separated:
 
 * `Variety k` carries actual scheme geometry;
-* `NumericalVariety n A N` carries the intersection-theoretic quotient used by numerical
+* `NumericalVarietyData n A N` carries the intersection-theoretic quotient used by numerical
   arguments;
 * a future realization constructor will derive the latter from the former after geometric
   Chern classes, Euler-characteristic finiteness, and Riemann--Roch are available.

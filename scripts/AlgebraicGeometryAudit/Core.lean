@@ -610,7 +610,10 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms ChernClassData.toddFour
 #print axioms ChernClassData.chernCharacterComponent
 #print axioms ChernClassData.toddComponent
+#print axioms Variety.NumericalData.SatisfiesHRR
+#print axioms Variety.NumericalData.SatisfiesHRR.eq
 #print axioms Variety.NumericalData.toNumericalVariety
+#print axioms Variety.NumericalData.toNumericalVariety_satisfiesHRR
 #print axioms Variety.NumericalData.toNumericalVariety_chComp_four
 #print axioms Variety.NumericalData.toNumericalVariety_toddComp_four
 #print axioms Variety.NumericalData.chernCharacter_classOf
@@ -805,6 +808,8 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.RiemannRoch.Surface.ReconstructionSystem.chernCharacterHom_zero
 #print axioms AlgebraicGeometry.RiemannRoch.Surface.ReconstructionSystem.chernCharacterHom_add
 #print axioms AlgebraicGeometry.RiemannRoch.Surface.GeometricData
+#print axioms AlgebraicGeometry.RiemannRoch.Surface.GeometricData.SatisfiesSheafHRR
+#print axioms AlgebraicGeometry.RiemannRoch.Surface.GeometricData.SatisfiesSheafHRR.eq
 #print axioms AlgebraicGeometry.RiemannRoch.Surface.GeometricData.totalChernCharacterHom
 #print axioms AlgebraicGeometry.RiemannRoch.Surface.GeometricData.totalTodd
 #print axioms AlgebraicGeometry.RiemannRoch.Surface.GeometricData.riemannRochHom
@@ -814,6 +819,7 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.RiemannRoch.Surface.GeometricData.rationalEulerHom_class
 #print axioms AlgebraicGeometry.RiemannRoch.Surface.GeometricData.hirzebruch_riemannRoch
 #print axioms AlgebraicGeometry.RiemannRoch.Surface.GeometricData.toNumericalVariety
+#print axioms AlgebraicGeometry.RiemannRoch.Surface.GeometricData.toNumericalVariety_satisfiesHRR
 #print axioms AlgebraicGeometry.RiemannRoch.Surface.GeometricData.toNumericalVariety_rank_class
 #print axioms AlgebraicGeometry.RiemannRoch.Surface.GeometricData.toNumericalVariety_chComp_class
 #print axioms AlgebraicGeometry.RiemannRoch.Surface.GeometricData.toNumericalVariety_toddComp
@@ -825,21 +831,30 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 
 -- Layer A: the graded-basis constructor. `ofGradedBasis` is what every concrete model
 -- goes through, so a sorry here would silently contaminate every instance in the repo.
+#print axioms NumericalRingData
+#print axioms NumericalRingData.piece
+#print axioms NumericalRingData.degree
+#print axioms NumericalVarietyData
+#print axioms NumericalVarietyData.ring
+#print axioms NumericalVarietyData.chi
 #print axioms gradedPiece
 #print axioms gradedPiece_eq_bot
 #print axioms gradedPiece_iSupIndep
 #print axioms gradedPiece_iSup_eq_top
 #print axioms gradedPiece_isInternal
 #print axioms gradedPiece_mul_mem
-#print axioms NumericalRing.ofGradedBasis
+#print axioms NumericalRingData.ofGradedBasis
 
 -- Layer A: the general Riemann-Roch expansion and its surface specialisation.
-#print axioms NumericalVariety.degree_ch_mul_todd
-#print axioms NumericalVariety.chi_eq_sum
-#print axioms NumericalVariety.discriminant_mem_piece_two
-#print axioms NumericalVariety.degree_discriminant
-#print axioms NumericalVariety.chComp_eq_zero_of_lt
-#print axioms NumericalVariety.toddComp_eq_zero_of_lt
+#print axioms NumericalVarietyData.SatisfiesHRR
+#print axioms NumericalVarietyData.SatisfiesHRR.eq
+#print axioms NumericalVarietyData.hrr
+#print axioms NumericalVarietyData.degree_ch_mul_todd
+#print axioms NumericalVarietyData.chi_eq_sum
+#print axioms NumericalVarietyData.discriminant_mem_piece_two
+#print axioms NumericalVarietyData.degree_discriminant
+#print axioms NumericalVarietyData.chComp_eq_zero_of_lt
+#print axioms NumericalVarietyData.toddComp_eq_zero_of_lt
 #print axioms Surface.chi_eq
 #print axioms Surface.discriminant_mem_piece_two
 #print axioms Surface.degree_discriminant
@@ -864,13 +879,13 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 
 -- Layer A: the dual involution and the Euler pairing. chi2 is what Bridgeland stability
 -- is defined against, so a sorry here would contaminate the downstream repos.
-#print axioms NumericalRingWithDual
-#print axioms NumericalVariety.dual_ch
-#print axioms NumericalVariety.chDual_add
-#print axioms NumericalVariety.chi₂_eq_sum
-#print axioms NumericalVariety.chi₂_eq_degree_dual_ch
-#print axioms NumericalVariety.chi₂_add_left
-#print axioms NumericalVariety.chi₂_add_right
+#print axioms NumericalRingDualData
+#print axioms NumericalVarietyData.dual_ch
+#print axioms NumericalVarietyData.chDual_add
+#print axioms NumericalVarietyData.chi₂_eq_sum
+#print axioms NumericalVarietyData.chi₂_eq_degree_dual_ch
+#print axioms NumericalVarietyData.chi₂_add_left
+#print axioms NumericalVarietyData.chi₂_add_right
 #print axioms Surface.chi₂_eq
 #print axioms Surface.chi₂_eq_chi_of_isStructureSheafLike
 #print axioms Surface.chi₂_sub_chi₂_swap
@@ -884,29 +899,29 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 -- torsion-freeness hypotheses.
 #print axioms ZLattice
 #print axioms ZLattice.ofFiniteTorsionFree
-#print axioms NumericalVariety.eulerPairingRow
-#print axioms NumericalVariety.eulerPairing
-#print axioms NumericalVariety.eulerPairingFlip
-#print axioms NumericalVariety.eulerPairing_apply
-#print axioms NumericalVariety.eulerPairingFlip_apply
-#print axioms NumericalVariety.leftRadical
-#print axioms NumericalVariety.rightRadical
-#print axioms NumericalVariety.mem_leftRadical_iff
-#print axioms NumericalVariety.mem_rightRadical_iff
-#print axioms NumericalVariety.IsEulerPairingSymmetric
-#print axioms NumericalVariety.leftRadical_eq_rightRadical
-#print axioms NumericalVariety.NumericalQuotient
-#print axioms NumericalVariety.eulerPairingDescendRight
-#print axioms NumericalVariety.eulerPairingDescendRight_mk
-#print axioms NumericalVariety.eulerPairingToQuotient
-#print axioms NumericalVariety.eulerPairingToQuotient_mk
-#print axioms NumericalVariety.numericalPairing
-#print axioms NumericalVariety.numericalPairing_mk
-#print axioms NumericalVariety.numericalPairing_symm
-#print axioms NumericalVariety.numericalPairing_left_nondegenerate
-#print axioms NumericalVariety.numericalPairing_right_nondegenerate
-#print axioms NumericalVariety.numericalPairing_ker_eq_bot
-#print axioms NumericalVariety.numericalZLattice
+#print axioms NumericalVarietyData.eulerPairingRow
+#print axioms NumericalVarietyData.eulerPairing
+#print axioms NumericalVarietyData.eulerPairingFlip
+#print axioms NumericalVarietyData.eulerPairing_apply
+#print axioms NumericalVarietyData.eulerPairingFlip_apply
+#print axioms NumericalVarietyData.leftRadical
+#print axioms NumericalVarietyData.rightRadical
+#print axioms NumericalVarietyData.mem_leftRadical_iff
+#print axioms NumericalVarietyData.mem_rightRadical_iff
+#print axioms NumericalVarietyData.IsEulerPairingSymmetric
+#print axioms NumericalVarietyData.leftRadical_eq_rightRadical
+#print axioms NumericalVarietyData.NumericalQuotient
+#print axioms NumericalVarietyData.eulerPairingDescendRight
+#print axioms NumericalVarietyData.eulerPairingDescendRight_mk
+#print axioms NumericalVarietyData.eulerPairingToQuotient
+#print axioms NumericalVarietyData.eulerPairingToQuotient_mk
+#print axioms NumericalVarietyData.numericalPairing
+#print axioms NumericalVarietyData.numericalPairing_mk
+#print axioms NumericalVarietyData.numericalPairing_symm
+#print axioms NumericalVarietyData.numericalPairing_left_nondegenerate
+#print axioms NumericalVarietyData.numericalPairing_right_nondegenerate
+#print axioms NumericalVarietyData.numericalPairing_ker_eq_bot
+#print axioms NumericalVarietyData.numericalZLattice
 #print axioms K3.isEulerPairingSymmetric
 #print axioms K3.leftRadical_eq_rightRadical
 #print axioms K3.numericalPairing_mk_eq_neg_mukaiPairing
@@ -919,8 +934,9 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 
 -- Layer A: the consistency witness. If this depended on `sorryAx` the whole
 -- interface would be unmodelled.
-#print axioms Examples.instNumericalRingPoint
-#print axioms Examples.instNumericalVarietyPoint
+#print axioms Examples.pointNumericalRing
+#print axioms Examples.pointNumericalVariety
+#print axioms Examples.pointNumericalVariety_satisfiesHRR
 #print axioms Examples.pointPiece_isInternal
 
 -- Layer A: the K3 model. If these carried a sorry the K3 theorems would still be
@@ -931,11 +947,13 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms Examples.surfaceDegree_normalForm
 #print axioms Examples.surfaceDegree_ch_mul_todd
 #print axioms Examples.k3NumericalVariety
+#print axioms Examples.k3NumericalVariety_satisfiesHRR
 #print axioms Examples.k3_isK3
 
 -- Layer A: the projective plane. Its td1 is nonzero, so it is the model that can
 -- detect an error in the c1.td1 term of Surface.chi_eq.
 #print axioms Examples.p2NumericalVariety
+#print axioms Examples.p2NumericalVariety_satisfiesHRR
 #print axioms Examples.p2_chi_structureSheaf
 #print axioms Examples.p2Chi_lineBundle
 #print axioms Examples.p2ChCoeff_lineBundle
@@ -946,6 +964,8 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms Examples.abelianTodd_mem
 #print axioms Examples.abelianTodd_sum
 #print axioms Examples.abelianNumericalVariety
+#print axioms Examples.abelianNumericalVariety_satisfiesHRR
+#print axioms Examples.k3AndAbelianPresentations
 #print axioms Examples.abelianToddComp_one
 #print axioms Examples.abelianChiStructureSheaf
 #print axioms Examples.abelianChi_eq_of_chComp_two_eq
@@ -987,6 +1007,7 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms Examples.rankOneTodd_mem
 #print axioms Examples.rankOneTodd_sum
 #print axioms Examples.rankOneNumericalVariety
+#print axioms Examples.rankOneNumericalVariety_satisfiesHRR
 
 -- Layer A: linear-section coordinates in dimensions three and four. These are what make
 -- chi integral on the lattice, so an axiom here would undermine every Euler
@@ -1010,6 +1031,7 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms Examples.p3Todd
 #print axioms Examples.p3Chi
 #print axioms Examples.p3NumericalVariety
+#print axioms Examples.p3NumericalVariety_satisfiesHRR
 #print axioms Examples.p3ChiStructureSheaf
 #print axioms Examples.p3Chi_lineBundle
 #print axioms Examples.p3ChCoeff_lineBundle_two
@@ -1017,6 +1039,7 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms Examples.quinticTodd
 #print axioms Examples.quinticChi
 #print axioms Examples.quinticNumericalVariety
+#print axioms Examples.quinticNumericalVariety_satisfiesHRR
 #print axioms Examples.quintic_isCalabiYau
 #print axioms Examples.quinticChi_structureSheaf
 #print axioms Examples.quinticChi_hyperplaneSection
@@ -1029,12 +1052,14 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms Examples.p4Todd
 #print axioms Examples.p4Chi
 #print axioms Examples.p4NumericalVariety
+#print axioms Examples.p4NumericalVariety_satisfiesHRR
 #print axioms Examples.p4ChiStructureSheaf
 #print axioms Examples.p4Chi_lineBundle
 #print axioms Examples.p4ChCoeff_lineBundle_four
 #print axioms Examples.sexticTodd
 #print axioms Examples.sexticChi
 #print axioms Examples.sexticNumericalVariety
+#print axioms Examples.sexticNumericalVariety_satisfiesHRR
 #print axioms Examples.sextic_isCalabiYau
 #print axioms Examples.sexticChi_structureSheaf
 #print axioms Examples.sexticChi_hyperplaneSection
@@ -1781,6 +1806,7 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.RiemannRoch.Surface.ToddData.structureToddOne_eq_toddOne
 #print axioms AlgebraicGeometry.RiemannRoch.Surface.ToddData.toddOne_eq_zero
 #print axioms AlgebraicGeometry.RiemannRoch.Surface.ToddData.degree_toddTwo_eq_two
+#print axioms AlgebraicGeometry.RiemannRoch.Surface.ToddData.NumericalVarietyComparison.ring_eq
 #print axioms AlgebraicGeometry.RiemannRoch.Surface.ToddData.NumericalVarietyComparison.toIsK3
 
 -- Layer B stage 5: finite locally free and explicitly perfect surface dévissage. Arbitrary
@@ -1807,7 +1833,9 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.RiemannRoch.Surface.Assembly.degree_tauComponent_two_eq_eulerCharacteristic
 #print axioms AlgebraicGeometry.RiemannRoch.Surface.Assembly.sheaf_hirzebruch_riemannRoch
 #print axioms AlgebraicGeometry.RiemannRoch.Surface.Assembly.toGeometricData
+#print axioms AlgebraicGeometry.RiemannRoch.Surface.Assembly.toGeometricData_satisfiesSheafHRR
 #print axioms AlgebraicGeometry.RiemannRoch.Surface.Assembly.toNumericalVariety
+#print axioms AlgebraicGeometry.RiemannRoch.Surface.Assembly.toNumericalVariety_satisfiesHRR
 #print axioms AlgebraicGeometry.RiemannRoch.Surface.Assembly.PerfectReconstructionComparison
 #print axioms AlgebraicGeometry.RiemannRoch.Surface.Assembly.perfect_rank_eq
 #print axioms AlgebraicGeometry.RiemannRoch.Surface.Assembly.perfect_toddTwo_degree
@@ -1820,7 +1848,7 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 
 -- Layer B stage 5: numerical HRR in positive dimensions through four. Representability and
 -- divisor-pairing separation remain visible in `PairingContext`; no cycle-valued GRR theorem is
--- assumed. The dimension-three and dimension-four constructors discharge the Layer A HRR field.
+-- assumed. The dimension-three and dimension-four constructors expose a separate HRR witness.
 #print axioms AlgebraicGeometry.RiemannRoch.HigherDimension.reconstruction_eulerPic_one
 #print axioms AlgebraicGeometry.RiemannRoch.HigherDimension.degree_tauComponent_top_eq_eulerCharacteristic
 #print axioms AlgebraicGeometry.RiemannRoch.HigherDimension.ReconstructionSystem
@@ -1834,6 +1862,7 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.RiemannRoch.HigherDimension.sheaf_hirzebruch_riemannRoch
 #print axioms AlgebraicGeometry.RiemannRoch.HigherDimension.hirzebruch_riemannRoch
 #print axioms AlgebraicGeometry.RiemannRoch.HigherDimension.toNumericalVariety
+#print axioms AlgebraicGeometry.RiemannRoch.HigherDimension.toNumericalVariety_satisfiesHRR
 #print axioms AlgebraicGeometry.RiemannRoch.HigherDimension.numericalClass
 #print axioms AlgebraicGeometry.RiemannRoch.HigherDimension.toThreefoldNumericalVariety
 #print axioms AlgebraicGeometry.RiemannRoch.HigherDimension.toFourfoldNumericalVariety
@@ -2013,4 +2042,3 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Numerical.PreservesCategoricalEuler
 #print axioms AlgebraicGeometry.Numerical.preservesEuler_of_descends
 #print axioms AlgebraicGeometry.Numerical.pairing_mukaiVector_eq_on_realized_of_categorical
-

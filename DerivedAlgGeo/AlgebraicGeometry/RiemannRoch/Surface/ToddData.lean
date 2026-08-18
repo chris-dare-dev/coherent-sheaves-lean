@@ -21,8 +21,8 @@ characteristic `χ(O_X)`.  Representability of the twist functional remains expl
 `PairingContext.ReconstructionData`; no global Chow group or hidden existence instance is used.
 
 The resulting component family carries the grading and normalization statements expected by
-`NumericalVariety`.  A final comparison theorem turns geometric K3 hypotheses into the existing
-Layer A `K3.IsK3` class whenever a proposed `NumericalVariety` uses these components.
+`NumericalVarietyData`. A final comparison theorem turns geometric K3 hypotheses into a Layer A
+`K3.IsK3` witness for any proposed `NumericalVarietyData` using these components.
 -/
 
 universe u v w
@@ -44,7 +44,7 @@ variable {k : Type u} [Field k]
 variable {X : SmoothProperVariety k}
 variable {D : FiniteCohomology X.toVariety}
 variable {C : D.LinearConnectingSystem}
-variable {A : Type v} [CommRing A] [Algebra ℚ A] [NumericalRing 2 A]
+variable {A : Type v} [CommRing A] [Algebra ℚ A]
 
 noncomputable section
 
@@ -146,27 +146,27 @@ noncomputable def toddComponent (T : Data P K) : ℕ → A
   | _ => 0
 
 theorem numericalCanonicalClass_mem :
-    numericalCanonicalClass (P := P) (K := K) ∈ NumericalRing.piece (n := 2) 1 :=
+    numericalCanonicalClass (P := P) (K := K) ∈ P.ring.piece 1 :=
   P.divisorClass_mem K.canonicalClassAdd
 
 theorem toddZero_mem :
-    toddZero (A := A) ∈ NumericalRing.piece (n := 2) 0 :=
-  NumericalRing.one_mem_piece_zero
+    toddZero (A := A) ∈ P.ring.piece 0 :=
+  P.ring.one_mem_piece_zero
 
 theorem toddOne_mem :
-    toddOne (P := P) (K := K) ∈ NumericalRing.piece (n := 2) 1 := by
+    toddOne (P := P) (K := K) ∈ P.ring.piece 1 := by
   unfold toddOne
   exact Submodule.neg_mem _ <| by
-    simpa using NumericalRing.mul_mem_piece
-      (NumericalRing.algebraMap_mem_piece_zero (n := 2) (A := A) (1 / 2))
+    simpa using P.ring.mul_mem_piece
+      (P.ring.algebraMap_mem_piece_zero (1 / 2))
       (numericalCanonicalClass_mem (P := P) (K := K))
 
 theorem toddTwo_mem (T : Data P K) :
-    toddTwo T ∈ NumericalRing.piece (n := 2) 2 :=
+    toddTwo T ∈ P.ring.piece 2 :=
   T.structureData.tauComponent_mem 2
 
 theorem toddComponent_mem (T : Data P K) (i : ℕ) :
-    toddComponent T i ∈ NumericalRing.piece (n := 2) i := by
+    toddComponent T i ∈ P.ring.piece i := by
   rcases i with _ | _ | _ | i
   · exact toddZero_mem
   · exact toddOne_mem
@@ -192,7 +192,7 @@ theorem toddComponent_eq_zero_of_two_lt (T : Data P K)
 /-- The reconstructed top Todd component has degree `χ(O_X)`, derived from the
 structure-sheaf twist polynomial rather than supplied as a Todd axiom. -/
 theorem degree_toddTwo_eq_eulerPic_one (T : Data P K) :
-    NumericalRing.degree (n := 2) (toddTwo T) =
+    P.ring.degree (toddTwo T) =
       (P.intersection.eulerPic 1 : ℚ) := by
   have h := T.structureData.degree_tauComponent_mul_divisorProduct
     2 (by omega) [] (by simp)
@@ -201,7 +201,7 @@ theorem degree_toddTwo_eq_eulerPic_one (T : Data P K) :
 
 /-- Geometric form of the top normalization: `∫td₂ = χ(O_X)`. -/
 theorem degree_toddTwo_eq_structureSheafEulerCharacteristic (T : Data P K) :
-    NumericalRing.degree (n := 2) (toddTwo T) =
+    P.ring.degree (toddTwo T) =
       (D.eulerCharacteristic
         (structureSheafObject P.intersection.structureSheafCoherent) : ℚ) := by
   rw [degree_toddTwo_eq_eulerPic_one T,
@@ -210,12 +210,12 @@ theorem degree_toddTwo_eq_structureSheafEulerCharacteristic (T : Data P K) :
 /-- Realization of the intersection of the numerical canonical class with a divisor class. -/
 theorem degree_numericalCanonicalClass_mul_divisorClass
     (L : Additive (Pic X.toVariety.toScheme)) :
-    NumericalRing.degree (n := 2)
+    P.ring.degree
         (numericalCanonicalClass (P := P) (K := K) * P.divisorClass L) =
       (P.intersection.surfaceIntersectionPairing K.canonicalClassAdd L : ℤ) := by
   have h := P.degree_divisorProduct ![K.canonicalClass, L.toMul]
   rw [P.intersection.picardIntersectionNumber_fin2] at h
-  change NumericalRing.degree (n := 2)
+  change P.ring.degree
       (P.divisorClass (Additive.ofMul K.canonicalClass) * P.divisorClass L) =
     (P.intersection.surfaceIntersectionNumber K.canonicalClass L.toMul : ℚ)
   simpa [divisorProduct, numericalCanonicalClass] using h
@@ -245,11 +245,11 @@ theorem toddOnePairing_eq_neg_half_canonical (T : Data P K)
 /-- Ring-valued form of `td₁ = -K_X/2`, tested against every divisor class. -/
 theorem degree_toddOne_mul_divisorClass (T : Data P K)
     (L : Additive (Pic X.toVariety.toScheme)) :
-    NumericalRing.degree (n := 2)
+    P.ring.degree
         (toddOne (P := P) (K := K) * P.divisorClass L) =
       toddOnePairing P.intersection L := by
   rw [toddOne, neg_mul, map_neg]
-  rw [mul_assoc, NumericalRing.degree_algebraMap_mul,
+  rw [mul_assoc, P.ring.degree_algebraMap_mul,
     degree_numericalCanonicalClass_mul_divisorClass (P := P) (K := K) L,
     toddOnePairing_eq_neg_half_canonical T L]
   ring
@@ -291,56 +291,57 @@ theorem toddOne_eq_zero (hK : K.canonicalClass = 1) :
 /-- K3 top normalization: `χ(O_X)=2` gives `∫td₂=2`. -/
 theorem degree_toddTwo_eq_two (T : Data P K)
     (hchi : P.intersection.eulerPic 1 = 2) :
-    NumericalRing.degree (n := 2) (toddTwo T) = 2 := by
+    P.ring.degree (toddTwo T) = 2 := by
   rw [degree_toddTwo_eq_eulerPic_one T, hchi]
   norm_num
 
 /-- A proposed Layer A numerical variety uses the geometrically constructed Todd components. -/
 structure NumericalVarietyComparison
     {B : Type v} [CommRing B] [Algebra ℚ B]
-    {N : Type w} [AddCommGroup N] [NumericalVariety 2 B N]
+    {N : Type w} [AddCommGroup N] (V : NumericalVarietyData 2 B N)
     {PB : PairingContext D C 2 B}
     {KB : SmoothProperVariety.CanonicalSheafData X 2}
     (T : Data PB KB) : Prop where
+  ring_eq : V.ring = PB.ring
   toddComp_eq : ∀ i,
-    NumericalVariety.toddComp (A := B) (N := N) i = toddComponent T i
+    V.toddComp i = toddComponent T i
 
 namespace NumericalVarietyComparison
 
 variable {B : Type v} [CommRing B] [Algebra ℚ B]
-variable {N : Type w} [AddCommGroup N] [NumericalVariety 2 B N]
+variable {N : Type w} [AddCommGroup N]
+variable (V : NumericalVarietyData 2 B N)
 variable {PB : PairingContext D C 2 B}
 variable {KB : SmoothProperVariety.CanonicalSheafData X 2}
 
 theorem toddComp_zero_eq (T : Data PB KB)
-    (Q : NumericalVarietyComparison (N := N) T) :
-    NumericalVariety.toddComp (A := B) (N := N) 0 = 1 := by
+    (Q : NumericalVarietyComparison V T) : V.toddComp 0 = 1 := by
   rw [Q.toddComp_eq, toddComponent_zero]
 
 theorem toddComp_one_eq (T : Data PB KB)
-    (Q : NumericalVarietyComparison (N := N) T) :
-    NumericalVariety.toddComp (A := B) (N := N) 1 =
-      toddOne (P := PB) (K := KB) := by
+    (Q : NumericalVarietyComparison V T) :
+    V.toddComp 1 = toddOne (P := PB) (K := KB) := by
   rw [Q.toddComp_eq, toddComponent_one]
 
 theorem degree_toddComp_two_eq (T : Data PB KB)
-    (Q : NumericalVarietyComparison (N := N) T) :
-    NumericalRing.degree (n := 2)
-        (NumericalVariety.toddComp (A := B) (N := N) 2) =
+    (Q : NumericalVarietyComparison V T) :
+    V.ring.degree (V.toddComp 2) =
       (PB.intersection.eulerPic 1 : ℚ) := by
-  rw [Q.toddComp_eq, toddComponent_two, degree_toddTwo_eq_eulerPic_one]
+  rw [Q.toddComp_eq, toddComponent_two, Q.ring_eq,
+    degree_toddTwo_eq_eulerPic_one]
 
 /-- The geometric Todd construction supplies the existing Layer A K3 hypotheses whenever the
 Layer A variety is explicitly compared with it. -/
 theorem toIsK3
-    (T : Data PB KB) (Q : NumericalVarietyComparison (N := N) T)
+    (T : Data PB KB) (Q : NumericalVarietyComparison V T)
     (hK : KB.canonicalClass = 1)
     (hchi : PB.intersection.eulerPic 1 = 2) :
-    AlgebraicGeometry.Numerical.K3.IsK3 B N where
+    AlgebraicGeometry.Numerical.K3.IsK3 V where
   toddComp_one := by
     rw [Q.toddComp_eq, toddComponent_one, toddOne_eq_zero hK]
   degree_toddComp_two := by
-    rw [Q.toddComp_eq, toddComponent_two, degree_toddTwo_eq_two T hchi]
+    rw [Q.toddComp_eq, toddComponent_two, Q.ring_eq,
+      degree_toddTwo_eq_two T hchi]
 
 end NumericalVarietyComparison
 

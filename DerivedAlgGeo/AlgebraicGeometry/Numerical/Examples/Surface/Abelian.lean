@@ -80,8 +80,8 @@ theorem abelianTodd_sum :
 and trivial Todd class. -/
 @[reducible]
 noncomputable def abelianNumericalVariety (d : ℕ) :
-    NumericalVariety 2 SurfaceRing SurfaceNum where
-  toNumericalRing := surfaceNumericalRing (2 * (d : ℚ))
+    NumericalVarietyData 2 SurfaceRing SurfaceNum where
+  ring := surfaceNumericalRing (2 * (d : ℚ))
   rank := { toFun := fun E => E.1, map_zero' := rfl, map_add' := fun _ _ => rfl }
   chComp := surfaceCh k3ChCoeff
   chComp_mem := surfaceCh_mem k3ChCoeff
@@ -94,26 +94,34 @@ noncomputable def abelianNumericalVariety (d : ℕ) :
     { toFun := fun E => 2 * (d : ℤ) * E.2.2
       map_zero' := by simp
       map_add' := by intro a b; show 2 * (d : ℤ) * (a.2.2 + b.2.2) = _; ring }
-  hirzebruch_riemannRoch := by
-    intro E
-    show ((2 * (d : ℤ) * E.2.2 : ℤ) : ℚ) = surfaceDegree (2 * (d : ℚ)) _
-    rw [surfaceCh_sum, abelianTodd_sum, surfaceDegree_ch_mul_todd]
-    show _ = 2 * (d : ℚ) * ((E.1 : ℚ) * 0 + (E.2.1 : ℚ) * 0 + (E.2.2 : ℚ))
-    push_cast
-    ring
+
+/-- With trivial Todd class, HRR reduces to the top Chern-character coordinate multiplied by
+the polarization degree `2d`. -/
+theorem abelianNumericalVariety_satisfiesHRR (d : ℕ) :
+    (abelianNumericalVariety d).SatisfiesHRR := by
+  refine ⟨fun E => ?_⟩
+  show ((2 * (d : ℤ) * E.2.2 : ℤ) : ℚ) = surfaceDegree (2 * (d : ℚ)) _
+  rw [surfaceCh_sum, abelianTodd_sum, surfaceDegree_ch_mul_todd]
+  show _ = 2 * (d : ℚ) * ((E.1 : ℚ) * 0 + (E.2.1 : ℚ) * 0 + (E.2.2 : ℚ))
+  push_cast
+  ring
+
+/-- Two numerical presentations on the same carriers coexist as ordinary data. This is a
+regression test against making either presentation a global instance. -/
+noncomputable def k3AndAbelianPresentations (d : ℕ) :
+    NumericalVarietyData 2 SurfaceRing SurfaceNum ×
+      NumericalVarietyData 2 SurfaceRing SurfaceNum :=
+  (k3NumericalVariety d, abelianNumericalVariety d)
 
 /-- `td₁ = 0`: the canonical class of an abelian surface is trivial. -/
 theorem abelianToddComp_one (d : ℕ) :
-    letI := abelianNumericalVariety d
-    NumericalVariety.toddComp (A := SurfaceRing) (N := SurfaceNum) 1 = 0 := rfl
+    (abelianNumericalVariety d).toddComp 1 = 0 := rfl
 
 /-- `∫_A td₂ = χ(O_A) = 0`. Together with `abelianToddComp_one` this is the abelian-surface
 analogue of `k3_isK3`, stated as two theorems because — unlike K3s and Calabi–Yau
 threefolds — abelian surfaces have no class in this library to inhabit. -/
 theorem abelianChiStructureSheaf (d : ℕ) :
-    letI := abelianNumericalVariety d
-    Surface.chiStructureSheaf SurfaceRing SurfaceNum = 0 := by
-  letI := abelianNumericalVariety d
+    Surface.chiStructureSheaf (abelianNumericalVariety d) = 0 := by
   show surfaceDegree (2 * (d : ℚ)) (abelianTodd 2) = 0
   show surfaceDegree (2 * (d : ℚ)) 0 = 0
   rw [map_zero]
@@ -126,12 +134,9 @@ This is the two-dimensional shadow of `CalabiYauThreefold.chi_eq_of_chComp_eq`, 
 the reason to carry this model alongside the K3: on a K3 the rank term survives with
 coefficient `∫td₂ = 2`, so the same statement is false there. -/
 theorem abelianChi_eq_of_chComp_two_eq (d : ℕ) (E F : SurfaceNum)
-    (h : letI := abelianNumericalVariety d
-      NumericalVariety.chComp (A := SurfaceRing) E 2
-        = NumericalVariety.chComp (A := SurfaceRing) F 2) :
-    letI := abelianNumericalVariety d
-    NumericalVariety.chi (A := SurfaceRing) E = NumericalVariety.chi (A := SurfaceRing) F := by
-  letI := abelianNumericalVariety d
+    (h : (abelianNumericalVariety d).chComp E 2 =
+      (abelianNumericalVariety d).chComp F 2) :
+    (abelianNumericalVariety d).chi E = (abelianNumericalVariety d).chi F := by
   -- `∫_A` renormalised to send `H²` to `1` is a coefficient extractor: it turns the equality
   -- of codimension-two components into the equality of the coordinates behind them. The
   -- model's own degree `2d` would not do, since it annihilates the coordinate when `d = 0`.

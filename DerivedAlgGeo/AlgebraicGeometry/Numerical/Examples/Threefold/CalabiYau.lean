@@ -11,7 +11,7 @@ import DerivedAlgGeo.AlgebraicGeometry.Numerical.Specializations.Threefold
 A smooth quintic hypersurface `X ⊂ ℙ⁴`, and the model that makes
 `AlgebraicGeometry.Numerical.CalabiYauThreefold` inhabited. Until this file,
 `CalabiYauThreefold.chi_eq` and `CalabiYauThreefold.chi_eq_of_chComp_eq` were conditional on
-a `NumericalVariety 3 A N` satisfying `IsCalabiYau` existing at all, which the module
+a `NumericalVarietyData 3 A N` satisfying `IsCalabiYau` existing at all, which the module
 docstring of `Numerical/Specializations/Threefold.lean` recorded as the outstanding gap.
 
 The data: `∫_X H³ = 5`, `K_X = 0`, and `∫_X c₂(X)·H = 50`, so
@@ -82,27 +82,31 @@ def quinticChi : ThreefoldNum →+ ℤ where
 /-- **The model.** A smooth quintic threefold in `ℙ⁴`: `∫H³ = 5`, `td = 1 + (5/6)H²`. -/
 @[reducible]
 noncomputable def quinticNumericalVariety :
-    NumericalVariety 3 (RankOneRing 3) ThreefoldNum :=
+    NumericalVarietyData 3 (RankOneRing 3) ThreefoldNum :=
   rankOneNumericalVariety 3 5 threefoldRank quinticChi (threefoldChCoeff 5) quinticTodd
-    (threefoldChCoeff_zero 5) (threefoldChCoeff_add 5) rfl (fun E => by
-      rw [threefoldChi_sum]
-      show ((5 * E.2.1 - 5 * E.2.2.1 + E.2.2.2 : ℤ) : ℚ)
-        = 5 * ((E.1 : ℚ) * 0 + (E.2.1 : ℚ) * (5 / 6)
-          + (-(E.2.1 : ℚ) / 2 + (E.2.2.1 : ℚ)) * 0
-          + ((E.2.1 : ℚ) / 6 - (E.2.2.1 : ℚ) + (E.2.2.2 : ℚ) / 5) * 1)
-      push_cast
-      ring)
+    (threefoldChCoeff_zero 5) (threefoldChCoeff_add 5) rfl
+
+/-- Substituting the quintic Todd coefficients into the rank-one HRR polynomial recovers the
+integer-valued Euler formula in linear-section coordinates. -/
+theorem quinticNumericalVariety_satisfiesHRR : quinticNumericalVariety.SatisfiesHRR :=
+  rankOneNumericalVariety_satisfiesHRR 3 5 threefoldRank quinticChi (threefoldChCoeff 5)
+    quinticTodd (threefoldChCoeff_zero 5) (threefoldChCoeff_add 5) rfl (fun E => by
+    rw [threefoldChi_sum]
+    show ((5 * E.2.1 - 5 * E.2.2.1 + E.2.2.2 : ℤ) : ℚ)
+      = 5 * ((E.1 : ℚ) * 0 + (E.2.1 : ℚ) * (5 / 6)
+        + (-(E.2.1 : ℚ) / 2 + (E.2.2.1 : ℚ)) * 0
+        + ((E.2.1 : ℚ) / 6 - (E.2.2.1 : ℚ) + (E.2.2.2 : ℚ) / 5) * 1)
+    push_cast
+    ring)
 
 /-- The model really is a Calabi–Yau threefold: `td₁ = 0` and `∫_X td₃ = χ(O_X) = 0`.
 
-With this instance every theorem in the `CalabiYauThreefold` namespace — in particular
+With this presentation and its property witnesses, every theorem in the
+`CalabiYauThreefold` namespace — in particular
 `chi_eq_of_chComp_eq`, that `χ` cannot see the rank — is a statement about an object that
 exists. -/
 theorem quintic_isCalabiYau :
-    letI := quinticNumericalVariety
-    CalabiYauThreefold.IsCalabiYau (RankOneRing 3) ThreefoldNum := by
-  -- the `letI` in the statement is zeta-reduced away, so re-establish the instance here
-  letI := quinticNumericalVariety
+    CalabiYauThreefold.IsCalabiYau quinticNumericalVariety := by
   constructor
   · show algebraMap ℚ (RankOneRing 3) (quinticTodd 1) * rankOneH 3 ^ 1 = 0
     show algebraMap ℚ (RankOneRing 3) 0 * rankOneH 3 ^ 1 = 0
