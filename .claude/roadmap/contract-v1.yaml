@@ -211,7 +211,7 @@ items:
 
   - id: contract-v1-e8
     gh_issue: 135
-    gh_sub_issues: [173, 174, 175, 176, 618]
+    gh_sub_issues: [173, 174, 175, 176]
     kind: epic
     parent: contract-v1-m2
     title: "First release, and the consumer side that reads it"
