@@ -5,7 +5,6 @@ Released under the MIT license.
 import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Symmetry.Combined.Action
 import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Metric.Distance.Topology
 import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Metric.Isometry.Phase
-import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Foundation
 import Mathlib.Topology.Algebra.ConstMulAction
 
 set_option backward.defeqAttrib.useBackward true
