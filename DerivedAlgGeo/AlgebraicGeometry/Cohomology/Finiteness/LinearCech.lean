@@ -136,4 +136,50 @@ theorem cechComparisonAddEquiv_coherentSmul (Y : Variety k) (F : Coh Y.toScheme)
     (HasExt.standard (Sheaf (Opens.grothendieckTopology Y.toScheme) AddCommGrpCat.{u}))
     hcover n r x
 
+/-- **The Čech comparison as a `k`-linear equivalence.**
+
+This is the form the finiteness interface consumes: the underlying additive equivalence is the
+Čech-to-derived comparison, and the scalar action it respects is `coherentScalarAction`. -/
+noncomputable def cechComparisonLinearEquiv (Y : Variety k) (F : Coh Y.toScheme)
+    {ind : Type u} (U : ind → Opens Y.toScheme)
+    (I : InjectiveResolution
+      ((Scheme.Modules.toSheaf Y.toScheme).obj ((Coh.ι Y.toScheme).obj F)))
+    (hcover : @IsCechAcyclicCover (Opens Y.toScheme) _
+      (Opens.grothendieckTopology Y.toScheme) _
+      (HasExt.standard (Sheaf (Opens.grothendieckTopology Y.toScheme) AddCommGrpCat.{u}))
+      ind _ U ((Scheme.Modules.toSheaf Y.toScheme).obj ((Coh.ι Y.toScheme).obj F)))
+    (n : ℕ) :
+    letI := cechCohomologyModule Y ((Coh.ι Y.toScheme).obj F) U n
+    ((cechCohomologyFunctor U n).obj
+        ((Scheme.Modules.toSheaf Y.toScheme).obj ((Coh.ι Y.toScheme).obj F))) ≃ₗ[k]
+      ((linearCoherentH Y n).obj F) :=
+  letI := cechCohomologyModule Y ((Coh.ι Y.toScheme).obj F) U n
+  { __ := cechComparisonAddEquiv Limits.isTerminalTop U I
+      (HasExt.standard (Sheaf (Opens.grothendieckTopology Y.toScheme) AddCommGrpCat.{u}))
+      hcover n
+    map_smul' := cechComparisonAddEquiv_coherentSmul Y F U I hcover n }
+
+/-- **Finite-dimensionality transfers from the Čech complex to the interface group.**
+
+`FiniteDimensionalCohomology` asks for `Module.Finite k ((moduleH i).obj F)`, and
+`linearCoherentH` is the realization that supplies `moduleH`. The Čech side is where a finite
+spanning set is actually available; this carries it across, and it is the `k`-linearity of the
+comparison -- not the additive equivalence alone -- that makes the transfer legitimate. -/
+theorem module_finite_linearCoherentH_of_cech (Y : Variety k) (F : Coh Y.toScheme)
+    {ind : Type u} (U : ind → Opens Y.toScheme)
+    (I : InjectiveResolution
+      ((Scheme.Modules.toSheaf Y.toScheme).obj ((Coh.ι Y.toScheme).obj F)))
+    (hcover : @IsCechAcyclicCover (Opens Y.toScheme) _
+      (Opens.grothendieckTopology Y.toScheme) _
+      (HasExt.standard (Sheaf (Opens.grothendieckTopology Y.toScheme) AddCommGrpCat.{u}))
+      ind _ U ((Scheme.Modules.toSheaf Y.toScheme).obj ((Coh.ι Y.toScheme).obj F)))
+    (n : ℕ)
+    (hfin : letI := cechCohomologyModule Y ((Coh.ι Y.toScheme).obj F) U n
+      Module.Finite k ((cechCohomologyFunctor U n).obj
+        ((Scheme.Modules.toSheaf Y.toScheme).obj ((Coh.ι Y.toScheme).obj F)))) :
+    Module.Finite k ((linearCoherentH Y n).obj F) :=
+  letI := cechCohomologyModule Y ((Coh.ι Y.toScheme).obj F) U n
+  letI := hfin
+  Module.Finite.equiv (cechComparisonLinearEquiv Y F U I hcover n)
+
 end AlgebraicGeometry.Cohomology

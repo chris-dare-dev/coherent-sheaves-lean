@@ -304,8 +304,9 @@ noncomputable def coherentHScalarAction (Y : Variety k) (i : ℕ)
     ((additiveMapEndRingHom (coherentH Y.toScheme i) F).comp
       (coherentScalarAction Y F))
 
+/-- The canonical base-field module structure on a derived coherent cohomology group. -/
 @[reducible]
-private noncomputable def coherentHModule (Y : Variety k) (i : ℕ)
+noncomputable def coherentHModule (Y : Variety k) (i : ℕ)
     (F : Coh Y.toScheme) : Module k ((coherentH Y.toScheme i).obj F) :=
   Module.compHom _ (coherentHScalarAction Y i F)
 
