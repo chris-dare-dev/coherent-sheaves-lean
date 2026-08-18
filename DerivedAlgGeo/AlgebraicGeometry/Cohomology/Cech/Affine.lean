@@ -2,6 +2,7 @@
 Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under the MIT license.
 -/
+import DerivedAlgGeo.Algebra.Module.LocalizedRadical
 import DerivedAlgGeo.AlgebraicGeometry.Cohomology.Simplicial.ExtraCodegeneracy
 import DerivedAlgGeo.Topology.Opens.Limits
 import Mathlib.Algebra.Category.ModuleCat.Products
@@ -185,43 +186,6 @@ lemma basicOpen_prod_eq_pi (g : α → R) :
 
 end PrimeSpectrum
 
-namespace Submodule
-
-variable {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
-
-/-- If a section belongs to a submodule after localization at every element of `s`, then a
-power of every element in the radical of `span s` sends it into the submodule. -/
-private lemma exists_pow_smul_mem_of_isLocalized_radical
-    (s : Set R) {d : R} (hd : d ∈ (Ideal.span s).radical)
-    (Mₚ : ∀ _ : s, Type*) [∀ r : s, AddCommMonoid (Mₚ r)]
-    [∀ r : s, Module R (Mₚ r)] (f : ∀ r : s, M →ₗ[R] Mₚ r)
-    [∀ r : s, IsLocalizedModule.Away r.1 (f r)]
-    {m : M} {N : Submodule R M}
-    (h : ∀ r : s, f r m ∈ N.localized₀ (.powers r.1) (f r)) :
-    ∃ n : ℕ, d ^ n • m ∈ N := by
-  let I : Ideal R := N.comap (LinearMap.toSpanSingleton R M m)
-  have hrs : Ideal.span s ≤ I.radical := by
-    apply Ideal.span_le.2
-    intro r hr
-    let r' : s := ⟨r, hr⟩
-    obtain ⟨a, ha, t, e⟩ := h r'
-    rw [← IsLocalizedModule.mk'_one (.powers r'.1),
-      IsLocalizedModule.mk'_eq_mk'_iff] at e
-    obtain ⟨u, hu⟩ := e
-    simp_rw [smul_smul] at hu
-    obtain ⟨k, hk⟩ := (u * t).2
-    refine ⟨k, ?_⟩
-    change r'.1 ^ k • m ∈ N
-    have hpow : r'.1 ^ k = (u * t : Submonoid.powers r'.1).1 := by
-      simpa only using hk
-    rw [hpow]
-    exact hu ▸ N.smul_mem (u * 1 : Submonoid.powers r'.1).1 ha
-  have hdI : d ∈ I.radical :=
-    (I.radical_isRadical.radical_le_iff.2 hrs) hd
-  obtain ⟨n, hn⟩ := hdI
-  exact ⟨n, hn⟩
-
-end Submodule
 
 /-- Exactness descends from localizations at a family whose span contains `d` up to radical,
 provided multiplication by `d` is invertible on the source and middle modules. -/
