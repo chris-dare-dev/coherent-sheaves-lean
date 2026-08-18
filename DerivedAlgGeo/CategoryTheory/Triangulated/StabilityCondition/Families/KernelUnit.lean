@@ -17,11 +17,12 @@ along the diagonal `δ : X ⟶ X ×_S X`, and neither `𝒪_X` nor anything abou
 This file is the ledger for it, in the same shape as the two kernel ledgers:
 
 * `diagonalKernel` is a **definition** — `Rδ_*` applied to the tensor unit —
-  built from functors the first ledger already names plus one new input
-  (`HasTensorUnit`).
+  built from functors the first ledger already names plus the coherent
+  derived-tensor root (`HasCoherentDerivedTensor`).
 * `geometricUnitIso`, the statement that its transform is the identity, is
   **derived** from four inputs: the right-slot projection formula at `δ`
-  (an *existing* class, consumed here at a second site), the tensor unit,
+  (an *existing* class, consumed here at a second site), the coherent left
+  unitor,
   and the two retraction classes below.
 * `geometricUnitKernelData` assembles a genuine
   `UnitKernelData (geometricCorrespondence X X Z p q)` from exactly those
@@ -32,8 +33,9 @@ This file is the ledger for it, in the same shape as the two kernel ledgers:
 Classically every input below is a theorem about the diagonal of a product:
 `δ ≫ p = 𝟙 = δ ≫ q` are the defining triangle identities, pullback and
 pushforward along a retraction compose to the identity by functoriality, and
-`− ⊗ 𝒪` is the identity because `𝒪` is the monoidal unit. Here each is a
-named class, and the two retraction classes carry their triangle identity as
+`− ⊗ 𝒪` is the identity because `𝒪` is the monoidal unit. The tensor unit and
+unitor now come from one structure whose triangle law is explicit. The two
+retraction classes carry their triangle identity as
 a `comm` **guard** — deliberately not consumed by the derivation, which uses
 `iso` alone; the guard is what makes `iso` the right thing to ask for.
 
@@ -49,9 +51,9 @@ a `comm` **guard** — deliberately not consumed by the derivation, which uses
   substrate in this repository. It stays a named absence, not a ledger,
   because a ledger for it would today be a list of classes nothing will
   discharge and nothing consumes.
-* The unit kernel is not proved to be a unit *for convolution* — that needs
-  convolution data comparing the correspondence with itself, exactly as the
-  `KernelAutoequivalence.id` docstring already says.
+* This file alone does not prove the kernel is a unit *for convolution*;
+  `KernelUnitConvolution.lean` derives those laws from additional section and
+  base-change geometry.
 -/
 
 universe u
@@ -67,12 +69,11 @@ variable {S : Scheme.{u}}
 
 section UnitInputs
 
-/-- **The derived tensor unit, supplied.**
+/-- Compatibility record for a raw tensor bifunctor with a chosen left unit.
 
-An object playing `𝒪_T` together with the statement that twisting by it is
-the identity. `HasDerivedTensor` deliberately carries no monoidal structure,
-so the unit is not a monoidal unit of anything — it is exactly the one
-isomorphism the unit-kernel derivation consumes, and no coherence beyond it. -/
+New stable unit and convolution APIs require `HasCoherentDerivedTensor`, where
+this unit and both unitors belong to the same monoidal structure as the
+associator, pentagon, and triangle. -/
 class HasTensorUnit (T : SchemeBaseChange S) [IsLocallyNoetherian T.left]
     [HasDerivedTensor T] where
   /-- The unit object, playing `𝒪_T`. -/
@@ -80,6 +81,16 @@ class HasTensorUnit (T : SchemeBaseChange S) [IsLocallyNoetherian T.left]
   /-- Twisting by the unit is the identity. -/
   iso : (derivedTensor T).obj unit ≅
     𝟭 (SchemeBoundedCoherentDerivedCategory T.left)
+
+/-- Forget the coherent root to the old selected-unit capability.
+
+This supports raw intermediate callers without allowing a selected unit to
+synthesize monoidal coherence. -/
+noncomputable instance hasTensorUnitOfCoherent (T : SchemeBaseChange S)
+    [IsLocallyNoetherian T.left] [HasCoherentDerivedTensor T] :
+    HasTensorUnit T where
+  unit := coherentDerivedTensorUnit T
+  iso := coherentDerivedTensorLeftUnitor T
 
 /-- **Derived pullback along a section collapses, supplied.**
 
@@ -136,9 +147,9 @@ the ledgers already name. -/
 noncomputable def diagonalKernel {X Z : SchemeBaseChange S}
     [IsLocallyNoetherian X.left] [IsLocallyNoetherian Z.left]
     (δ : X ⟶ Z) [HasDerivedPushforward δ]
-    [HasDerivedTensor X] [HasTensorUnit X] :
+    [HasCoherentDerivedTensor X] :
     SchemeBoundedCoherentDerivedCategory Z.left :=
-  (derivedPushforward δ).obj (HasTensorUnit.unit (T := X))
+  (derivedPushforward δ).obj (coherentDerivedTensorUnit X)
 
 /-- **The transform of the unit kernel is the identity — derived.**
 
@@ -147,7 +158,7 @@ The chain is the classical argument, four steps, each naming its input:
 | step | rewrites | input |
 |---|---|---|
 | 1 | `(⊗ 𝒪_Δ)` → `δ^* ⋙ (⊗𝒪) ⋙ δ_*` | `HasProjectionFormulaRight` at `δ` |
-| 2 | `(⊗𝒪)` deleted | `HasTensorUnit` |
+| 2 | `(⊗𝒪)` deleted | `HasCoherentDerivedTensor` left unitor |
 | 3 | `δ_* ⋙ q_*` deleted | `HasPushforwardRetraction` |
 | 4 | `p^* ⋙ δ^*` → `𝟭` | `HasPullbackRetraction` |
 
@@ -157,14 +168,14 @@ noncomputable def geometricUnitIso {X Z : SchemeBaseChange S}
     [IsLocallyNoetherian X.left] [IsLocallyNoetherian Z.left]
     (p q : Z ⟶ X) (δ : X ⟶ Z)
     [HasCoherentPullback p] [HasCoherentPullback δ]
-    [HasDerivedTensor Z] [HasDerivedTensor X]
+    [HasDerivedTensor Z] [HasCoherentDerivedTensor X]
     [HasDerivedPushforward q] [HasDerivedPushforward δ]
-    [HasProjectionFormulaRight δ] [HasTensorUnit X]
+    [HasProjectionFormulaRight δ]
     [HasPullbackRetraction δ p] [HasPushforwardRetraction δ q] :
     𝟭 (SchemeBoundedCoherentDerivedCategory X.left) ≅
       (geometricCorrespondence X X Z p q).transform (diagonalKernel δ) :=
   let u : SchemeBoundedCoherentDerivedCategory X.left :=
-    HasTensorUnit.unit (T := X)
+    coherentDerivedTensorUnit X
   let U₀ : SchemeBoundedCoherentDerivedCategory X.left ⥤
       SchemeBoundedCoherentDerivedCategory X.left :=
     boundedCoherentDerivedPullback p ⋙
@@ -193,7 +204,7 @@ noncomputable def geometricUnitIso {X Z : SchemeBaseChange S}
     Functor.isoWhiskerLeft (boundedCoherentDerivedPullback p)
       (Functor.isoWhiskerLeft (boundedCoherentDerivedPullback δ)
         (vanishHead (derivedPushforward δ ⋙ derivedPushforward q)
-          (HasTensorUnit.iso (T := X))))
+          (coherentDerivedTensorLeftUnitor X)))
   -- Step 3, the pushforward retraction collapses the tail.
   let t₃ : U₂ ≅ U₃ :=
     Functor.isoWhiskerLeft (boundedCoherentDerivedPullback p)
@@ -216,9 +227,9 @@ noncomputable def geometricUnitKernelData {X Z : SchemeBaseChange S}
     [IsLocallyNoetherian X.left] [IsLocallyNoetherian Z.left]
     (p q : Z ⟶ X) (δ : X ⟶ Z)
     [HasCoherentPullback p] [HasCoherentPullback δ]
-    [HasDerivedTensor Z] [HasDerivedTensor X]
+    [HasDerivedTensor Z] [HasCoherentDerivedTensor X]
     [HasDerivedPushforward q] [HasDerivedPushforward δ]
-    [HasProjectionFormulaRight δ] [HasTensorUnit X]
+    [HasProjectionFormulaRight δ]
     [HasPullbackRetraction δ p] [HasPushforwardRetraction δ q] :
     Symmetry.UnitKernelData (geometricCorrespondence X X Z p q) where
   unitKernel := diagonalKernel δ
@@ -230,7 +241,7 @@ end Derivation
 
 The unit side of the autoequivalence story is now: a caller who discharges
 the first ledger's contracts at `p`, `q`, `δ` plus `HasProjectionFormulaRight`
-at `δ`, `HasTensorUnit`, and the two retraction classes gets
+at `δ`, `HasCoherentDerivedTensor`, and the two retraction classes gets
 `KernelAutoequivalence.id` with a geometric kernel. Still absent, and named
 absences rather than ledgers: `DualKernel` (needs derived duals and a
 dualizing complex) and the unit's compatibility with convolution (needs
