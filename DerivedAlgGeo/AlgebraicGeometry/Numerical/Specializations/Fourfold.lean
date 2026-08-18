@@ -7,7 +7,7 @@ import DerivedAlgGeo.AlgebraicGeometry.Numerical.RiemannRoch.General
 /-!
 # Display formulas for numerical fourfolds
 
-The `n = 4` specialisation of `AlgebraicGeometry.Numerical.NumericalVariety.chi_eq_sum`,
+The `n = 4` specialisation of `AlgebraicGeometry.Numerical.NumericalVarietyData.chi_eq_sum`,
 closing out the dimensions this repo targets.
 
 This file is mechanical on purpose. It is the check that `degree_ch_mul_todd` really is
@@ -42,44 +42,44 @@ namespace AlgebraicGeometry.Numerical
 
 namespace Fourfold
 
-open NumericalRing NumericalVariety Finset
+open NumericalRingData NumericalVarietyData Finset
 
 variable {A : Type u} {N : Type v}
-variable [CommRing A] [Algebra ℚ A] [AddCommGroup N] [NumericalVariety 4 A N]
+variable [CommRing A] [Algebra ℚ A] [AddCommGroup N]
+variable (V : NumericalVarietyData 4 A N)
 
 /-- `χ(O_X)` for a fourfold, read off the top Todd component: taking `E` of rank one with
 vanishing higher Chern components in `chi_eq` leaves exactly `∫_X td₄(X)`. -/
-noncomputable abbrev chiStructureSheaf (A : Type u) (N : Type v) [CommRing A] [Algebra ℚ A]
-    [AddCommGroup N] [NumericalVariety 4 A N] : ℚ :=
-  NumericalVariety.structureSheafEulerCharacteristic (n := 4) (A := A) (N := N)
+noncomputable abbrev chiStructureSheaf : ℚ := V.structureSheafEulerCharacteristic
 
 /-- **Riemann–Roch for fourfolds.**
 
 `χ(E) = rank(E) · ∫_X td₄(X) + ∫_X c₁(E)·td₃(X) + ∫_X ch₂(E)·td₂(X) + ∫_X ch₃(E)·td₁(X)
 + ∫_X ch₄(E)`. -/
-theorem chi_eq (E : N) :
-    (chi (A := A) E : ℚ)
-      = (rank (A := A) E : ℚ) * degree (n := 4) (toddComp (A := A) (N := N) 4)
-        + degree (n := 4) (chComp (A := A) E 1 * toddComp (N := N) 3)
-        + degree (n := 4) (chComp (A := A) E 2 * toddComp (N := N) 2)
-        + degree (n := 4) (chComp (A := A) E 3 * toddComp (N := N) 1)
-        + degree (n := 4) (chComp (A := A) E 4) := by
-  have h := chi_eq_sum (A := A) E
+theorem chi_eq (hV : V.SatisfiesHRR) (E : N) :
+    (V.chi E : ℚ)
+      = (V.rank E : ℚ) * V.ring.degree (V.toddComp 4)
+        + V.ring.degree (V.chComp E 1 * V.toddComp 3)
+        + V.ring.degree (V.chComp E 2 * V.toddComp 2)
+        + V.ring.degree (V.chComp E 3 * V.toddComp 1)
+        + V.ring.degree (V.chComp E 4) := by
+  have h := V.chi_eq_sum hV E
   rw [Finset.sum_range_succ, Finset.sum_range_succ, Finset.sum_range_succ,
     Finset.sum_range_succ, Finset.sum_range_succ, Finset.sum_range_zero, zero_add] at h
   simp only [show (4 : ℕ) - 0 = 4 from rfl, show (4 : ℕ) - 1 = 3 from rfl,
     show (4 : ℕ) - 2 = 2 from rfl, show (4 : ℕ) - 3 = 1 from rfl,
     show (4 : ℕ) - 4 = 0 from rfl] at h
-  rw [h, chComp_zero, degree_algebraMap_mul, toddComp_zero, mul_one]
+  rw [h, V.chComp_zero, V.ring.degree_algebraMap_mul, V.toddComp_zero, mul_one]
 
 end Fourfold
 
 namespace CalabiYauFourfold
 
-open NumericalRing NumericalVariety
+open NumericalRingData NumericalVarietyData
 
 variable {A : Type u} {N : Type v}
-variable [CommRing A] [Algebra ℚ A] [AddCommGroup N] [NumericalVariety 4 A N]
+variable [CommRing A] [Algebra ℚ A] [AddCommGroup N]
+variable (V : NumericalVarietyData 4 A N)
 
 /-- The numerical signature of a **Calabi–Yau fourfold**: trivial canonical class and
 `χ(O_X) = 2`.
@@ -91,29 +91,26 @@ The three conditions are the odd Todd components vanishing — `td₁ = −K_X/2
 The `2` is the one place a fourfold differs qualitatively from the threefold, where the
 corresponding value is `0`: `χ` still sees the rank here, so unlike
 `CalabiYauThreefold.chi_eq_of_chComp_eq` there is no rank-blindness statement to make. -/
-class IsCalabiYau (A : Type u) (N : Type v) [CommRing A] [Algebra ℚ A] [AddCommGroup N]
-    [NumericalVariety 4 A N] : Prop where
+structure IsCalabiYau : Prop where
   /-- `td₁(X) = −K_X/2 = 0`. -/
-  toddComp_one : toddComp (A := A) (N := N) 1 = 0
+  toddComp_one : V.toddComp 1 = 0
   /-- `td₃(X) = c₁c₂/24 = 0`. -/
-  toddComp_three : toddComp (A := A) (N := N) 3 = 0
+  toddComp_three : V.toddComp 3 = 0
   /-- `∫_X td₄(X) = χ(O_X) = 2`. -/
-  degree_toddComp_four : degree (n := 4) (toddComp (A := A) (N := N) 4) = 2
-
-variable [IsCalabiYau A N]
+  degree_toddComp_four : V.ring.degree (V.toddComp 4) = 2
 
 /-- **Riemann–Roch on a Calabi–Yau fourfold**:
 `χ(E) = 2·rank(E) + ∫_X ch₂(E)·td₂(X) + ∫_X ch₄(E)`.
 
 Two of the five terms of `Fourfold.chi_eq` vanish, both because an odd Todd component does;
 the rank term survives with the coefficient `∫td₄ = 2`. -/
-theorem chi_eq (E : N) :
-    (chi (A := A) E : ℚ)
-      = 2 * (rank (A := A) E : ℚ)
-        + degree (n := 4) (chComp (A := A) E 2 * toddComp (N := N) 2)
-        + degree (n := 4) (chComp (A := A) E 4) := by
-  rw [Fourfold.chi_eq E, IsCalabiYau.toddComp_one, IsCalabiYau.toddComp_three,
-    IsCalabiYau.degree_toddComp_four]
+theorem chi_eq (hHRR : V.SatisfiesHRR) (hCY : IsCalabiYau V) (E : N) :
+    (V.chi E : ℚ)
+      = 2 * (V.rank E : ℚ)
+        + V.ring.degree (V.chComp E 2 * V.toddComp 2)
+        + V.ring.degree (V.chComp E 4) := by
+  rw [Fourfold.chi_eq V hHRR E, hCY.toddComp_one, hCY.toddComp_three,
+    hCY.degree_toddComp_four]
   simp only [mul_zero, map_zero]
   ring
 

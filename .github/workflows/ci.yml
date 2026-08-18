@@ -313,6 +313,9 @@ jobs:
       - name: Coherent families architecture
         run: python3 scripts/check_coherent_families.py
 
+      - name: Explicit numerical data architecture
+        run: python3 scripts/check_explicit_numerical_data.py
+
       - name: No declaration uses sorry
         run: |
           set -euo pipefail
@@ -444,7 +447,7 @@ jobs:
           echo "using $PY311 ($("$PY311" -V 2>&1))"
           "$PY311" -m venv .mfc-venv
           .mfc-venv/bin/pip install --quiet \
-            "mfc[yaml] @ git+https://github.com/chris-dare-dev/math-formal-contract-lean@d3df38183164d86ea5661ff3c26942c2c04c39fc#subdirectory=contract"
+            "mfc[yaml] @ git+https://github.com/chris-dare-dev/math-formal-contract-lean@b41d9bc87371ba807e069cf8c99cf632c0ca6bda#subdirectory=contract"
           MFC=.mfc-venv/bin/mfc
 
           "$MFC" validate attest/lean-emission.json
@@ -479,6 +482,95 @@ jobs:
             echo "::notice::check-resolution did NOT run: no attest/resolution.json yet (arXMCP-side, #134)"
           fi
 
+          # ------------------------------------------------------------------
+          # build.json, and the honest size of what it measured.
+          #
+          # There is no cheap route to project-wide NDJSON, and the obvious
+          # wirings are worse than nothing because THEY LOOK CLEAN. Measured on
+          # v4.32.1 before writing this:
+          #
+          #   - `lake env lean --json` on a root import file prints NOTHING.
+          #     Imports are served from oleans and never re-reported, so this
+          #     step would have emitted error_count 0, warning_count 0,
+          #     sorry_diagnostic_count 0 having elaborated no library module --
+          #     and `mfc seal` would have accepted it as the build/v1 predicate
+          #     C-12 requires. A vacuous pass wearing a passing bundle.
+          #   - `moreLeanArgs = ["--json"]` is consumed by lake, which
+          #     re-renders every message in its own text format.
+          #   - lake persists no structured log: .hash, .trace, .olean, .ilean.
+          #   - per-module invocation pays a full Mathlib import load each time;
+          #     494 own modules is hours, not a per-commit step.
+          #
+          # So this covers the two ROOT modules and says so. `--covers` is what
+          # puts `measured: {modules, in_scope_modules}` in the artifact, and
+          # `mfc build` prints "PARTIAL diagnostics cover 2 of N" on stderr
+          # every run. The number is meant to look small. It is small.
+          #
+          # THE REPOSITORY-WIDE SORRY GATE IS NOT THIS. It is the emission step
+          # above: `lake env lean --run exe/Emit.lean` exits non-zero when any
+          # constant's axiom closure contains sorryAx, over every constant in
+          # the environment, and it is strictly stronger than any build-log
+          # count because it cannot be defeated by declaration syntax.
+          #
+          # `set +e` around the sweep for the same reason as the exit capture
+          # below: a root module that will not elaborate is exactly when the
+          # diagnostics are worth having, and dying here would discard them
+          # before build.json is written. Only stdout is captured -- lean writes
+          # its JSON messages there, and anything lake says on stderr would not
+          # parse as NDJSON.
+          : > attest/lake-build.ndjson
+          set +e
+          for m in DerivedAlgGeo DerivedAlgGeoSweep; do
+            lake env lean --json "$m.lean" >> attest/lake-build.ndjson
+          done
+          set -e
+
+          # RECORDED, NEVER THE GATE -- on this toolchain a build whose only
+          # defect is a sorry exits 0. Captured rather than assumed, so the
+          # field says what happened.
+          #
+          # `set +e` and not `|| true`: with `|| true` the pipeline succeeds and
+          # $? is 0 no matter what lake returned, which would record a clean
+          # exit for a failed build -- the field lying in the one direction that
+          # matters. The step must not die here either; the artifact has to
+          # exist and be honest especially when the answer is bad.
+          set +e
+          lake build DerivedAlgGeoSweep > attest/lake-build.log 2>&1
+          LAKE_EXIT=$?
+          set -e
+          # 0 when lake printed no job line, which is what a fully cached
+          # no-op build looks like. `minimum: 0` in the schema permits it.
+          LAKE_JOBS=$(sed -n 's/.*Build completed successfully (\([0-9]*\) jobs).*/\1/p' \
+                        attest/lake-build.log | tail -1)
+          LAKE_JOBS=${LAKE_JOBS:-0}
+
+          "$MFC" build --ndjson attest/lake-build.ndjson \
+                       --environment attest/environment.json \
+                       --emission attest/lean-emission.json \
+                       --covers DerivedAlgGeo --covers DerivedAlgGeoSweep \
+                       --lake-exit "$LAKE_EXIT" --lake-jobs "$LAKE_JOBS" \
+                       --out attest/build.json
+
+          # The in-toto Statement, and then the twelve rules over it. Until
+          # this step existed nothing in either repository produced the file
+          # `conformance` reads, so C-01..C-12 ran only inside mfc's own pytest
+          # against a tree the tests assembled.
+          #
+          # `seal` REFUSES to omit a required predicate and refuses a dirty
+          # worktree; both are why the .gitignore block landed in this commit.
+          "$MFC" seal --root . \
+                      --environment attest/environment.json \
+                      --registry registry/bridgeland2007.json \
+                      --declarations attest/declarations.json \
+                      --build attest/build.json \
+                      --out attest/bundle.json
+
+          # C-08 and C-10 print not_run today -- no resolution.json (#134) and
+          # no review.yaml (#178). That is NOT a pass, and the summary line
+          # says so on every run.
+          "$MFC" conformance --bundle attest/bundle.json \
+                             --emission attest/lean-emission.json
+
       # Step 6 of #156: the determinism assertion. Two runs over an unchanged
       # environment must be byte-identical except for `emitted_at`.
       #
@@ -511,6 +603,10 @@ jobs:
           name: trust-artifacts
           path: |
             attest/lean-emission.json
+            attest/environment.json
+            attest/declarations.json
+            attest/build.json
+            attest/bundle.json
             coh-audit.txt
             bridgeland-audit.txt
           if-no-files-found: warn

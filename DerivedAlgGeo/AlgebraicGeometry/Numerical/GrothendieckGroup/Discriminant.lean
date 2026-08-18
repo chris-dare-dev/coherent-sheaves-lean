@@ -17,12 +17,11 @@ universe u v
 
 namespace AlgebraicGeometry.Numerical
 
-namespace NumericalVariety
-
-open NumericalRing
+namespace NumericalVarietyData
 
 variable {n : ℕ} {A : Type u} {N : Type v}
-variable [CommRing A] [Algebra ℚ A] [AddCommGroup N] [NumericalVariety n A N]
+variable [CommRing A] [Algebra ℚ A] [AddCommGroup N]
+variable (V : NumericalVarietyData n A N)
 
 /-- The numerical discriminant `Δ(E) = ch₁(E)² - 2 rank(E) ch₂(E)`.
 
@@ -30,23 +29,23 @@ It is defined for a numerical variety of any dimension. When `n < 2`, its member
 second graded piece forces it to vanish; when `n = 2`, its degree is the quantity appearing
 in the Bogomolov--Gieseker inequality. -/
 noncomputable def discriminant (E : N) : A :=
-  chComp (A := A) E 1 * chComp (A := A) E 1
-    - algebraMap ℚ A (2 * (rank (A := A) E : ℚ)) * chComp (A := A) E 2
+  V.chComp E 1 * V.chComp E 1
+    - algebraMap ℚ A (2 * (V.rank E : ℚ)) * V.chComp E 2
 
 /-- The discriminant lives in codimension two, independently of the ambient dimension. -/
 theorem discriminant_mem_piece_two (E : N) :
-    discriminant (A := A) E ∈ piece (n := n) 2 := by
+    V.discriminant E ∈ V.ring.piece 2 := by
   refine Submodule.sub_mem _ ?_ ?_
-  · exact mul_mem_piece (chComp_mem E 1) (chComp_mem E 1)
-  · exact mul_mem_piece (algebraMap_mem_piece_zero _) (chComp_mem E 2)
+  · exact V.ring.mul_mem_piece (V.chComp_mem E 1) (V.chComp_mem E 1)
+  · exact V.ring.mul_mem_piece (V.ring.algebraMap_mem_piece_zero _) (V.chComp_mem E 2)
 
 /-- Integrating the discriminant pulls its scalar coefficient outside the degree map. -/
 theorem degree_discriminant (E : N) :
-    degree (n := n) (discriminant (A := A) E)
-      = degree (n := n) (chComp (A := A) E 1 * chComp (A := A) E 1)
-        - 2 * (rank (A := A) E : ℚ) * degree (n := n) (chComp (A := A) E 2) := by
-  simp only [discriminant, map_sub, degree_algebraMap_mul]
+    V.ring.degree (V.discriminant E)
+      = V.ring.degree (V.chComp E 1 * V.chComp E 1)
+        - 2 * (V.rank E : ℚ) * V.ring.degree (V.chComp E 2) := by
+  simp only [discriminant, map_sub, V.ring.degree_algebraMap_mul]
 
-end NumericalVariety
+end NumericalVarietyData
 
 end AlgebraicGeometry.Numerical

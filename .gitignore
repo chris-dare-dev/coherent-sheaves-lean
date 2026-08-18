@@ -16,3 +16,18 @@ ROADMAP.md
 # Environment-emission artifacts are attached to releases or CI runs, not
 # committed as potentially stale trust records.
 /attest/
+
+# CI scratch, ignored so `worktree_dirty` in environment.json means what it
+# says. `mfc env` reads `git status --porcelain`, and `mfc seal` REFUSES a dirty
+# tree -- the subject attests a gitCommit, and uncommitted changes make every
+# digest in the bundle a true statement about a tree nobody can fetch. Before
+# this block the workflow's own venv and audit logs made every CI run "dirty",
+# which is a measurement of the workflow rather than of the repository.
+/.mfc-venv/
+/algebraic-geometry-audit.txt
+/bridgeland-audit.txt
+/coh-audit.txt
+/dg-audit.txt
+/enum-decls.txt
+/lean-source-check.txt
+/stability-condition-audit.txt

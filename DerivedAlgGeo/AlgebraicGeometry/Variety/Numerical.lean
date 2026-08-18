@@ -14,7 +14,7 @@ import DerivedAlgGeo.AlgebraicGeometry.Numerical.Core.Definitions
 `Variety.NumericalData` is the first explicit bridge from the geometric half of DerivedAlgGeo to
 the numerical half. Its source is a genuine `Variety k` and coherent sheaves on its underlying
 scheme. Its target is a numerical intersection ring `A`, a numerical Grothendieck group `N`,
-and ultimately a `NumericalVariety n A N`.
+and ultimately a `NumericalVarietyData n A N`.
 
 The important direction of construction is encoded in the fields:
 
@@ -43,18 +43,20 @@ namespace AlgebraicGeometry
 
 namespace Variety
 
-open Numerical Numerical.NumericalRing
+open Numerical Numerical.NumericalRingData
 
 variable {k : Type w} [Field k]
 
 /-- Certified data exhibiting how a geometric variety descends to a numerical variety.
 
-`NumericalRing n A` is an input because constructing the numerical intersection ring is a
+`NumericalRingData n A` is an input because constructing the numerical intersection ring is a
 separate geometric task. This structure then derives the numerical Chern character and Todd
 components from Chern-class data and packages all compatibility obligations needed for
-`NumericalVariety`. -/
+`NumericalVarietyData`. -/
 structure NumericalData (X : Variety k) (n : ℕ) (A : Type u) (N : Type v)
-    [CommRing A] [Algebra ℚ A] [AddCommGroup N] [NumericalRing n A] where
+    [CommRing A] [Algebra ℚ A] [AddCommGroup N] where
+  /-- The selected numerical intersection-ring presentation. -/
+  ring : NumericalRingData n A
   /-- The component formulas currently supplied cover every codimension of `X`. -/
   dimension_le_four : n ≤ 4
   /-- The numerical class of a coherent sheaf. -/
@@ -77,7 +79,7 @@ structure NumericalData (X : Variety k) (n : ℕ) (A : Type u) (N : Type v)
     chernClasses (classOf F) = coherentChernClasses F
   /-- The universally computed Chern-character components have the expected grading. -/
   chernCharacter_mem : ∀ (E : N) (i : ℕ),
-    ChernClassData.chernCharacterComponent (chernClasses E) i ∈ piece (n := n) i
+    ChernClassData.chernCharacterComponent (chernClasses E) i ∈ ring.piece i
   /-- The universally computed Chern character is additive on numerical classes. -/
   chernCharacter_add : ∀ (E F : N) (i : ℕ),
     ChernClassData.chernCharacterComponent (chernClasses (E + F)) i =
@@ -87,7 +89,7 @@ structure NumericalData (X : Variety k) (n : ℕ) (A : Type u) (N : Type v)
   tangentChernClasses : ChernClassData A
   /-- The universally computed Todd components have the expected grading. -/
   todd_mem : ∀ i : ℕ,
-    ChernClassData.toddComponent tangentChernClasses i ∈ piece (n := n) i
+    ChernClassData.toddComponent tangentChernClasses i ∈ ring.piece i
   /-- Euler characteristic on numerical classes. -/
   chi : N →+ ℤ
   /-- Finite-dimensional derived cohomology from which the geometric Euler characteristic is
@@ -96,18 +98,20 @@ structure NumericalData (X : Variety k) (n : ℕ) (A : Type u) (N : Type v)
   /-- The cohomological Euler characteristic descends through the numerical class map. -/
   coherentEulerCharacteristic_classOf : ∀ F : Coh X.toScheme,
     chi (classOf F) = finiteCohomology.eulerCharacteristic F
-  /-- Hirzebruch--Riemann--Roch for the components computed from Chern-class data. -/
-  hirzebruch_riemannRoch : ∀ E : N,
-    (chi E : ℚ) = degree (n := n)
-      ((∑ i ∈ Finset.range (n + 1),
-          ChernClassData.chernCharacterComponent (chernClasses E) i) *
-        (∑ j ∈ Finset.range (n + 1),
-          ChernClassData.toddComponent tangentChernClasses j))
 
 namespace NumericalData
 
 variable {X : Variety k} {n : ℕ} {A : Type u} {N : Type v}
-variable [CommRing A] [Algebra ℚ A] [AddCommGroup N] [NumericalRing n A]
+variable [CommRing A] [Algebra ℚ A] [AddCommGroup N]
+
+/-- Hirzebruch--Riemann--Roch as a property of geometric numerical data, kept
+separate from the selected realization. -/
+structure SatisfiesHRR (D : NumericalData X n A N) : Prop where
+  eq : ∀ E : N, (D.chi E : ℚ) = D.ring.degree
+    ((∑ i ∈ Finset.range (n + 1),
+        ChernClassData.chernCharacterComponent (D.chernClasses E) i) *
+      (∑ j ∈ Finset.range (n + 1),
+        ChernClassData.toddComponent D.tangentChernClasses j))
 
 /-- The geometric Euler characteristic used by a numerical realization, constructed from its
 finite-dimensional derived cohomology. -/
@@ -121,8 +125,8 @@ Unlike the original direct model definitions, the Chern-character and Todd compo
 independent fields here: they are definitionally the universal expressions in the supplied
 Chern classes. -/
 @[reducible]
-noncomputable def toNumericalVariety (D : NumericalData X n A N) : NumericalVariety n A N where
-  toNumericalRing := inferInstance
+noncomputable def toNumericalVariety (D : NumericalData X n A N) : NumericalVarietyData n A N where
+  ring := D.ring
   rank := D.rank
   chComp := fun E i => ChernClassData.chernCharacterComponent (D.chernClasses E) i
   chComp_mem := D.chernCharacter_mem
@@ -134,7 +138,11 @@ noncomputable def toNumericalVariety (D : NumericalData X n A N) : NumericalVari
   toddComp_mem := D.todd_mem
   toddComp_zero := ChernClassData.toddComponent_zero _
   chi := D.chi
-  hirzebruch_riemannRoch := D.hirzebruch_riemannRoch
+
+/-- A geometric HRR proof induces the proposition-valued numerical HRR witness. -/
+theorem toNumericalVariety_satisfiesHRR (D : NumericalData X n A N)
+    (hD : SatisfiesHRR D) : D.toNumericalVariety.SatisfiesHRR :=
+  ⟨hD.eq⟩
 
 @[simp] theorem toNumericalVariety_rank (D : NumericalData X n A N) :
     D.toNumericalVariety.rank = D.rank := rfl

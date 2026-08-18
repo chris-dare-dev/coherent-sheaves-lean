@@ -177,8 +177,8 @@ theorem surfaceDegree_normalForm (h2 a b c : ℚ) :
 
 /-- The numerical intersection ring of a Picard-rank-one surface with `∫_X H² = h2`. -/
 @[reducible]
-noncomputable def surfaceNumericalRing (h2 : ℚ) : NumericalRing 2 SurfaceRing :=
-  NumericalRing.ofGradedBasis 2 surfacePB.basis surfaceW surfaceW_le surface_one_mem
+noncomputable def surfaceNumericalRing (h2 : ℚ) : NumericalRingData 2 SurfaceRing :=
+  NumericalRingData.ofGradedBasis 2 surfacePB.basis surfaceW surfaceW_le surface_one_mem
     surface_mul_mem (surfaceDegree h2) (surfaceDegree_basis_of_ne h2)
 
 /-! ### The Chern character

@@ -85,18 +85,24 @@ def sexticChi : FourfoldNum →+ ℤ where
 `td = 1 + (5/4)H² + (1/3)H⁴`. -/
 @[reducible]
 noncomputable def sexticNumericalVariety :
-    NumericalVariety 4 (RankOneRing 4) FourfoldNum :=
+    NumericalVarietyData 4 (RankOneRing 4) FourfoldNum :=
   rankOneNumericalVariety 4 6 fourfoldRank sexticChi (fourfoldChCoeff 6) sexticTodd
-    (fourfoldChCoeff_zero 6) (fourfoldChCoeff_add 6) rfl (fun E => by
-      rw [fourfoldChi_sum]
-      show ((2 * E.1 - 4 * E.2.1 + 11 * E.2.2.1 - 9 * E.2.2.2.1 + E.2.2.2.2 : ℤ) : ℚ)
-        = 6 * ((E.1 : ℚ) * (1 / 3) + (E.2.1 : ℚ) * 0
-          + (-(E.2.1 : ℚ) / 2 + (E.2.2.1 : ℚ)) * (5 / 4)
-          + ((E.2.1 : ℚ) / 6 - (E.2.2.1 : ℚ) + (E.2.2.2.1 : ℚ)) * 0
-          + (-(E.2.1 : ℚ) / 24 + 7 * (E.2.2.1 : ℚ) / 12 - 3 * (E.2.2.2.1 : ℚ) / 2
-              + (E.2.2.2.2 : ℚ) / 6) * 1)
-      push_cast
-      ring)
+    (fourfoldChCoeff_zero 6) (fourfoldChCoeff_add 6) rfl
+
+/-- Substituting the sextic Todd coefficients into the rank-one HRR polynomial recovers the
+integer-valued Euler formula in linear-section coordinates. -/
+theorem sexticNumericalVariety_satisfiesHRR : sexticNumericalVariety.SatisfiesHRR :=
+  rankOneNumericalVariety_satisfiesHRR 4 6 fourfoldRank sexticChi (fourfoldChCoeff 6)
+    sexticTodd (fourfoldChCoeff_zero 6) (fourfoldChCoeff_add 6) rfl (fun E => by
+    rw [fourfoldChi_sum]
+    show ((2 * E.1 - 4 * E.2.1 + 11 * E.2.2.1 - 9 * E.2.2.2.1 + E.2.2.2.2 : ℤ) : ℚ)
+      = 6 * ((E.1 : ℚ) * (1 / 3) + (E.2.1 : ℚ) * 0
+        + (-(E.2.1 : ℚ) / 2 + (E.2.2.1 : ℚ)) * (5 / 4)
+        + ((E.2.1 : ℚ) / 6 - (E.2.2.1 : ℚ) + (E.2.2.2.1 : ℚ)) * 0
+        + (-(E.2.1 : ℚ) / 24 + 7 * (E.2.2.1 : ℚ) / 12 - 3 * (E.2.2.2.1 : ℚ) / 2
+            + (E.2.2.2.2 : ℚ) / 6) * 1)
+    push_cast
+    ring)
 
 /-- The model really is a Calabi–Yau fourfold: `td₁ = td₃ = 0` and `∫_X td₄ = χ(O_X) = 2`.
 
@@ -104,10 +110,7 @@ The third condition is the one with content — it is the only place the degree 
 the Todd coefficient `1/3` have to agree — and it is why this file computes `c₄ = 435H⁴`
 rather than normalising `td₄` to whatever makes the answer come out. -/
 theorem sextic_isCalabiYau :
-    letI := sexticNumericalVariety
-    CalabiYauFourfold.IsCalabiYau (RankOneRing 4) FourfoldNum := by
-  -- the `letI` in the statement is zeta-reduced away, so re-establish the instance here
-  letI := sexticNumericalVariety
+    CalabiYauFourfold.IsCalabiYau sexticNumericalVariety := by
   refine ⟨?_, ?_, ?_⟩
   · show algebraMap ℚ (RankOneRing 4) (sexticTodd 1) * rankOneH 4 ^ 1 = 0
     show algebraMap ℚ (RankOneRing 4) 0 * rankOneH 4 ^ 1 = 0
