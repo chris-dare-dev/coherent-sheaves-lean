@@ -889,6 +889,37 @@ theorem intCechTermSectionAddEquiv_toAddMonoidHom (ι k : Type u) [Field k] (d :
         (polynomialVariableCechDenominator ι k x) :=
   moduleAwayToSection_unique _ _ _ _ (intCechTermSectionAddEquiv_apply_mk ι k d x)
 
+/-- The integer Čech comparison intertwines the algebraic face with restriction of sections.
+
+This is `cechTermSectionAddEquiv_res_face` for a twist of either sign, and it is the same proof:
+once `intCechTermSectionAddEquiv_toAddMonoidHom` has identified the five-step composite with the
+canonical fraction-to-section map, the statement is `moduleAwayToSection_res_faceMap`, which is
+generic in the graded module and never mentions the twist. The sign lives entirely in the
+`intShift` bookkeeping that `intCechTermSectionAddEquiv` already absorbed. -/
+theorem intCechTermSectionAddEquiv_res_face (ι k : Type u) [Field k] (d : ℤ) {n : ℕ}
+    (x : Fin (n + 2) → ι) (j : Fin (n + 2))
+    (i : (op (ProjectiveSpectrum.basicOpen (polynomialGrading ι k)
+        (polynomialVariableCechDenominator ι k (x ∘ j.succAbove))) :
+          (Opens (ProjectiveSpectrum.top (polynomialGrading ι k)))ᵒᵖ) ⟶
+      op (ProjectiveSpectrum.basicOpen (polynomialGrading ι k)
+        (polynomialVariableCechDenominator ι k x)))
+    (z : polynomialVariableIntCechTerm ι k d n (x ∘ j.succAbove)) :
+    (associatedSheafInType (polynomialGrading ι k)
+          (intShift (polynomialGrading ι k) d)).1.map i
+        (intCechTermSectionAddEquiv ι k d (x ∘ j.succAbove) z) =
+      intCechTermSectionAddEquiv ι k d x (polynomialVariableIntCechFace ι k d x j z) := by
+  change (associatedSheafInType (polynomialGrading ι k)
+        (intShift (polynomialGrading ι k) d)).1.map i
+      ((intCechTermSectionAddEquiv ι k d (x ∘ j.succAbove)).toAddMonoidHom z) =
+    (intCechTermSectionAddEquiv ι k d x).toAddMonoidHom
+      (polynomialVariableIntCechFace ι k d x j z)
+  rw [intCechTermSectionAddEquiv_toAddMonoidHom, intCechTermSectionAddEquiv_toAddMonoidHom]
+  exact moduleAwayToSection_res_faceMap (polynomialGrading ι k)
+    (intShift (polynomialGrading ι k) d)
+    (MvPolynomial.isHomogeneous_X k (x j))
+    (polynomialVariableCechDenominator_succAbove_mem ι k x j)
+    (polynomialVariableCechDenominator_succAbove ι k x j) i z
+
 /-- The canonical fraction-to-section map is bijective on every Čech intersection, for a twist
 of either sign. -/
 theorem moduleAwayToSection_intCechDenominator_bijective (ι k : Type u) [Field k] (d : ℤ)

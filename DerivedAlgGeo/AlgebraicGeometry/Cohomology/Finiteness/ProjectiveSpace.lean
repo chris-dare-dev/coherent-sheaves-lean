@@ -276,4 +276,49 @@ theorem polynomialVariableIntShift_isCechAcyclicCover (ι k : Type u) [Field k] 
   polynomialVariable_isCechAcyclicCover_of_isQuasicoherent ι k
     (intShift (polynomialGrading ι k) d) (polynomialIntShift_isQuasicoherent ι k d)
 
+set_option maxHeartbeats 1600000 in
+set_option synthInstance.maxHeartbeats 400000 in
+/-- **The explicit Čech complex computes the cohomology of `O(d)` for a twist of either sign.**
+
+This is `polynomialVariableCechComplex_computesCohomology` with `natShift` replaced by
+`intShift` throughout, and it is assembled from the same three inputs, each already proved:
+
+* `polynomialVariableIntShift_isCechAcyclicCover` — the variable cover is Čech-acyclic for an
+  integer twist, which is what makes the Čech cohomology the derived cohomology at all;
+* `isCechAcyclicCover_cechComputesDerivedCohomologyAt_opens` — the Čech-to-derived comparison;
+* `polynomialVariableIntCechComplexIso` — Mathlib's Čech complex of the cover *is* the explicit
+  algebraic complex.
+
+The nonnegative statement is not a corollary of this one and is not restated in terms of it:
+`natShift` and `intShift` are different graded families, so the two complexes are related by
+transport rather than by definitional equality, and `#340`'s vanishing theorem reads the
+nonnegative one directly.
+
+The `HasExt` witness is passed positionally, for the reason recorded throughout this lane:
+`Sheaf.H` lands in the `HasExt` universe, so `HasExt.{u}` and `HasExt.{u + 1}` name different
+groups and instance search must not be allowed to pick.
+
+This is the input `#332`'s dévissage consumes. It surjects a finite sum of `O(-d)` onto a
+coherent sheaf and does descending induction on the degree, which needs `Hⁱ(Pⁿ, O(d))` presented
+as the cohomology of an explicit complex at negative `d`, not only at nonnegative `d`. -/
+theorem polynomialVariableIntCechComplex_computesCohomology (ι k : Type u) [Field k]
+    (d : ℤ) (n : ℕ)
+    [hExt : HasExt.{u + 1} (TopCat.Sheaf AddCommGrpCat.{u}
+      (_root_.AlgebraicGeometry.Proj (polynomialGrading ι k)))] :
+    Nonempty
+      (((polynomialVariableIntCechComplex ι k d).homology n : AddCommGrpCat.{u}) ≃+
+        @CategoryTheory.Sheaf.H
+          (Opens (_root_.AlgebraicGeometry.Proj (polynomialGrading ι k))) _
+          (Opens.grothendieckTopology
+            (_root_.AlgebraicGeometry.Proj (polynomialGrading ι k)))
+          ((_root_.AlgebraicGeometry.Scheme.Modules.toSheaf _).obj
+            (associatedSheaf (polynomialGrading ι k)
+              (intShift (polynomialGrading ι k) d))) _ hExt n) := by
+  obtain ⟨e⟩ := CategoryTheory.Sheaf.isCechAcyclicCover_cechComputesDerivedCohomologyAt_opens
+    (T := (⊤ : Opens (_root_.AlgebraicGeometry.Proj (polynomialGrading ι k))))
+    isTerminalTop (polynomialVariableChart ι k) hExt
+    (polynomialVariableIntShift_isCechAcyclicCover ι k d) n
+  exact ⟨(HomologicalComplex.homologyMapIso
+    (polynomialVariableIntCechComplexIso ι k d) n).symm.addCommGroupIsoToAddEquiv.trans e⟩
+
 end AlgebraicGeometry.Proj
