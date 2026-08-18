@@ -8,7 +8,7 @@ import Mathlib.AlgebraicGeometry.Morphisms.Smooth
 import DerivedAlgGeo.AlgebraicGeometry.Stacks.Representable
 
 /-!
-# Scheme morphisms and geometric properties of stack morphisms
+# Scheme morphisms and big-Zariski stack presentation data
 
 This file starts the algebraicity layer with two pieces of data that retain
 their geometric content:
@@ -18,8 +18,12 @@ their geometric content:
 * a property of a representable stack morphism is required on the actual
   structure morphism of every representing scheme.
 
-No Artin representability theorem or opaque algebraicity proposition is
-introduced.
+The presentation structure at the end of this file is deliberately named for
+the big Zariski topology.  It is useful geometric data, but it is not the
+standard definition of an algebraic stack: no fppf or étale descent theorem is
+proved here, and the diagonal is represented by schemes rather than algebraic
+spaces.  No Artin representability theorem or opaque algebraicity proposition
+is introduced.
 -/
 
 namespace AlgebraicGeometry
@@ -302,7 +306,7 @@ theorem representableZariskiStackMap_isOpenImmersion
   representableZariskiStackMap_hasRepresentableProperty
     @AlgebraicGeometry.IsOpenImmersion f inferInstance
 
-/-! ## Diagonal representability and algebraic-stack presentations -/
+/-! ## Diagonal representability and big-Zariski presentations -/
 
 /-- A scheme representing the isomorphisms between the pullbacks of two
 objects of a stack.  The equivalence is the pointwise Yoneda universal
@@ -364,14 +368,20 @@ instance representableZariskiStack_hasRepresentableDiagonal
   representation x y :=
     ⟨representableZariskiDiagonalFiberRepresentation x y⟩
 
-/-- An algebraic-stack presentation consists of effective descent, an actual
-representable diagonal, and a scheme atlas whose every fiber is represented
-by a smooth-surjective scheme morphism. -/
-structure AlgebraicStack where
+/-- A provisional big-Zariski stack presentation: effective Zariski descent,
+a diagonal represented by schemes, and a scheme atlas whose every fiber is
+represented by a smooth-surjective scheme morphism.
+
+This is not called `AlgebraicStack`: the standard notion requires fppf descent
+or an equivalent étale formulation, and usually asks for the diagonal to be
+representable by algebraic spaces. -/
+structure ZariskiStackPresentation where
   /-- The underlying big-Zariski stack in groupoids. -/
   toStackInGroupoids : StackInGroupoids Scheme.{u} Scheme.zariskiTopology
-  /-- The diagonal is represented by schemes via its isomorphism functors. -/
-  diagonal : toStackInGroupoids.HasRepresentableDiagonal
+  /-- The diagonal is represented by schemes via its isomorphism functors.
+  The scheme-level representability is explicit because it is stronger than
+  the usual algebraic-space diagonal condition. -/
+  schemeDiagonal : toStackInGroupoids.HasRepresentableDiagonal
   /-- The scheme presenting the stack. -/
   atlasScheme : Scheme.{u}
   /-- The atlas morphism from the corresponding representable stack. -/
@@ -381,45 +391,50 @@ structure AlgebraicStack where
   morphism. -/
   atlasSmoothSurjective : atlas.IsSmoothSurjective
 
-/-- Every representable big-Zariski stack has an algebraic-stack presentation
-using its identity atlas and its scheme-theoretic equalizer diagonal. -/
-def representableAlgebraicStack (X : Scheme.{u}) : AlgebraicStack where
+/-- Every representable big-Zariski stack has a Zariski presentation using its
+identity atlas and its scheme-theoretic equalizer diagonal. -/
+def representableZariskiStackPresentation (X : Scheme.{u}) :
+    ZariskiStackPresentation where
   toStackInGroupoids := representableZariskiStack X
-  diagonal := inferInstance
+  schemeDiagonal := inferInstance
   atlasScheme := X
   atlas := representableZariskiStackMap (𝟙 X)
   atlasSmoothSurjective :=
     representableZariskiStackMap_id_isSmoothSurjective X
 
-/-- An algebraic stack locally of finite presentation over a base scheme,
-expressed by an actual stack morphism whose every fiber has a locally
-finite-presentation representing scheme morphism. -/
-structure AlgebraicStackOver (S : Scheme.{u}) where
-  /-- The algebraic stack. -/
-  toAlgebraicStack : AlgebraicStack
+/-- A big-Zariski stack presentation locally of finite presentation over a
+base scheme, expressed by an actual stack morphism whose every fiber has a
+locally-finite-presentation representing scheme morphism. -/
+structure ZariskiStackPresentationOver (S : Scheme.{u}) where
+  /-- The underlying big-Zariski presentation. -/
+  toZariskiStackPresentation : ZariskiStackPresentation
   /-- Its structural morphism to the representable stack of the base. -/
   structureMorphism : StackMorphism
-    toAlgebraicStack.toStackInGroupoids (representableZariskiStack S)
+    toZariskiStackPresentation.toStackInGroupoids
+      (representableZariskiStack S)
   /-- Local finite presentation is checked on all scheme representatives of
   the structural morphism. -/
   locallyOfFinitePresentation :
     structureMorphism.IsLocallyOfFinitePresentation
 
 /-- A locally finitely presented scheme morphism gives a locally finitely
-presented algebraic stack over the target.  All fiber representatives are
-the actual scheme fiber products. -/
-def representableAlgebraicStackOver {X S : Scheme.{u}} (p : X ⟶ S)
-    [LocallyOfFinitePresentation p] : AlgebraicStackOver S where
-  toAlgebraicStack := representableAlgebraicStack X
+presented big-Zariski presentation over the target.  All fiber representatives
+are the actual scheme fiber products. -/
+def representableZariskiStackPresentationOver {X S : Scheme.{u}}
+    (p : X ⟶ S) [LocallyOfFinitePresentation p] :
+    ZariskiStackPresentationOver S where
+  toZariskiStackPresentation := representableZariskiStackPresentation X
   structureMorphism := representableZariskiStackMap p
   locallyOfFinitePresentation :=
     representableZariskiStackMap_hasRepresentableProperty
       @LocallyOfFinitePresentation p inferInstance
 
-/-- A concrete positive-dimensional supported case: the affine-line stack is
-algebraic and locally of finite presentation over every base scheme. -/
-def affineLineAlgebraicStackOver (S : Scheme.{u}) : AlgebraicStackOver S :=
-  representableAlgebraicStackOver
+/-- A concrete positive-dimensional supported case: the representable
+affine-line stack has a Zariski presentation locally of finite presentation
+over every base scheme. -/
+def affineLineZariskiStackPresentationOver (S : Scheme.{u}) :
+    ZariskiStackPresentationOver S :=
+  representableZariskiStackPresentationOver
     (𝔸(ULift.{u} (Fin 1); S) ↘ S)
 
 end
