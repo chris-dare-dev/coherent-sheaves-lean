@@ -101,6 +101,11 @@ theorem laurentFilter_apply_ge {γ : ι →₀ ℕ} {F : Finset ι} {i₀ : ι} 
 
 /-! ## The homotopy map -/
 
+variable {σM : Type u} [SetLike σM (MvPolynomial ι R)]
+  [AddSubgroupClass σM (MvPolynomial ι R)] {𝓜 : ℕ → σM}
+  [SetLike.GradedSMul (polynomialGrading ι R) 𝓜] {d : ℤ}
+
+
 /-- The full splitting of the cone denominator: `X_{i₀} · Xᵞ = X_{i₀}^{1+γ(i₀)} · Xᵞ''` with
 `γ'' = γ.erase i₀`. This is the splitting the projection half of the homotopy uses; unlike the
 naive `c = 1` splitting it leaves a target free of `i₀`, so the projection's equations apply
@@ -120,58 +125,63 @@ theorem laurentHomotopy_back (i₀ : ι) (γ : ι →₀ ℕ) :
 `X_{i₀}`, then reinsert the surplus `X_{i₀}^{γ(i₀)}` by a face. A composite of two maps that
 are already well defined and additive, so it is both, with no new descent argument. Callers
 use `laurentHomotopy_awayMk`. -/
-noncomputable def laurentHomotopy [IsDomain R] (i₀ : ι) (γ : ι →₀ ℕ) (d : ℕ) :
+noncomputable def laurentHomotopy [IsDomain R] (h𝓜 : IsPolynomialTwist 𝓜 d) (i₀ : ι)
+    (γ : ι →₀ ℕ) :
     DegreeZeroLocalization (polynomialGrading ι R)
-        (natShift (polynomialGrading ι R) d)
+        (𝓜)
         (.powers (MvPolynomial.monomial (Finsupp.single i₀ 1 + γ) (1 : R))) →+
       DegreeZeroLocalization (polynomialGrading ι R)
-        (natShift (polynomialGrading ι R) d)
+        (𝓜)
         (.powers (MvPolynomial.monomial γ (1 : R))) :=
-  (laurentFace (laurentHomotopy_back i₀ γ) d).comp
-    (signProjectionHom (laurentHomotopy_split i₀ γ) (Finsupp.erase_same) d)
+  (laurentFace 𝓜 (laurentHomotopy_back i₀ γ)).comp
+    (signProjectionHom h𝓜 (laurentHomotopy_split i₀ γ) Finsupp.erase_same)
 
+omit [AddSubgroupClass σM (MvPolynomial ι R)]
+  [SetLike.GradedSMul (polynomialGrading ι R) 𝓜] in
 /-- The numerator produced by the homotopy map is a legitimate numerator for `Xᵞ`. -/
-theorem laurentHomotopy_numerator_mem (i₀ : ι) (γ : ι →₀ ℕ) {d m : ℕ}
+theorem laurentHomotopy_numerator_mem (h𝓜 : IsPolynomialTwist 𝓜 d) (i₀ : ι) (γ : ι →₀ ℕ)
+    {m : ℕ}
     {q : MvPolynomial ι R}
-    (hq : q ∈ natShift (polynomialGrading ι R) d
+    (hq : q ∈ 𝓜
       (m • (Finsupp.single i₀ 1 + γ).degree)) :
     (MvPolynomial.monomial (Finsupp.single i₀ (γ i₀)) (1 : R)) ^ m •
       MvPolynomial.divMonomial q (Finsupp.single i₀ (m * (1 + γ i₀))) ∈
-      natShift (polynomialGrading ι R) d (m • γ.degree) := by
+      𝓜 (m • γ.degree) := by
   have hdeg : γ.degree = γ i₀ + (γ.erase i₀).degree := by
     conv_lhs => rw [← Finsupp.single_add_erase i₀ γ]
     rw [map_add, Finsupp.degree_single]
-  have h1 := divMonomial_mem_natShift (laurentHomotopy_split i₀ γ) hq
-  have h2 := monomial_single_pow_smul_mem (e := i₀) (c' := γ i₀) h1
+  have h1 := h𝓜.divMonomial_mem (laurentHomotopy_split i₀ γ) hq
+  have h2 := monomial_single_pow_smul_mem h𝓜 (e := i₀) (c' := γ i₀) h1
   rwa [← hdeg] at h2
 
 set_option maxHeartbeats 1200000 in
 /-- **The defining equation of the homotopy map**: on `q / (X_{i₀}·Xᵞ)ᵐ` it divides the
 numerator by `X_{i₀}^{m(1+γ(i₀))}` and multiplies `X_{i₀}^{m·γ(i₀)}` back in. -/
-theorem laurentHomotopy_awayMk [IsDomain R] (i₀ : ι) (γ : ι →₀ ℕ) {d m : ℕ}
+theorem laurentHomotopy_awayMk [IsDomain R] (h𝓜 : IsPolynomialTwist 𝓜 d) (i₀ : ι)
+    (γ : ι →₀ ℕ) {m : ℕ}
     {q : MvPolynomial ι R}
-    (hq : q ∈ natShift (polynomialGrading ι R) d
+    (hq : q ∈ 𝓜
       (m • (Finsupp.single i₀ 1 + γ).degree)) :
-    laurentHomotopy i₀ γ d
-        (DegreeZeroLocalization.awayMk (𝓜 := natShift (polynomialGrading ι R) d)
+    laurentHomotopy h𝓜 i₀ γ
+        (DegreeZeroLocalization.awayMk (𝓜 := 𝓜)
           (monomial_one_mem_polynomialGrading (R := R) (Finsupp.single i₀ 1 + γ)) m q hq) =
-      DegreeZeroLocalization.awayMk (𝓜 := natShift (polynomialGrading ι R) d)
+      DegreeZeroLocalization.awayMk (𝓜 := 𝓜)
         (monomial_one_mem_polynomialGrading (R := R) γ) m
         ((MvPolynomial.monomial (Finsupp.single i₀ (γ i₀)) (1 : R)) ^ m •
           MvPolynomial.divMonomial q (Finsupp.single i₀ (m * (1 + γ i₀))))
-        (laurentHomotopy_numerator_mem i₀ γ hq) := by
+        (laurentHomotopy_numerator_mem h𝓜 i₀ γ hq) := by
   have hdeg : γ.degree = γ i₀ + (γ.erase i₀).degree := by
     conv_lhs => rw [← Finsupp.single_add_erase i₀ γ]
     rw [map_add, Finsupp.degree_single]
-  have h1 := divMonomial_mem_natShift (laurentHomotopy_split i₀ γ) hq
-  have hres := monomial_single_pow_smul_mem (e := i₀) (c' := γ i₀) h1
+  have h1 := h𝓜.divMonomial_mem (laurentHomotopy_split i₀ γ) hq
+  have hres := monomial_single_pow_smul_mem h𝓜 (e := i₀) (c' := γ i₀) h1
   rw [laurentHomotopy, AddMonoidHom.comp_apply, signProjectionHom_apply,
-    signProjection_awayMk (laurentHomotopy_split i₀ γ) Finsupp.erase_same,
+    signProjection_awayMk h𝓜 (laurentHomotopy_split i₀ γ) Finsupp.erase_same,
     laurentFace_awayMk (laurentHomotopy_back i₀ γ) h1 hres,
     DegreeZeroLocalization.awayMk_deg_congr hdeg.symm
       (monomial_mem_add_degree (laurentHomotopy_back i₀ γ))
       (monomial_one_mem_polynomialGrading (R := R) γ) m _ hres
-      (laurentHomotopy_numerator_mem i₀ γ hq)]
+      (laurentHomotopy_numerator_mem h𝓜 i₀ γ hq)]
 
 /-! ## The retraction on a block -/
 
@@ -184,31 +194,31 @@ The front face multiplies the numerator by `X_{i₀}^m`; the projection half of 
 restores that surplus — and restoring is exact precisely because on block `F` with `i₀ ∉ F`
 every term had `β i₀ ≥ m·t` to give (`laurentFilter_apply_ge`). This is the only identity in
 the homotopy that sees the block. -/
-theorem laurentHomotopy_laurentFace_blockProj [IsDomain R] {i₀ : ι} {F : Finset ι}
-    (hi₀ : i₀ ∉ F) (γ : ι →₀ ℕ) (d : ℕ)
+theorem laurentHomotopy_laurentFace_blockProj [IsDomain R] (h𝓜 : IsPolynomialTwist 𝓜 d)
+    {i₀ : ι} {F : Finset ι} (hi₀ : i₀ ∉ F) (γ : ι →₀ ℕ)
     (z : DegreeZeroLocalization (polynomialGrading ι R)
-      (natShift (polynomialGrading ι R) d) (.powers (MvPolynomial.monomial γ (1 : R)))) :
-    laurentHomotopy i₀ γ d
-        (laurentFace (rfl : Finsupp.single i₀ 1 + γ = Finsupp.single i₀ 1 + γ) d
-          (blockProj γ F d z)) =
-      blockProj γ F d z := by
+      (𝓜) (.powers (MvPolynomial.monomial γ (1 : R)))) :
+    laurentHomotopy h𝓜 i₀ γ
+        (laurentFace 𝓜 (rfl : Finsupp.single i₀ 1 + γ = Finsupp.single i₀ 1 + γ)
+          (blockProj h𝓜 γ F z)) =
+      blockProj h𝓜 γ F z := by
   obtain ⟨m, q₀, hq₀, rfl⟩ := DegreeZeroLocalization.exists_awayMk
     (monomial_one_mem_polynomialGrading (R := R) γ) (monomial_one_pow_ne_zero γ) z
-  rw [blockProj_awayMk γ F]
+  rw [blockProj_awayMk h𝓜 γ F]
   have hq : laurentFilter γ m F q₀ ∈
-      natShift (polynomialGrading ι R) d (m • γ.degree) :=
-    laurentFilter_mem_natShift hq₀
+      𝓜 (m • γ.degree) :=
+    h𝓜.laurentFilter_mem hq₀
   have hdeg : (Finsupp.single i₀ 1 + γ).degree = 1 + γ.degree := by
     rw [map_add, Finsupp.degree_single]
-  have hres := monomial_single_pow_smul_mem (e := i₀) (c' := 1) hq
+  have hres := monomial_single_pow_smul_mem h𝓜 (e := i₀) (c' := 1) hq
   have hres' : (MvPolynomial.monomial (Finsupp.single i₀ 1) (1 : R)) ^ m •
       laurentFilter γ m F q₀ ∈
-      natShift (polynomialGrading ι R) d (m • (Finsupp.single i₀ 1 + γ).degree) := by
+      𝓜 (m • (Finsupp.single i₀ 1 + γ).degree) := by
     rw [hdeg]; exact hres
   rw [laurentFace_awayMk rfl hq hres,
     DegreeZeroLocalization.awayMk_deg_congr hdeg.symm (monomial_mem_add_degree rfl)
       (monomial_one_mem_polynomialGrading (R := R) (Finsupp.single i₀ 1 + γ)) m _ hres hres',
-    laurentHomotopy_awayMk i₀ γ hres']
+    laurentHomotopy_awayMk h𝓜 i₀ γ hres']
   -- The numerator: the division eats the face's `X_{i₀}^m` and `X_{i₀}^{m·t}` more, and the
   -- reinsertion restores the surplus exactly, by the block's support bound.
   have hnum : (MvPolynomial.monomial (Finsupp.single i₀ (γ i₀)) (1 : R)) ^ m •
@@ -227,11 +237,11 @@ theorem laurentHomotopy_laurentFace_blockProj [IsDomain R] {i₀ : ι} {F : Fins
     exact monomial_mul_divMonomial_cancel fun β hβ =>
       Finsupp.single_le_iff.mpr (laurentFilter_apply_ge hi₀ m q₀ hβ)
   have hgen : ∀ (a b : MvPolynomial ι R)
-      (ha : a ∈ natShift (polynomialGrading ι R) d (m • γ.degree))
-      (hb : b ∈ natShift (polynomialGrading ι R) d (m • γ.degree)), a = b →
-      DegreeZeroLocalization.awayMk (𝓜 := natShift (polynomialGrading ι R) d)
+      (ha : a ∈ 𝓜 (m • γ.degree))
+      (hb : b ∈ 𝓜 (m • γ.degree)), a = b →
+      DegreeZeroLocalization.awayMk (𝓜 := 𝓜)
           (monomial_one_mem_polynomialGrading (R := R) γ) m a ha =
-        DegreeZeroLocalization.awayMk (𝓜 := natShift (polynomialGrading ι R) d)
+        DegreeZeroLocalization.awayMk (𝓜 := 𝓜)
           (monomial_one_mem_polynomialGrading (R := R) γ) m b hb := by
     rintro a b ha hb rfl; rfl
   exact hgen _ _ _ _ hnum
@@ -247,15 +257,16 @@ true — the bare sign projection satisfies no unrestricted square.
 
 The two splittings are hypotheses in the lane's usual style; both are associativity-and-
 commutativity rearrangements the Čech caller has in hand. -/
-theorem laurentHomotopy_laurentFace_comm [IsDomain R] (i₀ e : ι) (γ₀ : ι →₀ ℕ) (d : ℕ)
+theorem laurentHomotopy_laurentFace_comm [IsDomain R] (h𝓜 : IsPolynomialTwist 𝓜 d)
+    (i₀ e : ι) (γ₀ : ι →₀ ℕ)
     (htop : Finsupp.single i₀ 1 + (γ₀ + Finsupp.single e 1) =
       Finsupp.single e 1 + (Finsupp.single i₀ 1 + γ₀))
     (hbot : γ₀ + Finsupp.single e 1 = Finsupp.single e 1 + γ₀)
     (z : DegreeZeroLocalization (polynomialGrading ι R)
-      (natShift (polynomialGrading ι R) d)
+      (𝓜)
       (.powers (MvPolynomial.monomial (Finsupp.single i₀ 1 + γ₀) (1 : R)))) :
-    laurentHomotopy i₀ (γ₀ + Finsupp.single e 1) d (laurentFace htop d z) =
-      laurentFace hbot d (laurentHomotopy i₀ γ₀ d z) := by
+    laurentHomotopy h𝓜 i₀ (γ₀ + Finsupp.single e 1) (laurentFace 𝓜 htop z) =
+      laurentFace 𝓜 hbot (laurentHomotopy h𝓜 i₀ γ₀ z) := by
   obtain ⟨m, q, hq, rfl⟩ := DegreeZeroLocalization.exists_awayMk
     (monomial_one_mem_polynomialGrading (R := R) (Finsupp.single i₀ 1 + γ₀))
     (monomial_one_pow_ne_zero _) z
@@ -263,28 +274,28 @@ theorem laurentHomotopy_laurentFace_comm [IsDomain R] (i₀ e : ι) (γ₀ : ι 
   have hdegtop : (Finsupp.single i₀ 1 + (γ₀ + Finsupp.single e 1)).degree =
       1 + (Finsupp.single i₀ 1 + γ₀).degree := by
     rw [htop, map_add, Finsupp.degree_single]
-  have hrestop := monomial_single_pow_smul_mem (e := e) (c' := 1) hq
+  have hrestop := monomial_single_pow_smul_mem h𝓜 (e := e) (c' := 1) hq
   have hrestop' : (MvPolynomial.monomial (Finsupp.single e 1) (1 : R)) ^ m • q ∈
-      natShift (polynomialGrading ι R) d
+      𝓜
         (m • (Finsupp.single i₀ 1 + (γ₀ + Finsupp.single e 1)).degree) := by
     rw [hdegtop]; exact hrestop
   -- Right side: the homotopy map, then the face up to the enlarged plain denominator.
   have hdegbot : (γ₀ + Finsupp.single e 1).degree = 1 + γ₀.degree := by
     rw [hbot, map_add, Finsupp.degree_single]
   have hresbot :=
-    monomial_single_pow_smul_mem (e := e) (c' := 1) (laurentHomotopy_numerator_mem i₀ γ₀ hq)
+    monomial_single_pow_smul_mem h𝓜 (e := e) (c' := 1) (laurentHomotopy_numerator_mem h𝓜 i₀ γ₀ hq)
   have hresbot' : (MvPolynomial.monomial (Finsupp.single e 1) (1 : R)) ^ m •
       ((MvPolynomial.monomial (Finsupp.single i₀ (γ₀ i₀)) (1 : R)) ^ m •
         MvPolynomial.divMonomial q (Finsupp.single i₀ (m * (1 + γ₀ i₀)))) ∈
-      natShift (polynomialGrading ι R) d (m • (γ₀ + Finsupp.single e 1).degree) := by
+      𝓜 (m • (γ₀ + Finsupp.single e 1).degree) := by
     rw [hdegbot]; exact hresbot
   rw [laurentFace_awayMk htop hq hrestop,
     DegreeZeroLocalization.awayMk_deg_congr hdegtop.symm (monomial_mem_add_degree htop)
       (monomial_one_mem_polynomialGrading (R := R)
         (Finsupp.single i₀ 1 + (γ₀ + Finsupp.single e 1))) m _ hrestop hrestop',
-    laurentHomotopy_awayMk i₀ (γ₀ + Finsupp.single e 1) hrestop',
-    laurentHomotopy_awayMk i₀ γ₀ hq,
-    laurentFace_awayMk hbot (laurentHomotopy_numerator_mem i₀ γ₀ hq) hresbot,
+    laurentHomotopy_awayMk h𝓜 i₀ (γ₀ + Finsupp.single e 1) hrestop',
+    laurentHomotopy_awayMk h𝓜 i₀ γ₀ hq,
+    laurentFace_awayMk hbot (laurentHomotopy_numerator_mem h𝓜 i₀ γ₀ hq) hresbot,
     DegreeZeroLocalization.awayMk_deg_congr hdegbot.symm (monomial_mem_add_degree hbot)
       (monomial_one_mem_polynomialGrading (R := R) (γ₀ + Finsupp.single e 1)) m _
       hresbot hresbot']
@@ -323,13 +334,13 @@ theorem laurentHomotopy_laurentFace_comm [IsDomain R] (i₀ e : ι) (γ₀ : ι 
         · exact Or.inr (Finsupp.single_eq_of_ne hj)
       rw [divMonomial_monomial_mul_comm hdisj, mul_left_comm]
   have hgen : ∀ (a b : MvPolynomial ι R)
-      (ha : a ∈ natShift (polynomialGrading ι R) d
+      (ha : a ∈ 𝓜
         (m • (γ₀ + Finsupp.single e 1).degree))
-      (hb : b ∈ natShift (polynomialGrading ι R) d
+      (hb : b ∈ 𝓜
         (m • (γ₀ + Finsupp.single e 1).degree)), a = b →
-      DegreeZeroLocalization.awayMk (𝓜 := natShift (polynomialGrading ι R) d)
+      DegreeZeroLocalization.awayMk (𝓜 := 𝓜)
           (monomial_one_mem_polynomialGrading (R := R) (γ₀ + Finsupp.single e 1)) m a ha =
-        DegreeZeroLocalization.awayMk (𝓜 := natShift (polynomialGrading ι R) d)
+        DegreeZeroLocalization.awayMk (𝓜 := 𝓜)
           (monomial_one_mem_polynomialGrading (R := R) (γ₀ + Finsupp.single e 1)) m b hb := by
     rintro a b ha hb rfl; rfl
   exact hgen _ _ _ _ hnum

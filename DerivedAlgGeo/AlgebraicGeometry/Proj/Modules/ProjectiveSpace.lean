@@ -656,6 +656,51 @@ noncomputable def polynomialVariableIntCechFace
     (polynomialVariableCechDenominator_succAbove_mem ι k x j)
     (polynomialVariableCechDenominator_succAbove ι k x j)
 
+/-! ## The same three objects over an arbitrary twist
+
+`polynomialVariableCechTerm` and `polynomialVariableIntCechTerm` are the same construction at two
+graded families, and the contracting-homotopy layer above them uses nothing else about the family.
+Naming the construction once lets that layer be stated once; the two twists are then instances,
+definitionally so, which is what `cechTerm_natShift` and friends record. -/
+
+/-- The algebraic term attached to one variable Čech intersection, for an arbitrary twist. -/
+abbrev cechTerm (ι k : Type u) [Field k] {σM : Type u} [SetLike σM (MvPolynomial ι k)]
+    [AddSubgroupClass σM (MvPolynomial ι k)] (𝓜 : ℕ → σM)
+    [SetLike.GradedSMul (polynomialGrading ι k) 𝓜] {n : ℕ} (x : Fin (n + 1) → ι) :=
+  DegreeZeroLocalization (polynomialGrading ι k) 𝓜
+    (.powers (polynomialVariableCechDenominator ι k x))
+
+/-- Degree-`n` algebraic Čech cochains for an arbitrary twist. -/
+abbrev cechCochains (ι k : Type u) [Field k] {σM : Type u} [SetLike σM (MvPolynomial ι k)]
+    [AddSubgroupClass σM (MvPolynomial ι k)] (𝓜 : ℕ → σM)
+    [SetLike.GradedSMul (polynomialGrading ι k) 𝓜] (n : ℕ) :=
+  ∀ x : Fin (n + 1) → ι, cechTerm ι k 𝓜 x
+
+/-- The `j`-th Čech face for an arbitrary twist. -/
+noncomputable def cechFace (ι k : Type u) [Field k] {σM : Type u}
+    [SetLike σM (MvPolynomial ι k)] [AddSubgroupClass σM (MvPolynomial ι k)] (𝓜 : ℕ → σM)
+    [SetLike.GradedSMul (polynomialGrading ι k) 𝓜] {n : ℕ} (x : Fin (n + 2) → ι)
+    (j : Fin (n + 2)) :
+    cechTerm ι k 𝓜 (x ∘ j.succAbove) →+ cechTerm ι k 𝓜 x :=
+  DegreeZeroLocalization.faceMap (𝓜 := 𝓜)
+    (MvPolynomial.isHomogeneous_X k (x j))
+    (polynomialVariableCechDenominator_succAbove_mem ι k x j)
+    (polynomialVariableCechDenominator_succAbove ι k x j)
+
+/-- The nonnegative face is the generic one at `natShift`. -/
+theorem cechFace_natShift (ι k : Type u) [Field k] (d : ℕ) {n : ℕ} (x : Fin (n + 2) → ι)
+    (j : Fin (n + 2)) :
+    cechFace ι k (natShift (polynomialGrading ι k) d) x j =
+      polynomialVariableCechFace ι k d x j :=
+  rfl
+
+/-- The integer face is the generic one at `intShift`. -/
+theorem cechFace_intShift (ι k : Type u) [Field k] (d : ℤ) {n : ℕ} (x : Fin (n + 2) → ι)
+    (j : Fin (n + 2)) :
+    cechFace ι k (intShift (polynomialGrading ι k) d) x j =
+      polynomialVariableIntCechFace ι k d x j :=
+  rfl
+
 /-! ## Comparing the algebraic Čech terms with sections -/
 
 /-- The product of all but the first variable in a Čech index. -/
