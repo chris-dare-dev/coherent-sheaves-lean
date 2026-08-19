@@ -120,3 +120,6 @@ def main(argv: list[str]) -> int:
 
 if __name__ == "__main__":
     sys.exit(main(sys.argv[1:]))
+
+# Self-test for the trust-guard workflow (PR #645). This comment exists only
+# to make a pull request touch the trust surface; the PR is closed unmerged.
