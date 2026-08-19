@@ -142,8 +142,9 @@ the head `MulAction G (Slicing C)` claims *every* group acts on the slicings of
 *every* pretriangulated category, for whatever `ρ` search happened to pick.
 
 Bring it into scope at the use site with `letI := ρ.mulActionSlicing`. For an
-action `•` can find on its own, use `AutQuot` (`QuotAutAction.lean`), where the
-acting object *is* the group.
+action `•` can find on its own, use `AutQuot`
+(`StabilityCondition/Symmetry/Autoequivalence/Slicing/Quotient.lean`), where
+the acting object *is* the group.
 
 `@[reducible]` because Lean requires it of any `def` whose type is a class —
 Mathlib's reducible-non-instance convention, and what makes the `letI` above

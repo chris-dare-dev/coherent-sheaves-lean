@@ -36,8 +36,9 @@ strict mono's cokernel triangle
 `exists_distTriang_of_strictShortExact`), push it through `Φ⁻¹` — which is
 triangulated, so the triangle stays distinguished and all three vertices stay
 in the *same* window — then read the strict mono back off with
-`strictMono_strictEpi_of_distTriang`. This is exactly how the foundational library's own
-`intervalInclusion_map_strictMono` works.
+`strictMono_strictEpi_of_distTriang`. This is exactly how
+`intervalInclusion_map_strictMono`
+(`StabilityCondition/Foundation/Slicing/IntervalFiniteTransfer.lean`) works.
 
 The heart route would not have worked: `toRightHeart` lands in the heart of
 `phaseShift C (b - 1)`, and the two slicings' hearts are different

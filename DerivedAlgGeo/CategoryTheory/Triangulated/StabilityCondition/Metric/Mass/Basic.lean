@@ -17,8 +17,9 @@ For an HN filtration `F` of `E`, its mass is the finite sum
   ∑ i, ‖Z(F.factor i)‖.
 ```
 
-The foundational library proves that the extreme phases of an HN filtration are intrinsic,
-but does not expose uniqueness of the complete HN filtration.  Defining the
+`StabilityCondition/Foundation/Slicing/IntrinsicPhases.lean` proves that the
+extreme phases of an HN filtration are intrinsic, but nothing exposes
+uniqueness of the complete HN filtration.  Defining the
 mass using `Classical.choice (s.hn_exists E)` would therefore make its
 transport law depend on an arbitrary, non-functorial choice.  We first take
 the supremum of the masses of all HN filtrations.  This is choice-free and

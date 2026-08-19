@@ -20,9 +20,9 @@ heart.  Their successive quotients are weak-semistable and their
 zero-charge boundary at phase `1` without assigning an argument to zero.
 
 The main construction reads the slicing HN filtration of a heart object as a
-weak abelian HN filtration.  It follows the ordinary heart-equivalence proof
-in the foundational library, with phase comparisons replaced by the weak phase--slope
-bridge proved here.
+weak abelian HN filtration.  It follows the ordinary heart-equivalence proof in
+`StabilityCondition/Weak/Heart/Equivalence.lean`, with phase comparisons
+replaced by the weak phase--slope bridge proved here.
 -/
 
 namespace CategoryTheory.Triangulated.WeakStabilityCondition

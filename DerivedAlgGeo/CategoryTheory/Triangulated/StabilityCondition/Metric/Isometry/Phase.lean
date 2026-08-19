@@ -9,15 +9,12 @@ import MathFormalContract
 /-!
 # The `Aut` action preserves the phase distance
 
-Lemma 8.2 says `Aut(D)` acts on `Stab(D)` **by isometries**. For a while this
-repo said nothing about that clause, on the ground that no metric is
-constructed here.
+Lemma 8.2 says `Aut(D)` acts on `Stab(D)` **by isometries**. This module proves
+the phase half of that clause, and is deliberate about which half it is.
 
-That ground is literally true — nothing in *this* repo constructs a metric, and
-this module still does not. What it invites is the wrong inference, that the
-clause is therefore out of reach. It is not: the **foundational library** carries a distance,
-`slicingDist` (`StabilityCondition/Defs.lean:168`), built for the deformation
-theory of §7 and never connected to §8.
+The distance it uses is `slicingDist`
+(`StabilityCondition/Foundation/Deformation/SlicingDistance.lean`), built for
+the deformation theory of §7 and not, on its own, the §8 metric.
 
 ```
 slicingDist C s₁ s₂ = ⨆ (E : C) (_ : ¬IsZero E),
@@ -35,10 +32,11 @@ them — the `φ⁺` and `φ⁻` discrepancies — and omits
 one that sees the central charge, and therefore the only one that could move
 under `Φ` at all, since `actStabAut` replaces `Z` by `Z ∘ lam`.
 
-This module itself does not close it: **the foundational library has no mass function** —
-`m_σ(E) = Σ|Z(A_i)|` over the HN factors is not defined anywhere in it.
-The downstream `StabilityMass`, `HNMassUniqueness`, `StabilityDistance`, and
-`AutFullIsometry` modules define the HN mass, prove independence from the
+This module itself does not close it: **the slicing foundation has no mass
+function** — `m_σ(E) = Σ|Z(A_i)|` over the HN factors is not defined anywhere
+under `Foundation/`. The downstream `Metric/Mass/Basic.lean`,
+`Metric/Mass/Uniqueness.lean`, `Metric/Distance/Basic.lean`, and
+`Metric/Isometry/Full.lean` define the HN mass, prove independence from the
 chosen filtration and finiteness, and prove preservation of the resulting
 three-coordinate distance.
 
@@ -77,9 +75,10 @@ variable {C : Type u} [Category.{w} C] [HasZeroObject C] [HasShift C ℤ]
 
 /-! ## The intrinsic phases are invariant under isomorphism of the object
 
-The foundational library needs this repeatedly and never states it — `Deformation/DeformedGtLe.lean`
-inlines the `HNFiltration.ofIso` argument at four separate sites. Stated once here,
-because the `≥` half of the isometry cannot be written without it. -/
+The deformation modules need this repeatedly and never state it —
+`Foundation/Deformation/PhaseConfinement.lean` and its neighbours inline the
+`HNFiltration.ofIso` argument instead. Stated once here, because the `≥` half
+of the isometry cannot be written without it. -/
 
 /-- `φ⁺` depends on the object only up to isomorphism. -/
 theorem Slicing.phiPlus_congr (s : Slicing C) {E E' : C} (e : E ≅ E')
@@ -184,7 +183,7 @@ isometry clause.
 No finiteness hypothesis: both sides live in `ℝ≥0∞` and the equality holds when
 they are `⊤`. -/
 @[cites "stmt:a520a8d4f877:bridgeland2007.lem-8.2" (relation := no_claim)
-        (note := "The ISOMETRY clause of Lemma 8.2, for a DIFFERENT distance, so neither statement implies the other. The paper's d is a sup of THREE quantities; the foundational library's slicingDist carries the two phase discrepancies and omits |log(m2/m1)|, the mass ratio -- the only term that sees the central charge, hence the only one Z-composed-with-lam could move. A sup of three being preserved does not give that each term is, so isometry for d does NOT imply this; and preserving slicingDist plainly does not imply isometry for d. Separately, slicingDist is a distance on Slicing C, not on Stab(D). Downstream files construct a three-coordinate envelope distance, but this phase-only theorem remains distinct.")]
+        (note := "The ISOMETRY clause of Lemma 8.2, for a DIFFERENT distance, so neither statement implies the other. The paper's d is a sup of THREE quantities; this library's slicingDist carries the two phase discrepancies and omits |log(m2/m1)|, the mass ratio -- the only term that sees the central charge, hence the only one Z-composed-with-lam could move. A sup of three being preserved does not give that each term is, so isometry for d does NOT imply this; and preserving slicingDist plainly does not imply isometry for d. Separately, slicingDist is a distance on Slicing C, not on Stab(D). Downstream files construct a three-coordinate envelope distance, but this phase-only theorem remains distinct.")]
 theorem mapEquiv_slicingDist (s₁ s₂ : Slicing C) :
     slicingDist C (s₁.mapEquiv Φ) (s₂.mapEquiv Φ) = slicingDist C s₁ s₂ := by
   apply le_antisymm
@@ -248,7 +247,7 @@ moves the central charge and nothing else, and `slicingDist` does not see the
 central charge — which is exactly why the mass term, which does, is out of
 scope here. -/
 @[cites "stmt:a520a8d4f877:bridgeland2007.lem-8.2" (relation := no_claim)
-        (note := "Same non-implication as mapEquiv_slicingDist: the distance is the foundational library's slicingDist, not Bridgeland's d, and d omits nothing while slicingDist omits the mass ratio. What this adds over that theorem is only the carrier -- the statement is now about stability conditions rather than bare slicings, matching the paper's Stab(D). It is still not the paper's isometry claim.")]
+        (note := "Same non-implication as mapEquiv_slicingDist: the distance is slicingDist, not Bridgeland's d, and d omits nothing while slicingDist omits the mass ratio. What this adds over that theorem is only the carrier -- the statement is now about stability conditions rather than bare slicings, matching the paper's Stab(D). It is still not the paper's isometry claim.")]
 theorem actStabAut_slicingDist (lam : Λ →+ Λ)
     (hlam : ∀ x : K₀ C, v (K₀.map Φ.inverse x) = lam (v x))
     (σ τ : StabilityCondition.WithClassMap C v) :

@@ -33,8 +33,9 @@ without creating an import cycle.
 
 That was a live constraint rather than an aesthetic one — the remaining half of the affine
 comparison theorem (issue #46) needs `basicOpen_coversTop_of_span_eq_top` in
-`AlgebraicGeometry/Modules/AffineComparison.lean`, which is exactly where the old placement
-blocked it. Moving the lemma into the topology domain keeps the dependency direction explicit.
+`AlgebraicGeometry/CoherentSheaf/Affine/Comparison.lean`, which is exactly where the old
+placement blocked it. Moving the lemma into the topology domain keeps the dependency direction
+explicit.
 
 ## Where the second one is used
 

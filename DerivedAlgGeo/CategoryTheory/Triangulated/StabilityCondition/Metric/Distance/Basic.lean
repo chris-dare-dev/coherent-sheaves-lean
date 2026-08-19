@@ -8,8 +8,9 @@ import MathFormalContract
 /-!
 # The three-coordinate stability distance
 
-This file adds the mass coordinate to the foundational library's two-coordinate
-`slicingDist`.  For every nonzero object it takes the maximum of
+This file adds the mass coordinate to the two-coordinate `slicingDist` of
+`StabilityCondition/Foundation/Deformation/SlicingDistance.lean`.  For every
+nonzero object it takes the maximum of
 
 * the `φ⁺` discrepancy;
 * the `φ⁻` discrepancy;
@@ -118,7 +119,7 @@ def stabilityDistTerm (σ τ : StabilityCondition.WithClassMap C v) (E : C)
 
 /-- The three-coordinate, `ℝ≥0∞`-valued stability distance. -/
 @[cites "stmt:a520a8d4f877:bridgeland2007.prop-8.1" (relation := no_claim)
-        (note := "The same three-coordinate formula, with stabilityMass proved equal to the finite mass sum of every HN filtration. StabilityCondition/Metric/Distance/Separation.lean proves separation for ordinary stability conditions and for surjective class maps. Equality with the Section 6 topology is not proved, so this is not yet all of Proposition 8.1.")]
+        (note := "The same three-coordinate formula, with stabilityMass proved equal to the finite mass sum of every HN filtration. StabilityCondition/Metric/Distance/Separation.lean proves separation for ordinary stability conditions and for surjective class maps. The comparison with the Section 6 topology is proved unconditionally as stabilityDistanceTopologyCompatible in StabilityCondition/Metric/Mass/Subadditivity/Triangle/Consequences.lean: full-distance balls are a neighbourhood basis for the basisNhd topology. The citation stays no_claim pending exact-head source-faithfulness review; no topology or metric instance is installed.")]
 def stabilityDist (σ τ : StabilityCondition.WithClassMap C v) : ℝ≥0∞ :=
   ⨆ (E : C) (hE : ¬IsZero E), stabilityDistTerm σ τ E hE
 
@@ -310,7 +311,7 @@ theorem massDist_le_stabilityDist
     (stabilityDistTerm_le_stabilityDist σ τ E hE))
 
 omit [IsTriangulated C] in
-/-- The foundational library's phase-only distance is bounded by the full three-coordinate
+/-- The phase-only `slicingDist` is bounded by the full three-coordinate
 distance. -/
 theorem slicingDist_le_stabilityDist (σ τ : StabilityCondition.WithClassMap C v) :
     slicingDist C σ.slicing τ.slicing ≤ stabilityDist σ τ := by

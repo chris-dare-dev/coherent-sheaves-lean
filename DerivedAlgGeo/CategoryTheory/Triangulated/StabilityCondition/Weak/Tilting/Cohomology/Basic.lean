@@ -17,9 +17,8 @@ This file supplies the two-term cohomology bridge used by weak tilting
 arguments.  It has two independent parts:
 
 * `originalHeartCohFunctor t n` constructs degree-`n` cohomology in the heart
-  of an arbitrary t-structure.  Unlike the foundational library's
-  `HeartStabilityData.heartCohFunctor`, it does not require a stability
-  function or HN data.
+  of an arbitrary t-structure.  Unlike `HeartStabilityData.heartCohFunctor`,
+  it does not require a stability function or HN data.
 * for a torsion pair `P` and an object `X` of the tilted heart, the canonical
   truncation triangle is exposed as
 
