@@ -14,9 +14,14 @@ constant-true boundedness predicate.  Those inhabitants are useful for API
 reconnaissance, but they are not mathematical families and therefore expose
 no public declarations.
 
-The stable family modules deliberately provide no such constructors.  A
-stable inhabitant must instead name the intended geometry, as the scheme,
-relative-HN, and moduli layers do.
+The stable family modules deliberately provide no such vacuous-probe
+constructors: nothing in stable discharges a field with a constant-true
+predicate, a full-locus probe, or an arbitrary-`Prop` ledger.  Stable modules
+do still export constant-family reindexings (`_constant`/`_punit` witnesses
+in `FiberwiseSupport`, `PreStabilityBaseChange.constant`, and the scheme and
+relative-HN constant models); each of those requires a genuine support or
+pre-stability input and asserts nothing vacuously (2026-08-18 adversarial
+review, finding P2-10).
 -/
 
 namespace CategoryTheory.Triangulated.StabilityCondition.Families.Development
