@@ -83,30 +83,83 @@ def preimageLift (F : Functor C D) (hmem : ∀ X : C, P X ↔ Q (F.obj X)) :
     Functor P.FullSubcategory Q.FullSubcategory :=
   Q.lift (P.ι ⋙ F) (fun X ↦ (hmem X.obj).1 X.property)
 
-/-- Formula (A.3) on the restricted categories. -/
+/-- Formula (A.3) on the restricted categories.
+
+Zero reflection is required only on objects of `P`, matching A.17's
+conservativity-on-bounded-objects hypothesis: the proof applies `hzero` at a
+truncation of an object of `P`, and truncations stay in `P` by the induced
+t-structure. A caller with global conservativity weakens it pointwise. -/
 theorem tStructure_isLE_iff_map
-    [P.IsTriangulated] [Q.IsTriangulated]
+    [P.IsTriangulated] [Q.IsTriangulated] [P.IsClosedUnderIsomorphisms]
     [P.HasInducedTStructure t] [Q.HasInducedTStructure t']
     [F.CommShift ℤ] [F.IsTriangulated] [F.IsTExact t t']
-    (hzero : ∀ E : C, IsZero (F.obj E) → IsZero E)
+    (hzero : ∀ E : C, P E → IsZero (F.obj E) → IsZero E)
     (hmem : ∀ X : C, P X ↔ Q (F.obj X))
     (X : P.FullSubcategory) (n : ℤ) :
     (P.tStructure t).IsLE X n ↔
       (Q.tStructure t').IsLE ((preimageLift F hmem).obj X) n := by
   rw [P.tStructure_isLE_iff, Q.tStructure_isLE_iff]
-  exact F.isLE_iff_of_reflectsZeroObjects t t' hzero X.obj n
+  have key : t.IsLE X.obj n ↔ t'.IsLE (F.obj X.obj) n := by
+    constructor
+    · exact Functor.IsRightTExact.isLE_map X.obj n
+    · intro hX
+      haveI : t'.IsLE (F.obj X.obj) n := hX
+      have hTarget : IsZero ((t'.truncGE (n + 1)).obj (F.obj X.obj)) :=
+        t'.isZero_truncGE_obj_of_isLE n (n + 1) rfl (F.obj X.obj)
+      have hMapped : IsZero (F.obj ((t.truncGE (n + 1)).obj X.obj)) :=
+        hTarget.of_iso (F.mapTruncGEIso t t' (n + 1) X.obj)
+      have hP : P ((t.truncGE (n + 1)).obj X.obj) := by
+        simpa only [TStructure.triangleLEGE_obj_obj₃] using
+          (P.mem_of_hasInductedTStructure t _
+            (t.triangleLEGE_distinguished n (n + 1) rfl X.obj) n (n + 1) rfl
+            (by simpa only [TStructure.triangleLEGE_obj_obj₁] using
+              t.isLE_truncLE_obj X.obj n n)
+            X.property
+            (by simpa only [TStructure.triangleLEGE_obj_obj₃] using
+              t.isGE_truncGE_obj X.obj (n + 1) (n + 1))).2
+      exact (t.isLE_iff_isZero_truncGE_obj n (n + 1) rfl X.obj).2
+        (hzero _ hP hMapped)
+  exact key
 
-/-- Formula (A.4) on the restricted categories. -/
+/-- Formula (A.4) on the restricted categories.
+
+As in `tStructure_isLE_iff_map`, zero reflection is required only on objects
+of `P`. -/
 theorem tStructure_isGE_iff_map
-    [P.IsTriangulated] [Q.IsTriangulated]
+    [P.IsTriangulated] [Q.IsTriangulated] [P.IsClosedUnderIsomorphisms]
     [P.HasInducedTStructure t] [Q.HasInducedTStructure t']
     [F.CommShift ℤ] [F.IsTriangulated] [F.IsTExact t t']
-    (hzero : ∀ E : C, IsZero (F.obj E) → IsZero E)
+    (hzero : ∀ E : C, P E → IsZero (F.obj E) → IsZero E)
     (hmem : ∀ X : C, P X ↔ Q (F.obj X))
     (X : P.FullSubcategory) (n : ℤ) :
     (P.tStructure t).IsGE X n ↔
       (Q.tStructure t').IsGE ((preimageLift F hmem).obj X) n := by
   rw [P.tStructure_isGE_iff, Q.tStructure_isGE_iff]
-  exact F.isGE_iff_of_reflectsZeroObjects t t' hzero X.obj n
+  have key : t.IsGE X.obj n ↔ t'.IsGE (F.obj X.obj) n := by
+    constructor
+    · exact Functor.IsLeftTExact.isGE_map X.obj n
+    · intro hX
+      haveI : t'.IsGE (F.obj X.obj) n := hX
+      have hTarget : IsZero ((t'.truncLT n).obj (F.obj X.obj)) :=
+        t'.isZero_truncLT_obj_of_isGE n (F.obj X.obj)
+      let e : F.obj ((t.truncLT n).obj X.obj) ≅
+          (t'.truncLT n).obj (F.obj X.obj) := by
+        simpa only [TStructure.truncLE, sub_add_cancel] using
+          F.mapTruncLEIso t t' (n - 1) X.obj
+      have hMapped : IsZero (F.obj ((t.truncLT n).obj X.obj)) :=
+        hTarget.of_iso e
+      have hP : P ((t.truncLT n).obj X.obj) := by
+        have h₁ := (P.mem_of_hasInductedTStructure t _
+          (t.triangleLEGE_distinguished (n - 1) n (by omega) X.obj)
+          (n - 1) n (by omega)
+          (by simpa only [TStructure.triangleLEGE_obj_obj₁] using
+            t.isLE_truncLE_obj X.obj (n - 1) (n - 1))
+          X.property
+          (by simpa only [TStructure.triangleLEGE_obj_obj₃] using
+            t.isGE_truncGE_obj X.obj n n)).1
+        simpa only [TStructure.triangleLEGE_obj_obj₁, TStructure.truncLE,
+          sub_add_cancel] using h₁
+      exact (t.isGE_iff_isZero_truncLT_obj n X.obj).2 (hzero _ hP hMapped)
+  exact key
 
 end CategoryTheory.ObjectProperty
