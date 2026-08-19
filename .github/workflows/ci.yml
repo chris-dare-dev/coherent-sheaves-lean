@@ -602,26 +602,56 @@ jobs:
           #
           # `seal` REFUSES to omit a required predicate and refuses a dirty
           # worktree; both are why the .gitignore block landed in this commit.
+          # attest/review.yaml is the one file here that is committed rather
+          # than regenerated -- see the .gitignore negation. When it exists the
+          # bundle carries a human-review predicate and C-10 stops reporting
+          # not_run; when it does not, seal is called without it and C-10 says
+          # so out loud. `--review-produced-by` is read FROM the file rather
+          # than hardcoded here, so the bundle names whoever actually signed the
+          # review instead of whoever wrote this workflow.
+          SEAL_REVIEW=()
+          if [ -f attest/review.yaml ]; then
+            REVIEWER=$(.mfc-venv/bin/python -c "import yaml,sys; \
+              print(yaml.safe_load(open('attest/review.yaml'))['reviews'][0]['reviewer']['name'])")
+            SEAL_REVIEW=(--review attest/review.yaml
+                         --review-produced-by "human:$REVIEWER")
+            echo "::notice::sealing with human review by $REVIEWER"
+          else
+            echo "::notice::no attest/review.yaml; C-10 will report not_run (#178)"
+          fi
+
           "$MFC" seal --root . \
                       --environment attest/environment.json \
                       --registry registry/bridgeland2007.json \
                       --declarations attest/declarations.json \
                       --build attest/build.json \
+                      "${SEAL_REVIEW[@]}" \
                       --out attest/bundle.json
 
-          # C-08 and C-10 print not_run today -- no resolution.json (#134) and
-          # no review.yaml (#178). That is NOT a pass, and the summary line
-          # says so on every run. As with lint above, the exact expected
-          # not_run set is asserted so it cannot widen silently (2026-08-18
-          # adversarial review, finding P2-4).
+          # C-08 alone prints not_run: no resolution.json (#134). That is NOT
+          # a pass, and the summary line says so on every run. As with lint
+          # above, the exact expected not_run set is asserted so it cannot
+          # widen silently (2026-08-18 adversarial review, finding P2-4).
+          #
+          # WAS 'C-08,C-10' until 2026-08-19. C-10 now RUNS, because
+          # attest/review.yaml exists (#178) and the bundle carries a
+          # human-review predicate. This assertion fired on that change, which
+          # is the assertion working -- it is narrowed here with the config
+          # change that explains it, per its own error message, and not to make
+          # a red build green.
+          #
+          # It must not widen back. C-10 returning to not_run would mean the
+          # review stopped being sealed into the bundle -- most likely
+          # review.yaml going missing, which the .gitignore negation exists to
+          # prevent.
           "$MFC" conformance --bundle attest/bundle.json \
                              --emission attest/lean-emission.json \
             | tee mfc-conformance-report.txt
           actual_not_run=$(grep -oE '^not_run  C-[0-9]+' mfc-conformance-report.txt \
             | awk '{print $2}' | sort | paste -sd, -)
-          if [ "$actual_not_run" != "C-08,C-10" ]; then
+          if [ "$actual_not_run" != "C-08" ]; then
             echo "::error::mfc conformance not_run set is '$actual_not_run'," \
-                 "expected 'C-08,C-10'. A rule stopped running (or started);" \
+                 "expected 'C-08'. A rule stopped running (or started);" \
                  "update this assertion only with the config change that" \
                  "explains it."
             exit 1
