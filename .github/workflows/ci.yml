@@ -461,7 +461,7 @@ jobs:
           echo "using $PY311 ($("$PY311" -V 2>&1))"
           "$PY311" -m venv .mfc-venv
           .mfc-venv/bin/pip install --quiet \
-            "mfc[yaml] @ git+https://github.com/chris-dare-dev/math-formal-contract-lean@21e3b442a85c05978a70acc0b047da4a3ff22d7c#subdirectory=contract"
+            "mfc[yaml] @ git+https://github.com/chris-dare-dev/math-formal-contract-lean@271bf44cc93ac6ea7e946fe7f508643e95d0dd57#subdirectory=contract"
           MFC=.mfc-venv/bin/mfc
 
           "$MFC" validate attest/lean-emission.json
@@ -628,6 +628,42 @@ jobs:
                       "${SEAL_REVIEW[@]}" \
                       --out attest/bundle.json
 
+          # ------------------------------------------------------------------
+          # restate: does the human review survive the environment it is in?
+          #
+          # env_digest hashes every package revision, so ONE dependency bump
+          # rotates it while the mathematics sits still, and C-10 then reports
+          # every review as belonging to another environment. This repository
+          # learned that the hard way on 2026-08-19: mfc moved d3df3818 ->
+          # 21e3b442, env_digest went 45d9e8ca -> 5b2b3d86, and the first review
+          # ever recorded failed C-10 hours after it was written -- with its
+          # statement digest byte-identical on both sides.
+          #
+          # The recovery without this is a re-read per review per bump, costed
+          # at ~2h/entry. With it, `restated` carries the review forward on
+          # evidence and NOTHING ELSE does: `changed` means the statement moved,
+          # and `not_checkable` means nobody knows, which is not a pass either.
+          #
+          # The plan step exists because Lean cannot read YAML and this package
+          # is forbidden dependencies -- so the reviews cross the boundary as
+          # JSON. Elaboration is Lean's; reading the verdict is mfc's.
+          if [ -f attest/review.yaml ]; then
+            "$MFC" restate-plan --review attest/review.yaml \
+                                --out attest/restate-plan.json
+            # Interpreted, like the emitter: linking the executable compiles
+            # every transitively imported module and none of it is cached.
+            lake env lean --run exe/Restate.lean \
+              --plan attest/restate-plan.json --out attest/restate.json
+            "$MFC" validate attest/restate.json
+            # T-01/T-02 need the review; without it they print not_run and this
+            # step would assert nothing about the entries it just checked.
+            "$MFC" restate-check attest/restate.json --review attest/review.yaml
+            RESTATE_ARG="--restate attest/restate.json"
+          else
+            RESTATE_ARG=""
+            echo "::notice::restate did NOT run: no attest/review.yaml"
+          fi
+
           # C-08 alone prints not_run: no resolution.json (#134). That is NOT
           # a pass, and the summary line says so on every run. As with lint
           # above, the exact expected not_run set is asserted so it cannot
@@ -644,8 +680,12 @@ jobs:
           # review stopped being sealed into the bundle -- most likely
           # review.yaml going missing, which the .gitignore negation exists to
           # prevent.
+          # $RESTATE_ARG unquoted on purpose: it is empty when there is no
+          # review, and "" would pass conformance an empty argument.
+          # shellcheck disable=SC2086
           "$MFC" conformance --bundle attest/bundle.json \
                              --emission attest/lean-emission.json \
+                             $RESTATE_ARG \
             | tee mfc-conformance-report.txt
           actual_not_run=$(grep -oE '^not_run  C-[0-9]+' mfc-conformance-report.txt \
             | awk '{print $2}' | sort | paste -sd, -)
@@ -700,6 +740,7 @@ jobs:
             attest/declarations.json
             attest/build.json
             attest/bundle.json
+            attest/restate.json
             algebraic-geometry-audit.txt
             stability-condition-audit.txt
             dg-audit.txt
