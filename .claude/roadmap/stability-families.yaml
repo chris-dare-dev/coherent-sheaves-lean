@@ -27,7 +27,7 @@ goal:
     - "The absolute stability topology no longer accepts HN-mass subadditivity as an external premise, and the recovered proof has current CI plus independent mathematical review."
     - "The HRS t-structure is reviewed, its heart is related to the textbook extension closure under explicit hypotheses, and §14 weak-stability tilting is formalized without geometric assumptions."
     - "Support is expressed by a genuine bundled quadratic form on semistable classes and has an explicitly separate uniform-in-families layer."
-    - "The five conditions in Definitions 20.5 and 21.15 are represented separately; stable declarations bind useful categorical or geometric data, while constant/full/PUnit inhabitance checks remain development-only scaffolding."
+    - "The five conditions in Definitions 20.5 and 21.15 are represented separately; stable declarations bind useful categorical or geometric data, while vacuous-probe inhabitance checks (constant-true, full-locus, arbitrary-Prop) remain development-only scaffolding; genuine-input constant-family reindexings remain stable API."
     - "Every result mapped to this program is pinned to 1902.08184v4 and defaults to target/no-claim until its statement and proof have been reviewed."
     - "Coherent-sheaf and derived work is integrated through the monorepo's explicit package boundaries; Quot, boundedness, stack, and good-moduli work remains assigned to a named owner and is never hidden behind an axiom."
   assumptions:
