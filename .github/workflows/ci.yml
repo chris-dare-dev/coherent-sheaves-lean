@@ -126,6 +126,9 @@ jobs:
             echo "library=false" >> "$GITHUB_OUTPUT"
           fi
 
+      - name: Foundation import boundary
+        run: python3 scripts/check_foundation_import_boundary.py
+
       # Build-output cache, hosted lane only (2026-08-14, corrected 2026-08-15).
       #
       # Measured on this workflow: `lean-action` takes 9 minutes on the

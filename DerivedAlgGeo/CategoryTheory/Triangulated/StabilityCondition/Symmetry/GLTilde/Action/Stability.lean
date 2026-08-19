@@ -5,7 +5,6 @@ Released under the MIT license.
 import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Symmetry.GLTilde.Action.PreStability
 import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Symmetry.Autoequivalence.Foundations.FiniteLength
 import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Phase.UniformContinuity
-import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Foundation
 import MathFormalContract
 
 /-!
