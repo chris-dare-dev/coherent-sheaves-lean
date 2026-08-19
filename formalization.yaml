@@ -1273,8 +1273,34 @@ fidelity:
     paragraph whose whole point is "do not quote a stale number" had quoted
     three of them.
   builds_clean: true
-  builds_clean_date: 2026-08-07
+  builds_clean_date: 2026-08-18
   builds_clean_note: >
+    FIRST CI-MEASURED RELEASE BUILD, 2026-08-18, GitHub Actions run 32201297893
+    at e8a1a84, the tree of the pull request carrying this record. `lake build
+    DerivedAlgGeoSweep` exit 0 at 5083 jobs. The contract gates produced
+    attest/environment.json, attest/declarations.json, attest/build.json and
+    attest/bundle.json, and `mfc conformance` over that bundle reported 10
+    passed, 0 failed, 2 not_run. The emission carries 15998 constants, 9262 of
+    them in scope, 6736 internal and 13 cited, at env_digest 45d9e8ca8c1b.
+    THESE FIGURES ARE ATTRIBUTED TO THAT RUN AND ARE NOT ASSERTED TO EQUAL THE
+    TAGGED TREE'S. main merges continuously -- while this record was being
+    written the count moved from 15992 to 15998 across four merges, which is
+    exactly why the earlier draft's "reconfirmed unchanged" claim was withdrawn
+    -- and a count committed INTO the tree it counts cannot be exact by
+    construction. The authoritative count for v0.1.0 is
+    attest/declarations.json in the release itself, produced by CI with the tag
+    in place; this paragraph is a human-readable pointer to it, not a
+    substitute.
+    build/1.0 records error_count 0, warning_count 0 and sorry_diagnostic_count
+    0 -- BUT ITS `measured` BLOCK RECORDS THAT THOSE THREE COUNTS COVER 2 OF
+    516 IN-SCOPE MODULES, the two root modules, because lake exposes no cheap
+    project-wide NDJSON: `lake env lean --json` on a root import file reports
+    nothing, imports being served from oleans and never re-reported. Read those
+    counts at that scope and not as a whole-repository build log. THE
+    REPOSITORY-WIDE SORRY GATE IS NOT THEM. It is the emission's axiom-closure
+    check, which exits non-zero when any constant carries sorryAx in its
+    closure, and it passed.
+
     MUKAI AND TILTING LANES, 2026-08-06, on Windows 11 / x86_64, working tree
     at branch agent/mukai-lattice off 45f2fba. Three of CI's five gates were
     run and all three passed, at both lanes. With Mukai only: `lake build` at
@@ -1440,6 +1466,22 @@ fidelity:
     own CI run and both of those conclude success.
   human_review: none
   machine_review: >
+    CONTRACT MACHINE REVIEW IS CONTINUOUS AS OF 2026-08-18, at 46794e7. Every
+    commit now runs `mfc validate`, `mfc lint` (E-01..E-10), `mfc
+    check-ilean-coverage` (I-01..I-05), the emitter determinism assertion, and
+    -- new with #616 -- `mfc build`, `mfc seal` and `mfc conformance`
+    (C-01..C-12) over a bundle CI itself produced rather than one a test
+    assembled. Run 32195074042 reports 10 passed, 0 failed, 2 not_run. C-08
+    (registry_sha256 agrees between bundle and resolution) and C-10 (every
+    human review is of this environment) DID NOT RUN, because
+    attest/resolution.json and attest/review.yaml do not exist. NOT_RUN IS NOT
+    A PASS, and v0.1.0 freezes both into its published bundle deliberately --
+    the decision and its alternative are recorded on #618. THIS IS STILL NOT A
+    FAITHFULNESS REVIEW: twelve cross-artifact rules can tell whether the
+    artifacts describe the same build, and not one of them can tell whether a
+    statement says what it should. `human_review` remains none and #178 is
+    open. Do not quote this entry as review of the mathematics.
+
     THE MUKAI, TILTING, SUPPORT, FINITELENGTH AND WALL LANES HAVE HAD NO
     REVIEW OF ANY KIND, 2026-08-06 AND 2026-08-07, INCLUDING BOTH TILTING INCREMENTS.
     All of it was written
