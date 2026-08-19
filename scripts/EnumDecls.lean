@@ -16,6 +16,7 @@ because the environment is where the information lives: `.casesOn`, `.recOn`,
 declaring an inductive or by tactic elaboration, and no audit should list them.
 -/
 import DerivedAlgGeo
+import DerivedAlgGeo.Development
 import DerivedAlgGeo.AlgebraicGeometry.Numerical.Specializations.Surface
 import DerivedAlgGeo.AlgebraicGeometry.Numerical.Specializations.Threefold
 import DerivedAlgGeo.AlgebraicGeometry.Numerical.Specializations.Fourfold

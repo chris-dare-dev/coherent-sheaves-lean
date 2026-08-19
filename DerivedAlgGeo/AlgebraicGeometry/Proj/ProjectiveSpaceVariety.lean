@@ -101,11 +101,13 @@ instance nonempty_projectiveSpace [Nonempty ι] :
 
 Finiteness of the variable set is what makes the structure morphism of finite type;
 nonemptiness is what makes the space irreducible rather than vacuously so. -/
-noncomputable def projectiveSpaceVariety [Finite ι] [Nonempty ι] : Variety k where
-  toScheme := Proj (polynomialGrading ι k)
-  structureMorphism := projectiveSpaceToSpec ι k
-  isIntegral := Proj.isIntegral (polynomialGrading ι k)
-  locallyOfFiniteType := inferInstance
+noncomputable def projectiveSpaceVariety [Finite ι] [Nonempty ι] : Variety k :=
+  ⟨
+    { toScheme := Proj (polynomialGrading ι k)
+      structureMorphism := projectiveSpaceToSpec ι k },
+    { isIntegral := Proj.isIntegral (polynomialGrading ι k)
+      locallyOfFiniteType := inferInstance }
+  ⟩
 
 /-- The variety bundle changes nothing about the underlying scheme, so results proved about
 `Proj` apply to it directly. -/
