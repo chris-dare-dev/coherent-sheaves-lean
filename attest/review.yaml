@@ -35,8 +35,22 @@ reviews:
     # registry/bridgeland2007.json records.
     reviewed_quote_sha256: 3d821c479c6f091d32ac1828a4e00fa18dbb21b4727a5db3e4c1b2c4992a54ff
 
-    # v0.1.0's environment. C-10 compares this against environment.json.
-    reviewed_env_digest: 45d9e8ca8c1bc23e34615967859075f1437b0fd8f0f778badafd803f0da9bdf2
+    # RE-CONFIRMED at this environment on 2026-08-19, not carried over from the
+    # one the first pass ran in. The review was originally performed at
+    # 45d9e8ca (v0.1.0); MathFormalContract then moved d3df3818 -> 21e3b442 in
+    # lake-manifest.json, and env_digest hashes every package rev, so the
+    # fingerprint rotated while nothing about the mathematics did.
+    #
+    # C-10 caught that and failed, correctly. It was NOT silenced and the old
+    # digest was NOT quietly overwritten -- #178 names re-dating a review as the
+    # one thing that must never happen silently. The reviewer looked again at
+    # the new environment, which is a re-confirmation rather than a re-read
+    # because reviewed_statement_digest below is byte-identical across the bump:
+    # 14c4fd0e... at 45d9e8ca and 14c4fd0e... at 5b2b3d86.
+    #
+    # This will recur on the next dependency bump. `mfc restate-check` is the
+    # designed mitigation and is not yet wired into this repo's CI.
+    reviewed_env_digest: 5b2b3d86a9616375a0d35578ab83b645c9648d204f8a68e04ed6d24c3a3bca41
 
     faithfulness: adequate
     relation_confirmed: specialization
@@ -57,7 +71,11 @@ reviews:
       review turned on that point -- had it been the latter the theorem would be
       a tautology. Recorded because it is the assumption a re-reviewer should
       check first, not because it was left open. Upgrades the cite's
-      relation_claimed of no_claim. Whether this discharges the registry's
+      relation_claimed of no_claim. Re-confirmed 2026-08-19 at env_digest
+      5b2b3d86 after the MathFormalContract dependency bump rotated the
+      environment fingerprint; the statement digest was verified byte-identical
+      across it, so the mathematics re-confirmed was the same mathematics.
+      Whether this discharges the registry's
       `stability-mass-triangle` frontier item is a separate governance question:
       that item names an "exact-head" review, and this verdict is
       specialization.
