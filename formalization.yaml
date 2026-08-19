@@ -1289,8 +1289,12 @@ fidelity:
     never re-reported. Read those counts at that scope and not as a whole-
     repository build log. THE REPOSITORY-WIDE SORRY GATE IS NOT THEM. It is the
     emission's axiom-closure check, which exits non-zero when any of the 15992
-    constants carries sorryAx in its closure, and it passed. This is the state
-    tagged v0.1.0.
+    constants carries sorryAx in its closure, and it passed. RECONFIRMED
+    UNCHANGED at 254e5d9, two merges later, run 32197368734: identical counts,
+    identical 5083 jobs, identical env_digest -- so these figures describe the
+    tagged tree rather than one commit's snapshot of it. The tag lands on the
+    merge commit carrying this record, whose tree differs from the measured one
+    only by this file.
 
     MUKAI AND TILTING LANES, 2026-08-06, on Windows 11 / x86_64, working tree
     at branch agent/mukai-lattice off 45f2fba. Three of CI's five gates were
