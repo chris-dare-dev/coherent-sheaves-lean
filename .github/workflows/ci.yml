@@ -461,7 +461,7 @@ jobs:
           echo "using $PY311 ($("$PY311" -V 2>&1))"
           "$PY311" -m venv .mfc-venv
           .mfc-venv/bin/pip install --quiet \
-            "mfc[yaml] @ git+https://github.com/chris-dare-dev/math-formal-contract-lean@271bf44cc93ac6ea7e946fe7f508643e95d0dd57#subdirectory=contract"
+            "mfc[yaml] @ git+https://github.com/chris-dare-dev/math-formal-contract-lean@a5af3b29047a3bbe974529462b26ff353086beea#subdirectory=contract"
           MFC=.mfc-venv/bin/mfc
 
           "$MFC" validate attest/lean-emission.json
@@ -648,6 +648,19 @@ jobs:
           # is forbidden dependencies -- so the reviews cross the boundary as
           # JSON. Elaboration is Lean's; reading the verdict is mfc's.
           if [ -f attest/review.yaml ]; then
+            # RV-01 first, before anything reads the review. A review whose
+            # reviewed_statement_pp is null passes `mfc validate`, has a
+            # reviewer, a date, a verdict and three digests, and is SILENTLY
+            # un-carryable: restate returns not_checkable, so C-10 fails at the
+            # next dependency bump and #136's ~2h/entry comes due. Nothing about
+            # it looks wrong until then.
+            #
+            # It runs ahead of restate-plan deliberately. Downstream the same
+            # defect appears as `not_checkable`, which is also what a genuine
+            # tooling failure looks like; here it appears as what it is, with
+            # the entry named and the remedy in the message.
+            "$MFC" check-review attest/review.yaml
+
             "$MFC" restate-plan --review attest/review.yaml \
                                 --out attest/restate-plan.json
             # Interpreted, like the emitter: linking the executable compiles
