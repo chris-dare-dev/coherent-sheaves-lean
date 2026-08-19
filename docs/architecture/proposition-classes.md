@@ -60,3 +60,41 @@ object (`𝟭 C` for the t-exactness classes, `free PUnit` and `unit R` for
 `ProjectiveVariety` for `IsProjective`). None is discharged unconditionally
 for every inhabitant of its base type. `HasPhaseTruncations` was the only
 instance of the pattern.
+
+## Promoting a private helper to enable a module split
+
+Splitting an oversized module can require making a `private` helper public,
+because `private` is scoped to the module and a helper cannot be referenced
+across a file boundary. That promotion is a real cost: `private` marks
+scaffolding that supports a construction without being part of its interface,
+and every promotion turns scaffolding into a supported name that the axiom
+audit records and that downstream code may come to depend on.
+
+The rule is that a split does not by itself justify a promotion.
+
+1. **Promote only what is actually referenced across the new boundary.** Do not
+   promote a block wholesale. In particular, instances usually do not need
+   promoting: a structure found by generic instance search — for example the
+   `Pi` instances on a reducible `abbrev` — resolves without the named local
+   instance being exported. Check by re-privatising and rebuilding, not by
+   inspection.
+2. **The promoted name must be worth supporting on its own terms.** If the
+   helper only makes sense as a step in one proof, prefer keeping the module
+   larger and reverting that cut.
+3. **The name must read correctly at its new visibility**, and its docstring
+   must state the supported meaning rather than what the proof needed.
+
+Applying this in `#642` returned five of the seventeen helpers promoted by the
+`#607` splits to `private`: the four rational-sections instances and
+`nonemptyOfLE`, none of which is referenced outside its own module. The
+remaining twelve are genuinely used across a boundary. `WeakUpperClosed` and
+`cross` also pass rule 2 — the closed weak upper half plane and the planar
+cross product are named concepts of the theory, not proof steps — as does the
+rational-sections presheaf, which is a self-contained account of rational
+functions on an integral scheme.
+
+`AssociatedSheaf.RationalSections` stays under `Divisors/` despite not
+mentioning divisors. Its only consumer is the divisor construction, and
+`functionField` appears nowhere else outside `Divisors/`, so a general home
+would be a subject boundary invented for one module. Move it when a second
+consumer appears.

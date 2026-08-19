@@ -34,12 +34,12 @@ nonempty open and the zero module on the empty open. -/
 abbrev RationalSections (U : X.Opens) := PLift (Nonempty U) → X.functionField
 
 /-- Rational sections form an additive group pointwise. -/
-noncomputable instance rationalSectionsAddCommGroup (U : X.Opens) :
+private noncomputable instance rationalSectionsAddCommGroup (U : X.Opens) :
     AddCommGroup (RationalSections X U) := inferInstance
 
 /-- Rational sections carry the pointwise action of the sections of the
 structure sheaf. -/
-noncomputable instance rationalSectionsSMul (U : X.Opens) :
+private noncomputable instance rationalSectionsSMul (U : X.Opens) :
     SMul Γ(X, U) (RationalSections X U) where
   smul r s h := by
     letI : Nonempty U := h.down
@@ -47,7 +47,7 @@ noncomputable instance rationalSectionsSMul (U : X.Opens) :
 
 /-- The pointwise action makes rational sections a module over the sections of
 the structure sheaf. -/
-noncomputable instance rationalSectionsModule (U : X.Opens) :
+private noncomputable instance rationalSectionsModule (U : X.Opens) :
     Module Γ(X, U) (RationalSections X U) :=
   Module.ofMinimalAxioms
     (fun r s t ↦ by
@@ -69,14 +69,14 @@ noncomputable instance rationalSectionsModule (U : X.Opens) :
 
 /-- The module structure on rational sections, stated for the bundled ring of
 sections used by the presheaf-of-modules API. -/
-noncomputable instance rationalSectionsModuleRingCat (U : X.Opensᵒᵖ) :
+private noncomputable instance rationalSectionsModuleRingCat (U : X.Opensᵒᵖ) :
     Module (X.ringCatSheaf.obj.obj U) (RationalSections X U.unop) := by
   change Module Γ(X, U.unop) (RationalSections X U.unop)
   infer_instance
 
 omit [IsIntegral X] in
 /-- Nonemptiness travels from a smaller open to a larger one. -/
-theorem nonemptyOfLE {U V : X.Opens} (h : V ≤ U) : Nonempty V → Nonempty U :=
+private theorem nonemptyOfLE {U V : X.Opens} (h : V ≤ U) : Nonempty V → Nonempty U :=
   fun hV ↦ ⟨⟨hV.some.1, h hV.some.2⟩⟩
 
 /-- Restriction of rational sections. -/
