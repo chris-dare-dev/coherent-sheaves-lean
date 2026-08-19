@@ -155,21 +155,18 @@ theorem Slicing.exists_phase_truncation (s : Slicing C) (A : C)
               · exact le_rfl
 
 /-- Distinguished phase truncations at the boundary `0`.  This is the precise
-decomposition datum required by the half-open t-structure convention. -/
-class Slicing.HasPhaseTruncations (s : Slicing C) : Prop where
-  exists_triangle (A : C) :
+decomposition datum required by the half-open t-structure convention, and it is
+available for every owner slicing from its Harder--Narasimhan filtrations. -/
+theorem Slicing.exists_phase_truncation_zero (s : Slicing C) (A : C) :
     ∃ (X Y : C) (_ : s.gtProp C 0 X) (_ : s.leProp C 0 Y)
       (f : X ⟶ A) (g : A ⟶ Y) (h : Y ⟶ X⟦(1 : ℤ)⟧),
-      Triangle.mk f g h ∈ distTriang C
+      Triangle.mk f g h ∈ distTriang C := by
+  obtain ⟨F⟩ := s.hn_exists A
+  exact s.exists_phase_truncation C A F
 
-instance Slicing.hasPhaseTruncations (s : Slicing C) : s.HasPhaseTruncations C where
-  exists_triangle A := by
-    obtain ⟨F⟩ := s.hn_exists A
-    exact s.exists_phase_truncation C A F
-
-/-- A slicing with phase truncations determines a t-structure.  Its heart uses
-the half-open convention `P((0, 1])`. -/
-def Slicing.toTStructure (s : Slicing C) [s.HasPhaseTruncations C] :
+/-- An owner slicing determines a t-structure.  Its heart uses the half-open
+convention `P((0, 1])`. -/
+def Slicing.toTStructure (s : Slicing C) :
     CategoryTheory.Triangulated.TStructure C where
   le n := s.gtProp C (-n)
   ge n := s.leProp C (1 - n)
@@ -192,14 +189,11 @@ def Slicing.toTStructure (s : Slicing C) [s.HasPhaseTruncations C] :
   ge_one_le := by
     simpa using s.leProp_mono C (show (0 : ℝ) ≤ 1 by norm_num)
   exists_triangle_zero_one A := by
-    obtain ⟨X, Y, hX, hY, f, g, h, hT⟩ :=
-      Slicing.HasPhaseTruncations.exists_triangle (s := s) A
+    obtain ⟨X, Y, hX, hY, f, g, h, hT⟩ := s.exists_phase_truncation_zero C A
     exact ⟨X, Y, by simpa using hX, by simpa using hY, f, g, h, hT⟩
 
-omit [IsTriangulated C] in
 @[simp]
-theorem Slicing.toTStructure_heart_iff (s : Slicing C) [s.HasPhaseTruncations C]
-    (E : C) : (s.toTStructure C).heart E ↔ s.gtProp C 0 E ∧ s.leProp C 1 E := by
+theorem Slicing.toTStructure_heart_iff (s : Slicing C) (E : C) : (s.toTStructure C).heart E ↔ s.gtProp C 0 E ∧ s.leProp C 1 E := by
   change (s.toTStructure C).le 0 E ∧ (s.toTStructure C).ge 0 E ↔ _
   simp only [Slicing.toTStructure, Int.cast_zero, neg_zero, sub_zero]
 
