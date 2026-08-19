@@ -172,6 +172,7 @@ echo "== gates ($MODE) =="
 gate workflows scripts/check_workflows.sh
 gate mathlib-style mathlib_style
 gate explicit-numerical-data python3 scripts/check_explicit_numerical_data.py
+gate foundation-import-boundary python3 scripts/check_foundation_import_boundary.py
 gate build lake build
 gate algebraic-geometry-audit algebraic_geometry_audit
 gate stability-condition-audit stability_condition_audit

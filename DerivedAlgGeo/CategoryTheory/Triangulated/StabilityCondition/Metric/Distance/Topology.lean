@@ -3,7 +3,7 @@ Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under the MIT license.
 -/
 import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Metric.Distance.Separation
-import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Foundation
+import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Foundation.Deformation.ConnectedComponent
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Bounds
 import Mathlib.Topology.EMetricSpace.Defs
 import MathFormalContract

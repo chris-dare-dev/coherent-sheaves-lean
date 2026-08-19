@@ -5,7 +5,6 @@ Released under the MIT license.
 import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Weak.Tilting.Cohomology.Homological
 -- The owner heart bridge supplies the short-exact-sequence-to-triangle result;
 -- the degree comparison is supplied by `Cohomology.Shift`.
-import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Foundation
 
 set_option backward.defeqAttrib.useBackward true
 set_option backward.isDefEq.respectTransparency false

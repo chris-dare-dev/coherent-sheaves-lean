@@ -2,7 +2,8 @@
 Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under the MIT license.
 -/
-import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Foundation
+import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Foundation.StabilityFunction.FiniteSums
+import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Foundation.StabilityFunction.Uniqueness
 import Mathlib.Analysis.Convex.Hull
 import Mathlib.Analysis.Convex.Jensen
 import Mathlib.Data.Fin.SuccPredOrder
