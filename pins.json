@@ -13,7 +13,7 @@
   "mathlib_is_direct_require": true,
   "external_bridgeland_source_dependency": false,
   "literal_source_independence_recorded_at": "2026-08-14",
-  "mfc_rev": "21e3b442a85c05978a70acc0b047da4a3ff22d7c",
+  "mfc_rev": "5acddfc185bf8eae870ac5396b54edaab084b564",
   "mfc_repo": "https://github.com/chris-dare-dev/math-formal-contract-lean",
   "mfc_has_lake_dependencies": false,
   "cross_repo": {
@@ -21,5 +21,5 @@
     "former_peer": "bridgeland-stab-lean",
     "note": "Both owner-authored histories now share this v4.32.1 monorepo branch."
   },
-  "mfc_cli_rev": "21e3b442a85c05978a70acc0b047da4a3ff22d7c"
+  "mfc_cli_rev": "5acddfc185bf8eae870ac5396b54edaab084b564"
 }
