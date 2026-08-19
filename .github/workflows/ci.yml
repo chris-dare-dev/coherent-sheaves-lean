@@ -628,19 +628,30 @@ jobs:
                       "${SEAL_REVIEW[@]}" \
                       --out attest/bundle.json
 
-          # C-08 and C-10 print not_run today -- no resolution.json (#134) and
-          # no review.yaml (#178). That is NOT a pass, and the summary line
-          # says so on every run. As with lint above, the exact expected
-          # not_run set is asserted so it cannot widen silently (2026-08-18
-          # adversarial review, finding P2-4).
+          # C-08 alone prints not_run: no resolution.json (#134). That is NOT
+          # a pass, and the summary line says so on every run. As with lint
+          # above, the exact expected not_run set is asserted so it cannot
+          # widen silently (2026-08-18 adversarial review, finding P2-4).
+          #
+          # WAS 'C-08,C-10' until 2026-08-19. C-10 now RUNS, because
+          # attest/review.yaml exists (#178) and the bundle carries a
+          # human-review predicate. This assertion fired on that change, which
+          # is the assertion working -- it is narrowed here with the config
+          # change that explains it, per its own error message, and not to make
+          # a red build green.
+          #
+          # It must not widen back. C-10 returning to not_run would mean the
+          # review stopped being sealed into the bundle -- most likely
+          # review.yaml going missing, which the .gitignore negation exists to
+          # prevent.
           "$MFC" conformance --bundle attest/bundle.json \
                              --emission attest/lean-emission.json \
             | tee mfc-conformance-report.txt
           actual_not_run=$(grep -oE '^not_run  C-[0-9]+' mfc-conformance-report.txt \
             | awk '{print $2}' | sort | paste -sd, -)
-          if [ "$actual_not_run" != "C-08,C-10" ]; then
+          if [ "$actual_not_run" != "C-08" ]; then
             echo "::error::mfc conformance not_run set is '$actual_not_run'," \
-                 "expected 'C-08,C-10'. A rule stopped running (or started);" \
+                 "expected 'C-08'. A rule stopped running (or started);" \
                  "update this assertion only with the config change that" \
                  "explains it."
             exit 1
