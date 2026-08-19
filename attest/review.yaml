@@ -1,0 +1,63 @@
+# review/1.0 — the only contract file no machine may write.
+#
+# Transcribed from the reviewer's verdict, not formed by one. ADR-0005 rejected
+# `faithfulness: agent_drafted` precisely so an LLM verdict cannot occupy this
+# axis, and the two fields that ARE the verdict -- `faithfulness` and
+# `relation_confirmed` -- were supplied by the named reviewer.
+#
+# Scope is per entry and nothing more. `fidelity.human_review` in
+# formalization.yaml stays `none` at repository level: one reviewed declaration
+# out of 9262 in scope is not a reviewed repository, and ADR-0005 forbids the
+# collapse that would let it read otherwise.
+schema_version: review/1.0
+reviews:
+  - key: stmt:a520a8d4f877:bridgeland2007.prop-8.1
+    decl: CategoryTheory.Triangulated.stabilityDistanceTopologyCompatible
+    reviewer:
+      name: Chris Dare
+    reviewed_at: "2026-08-19"
+
+    # From attest/declarations.json at v0.1.0 (tag object df9e6e6d, commit
+    # 7f649532). The reviewer read the statement at this digest; if it rotates,
+    # `mfc restate-check` decides whether the review carries forward.
+    reviewed_statement_digest: 14c4fd0e6ec599429b34cfbee330877f8af6e02a0232cb259e4209fae59a162d
+
+    # NULL DELIBERATELY. The schema wants the statement as the reviewer read it
+    # under `pp.explicit := true`, and warns that reusing the emission's
+    # `type_pp` is the trap. The emitter does not store an explicit rendering
+    # (#136), so recording `type_pp` here would be recording a different string
+    # than the field asks for. Null says "not captured"; type_pp would have said
+    # "captured" and been wrong.
+    reviewed_statement_pp: null
+
+    # D1 over the registry's verbatim Proposition 8.1 quote. Independently
+    # recomputed (NFC, whitespace-collapsed, sha256) and matches what
+    # registry/bridgeland2007.json records.
+    reviewed_quote_sha256: 3d821c479c6f091d32ac1828a4e00fa18dbb21b4727a5db3e4c1b2c4992a54ff
+
+    # v0.1.0's environment. C-10 compares this against environment.json.
+    reviewed_env_digest: 45d9e8ca8c1bc23e34615967859075f1437b0fd8f0f778badafd803f0da9bdf2
+
+    faithfulness: adequate
+    relation_confirmed: specialization
+    divergences:
+      - >-
+        Proposition 8.1 has two clauses; this declaration is clause (ii) only.
+        Clause (i) -- that d defines a generalised metric on Stab(D) -- is
+        carried by stabilityDist_self, stabilityDist_comm, stabilityDist_triangle
+        and separation, which are different declarations and are not reviewed
+        here. `specialization` records that scope; reading this entry as
+        confirmation of Proposition 8.1 entire would be an overclaim.
+    note: >-
+      Reviewed against the registry's verbatim quote at v0.1.0. The Lean
+      statement is that for every sigma the neighbourhood filter has a basis of
+      stabilityDist-balls; the source says the topology induced by d is the
+      Section 6 topology. Those agree only if the ambient topology on
+      WithClassMap is the Section 6 topology rather than the d-topology, and the
+      review turned on that point -- had it been the latter the theorem would be
+      a tautology. Recorded because it is the assumption a re-reviewer should
+      check first, not because it was left open. Upgrades the cite's
+      relation_claimed of no_claim. Whether this discharges the registry's
+      `stability-mass-triangle` frontier item is a separate governance question:
+      that item names an "exact-head" review, and this verdict is
+      specialization.

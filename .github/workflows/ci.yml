@@ -602,11 +602,30 @@ jobs:
           #
           # `seal` REFUSES to omit a required predicate and refuses a dirty
           # worktree; both are why the .gitignore block landed in this commit.
+          # attest/review.yaml is the one file here that is committed rather
+          # than regenerated -- see the .gitignore negation. When it exists the
+          # bundle carries a human-review predicate and C-10 stops reporting
+          # not_run; when it does not, seal is called without it and C-10 says
+          # so out loud. `--review-produced-by` is read FROM the file rather
+          # than hardcoded here, so the bundle names whoever actually signed the
+          # review instead of whoever wrote this workflow.
+          SEAL_REVIEW=()
+          if [ -f attest/review.yaml ]; then
+            REVIEWER=$(.mfc-venv/bin/python -c "import yaml,sys; \
+              print(yaml.safe_load(open('attest/review.yaml'))['reviews'][0]['reviewer']['name'])")
+            SEAL_REVIEW=(--review attest/review.yaml
+                         --review-produced-by "human:$REVIEWER")
+            echo "::notice::sealing with human review by $REVIEWER"
+          else
+            echo "::notice::no attest/review.yaml; C-10 will report not_run (#178)"
+          fi
+
           "$MFC" seal --root . \
                       --environment attest/environment.json \
                       --registry registry/bridgeland2007.json \
                       --declarations attest/declarations.json \
                       --build attest/build.json \
+                      "${SEAL_REVIEW[@]}" \
                       --out attest/bundle.json
 
           # C-08 and C-10 print not_run today -- no resolution.json (#134) and
