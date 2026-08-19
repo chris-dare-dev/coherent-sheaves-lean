@@ -22,13 +22,91 @@ reviews:
     # `mfc restate-check` decides whether the review carries forward.
     reviewed_statement_digest: 14c4fd0e6ec599429b34cfbee330877f8af6e02a0232cb259e4209fae59a162d
 
-    # NULL DELIBERATELY. The schema wants the statement as the reviewer read it
-    # under `pp.explicit := true`, and warns that reusing the emission's
-    # `type_pp` is the trap. The emitter does not store an explicit rendering
-    # (#136), so recording `type_pp` here would be recording a different string
-    # than the field asks for. Null says "not captured"; type_pp would have said
-    # "captured" and been wrong.
-    reviewed_statement_pp: null
+    # Captured 2026-08-19 under the EMITTER'S OWN pp option set with the one
+    # deliberate difference, `pp.explicit := true`:
+    #
+    #   pp.fullNames true   pp.universes true   pp.explicit TRUE
+    #   pp.notation  true   pp.proofs    true   pp.deepTerms true
+    #   pp.maxSteps  1000000                    format.width 120
+    #
+    # pp.proofs/pp.deepTerms/pp.maxSteps are not optional here. The first
+    # attempt used `pp.explicit true` alone and produced a rendering containing
+    # a `⋯` elision inside the K₀ quotient's proof argument -- unparseable, so
+    # `mfc restate-check` would have returned not_checkable and carried nothing
+    # forward. That is the pretty-printer elision failure #136 names, and it is
+    # silent: the field would have looked captured.
+    #
+    # VERIFIED TO ROUND-TRIP, not merely to be elision-free. `example : <this>
+    # := @CategoryTheory.Triangulated.stabilityDistanceTopologyCompatible`
+    # elaborates clean, and a negative control mutating one universe
+    # (Type u_2 -> u_9) fails with a type mismatch -- so the check discriminates
+    # rather than passing vacuously. That is the same question restate asks.
+    #
+    # This is NOT the emission's `type_pp`, which is rendered at
+    # `pp.explicit := false` (Emit.lean:117) and would report not_checkable.
+    reviewed_statement_pp: |
+      ∀ {C : Type u_2} [inst : CategoryTheory.Category.{u_1, u_2} C]
+        [inst_1 : @CategoryTheory.Limits.HasZeroObject.{u_1, u_2} C inst]
+        [inst_2 : @CategoryTheory.HasShift.{u_1, u_2, 0} C Int inst Int.instAddMonoid]
+        [inst_3 : @CategoryTheory.Preadditive.{u_1, u_2} C inst]
+        [inst_4 :
+          ∀ (n : Int),
+            @CategoryTheory.Functor.Additive.{u_1, u_2, u_1, u_2} C C inst inst inst_3 inst_3
+              (@CategoryTheory.shiftFunctor.{u_1, u_2, 0} C Int inst Int.instAddMonoid inst_2 n)]
+        [inst_5 : @CategoryTheory.Pretriangulated.{u_1, u_2} C inst inst_1 inst_2 inst_3 inst_4]
+        [@CategoryTheory.IsTriangulated.{u_1, u_2} C inst inst_3 inst_1 inst_2 inst_4 inst_5] {Λ : Type u_3}
+        [inst_7 : AddCommGroup.{u_3} Λ]
+        {v :
+          @AddMonoidHom.{u_2, u_3} (@CategoryTheory.Triangulated.K₀.{u_2, u_1} C inst inst_1 inst_2 inst_3 inst_4 inst_5) Λ
+            (@AddZeroClass.toAddZero.{u_2}
+              (@CategoryTheory.Triangulated.K₀.{u_2, u_1} C inst inst_1 inst_2 inst_3 inst_4 inst_5)
+              (@AddMonoid.toAddZeroClass.{u_2}
+                (@CategoryTheory.Triangulated.K₀.{u_2, u_1} C inst inst_1 inst_2 inst_3 inst_4 inst_5)
+                (@SubNegMonoid.toAddMonoid.{u_2}
+                  (@CategoryTheory.Triangulated.K₀.{u_2, u_1} C inst inst_1 inst_2 inst_3 inst_4 inst_5)
+                  (@AddGroup.toSubNegMonoid.{u_2}
+                    (@CategoryTheory.Triangulated.K₀.{u_2, u_1} C inst inst_1 inst_2 inst_3 inst_4 inst_5)
+                    (@QuotientAddGroup.Quotient.addGroup.{u_2} (FreeAbelianGroup.{u_2} C)
+                      (@AddCommGroup.toAddGroup.{u_2} (FreeAbelianGroup.{u_2} C) (instAddCommGroupFreeAbelianGroup.{u_2} C))
+                      (@CategoryTheory.Triangulated.GrothendieckPresentation.relationSubgroup.{u_2, max u_2 u_1} C
+                        (@Subtype.{max (u_2 + 1) (u_1 + 1)}
+                          (@CategoryTheory.Pretriangulated.Triangle.{u_1, u_2} C inst inst_2) fun T =>
+                          @Membership.mem.{max u_2 u_1, max u_2 u_1}
+                            (@CategoryTheory.Pretriangulated.Triangle.{u_1, u_2} C inst inst_2)
+                            (Set.{max u_2 u_1} (@CategoryTheory.Pretriangulated.Triangle.{u_1, u_2} C inst inst_2))
+                            (@Set.instMembership.{max u_2 u_1}
+                              (@CategoryTheory.Pretriangulated.Triangle.{u_1, u_2} C inst inst_2))
+                            (@CategoryTheory.Pretriangulated.distinguishedTriangles.{u_1, u_2} C inst inst_1 inst_2 inst_3
+                              inst_4 inst_5)
+                            T)
+                        (@CategoryTheory.Triangulated.triangulatedPresentation.{u_2, u_1} C inst inst_1 inst_2 inst_3 inst_4
+                          inst_5))
+                      (@AddSubgroup.normal_of_isAddCommutative.{u_2} (FreeAbelianGroup.{u_2} C)
+                        (@AddCommGroup.toAddGroup.{u_2} (FreeAbelianGroup.{u_2} C) (instAddCommGroupFreeAbelianGroup.{u_2} C))
+                        (@AddCommMagma.to_isCommutative.{u_2} (FreeAbelianGroup.{u_2} C)
+                          (@AddCommSemigroup.toAddCommMagma.{u_2} (FreeAbelianGroup.{u_2} C)
+                            (@AddCommMonoid.toAddCommSemigroup.{u_2} (FreeAbelianGroup.{u_2} C)
+                              (@AddCommGroup.toAddCommMonoid.{u_2} (FreeAbelianGroup.{u_2} C)
+                                (instAddCommGroupFreeAbelianGroup.{u_2} C)))))
+                        (@CategoryTheory.Triangulated.GrothendieckPresentation.relationSubgroup.{u_2, max u_2 u_1} C
+                          (@Subtype.{max (u_2 + 1) (u_1 + 1)}
+                            (@CategoryTheory.Pretriangulated.Triangle.{u_1, u_2} C inst inst_2) fun T =>
+                            @Membership.mem.{max u_2 u_1, max u_2 u_1}
+                              (@CategoryTheory.Pretriangulated.Triangle.{u_1, u_2} C inst inst_2)
+                              (Set.{max u_2 u_1} (@CategoryTheory.Pretriangulated.Triangle.{u_1, u_2} C inst inst_2))
+                              (@Set.instMembership.{max u_2 u_1}
+                                (@CategoryTheory.Pretriangulated.Triangle.{u_1, u_2} C inst inst_2))
+                              (@CategoryTheory.Pretriangulated.distinguishedTriangles.{u_1, u_2} C inst inst_1 inst_2 inst_3
+                                inst_4 inst_5)
+                              T)
+                          (@CategoryTheory.Triangulated.triangulatedPresentation.{u_2, u_1} C inst inst_1 inst_2 inst_3 inst_4
+                            inst_5))))))))
+            (@AddZeroClass.toAddZero.{u_3} Λ
+              (@AddMonoid.toAddZeroClass.{u_3} Λ
+                (@SubNegMonoid.toAddMonoid.{u_3} Λ
+                  (@AddGroup.toSubNegMonoid.{u_3} Λ (@AddCommGroup.toAddGroup.{u_3} Λ inst_7)))))},
+        @CategoryTheory.Triangulated.StabilityDistanceTopologyCompatible.{u_1, u_2, u_3} C inst inst_1 inst_2 inst_3 inst_4
+          inst_5 Λ inst_7 v
 
     # D1 over the registry's verbatim Proposition 8.1 quote. Independently
     # recomputed (NFC, whitespace-collapsed, sha256) and matches what
