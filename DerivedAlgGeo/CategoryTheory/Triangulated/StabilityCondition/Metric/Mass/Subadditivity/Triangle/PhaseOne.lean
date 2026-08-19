@@ -6,9 +6,6 @@ import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Metric.Mass.
 import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Metric.Mass.Subadditivity.Triangle.HeartShortExact
 import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Metric.Mass.Subadditivity.CohomologyExactness
 
-set_option backward.defeqAttrib.useBackward true
-set_option backward.isDefEq.respectTransparency false
-
 /-!
 # The phase-one left endpoint through the six-term cohomology sequence
 
@@ -21,6 +18,9 @@ identifications, and reduces a bounded-amplitude object to that window.
 It is isolated because its elaboration cost dominates the module; consumers
 that need only the final inequalities import `Consequences`.
 -/
+
+set_option backward.defeqAttrib.useBackward true
+set_option backward.isDefEq.respectTransparency false
 
 open CategoryTheory.Triangulated
 open CategoryTheory CategoryTheory.Limits CategoryTheory.Pretriangulated
@@ -41,7 +41,7 @@ variable {C : Type u} [Category.{w} C] [HasZeroObject C] [HasShift C ℤ]
   [IsTriangulated C]
 variable {Λ : Type u'} [AddCommGroup Λ] {v : K₀ C →+ Λ}
 
-set_option maxHeartbeats 3000000
+set_option maxHeartbeats 3000000 in
 /-- The six-term comparison at the level of the shifted homological functor.
 Keeping this categorical construction separate from the canonical
 `heartCoh` identifications substantially reduces elaboration cost for the
@@ -243,6 +243,7 @@ theorem stabilityMass_H0FunctorShift_negOne_zero_triangle_le_of_obj₁_phase_one
         (stabilityMass σ F0.obj).toReal)
   linarith only [hNeg, hZero, hAeq]
 
+set_option maxHeartbeats 3000000 in
 /-- The six-term cohomology comparison for a phase-one source.  This is the
 homological core of the semistable-left argument, stated before the ambient
 objects are reassembled from their two nonzero cohomology degrees. -/
@@ -291,6 +292,7 @@ theorem stabilityMass_heartCoh_negOne_zero_triangle_le_of_obj₁_phase_one
   rw [hEmMass, hE0Mass, hFmMass, hF0Mass] at hshift
   exact hshift
 
+set_option maxHeartbeats 3000000 in
 /-- The semistable-left comparison on the two-cohomology window `(0, 2]`.
 After rotating the semistable source to phase one, the unconditional
 homological `H⁰` functor gives the six-term exact sequence

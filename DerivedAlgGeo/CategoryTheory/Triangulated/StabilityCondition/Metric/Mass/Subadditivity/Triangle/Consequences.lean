@@ -6,10 +6,6 @@ import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Metric.Mass.
 import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Metric.Distance.Topology
 import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Symmetry.GLTilde.Covering.SourceTopology
 
-set_option backward.defeqAttrib.useBackward true
-set_option backward.isDefEq.respectTransparency false
-set_option maxHeartbeats 3000000
-
 /-!
 # The mass-triangle inequality and its recorded consequences
 
@@ -20,6 +16,9 @@ comparison from the conditional substrate in `Metric.Distance.Topology`.
 
 This is the module a consumer of the milestone should import.
 -/
+
+set_option backward.defeqAttrib.useBackward true
+set_option backward.isDefEq.respectTransparency false
 
 open CategoryTheory.Triangulated
 open CategoryTheory CategoryTheory.Limits CategoryTheory.Pretriangulated
@@ -40,6 +39,7 @@ variable {C : Type u} [Category.{w} C] [HasZeroObject C] [HasShift C ℤ]
   [IsTriangulated C]
 variable {Λ : Type u'} [AddCommGroup Λ] {v : K₀ C →+ Λ}
 
+set_option maxHeartbeats 3000000 in
 /-- Mass is subadditive for a distinguished triangle whose first object lies
 in the phase-one slice.  The proof first cuts the middle object at phase zero;
 the common lower tail splits off exactly from both the middle and right
@@ -159,6 +159,7 @@ theorem stabilityMass_triangle_le_of_obj₁_phase_one
     (stabilityMass σ T.obj₁).toReal + (stabilityMass σ Flow).toReal at hamp
   linarith
 
+set_option maxHeartbeats 3000000 in
 /-- The second mass-triangle milestone: the triangle inequality whenever the
 left endpoint is semistable, at an arbitrary phase.  A lifted rotation moves
 that phase to one and preserves every object's HN mass. -/
@@ -174,23 +175,26 @@ theorem stabilityMassSemistableLeftTriangleInequality :
     (liftedRotation θ • σ) T hT hrot
   simpa using h
 
+set_option maxHeartbeats 3000000 in
 /-- Harder--Narasimhan mass is subadditive along every distinguished triangle. -/
 theorem stabilityMassTriangleInequality :
     StabilityMassTriangleInequality (C := C) (v := v) :=
   stabilityMassTriangleInequality_of_semistable_obj₁
     stabilityMassSemistableLeftTriangleInequality
 
+set_option maxHeartbeats 3000000 in
 /-- Full-distance balls form a neighbourhood basis for the pre-existing
 Section 6 topology.  This closes the explicit mass-triangle premise of the
 topology comparison without installing a second topology or metric instance. -/
 @[cites "stmt:a520a8d4f877:bridgeland2007.prop-8.1" (relation := no_claim)
-        (note := "Unconditional topology comparison obtained by applying the existing conditional comparison to the proved HN mass-triangle theorem. The citation remains no_claim pending exact-head source-faithfulness review and owner acceptance; no topology or metric instance is installed.")]
+        (note := "Unconditional topology comparison obtained by applying the \
+existing conditional comparison to the proved HN mass-triangle theorem. The \
+citation remains no_claim pending exact-head source-faithfulness review and \
+owner acceptance; no topology or metric instance is installed.")]
 theorem stabilityDistanceTopologyCompatible :
     StabilityDistanceTopologyCompatible (C := C) (v := v) :=
   stabilityDistanceTopologyCompatible_of_mass_triangle
     stabilityMassTriangleInequality
-
-set_option maxHeartbeats 200000
 
 /-- The global distinguished-triangle inequality restricts to the heart-level
 short-exact inequality. -/

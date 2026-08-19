@@ -4,9 +4,6 @@ Released under the MIT license.
 -/
 import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Metric.Mass.Subadditivity.Triangle.HeartObservable
 
-set_option backward.defeqAttrib.useBackward true
-set_option backward.isDefEq.respectTransparency false
-
 /-!
 # Named inequality targets and the heart short-exact bridge
 
@@ -20,6 +17,9 @@ inequality.
 Definitions of the targets are kept above their proofs so that a consumer may
 depend on the statement without the proof's import surface.
 -/
+
+set_option backward.defeqAttrib.useBackward true
+set_option backward.isDefEq.respectTransparency false
 
 open CategoryTheory.Triangulated
 open CategoryTheory CategoryTheory.Limits CategoryTheory.Pretriangulated

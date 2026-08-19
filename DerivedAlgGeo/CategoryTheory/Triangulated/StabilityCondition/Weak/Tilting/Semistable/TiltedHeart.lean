@@ -5,9 +5,6 @@ Released under the MIT license.
 import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Weak.Tilting.Semistable.TiltGeometry
 import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Weak.Tilting.Cohomology.Basic
 
-set_option backward.defeqAttrib.useBackward true
-set_option backward.isDefEq.respectTransparency false
-
 /-!
 # The tilted heart and its weak stability function
 
@@ -17,6 +14,9 @@ heart by that phase interval, its agreement with the phase-shifted heart, and
 the construction of the weak stability function the tilted heart carries.  Its
 charge is the original charge rotated clockwise through `pi * beta`.
 -/
+
+set_option backward.defeqAttrib.useBackward true
+set_option backward.isDefEq.respectTransparency false
 
 open CategoryTheory.Triangulated
 open CategoryTheory Limits Pretriangulated CategoryTheory.Triangulated Complex

@@ -6,9 +6,6 @@ import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Metric.Mass.
 import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Symmetry.GLTilde.Covering.SourceTopology
 import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Symmetry.GLTilde.Action.Stability
 
-set_option backward.defeqAttrib.useBackward true
-set_option backward.isDefEq.respectTransparency false
-
 /-!
 # Elementary transport of Harder--Narasimhan mass
 
@@ -21,6 +18,9 @@ These are the arithmetic inputs to the triangle comparisons; keeping them apart
 from the heart bridge lets them be imported without the heart-equivalence
 machinery.
 -/
+
+set_option backward.defeqAttrib.useBackward true
+set_option backward.isDefEq.respectTransparency false
 
 open CategoryTheory.Triangulated
 open CategoryTheory CategoryTheory.Limits CategoryTheory.Pretriangulated

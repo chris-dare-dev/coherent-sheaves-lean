@@ -7,8 +7,6 @@ import DerivedAlgGeo.AlgebraicGeometry.Divisors.Cartier
 import Mathlib.Algebra.Category.ModuleCat.Presheaf.Submodule
 import Mathlib.Algebra.Module.MinimalAxioms
 
-set_option backward.isDefEq.respectTransparency false
-
 /-!
 # The presheaf of rational sections on an integral scheme
 
@@ -20,6 +18,8 @@ empty open, which makes restriction definitional.
 Nothing here mentions divisors.  `AssociatedSheaf.Construction` builds the
 fractional subpresheaf of a Cartier divisor inside this presheaf.
 -/
+
+set_option backward.isDefEq.respectTransparency false
 
 open CategoryTheory Opposite TopologicalSpace MonoidalCategory
 
@@ -74,6 +74,7 @@ noncomputable instance rationalSectionsModuleRingCat (U : X.Opensᵒᵖ) :
   change Module Γ(X, U.unop) (RationalSections X U.unop)
   infer_instance
 
+omit [IsIntegral X] in
 /-- Nonemptiness travels from a smaller open to a larger one. -/
 theorem nonemptyOfLE {U V : X.Opens} (h : V ≤ U) : Nonempty V → Nonempty U :=
   fun hV ↦ ⟨⟨hV.some.1, h hV.some.2⟩⟩

@@ -4,8 +4,6 @@ Released under the MIT license.
 -/
 import DerivedAlgGeo.AlgebraicGeometry.Divisors.AssociatedSheaf.Construction
 
-set_option backward.isDefEq.respectTransparency false
-
 /-!
 # From Cartier divisors to the Picard group
 
@@ -21,6 +19,8 @@ of module sheaves would also need compatibility between that data, rational
 sections, and module sheafification.  That extra compatibility is not part of
 the current Mathlib API.
 -/
+
+set_option backward.isDefEq.respectTransparency false
 
 open CategoryTheory Opposite TopologicalSpace MonoidalCategory
 

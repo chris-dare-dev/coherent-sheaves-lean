@@ -6,9 +6,6 @@ import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Weak.Tilting
 import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Weak.Tilting.Cohomology.Sequence
 import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Weak.HarderNarasimhan.Heart
 
-set_option backward.defeqAttrib.useBackward true
-set_option backward.isDefEq.respectTransparency false
-
 /-!
 # Transfer of semistability across the tilt
 
@@ -16,6 +13,9 @@ This file owns the transfer results: semistability on the original heart in the
 torsion and torsion-free cases, and semistability of an object whose rotated
 charge lies on a fixed ray.
 -/
+
+set_option backward.defeqAttrib.useBackward true
+set_option backward.isDefEq.respectTransparency false
 
 open CategoryTheory.Triangulated
 open CategoryTheory Limits Pretriangulated CategoryTheory.Triangulated Complex

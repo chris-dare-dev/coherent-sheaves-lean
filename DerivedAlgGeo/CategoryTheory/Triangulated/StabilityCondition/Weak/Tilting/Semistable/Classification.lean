@@ -4,9 +4,6 @@ Released under the MIT license.
 -/
 import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Weak.Tilting.Semistable.SemistableTransfer
 
-set_option backward.defeqAttrib.useBackward true
-set_option backward.isDefEq.respectTransparency false
-
 /-!
 # The phase-language classification of tilted semistable objects
 
@@ -18,6 +15,9 @@ records the resulting characterisation.
 
 This is the module a consumer of Lemma 14.17 should import.
 -/
+
+set_option backward.defeqAttrib.useBackward true
+set_option backward.isDefEq.respectTransparency false
 
 open CategoryTheory.Triangulated
 open CategoryTheory Limits Pretriangulated CategoryTheory.Triangulated Complex

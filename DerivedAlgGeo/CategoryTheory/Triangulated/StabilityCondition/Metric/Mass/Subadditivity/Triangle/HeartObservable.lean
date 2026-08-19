@@ -9,9 +9,6 @@ import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Symmetry.GLT
 import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Symmetry.GLTilde.Action.Stability
 import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Weak.Heart.Equivalence
 
-set_option backward.defeqAttrib.useBackward true
-set_option backward.isDefEq.respectTransparency false
-
 /-!
 # The observable stability function on the canonical heart
 
@@ -24,6 +21,9 @@ semistable objects are exactly the ambient slicing's.
 Only this bridge lives here.  Mass estimates along distinguished triangles are
 developed in the sibling modules and consume this file through the umbrella.
 -/
+
+set_option backward.defeqAttrib.useBackward true
+set_option backward.isDefEq.respectTransparency false
 
 open CategoryTheory.Triangulated
 open CategoryTheory CategoryTheory.Limits CategoryTheory.Pretriangulated

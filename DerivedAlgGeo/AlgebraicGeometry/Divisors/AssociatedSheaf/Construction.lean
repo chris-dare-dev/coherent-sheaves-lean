@@ -4,8 +4,6 @@ Released under the MIT license.
 -/
 import DerivedAlgGeo.AlgebraicGeometry.Divisors.AssociatedSheaf.RationalSections
 
-set_option backward.isDefEq.respectTransparency false
-
 /-!
 # The associated sheaf of a Cartier divisor
 
@@ -25,6 +23,8 @@ local equation.  The scaffolding lemmas that establish the local surjectivity
 and injectivity conditions are private to this module; only the resulting
 sheaves, isomorphisms, and their defining data are exported.
 -/
+
+set_option backward.isDefEq.respectTransparency false
 
 open CategoryTheory Opposite TopologicalSpace MonoidalCategory
 

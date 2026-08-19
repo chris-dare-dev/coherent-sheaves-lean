@@ -5,9 +5,6 @@ Released under the MIT license.
 import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Weak.Tilting.Semistable.TiltedHeart
 import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Weak.Tilting.Cohomology.Sequence
 
-set_option backward.defeqAttrib.useBackward true
-set_option backward.isDefEq.respectTransparency false
-
 /-!
 # Objects of zero tilted charge
 
@@ -16,6 +13,9 @@ tilted heart lie in `P(1)`, the characterisation of that locus, vanishing of
 maps out of it into a tilted-semistable object, and the semistability of the
 left endpoint that follows.
 -/
+
+set_option backward.defeqAttrib.useBackward true
+set_option backward.isDefEq.respectTransparency false
 
 open CategoryTheory.Triangulated
 open CategoryTheory Limits Pretriangulated CategoryTheory.Triangulated Complex

@@ -5,9 +5,6 @@ Released under the MIT license.
 import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Weak.Tilting.Property
 import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Weak.Heart.Equivalence
 
-set_option backward.defeqAttrib.useBackward true
-set_option backward.isDefEq.respectTransparency false
-
 /-!
 # Plane geometry of the phase tilt
 
@@ -21,6 +18,9 @@ comparisons from strict separation of old slicing phases.
 shared vocabulary of the rest of `Semistable`; the helpers used only here stay
 private.
 -/
+
+set_option backward.defeqAttrib.useBackward true
+set_option backward.isDefEq.respectTransparency false
 
 open CategoryTheory.Triangulated
 open CategoryTheory Limits Pretriangulated CategoryTheory.Triangulated Complex

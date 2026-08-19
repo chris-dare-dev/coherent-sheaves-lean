@@ -6,9 +6,6 @@ import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Metric.Mass.
 import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Metric.Distance.Separation
 import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Weak.Tilting.Cohomology.Sequence
 
-set_option backward.defeqAttrib.useBackward true
-set_option backward.isDefEq.respectTransparency false
-
 /-!
 # Exact mass splitting across a distinguished triangle
 
@@ -20,6 +17,9 @@ that follow directly from additivity are proved here too.
 
 The hard arbitrary-left case is developed in `PhaseOne` and `Consequences`.
 -/
+
+set_option backward.defeqAttrib.useBackward true
+set_option backward.isDefEq.respectTransparency false
 
 open CategoryTheory.Triangulated
 open CategoryTheory CategoryTheory.Limits CategoryTheory.Pretriangulated
