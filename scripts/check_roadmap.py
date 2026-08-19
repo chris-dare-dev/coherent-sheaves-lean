@@ -33,7 +33,8 @@ default is a degraded report rather than a failure, so a contributor without
   RM-03  a `deliverable`'s GitHub parent is its entry's parent
   RM-04  a `task` is milestone-direct: no GitHub parent, milestone agrees
   RM-05  `blocked_by` mirrors GitHub's blocked-by, on OPEN items
-  RM-06  no issue on a roadmap-owned milestone goes unreferenced
+  RM-06  no LIVE issue on a roadmap-owned milestone goes unreferenced
+         (live = the issue is open, or its milestone is)
 
 RM-05 is scoped to open items on purpose. A closed item's blockers are history:
 #618 was closed as a decision while still marked blocked by #134 and #178, and
@@ -55,26 +56,19 @@ import sys
 REPO = "chris-dare-dev/derived-alg-geo-lean"
 LEAF_KINDS = ("deliverable", "task")
 
-#: RM-06 gaps that predate this check, recorded 2026-08-18 rather than tolerated
-#: silently. FIFTEEN of eighteen owned milestones have zero unreferenced issues,
-#: so the invariant is the norm and these are the exceptions -- which is exactly
-#: why they are listed by number instead of the rule being weakened to a warning
-#: nobody reads.
+#: RM-06 gaps that predate this rule's scoping, recorded rather than tolerated
+#: silently. THIS LIST MAY ONLY SHRINK: adding to it records a new gap instead
+#: of fixing one, and the next reader cannot tell those apart.
 #:
-#: THIS LIST MAY ONLY SHRINK. Adding to it means recording a new gap instead of
-#: fixing one, and the next reader cannot tell those apart. Either decompose the
-#: issue into the roadmap or move it off a roadmap-owned milestone.
-#:
-#: Milestone 14 accounts for 25 of the 27: "Owner foundation slice 1..52", of
-#: which the roadmap itemizes 8. That is a roadmap gap large enough to be its
-#: own decision and is tracked separately -- it is not drift that landed by
-#: accident, and burying it here without saying so would be the failure this
-#: script exists to prevent.
+#: It was 27 entries for a few hours, and 26 of those were closed issues on
+#: CLOSED milestones -- SF0 (33 closed, description "Complete") and DG1 (7
+#: closed). Finished work that was never itemized cannot be work the roadmap
+#: loses track of, so flagging it bought nothing and cost something: a list
+#: reading "27 known gaps" invites being ignored, and #554 -- the one live gap
+#: -- was buried in it. See the scoping in RM-06 below, and #639.
 RM06_KNOWN_GAPS = {
-    225, 226, 228, 229, 231, 233, 236, 238, 240, 242, 244, 246, 248, 250,
-    252, 254, 256, 258, 260, 262, 264, 266, 350, 351, 352,   # milestone 14
-    356,                                                      # milestone 20
-    554,                                                      # milestone 31
+    554,   # SF8.5, open, on the open SF8 milestone. A real gap: give it a
+           # roadmap entry and this list is empty.
 }
 
 
@@ -138,6 +132,25 @@ def fetch_issues():
     }, None
 
 
+def fetch_open_milestones():
+    """Milestone numbers whose milestone is still OPEN."""
+    try:
+        proc = subprocess.run(
+            ["gh", "api", f"repos/{REPO}/milestones?state=all&per_page=100",
+             "--jq", ".[] | [.number, .state] | @tsv"],
+            capture_output=True, text=True, timeout=120)
+    except (OSError, subprocess.SubprocessError) as exc:
+        return None, f"could not run gh: {exc}"
+    if proc.returncode != 0:
+        return None, f"gh api milestones exited {proc.returncode}: {proc.stderr.strip()[:200]}"
+    open_ms = set()
+    for line in proc.stdout.splitlines():
+        num, _, state = line.partition("\t")
+        if state.strip() == "open":
+            open_ms.add(int(num))
+    return open_ms, None
+
+
 def main(argv):
     require_api = "--require-api" in argv
     rest = [a for a in argv if not a.startswith("--")]
@@ -152,6 +165,9 @@ def main(argv):
 
     live, problem = fetch_issues()
     if live is None:
+        return not_run(problem, require_api)
+    open_milestones, problem = fetch_open_milestones()
+    if open_milestones is None:
         return not_run(problem, require_api)
 
     by_id = {i["id"]: i for i in items}
@@ -232,9 +248,18 @@ def main(argv):
     # RM-06 -----------------------------------------------------------------
     owned = {e["gh_milestone"] for e in items
              if e.get("kind") == "milestone" and e.get("gh_milestone")}
+    #
+    # SCOPED TO WHERE THE ROADMAP CAN STILL LOSE SOMETHING: an issue is only a
+    # finding when the issue is open, or its milestone is. A closed issue on a
+    # closed milestone is finished work that was never itemized -- it cannot go
+    # missing, and flagging it drowns the live gaps. #639 measured the
+    # difference: 27 findings before, 1 after, and the 1 was invisible inside
+    # the 27.
     known_hit = set()
     for n, i in sorted(live.items()):
         if i["milestone"] not in owned or n in referenced:
+            continue
+        if i["state"] != "OPEN" and i["milestone"] not in open_milestones:
             continue
         if n in RM06_KNOWN_GAPS:
             known_hit.add(n)
