@@ -1,5 +1,31 @@
 # G3 lane — `Hⁱ(Pⁿ, O(d))` vanishing: review and continuation handoff
 
+> **SUPERSEDED — read this box first.**
+>
+> The continuation plan below recommends a **peeling** route. That recommendation was wrong and
+> the route was never needed. `#340`'s vanishing theorem is proved on `main` by the **block
+> decomposition** — the route §1 originally described — in `8dd0e5c` (`LaurentBlock.lean`),
+> `f35fd17`, `b6ad039`, `e868472`, with the close-out in #558
+> (`polynomialVariableCechComplex_exactAt`, `polynomialVariableCechComplex_homology_isZero`,
+> `polynomialTwisting_H_subsingleton`).
+>
+> **Why the peeling recommendation was wrong.** It rested on one claim: that `∑_F π_F = 1` would be
+> painful because it is a powerset expansion in `AddMonoidHom.End`, a *noncommutative* ring, so
+> `Finset.prod_add` would not apply. `LaurentBlock.lean` never enters the endomorphism ring —
+> `laurentFilter` acts on **numerators**, where the coefficient ring is commutative, and
+> `sum_laurentFilter_powerset` is then an ordinary expansion. The objection was to a formulation,
+> mistaken for an objection to the route, and not tested before being acted on.
+>
+> The peeling work (#549, #557) is closed unmerged. Its one reusable observation: a Čech face
+> preserves the Laurent exponent, so the sign projection commutes with *every* face —
+> `signIdem_laurentFace_same` in #557 has the `e = i₀` half written and gated, should anyone ever
+> want "the sign projection is a chain map".
+>
+> §0 (mechanics) and §1 (the mathematics) below remain accurate and are still worth reading. §2 is
+> current only up to #526. **§3.2 and §4 are superseded.**
+
+
+
 **Audience:** a working session (autonomous or interactive) picking up #340 / #491.
 Not a human summary.
 **Baseline:** `origin/main` at `ab4d431` (merge of PR #539). Everything below assumes
@@ -46,9 +72,13 @@ cd /tmp/<your-dir> && lake build && scripts/gates.sh
     to the audit file aborted before its single `write()` and 21 declarations went
     unregistered; only `audit-complete` caught it. Verify with
     `grep -c '<new-name>' scripts/AlgebraicGeometryAudit.lean` after editing.
-- **The audit file is a single append-point and conflicts structurally** with every
-  concurrent PR. Four of this lane's eight PRs conflicted there. Resolution is
-  always "keep both blocks"; never take one side.
+- **The audit was split by #546 (issue #480).** Records now live in
+  `scripts/AlgebraicGeometryAudit/{Core,Moduli}.lean`; `AlgebraicGeometryAudit.lean`
+  is an imports-only umbrella, and `#print axioms` does not replay across the
+  import boundary, so add a record to the *area file* its module belongs to.
+  Before the split it was a single append-point and conflicted structurally with
+  every concurrent PR — four of this lane's eight PRs conflicted there, resolution
+  always "keep both blocks". The split should make that rarer, not impossible.
 - `grep -c` exits **1** when the count is 0, which short-circuits a `&&` chain and
   can skip a `git commit`. Do not chain a verification `grep -c` before a commit.
 
@@ -66,6 +96,17 @@ cd /tmp/<your-dir> && lake build && scripts/gates.sh
   will report the *previous* head's checks as `SUCCESS`. Always compare
   `.headRefOid` against what you pushed before believing a green rollup. This
   nearly merged #499 on the wrong commit's checks.
+- **Check who else is in the lane before planning, not after.** This lane had two
+  sessions working it simultaneously; the second one's worktree was visible in `ps`
+  output that had already been read twice, and its PRs were visible in
+  `gh pr list`. A whole route (#549, #557) was designed and built against work that
+  was already finished elsewhere. Run
+  `gh api "/repos/OWNER/REPO/pulls?state=open" --jq '.[].title'` and
+  `git log --oneline origin/main -- <your subtree>` before proposing a plan.
+- **The shared Mathlib cache can be left half-unpacked.** Symptom: a specific
+  `.olean` missing while the build directory looks populated (seen at 3321 of 8263
+  oleans). `lake exe cache get` in the main checkout repairs it; every worktree
+  symlinked to `.lake/packages` is broken until it does.
 
 ## 1. What the mathematics is
 
@@ -249,6 +290,10 @@ Things a reviewer should look at, or a continuation should not undo:
    group. #340's acceptance criteria are all still open.
 
 ## 4. Continuation, in order
+
+### ALL STEPS BELOW ARE DONE — see the box at the top of this file
+
+Kept for the record of how the lane was reasoned about, not as instructions.
 
 ### Step 0 — DONE in #539 (was step 1 here)
 
