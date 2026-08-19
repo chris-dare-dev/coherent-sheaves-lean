@@ -19,45 +19,46 @@ universe u v
 
 namespace AlgebraicGeometry.Numerical
 
-namespace NumericalVariety
+namespace NumericalVarietyData
 
-open NumericalRing Finset
+open Finset
 
 variable {n : ℕ} {A : Type u} {N : Type v}
-variable [CommRing A] [Algebra ℚ A] [AddCommGroup N] [NumericalVariety n A N]
+variable [CommRing A] [Algebra ℚ A] [AddCommGroup N]
+variable (V : NumericalVarietyData n A N)
 
 /-- The Euler characteristic of the structure sheaf, represented numerically by the degree
 of the top Todd component. This definition is dimension-general; surface, threefold, and
 fourfold names are only compatibility aliases in the specialization modules. -/
 noncomputable def structureSheafEulerCharacteristic : ℚ :=
-  degree (n := n) (toddComp (A := A) (N := N) n)
+  V.ring.degree (V.toddComp n)
 
 /-- **The Riemann–Roch expansion.** Integrating `ch(E) · td(X)` leaves exactly the
 `n + 1` terms of total codimension `n`:
 
 `∫_X ch(E) · td(X) = Σ_{i=0}^{n} ∫_X chᵢ(E) · td_{n-i}(X)`. -/
 theorem degree_ch_mul_todd (E : N) :
-    degree (n := n) (ch (A := A) E * todd n A (N := N))
+    V.ring.degree (V.ch E * V.todd)
       = ∑ i ∈ range (n + 1),
-          degree (n := n) (chComp (A := A) E i * toddComp (N := N) (n - i)) := by
+          V.ring.degree (V.chComp E i * V.toddComp (n - i)) := by
   simp only [ch, todd]
   rw [Finset.sum_mul_sum, map_sum]
   refine Finset.sum_congr rfl fun i hi => ?_
   have hin : i ≤ n := Nat.lt_succ_iff.mp (Finset.mem_range.mp hi)
   rw [map_sum]
   refine Finset.sum_eq_single (n - i) (fun b _ hb => ?_) (fun hmem => ?_)
-  · refine degree_chComp_mul_toddComp_eq_zero E fun hib => hb ?_
+  · refine V.degree_chComp_mul_toddComp_eq_zero E fun hib => hb ?_
     omega
   · exact absurd (Finset.mem_range.mpr (by omega)) hmem
 
 /-- Riemann–Roch with the product already expanded:
 `χ(E) = Σ_{i=0}^{n} ∫_X chᵢ(E) · td_{n-i}(X)`. -/
-theorem chi_eq_sum (E : N) :
-    (chi (A := A) E : ℚ)
+theorem chi_eq_sum (hV : V.SatisfiesHRR) (E : N) :
+    (V.chi E : ℚ)
       = ∑ i ∈ range (n + 1),
-          degree (n := n) (chComp (A := A) E i * toddComp (N := N) (n - i)) := by
-  rw [hrr E, degree_ch_mul_todd]
+          V.ring.degree (V.chComp E i * V.toddComp (n - i)) := by
+  rw [V.hrr hV E, V.degree_ch_mul_todd]
 
-end NumericalVariety
+end NumericalVarietyData
 
 end AlgebraicGeometry.Numerical

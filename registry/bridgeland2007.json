@@ -183,7 +183,8 @@
           "kind_class": "interface",
           "kind_label": "source-review-pending",
           "statement": "MECHANICALLY CLOSED 2026-08-11; HUMAN DISCHARGE PENDING. Proposition 8.1 has two clauses. Clause (i) -- that d is a generalised metric -- is proved unconditionally by stabilityDist_self, stabilityDist_comm, stabilityDist_triangle, and separation. Clause (ii) is now also exposed unconditionally: stabilityMassSemistableLeftTriangleInequality proves arbitrary-phase semistable-left subadditivity, stabilityMassTriangleInequality assembles it through the HN filtration, and stabilityDistanceTopologyCompatible applies that theorem to the already-proved two-way neighborhood cofinality result. No topology or metric instance is installed. The frontier item remains open only because an agent may not supply the named exact-head source-faithfulness review or owner acceptance required to discharge it; all Proposition 8.1 citations remain no_claim until that governance step.",
-          "discharged_by": null
+          "discharged_by": null,
+          "referent": "Bridgeland 2007, Proposition 8.1: the function d(sigma, tau) on Stab(D) as a generalised metric inducing the Section 6 topology"
         }
       ],
       "minted_at": "2026-08-05",
@@ -227,7 +228,8 @@
             "key": "stmt:a520a8d4f877:obl-gltilde-universal-cover",
             "discharged_at": "2026-08-07",
             "discharged_by_reviewer": "Chris Dare",
-            "note": "Accepted by the owner on 2026-08-07 on the basis of two named declarations, both sorry-free and axiom-clean at 56c7531 and after: CategoryTheory.Triangulated.StabilityCondition.GroupAction.GLTilde.universalCoverData, which packages IsCoveringMap GLTilde.mat, Function.Surjective GLTilde.mat and SimplyConnectedSpace GLTilde; and CategoryTheory.Triangulated.StabilityCondition.GroupAction.exact_deckHom_toMatHom, which records the Z deck group. The judgement being recorded is that this conjunction is what the paper's phrase 'the universal covering space of GL+(2,R)' means here -- Mathlib has no bundled universal-cover predicate at the pinned revision to instantiate instead, so the identification cannot be discharged mechanically and required a human. SCOPE: this closes the covering-space gap ONLY. Lemma 8.2 remains non-exact under E-05 because autpairquot-not-aut-d is still open, and Proposition 8.1 remains non-exact because stability-mass-triangle is still open. It is also NOT a source-faithfulness review; fidelity.human_review stays 'none'."
+            "note": "Accepted by the owner on 2026-08-07 on the basis of two named declarations, both sorry-free and axiom-clean at 56c7531 and after: CategoryTheory.Triangulated.StabilityCondition.GroupAction.GLTilde.universalCoverData, which packages IsCoveringMap GLTilde.mat, Function.Surjective GLTilde.mat and SimplyConnectedSpace GLTilde; and CategoryTheory.Triangulated.StabilityCondition.GroupAction.exact_deckHom_toMatHom, which records the Z deck group. The judgement being recorded is that this conjunction is what the paper's phrase 'the universal covering space of GL+(2,R)' means here -- Mathlib has no bundled universal-cover predicate at the pinned revision to instantiate instead, so the identification cannot be discharged mechanically and required a human. SCOPE: this closes the covering-space gap ONLY. Lemma 8.2 remains non-exact under E-05 because autpairquot-not-aut-d is still open, and Proposition 8.1 remains non-exact because stability-mass-triangle is still open. It is also NOT a source-faithfulness review; fidelity.human_review stays 'none'.",
+            "declaration": "CategoryTheory.Triangulated.StabilityCondition.GroupAction.GLTilde.universalCoverData"
           }
         },
         {
@@ -235,7 +237,8 @@
           "kind_class": "interface",
           "kind_label": "definitional-divergence",
           "statement": "The left action proved here is by AutPairQuot v, NOT by the paper's Aut(D). Its elements are PAIRS (Phi, lam) of a triangulated autoequivalence and a compatible class-lattice automorphism lam : Lambda ~=+ Lambda, quotiented by natural isomorphism of Phi with lam fixed on the nose. The forgetful map to AutQuot C is proved to be neither injective (two lam over one Phi whenever v is not surjective) nor surjective (a Phi with no compatible lam has no preimage). Both failures are about v, which is arbitrary. Say 'the group of autoequivalences carrying a compatible class-lattice automorphism', never Aut(D).",
-          "discharged_by": null
+          "discharged_by": null,
+          "referent": "Aut(D), the group of triangulated autoequivalences of D acting on Stab(D) in Bridgeland 2007, Lemma 8.2"
         }
       ],
       "minted_at": "2026-08-05",
@@ -278,7 +281,8 @@
             "key": "stmt:a520a8d4f877:obl-gltilde-universal-cover",
             "discharged_at": "2026-08-07",
             "discharged_by_reviewer": "Chris Dare",
-            "note": "Accepted by the owner on 2026-08-07 on the basis of two named declarations, both sorry-free and axiom-clean at 56c7531 and after: CategoryTheory.Triangulated.StabilityCondition.GroupAction.GLTilde.universalCoverData, which packages IsCoveringMap GLTilde.mat, Function.Surjective GLTilde.mat and SimplyConnectedSpace GLTilde; and CategoryTheory.Triangulated.StabilityCondition.GroupAction.exact_deckHom_toMatHom, which records the Z deck group. The judgement being recorded is that this conjunction is what the paper's phrase 'the universal covering space of GL+(2,R)' means here -- Mathlib has no bundled universal-cover predicate at the pinned revision to instantiate instead, so the identification cannot be discharged mechanically and required a human. SCOPE: this closes the covering-space gap ONLY. Lemma 8.2 remains non-exact under E-05 because autpairquot-not-aut-d is still open, and Proposition 8.1 remains non-exact because stability-mass-triangle is still open. It is also NOT a source-faithfulness review; fidelity.human_review stays 'none'."
+            "note": "Accepted by the owner on 2026-08-07 on the basis of two named declarations, both sorry-free and axiom-clean at 56c7531 and after: CategoryTheory.Triangulated.StabilityCondition.GroupAction.GLTilde.universalCoverData, which packages IsCoveringMap GLTilde.mat, Function.Surjective GLTilde.mat and SimplyConnectedSpace GLTilde; and CategoryTheory.Triangulated.StabilityCondition.GroupAction.exact_deckHom_toMatHom, which records the Z deck group. The judgement being recorded is that this conjunction is what the paper's phrase 'the universal covering space of GL+(2,R)' means here -- Mathlib has no bundled universal-cover predicate at the pinned revision to instantiate instead, so the identification cannot be discharged mechanically and required a human. SCOPE: this closes the covering-space gap ONLY. Lemma 8.2 remains non-exact under E-05 because autpairquot-not-aut-d is still open, and Proposition 8.1 remains non-exact because stability-mass-triangle is still open. It is also NOT a source-faithfulness review; fidelity.human_review stays 'none'.",
+            "declaration": "CategoryTheory.Triangulated.StabilityCondition.GroupAction.GLTilde.universalCoverData"
           }
         }
       ],
@@ -318,7 +322,8 @@
           "kind_class": "interface",
           "kind_label": "source-review-pending",
           "statement": "MECHANICALLY CLOSED 2026-08-11; HUMAN DISCHARGE PENDING. CategoryTheory.Triangulated.stabilityMassTriangleInequality now inhabits the explicit StabilityMassTriangleInequality proposition from arbitrary-phase semistable-left subadditivity and HN filtration assembly. CategoryTheory.Triangulated.stabilityDistanceTopologyCompatible consumes it to prove the existing Section 6 topology is generated by full-distance balls. Both declarations are sorry-free, axiom-gated, and introduce no global metric or topology instance. The frontier entry retains discharged_by: null because registry-1.0 requires a named human exact-head review and owner acceptance, which an agent may not supply.",
-          "discharged_by": null
+          "discharged_by": null,
+          "referent": "Bridgeland 2007, Proposition 8.1: the function d(sigma, tau) on Stab(D) as a generalised metric inducing the Section 6 topology"
         }
       ],
       "minted_at": "2026-08-06",

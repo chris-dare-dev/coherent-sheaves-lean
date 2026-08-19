@@ -9,7 +9,7 @@ import DerivedAlgGeo.AlgebraicGeometry.RiemannRoch.Surface.NumericalVariety
 # Geometric assembly of the surface numerical variety
 
 This file closes the surface bridge from the geometric Todd and reconstruction data to the
-Layer A `NumericalVariety` interface.
+Layer A `NumericalVarietyData` interface.
 
 The crucial all-coherent HRR theorem comes from reconstruction, not from an unproved global
 resolution theorem.  For every coherent sheaf, the degree of its reconstructed top
@@ -39,7 +39,7 @@ variable {k : Type u} [Field k]
 variable {X : SmoothProperVariety k}
 variable {D : FiniteCohomology X.toVariety}
 variable {C : D.LinearConnectingSystem}
-variable {A : Type v} [CommRing A] [Algebra ℚ A] [NumericalRing 2 A]
+variable {A : Type v} [CommRing A] [Algebra ℚ A]
 variable {P : PairingContext D C 2 A}
 variable {K : SmoothProperVariety.CanonicalSheafData X 2}
 
@@ -68,53 +68,53 @@ theorem reconstruction_eulerPic_one {F : Coh X.toVariety.toScheme}
 characteristic. -/
 theorem degree_tauComponent_two_eq_eulerCharacteristic
     {F : Coh X.toVariety.toScheme} (Q : P.ReconstructionData F) :
-    NumericalRing.degree (n := 2) (Q.tauComponent 2) =
+    P.ring.degree (Q.tauComponent 2) =
       (D.eulerCharacteristic F : ℚ) := by
   have h := Q.degree_tauComponent_mul_divisorProduct 2 (by omega) [] (by simp)
   rw [divisorProduct_nil, mul_one, PairingContext.twistPairing,
     homogeneousPicardCoefficient_nil] at h
   calc
-    NumericalRing.degree (n := 2) (Q.tauComponent 2) =
+    P.ring.degree (Q.tauComponent 2) =
         (Q.twists.eulerPic 1 : ℚ) := h
     _ = (D.eulerCharacteristic F : ℚ) := by
       exact_mod_cast reconstruction_eulerPic_one Q
 
 private theorem degree_surface_total
     (c0 c1 c2 t0 t1 t2 : A) (r : ℚ)
-    (hc0m : c0 ∈ NumericalRing.piece (n := 2) 0)
-    (hc1m : c1 ∈ NumericalRing.piece (n := 2) 1)
-    (hc2m : c2 ∈ NumericalRing.piece (n := 2) 2)
-    (ht0m : t0 ∈ NumericalRing.piece (n := 2) 0)
-    (ht1m : t1 ∈ NumericalRing.piece (n := 2) 1)
-    (ht2m : t2 ∈ NumericalRing.piece (n := 2) 2)
+    (hc0m : c0 ∈ P.ring.piece 0)
+    (hc1m : c1 ∈ P.ring.piece 1)
+    (hc2m : c2 ∈ P.ring.piece 2)
+    (ht0m : t0 ∈ P.ring.piece 0)
+    (ht1m : t1 ∈ P.ring.piece 1)
+    (ht2m : t2 ∈ P.ring.piece 2)
     (hc0 : c0 = algebraMap ℚ A r) (ht0 : t0 = 1) :
-    NumericalRing.degree (n := 2) ((c0 + c1 + c2) * (t0 + t1 + t2)) =
-      r * NumericalRing.degree (n := 2) t2 +
-        NumericalRing.degree (n := 2) (c1 * t1) +
-          NumericalRing.degree (n := 2) c2 := by
-  have h00 : NumericalRing.degree (n := 2) (c0 * t0) = 0 :=
-    NumericalRing.degree_eq_zero_of_mem (by omega)
-      (NumericalRing.mul_mem_piece hc0m ht0m)
-  have h01 : NumericalRing.degree (n := 2) (c0 * t1) = 0 :=
-    NumericalRing.degree_eq_zero_of_mem (by omega)
-      (NumericalRing.mul_mem_piece hc0m ht1m)
-  have h10 : NumericalRing.degree (n := 2) (c1 * t0) = 0 :=
-    NumericalRing.degree_eq_zero_of_mem (by omega)
-      (NumericalRing.mul_mem_piece hc1m ht0m)
+    P.ring.degree ((c0 + c1 + c2) * (t0 + t1 + t2)) =
+      r * P.ring.degree t2 +
+        P.ring.degree (c1 * t1) +
+          P.ring.degree c2 := by
+  have h00 : P.ring.degree (c0 * t0) = 0 :=
+    P.ring.degree_eq_zero_of_mem (by omega)
+      (P.ring.mul_mem_piece hc0m ht0m)
+  have h01 : P.ring.degree (c0 * t1) = 0 :=
+    P.ring.degree_eq_zero_of_mem (by omega)
+      (P.ring.mul_mem_piece hc0m ht1m)
+  have h10 : P.ring.degree (c1 * t0) = 0 :=
+    P.ring.degree_eq_zero_of_mem (by omega)
+      (P.ring.mul_mem_piece hc1m ht0m)
   have hprod : (c0 + c1 + c2) * (t0 + t1 + t2) =
       c0 * t0 + c0 * t1 + c0 * t2 +
         c1 * t0 + c1 * t1 + c1 * t2 +
           c2 * t0 + c2 * t1 + c2 * t2 := by ring
   rw [hprod]
   simp only [map_add]
-  have h12 : c1 * t2 = 0 := NumericalRing.eq_zero_of_mem_piece_of_lt (by omega)
-    (NumericalRing.mul_mem_piece hc1m ht2m)
-  have h21 : c2 * t1 = 0 := NumericalRing.eq_zero_of_mem_piece_of_lt (by omega)
-    (NumericalRing.mul_mem_piece hc2m ht1m)
-  have h22 : c2 * t2 = 0 := NumericalRing.eq_zero_of_mem_piece_of_lt (by omega)
-    (NumericalRing.mul_mem_piece hc2m ht2m)
+  have h12 : c1 * t2 = 0 := P.ring.eq_zero_of_mem_piece_of_lt (by omega)
+    (P.ring.mul_mem_piece hc1m ht2m)
+  have h21 : c2 * t1 = 0 := P.ring.eq_zero_of_mem_piece_of_lt (by omega)
+    (P.ring.mul_mem_piece hc2m ht1m)
+  have h22 : c2 * t2 = 0 := P.ring.eq_zero_of_mem_piece_of_lt (by omega)
+    (P.ring.mul_mem_piece hc2m ht2m)
   rw [h00, h01, h10, h12, h21, h22, map_zero, add_zero, zero_add, hc0,
-    NumericalRing.degree_algebraMap_mul, ht0, mul_one]
+    P.ring.degree_algebraMap_mul, ht0, mul_one]
   ring
 
 /-! ## The concrete geometric HRR datum -/
@@ -125,7 +125,7 @@ theorem sheaf_hirzebruch_riemannRoch
     (T : ToddData.Data P K)
     (R : ReconstructionSystem (X := X.toVariety) (P := P))
     (F : Coh X.toVariety.toScheme) :
-    (D.eulerCharacteristic F : ℚ) = NumericalRing.degree (n := 2)
+    (D.eulerCharacteristic F : ℚ) = P.ring.degree
       ((∑ i ∈ Finset.range 3,
           chernCharacterComponent T.structureData (R.reconstruction F) i) *
         (∑ j ∈ Finset.range 3, ToddData.toddComponent T j)) := by
@@ -147,27 +147,27 @@ theorem sheaf_hirzebruch_riemannRoch
   have ht2 :
       AlgebraicGeometry.IntersectionTheory.ChernCharacter.toddComponent T.structureData 2 = t2 :=
     rfl
-  have hdegree := congrArg (NumericalRing.degree (n := 2)) htau
+  have hdegree := congrArg (P.ring.degree) htau
   simp only [map_add] at hdegree
   rw [ToddData.structureToddOne_eq_toddOne T, ht2] at hdegree
-  change NumericalRing.degree (n := 2) (Q.tauComponent 2) =
-    NumericalRing.degree (n := 2) c2 +
-      NumericalRing.degree (n := 2) (c1 * t1) +
-        NumericalRing.degree (n := 2) (c0 * t2) at hdegree
+  change P.ring.degree (Q.tauComponent 2) =
+    P.ring.degree c2 +
+      P.ring.degree (c1 * t1) +
+        P.ring.degree (c0 * t2) at hdegree
   have hc0 : c0 = algebraMap ℚ A (Q.rank : ℚ) := by simp [c0]
-  rw [hc0, NumericalRing.degree_algebraMap_mul] at hdegree
+  rw [hc0, P.ring.degree_algebraMap_mul] at hdegree
   simp only [Finset.sum_range_succ, Finset.sum_range_zero, zero_add]
   rw [hsurface]
   calc
     (D.eulerCharacteristic F : ℚ) =
-        NumericalRing.degree (n := 2) (Q.tauComponent 2) := htauDegree.symm
-    _ = (Q.rank : ℚ) * NumericalRing.degree (n := 2) t2 +
-        NumericalRing.degree (n := 2) (c1 * t1) +
-          NumericalRing.degree (n := 2) c2 := by
+        P.ring.degree (Q.tauComponent 2) := htauDegree.symm
+    _ = (Q.rank : ℚ) * P.ring.degree t2 +
+        P.ring.degree (c1 * t1) +
+          P.ring.degree c2 := by
       linarith [hdegree]
 
-/-- The concrete geometric input to the surface numerical-variety assembly.  Its HRR field is
-the theorem above, not an additional hypothesis. -/
+/-- The concrete geometric input to the surface numerical-variety assembly. The theorem above
+supplies its separate HRR witness rather than adding proof data here. -/
 noncomputable def toGeometricData
     (T : ToddData.Data P K)
     (R : ReconstructionSystem (X := X.toVariety) (P := P)) :
@@ -175,7 +175,13 @@ noncomputable def toGeometricData
   toddComponent := ToddData.toddComponent T
   toddComponent_mem := ToddData.toddComponent_mem T
   toddComponent_zero := ToddData.toddComponent_zero T
-  sheaf_hirzebruch_riemannRoch := sheaf_hirzebruch_riemannRoch T R
+
+/-- The constructed geometric data satisfies sheaf-level HRR. -/
+theorem toGeometricData_satisfiesSheafHRR
+    (T : ToddData.Data P K)
+    (R : ReconstructionSystem (X := X.toVariety) (P := P)) :
+    (toGeometricData T R).SatisfiesSheafHRR :=
+  ⟨sheaf_hirzebruch_riemannRoch T R⟩
 
 /-- The scheme-derived numerical surface obtained from the concrete Todd and reconstruction
 data. -/
@@ -183,8 +189,17 @@ data. -/
 noncomputable def toNumericalVariety
     (T : ToddData.Data P K)
     (R : ReconstructionSystem (X := X.toVariety) (P := P)) :
-    NumericalVariety 2 A (CoherentGrothendieckGroup X.toVariety) :=
+    NumericalVarietyData 2 A (CoherentGrothendieckGroup X.toVariety) :=
   (toGeometricData T R).toNumericalVariety
+
+/-- The assembled numerical presentation satisfies HRR. -/
+theorem toNumericalVariety_satisfiesHRR
+    (T : ToddData.Data P K)
+    (R : ReconstructionSystem (X := X.toVariety) (P := P)) :
+    (toNumericalVariety T R).SatisfiesHRR :=
+  GeometricData.toNumericalVariety_satisfiesHRR
+    (RO := T.structureData) (toGeometricData T R)
+      (toGeometricData_satisfiesSheafHRR T R)
 
 /-! ## Explicit-perfect comparison with dévissage -/
 
@@ -212,7 +227,7 @@ theorem perfect_rank_eq
 /-- The top Todd term in the assembled numerical surface is `χ(O_X)`. -/
 theorem perfect_toddTwo_degree
     (T : ToddData.Data P K) :
-    NumericalRing.degree (n := 2) (ToddData.toddComponent T 2) =
+    P.ring.degree (ToddData.toddComponent T 2) =
       (P.intersection.eulerPic 1 : ℚ) := by
   simpa using ToddData.degree_toddTwo_eq_eulerPic_one T
 
@@ -223,7 +238,7 @@ theorem perfect_toddOne_degree
     (R : ReconstructionSystem (X := X.toVariety) (P := P))
     (F : Coh X.toVariety.toScheme)
     (Q : PerfectReconstructionComparison T R F) :
-    NumericalRing.degree (n := 2)
+    P.ring.degree
       (chernCharacterComponent T.structureData (R.reconstruction F) 1 *
         ToddData.toddComponent T 1) =
       toddOnePairing P.intersection (picardFirstChernClass Q.resolution) := by
@@ -238,7 +253,7 @@ theorem perfect_chTwo_degree
     (R : ReconstructionSystem (X := X.toVariety) (P := P))
     (F : Coh X.toVariety.toScheme)
     (Q : PerfectReconstructionComparison T R F) :
-    NumericalRing.degree (n := 2)
+    P.ring.degree
       (chernCharacterComponent T.structureData (R.reconstruction F) 2) =
       chernCharacterTwoDegree P.intersection Q.resolution := by
   apply degree_chernCharacterComponent_two_eq_surface P T.structureData
@@ -248,7 +263,7 @@ theorem perfect_chTwo_degree
   · rw [ToddData.structureToddOne_eq_toddOne T, mul_comm]
     exact ToddData.degree_toddOne_mul_divisorClass T
       (picardFirstChernClass Q.resolution)
-  · change NumericalRing.degree (n := 2) (ToddData.toddTwo T) =
+  · change P.ring.degree (ToddData.toddTwo T) =
       toddTwoDegree P.intersection
     rw [ToddData.degree_toddTwo_eq_eulerPic_one,
       toddTwoDegree_eq_eulerPic_one]
@@ -265,14 +280,14 @@ theorem perfect_surface_expansion
         toddOnePairing P.intersection (picardFirstChernClass Q.resolution) +
           chernCharacterTwoDegree P.intersection Q.resolution := by
   have h := GeometricData.surface_chi_class_eq (RO := T.structureData)
-    (toGeometricData T R) F
+    (toGeometricData T R) (toGeometricData_satisfiesSheafHRR T R) F
   change (D.eulerCharacteristic F : ℚ) =
     ((R.reconstruction F).rank : ℚ) *
-        NumericalRing.degree (n := 2) (ToddData.toddComponent T 2) +
-      NumericalRing.degree (n := 2)
+        P.ring.degree (ToddData.toddComponent T 2) +
+      P.ring.degree
         (chernCharacterComponent T.structureData (R.reconstruction F) 1 *
           ToddData.toddComponent T 1) +
-      NumericalRing.degree (n := 2)
+      P.ring.degree
         (chernCharacterComponent T.structureData (R.reconstruction F) 2) at h
   rw [perfect_rank_eq T R F Q, perfect_toddTwo_degree T,
     perfect_toddOne_degree T R F Q, perfect_chTwo_degree T R F Q] at h
@@ -298,19 +313,15 @@ theorem perfect_chi_eq_classical
 
 /-! ## Geometric K3 specialization -/
 
-/-- Trivial canonical class and `χ(O_X)=2` install the existing Layer A K3 structure on the
+/-- Trivial canonical class and `χ(O_X)=2` prove the Layer A K3 property for the
 scheme-derived numerical surface. -/
 theorem toIsK3
     (T : ToddData.Data P K)
     (R : ReconstructionSystem (X := X.toVariety) (P := P))
     (hK : K.canonicalClass = 1)
     (hchi : P.intersection.eulerPic 1 = 2) :
-    letI : NumericalVariety 2 A (CoherentGrothendieckGroup X.toVariety) :=
-      toNumericalVariety T R
-    K3.IsK3 A (CoherentGrothendieckGroup X.toVariety) := by
+    K3.IsK3 (toNumericalVariety T R) := by
   let G := toGeometricData T R
-  letI : NumericalVariety 2 A (CoherentGrothendieckGroup X.toVariety) :=
-    toNumericalVariety T R
   apply GeometricData.toIsK3 (RO := T.structureData) G
   · exact ToddData.toddOne_eq_zero hK
   · exact ToddData.degree_toddTwo_eq_two T hchi
@@ -325,10 +336,11 @@ theorem k3_eulerCharacteristic_eq
     (F : Coh X.toVariety.toScheme) :
     (D.eulerCharacteristic F : ℚ) =
       2 * ((R.reconstruction F).rank : ℚ) +
-        NumericalRing.degree (n := 2)
+        P.ring.degree
           (chernCharacterComponent T.structureData (R.reconstruction F) 2) := by
   exact GeometricData.k3_eulerCharacteristic_eq (RO := T.structureData)
-    (toGeometricData T R) (ToddData.toddOne_eq_zero hK)
+    (toGeometricData T R) (toGeometricData_satisfiesSheafHRR T R)
+      (ToddData.toddOne_eq_zero hK)
       (ToddData.degree_toddTwo_eq_two T hchi) F
 
 end

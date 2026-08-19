@@ -7,7 +7,6 @@ import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Symmetry.Aut
 -- For `StabilityCondition.WithClassMap.ext`, which lives in `Basic.lean` and
 -- is NOT reachable through `Defs.lean` — the structure and its usable
 -- extensionality lemma are in different files. See CLAUDE.md §5.
-import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Foundation
 
 /-!
 # The class-map-compatible autoequivalence action

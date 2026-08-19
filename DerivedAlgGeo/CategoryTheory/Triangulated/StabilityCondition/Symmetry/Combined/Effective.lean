@@ -3,7 +3,6 @@ Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under the MIT license.
 -/
 import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Symmetry.Combined.PeriodMap
-import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Foundation
 import Mathlib.GroupTheory.QuotientGroup.Basic
 
 set_option backward.defeqAttrib.useBackward true

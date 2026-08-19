@@ -29,7 +29,7 @@ a fully faithful `k`-linear shift-compatible functor, together with the
 Hom-finiteness and boundedness that make the sum finite.
 
 Neither hypothesis reaches `chi₂` on its own, and the reason is structural.
-`NumericalVariety.chi₂` is `∫ ch(E)ᵛ · ch(F) · td(X)`: a formula in Chern
+`NumericalVarietyData.chi₂` is `∫ ch(E)ᵛ · ch(F) · td(X)`: a formula in Chern
 characters, with no `Hom` anywhere in it.  `EulerPairing`'s own docstring is
 explicit that `chi₂ E F = Σᵢ (-1)ⁱ dim Extⁱ(E,F)` is **the bilinear
 Hirzebruch--Riemann--Roch**, that there is no `Ext` at this layer to state it
@@ -72,7 +72,7 @@ matter here.
   `ofLinear` (`ofLinear_preservesCategoricalEuler`).  It stays a hypothesis for
   *supplied* forms, where there is no `Hom` for the argument to run on.
 * `IsRiemannRoch` is bilinear HRR, assumed.  No variety is shown to satisfy
-  it, and `NumericalVariety.hirzebruch_riemannRoch` — the one-variable
+  it, and `NumericalVarietyData.hirzebruch_riemannRoch` — the one-variable
   statement — is itself an axiom of the Layer A interface.
 -/
 
@@ -82,7 +82,7 @@ namespace AlgebraicGeometry.Numerical
 
 open CategoryTheory CategoryTheory.Limits CategoryTheory.Pretriangulated
 open CategoryTheory.Triangulated
-open NumericalRing NumericalRingWithDual NumericalVariety
+open NumericalRingData NumericalRingDualData NumericalVarietyData
 
 section Form
 
@@ -151,20 +151,19 @@ variable {n : ℕ} {𝒳 : Type u₁} {𝒴 : Type u₂}
   [∀ m : ℤ, (shiftFunctor 𝒳 m).Additive] [Pretriangulated 𝒳]
   [HasZeroObject 𝒴] [HasShift 𝒴 ℤ] [Preadditive 𝒴]
   [∀ m : ℤ, (shiftFunctor 𝒴 m).Additive] [Pretriangulated 𝒴]
-  [CommRing A] [Algebra ℚ A] [AddCommGroup N] [NumericalVariety n A N]
-  [NumericalRingWithDual n A]
-  [CommRing A'] [Algebra ℚ A'] [AddCommGroup N'] [NumericalVariety n A' N']
-  [NumericalRingWithDual n A']
+  [CommRing A] [Algebra ℚ A] [AddCommGroup N]
+  [CommRing A'] [Algebra ℚ A'] [AddCommGroup N']
+  {V : NumericalVarietyData n A N} {V' : NumericalVarietyData n A' N'}
 
 /-- **Bilinear Hirzebruch--Riemann--Roch for a realization**: the categorical
 Euler form computes the numerical one on realized classes.
 
 This is the comparison the whole reduction turns on, and it is assumed.  The
-one-variable statement `NumericalVariety.hirzebruch_riemannRoch` is already an
+one-variable statement `NumericalVarietyData.hirzebruch_riemannRoch` is already an
 axiom of the Layer A interface; this is its bilinear companion. -/
-def IsRiemannRoch (R : NumericalRealization 𝒳 N)
+def IsRiemannRoch (V : NumericalVarietyData n A N) (R : NumericalRealization 𝒳 N)
     (E : CategoricalEulerForm 𝒳) : Prop :=
-  ∀ x y : K₀ 𝒳, ((E.chi x y : ℤ) : ℚ) = chi₂ (A := A) (R.cl x) (R.cl y)
+  ∀ x y : K₀ 𝒳, ((E.chi x y : ℤ) : ℚ) = V.chi₂ (R.cl x) (R.cl y)
 
 /-- `Φ` **preserves the categorical Euler form**.
 
@@ -180,7 +179,6 @@ def PreservesCategoricalEuler (Φ : 𝒳 ⥤ 𝒴) [Φ.CommShift ℤ] [Φ.IsTria
     (E : CategoricalEulerForm 𝒳) (E' : CategoricalEulerForm 𝒴) : Prop :=
   ∀ x y : K₀ 𝒳, E'.chi (K₀.map Φ x) (K₀.map Φ y) = E.chi x y
 
-omit [NumericalRingWithDual n A] [NumericalRingWithDual n A'] in
 /-- **Euler preservation transfers across a realization.**
 
 Given bilinear HRR on both sides, a functor preserving the categorical Euler
@@ -192,9 +190,9 @@ theorem preservesEuler_of_descends {Φ : 𝒳 ⥤ 𝒴} [Φ.CommShift ℤ]
     {R' : NumericalRealization 𝒴 N'} {E : CategoricalEulerForm 𝒳}
     {E' : CategoricalEulerForm 𝒴} {φ : N →+ N'}
     (hsurj : Function.Surjective R.cl)
-    (hRR : IsRiemannRoch (A := A) R E) (hRR' : IsRiemannRoch (A := A') R' E')
+    (hRR : IsRiemannRoch V R E) (hRR' : IsRiemannRoch V' R' E')
     (hΦ : PreservesCategoricalEuler Φ E E') (hd : Descends R R' Φ φ) :
-    PreservesEuler (A := A) (A' := A') φ := by
+    PreservesEuler V V' φ := by
   intro F G
   obtain ⟨x, rfl⟩ := hsurj F
   obtain ⟨y, rfl⟩ := hsurj G
@@ -246,13 +244,11 @@ variable {𝒳 : Type u₁} {𝒴 : Type u₂} {𝒲 : Type u₃}
   [∀ m : ℤ, (shiftFunctor 𝒴 m).Additive] [Pretriangulated 𝒴]
   [HasZeroObject 𝒲] [HasShift 𝒲 ℤ] [Preadditive 𝒲]
   [∀ m : ℤ, (shiftFunctor 𝒲 m).Additive] [Pretriangulated 𝒲]
-  [CommRing A] [Algebra ℚ A] [AddCommGroup N] [NumericalVariety 2 A N]
-  [NumericalRingWithDual 2 A]
-  [CommRing A'] [Algebra ℚ A'] [AddCommGroup N'] [NumericalVariety 2 A' N']
-  [NumericalRingWithDual 2 A']
-  [AddCommGroup Λ] [AddCommGroup Λ'] [IsK3 A N] [IsK3 A' N']
+  [CommRing A] [Algebra ℚ A] [AddCommGroup N]
+  [CommRing A'] [Algebra ℚ A'] [AddCommGroup N']
+  [AddCommGroup Λ] [AddCommGroup Λ']
+  {V : NumericalVarietyData 2 A N} {V' : NumericalVarietyData 2 A' N'}
 
-omit [NumericalRingWithDual 2 A] [NumericalRingWithDual 2 A'] in
 /-- **A kernel functor preserving the categorical Euler form leaves the Mukai
 pairing unchanged on realized classes.**
 
@@ -274,16 +270,18 @@ theorem pairing_mukaiVector_eq_on_realized_of_categorical
     (R : NumericalRealization 𝒳 N) (R' : NumericalRealization 𝒴 N')
     (E : CategoricalEulerForm 𝒳) (E' : CategoricalEulerForm 𝒴)
     (φ : N →+ N') (hsurj : Function.Surjective R.cl)
-    (hRR : IsRiemannRoch (A := A) R E) (hRR' : IsRiemannRoch (A := A') R' E')
+    (hRR : IsRiemannRoch V R E) (hRR' : IsRiemannRoch V' R' E')
     (hΦ : PreservesCategoricalEuler (C.transform K) E E')
     (hd : Descends R R' (C.transform K) φ)
-    (D : IntegralMukaiData A N Λ) (D' : IntegralMukaiData A' N' Λ')
+    (D : IntegralMukaiData V Λ) (D' : IntegralMukaiData V' Λ')
+    (hHRR : V.SatisfiesHRR) (hHRR' : V'.SatisfiesHRR)
+    (hK3 : IsK3 V) (hK3' : IsK3 V')
     (x y : K₀ 𝒳) :
     Mukai.pairing D'.b (D'.mukaiVector (R'.cl (C.transformK₀ K x)))
         (D'.mukaiVector (R'.cl (C.transformK₀ K y)))
       = Mukai.pairing D.b (D.mukaiVector (R.cl x))
         (D.mukaiVector (R.cl y)) :=
-  pairing_mukaiVector_eq_on_realized C K R R' φ hd D D'
+  pairing_mukaiVector_eq_on_realized C K R R' φ hd D D' hHRR hHRR' hK3 hK3'
     (preservesEuler_of_descends hsurj hRR hRR' hΦ hd) x y
 
 end KernelFunctor

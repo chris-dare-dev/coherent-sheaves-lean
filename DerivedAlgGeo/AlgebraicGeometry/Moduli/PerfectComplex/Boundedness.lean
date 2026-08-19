@@ -3,7 +3,7 @@ Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under the MIT license.
 -/
 import DerivedAlgGeo.AlgebraicGeometry.Moduli.PerfectComplex.Presheaf
-import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Families.FiniteTypeGeometry
+import DerivedAlgGeo.AlgebraicGeometry.StabilityCondition.Families.FiniteTypeGeometry
 
 /-!
 # Finite-type boundedness witnesses for relative-perfect complexes
@@ -233,7 +233,7 @@ def zeroFiniteTypeBoundednessWitness (S : Scheme.{u})
         ((identityRelativePerfectBaseChange S).residue x).hom) eDqc
 
 /-- The zero subproblem is geometrically bounded by an inhabited finite-type
-witness, not by `BoundednessProblem.trivial`. -/
+witness, not by a constant-true predicate. -/
 theorem zeroRelativePerfectModuliSubproblem_isBounded
     (S : Scheme.{u}) [IsLocallyNoetherian S] :
     (relativePerfectGeometricBoundednessProblem S).IsBounded

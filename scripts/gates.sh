@@ -88,7 +88,10 @@ algebraic_geometry_audit() {
     }
   done
   grep -q 'sorryAx' "$GATE_TMP"/algebraic-geometry-audit.txt && { echo "sorryAx reached the audit"; return 1; }
-  return 0
+  # Allowlist + truncation + parse checks, matching CI and the other two audit
+  # lanes; until 2026-08-18 this lane checked only sorryAx (review P2-3).
+  python3 scripts/check_audit.py "$GATE_TMP"/algebraic-geometry-audit.txt \
+    scripts/AlgebraicGeometryAudit.lean
 }
 
 dg_audit() {
@@ -171,6 +174,8 @@ echo "== gates ($MODE) =="
 # checks. In `fast` mode too, for the same reason.
 gate workflows scripts/check_workflows.sh
 gate mathlib-style mathlib_style
+gate explicit-numerical-data python3 scripts/check_explicit_numerical_data.py
+gate foundation-import-boundary python3 scripts/check_foundation_import_boundary.py
 gate build lake build
 gate algebraic-geometry-audit algebraic_geometry_audit
 gate stability-condition-audit stability_condition_audit
@@ -182,6 +187,8 @@ if [ "$MODE" != "fast" ]; then
   gate lint-style lake exe lint-style
   gate pin python3 scripts/check_pin.py
   gate source-independence python3 scripts/check_source_independence.py
+  gate subject-layering python3 scripts/check_layering.py
+  gate coherent-families python3 scripts/check_coherent_families.py
   gate coverage-map python3 scripts/check_coverage_map.py
   gate audit-complete audit_complete
   # emit-build keeps proving the executable still LINKS -- linking is the only

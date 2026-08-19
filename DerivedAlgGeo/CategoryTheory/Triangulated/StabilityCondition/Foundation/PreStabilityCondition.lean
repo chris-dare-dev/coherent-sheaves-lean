@@ -1,6 +1,9 @@
 /-
 Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under the MIT license.
+
+Portions adapted from mattrobball/BridgelandStability, revision 9e48f23
+(Apache-2.0, Copyright (c) 2026 Mathlib Contributors); see LICENSE.md.
 -/
 import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Foundation.Slicing
 import DerivedAlgGeo.CategoryTheory.Triangulated.GrothendieckGroup.Basic

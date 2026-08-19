@@ -8,24 +8,23 @@ import Mathlib.Algebra.DirectSum.Module
 /-!
 # The point, as a consistency witness for Layer A
 
-`NumericalVariety` is an axiomatic interface: its fields assert Hirzebruch–Riemann–Roch and
-the graded structure rather than proving them. An axiomatic interface is worthless — worse
-than worthless, since everything downstream of an inconsistent one is vacuously true —
-unless it has at least one model.
+`NumericalVarietyData` is an explicit presentation of the graded structure, characteristic
+data, and Euler characteristic. Its compatibility matters only if the separately stated
+`SatisfiesHRR` property has a model.
 
 This file supplies one: a point, in dimension zero. `A^•(pt)_ℚ = ℚ` concentrated in
 codimension zero, `N(pt) = ℤ`, `ch(E) = rank E`, `td(pt) = 1`, and Riemann–Roch degenerates
 to `χ(E) = rank E`.
 
 It is a *witness*, not a working example: nothing interesting is true in dimension zero.
-The K3 instance is the first positive-dimensional model in which Riemann--Roch has content.
+The K3 presentation is the first positive-dimensional model in which Riemann--Roch has content.
 -/
 
 namespace AlgebraicGeometry.Numerical
 
 namespace Examples
 
-open NumericalRing
+open NumericalRingData
 
 /-- The graded pieces of `A^•(pt)_ℚ`: everything sits in codimension zero. -/
 def pointPiece : ℕ → Submodule ℚ ℚ := fun i => if i = 0 then ⊤ else ⊥
@@ -49,7 +48,7 @@ theorem pointPiece_isInternal : DirectSum.IsInternal pointPiece := by
   · exact le_antisymm le_top (le_iSup_of_le 0 (by rw [pointPiece_zero]))
 
 /-- `A^•(pt)_ℚ = ℚ`, in dimension zero. -/
-noncomputable instance instNumericalRingPoint : NumericalRing 0 ℚ where
+noncomputable def pointNumericalRing : NumericalRingData 0 ℚ where
   piece := pointPiece
   isInternal := pointPiece_isInternal
   piece_eq_bot_of_lt := fun _ hi => pointPiece_eq_bot (by omega)
@@ -94,7 +93,8 @@ theorem pointTodd_mem (i : ℕ) : pointTodd i ∈ pointPiece i := by
     simp [pointTodd, hi]
 
 /-- `N(pt) = ℤ`, with `ch = rank` and `td = 1`. Riemann–Roch reads `χ(E) = rank E`. -/
-noncomputable instance instNumericalVarietyPoint : NumericalVariety 0 ℚ ℤ where
+noncomputable def pointNumericalVariety : NumericalVarietyData 0 ℚ ℤ where
+  ring := pointNumericalRing
   rank := AddMonoidHom.id ℤ
   chComp := pointCh
   chComp_mem := pointCh_mem
@@ -104,10 +104,11 @@ noncomputable instance instNumericalVarietyPoint : NumericalVariety 0 ℚ ℤ wh
   toddComp_mem := pointTodd_mem
   toddComp_zero := by simp [pointTodd]
   chi := AddMonoidHom.id ℤ
-  hirzebruch_riemannRoch := by
-    intro E
-    simp [pointCh, pointTodd]
-    rfl
+
+/-- Riemann--Roch for the explicit point presentation. -/
+theorem pointNumericalVariety_satisfiesHRR : pointNumericalVariety.SatisfiesHRR where
+  eq E := by
+    simp [pointNumericalVariety, pointNumericalRing, pointCh, pointTodd]
 
 end Examples
 

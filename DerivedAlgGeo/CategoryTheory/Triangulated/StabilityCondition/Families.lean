@@ -6,32 +6,14 @@ import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Families.Ord
 import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Families.BaseChange
 import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Families.PreStabilityBaseChange
 import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Families.FiberwiseSupport
-import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Families.Theorem22
 import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Families.FiberwiseOrdinary
 import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Families.CategoricalOrdinary
-import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Families.Scheme
-import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Families.ResidueFiber
-import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Families.RelativeHN
-import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Families.SchemeSemistableLocus
-import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Families.SchemeDerived
-import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Families.BoundedGeometry
-import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Families.KernelCorrespondence
-import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Families.KernelConvolution
-import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Families.KernelUnit
-import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Families.KernelAssociativity
-import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Families.Dqc
-import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Families.Dqc.Affine
-import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Families.GeometricBaseChange
-import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Families.FiniteTypeGeometry
-import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Families.ExactPullback
-import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Families.LeftDerivedPullback
-import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Families.FlatPullback
-import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Families.OpenImmersionPullback
-import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Families.ExactPullbackCoherence
-import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Families.DerivedPullbackCoherence
-import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Families.DerivedPullbackLaws
-import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Families.DerivedPullbackShift
-import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Families.InducingPullback
 import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Families.Weak
 
-/-! # Abstract interfaces for stability conditions in families -/
+/-!
+# Abstract interfaces for stability conditions in families
+
+This umbrella is deliberately geometry-independent. Scheme-indexed
+realizations, derived pullback, `Dqc`, and Fourier--Mukai kernels are owned by
+`DerivedAlgGeo.AlgebraicGeometry.StabilityCondition.Families`.
+-/

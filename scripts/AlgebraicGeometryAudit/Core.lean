@@ -70,6 +70,51 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Proj.laurentExponent
 #print axioms AlgebraicGeometry.Proj.laurentExponent_apply
 #print axioms AlgebraicGeometry.Proj.laurentExponent_eq_iff
+-- The twist abstraction (#568). IsPolynomialTwist isolates the only reading of a numerator the
+-- Laurent argument makes -- an element of 𝓜 n is homogeneous of degree n + d -- so the stack can
+-- be stated once and instantiated at natShift for d : N and intShift for d : Z. The p = 0
+-- disjunct is what makes intShift fit: it carries zero in degrees where n + d is negative and
+-- there is no graded piece to name.
+#print axioms AlgebraicGeometry.Proj.IsPolynomialTwist
+#print axioms AlgebraicGeometry.Proj.isPolynomialTwist_natShift
+#print axioms AlgebraicGeometry.Proj.isPolynomialTwist_intShift
+#print axioms AlgebraicGeometry.Proj.degree_laurentExponent_int
+#print axioms AlgebraicGeometry.Proj.IsPolynomialTwist.degree_eq_of_mem_support
+#print axioms AlgebraicGeometry.Proj.IsPolynomialTwist.monomial_coeff_mem
+#print axioms AlgebraicGeometry.Proj.IsPolynomialTwist.degree_laurentExponent_of_mem_support
+-- The degree bookkeeping at either sign. The by_cases on the quotient is the only place the two
+-- signs behave differently: a negative twist can put the numerator's degree below m * c, and then
+-- the quotient is zero rather than a numerator of lower degree.
+#print axioms AlgebraicGeometry.Proj.IsPolynomialTwist.divMonomial_mem
+-- The other two readings the port needs: multiplying a numerator by a homogeneous factor, and
+-- filtering it to one block. Both are the same case split -- the numerator may be zero in a
+-- degree the twist names no graded piece for -- where the nonnegative versions read membership
+-- as homogeneity directly.
+#print axioms AlgebraicGeometry.Proj.IsPolynomialTwist.mul_mem_of_isHomogeneous
+#print axioms AlgebraicGeometry.Proj.IsPolynomialTwist.laurentFilter_mem
+-- The Cech term, cochains and face over an arbitrary twist, with the two instances recorded as
+-- definitional. Naming the construction once is what lets the contracting-homotopy layer above
+-- it be stated once instead of duplicated per twist.
+#print axioms AlgebraicGeometry.Proj.cechTerm
+#print axioms AlgebraicGeometry.Proj.cechCochains
+#print axioms AlgebraicGeometry.Proj.cechFace
+#print axioms AlgebraicGeometry.Proj.cechFace_natShift
+#print axioms AlgebraicGeometry.Proj.cechFace_intShift
+-- The short-tuple vanishing input (#568). A block containing every variable has Fintype.card
+-- elements while a tuple of length n + 2 supports at most n + 2, so over a larger variable set
+-- the block cannot sit inside the tuple's support -- whatever the twist. This is what replaces
+-- the degree argument at a negative twist, and the first place the lane needs iota finite.
+#print axioms AlgebraicGeometry.Proj.tupleExponent_support_card_le
+#print axioms AlgebraicGeometry.Proj.cechBlockProj_eq_zero_of_card_lt
+-- cechBlockProj and cechHomotopy now take the twist hypothesis, which is a Prop, so Lean emits
+-- congruence lemmas for them; recorded here for the same reason AwayRep's projections are.
+#print axioms AlgebraicGeometry.Proj.cechBlockProj.congr_simp
+#print axioms AlgebraicGeometry.Proj.cechHomotopy.congr_simp
+-- Vanishing below the top degree, either sign (#568). The nonnegative companion is stronger
+-- where it applies -- no finiteness, every positive degree -- and is not a corollary.
+#print axioms AlgebraicGeometry.Proj.polynomialVariableIntCechComplex_exactAt
+#print axioms AlgebraicGeometry.Proj.polynomialVariableIntCechComplex_homology_isZero
+#print axioms AlgebraicGeometry.Proj.polynomialIntTwisting_H_subsingleton
 #print axioms AlgebraicGeometry.Proj.degree_laurentExponent
 #print axioms AlgebraicGeometry.Proj.laurentExponent_nonneg_of_apply_eq_zero
 #print axioms AlgebraicGeometry.Proj.monomial_one_mem_polynomialGrading
@@ -149,6 +194,11 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Proj.intNegSupport
 #print axioms AlgebraicGeometry.Proj.mem_intNegSupport
 #print axioms AlgebraicGeometry.Proj.intNegSupport_laurentExponent_subset
+-- The finite index set of the full block (#568 step 6.1). An exponent negative in every
+-- coordinate whose coordinates sum to d has each coordinate trapped in [d + card - 1, -1], so
+-- the exponents form a subset of a finite box. This is the finiteness the top cohomology rests
+-- on; it is empty unless d <= -(card iota), which is Serre's vanishing in exponent form.
+#print axioms AlgebraicGeometry.Proj.finite_setOf_degree_eq_of_neg
 #print axioms AlgebraicGeometry.Proj.laurentExponent_sub_of_add_eq
 #print axioms AlgebraicGeometry.Proj.laurentFilter
 #print axioms AlgebraicGeometry.Proj.coeff_laurentFilter_of_eq
@@ -243,6 +293,10 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Proj.cechBlockPrimitive_of_forall
 #print axioms AlgebraicGeometry.Proj.cechBlockPrimitive_eq_zero_of_not_subset
 #print axioms AlgebraicGeometry.Proj.cechPrimitive
+-- The cone-point case, separated out because it needs no hypothesis on the twist at all. Every
+-- block except the one containing every variable has a cone point, so this alone says the
+-- cohomology is carried entirely by the full block.
+#print axioms AlgebraicGeometry.Proj.cechBlockPrimitive_faces_of_exists
 #print axioms AlgebraicGeometry.Proj.cechBlockPrimitive_faces
 #print axioms AlgebraicGeometry.Proj.cechPrimitive_isPrimitive
 -- The headline of #340: H^n(P, O(d)) = 0 for n >= 1 and d >= 0, over an arbitrary --
@@ -327,6 +381,15 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Proj.natShift
 #print axioms AlgebraicGeometry.Proj.intShift
 #print axioms AlgebraicGeometry.Proj.mem_intShift_ofNat_iff
+-- Integer shifts compose only where the intermediate degree exists (#584). The unrestricted
+-- statement is false: an inner shift by a negative e asks for degree n + e, and when that integer
+-- is negative the zero extension supplies 0 while the single shift by d + e may still land in a
+-- genuine piece. eq_zero_of_mem_intShift_intShift_of_neg makes that failure a theorem rather than
+-- a remark. It is a fact about the algebraic model only -- associatedSheaf reads these pieces
+-- through homogeneous localizations, where the missing degrees are inverted back in -- so the
+-- sheaf-level O(d)(e) = O(d+e) is not obstructed, but it cannot be transported from here.
+#print axioms AlgebraicGeometry.Proj.mem_intShift_add_iff_of_nonneg
+#print axioms AlgebraicGeometry.Proj.eq_zero_of_mem_intShift_intShift_of_neg
 #print axioms AlgebraicGeometry.Proj.sheafTwist
 #print axioms AlgebraicGeometry.Proj.sheafTwistZeroIso
 #print axioms AlgebraicGeometry.Proj.sheafNatTwistAddIso
@@ -373,6 +436,11 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 -- of the quasi-coherent form to polynomialIntShift_isQuasicoherent.
 #print axioms AlgebraicGeometry.Proj.polynomialVariableIntShift_isCechAcyclicFor
 #print axioms AlgebraicGeometry.Proj.polynomialVariableIntShift_isCechAcyclicCover
+-- The integer-twist form of the same conclusion (#332 step 1, negative half). Not a corollary
+-- of the nonnegative statement: natShift and intShift are different graded families, so the two
+-- complexes are related by transport rather than definitional equality. This is the shape
+-- devissage consumes, which needs Hⁱ(Pⁿ, O(d)) as an explicit complex at negative d.
+#print axioms AlgebraicGeometry.Proj.polynomialVariableIntCechComplex_computesCohomology
 #print axioms AlgebraicGeometry.Proj.polynomialVariable_adjoin_eq_top
 #print axioms AlgebraicGeometry.Proj.natShiftQuasicoherentData
 #print axioms AlgebraicGeometry.Proj.natShift_isQuasicoherent
@@ -437,6 +505,22 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AddCommGrpCat.hom_sum_zsmul_apply
 #print axioms AlgebraicGeometry.Proj.cechCochainsDegreewiseAddEquiv_d
 #print axioms AlgebraicGeometry.Proj.polynomialVariableCechComplex_d_apply
+-- The whole layer again for a twist of either sign (#332 step 1, negative half). Nothing here
+-- knows about the sign: the three shape mismatches are statements about the cover, so
+-- piObj_polynomialVariableChart is reused rather than restated, and the only twist-dependent
+-- inputs are intCechTermSectionAddEquiv and its face compatibility.
+#print axioms AlgebraicGeometry.Proj.intTwistPresheaf
+#print axioms AlgebraicGeometry.Proj.intCechIndexEquiv
+#print axioms AlgebraicGeometry.Proj.intCechCochainsDegreewiseAddEquiv
+#print axioms AlgebraicGeometry.Proj.intCechCochainsDegreewiseAddEquiv_apply
+#print axioms AlgebraicGeometry.Proj.intCechCochainsDegreewiseAddEquiv_symm_apply
+#print axioms AlgebraicGeometry.Proj.intCechIndexEquiv_map_face
+#print axioms AlgebraicGeometry.Proj.intCechComplexOfTwist
+#print axioms AlgebraicGeometry.Proj.intCechCochainsIso
+#print axioms AlgebraicGeometry.Proj.intCechCochainsDegreewiseAddEquiv_d
+#print axioms AlgebraicGeometry.Proj.polynomialVariableIntCechComplex
+#print axioms AlgebraicGeometry.Proj.polynomialVariableIntCechComplexIso
+#print axioms AlgebraicGeometry.Proj.polynomialVariableIntCechComplex_d_apply
 #print axioms AlgebraicGeometry.Proj.AffineComparisonDataOn
 #print axioms AlgebraicGeometry.Proj.AffineComparisonDataOn.localQuasicoherentData
 #print axioms AlgebraicGeometry.Proj.AffineComparisonDataOn.associatedSheaf_isQuasicoherent
@@ -506,6 +590,11 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Proj.cechTermSectionAddEquiv_toAddMonoidHom
 -- The consumable form: the comparison carries polynomialVariableCechFace to restriction.
 #print axioms AlgebraicGeometry.Proj.cechTermSectionAddEquiv_res_face
+-- The same face compatibility for a twist of either sign (#332 step 1, negative half). Once
+-- intCechTermSectionAddEquiv_toAddMonoidHom has identified the five-step composite with the
+-- canonical fraction-to-section map, this is moduleAwayToSection_res_faceMap, which is generic
+-- in the graded module and never mentions the twist.
+#print axioms AlgebraicGeometry.Proj.intCechTermSectionAddEquiv_res_face
 #print axioms AlgebraicGeometry.Proj.moduleAwayToSection_cechDenominator_bijective
 #print axioms AlgebraicGeometry.Proj.DegreeZeroLocalization.natShiftLinearEquivOfMulMem_apply_mk
 #print axioms AlgebraicGeometry.Proj.natShiftSectionFromSelfOn_apply
@@ -513,15 +602,19 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Proj.natShiftSectionFromSelfOn_selfBasicOpenSectionAddEquiv_mk
 #print axioms AlgebraicGeometry.Proj.basicOpen_polynomialVariableCechDenominator
 
--- The geometric source object is a bundle of explicit data, not an axiom identifying schemes
--- with their numerical realizations.
+-- The geometric source has one over-scheme object and proof-irrelevant adjective layers.
+#print axioms SchemeOverField
+#print axioms SchemeOverField.IsVariety
 #print axioms Variety
 #print axioms SmoothProperVariety
 #print axioms ChernClassData.chernCharacterFour
 #print axioms ChernClassData.toddFour
 #print axioms ChernClassData.chernCharacterComponent
 #print axioms ChernClassData.toddComponent
+#print axioms Variety.NumericalData.SatisfiesHRR
+#print axioms Variety.NumericalData.SatisfiesHRR.eq
 #print axioms Variety.NumericalData.toNumericalVariety
+#print axioms Variety.NumericalData.toNumericalVariety_satisfiesHRR
 #print axioms Variety.NumericalData.toNumericalVariety_chComp_four
 #print axioms Variety.NumericalData.toNumericalVariety_toddComp_four
 #print axioms Variety.NumericalData.chernCharacter_classOf
@@ -716,6 +809,8 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.RiemannRoch.Surface.ReconstructionSystem.chernCharacterHom_zero
 #print axioms AlgebraicGeometry.RiemannRoch.Surface.ReconstructionSystem.chernCharacterHom_add
 #print axioms AlgebraicGeometry.RiemannRoch.Surface.GeometricData
+#print axioms AlgebraicGeometry.RiemannRoch.Surface.GeometricData.SatisfiesSheafHRR
+#print axioms AlgebraicGeometry.RiemannRoch.Surface.GeometricData.SatisfiesSheafHRR.eq
 #print axioms AlgebraicGeometry.RiemannRoch.Surface.GeometricData.totalChernCharacterHom
 #print axioms AlgebraicGeometry.RiemannRoch.Surface.GeometricData.totalTodd
 #print axioms AlgebraicGeometry.RiemannRoch.Surface.GeometricData.riemannRochHom
@@ -725,6 +820,7 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.RiemannRoch.Surface.GeometricData.rationalEulerHom_class
 #print axioms AlgebraicGeometry.RiemannRoch.Surface.GeometricData.hirzebruch_riemannRoch
 #print axioms AlgebraicGeometry.RiemannRoch.Surface.GeometricData.toNumericalVariety
+#print axioms AlgebraicGeometry.RiemannRoch.Surface.GeometricData.toNumericalVariety_satisfiesHRR
 #print axioms AlgebraicGeometry.RiemannRoch.Surface.GeometricData.toNumericalVariety_rank_class
 #print axioms AlgebraicGeometry.RiemannRoch.Surface.GeometricData.toNumericalVariety_chComp_class
 #print axioms AlgebraicGeometry.RiemannRoch.Surface.GeometricData.toNumericalVariety_toddComp
@@ -736,21 +832,30 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 
 -- Layer A: the graded-basis constructor. `ofGradedBasis` is what every concrete model
 -- goes through, so a sorry here would silently contaminate every instance in the repo.
+#print axioms NumericalRingData
+#print axioms NumericalRingData.piece
+#print axioms NumericalRingData.degree
+#print axioms NumericalVarietyData
+#print axioms NumericalVarietyData.ring
+#print axioms NumericalVarietyData.chi
 #print axioms gradedPiece
 #print axioms gradedPiece_eq_bot
 #print axioms gradedPiece_iSupIndep
 #print axioms gradedPiece_iSup_eq_top
 #print axioms gradedPiece_isInternal
 #print axioms gradedPiece_mul_mem
-#print axioms NumericalRing.ofGradedBasis
+#print axioms NumericalRingData.ofGradedBasis
 
 -- Layer A: the general Riemann-Roch expansion and its surface specialisation.
-#print axioms NumericalVariety.degree_ch_mul_todd
-#print axioms NumericalVariety.chi_eq_sum
-#print axioms NumericalVariety.discriminant_mem_piece_two
-#print axioms NumericalVariety.degree_discriminant
-#print axioms NumericalVariety.chComp_eq_zero_of_lt
-#print axioms NumericalVariety.toddComp_eq_zero_of_lt
+#print axioms NumericalVarietyData.SatisfiesHRR
+#print axioms NumericalVarietyData.SatisfiesHRR.eq
+#print axioms NumericalVarietyData.hrr
+#print axioms NumericalVarietyData.degree_ch_mul_todd
+#print axioms NumericalVarietyData.chi_eq_sum
+#print axioms NumericalVarietyData.discriminant_mem_piece_two
+#print axioms NumericalVarietyData.degree_discriminant
+#print axioms NumericalVarietyData.chComp_eq_zero_of_lt
+#print axioms NumericalVarietyData.toddComp_eq_zero_of_lt
 #print axioms Surface.chi_eq
 #print axioms Surface.discriminant_mem_piece_two
 #print axioms Surface.degree_discriminant
@@ -775,13 +880,13 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 
 -- Layer A: the dual involution and the Euler pairing. chi2 is what Bridgeland stability
 -- is defined against, so a sorry here would contaminate the downstream repos.
-#print axioms NumericalRingWithDual
-#print axioms NumericalVariety.dual_ch
-#print axioms NumericalVariety.chDual_add
-#print axioms NumericalVariety.chi₂_eq_sum
-#print axioms NumericalVariety.chi₂_eq_degree_dual_ch
-#print axioms NumericalVariety.chi₂_add_left
-#print axioms NumericalVariety.chi₂_add_right
+#print axioms NumericalRingDualData
+#print axioms NumericalVarietyData.dual_ch
+#print axioms NumericalVarietyData.chDual_add
+#print axioms NumericalVarietyData.chi₂_eq_sum
+#print axioms NumericalVarietyData.chi₂_eq_degree_dual_ch
+#print axioms NumericalVarietyData.chi₂_add_left
+#print axioms NumericalVarietyData.chi₂_add_right
 #print axioms Surface.chi₂_eq
 #print axioms Surface.chi₂_eq_chi_of_isStructureSheafLike
 #print axioms Surface.chi₂_sub_chi₂_swap
@@ -795,29 +900,29 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 -- torsion-freeness hypotheses.
 #print axioms ZLattice
 #print axioms ZLattice.ofFiniteTorsionFree
-#print axioms NumericalVariety.eulerPairingRow
-#print axioms NumericalVariety.eulerPairing
-#print axioms NumericalVariety.eulerPairingFlip
-#print axioms NumericalVariety.eulerPairing_apply
-#print axioms NumericalVariety.eulerPairingFlip_apply
-#print axioms NumericalVariety.leftRadical
-#print axioms NumericalVariety.rightRadical
-#print axioms NumericalVariety.mem_leftRadical_iff
-#print axioms NumericalVariety.mem_rightRadical_iff
-#print axioms NumericalVariety.IsEulerPairingSymmetric
-#print axioms NumericalVariety.leftRadical_eq_rightRadical
-#print axioms NumericalVariety.NumericalQuotient
-#print axioms NumericalVariety.eulerPairingDescendRight
-#print axioms NumericalVariety.eulerPairingDescendRight_mk
-#print axioms NumericalVariety.eulerPairingToQuotient
-#print axioms NumericalVariety.eulerPairingToQuotient_mk
-#print axioms NumericalVariety.numericalPairing
-#print axioms NumericalVariety.numericalPairing_mk
-#print axioms NumericalVariety.numericalPairing_symm
-#print axioms NumericalVariety.numericalPairing_left_nondegenerate
-#print axioms NumericalVariety.numericalPairing_right_nondegenerate
-#print axioms NumericalVariety.numericalPairing_ker_eq_bot
-#print axioms NumericalVariety.numericalZLattice
+#print axioms NumericalVarietyData.eulerPairingRow
+#print axioms NumericalVarietyData.eulerPairing
+#print axioms NumericalVarietyData.eulerPairingFlip
+#print axioms NumericalVarietyData.eulerPairing_apply
+#print axioms NumericalVarietyData.eulerPairingFlip_apply
+#print axioms NumericalVarietyData.leftRadical
+#print axioms NumericalVarietyData.rightRadical
+#print axioms NumericalVarietyData.mem_leftRadical_iff
+#print axioms NumericalVarietyData.mem_rightRadical_iff
+#print axioms NumericalVarietyData.IsEulerPairingSymmetric
+#print axioms NumericalVarietyData.leftRadical_eq_rightRadical
+#print axioms NumericalVarietyData.NumericalQuotient
+#print axioms NumericalVarietyData.eulerPairingDescendRight
+#print axioms NumericalVarietyData.eulerPairingDescendRight_mk
+#print axioms NumericalVarietyData.eulerPairingToQuotient
+#print axioms NumericalVarietyData.eulerPairingToQuotient_mk
+#print axioms NumericalVarietyData.numericalPairing
+#print axioms NumericalVarietyData.numericalPairing_mk
+#print axioms NumericalVarietyData.numericalPairing_symm
+#print axioms NumericalVarietyData.numericalPairing_left_nondegenerate
+#print axioms NumericalVarietyData.numericalPairing_right_nondegenerate
+#print axioms NumericalVarietyData.numericalPairing_ker_eq_bot
+#print axioms NumericalVarietyData.numericalZLattice
 #print axioms K3.isEulerPairingSymmetric
 #print axioms K3.leftRadical_eq_rightRadical
 #print axioms K3.numericalPairing_mk_eq_neg_mukaiPairing
@@ -830,8 +935,9 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 
 -- Layer A: the consistency witness. If this depended on `sorryAx` the whole
 -- interface would be unmodelled.
-#print axioms Examples.instNumericalRingPoint
-#print axioms Examples.instNumericalVarietyPoint
+#print axioms Examples.pointNumericalRing
+#print axioms Examples.pointNumericalVariety
+#print axioms Examples.pointNumericalVariety_satisfiesHRR
 #print axioms Examples.pointPiece_isInternal
 
 -- Layer A: the K3 model. If these carried a sorry the K3 theorems would still be
@@ -842,11 +948,13 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms Examples.surfaceDegree_normalForm
 #print axioms Examples.surfaceDegree_ch_mul_todd
 #print axioms Examples.k3NumericalVariety
+#print axioms Examples.k3NumericalVariety_satisfiesHRR
 #print axioms Examples.k3_isK3
 
 -- Layer A: the projective plane. Its td1 is nonzero, so it is the model that can
 -- detect an error in the c1.td1 term of Surface.chi_eq.
 #print axioms Examples.p2NumericalVariety
+#print axioms Examples.p2NumericalVariety_satisfiesHRR
 #print axioms Examples.p2_chi_structureSheaf
 #print axioms Examples.p2Chi_lineBundle
 #print axioms Examples.p2ChCoeff_lineBundle
@@ -857,6 +965,8 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms Examples.abelianTodd_mem
 #print axioms Examples.abelianTodd_sum
 #print axioms Examples.abelianNumericalVariety
+#print axioms Examples.abelianNumericalVariety_satisfiesHRR
+#print axioms Examples.k3AndAbelianPresentations
 #print axioms Examples.abelianToddComp_one
 #print axioms Examples.abelianChiStructureSheaf
 #print axioms Examples.abelianChi_eq_of_chComp_two_eq
@@ -898,6 +1008,7 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms Examples.rankOneTodd_mem
 #print axioms Examples.rankOneTodd_sum
 #print axioms Examples.rankOneNumericalVariety
+#print axioms Examples.rankOneNumericalVariety_satisfiesHRR
 
 -- Layer A: linear-section coordinates in dimensions three and four. These are what make
 -- chi integral on the lattice, so an axiom here would undermine every Euler
@@ -921,6 +1032,7 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms Examples.p3Todd
 #print axioms Examples.p3Chi
 #print axioms Examples.p3NumericalVariety
+#print axioms Examples.p3NumericalVariety_satisfiesHRR
 #print axioms Examples.p3ChiStructureSheaf
 #print axioms Examples.p3Chi_lineBundle
 #print axioms Examples.p3ChCoeff_lineBundle_two
@@ -928,6 +1040,7 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms Examples.quinticTodd
 #print axioms Examples.quinticChi
 #print axioms Examples.quinticNumericalVariety
+#print axioms Examples.quinticNumericalVariety_satisfiesHRR
 #print axioms Examples.quintic_isCalabiYau
 #print axioms Examples.quinticChi_structureSheaf
 #print axioms Examples.quinticChi_hyperplaneSection
@@ -940,12 +1053,14 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms Examples.p4Todd
 #print axioms Examples.p4Chi
 #print axioms Examples.p4NumericalVariety
+#print axioms Examples.p4NumericalVariety_satisfiesHRR
 #print axioms Examples.p4ChiStructureSheaf
 #print axioms Examples.p4Chi_lineBundle
 #print axioms Examples.p4ChCoeff_lineBundle_four
 #print axioms Examples.sexticTodd
 #print axioms Examples.sexticChi
 #print axioms Examples.sexticNumericalVariety
+#print axioms Examples.sexticNumericalVariety_satisfiesHRR
 #print axioms Examples.sextic_isCalabiYau
 #print axioms Examples.sexticChi_structureSheaf
 #print axioms Examples.sexticChi_hyperplaneSection
@@ -1312,6 +1427,12 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Cohomology.AffineTildeCechDerivedComparisonAt
 #print axioms AlgebraicGeometry.Cohomology.AffineTildeCechDerivedComparison
 #print axioms AlgebraicGeometry.Cohomology.affineTildeCechDerivedComparisonAt_of_pos
+-- The denominator-clearing step behind "a section over a basic open extends after multiplying by
+-- a power of the defining element" (#585). It was a private lemma inside the Cech affine file,
+-- where it was used once; it is pure commutative algebra with no Cech content, so it now lives in
+-- DerivedAlgGeo/Algebra/Module/LocalizedRadical.lean and the Cech file imports it. Nothing about
+-- the proof changed in the move. Not in Mathlib at the pin; upstream-candidate.
+#print axioms Submodule.exists_pow_smul_mem_of_isLocalized_radical
 #print axioms AlgebraicGeometry.Cohomology.tilde_H_subsingleton_of_comparisonAt
 #print axioms AlgebraicGeometry.Cohomology.tilde_H_subsingleton_of_comparison
 #print axioms AlgebraicGeometry.Cohomology.H_subsingleton_of_iso_tilde_of_comparisonAt
@@ -1484,6 +1605,11 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Scheme.CartierDivisor.IsEquationOn
 #print axioms AlgebraicGeometry.Scheme.CartierDivisor.IsEquationOn.mono
 #print axioms AlgebraicGeometry.Scheme.CartierDivisor.fractionalPresheaf
+#print axioms AlgebraicGeometry.Scheme.RationalSections
+#print axioms AlgebraicGeometry.Scheme.rationalSectionsRes
+#print axioms AlgebraicGeometry.Scheme.germToFunctionField_res
+#print axioms AlgebraicGeometry.Scheme.rationalSectionsRes_smul
+#print axioms AlgebraicGeometry.Scheme.rationalPresheaf
 #print axioms AlgebraicGeometry.Scheme.CartierDivisor.associatedSheaf
 #print axioms AlgebraicGeometry.Scheme.CartierDivisor.equationIso
 #print axioms AlgebraicGeometry.Scheme.CartierDivisor.equationTransitionIso
@@ -1686,6 +1812,7 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.RiemannRoch.Surface.ToddData.structureToddOne_eq_toddOne
 #print axioms AlgebraicGeometry.RiemannRoch.Surface.ToddData.toddOne_eq_zero
 #print axioms AlgebraicGeometry.RiemannRoch.Surface.ToddData.degree_toddTwo_eq_two
+#print axioms AlgebraicGeometry.RiemannRoch.Surface.ToddData.NumericalVarietyComparison.ring_eq
 #print axioms AlgebraicGeometry.RiemannRoch.Surface.ToddData.NumericalVarietyComparison.toIsK3
 
 -- Layer B stage 5: finite locally free and explicitly perfect surface dévissage. Arbitrary
@@ -1712,7 +1839,9 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.RiemannRoch.Surface.Assembly.degree_tauComponent_two_eq_eulerCharacteristic
 #print axioms AlgebraicGeometry.RiemannRoch.Surface.Assembly.sheaf_hirzebruch_riemannRoch
 #print axioms AlgebraicGeometry.RiemannRoch.Surface.Assembly.toGeometricData
+#print axioms AlgebraicGeometry.RiemannRoch.Surface.Assembly.toGeometricData_satisfiesSheafHRR
 #print axioms AlgebraicGeometry.RiemannRoch.Surface.Assembly.toNumericalVariety
+#print axioms AlgebraicGeometry.RiemannRoch.Surface.Assembly.toNumericalVariety_satisfiesHRR
 #print axioms AlgebraicGeometry.RiemannRoch.Surface.Assembly.PerfectReconstructionComparison
 #print axioms AlgebraicGeometry.RiemannRoch.Surface.Assembly.perfect_rank_eq
 #print axioms AlgebraicGeometry.RiemannRoch.Surface.Assembly.perfect_toddTwo_degree
@@ -1725,7 +1854,7 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 
 -- Layer B stage 5: numerical HRR in positive dimensions through four. Representability and
 -- divisor-pairing separation remain visible in `PairingContext`; no cycle-valued GRR theorem is
--- assumed. The dimension-three and dimension-four constructors discharge the Layer A HRR field.
+-- assumed. The dimension-three and dimension-four constructors expose a separate HRR witness.
 #print axioms AlgebraicGeometry.RiemannRoch.HigherDimension.reconstruction_eulerPic_one
 #print axioms AlgebraicGeometry.RiemannRoch.HigherDimension.degree_tauComponent_top_eq_eulerCharacteristic
 #print axioms AlgebraicGeometry.RiemannRoch.HigherDimension.ReconstructionSystem
@@ -1739,6 +1868,7 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.RiemannRoch.HigherDimension.sheaf_hirzebruch_riemannRoch
 #print axioms AlgebraicGeometry.RiemannRoch.HigherDimension.hirzebruch_riemannRoch
 #print axioms AlgebraicGeometry.RiemannRoch.HigherDimension.toNumericalVariety
+#print axioms AlgebraicGeometry.RiemannRoch.HigherDimension.toNumericalVariety_satisfiesHRR
 #print axioms AlgebraicGeometry.RiemannRoch.HigherDimension.numericalClass
 #print axioms AlgebraicGeometry.RiemannRoch.HigherDimension.toThreefoldNumericalVariety
 #print axioms AlgebraicGeometry.RiemannRoch.HigherDimension.toFourfoldNumericalVariety
@@ -1918,4 +2048,3 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Numerical.PreservesCategoricalEuler
 #print axioms AlgebraicGeometry.Numerical.preservesEuler_of_descends
 #print axioms AlgebraicGeometry.Numerical.pairing_mukaiVector_eq_on_realized_of_categorical
-

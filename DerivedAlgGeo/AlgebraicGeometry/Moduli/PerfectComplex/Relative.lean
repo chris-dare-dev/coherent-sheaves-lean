@@ -5,8 +5,8 @@ Released under the MIT license.
 import Mathlib.AlgebraicGeometry.Fiber
 import Mathlib.AlgebraicGeometry.Morphisms.FinitePresentation
 import Mathlib.RingTheory.Flat.Basic
-import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Families.Dqc
-import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Families.OpenImmersionPullback
+import DerivedAlgGeo.AlgebraicGeometry.StabilityCondition.Families.Dqc
+import DerivedAlgGeo.AlgebraicGeometry.StabilityCondition.Families.OpenImmersionPullback
 
 /-!
 # Relative-perfect and universally-gluable complexes
@@ -59,7 +59,16 @@ def Modules.IsFlatOver {X S : Scheme.{u}} (p : X ⟶ S)
 end Scheme
 
 /-- The locally Noetherian cohomological criterion for pseudo-coherence:
-bounded above with finitely presented cohomology in every degree. -/
+bounded above with finitely presented cohomology in every degree.
+
+SCOPE (2026-08-18 review, P2-12): on a locally Noetherian scheme this
+criterion is pseudo-coherence; on a general scheme the two notions diverge
+in both directions, and the affine family pseudofunctor instantiates this
+predicate over arbitrary test algebras. Any theorem that quantifies over
+non-Noetherian bases is therefore about THIS predicate, not about standard
+pseudo-coherence; the #554 preservation program must either restrict its
+index to the Noetherian locus or prove preservation for this criterion and
+say which. -/
 def schemePseudoCoherent (X : Scheme.{u}) :
     ObjectProperty (SchemeQuasicoherentDerivedCategory X) :=
   fun E ↦
@@ -155,8 +164,14 @@ instance schemeLocallyFiniteTorAmplitudeOver_isClosedUnderIsomorphisms
           (relativeOpenTo p h.openSubset)).mapIso
             ((SchemeQuasicoherentDerivedCategory.ι X).mapIso e) }⟩
 
-/-- Relative-perfect objects for a flat, locally finitely presented morphism:
-pseudo-coherent objects with locally finite Tor amplitude over the base. -/
+/-- The relative-perfect predicate: `schemePseudoCoherent` objects with
+locally finite Tor amplitude over the base.
+
+The definition takes an arbitrary morphism; the intended moduli context is a
+flat, locally finitely presented family, and geometric theorems state those
+hypotheses where they use them rather than here (see
+`SchemeRelativePerfectCategory`). The pseudo-coherence component carries the
+locally Noetherian scope note on `schemePseudoCoherent`. -/
 def schemeRelativePerfect {X S : Scheme.{u}} (p : X ⟶ S) :
     ObjectProperty (SchemeQuasicoherentDerivedCategory X) :=
   fun E ↦ schemePseudoCoherent X E ∧

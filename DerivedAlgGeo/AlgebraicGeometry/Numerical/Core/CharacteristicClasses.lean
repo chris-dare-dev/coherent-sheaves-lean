@@ -14,7 +14,7 @@ where the series truncates in a particular numerical ring.
 This module records the components through codimension four, the range currently used by the
 project. `ChernClassData A` is deliberately just algebraic input. The geometric construction
 of these classes for coherent sheaves and tangent bundles, and the proof that the resulting
-formulas agree with `NumericalVariety.chComp` and `toddComp`, belong to the future
+formulas agree with `NumericalVarietyData.chComp` and `toddComp`, belong to the future
 geometric-to-numerical realization layer.
 -/
 
@@ -24,7 +24,7 @@ namespace AlgebraicGeometry.Numerical
 
 /-- Rank and Chern-class components in a commutative coefficient ring.
 
-No dimension is stored here: a `NumericalRing n A` determines which components vanish after
+No dimension is stored here: a `NumericalRingData n A` determines which components vanish after
 these universal formulas have been evaluated. -/
 structure ChernClassData (A : Type u) where
   /-- The virtual rank. -/

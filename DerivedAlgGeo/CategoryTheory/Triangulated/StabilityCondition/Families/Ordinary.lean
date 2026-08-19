@@ -16,7 +16,10 @@ The index types stand for geometric base-change, object, fiber, and numerical
 moduli tests supplied by a client.  The library neither constructs nor
 recognizes those geometric objects.  The support field, by contrast, is the
 genuine quotient-uniform quadratic support predicate already implemented in
-the support subsystem.
+the support subsystem.  Vacuous-probe inhabitants -- constant-true
+predicates and full-locus witnesses -- are development scaffolding, not part
+of this stable interface; constant-family reindexings that consume a genuine
+support datum remain stable API.
 -/
 
 namespace CategoryTheory.Triangulated.StabilityCondition.Families
@@ -50,41 +53,25 @@ structure OrdinaryStabilityInFamiliesData
   /-- Definition 21.15(5). -/
   bounded : UniversalBoundedness boundedness
 
-/-- A concrete `PUnit`-indexed constant-family witness.
-
-All universal index types are inhabited, so this is not an empty-quantifier
-witness.  The only mathematical input is genuine quadratic support for the
-single selected locus; the topological, HN-witness, and boundedness probes are
-manifest constant data.  It does not assert that `PUnit` is a geometric base. -/
-theorem OrdinaryStabilityInFamiliesData.punit
-    (a : ℂ) (V₀ : Submodule ℝ V) (Z : V →ₗ[ℝ] W)
-    (hV₀ : V₀ ≤ LinearMap.ker Z) (S : Set V)
-    (hQ : HasQuadraticSupportProperty (quotientCharge V₀ Z hV₀)
-      (V₀.mkQ '' S)) :
-    OrdinaryStabilityInFamiliesData
-      (fun _ : PUnit.{1} ↦ ChargeProbe.constant PUnit.{1} a)
-      (fun _ : PUnit.{1} ↦ OpenLocusProbe.full PUnit.{1})
-      (DedekindHNProblem.constant PUnit.{1} PUnit.{1})
-      V₀ Z hV₀ (fun _ : PUnit.{1} ↦ S)
-      (BoundednessProblem.trivial PUnit.{1}) where
-  definition20_5 :=
-    { locallyConstantCharge :=
-        universallyLocallyConstantCharge_constant PUnit.{1}
-          (fun _ : PUnit.{1} ↦ a)
-      opennessOfGeometricStability := universalOpenness_full PUnit.{1}
-      dedekindHN := integratesAfterDedekindBaseChange_constant PUnit.{1} PUnit.{1} }
-  uniformSupport := hQ.constant_modulo V₀ Z hV₀ PUnit.{1}
-  bounded := universalBoundedness_trivial PUnit.{1}
-
-/-- The `PUnit` witness exposes the locally constant charge clause. -/
-theorem ordinary_punit_locallyConstantCharge
-    (a : ℂ) (V₀ : Submodule ℝ V) (Z : V →ₗ[ℝ] W)
-    (hV₀ : V₀ ≤ LinearMap.ker Z) (S : Set V)
-    (hQ : HasQuadraticSupportProperty (quotientCharge V₀ Z hV₀)
-      (V₀.mkQ '' S)) :
-    UniversallyLocallyConstantCharge
-      (fun _ : PUnit.{1} ↦ ChargeProbe.constant PUnit.{1} a) :=
-  (OrdinaryStabilityInFamiliesData.punit a V₀ Z hV₀ S hQ).definition20_5.locallyConstantCharge
+/-- The geometric and numerical input conditions used by deformation
+arguments: openness, relative HN integration, uniform quotient support, and
+boundedness.  The theorem consuming these inputs is deliberately not named or
+indexed here. -/
+structure OrdinaryDeformationInputConditions
+    (stable : JOpen → OpenLocusProbe)
+    (dedekind : DedekindHNProblem D)
+    (V₀ : Submodule ℝ V) (Z : V →ₗ[ℝ] W)
+    (hV₀ : V₀ ≤ LinearMap.ker Z) (semistableClasses : I → Set V)
+    (boundedness : BoundednessProblem M) : Prop where
+  /-- Universal openness of geometric stability. -/
+  openness : UniversalOpenness stable
+  /-- Relative HN structures after every eligible Dedekind base change. -/
+  dedekindHN : IntegratesAfterDedekindBaseChange dedekind
+  /-- One quotient quadratic form controls every fiber semistable locus. -/
+  uniformSupport : HasUniformQuadraticSupportPropertyModulo
+    V₀ Z hV₀ semistableClasses
+  /-- Every supplied numerical moduli problem is bounded. -/
+  bounded : UniversalBoundedness boundedness
 
 end
 

@@ -70,6 +70,7 @@ jobs:
     timeout-minutes: 90
     steps:
       - uses: actions/checkout@v4
+        id: checkout
         with:
           # A diff base is needed by "What changed" below. On the self-hosted
           # lane the repository is already present, so this costs a fetch, not a
@@ -124,6 +125,9 @@ jobs:
           else
             echo "library=false" >> "$GITHUB_OUTPUT"
           fi
+
+      - name: Foundation import boundary
+        run: python3 scripts/check_foundation_import_boundary.py
 
       # Build-output cache, hosted lane only (2026-08-14, corrected 2026-08-15).
       #
@@ -189,12 +193,35 @@ jobs:
       # `.lake/build` entry above. `use-mathlib-cache` stays on: mathlib's
       # oleans come from the Lean community cache, which is the right source and
       # costs no repository budget at all.
-      - uses: leanprover/lean-action@v1
+      # Pinned to a commit, not to `v1`. `v1` is a MOVING tag -- the maintainers
+      # repoint it -- so `@v1` is a pin that does not pin, which is the same
+      # failure `CLAUDE.md` names for `lake update` re-resolving a branch
+      # `inputRev`. The first symptom would be a build that changes with
+      # nothing in the diff to explain it. 38fbc41 is v1 as of 2026-04-22.
+      - uses: leanprover/lean-action@38fbc41a8c28c4cbaec22d7f7de508ec2e7c0dd9 # v1
         with:
           build: true
           use-mathlib-cache: true
           use-github-cache: false
+          # nanoda is off, and NOT because the axis does not matter. Measured
+          # while standing up CI for math-formal-contract-lean, recorded here
+          # rather than rediscovered: `nanoda: true` cannot run at this
+          # toolchain. lean-action's run_nanoda.sh detects the module name with
+          # `grep -A5 '^\[package\]' lakefile.toml`, and Lake REJECTS the
+          # `[package]` table that grep wants; past that, lean4export master
+          # emits NDJSON 3.1.0 while nanoda 0.3.2 expects the older
+          # space-separated format.
           nanoda: false
+          # ...and this line is load-bearing even though nanoda is off.
+          #
+          # `nanoda-allow-sorry` DEFAULTS TO "true" (verified in the action's
+          # own action.yml). So the day anyone flips `nanoda: true`, the
+          # default silently adds a checker that PASSES ON SORRY-BACKED
+          # PROOFS -- a green check meaning nothing, in a repository whose
+          # CLAUDE.md forbids `sorry` outright. Setting it false now costs a
+          # line and removes the trap; leaving it to be remembered later is
+          # how the trap gets sprung.
+          nanoda-allow-sorry: false
 
       - name: Pin and coverage records
         run: |
@@ -224,6 +251,12 @@ jobs:
             echo "::error::sorryAx reached the algebraic-geometry audit"
             exit 1
           fi
+          # Allowlist + truncation + parse checks, same standard as the other
+          # two audit lanes. Until 2026-08-18 this lane checked only sorryAx,
+          # so a custom axiom or a truncated transcript passed it (review
+          # finding P2-3).
+          python3 scripts/check_audit.py algebraic-geometry-audit.txt \
+            scripts/AlgebraicGeometryAudit.lean
 
       - name: Stability-condition axiom audit
         run: |
@@ -283,6 +316,15 @@ jobs:
 
       - name: Stability source independence
         run: python3 scripts/check_source_independence.py
+
+      - name: Subject ownership layering
+        run: python3 scripts/check_layering.py
+
+      - name: Coherent families architecture
+        run: python3 scripts/check_coherent_families.py
+
+      - name: Explicit numerical data architecture
+        run: python3 scripts/check_explicit_numerical_data.py
 
       - name: No declaration uses sorry
         run: |
@@ -375,15 +417,292 @@ jobs:
       # writer has to be a runner of the platform the cache is for; see the
       # `Cache warm` workflow, in .github/workflows/cache-warm.yml.
 
+      # The mfc gates. #156 specifies seven steps; this lands 3, 4 and 6.
+      #
+      # Verified before landing, against THIS repo's own CI emission (run
+      # 32086611934, 15346 constants) rather than against fixtures:
+      # `mfc lint` reports 7 passed, 0 failed, 5 not_run -- every not_run a
+      # missing input (no registry yet, no closed-lanes config), none of them a
+      # rule that could have fired and did not.
+      #
+      # Two defects surfaced doing that, both fixed upstream first:
+      # `counts.foreign` (8 constants attributed to Mathlib modules) and the
+      # repeatable `--lib`, without which coverage scopes to DerivedAlgGeoSweep
+      # alone and reports "1 in-scope module of 488 built; 0 built
+      # declarations" -- green, having compared nothing.
+      - name: Contract gates
+        env:
+          # For scripts/check_roadmap.py's `gh` calls at the end of this step.
+          # Read-only issue metadata; the default token's scope is sufficient.
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          # Its own venv, in the workspace. The self-hosted lane is the owner's
+          # daily-driver Mac and this must not touch its system python.
+          #
+          # The interpreter is CHOSEN, not inherited. `python3` on that Mac is
+          # 3.9.6, and `mfc` needs 3.11+ because `mfc env` reads lakefile.toml
+          # with `tomllib`. Inheriting it cost a full 20-minute build followed
+          # by ModuleNotFoundError -- and the same commit was simultaneously
+          # green on the hosted lane, whose `python3` is newer, which is the
+          # worst shape a CI failure can take.
+          PY311=""
+          for c in python3.13 python3.12 python3.11 python3; do
+            if command -v "$c" >/dev/null 2>&1 && \
+               "$c" -c 'import sys; raise SystemExit(0 if sys.version_info >= (3,11) else 1)'; then
+              PY311="$c"; break
+            fi
+          done
+          if [ -z "$PY311" ]; then
+            echo "::error::no python >= 3.11 on this runner. mfc needs tomllib," \
+                 "which is stdlib from 3.11; python3 here is $(python3 -V 2>&1)."
+            exit 1
+          fi
+          echo "using $PY311 ($("$PY311" -V 2>&1))"
+          "$PY311" -m venv .mfc-venv
+          .mfc-venv/bin/pip install --quiet \
+            "mfc[yaml] @ git+https://github.com/chris-dare-dev/math-formal-contract-lean@21e3b442a85c05978a70acc0b047da4a3ff22d7c#subdirectory=contract"
+          MFC=.mfc-venv/bin/mfc
+
+          "$MFC" validate attest/lean-emission.json
+
+          "$MFC" env --repo . --out attest/environment.json \
+            --axiom-allowlist propext,Quot.sound,Classical.choice \
+            --emitter-version mfc-emit/1.1.0
+          "$MFC" validate attest/environment.json
+
+          "$MFC" bundle --emission attest/lean-emission.json \
+                        --environment attest/environment.json \
+                        --out attest/declarations.json
+
+          # --registry runs E-04, E-05 and E-12 against the minted registry;
+          # until 2026-08-18 the step comment claimed no registry existed while
+          # `mfc seal` consumed one three commands later, and running E-12
+          # exposed a real unanchored discharge edge (adversarial review,
+          # finding P2-4). E-09 and E-11 still need a closed-lanes config this
+          # repo has not minted, so the EXACT expected not_run set is asserted
+          # below: any silent widening of it -- a malformed registry, a schema
+          # drift demoting more rules -- fails the step instead of printing a
+          # smaller green table.
+          "$MFC" lint --emission attest/lean-emission.json \
+                      --environment attest/environment.json \
+                      --registry registry/bridgeland2007.json \
+            | tee mfc-lint-report.txt
+          actual_not_run=$(grep -oE '^not_run  E-[0-9]+' mfc-lint-report.txt \
+            | awk '{print $2}' | sort | paste -sd, -)
+          if [ "$actual_not_run" != "E-09,E-11" ]; then
+            echo "::error::mfc lint not_run set is '$actual_not_run', expected" \
+                 "'E-09,E-11'. A rule stopped running (or started); update this" \
+                 "assertion only with the config change that explains it."
+            exit 1
+          fi
+
+          # BOTH roots. The emitter sweeps DerivedAlgGeoSweep plus DerivedAlgGeo
+          # (exe/Emit.lean), and a single root makes this check vacuous rather
+          # than wrong -- see the note above.
+          "$MFC" check-ilean-coverage --emission attest/lean-emission.json \
+            --lib DerivedAlgGeoSweep --lib DerivedAlgGeo
+
+          # Step 5 of #156. It runs when there is something to run it on, and
+          # says so when there is not -- arXMCP produces resolution.json and
+          # that is M2/e7 (#134), so today this prints the notice.
+          if [ -f attest/resolution.json ]; then
+            "$MFC" check-resolution attest/resolution.json
+          else
+            echo "::notice::check-resolution did NOT run: no attest/resolution.json yet (arXMCP-side, #134)"
+          fi
+
+          # The roadmap-vs-tracker check (#620). It runs HERE, at the end of
+          # this step, for one reason: it needs PyYAML, and `.mfc-venv` is the
+          # only interpreter in this workflow guaranteed to have it -- the
+          # self-hosted lane's `python3` is 3.9.6 system Python. Running it as
+          # a bare `python3 scripts/...` alongside the other check_*.py would
+          # be a coin flip on the runner.
+          #
+          # `--require-api` is deliberate. Without `gh` the script prints
+          # NOT_RUN and exits 0, so a contributor with no `gh` is not blocked
+          # from running the offline gates -- but CI is the one environment
+          # guaranteed to have the API, and a check that silently skips there
+          # is the vacuous pass this repository keeps finding in new places.
+          .mfc-venv/bin/python scripts/check_roadmap.py --require-api
+
+          # ------------------------------------------------------------------
+          # build.json, and the honest size of what it measured.
+          #
+          # There is no cheap route to project-wide NDJSON, and the obvious
+          # wirings are worse than nothing because THEY LOOK CLEAN. Measured on
+          # v4.32.1 before writing this:
+          #
+          #   - `lake env lean --json` on a root import file prints NOTHING.
+          #     Imports are served from oleans and never re-reported, so this
+          #     step would have emitted error_count 0, warning_count 0,
+          #     sorry_diagnostic_count 0 having elaborated no library module --
+          #     and `mfc seal` would have accepted it as the build/v1 predicate
+          #     C-12 requires. A vacuous pass wearing a passing bundle.
+          #   - `moreLeanArgs = ["--json"]` is consumed by lake, which
+          #     re-renders every message in its own text format.
+          #   - lake persists no structured log: .hash, .trace, .olean, .ilean.
+          #   - per-module invocation pays a full Mathlib import load each time;
+          #     494 own modules is hours, not a per-commit step.
+          #
+          # So this covers the two ROOT modules and says so. `--covers` is what
+          # puts `measured: {modules, in_scope_modules}` in the artifact, and
+          # `mfc build` prints "PARTIAL diagnostics cover 2 of N" on stderr
+          # every run. The number is meant to look small. It is small.
+          #
+          # THE REPOSITORY-WIDE SORRY GATE IS NOT THIS. It is the emission step
+          # above: `lake env lean --run exe/Emit.lean` exits non-zero when any
+          # constant's axiom closure contains sorryAx, over every constant in
+          # the environment, and it is strictly stronger than any build-log
+          # count because it cannot be defeated by declaration syntax.
+          #
+          # `set +e` around the sweep for the same reason as the exit capture
+          # below: a root module that will not elaborate is exactly when the
+          # diagnostics are worth having, and dying here would discard them
+          # before build.json is written. Only stdout is captured -- lean writes
+          # its JSON messages there, and anything lake says on stderr would not
+          # parse as NDJSON.
+          : > attest/lake-build.ndjson
+          set +e
+          for m in DerivedAlgGeo DerivedAlgGeoSweep; do
+            lake env lean --json "$m.lean" >> attest/lake-build.ndjson
+          done
+          set -e
+
+          # RECORDED, NEVER THE GATE -- on this toolchain a build whose only
+          # defect is a sorry exits 0. Captured rather than assumed, so the
+          # field says what happened.
+          #
+          # `set +e` and not `|| true`: with `|| true` the pipeline succeeds and
+          # $? is 0 no matter what lake returned, which would record a clean
+          # exit for a failed build -- the field lying in the one direction that
+          # matters. The step must not die here either; the artifact has to
+          # exist and be honest especially when the answer is bad.
+          set +e
+          lake build DerivedAlgGeoSweep > attest/lake-build.log 2>&1
+          LAKE_EXIT=$?
+          set -e
+          # 0 when lake printed no job line, which is what a fully cached
+          # no-op build looks like. `minimum: 0` in the schema permits it.
+          LAKE_JOBS=$(sed -n 's/.*Build completed successfully (\([0-9]*\) jobs).*/\1/p' \
+                        attest/lake-build.log | tail -1)
+          LAKE_JOBS=${LAKE_JOBS:-0}
+
+          "$MFC" build --ndjson attest/lake-build.ndjson \
+                       --environment attest/environment.json \
+                       --emission attest/lean-emission.json \
+                       --covers DerivedAlgGeo --covers DerivedAlgGeoSweep \
+                       --lake-exit "$LAKE_EXIT" --lake-jobs "$LAKE_JOBS" \
+                       --out attest/build.json
+
+          # The in-toto Statement, and then the twelve rules over it. Until
+          # this step existed nothing in either repository produced the file
+          # `conformance` reads, so C-01..C-12 ran only inside mfc's own pytest
+          # against a tree the tests assembled.
+          #
+          # `seal` REFUSES to omit a required predicate and refuses a dirty
+          # worktree; both are why the .gitignore block landed in this commit.
+          # attest/review.yaml is the one file here that is committed rather
+          # than regenerated -- see the .gitignore negation. When it exists the
+          # bundle carries a human-review predicate and C-10 stops reporting
+          # not_run; when it does not, seal is called without it and C-10 says
+          # so out loud. `--review-produced-by` is read FROM the file rather
+          # than hardcoded here, so the bundle names whoever actually signed the
+          # review instead of whoever wrote this workflow.
+          SEAL_REVIEW=()
+          if [ -f attest/review.yaml ]; then
+            REVIEWER=$(.mfc-venv/bin/python -c "import yaml,sys; \
+              print(yaml.safe_load(open('attest/review.yaml'))['reviews'][0]['reviewer']['name'])")
+            SEAL_REVIEW=(--review attest/review.yaml
+                         --review-produced-by "human:$REVIEWER")
+            echo "::notice::sealing with human review by $REVIEWER"
+          else
+            echo "::notice::no attest/review.yaml; C-10 will report not_run (#178)"
+          fi
+
+          "$MFC" seal --root . \
+                      --environment attest/environment.json \
+                      --registry registry/bridgeland2007.json \
+                      --declarations attest/declarations.json \
+                      --build attest/build.json \
+                      "${SEAL_REVIEW[@]}" \
+                      --out attest/bundle.json
+
+          # C-08 alone prints not_run: no resolution.json (#134). That is NOT
+          # a pass, and the summary line says so on every run. As with lint
+          # above, the exact expected not_run set is asserted so it cannot
+          # widen silently (2026-08-18 adversarial review, finding P2-4).
+          #
+          # WAS 'C-08,C-10' until 2026-08-19. C-10 now RUNS, because
+          # attest/review.yaml exists (#178) and the bundle carries a
+          # human-review predicate. This assertion fired on that change, which
+          # is the assertion working -- it is narrowed here with the config
+          # change that explains it, per its own error message, and not to make
+          # a red build green.
+          #
+          # It must not widen back. C-10 returning to not_run would mean the
+          # review stopped being sealed into the bundle -- most likely
+          # review.yaml going missing, which the .gitignore negation exists to
+          # prevent.
+          "$MFC" conformance --bundle attest/bundle.json \
+                             --emission attest/lean-emission.json \
+            | tee mfc-conformance-report.txt
+          actual_not_run=$(grep -oE '^not_run  C-[0-9]+' mfc-conformance-report.txt \
+            | awk '{print $2}' | sort | paste -sd, -)
+          if [ "$actual_not_run" != "C-08" ]; then
+            echo "::error::mfc conformance not_run set is '$actual_not_run'," \
+                 "expected 'C-08'. A rule stopped running (or started);" \
+                 "update this assertion only with the config change that" \
+                 "explains it."
+            exit 1
+          fi
+
+      # Step 6 of #156: the determinism assertion. Two runs over an unchanged
+      # environment must be byte-identical except for `emitted_at`.
+      #
+      # This is the gate that makes `builds_clean` mean something a second
+      # machine could reproduce, and it costs a second interpreted sweep --
+      # which is why it is here, after the artifact everything else needs has
+      # already been produced.
+      - name: Emitter reproducibility
+        run: |
+          set -euo pipefail
+          lake env lean --run exe/Emit.lean --out attest/lean-emission-2.json
+          python3 - <<'PY'
+          import json
+          a = json.load(open("attest/lean-emission.json", encoding="utf-8"))
+          b = json.load(open("attest/lean-emission-2.json", encoding="utf-8"))
+          # `emitted_at` is the ONLY field permitted to differ, and it is named
+          # rather than filtered by pattern: a second volatile field appearing
+          # later must fail here, loudly, instead of being absorbed.
+          a.pop("emitted_at"); b.pop("emitted_at")
+          if a != b:
+              differing = sorted(k for k in set(a) | set(b) if a.get(k) != b.get(k))
+              raise SystemExit(f"::error::emitter is not deterministic; fields differ: {differing}")
+          print("ok: two sweeps byte-identical modulo emitted_at")
+          PY
+
       - name: Upload trust artifacts
-        if: always()
+        # `always()` alone attached a PREVIOUS run's attest/ from the
+        # persistent self-hosted workspace whenever checkout itself failed
+        # before cleaning -- the observed HTTP-429-before-checkout mode -- and
+        # the fixed artifact name let that stale bundle masquerade as this
+        # run's (2026-08-18 adversarial review, P2-6). Gating on checkout and
+        # naming the artifact by commit closes both halves; the two audit
+        # filenames below were also stale since the #614 renames (P3-3).
+        if: always() && steps.checkout.outcome == 'success'
         uses: actions/upload-artifact@v4
         with:
-          name: trust-artifacts
+          name: trust-artifacts-${{ github.sha }}
           path: |
             attest/lean-emission.json
-            coh-audit.txt
-            bridgeland-audit.txt
+            attest/environment.json
+            attest/declarations.json
+            attest/build.json
+            attest/bundle.json
+            algebraic-geometry-audit.txt
+            stability-condition-audit.txt
+            dg-audit.txt
           if-no-files-found: warn
 
   # ---------------------------------------------------------------------------

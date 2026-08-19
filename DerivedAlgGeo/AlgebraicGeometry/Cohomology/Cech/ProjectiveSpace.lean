@@ -344,4 +344,194 @@ theorem polynomialVariableCechComplex_d_apply (d n : ℕ)
   exact congrArg (fun z : polynomialVariableCechCochains ι k d n => z (x ∘ j.succAbove))
     ((cechCochainsDegreewiseAddEquiv ι k d n).apply_symm_apply s)
 
+/-! ## The same complex for a twist of either sign
+
+Everything above is repeated for `d : ℤ`. Nothing in this layer knows about the sign: the three
+shape mismatches recorded in the module docstring — the outer product, the inner product, and the
+coefficients — are all statements about the *cover*, and `piObj_polynomialVariableChart` is
+therefore reused verbatim rather than restated. The only twist-dependent inputs are the section
+comparison `intCechTermSectionAddEquiv` and its face compatibility
+`intCechTermSectionAddEquiv_res_face`, and both are already proved with the sign absorbed.
+
+This is the layer `#332`'s dévissage consumes. The nonnegative layer above is not a special case
+of it — `natShift` and `intShift` are different graded families, related only by transport — so
+it is kept as it stands and `#340`'s vanishing theorem continues to read it. -/
+
+/-- The `AddCommGrpCat`-valued presheaf of `O(d)` for an integer twist. -/
+abbrev intTwistPresheaf (d : ℤ) :=
+  associatedPresheafInAddCommGrp (polynomialGrading ι k)
+    (intShift (polynomialGrading ι k) d)
+
+/-- One index of the degreewise comparison, for an integer twist. -/
+noncomputable def intCechIndexEquiv (d : ℤ) {n : ℕ} (x : Fin (n + 1) → ι) :
+    ((intTwistPresheaf ι k d).obj (op (∏ᶜ (polynomialVariableChart ι k ∘ x))) :
+        AddCommGrpCat) ≃+
+      polynomialVariableIntCechTerm ι k d n x :=
+  (eqToIso (congrArg (fun W => (intTwistPresheaf ι k d).obj (op W))
+      (piObj_polynomialVariableChart ι k x))).addCommGroupIsoToAddEquiv.trans
+    (intCechTermSectionAddEquiv ι k d x).symm
+
+/-- Degree `n` of the Čech complex of an integer twist `O(d)` over the variable charts is the
+explicit product of homogeneous degree-zero localizations. -/
+def intCechCochainsDegreewiseAddEquiv (d : ℤ) (n : ℕ) :
+    (((cechComplexFunctor (polynomialVariableChart ι k)).obj
+        (intTwistPresheaf ι k d)).X n : AddCommGrpCat) ≃+
+      polynomialVariableIntCechCochains ι k d n :=
+  (AddCommGrpCat.piAddEquivPi _).trans
+    (AddEquiv.piCongrRight fun x => intCechIndexEquiv ι k d x)
+
+/-- The degreewise comparison, read one index at a time. -/
+theorem intCechCochainsDegreewiseAddEquiv_apply (d : ℤ) (n : ℕ)
+    (t : (((cechComplexFunctor (polynomialVariableChart ι k)).obj
+      (intTwistPresheaf ι k d)).X n : AddCommGrpCat)) (x : Fin (n + 1) → ι) :
+    intCechCochainsDegreewiseAddEquiv ι k d n t x =
+      intCechIndexEquiv ι k d x (AddCommGrpCat.piAddEquivPi _ t x) :=
+  rfl
+
+/-- The inverse comparison, read one index at a time. -/
+theorem intCechCochainsDegreewiseAddEquiv_symm_apply (d : ℤ) (n : ℕ)
+    (s : polynomialVariableIntCechCochains ι k d n) (x : Fin (n + 1) → ι) :
+    AddCommGrpCat.piAddEquivPi _
+        ((intCechCochainsDegreewiseAddEquiv ι k d n).symm s) x =
+      (intCechIndexEquiv ι k d x).symm (s x) := by
+  have h := intCechCochainsDegreewiseAddEquiv_apply ι k d n
+    ((intCechCochainsDegreewiseAddEquiv ι k d n).symm s) x
+  rw [AddEquiv.apply_symm_apply] at h
+  exact ((AddEquiv.symm_apply_eq _).mpr h).symm
+
+/-- The per-index square for an integer twist: the comparison carries a Čech face restriction to
+the algebraic face. As in the nonnegative case, `g` is arbitrary because `Opens` is thin. -/
+theorem intCechIndexEquiv_map_face (d : ℤ) {n : ℕ} (x : Fin (n + 2) → ι) (j : Fin (n + 2))
+    (g : (∏ᶜ (polynomialVariableChart ι k ∘ x)) ⟶
+      ∏ᶜ (polynomialVariableChart ι k ∘ (x ∘ j.succAbove)))
+    (w : ((intTwistPresheaf ι k d).obj
+      (op (∏ᶜ (polynomialVariableChart ι k ∘ (x ∘ j.succAbove)))) : AddCommGrpCat)) :
+    intCechIndexEquiv ι k d x
+        (ConcreteCategory.hom ((intTwistPresheaf ι k d).map g.op) w) =
+      polynomialVariableIntCechFace ι k d x j
+        (intCechIndexEquiv ι k d (x ∘ j.succAbove) w) := by
+  have hx := piObj_polynomialVariableChart ι k x
+  have hy := piObj_polynomialVariableChart ι k (x ∘ j.succAbove)
+  let i : (op (ProjectiveSpectrum.basicOpen (polynomialGrading ι k)
+        (polynomialVariableCechDenominator ι k (x ∘ j.succAbove))) :
+      (Opens (ProjectiveSpectrum.top (polynomialGrading ι k)))ᵒᵖ) ⟶
+      op (ProjectiveSpectrum.basicOpen (polynomialGrading ι k)
+        (polynomialVariableCechDenominator ι k x)) :=
+    eqToHom (congrArg op hy.symm) ≫ g.op ≫ eqToHom (congrArg op hx)
+  refine (AddEquiv.symm_apply_eq (intCechTermSectionAddEquiv ι k d x)).mpr ?_
+  rw [← intCechTermSectionAddEquiv_res_face ι k d x j i
+    (intCechIndexEquiv ι k d (x ∘ j.succAbove) w)]
+  have hEy : intCechTermSectionAddEquiv ι k d (x ∘ j.succAbove)
+      (intCechIndexEquiv ι k d (x ∘ j.succAbove) w) =
+      ((eqToIso (congrArg (fun W => (intTwistPresheaf ι k d).obj (op W))
+        hy)).addCommGroupIsoToAddEquiv) w :=
+    AddEquiv.apply_symm_apply _ _
+  rw [hEy]
+  have hmap : (intTwistPresheaf ι k d).map g.op ≫
+      (eqToIso (congrArg (fun W => (intTwistPresheaf ι k d).obj (op W)) hx)).hom =
+      (eqToIso (congrArg (fun W => (intTwistPresheaf ι k d).obj (op W)) hy)).hom ≫
+        (intTwistPresheaf ι k d).map i := by
+    have ex : (eqToIso (congrArg (fun W => (intTwistPresheaf ι k d).obj (op W)) hx)).hom =
+        (intTwistPresheaf ι k d).map (eqToHom (congrArg op hx)) := by
+      rw [eqToHom_map]; rfl
+    have ey : (eqToIso (congrArg (fun W => (intTwistPresheaf ι k d).obj (op W)) hy)).hom =
+        (intTwistPresheaf ι k d).map (eqToHom (congrArg op hy)) := by
+      rw [eqToHom_map]; rfl
+    rw [ex, ey, ← Functor.map_comp, ← Functor.map_comp]
+    exact congrArg _ (Subsingleton.elim _ _)
+  exact congrArg (fun m => (ConcreteCategory.hom m) w) hmap
+
+/-- Mathlib's Čech complex of an integer twist `O(d)` over the variable charts. -/
+noncomputable abbrev intCechComplexOfTwist (d : ℤ) : CochainComplex AddCommGrpCat.{u} ℕ :=
+  (cechComplexFunctor (polynomialVariableChart ι k)).obj (intTwistPresheaf ι k d)
+
+/-- The degreewise comparison for an integer twist, as an isomorphism of bundled abelian
+groups. -/
+noncomputable def intCechCochainsIso (d : ℤ) (n : ℕ) :
+    (intCechComplexOfTwist ι k d).X n ≅
+      AddCommGrpCat.of (polynomialVariableIntCechCochains ι k d n) :=
+  (intCechCochainsDegreewiseAddEquiv ι k d n).toAddCommGrpIso
+
+/-- **The Čech differential of an integer twist in homogeneous localizations.** -/
+theorem intCechCochainsDegreewiseAddEquiv_d (d : ℤ) (n : ℕ)
+    (t : ((intCechComplexOfTwist ι k d).X n : AddCommGrpCat)) (x : Fin (n + 2) → ι) :
+    intCechCochainsDegreewiseAddEquiv ι k d (n + 1)
+        (ConcreteCategory.hom ((intCechComplexOfTwist ι k d).d n (n + 1)) t) x =
+      ∑ j : Fin (n + 2), (-1 : ℤ) ^ (j : ℕ) •
+        polynomialVariableIntCechFace ι k d x j
+          (intCechCochainsDegreewiseAddEquiv ι k d n t (x ∘ j.succAbove)) := by
+  rw [intCechCochainsDegreewiseAddEquiv_apply]
+  have hproj : AddCommGrpCat.piAddEquivPi _
+      (ConcreteCategory.hom ((intCechComplexOfTwist ι k d).d n (n + 1)) t) x =
+      ConcreteCategory.hom
+        ((intCechComplexOfTwist ι k d).d n (n + 1) ≫ Limits.Pi.π _ x) t := by
+    rw [ConcreteCategory.comp_apply]
+    exact AddCommGrpCat.piIsoPi_hom_eval_apply _ x _
+  rw [hproj]
+  have hd : (intCechComplexOfTwist ι k d).d n (n + 1) ≫ Limits.Pi.π _ x =
+      ∑ j : Fin (n + 2), (-1 : ℤ) ^ (j : ℕ) •
+        (Limits.Pi.π _ (((cechNerve (polynomialVariableChart ι k)).map
+            (SimplexCategory.δ j).op).f x) ≫
+          (intTwistPresheaf ι k d).map (((cechNerve (polynomialVariableChart ι k)).map
+            (SimplexCategory.δ j).op).φ x).op) :=
+    cechComplexFunctor_d_π _ _ x
+  rw [hd]
+  refine (congrArg (intCechIndexEquiv ι k d x)
+    (AddCommGrpCat.hom_sum_zsmul_apply Finset.univ
+      (fun j : Fin (n + 2) => (-1 : ℤ) ^ (j : ℕ)) _ t)).trans ?_
+  rw [map_sum]
+  refine Finset.sum_congr rfl fun j _ => ?_
+  rw [map_zsmul]
+  refine (congrArg (fun z => (-1 : ℤ) ^ (j : ℕ) • intCechIndexEquiv ι k d x z)
+    (ConcreteCategory.comp_apply _ _ t)).trans ?_
+  refine (congrArg (fun z => (-1 : ℤ) ^ (j : ℕ) • z)
+    (intCechIndexEquiv_map_face ι k d x j _ _)).trans ?_
+  congr 2
+
+/-- The algebraic Čech complex of an integer twist `O(d)`, with the differential carried over
+from Mathlib's Čech complex. -/
+noncomputable def polynomialVariableIntCechComplex (d : ℤ) :
+    CochainComplex AddCommGrpCat.{u} ℕ :=
+  CochainComplex.of
+    (fun n => AddCommGrpCat.of (polynomialVariableIntCechCochains ι k d n))
+    (fun n => (intCechCochainsIso ι k d n).inv ≫
+      (intCechComplexOfTwist ι k d).d n (n + 1) ≫ (intCechCochainsIso ι k d (n + 1)).hom)
+    (fun n => by
+      simp only [Category.assoc, Iso.hom_inv_id_assoc]
+      rw [← Category.assoc ((intCechComplexOfTwist ι k d).d n (n + 1)),
+        HomologicalComplex.d_comp_d, Limits.zero_comp, Limits.comp_zero])
+
+/-- The Čech complex of an integer twist `O(d)` over the variable charts *is* the explicit
+algebraic complex. -/
+noncomputable def polynomialVariableIntCechComplexIso (d : ℤ) :
+    intCechComplexOfTwist ι k d ≅ polynomialVariableIntCechComplex ι k d :=
+  HomologicalComplex.Hom.isoOfComponents (fun n => intCechCochainsIso ι k d n) (by
+    intro i j hij
+    obtain rfl : i + 1 = j := hij
+    simp [polynomialVariableIntCechComplex, CochainComplex.of_d])
+
+/-- The differential of the algebraic Čech complex of an integer twist, in coordinates. -/
+theorem polynomialVariableIntCechComplex_d_apply (d : ℤ) (n : ℕ)
+    (s : ((polynomialVariableIntCechComplex ι k d).X n : AddCommGrpCat))
+    (x : Fin (n + 2) → ι) :
+    ConcreteCategory.hom ((polynomialVariableIntCechComplex ι k d).d n (n + 1)) s x =
+      ∑ j : Fin (n + 2), (-1 : ℤ) ^ (j : ℕ) •
+        polynomialVariableIntCechFace ι k d x j (s (x ∘ j.succAbove)) := by
+  have hd : (polynomialVariableIntCechComplex ι k d).d n (n + 1) =
+      (intCechCochainsIso ι k d n).inv ≫ (intCechComplexOfTwist ι k d).d n (n + 1) ≫
+        (intCechCochainsIso ι k d (n + 1)).hom := by
+    simp [polynomialVariableIntCechComplex, CochainComplex.of_d]
+  have happ := congrArg (fun m : (polynomialVariableIntCechComplex ι k d).X n ⟶
+      (polynomialVariableIntCechComplex ι k d).X (n + 1) => ConcreteCategory.hom m s) hd
+  refine (congrArg
+    (fun z : polynomialVariableIntCechCochains ι k d (n + 1) => z x) happ).trans ?_
+  show intCechCochainsDegreewiseAddEquiv ι k d (n + 1)
+      (ConcreteCategory.hom ((intCechComplexOfTwist ι k d).d n (n + 1))
+        (ConcreteCategory.hom (intCechCochainsIso ι k d n).inv s)) x = _
+  rw [intCechCochainsDegreewiseAddEquiv_d]
+  refine Finset.sum_congr rfl fun j _ => ?_
+  congr 2
+  exact congrArg (fun z : polynomialVariableIntCechCochains ι k d n => z (x ∘ j.succAbove))
+    ((intCechCochainsDegreewiseAddEquiv ι k d n).apply_symm_apply s)
+
 end AlgebraicGeometry.Proj

@@ -8,9 +8,9 @@ import DerivedAlgGeo.AlgebraicGeometry.Numerical.Specializations.Threefold
 /-!
 # The numerical model of `ℙ³`
 
-The first model of `NumericalVariety` in dimension three. Before it, every statement in
+The first model of `NumericalVarietyData` in dimension three. Before it, every statement in
 `DerivedAlgGeo/AlgebraicGeometry/Numerical/Specializations/Threefold.lean` was conditional on
-a `NumericalVariety 3 A N` existing at all.
+a `NumericalVarietyData 3 A N` existing at all.
 
 `ℙ³` is the threefold analogue of `Examples/Surface/ProjectivePlane.lean`, and it is here for
 the same reason: **every** Todd coefficient is nonzero, so it is the model that can detect a
@@ -64,22 +64,25 @@ def p3Chi : ThreefoldNum →+ ℤ where
 
 /-- **The model.** `ℙ³`, with `∫H³ = 1` and `td = 1 + 2H + (11/6)H² + H³`. -/
 @[reducible]
-noncomputable def p3NumericalVariety : NumericalVariety 3 (RankOneRing 3) ThreefoldNum :=
+noncomputable def p3NumericalVariety : NumericalVarietyData 3 (RankOneRing 3) ThreefoldNum :=
   rankOneNumericalVariety 3 1 threefoldRank p3Chi (threefoldChCoeff 1) p3Todd
+    (threefoldChCoeff_zero 1) (threefoldChCoeff_add 1) rfl
+
+/-- The explicit projective-three-space presentation satisfies HRR. -/
+theorem p3NumericalVariety_satisfiesHRR : p3NumericalVariety.SatisfiesHRR :=
+  rankOneNumericalVariety_satisfiesHRR 3 1 threefoldRank p3Chi (threefoldChCoeff 1) p3Todd
     (threefoldChCoeff_zero 1) (threefoldChCoeff_add 1) rfl (fun E => by
-      rw [threefoldChi_sum]
-      show ((E.1 + E.2.1 + E.2.2.1 + E.2.2.2 : ℤ) : ℚ)
-        = 1 * ((E.1 : ℚ) * 1 + (E.2.1 : ℚ) * (11 / 6)
-          + (-(E.2.1 : ℚ) / 2 + (E.2.2.1 : ℚ)) * 2
-          + ((E.2.1 : ℚ) / 6 - (E.2.2.1 : ℚ) + (E.2.2.2 : ℚ) / 1) * 1)
-      push_cast
-      ring)
+    rw [threefoldChi_sum]
+    show ((E.1 + E.2.1 + E.2.2.1 + E.2.2.2 : ℤ) : ℚ)
+      = 1 * ((E.1 : ℚ) * 1 + (E.2.1 : ℚ) * (11 / 6)
+        + (-(E.2.1 : ℚ) / 2 + (E.2.2.1 : ℚ)) * 2
+        + ((E.2.1 : ℚ) / 6 - (E.2.2.1 : ℚ) + (E.2.2.2 : ℚ) / 1) * 1)
+    push_cast
+    ring)
 
 /-- `∫_{ℙ³} td₃ = χ(O_{ℙ³}) = 1`. -/
 theorem p3ChiStructureSheaf :
-    letI := p3NumericalVariety
-    Threefold.chiStructureSheaf (RankOneRing 3) ThreefoldNum = 1 := by
-  letI := p3NumericalVariety
+    Threefold.chiStructureSheaf p3NumericalVariety = 1 := by
   show rankOneDegree 3 1 (rankOneTodd 3 p3Todd 3) = 1
   rw [rankOneTodd, rankOneDegree_algebraMap_mul_pow]
   norm_num [p3Todd]

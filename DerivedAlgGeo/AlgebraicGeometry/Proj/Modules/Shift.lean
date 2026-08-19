@@ -136,4 +136,47 @@ theorem mem_natShift_add_iff (d e n : ℕ) (m : M) :
   simp only [natShift_apply]
   rw [Nat.add_assoc, Nat.add_comm e d]
 
+/-- **Integer shifts compose only where the intermediate degree exists**, and `hne` is exactly
+that condition.
+
+The unrestricted statement — `intShift (intShift 𝓜 d) e = intShift 𝓜 (d + e)` — is **false**, and
+the hypothesis here is where it fails rather than a convenience. Shifting by a negative `e` first
+asks for a graded piece in degree `n + e`; when that integer is negative the zero extension supplies
+`0` and the information is gone, while the single shift by `d + e` may still land in a genuine
+piece. Concretely, with `d = 10`, `e = -5` and `n = 0`, the left side is `{0}` because no natural
+number has integer value `-5`, and the right side is `𝓜 5`.
+
+This is a fact about the *algebraic* model, not about the sheaf. `associatedSheaf` only ever reads
+these pieces through homogeneous localizations, where the missing degrees are inverted back in, so
+the sheaf-level composition `O(d)(e) ≅ O(d + e)` is not obstructed by this — but it cannot be
+obtained by transporting an algebraic identity, and has to be proved on the sheaf side. Recorded
+here because that is the trap this lemma exists to mark. -/
+theorem mem_intShift_add_iff_of_nonneg (d e : ℤ) (n : ℕ) (hne : 0 ≤ (n : ℤ) + e) (m : M) :
+    m ∈ intShift (intShift 𝓜 d) e n ↔ m ∈ intShift 𝓜 (d + e) n := by
+  constructor
+  · rintro (rfl | ⟨k, hk, hm⟩)
+    · exact Or.inl rfl
+    · rcases hm with rfl | ⟨l, hl, hm⟩
+      · exact Or.inl rfl
+      · exact Or.inr ⟨l, by omega, hm⟩
+  · rintro (rfl | ⟨l, hl, hm⟩)
+    · exact Or.inl rfl
+    · obtain ⟨k, hk⟩ : ∃ k : ℕ, (k : ℤ) = (n : ℤ) + e :=
+        ⟨((n : ℤ) + e).toNat, Int.toNat_of_nonneg hne⟩
+      exact Or.inr ⟨k, hk, Or.inr ⟨l, by omega, hm⟩⟩
+
+/-- **Below the intermediate degree the double shift is zero.** This is the failure
+`mem_intShift_add_iff_of_nonneg`'s hypothesis avoids, as a theorem rather than a remark: an inner
+shift by `e` asks for degree `n + e`, and no natural number has a negative integer value, so
+nothing but zero survives.
+
+Together with membership in the single shift — for instance any nonzero element of `𝓜 (n + d + e)`
+when that degree is a natural number — this exhibits the two sides as different subgroups, which is
+why no unrestricted composition lemma appears above. -/
+theorem eq_zero_of_mem_intShift_intShift_of_neg (d e : ℤ) (n : ℕ) (hne : (n : ℤ) + e < 0)
+    {m : M} (hm : m ∈ intShift (intShift 𝓜 d) e n) : m = 0 := by
+  rcases hm with rfl | ⟨k, hk, _⟩
+  · rfl
+  · exact absurd hk (by omega)
+
 end AlgebraicGeometry.Proj

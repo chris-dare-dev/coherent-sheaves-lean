@@ -7,7 +7,7 @@ import DerivedAlgGeo.AlgebraicGeometry.Numerical.RiemannRoch.General
 /-!
 # Display formulas for numerical threefolds
 
-The `n = 3` specialisation of `AlgebraicGeometry.Numerical.NumericalVariety.chi_eq_sum`,
+The `n = 3` specialisation of `AlgebraicGeometry.Numerical.NumericalVarietyData.chi_eq_sum`,
 written exactly the way
 `DerivedAlgGeo/AlgebraicGeometry/Numerical/Specializations/Surface.lean` writes the `n = 2` case:
 expand
@@ -39,41 +39,41 @@ namespace AlgebraicGeometry.Numerical
 
 namespace Threefold
 
-open NumericalRing NumericalVariety Finset
+open NumericalRingData NumericalVarietyData Finset
 
 variable {A : Type u} {N : Type v}
-variable [CommRing A] [Algebra ℚ A] [AddCommGroup N] [NumericalVariety 3 A N]
+variable [CommRing A] [Algebra ℚ A] [AddCommGroup N]
+variable (V : NumericalVarietyData 3 A N)
 
 /-- `χ(O_X)` for a threefold, read off the top Todd component: taking `E` of rank one with
 vanishing higher Chern components in `chi_eq` leaves exactly `∫_X td₃(X)`. -/
-noncomputable abbrev chiStructureSheaf (A : Type u) (N : Type v) [CommRing A] [Algebra ℚ A]
-    [AddCommGroup N] [NumericalVariety 3 A N] : ℚ :=
-  NumericalVariety.structureSheafEulerCharacteristic (n := 3) (A := A) (N := N)
+noncomputable abbrev chiStructureSheaf : ℚ := V.structureSheafEulerCharacteristic
 
 /-- **Riemann–Roch for threefolds.**
 
 `χ(E) = rank(E) · ∫_X td₃(X) + ∫_X c₁(E)·td₂(X) + ∫_X ch₂(E)·td₁(X) + ∫_X ch₃(E)`. -/
-theorem chi_eq (E : N) :
-    (chi (A := A) E : ℚ)
-      = (rank (A := A) E : ℚ) * degree (n := 3) (toddComp (A := A) (N := N) 3)
-        + degree (n := 3) (chComp (A := A) E 1 * toddComp (N := N) 2)
-        + degree (n := 3) (chComp (A := A) E 2 * toddComp (N := N) 1)
-        + degree (n := 3) (chComp (A := A) E 3) := by
-  have h := chi_eq_sum (A := A) E
+theorem chi_eq (hV : V.SatisfiesHRR) (E : N) :
+    (V.chi E : ℚ)
+      = (V.rank E : ℚ) * V.ring.degree (V.toddComp 3)
+        + V.ring.degree (V.chComp E 1 * V.toddComp 2)
+        + V.ring.degree (V.chComp E 2 * V.toddComp 1)
+        + V.ring.degree (V.chComp E 3) := by
+  have h := V.chi_eq_sum hV E
   rw [Finset.sum_range_succ, Finset.sum_range_succ, Finset.sum_range_succ,
     Finset.sum_range_succ, Finset.sum_range_zero, zero_add] at h
   simp only [show (3 : ℕ) - 0 = 3 from rfl, show (3 : ℕ) - 1 = 2 from rfl,
     show (3 : ℕ) - 2 = 1 from rfl, show (3 : ℕ) - 3 = 0 from rfl] at h
-  rw [h, chComp_zero, degree_algebraMap_mul, toddComp_zero, mul_one]
+  rw [h, V.chComp_zero, V.ring.degree_algebraMap_mul, V.toddComp_zero, mul_one]
 
 end Threefold
 
 namespace CalabiYauThreefold
 
-open NumericalRing NumericalVariety
+open NumericalRingData NumericalVarietyData
 
 variable {A : Type u} {N : Type v}
-variable [CommRing A] [Algebra ℚ A] [AddCommGroup N] [NumericalVariety 3 A N]
+variable [CommRing A] [Algebra ℚ A] [AddCommGroup N]
+variable (V : NumericalVarietyData 3 A N)
 
 /-- The numerical signature of a **Calabi–Yau threefold**: trivial canonical class and
 `χ(O_X) = 0`.
@@ -82,14 +82,11 @@ As with `K3.IsK3`, this asserts only two facts about the Todd class, so everythi
 a consequence of *those two facts* and not of anything else one knows about Calabi–Yau
 threefolds. `∫_X td₃(X) = 0` is `χ(O_X) = 1 - 0 + 0 - 1 = 0`, which is what `h¹ = h² = 0`
 and `K_X = 0` give. -/
-class IsCalabiYau (A : Type u) (N : Type v) [CommRing A] [Algebra ℚ A] [AddCommGroup N]
-    [NumericalVariety 3 A N] : Prop where
+structure IsCalabiYau : Prop where
   /-- `td₁(X) = −K_X/2 = 0`. -/
-  toddComp_one : toddComp (A := A) (N := N) 1 = 0
+  toddComp_one : V.toddComp 1 = 0
   /-- `∫_X td₃(X) = χ(O_X) = 0`. -/
-  degree_toddComp_three : degree (n := 3) (toddComp (A := A) (N := N) 3) = 0
-
-variable [IsCalabiYau A N]
+  degree_toddComp_three : V.ring.degree (V.toddComp 3) = 0
 
 /-- **Riemann–Roch on a Calabi–Yau threefold**: `χ(E) = ∫_X c₁(E)·td₂(X) + ∫_X ch₃(E)`.
 
@@ -97,11 +94,11 @@ Two of the four terms of `Threefold.chi_eq` vanish, and they vanish for differen
 the rank term because `∫td₃ = 0`, the `ch₂` term because `td₁ = 0`. Note that the `ch₂`
 term goes as well as the rank term — `td₁ = 0` kills it, so the collapsed formula has two
 terms, not three. -/
-theorem chi_eq (E : N) :
-    (chi (A := A) E : ℚ)
-      = degree (n := 3) (chComp (A := A) E 1 * toddComp (N := N) 2)
-        + degree (n := 3) (chComp (A := A) E 3) := by
-  rw [Threefold.chi_eq E, IsCalabiYau.toddComp_one, IsCalabiYau.degree_toddComp_three]
+theorem chi_eq (hHRR : V.SatisfiesHRR) (hCY : IsCalabiYau V) (E : N) :
+    (V.chi E : ℚ)
+      = V.ring.degree (V.chComp E 1 * V.toddComp 2)
+        + V.ring.degree (V.chComp E 3) := by
+  rw [Threefold.chi_eq V hHRR E, hCY.toddComp_one, hCY.degree_toddComp_three]
   simp only [mul_zero, map_zero]
   ring
 
@@ -111,10 +108,11 @@ the same `ch₃` have the same Euler characteristic however their ranks differ.
 This is the concrete reason the Bridgeland-stability side wants the Calabi–Yau case
 separately — the central charge cannot be normalised against `χ` alone. -/
 theorem chi_eq_of_chComp_eq (E F : N)
-    (h₁ : chComp (A := A) E 1 = chComp (A := A) F 1)
-    (h₃ : chComp (A := A) E 3 = chComp (A := A) F 3) :
-    (chi (A := A) E : ℚ) = (chi (A := A) F : ℚ) := by
-  rw [chi_eq E, chi_eq F, h₁, h₃]
+    (hHRR : V.SatisfiesHRR) (hCY : IsCalabiYau V)
+    (h₁ : V.chComp E 1 = V.chComp F 1)
+    (h₃ : V.chComp E 3 = V.chComp F 3) :
+    (V.chi E : ℚ) = (V.chi F : ℚ) := by
+  rw [chi_eq V hHRR hCY E, chi_eq V hHRR hCY F, h₁, h₃]
 
 end CalabiYauThreefold
 

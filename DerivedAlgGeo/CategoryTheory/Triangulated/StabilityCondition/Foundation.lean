@@ -74,4 +74,19 @@ import DerivedAlgGeo.CategoryTheory.Triangulated.TStructure.ImageFactorisation
 # Repository-owned Bridgeland foundations
 
 Stable owner-authored root data for filtrations and stability conditions.
+
+## Import policy
+
+This file is the complete downstream umbrella and is not an internal prelude. Implementation
+modules import the narrow owner of the declarations they use:
+
+* `Foundation.Slicing` for the root slicing and HN-filtration structures, with individual
+  `Foundation.Slicing.*` leaves for later consequences;
+* `Foundation.PreStabilityCondition`, `Foundation.IntervalCategory`, and
+  `Foundation.StabilityCondition` for their respective stable layers;
+* individual `Foundation.StabilityFunction.*` leaves for the abelian HN API;
+* individual `Foundation.Deformation.*` leaves for deformation-theoretic results.
+
+The `foundation-import-boundary` gate prevents implementation modules from importing this
+umbrella and silently acquiring all of those layers.
 -/

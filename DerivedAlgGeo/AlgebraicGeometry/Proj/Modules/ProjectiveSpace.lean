@@ -656,6 +656,51 @@ noncomputable def polynomialVariableIntCechFace
     (polynomialVariableCechDenominator_succAbove_mem ι k x j)
     (polynomialVariableCechDenominator_succAbove ι k x j)
 
+/-! ## The same three objects over an arbitrary twist
+
+`polynomialVariableCechTerm` and `polynomialVariableIntCechTerm` are the same construction at two
+graded families, and the contracting-homotopy layer above them uses nothing else about the family.
+Naming the construction once lets that layer be stated once; the two twists are then instances,
+definitionally so, which is what `cechTerm_natShift` and friends record. -/
+
+/-- The algebraic term attached to one variable Čech intersection, for an arbitrary twist. -/
+abbrev cechTerm (ι k : Type u) [Field k] {σM : Type u} [SetLike σM (MvPolynomial ι k)]
+    [AddSubgroupClass σM (MvPolynomial ι k)] (𝓜 : ℕ → σM)
+    [SetLike.GradedSMul (polynomialGrading ι k) 𝓜] {n : ℕ} (x : Fin (n + 1) → ι) :=
+  DegreeZeroLocalization (polynomialGrading ι k) 𝓜
+    (.powers (polynomialVariableCechDenominator ι k x))
+
+/-- Degree-`n` algebraic Čech cochains for an arbitrary twist. -/
+abbrev cechCochains (ι k : Type u) [Field k] {σM : Type u} [SetLike σM (MvPolynomial ι k)]
+    [AddSubgroupClass σM (MvPolynomial ι k)] (𝓜 : ℕ → σM)
+    [SetLike.GradedSMul (polynomialGrading ι k) 𝓜] (n : ℕ) :=
+  ∀ x : Fin (n + 1) → ι, cechTerm ι k 𝓜 x
+
+/-- The `j`-th Čech face for an arbitrary twist. -/
+noncomputable def cechFace (ι k : Type u) [Field k] {σM : Type u}
+    [SetLike σM (MvPolynomial ι k)] [AddSubgroupClass σM (MvPolynomial ι k)] (𝓜 : ℕ → σM)
+    [SetLike.GradedSMul (polynomialGrading ι k) 𝓜] {n : ℕ} (x : Fin (n + 2) → ι)
+    (j : Fin (n + 2)) :
+    cechTerm ι k 𝓜 (x ∘ j.succAbove) →+ cechTerm ι k 𝓜 x :=
+  DegreeZeroLocalization.faceMap (𝓜 := 𝓜)
+    (MvPolynomial.isHomogeneous_X k (x j))
+    (polynomialVariableCechDenominator_succAbove_mem ι k x j)
+    (polynomialVariableCechDenominator_succAbove ι k x j)
+
+/-- The nonnegative face is the generic one at `natShift`. -/
+theorem cechFace_natShift (ι k : Type u) [Field k] (d : ℕ) {n : ℕ} (x : Fin (n + 2) → ι)
+    (j : Fin (n + 2)) :
+    cechFace ι k (natShift (polynomialGrading ι k) d) x j =
+      polynomialVariableCechFace ι k d x j :=
+  rfl
+
+/-- The integer face is the generic one at `intShift`. -/
+theorem cechFace_intShift (ι k : Type u) [Field k] (d : ℤ) {n : ℕ} (x : Fin (n + 2) → ι)
+    (j : Fin (n + 2)) :
+    cechFace ι k (intShift (polynomialGrading ι k) d) x j =
+      polynomialVariableIntCechFace ι k d x j :=
+  rfl
+
 /-! ## Comparing the algebraic Čech terms with sections -/
 
 /-- The product of all but the first variable in a Čech index. -/
@@ -888,6 +933,37 @@ theorem intCechTermSectionAddEquiv_toAddMonoidHom (ι k : Type u) [Field k] (d :
         (intShift (polynomialGrading ι k) d)
         (polynomialVariableCechDenominator ι k x) :=
   moduleAwayToSection_unique _ _ _ _ (intCechTermSectionAddEquiv_apply_mk ι k d x)
+
+/-- The integer Čech comparison intertwines the algebraic face with restriction of sections.
+
+This is `cechTermSectionAddEquiv_res_face` for a twist of either sign, and it is the same proof:
+once `intCechTermSectionAddEquiv_toAddMonoidHom` has identified the five-step composite with the
+canonical fraction-to-section map, the statement is `moduleAwayToSection_res_faceMap`, which is
+generic in the graded module and never mentions the twist. The sign lives entirely in the
+`intShift` bookkeeping that `intCechTermSectionAddEquiv` already absorbed. -/
+theorem intCechTermSectionAddEquiv_res_face (ι k : Type u) [Field k] (d : ℤ) {n : ℕ}
+    (x : Fin (n + 2) → ι) (j : Fin (n + 2))
+    (i : (op (ProjectiveSpectrum.basicOpen (polynomialGrading ι k)
+        (polynomialVariableCechDenominator ι k (x ∘ j.succAbove))) :
+          (Opens (ProjectiveSpectrum.top (polynomialGrading ι k)))ᵒᵖ) ⟶
+      op (ProjectiveSpectrum.basicOpen (polynomialGrading ι k)
+        (polynomialVariableCechDenominator ι k x)))
+    (z : polynomialVariableIntCechTerm ι k d n (x ∘ j.succAbove)) :
+    (associatedSheafInType (polynomialGrading ι k)
+          (intShift (polynomialGrading ι k) d)).1.map i
+        (intCechTermSectionAddEquiv ι k d (x ∘ j.succAbove) z) =
+      intCechTermSectionAddEquiv ι k d x (polynomialVariableIntCechFace ι k d x j z) := by
+  change (associatedSheafInType (polynomialGrading ι k)
+        (intShift (polynomialGrading ι k) d)).1.map i
+      ((intCechTermSectionAddEquiv ι k d (x ∘ j.succAbove)).toAddMonoidHom z) =
+    (intCechTermSectionAddEquiv ι k d x).toAddMonoidHom
+      (polynomialVariableIntCechFace ι k d x j z)
+  rw [intCechTermSectionAddEquiv_toAddMonoidHom, intCechTermSectionAddEquiv_toAddMonoidHom]
+  exact moduleAwayToSection_res_faceMap (polynomialGrading ι k)
+    (intShift (polynomialGrading ι k) d)
+    (MvPolynomial.isHomogeneous_X k (x j))
+    (polynomialVariableCechDenominator_succAbove_mem ι k x j)
+    (polynomialVariableCechDenominator_succAbove ι k x j) i z
 
 /-- The canonical fraction-to-section map is bijective on every Čech intersection, for a twist
 of either sign. -/

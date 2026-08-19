@@ -245,7 +245,7 @@ already refuses to merge two disagreeing reviews of one statement.
 
 ---
 
-## Q5 — `quote_mode`: `verbatim` or `digest_only` by default?
+## Q5 — `quote_mode`: `verbatim` or `digest_only` by default? — **ANSWERED**
 
 **Blocks:** the registry schema (M2). Lowest stakes of the five.
 
@@ -262,3 +262,25 @@ ar5iv/LaTeXML chunker; coverage is 36 of 66 chunks even on the flagship paper).
 Recommendation: **`quote_mode` required from v1**, so the two grounding
 strengths are always distinguishable in the served record, with `verbatim` the
 default for arXiv sources.
+
+**Answered 2026-08-18 by Chris Dare: the recommendation, as written.**
+`quote_mode` is required from v1, with `verbatim` the default for arXiv
+sources.
+
+Implemented in `math-formal-contract-lean` as `registry/1.0` plus rule `R-13`.
+The required half was already true; the *default* half needed a mechanism,
+because **a required field has no unspecified case** — so "default" cannot mean
+"what you get when it is omitted". It is expressed as what deviating costs: an
+arXiv source permits inlining, so `digest_only` there is a choice, and it must
+carry a `quote_mode_reason`.
+
+Two exemptions, each of which is the decision working rather than a hole in it:
+
+- a **non-arXiv source** is never asked to justify itself. A licence that
+  forbids inlining is not a choice, and that is the case this question was
+  actually about — an adopter whose source is not arXiv-licensed. Demanding a
+  justification there would be demanding an apology for the law.
+- an **obligation** is exempt: it is work that is owed with no statement minted
+  yet, so it is not declining verbatim — it has nothing to inline. This was not
+  anticipated; the conditional caught `obl-stab-action` in this repo's own
+  registry fixture the moment it was written, which is how the case was found.

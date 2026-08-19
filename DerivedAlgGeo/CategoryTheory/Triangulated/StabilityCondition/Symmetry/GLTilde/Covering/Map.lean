@@ -3,6 +3,7 @@ Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under the MIT license.
 -/
 import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Symmetry.GLTilde.Covering.SourceTopology
+import MathFormalContract
 import Mathlib.Analysis.SpecialFunctions.Complex.Circle
 import Mathlib.Topology.Covering.Basic
 import Mathlib.Topology.Homeomorph.Lemmas
@@ -468,6 +469,7 @@ theorem GLTilde.isCoveringMap_toMat : IsCoveringMap GLTilde.mat := by
 
 /-- The data comprising the universal-cover statement: the matrix projection
 is a surjective covering map and its source is simply connected. -/
+@[discharges "gltilde-universal-cover"]
 theorem GLTilde.universalCoverData :
     IsCoveringMap GLTilde.mat ∧
       Function.Surjective GLTilde.mat ∧ SimplyConnectedSpace GLTilde :=

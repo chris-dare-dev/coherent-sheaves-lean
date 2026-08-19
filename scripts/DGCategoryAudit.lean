@@ -222,3 +222,145 @@ import DerivedAlgGeo.CategoryTheory.DGCategory
 #print axioms CategoryTheory.prodComplex_X_coe
 #print axioms CategoryTheory.prodComplex_d
 #print axioms CategoryTheory.prodD
+
+-- dg-enhancements-e6: the shift functor on H0, its zero and add comparison
+-- isomorphisms, all three ShiftMkCore coherence identities, and the resulting
+-- HasShift (H0 C) instance.
+#print axioms CategoryTheory.H0.compareIso
+#print axioms CategoryTheory.H0.hasShift
+#print axioms CategoryTheory.H0.shiftCompWitness
+#print axioms CategoryTheory.H0.shiftCompWitness'
+#print axioms CategoryTheory.H0.shiftFunctor
+#print axioms CategoryTheory.H0.shiftFunctorAddIso
+#print axioms CategoryTheory.H0.shiftFunctorAddIso'
+#print axioms CategoryTheory.H0.shiftFunctorAddIso'_assoc
+#print axioms CategoryTheory.H0.shiftFunctorAddIso'_hom_app_congr
+#print axioms CategoryTheory.H0.shiftFunctorAddIso'_hom_app_zero_left
+#print axioms CategoryTheory.H0.shiftFunctorAddIso'_hom_app_zero_right
+#print axioms CategoryTheory.H0.shiftFunctorZeroIso
+#print axioms CategoryTheory.H0.shiftFunctor_additive
+#print axioms CategoryTheory.H0.shiftFunctor_map_mk
+#print axioms CategoryTheory.H0.shiftMkCore
+#print axioms CategoryTheory.IsPretriangulated.shiftObj
+#print axioms CategoryTheory.IsPretriangulated.shiftWitness
+#print axioms CategoryTheory.IsShiftBy.comp'
+#print axioms CategoryTheory.IsShiftBy.comp'.congr_simp
+#print axioms CategoryTheory.IsShiftBy.comp'_assoc_hom
+#print axioms CategoryTheory.IsShiftBy.comp'_hom
+#print axioms CategoryTheory.IsShiftBy.comp'_inv
+#print axioms CategoryTheory.IsShiftBy.comp'_self_left_inv
+#print axioms CategoryTheory.IsShiftBy.comp'_self_right_inv
+#print axioms CategoryTheory.IsShiftBy.comp_eq_comp'
+#print axioms CategoryTheory.IsShiftBy.comp_hom
+#print axioms CategoryTheory.IsShiftBy.comp_inv
+#print axioms CategoryTheory.IsShiftBy.compare_comp'_right
+#print axioms CategoryTheory.IsShiftBy.compare_congr
+#print axioms CategoryTheory.IsShiftBy.compare_self
+#print axioms CategoryTheory.IsShiftBy.compare_trans
+#print axioms CategoryTheory.IsShiftBy.inv_unique
+#print axioms CategoryTheory.IsShiftBy.mapShiftHom
+#print axioms CategoryTheory.IsShiftBy.mapShiftHom_apply
+#print axioms CategoryTheory.IsShiftBy.mapShift_add
+#print axioms CategoryTheory.IsShiftBy.mapShift_comp'_shift
+#print axioms CategoryTheory.IsShiftBy.mapShift_comp_shift
+#print axioms CategoryTheory.IsShiftBy.mapShift_compare
+#print axioms CategoryTheory.IsShiftBy.mapShift_compare_comp
+#print axioms CategoryTheory.IsShiftBy.mapShift_compare_comp'
+#print axioms CategoryTheory.IsShiftBy.mapShift_mem_coboundaries
+#print axioms CategoryTheory.IsShiftBy.mapShift_self
+#print axioms CategoryTheory.IsShiftBy.self_inv
+
+-- The maps *out* of a dg cone (dg-enhancements-e6). `IsConeOf` gives the universal
+-- property for maps into the cone; the triangle needs the projections, and the
+-- projection to the source is closed for a reason -- uniqueness of the splitting --
+-- rather than by assumption.
+#print axioms CategoryTheory.IsConeOf.splitId
+#print axioms CategoryTheory.IsConeOf.fst
+#print axioms CategoryTheory.IsConeOf.snd
+#print axioms CategoryTheory.IsConeOf.fst_inl_add_snd_inr
+#print axioms CategoryTheory.IsConeOf.delta_splitId_key
+#print axioms CategoryTheory.IsConeOf.delta_fst
+#print axioms CategoryTheory.IsConeOf.inr_comp_fst_and_snd
+#print axioms CategoryTheory.IsConeOf.inr_comp_fst
+#print axioms CategoryTheory.IsConeOf.inr_comp_snd
+#print axioms CategoryTheory.IsConeOf.toShift
+#print axioms CategoryTheory.IsConeOf.toShift_closed
+#print axioms CategoryTheory.IsConeOf.toShift_mem_cocycles
+#print axioms CategoryTheory.IsConeOf.inr_comp_toShift
+
+-- The cone on an identity is contractible: the primitive is `snd` composed with
+-- `inl`, and both of the cone's differential corrections are consumed exactly.
+#print axioms CategoryTheory.IsConeOf.delta_fst_and_snd
+#print axioms CategoryTheory.IsConeOf.delta_snd
+#print axioms CategoryTheory.IsConeOf.dgId_mem_coboundaries_of_dgId
+
+-- The distinguished triangles of H⁰, and three of the six Pretriangulated fields.
+#print axioms CategoryTheory.H0.homMk
+#print axioms CategoryTheory.H0.shiftFunctor_additive'
+#print axioms CategoryTheory.H0.coneTriangle
+#print axioms CategoryTheory.H0.distinguishedTriangles
+#print axioms CategoryTheory.H0.coneTriangle_mem
+#print axioms CategoryTheory.H0.isomorphic_distinguished
+#print axioms CategoryTheory.H0.distinguished_cocone_triangle
+#print axioms CategoryTheory.H0.isZero_of_dgId_mem_coboundaries
+#print axioms CategoryTheory.H0.contractible_distinguished
+
+-- Rotation groundwork (dg-enhancements-e6): the morphism a cone is built on is
+-- automatically closed, and the two comparison maps between a cone on `inr` and
+-- the shift, each closed for a reason the source records.
+#print axioms CategoryTheory.IsConeOf.delta_f
+#print axioms CategoryTheory.IsConeOf.rotateFwd
+#print axioms CategoryTheory.IsConeOf.rotateFwd_closed
+#print axioms CategoryTheory.IsConeOf.rotateBwd
+#print axioms CategoryTheory.IsConeOf.delta_shiftInvComp
+#print axioms CategoryTheory.IsConeOf.delta_shiftInvComp_inl
+#print axioms CategoryTheory.IsConeOf.rotateBwd_closed
+
+-- The comparison is a homotopy equivalence: one composite is the identity on the
+-- nose, the other only up to a primitive the source exhibits.
+#print axioms CategoryTheory.IsConeOf.inl_comp_fst_and_snd
+#print axioms CategoryTheory.IsConeOf.inl_comp_fst
+#print axioms CategoryTheory.IsConeOf.inl_comp_snd
+#print axioms CategoryTheory.IsConeOf.inl_comp_rotateFwd
+#print axioms CategoryTheory.IsConeOf.inr_comp_rotateFwd
+#print axioms CategoryTheory.IsConeOf.rotateBwd_comp_rotateFwd
+#print axioms CategoryTheory.IsConeOf.rotateFwd_absorb_inl
+#print axioms CategoryTheory.IsConeOf.rotateFwd_absorb_inr
+#print axioms CategoryTheory.IsConeOf.delta_sndComp
+#print axioms CategoryTheory.IsConeOf.rotateFwd_comp_rotateBwd_eq
+#print axioms CategoryTheory.IsConeOf.rotateFwd_comp_rotateBwd_sub_dgId
+
+-- The rotation axiom, forward direction (dg-enhancements-e6): the two squares of
+-- the rotated triangle -- one strict, one up to an exhibited primitive -- and the
+-- comparison assembled as an isomorphism of triangles in H⁰.
+#print axioms CategoryTheory.IsConeOf.rotateBwd_comp_toShift
+#print axioms CategoryTheory.IsConeOf.toShift_comp_rotateBwd_eq
+#print axioms CategoryTheory.IsConeOf.toShift_comp_rotateBwd_sub_inr
+#print axioms CategoryTheory.H0.homMk_eq_homMk
+#print axioms CategoryTheory.H0.homMk_neg
+#print axioms CategoryTheory.H0.homMk_comp
+#print axioms CategoryTheory.H0.coneTriangle_mor₁
+#print axioms CategoryTheory.H0.coneTriangle_mor₂
+#print axioms CategoryTheory.H0.coneTriangle_mor₃
+#print axioms CategoryTheory.H0.rotateIso
+#print axioms CategoryTheory.H0.rotateIso_hom
+#print axioms CategoryTheory.H0.rotateIso_inv
+#print axioms CategoryTheory.H0.rotateConeTriangleIso
+#print axioms CategoryTheory.H0.rotate_mem_of_mem
+
+-- The lifting axiom (dg-enhancements-e6): a square commuting in H⁰ extends to the
+-- cones. The homotopy is folded into the map -- that is the axiom's content -- and
+-- both of the extension's own squares then hold strictly.
+#print axioms CategoryTheory.IsConeOf.lift
+#print axioms CategoryTheory.IsConeOf.inr_comp_lift
+#print axioms CategoryTheory.IsConeOf.lift_closed
+#print axioms CategoryTheory.IsConeOf.lift_comp_toShift
+#print axioms CategoryTheory.H0.exists_lift_of_comm
+
+-- The instance itself (dg-enhancements-e6, #377): the completion axiom for
+-- arbitrary distinguished triangles, the five axioms H⁰ proves, and the
+-- `Pretriangulated (H0 C)` they assemble into.
+#print axioms CategoryTheory.H0.complete_distinguished_triangle_morphism
+#print axioms CategoryTheory.H0.pretriangulatedAxioms
+#print axioms CategoryTheory.H0.pretriangulated
+#print axioms CategoryTheory.H0.mem_distTriang_iff

@@ -4,8 +4,8 @@ Axiom audit. First build the optional specialization and development modules lis
 
 Every line must print either "does not depend on any axioms" or exactly
 `[propext, Classical.choice, Quot.sound]`. Any occurrence of `sorryAx` is a
-failure: this library has no `sorry`, and the trust boundary is carried by the
-*fields* of `NumericalVariety`, which are visible in its type, not by holes.
+failure: this library has no `sorry`, and the trust boundary is carried by explicit
+data and proposition witnesses, which are visible in theorem types rather than holes.
 
 Since #480 the records live in the per-area submodules under
 `scripts/AlgebraicGeometryAudit/`; this file is the imports-only umbrella that
@@ -16,4 +16,8 @@ it to the area file its module belongs to.
 -/
 
 import AlgebraicGeometryAudit.Core
+import AlgebraicGeometryAudit.GeometricLedgers
 import AlgebraicGeometryAudit.Moduli
+import AlgebraicGeometryAudit.Projective
+import AlgebraicGeometryAudit.SchemeDerived
+import AlgebraicGeometryAudit.StabilityConditionFamilies

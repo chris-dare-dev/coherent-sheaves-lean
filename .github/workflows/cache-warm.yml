@@ -71,12 +71,21 @@ jobs:
           restore-keys: |
             lake-build-linux-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-
 
-      - uses: leanprover/lean-action@v1
+      # Pinned to the same commit as ci.yml: `v1` is a moving tag, and this
+      # job writes the build cache the required CI lane restores, so a floating
+      # tag here is a supply-chain channel into a required check (2026-08-18
+      # adversarial review, P2-5).
+      - uses: leanprover/lean-action@38fbc41a8c28c4cbaec22d7f7de508ec2e7c0dd9 # v1
         with:
           build: true
           use-mathlib-cache: true
           use-github-cache: false
+          # Both settings mirror ci.yml deliberately; the reasoning is there.
+          # `nanoda-allow-sorry` defaults to "true", so it is set explicitly
+          # here too -- a warm-cache job that flipped nanoda on and inherited
+          # the default would be the one place nobody thinks to check.
           nanoda: false
+          nanoda-allow-sorry: false
 
       # `lake build` above covers `defaultTargets`, which is `DerivedAlgGeo`
       # alone. The gates in `ci.yml` need more than that, and a cache that omits

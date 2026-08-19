@@ -80,9 +80,25 @@ retired: []          # tombstoned item ids; ids are write-once, never deleted
 # useful burndown granularity alongside the repository's other tracks.
 #
 # Here, GitHub milestones are the track's PHASES (m0..m4 below) and epics are
-# issues assigned to them. `kind: milestone` items carry `parent: <epic-id>`
-# exactly as in arXMCP. If this track ever moves into arXMCP's tracker, collapse
-# m0..m4 into one milestone named by `title:` above. See ADR-0006.
+# issues assigned to them. `kind: epic` items carry `parent: <milestone-id>`;
+# milestones carry no parent. (This note previously said the reverse, which no
+# entry in the file has ever matched.) If this track ever moves into arXMCP's
+# tracker, collapse m0..m4 into one milestone named by `title:` above. See
+# ADR-0006.
+#
+# `blocked_by: [<gh issue numbers>]` records that an item cannot start until
+# those issues close. It mirrors GitHub's own blocked-by relation rather than
+# replacing it -- the tracker stays authoritative, and this file exists so the
+# same fact is legible without a network call. Absent means unblocked; it is
+# never a synonym for `status: blocked`, which is about the item and not about
+# what is holding it.
+#
+# `kind: task` is a leaf hanging off a MILESTONE rather than an epic. It exists
+# because an issue with no epic otherwise has no representation here at all --
+# and an unparented issue is invisible to a parent/child reconciliation by
+# construction, so the gap would not even surface as drift. `kind: deliverable`
+# in stability-families.yaml is the leaf-under-an-EPIC kind; all thirteen of
+# those parent to an epic, so it does not cover this case. See #620.
 # ---------------------------------------------------------------------------
 
 items:
@@ -101,7 +117,7 @@ items:
 
   - id: contract-v1-e1
     gh_issue: 128
-    gh_sub_issues: [139, 140, 141, 142, 143]
+    gh_sub_issues: [139, 140, 141, 142, 143, 187]
     kind: epic
     parent: contract-v1-m0
     title: "Close the false claims in the trust record and the contract prose"
@@ -230,6 +246,53 @@ items:
     priority: must
     size: M
     tags: [value, trust, gate-owner]
+
+  # The first entry in this file to carry `blocked_by`. #179 cannot be built:
+  # it adds {entries, papers_covered, corpus_chunks, generated_at} to
+  # arxmcp://formal/{notebook}, and that resource does not exist -- registering
+  # it is #175, which is open. Verified against arXMCP at main, where
+  # server/mcp_resources.py registers only arxmcp://notebooks and
+  # arxmcp://notebooks/{slug}, plus arxmcp://corpus-manifest elsewhere.
+  #
+  # `kind: deliverable` rather than a bare number in e9's gh_sub_issues,
+  # because a number cannot carry a status. It follows the thirteen
+  # deliverables in stability-families.yaml, which likewise appear under some
+  # epics and not others.
+  - id: contract-v1-e9-1
+    gh_issue: 179
+    gh_sub_issues: []
+    kind: deliverable
+    parent: contract-v1-e9
+    blocked_by: [175]
+    title: "Dated coverage census on the formal index resource"
+    status: blocked
+    summary: "Ten records against a 15,280-chunk corpus read as a covered corpus unless the denominator ships in the same response as the numerator, dated. #177's arithmetic put the served hit rate near 0.07%, and an agent that queries three times, gets nothing and stops is behaving rationally -- which reproduces one level up the failure this whole track exists to fix. arXMCP CLAUDE.md 4.9 already mandates the shape (novelty claims are dated censuses), so it is policy-compliant rather than new. The lane partition this issue asked for is GONE: it was conditional on the sketch lane, and #177 closed as deferred with one reopen trigger -- a second topic repository minting against the registry -- which has not happened. Shape is the flat {entries, papers_covered, corpus_chunks, generated_at}."
+    priority: must
+    size: S
+    tags: [value, corpus, cross-repo, census]
+
+  # `kind: task` — a leaf that hangs off a MILESTONE rather than an epic.
+  #
+  # `deliverable` in stability-families.yaml is the existing leaf kind and does
+  # not fit: all thirteen of them parent to an epic. This is the first entry
+  # that belongs to a milestone directly, and it exists because #618 was
+  # deliberately unparented from e8 -- its siblings there are arXMCP's half of
+  # the epic, and the release decision must not hold that epic open.
+  #
+  # Without this kind the file would simply have no record of #618, and an
+  # unparented issue is invisible to any parent/child reconciliation by
+  # construction -- so the gap would not even show up as drift. See #620.
+  - id: contract-v1-m2-t1
+    gh_issue: 618
+    gh_sub_issues: []
+    kind: task
+    parent: contract-v1-m2
+    title: "Tag v0.1.0 — the decision #173 could not make"
+    status: done
+    summary: "#173 asked for a release and turned out to be three things: two missing producers, a wrong asset name, and a decision. The producers landed (mfc build, mfc seal, and build/1.0's `measured` block; CI now runs the twelve conformance rules on every commit at 10 passed, 0 failed, 2 not_run). The asset name was wrong -- bindings.json is not an artifact this contract defines. What is left is the decision: tagging before #134 and #178 land freezes C-08 and C-10 as not_run in a published bundle, against a corpus resolution nobody computed and a review nobody performed. Wait-and-tag-seven or tag-now-at-six are both defensible; tagging without choosing is not. RESOLVED 2026-08-18: tagged at six of seven rather than waiting. v0.1.0 is tag object df9e6e6d at commit 7f649532, with attest/* shipped as release assets and 16002 constants recorded. C-08 and C-10 are not_run in the published bundle permanently, which is the cost that was accepted; #134 and #178 remain open and are no longer blockers for anything."
+    priority: must
+    size: S
+    tags: [value, release, gate-owner]
 
   # ===================== M3 — generalization =====================
   - id: contract-v1-m3
