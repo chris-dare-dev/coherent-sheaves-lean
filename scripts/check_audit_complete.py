@@ -68,10 +68,18 @@ AUDITS = {
 # one: a change that leaves more declarations unaudited than it found is the
 # thing this gate exists to stop.
 CEILINGS = {
-    "AlgebraicGeometry": 1096,
+    "AlgebraicGeometry": 1095,
     "StabilityCondition": 359,
     "DGCategory": 0,
 }
+
+# The identity half of the ratchet. Ceilings alone admit a swap: a new
+# unaudited declaration passes when the same change audits one old backlog
+# entry, count unchanged (2026-08-18 adversarial review, finding P2-8). This
+# file enumerates the known backlog by name; a missing declaration that is not
+# in it is NEW and must be added to its audit, never to the baseline by hand.
+# `--relax` rewrites it (and prints the ceilings) after a deliberate change.
+BASELINE = Path("scripts/audit_missing_baseline.txt")
 
 
 def load_env(path: Path) -> dict[str, set[str]]:
@@ -117,6 +125,19 @@ def main(argv: list[str]) -> int:
     relax = "--relax" in argv
     failed = False
     new_ceilings: dict[str, int] = {}
+    baseline: set[tuple[str, str]] = set()
+    baseline_rows: list[str] = []
+    if BASELINE.exists():
+        baseline = {
+            tuple(line.split("\t", 1))
+            for line in BASELINE.read_text(encoding="utf-8").splitlines()
+            if "\t" in line
+        }
+    elif not relax:
+        # Fail closed: without the baseline the identity check below is
+        # vacuous, which is the exact pass this gate exists to prevent.
+        print(f"::error::{BASELINE} is missing; regenerate it with --relax")
+        failed = True
 
     # Modules under the source root that `EnumDecls.libraryOf` classifies into
     # no audit bucket. Before #508 these were silently invisible to the sweep,
@@ -162,6 +183,7 @@ def main(argv: list[str]) -> int:
         missing = declared - resolved
         ceiling = CEILINGS[lib]
         new_ceilings[lib] = len(missing)
+        baseline_rows.extend(f"{lib}\t{n}" for n in sorted(missing))
 
         note = f" ({len(unresolved)} records unresolved)" if unresolved else ""
         print(f"{lib:<20} {len(declared):>5} public, {len(resolved):>5} audited, "
@@ -178,8 +200,21 @@ def main(argv: list[str]) -> int:
             print(f"  note: {lib} improved by {ceiling - len(missing)}; "
                   "run with --relax and lower the ceiling.")
 
+        if not relax and baseline:
+            new_names = sorted(n for n in missing if (lib, n) not in baseline)
+            if new_names:
+                failed = True
+                print(f"::error::{lib} has {len(new_names)} NEW unaudited public "
+                      f"declaration(s) absent from {BASELINE}. Add them to "
+                      f"{audit_path}; do not extend the baseline by hand.")
+                for n in new_names[:15]:
+                    print(f"    {n}")
+
     if relax:
-        print("\nCEILINGS = {")
+        BASELINE.write_text(
+            "\n".join(sorted(baseline_rows)) + "\n", encoding="utf-8")
+        print(f"\nwrote {BASELINE} ({len(baseline_rows)} entries)")
+        print("CEILINGS = {")
         for lib, n in new_ceilings.items():
             print(f'    "{lib}": {n},')
         print("}")

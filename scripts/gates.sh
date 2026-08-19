@@ -88,7 +88,10 @@ algebraic_geometry_audit() {
     }
   done
   grep -q 'sorryAx' "$GATE_TMP"/algebraic-geometry-audit.txt && { echo "sorryAx reached the audit"; return 1; }
-  return 0
+  # Allowlist + truncation + parse checks, matching CI and the other two audit
+  # lanes; until 2026-08-18 this lane checked only sorryAx (review P2-3).
+  python3 scripts/check_audit.py "$GATE_TMP"/algebraic-geometry-audit.txt \
+    scripts/AlgebraicGeometryAudit.lean
 }
 
 dg_audit() {

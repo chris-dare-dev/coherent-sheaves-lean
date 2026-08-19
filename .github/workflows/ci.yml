@@ -70,6 +70,7 @@ jobs:
     timeout-minutes: 90
     steps:
       - uses: actions/checkout@v4
+        id: checkout
         with:
           # A diff base is needed by "What changed" below. On the self-hosted
           # lane the repository is already present, so this costs a fetch, not a
@@ -247,6 +248,12 @@ jobs:
             echo "::error::sorryAx reached the algebraic-geometry audit"
             exit 1
           fi
+          # Allowlist + truncation + parse checks, same standard as the other
+          # two audit lanes. Until 2026-08-18 this lane checked only sorryAx,
+          # so a custom axiom or a truncated transcript passed it (review
+          # finding P2-3).
+          python3 scripts/check_audit.py algebraic-geometry-audit.txt \
+            scripts/AlgebraicGeometryAudit.lean
 
       - name: Stability-condition axiom audit
         run: |
@@ -461,11 +468,27 @@ jobs:
                         --environment attest/environment.json \
                         --out attest/declarations.json
 
-          # --require-all is deliberately NOT passed: E-04, E-09, E-11 and E-12
-          # need a registry and a closed-lanes config this repo has not minted
-          # yet, and they print as not_run rather than hiding in a count.
+          # --registry runs E-04, E-05 and E-12 against the minted registry;
+          # until 2026-08-18 the step comment claimed no registry existed while
+          # `mfc seal` consumed one three commands later, and running E-12
+          # exposed a real unanchored discharge edge (adversarial review,
+          # finding P2-4). E-09 and E-11 still need a closed-lanes config this
+          # repo has not minted, so the EXACT expected not_run set is asserted
+          # below: any silent widening of it -- a malformed registry, a schema
+          # drift demoting more rules -- fails the step instead of printing a
+          # smaller green table.
           "$MFC" lint --emission attest/lean-emission.json \
-                      --environment attest/environment.json
+                      --environment attest/environment.json \
+                      --registry registry/bridgeland2007.json \
+            | tee mfc-lint-report.txt
+          actual_not_run=$(grep -oE '^not_run  E-[0-9]+' mfc-lint-report.txt \
+            | awk '{print $2}' | sort | paste -sd, -)
+          if [ "$actual_not_run" != "E-09,E-11" ]; then
+            echo "::error::mfc lint not_run set is '$actual_not_run', expected" \
+                 "'E-09,E-11'. A rule stopped running (or started); update this" \
+                 "assertion only with the config change that explains it."
+            exit 1
+          fi
 
           # BOTH roots. The emitter sweeps DerivedAlgGeoSweep plus DerivedAlgGeo
           # (exe/Emit.lean), and a single root makes this check vacuous rather
@@ -567,9 +590,21 @@ jobs:
 
           # C-08 and C-10 print not_run today -- no resolution.json (#134) and
           # no review.yaml (#178). That is NOT a pass, and the summary line
-          # says so on every run.
+          # says so on every run. As with lint above, the exact expected
+          # not_run set is asserted so it cannot widen silently (2026-08-18
+          # adversarial review, finding P2-4).
           "$MFC" conformance --bundle attest/bundle.json \
-                             --emission attest/lean-emission.json
+                             --emission attest/lean-emission.json \
+            | tee mfc-conformance-report.txt
+          actual_not_run=$(grep -oE '^not_run  C-[0-9]+' mfc-conformance-report.txt \
+            | awk '{print $2}' | sort | paste -sd, -)
+          if [ "$actual_not_run" != "C-08,C-10" ]; then
+            echo "::error::mfc conformance not_run set is '$actual_not_run'," \
+                 "expected 'C-08,C-10'. A rule stopped running (or started);" \
+                 "update this assertion only with the config change that" \
+                 "explains it."
+            exit 1
+          fi
 
       # Step 6 of #156: the determinism assertion. Two runs over an unchanged
       # environment must be byte-identical except for `emitted_at`.
@@ -597,18 +632,26 @@ jobs:
           PY
 
       - name: Upload trust artifacts
-        if: always()
+        # `always()` alone attached a PREVIOUS run's attest/ from the
+        # persistent self-hosted workspace whenever checkout itself failed
+        # before cleaning -- the observed HTTP-429-before-checkout mode -- and
+        # the fixed artifact name let that stale bundle masquerade as this
+        # run's (2026-08-18 adversarial review, P2-6). Gating on checkout and
+        # naming the artifact by commit closes both halves; the two audit
+        # filenames below were also stale since the #614 renames (P3-3).
+        if: always() && steps.checkout.outcome == 'success'
         uses: actions/upload-artifact@v4
         with:
-          name: trust-artifacts
+          name: trust-artifacts-${{ github.sha }}
           path: |
             attest/lean-emission.json
             attest/environment.json
             attest/declarations.json
             attest/build.json
             attest/bundle.json
-            coh-audit.txt
-            bridgeland-audit.txt
+            algebraic-geometry-audit.txt
+            stability-condition-audit.txt
+            dg-audit.txt
           if-no-files-found: warn
 
   # ---------------------------------------------------------------------------
