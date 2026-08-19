@@ -1275,6 +1275,20 @@ fidelity:
   builds_clean: true
   builds_clean_date: 2026-08-18
   builds_clean_note: >
+    v0.1.0 RELEASED, 2026-08-18. Tag object df9e6e6d at commit 7f649532, from CI
+    run 32204149109 dispatched on the tag ref so the artifacts carry
+    subject.digest.gitTag "v0.1.0" rather than null -- an artifact set built
+    before the tag exists says null, which is a valid artifact and an invalid
+    release. THE TAGGED TREE MEASURES 16002 CONSTANTS, 9265 in scope, 6737
+    internal and 13 cited, at 5085 jobs over 517 in-scope modules. That is NOT
+    the 15998 recorded in the paragraph below, which was measured at e8a1a84
+    four merges earlier and was explicitly not asserted to equal the tagged
+    tree; attest/declarations.json in the release is the authoritative count,
+    exactly as that paragraph said it would be. Conformance over the released
+    bundle: 10 passed, 0 failed, 2 not_run -- C-08 and C-10, frozen there
+    permanently because no resolution.json (#134) and no review.yaml (#178)
+    exist. not_run is not a pass.
+
     FIRST CI-MEASURED RELEASE BUILD, 2026-08-18, GitHub Actions run 32201297893
     at e8a1a84, the tree of the pull request carrying this record. `lake build
     DerivedAlgGeoSweep` exit 0 at 5083 jobs. The contract gates produced
