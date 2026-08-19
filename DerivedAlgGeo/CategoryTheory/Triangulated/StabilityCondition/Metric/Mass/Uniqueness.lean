@@ -3,7 +3,7 @@ Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under the MIT license.
 -/
 import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Metric.Mass.Basic
-import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Foundation
+import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Foundation.Slicing.CoreConsequences
 
 set_option backward.defeqAttrib.useBackward true
 set_option backward.isDefEq.respectTransparency false

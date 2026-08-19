@@ -4,7 +4,8 @@ Released under the MIT license.
 -/
 import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Weak.Basic.Definitions
 import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Weak.Tilting.TorsionPair.Heart
-import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Foundation
+import DerivedAlgGeo.CategoryTheory.Triangulated.TStructure.HeartBridge
+import Mathlib.CategoryTheory.Abelian.Exact
 import Mathlib.CategoryTheory.Abelian.SerreClass.Basic
 import Mathlib.CategoryTheory.Abelian.CommSq
 import Mathlib.CategoryTheory.Abelian.DiagramLemmas.KernelCokernelComp
