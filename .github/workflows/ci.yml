@@ -431,6 +431,10 @@ jobs:
       # alone and reports "1 in-scope module of 488 built; 0 built
       # declarations" -- green, having compared nothing.
       - name: Contract gates
+        env:
+          # For scripts/check_roadmap.py's `gh` calls at the end of this step.
+          # Read-only issue metadata; the default token's scope is sufficient.
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
           # Its own venv, in the workspace. The self-hosted lane is the owner's
@@ -507,6 +511,20 @@ jobs:
           else
             echo "::notice::check-resolution did NOT run: no attest/resolution.json yet (arXMCP-side, #134)"
           fi
+
+          # The roadmap-vs-tracker check (#620). It runs HERE, at the end of
+          # this step, for one reason: it needs PyYAML, and `.mfc-venv` is the
+          # only interpreter in this workflow guaranteed to have it -- the
+          # self-hosted lane's `python3` is 3.9.6 system Python. Running it as
+          # a bare `python3 scripts/...` alongside the other check_*.py would
+          # be a coin flip on the runner.
+          #
+          # `--require-api` is deliberate. Without `gh` the script prints
+          # NOT_RUN and exits 0, so a contributor with no `gh` is not blocked
+          # from running the offline gates -- but CI is the one environment
+          # guaranteed to have the API, and a check that silently skips there
+          # is the vacuous pass this repository keeps finding in new places.
+          .mfc-venv/bin/python scripts/check_roadmap.py --require-api
 
           # ------------------------------------------------------------------
           # build.json, and the honest size of what it measured.
