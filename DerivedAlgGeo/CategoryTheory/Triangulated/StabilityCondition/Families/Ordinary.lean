@@ -16,8 +16,10 @@ The index types stand for geometric base-change, object, fiber, and numerical
 moduli tests supplied by a client.  The library neither constructs nor
 recognizes those geometric objects.  The support field, by contrast, is the
 genuine quotient-uniform quadratic support predicate already implemented in
-the support subsystem.  Logical `PUnit` inhabitants are development
-scaffolding, not part of this stable interface.
+the support subsystem.  Vacuous-probe inhabitants -- constant-true
+predicates and full-locus witnesses -- are development scaffolding, not part
+of this stable interface; constant-family reindexings that consume a genuine
+support datum remain stable API.
 -/
 
 namespace CategoryTheory.Triangulated.StabilityCondition.Families
