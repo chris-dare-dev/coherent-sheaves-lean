@@ -1,0 +1,130 @@
+# The one check a pull request cannot rewrite for its own run.
+#
+# THE HOLE THIS CLOSES (2026-08-18 adversarial review, finding P1-1).
+# `ci` is the only required status check on `main`, and for `pull_request`
+# events GitHub evaluates the workflow file **from the contributor's branch**.
+# `ci.yml` relies on that deliberately for runner routing, and the same
+# mechanism voids the check itself: a pull request that rewrites its own copy
+# of `ci.yml` to a job named `ci` that runs `exit 0` produces a green required
+# context having run no gate at all. With zero required reviews and auto-merge
+# armed, nothing forces a human to read that diff first. The same hole exists
+# one level down: a pull request that edits `scripts/check_*.py` to return 0
+# neuters that gate from inside an honestly-green `ci`.
+#
+# WHY THIS FILE IS DIFFERENT. `pull_request_target` runs the workflow
+# definition from the BASE branch. A pull request therefore cannot change what
+# this job does to it -- editing this file in the branch changes the copy that
+# runs only AFTER the edit is merged, which is exactly the review event this
+# job exists to force.
+#
+# WHAT IT DOES. If a pull request touches the trust surface -- the workflows,
+# the gate scripts, the emitter, the pin files, the registry, the licence
+# boundary -- it fails until the `trust-reviewed` label is present. Adding
+# that label is a deliberate, logged, human act, and re-runs this job.
+#
+# WHAT IT IS NOT. This does not stop someone holding the owner's credentials:
+# that person can label their own pull request, and no repository-side control
+# survives a compromised owner token. It stops the realistic failure -- an
+# agent lane silently disabling a gate inside a green build -- by making the
+# disabling step visible and manual. Read it as "no gate turns itself off
+# quietly", not as "the trust surface is adversary-proof".
+#
+# SAFETY: `pull_request_target` runs with a writable token and repository
+# secrets in the context of the BASE repository. Checking out or executing
+# pull-request code under it is the well-known privilege-escalation footgun.
+# This job does neither. It calls the REST API for the changed-file list and
+# reads the label set from the event payload; no `actions/checkout`, no `lake`,
+# no script from the branch under review. Keep it that way.
+name: Trust guard
+
+on:
+  pull_request_target:
+    # `labeled`/`unlabeled` are load-bearing: they are what re-runs the check
+    # after a human decides, so the label flips the status without a push.
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: trust-guard-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  trust-surface:
+    name: trust-surface
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Require review for trust-surface changes
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.pull_request.number }}
+          LABELS: ${{ toJSON(github.event.pull_request.labels.*.name) }}
+        run: |
+          set -euo pipefail
+
+          # The changed-file list comes from the API, not from a checkout, so
+          # nothing in the pull request is fetched or executed here.
+          files="$(gh api --paginate "repos/$REPO/pulls/$PR/files" --jq '.[].filename')"
+          if [ -z "$files" ]; then
+            echo "::error::the API returned no files for PR #$PR. This job must" \
+                 "not pass on an empty file list -- that is the vacuous pass it" \
+                 "exists to prevent."
+            exit 1
+          fi
+
+          # The guarded paths. Everything here decides what a green `ci` MEANS:
+          # the workflows that define it, the scripts it executes, the emitter
+          # and sweep root it measures, the pins that say what it ran against,
+          # the registry it validates, and the licence boundary.
+          patterns='
+          ^\.github/
+          ^scripts/
+          ^exe/
+          ^registry/
+          ^DerivedAlgGeoSweep\.lean$
+          ^lakefile\.toml$
+          ^lake-manifest\.json$
+          ^lean-toolchain$
+          ^pins\.json$
+          ^LICENSE\.md$
+          '
+
+          touched=""
+          while IFS= read -r f; do
+            [ -n "$f" ] || continue
+            while IFS= read -r p; do
+              p="$(printf '%s' "$p" | tr -d '[:space:]')"
+              [ -n "$p" ] || continue
+              if printf '%s' "$f" | grep -Eq "$p"; then
+                touched="$touched$f"$'\n'
+                break
+              fi
+            done <<< "$patterns"
+          done <<< "$files"
+
+          if [ -z "$touched" ]; then
+            echo "ok: no trust-surface path in this pull request"
+            exit 0
+          fi
+
+          echo "This pull request changes the trust surface:"
+          printf '%s' "$touched" | sed 's/^/    /'
+
+          if printf '%s' "$LABELS" | grep -q '"trust-reviewed"'; then
+            echo
+            echo "ok: labelled trust-reviewed -- a human accepted these changes"
+            exit 0
+          fi
+
+          echo
+          echo "::error::A trust-surface change needs a human decision. Read the" \
+               "diff of the files above, then add the 'trust-reviewed' label to" \
+               "this pull request; that re-runs this check. Do not remove this" \
+               "workflow to get past it -- the copy that judges a pull request" \
+               "comes from the base branch, so deleting it here has no effect" \
+               "until the deletion itself has been reviewed."
+          exit 1
