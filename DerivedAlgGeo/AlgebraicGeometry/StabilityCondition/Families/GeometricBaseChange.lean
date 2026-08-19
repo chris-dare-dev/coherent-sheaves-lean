@@ -5,6 +5,7 @@ Released under the MIT license.
 import DerivedAlgGeo.AlgebraicGeometry.StabilityCondition.Families.BoundedGeometry
 import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Families.PreStabilityBaseChange
 import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Phase.Transfer.InducingBoundary
+import Mathlib.CategoryTheory.Triangulated.Adjunction
 
 /-!
 # Geometric pre-stability base change on bounded coherent fibers
@@ -40,57 +41,6 @@ open CategoryTheory.Triangulated AlgebraicGeometry
 noncomputable section
 
 universe u v uV
-
-/-- An equivalence between possibly different triangulated categories, with
-all exactness instances bundled so they can be transported with the
-equivalence. -/
-structure TriangulatedEquivalence
-    (C : Type u) (D : Type v)
-    [Category C] [Category D] [Preadditive C] [Preadditive D]
-    [HasZeroObject C] [HasZeroObject D] [HasShift C ℤ] [HasShift D ℤ]
-    [∀ n : ℤ, (shiftFunctor C n).Additive]
-    [∀ n : ℤ, (shiftFunctor D n).Additive]
-    [Pretriangulated C] [Pretriangulated D] where
-  /-- The underlying equivalence. -/
-  e : C ≌ D
-  /-- The forward functor is additive. -/
-  functorAdditive : e.functor.Additive
-  /-- The inverse functor is additive. -/
-  inverseAdditive : e.inverse.Additive
-  /-- The forward functor commutes with shifts. -/
-  functorCommShift : e.functor.CommShift ℤ
-  /-- The inverse functor commutes with shifts. -/
-  inverseCommShift : e.inverse.CommShift ℤ
-  /-- The forward functor is triangulated. -/
-  functorTriangulated : e.functor.IsTriangulated
-  /-- The inverse functor is triangulated. -/
-  inverseTriangulated : e.inverse.IsTriangulated
-
-namespace TriangulatedEquivalence
-
-attribute [instance] functorAdditive inverseAdditive functorCommShift
-  inverseCommShift functorTriangulated inverseTriangulated
-
-variable {C : Type u} {D : Type v}
-  [Category C] [Category D] [Preadditive C] [Preadditive D]
-  [HasZeroObject C] [HasZeroObject D] [HasShift C ℤ] [HasShift D ℤ]
-  [∀ n : ℤ, (shiftFunctor C n).Additive]
-  [∀ n : ℤ, (shiftFunctor D n).Additive]
-  [Pretriangulated C] [Pretriangulated D]
-
-/-- Preimage data for the inverse functor of a bundled triangulated
-equivalence. -/
-theorem preimageDataInverse (E : TriangulatedEquivalence C D)
-    (s : Slicing C) : s.PreimageData E.e.inverse := by
-  letI : E.e.symm.functor.Additive := E.inverseAdditive
-  letI : E.e.symm.inverse.Additive := E.functorAdditive
-  letI : E.e.symm.functor.CommShift ℤ := E.inverseCommShift
-  letI : E.e.symm.inverse.CommShift ℤ := E.functorCommShift
-  letI : E.e.symm.functor.IsTriangulated := E.inverseTriangulated
-  letI : E.e.symm.inverse.IsTriangulated := E.functorTriangulated
-  exact s.preimageData_equivalence E.e.symm
-
-end TriangulatedEquivalence
 
 namespace SchemeBaseChange
 
@@ -247,16 +197,32 @@ structure BoundedCoherentDerivedRealization
     [∀ T : SchemeBaseChange S, IsLocallyNoetherian T.left]
     [∀ {T U : SchemeBaseChange S} (f : T ⟶ U),
       SchemeBaseChange.HasCoherentPullback f] where
-  /-- Triangulated equivalence from each abstract fiber to `Dᵇ(Coh)`. -/
+  /-- Equivalence from each abstract fiber to `Dᵇ(Coh)`. -/
   fiberEquivalence (T : SchemeBaseChange S) :
-    TriangulatedEquivalence (F.Fiber T) T.BoundedCoherentDerivedFiber
+    F.Fiber T ≌ T.BoundedCoherentDerivedFiber
+  /-- The chosen forward functor commutes with shifts.  Mathlib derives the
+  unique compatible shift structure on the inverse functor from this one. -/
+  fiberEquivalenceFunctorCommShift (T : SchemeBaseChange S) :
+    (fiberEquivalence T).functor.CommShift ℤ
+  /-- Unit and counit coherence for the derived inverse shift structure. -/
+  fiberEquivalenceCommShift (T : SchemeBaseChange S) :
+    letI := fiberEquivalenceFunctorCommShift T
+    letI := (fiberEquivalence T).commShiftInverse ℤ
+    (fiberEquivalence T).CommShift ℤ
+  /-- The equivalence is triangulated.  Mathlib derives exactness and
+  additivity for both directions from this equivalence-level property. -/
+  fiberEquivalenceIsTriangulated (T : SchemeBaseChange S) :
+    letI := fiberEquivalenceFunctorCommShift T
+    letI := (fiberEquivalence T).commShiftInverse ℤ
+    letI := fiberEquivalenceCommShift T
+    (fiberEquivalence T).IsTriangulated
   /-- Abstract pullback is the actual bounded coherent pullback, transported
   through the two fiber equivalences. -/
   pullbackIso {T U : SchemeBaseChange S} (f : T ⟶ U) :
     F.pull f ≅
-      (fiberEquivalence U).e.functor ⋙
+      (fiberEquivalence U).functor ⋙
         (SchemeBaseChange.boundedCoherentDerivedPullback f ⋙
-          (fiberEquivalence T).e.inverse)
+          (fiberEquivalence T).inverse)
 
 namespace BoundedCoherentDerivedRealization
 
@@ -265,6 +231,37 @@ variable {S : Scheme.{u}} {F : SchemeTriangulatedFiberFamily S}
   [∀ {T U : SchemeBaseChange S} (f : T ⟶ U),
     SchemeBaseChange.HasCoherentPullback f]
 
+/-- The standard Mathlib triangulated-equivalence structure supplies preimage
+data for the inverse fiber equivalence. -/
+theorem inversePreimageData (R : BoundedCoherentDerivedRealization F)
+    (T : SchemeBaseChange S) (s : Slicing (F.Fiber T)) :
+    s.PreimageData (R.fiberEquivalence T).inverse := by
+  letI : (R.fiberEquivalence T).functor.CommShift ℤ :=
+    R.fiberEquivalenceFunctorCommShift T
+  letI : (R.fiberEquivalence T).inverse.CommShift ℤ :=
+    (R.fiberEquivalence T).commShiftInverse ℤ
+  letI : (R.fiberEquivalence T).CommShift ℤ :=
+    R.fiberEquivalenceCommShift T
+  letI : (R.fiberEquivalence T).IsTriangulated :=
+    R.fiberEquivalenceIsTriangulated T
+  exact s.preimageData_equivalence (R.fiberEquivalence T).symm
+
+/-- Transport a slicing from an abstract fiber to its bounded coherent
+realization through the inverse equivalence. -/
+noncomputable def inversePreimage
+    (R : BoundedCoherentDerivedRealization F) (T : SchemeBaseChange S)
+    (s : Slicing (F.Fiber T)) : Slicing T.BoundedCoherentDerivedFiber := by
+  letI : (R.fiberEquivalence T).functor.CommShift ℤ :=
+    R.fiberEquivalenceFunctorCommShift T
+  letI : (R.fiberEquivalence T).inverse.CommShift ℤ :=
+    (R.fiberEquivalence T).commShiftInverse ℤ
+  letI : (R.fiberEquivalence T).CommShift ℤ :=
+    R.fiberEquivalenceCommShift T
+  letI : (R.fiberEquivalence T).IsTriangulated :=
+    R.fiberEquivalenceIsTriangulated T
+  exact s.preimage (R.fiberEquivalence T).inverse
+    (R.inversePreimageData T s)
+
 /-- Transport the genuine bounded coherent A.17 output through a bounded
 coherent realization.  The result is preimage data for the abstract family
 pullback, not a caller-supplied preimage witness. -/
@@ -272,19 +269,34 @@ theorem preimageData (R : BoundedCoherentDerivedRealization F)
     {T U : SchemeBaseChange S} (f : T ⟶ U)
     (s : Slicing (F.Fiber T))
     (h : SchemeBaseChange.BoundedCoherentPullbackInducingData f
-      (s.preimage (R.fiberEquivalence T).e.inverse
-        ((R.fiberEquivalence T).preimageDataInverse s))) :
+      (R.inversePreimage T s)) :
     s.PreimageData (F.pull f) := by
-  let hT := (R.fiberEquivalence T).preimageDataInverse s
+  letI : (R.fiberEquivalence T).functor.CommShift ℤ :=
+    R.fiberEquivalenceFunctorCommShift T
+  letI : (R.fiberEquivalence T).inverse.CommShift ℤ :=
+    (R.fiberEquivalence T).commShiftInverse ℤ
+  letI : (R.fiberEquivalence T).CommShift ℤ :=
+    R.fiberEquivalenceCommShift T
+  letI : (R.fiberEquivalence T).IsTriangulated :=
+    R.fiberEquivalenceIsTriangulated T
+  letI : (R.fiberEquivalence U).functor.CommShift ℤ :=
+    R.fiberEquivalenceFunctorCommShift U
+  letI : (R.fiberEquivalence U).inverse.CommShift ℤ :=
+    (R.fiberEquivalence U).commShiftInverse ℤ
+  letI : (R.fiberEquivalence U).CommShift ℤ :=
+    R.fiberEquivalenceCommShift U
+  letI : (R.fiberEquivalence U).IsTriangulated :=
+    R.fiberEquivalenceIsTriangulated U
+  let hT := R.inversePreimageData T s
   let hGeom := h.toPreimageData
   let hPost : s.PreimageData
       (SchemeBaseChange.boundedCoherentDerivedPullback f ⋙
-        (R.fiberEquivalence T).e.inverse) :=
+        (R.fiberEquivalence T).inverse) :=
     hT.comp hGeom.preimageData
   let sU := s.preimage _ hPost
-  let hU := sU.preimageData_equivalence (R.fiberEquivalence U).e
+  let hU := sU.preimageData_equivalence (R.fiberEquivalence U)
   have hU' : (s.preimage _ hPost).PreimageData
-      (R.fiberEquivalence U).e.functor := by
+      (R.fiberEquivalence U).functor := by
     simpa [sU] using hU
   exact (hPost.comp hU').ofIso (R.pullbackIso f).symm
 
@@ -312,8 +324,7 @@ structure GeometricPreStabilityBaseChangeData
   pullback. -/
   inducing : ∀ {T U} (f : T ⟶ U),
     SchemeBaseChange.BoundedCoherentPullbackInducingData f
-      ((sigma T).slicing.preimage (R.fiberEquivalence T).e.inverse
-        ((R.fiberEquivalence T).preimageDataInverse (sigma T).slicing))
+      (R.inversePreimage T (sigma T).slicing)
   /-- The supplied target slicing is the one induced geometrically.  The
   preimage witness occurring here is constructed from `inducing`; it is not a
   field of this structure. -/
