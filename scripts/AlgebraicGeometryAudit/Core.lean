@@ -1606,11 +1606,6 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Scheme.CartierDivisor.IsEquationOn.mono
 #print axioms AlgebraicGeometry.Scheme.CartierDivisor.fractionalPresheaf
 #print axioms AlgebraicGeometry.Scheme.RationalSections
-#print axioms AlgebraicGeometry.Scheme.rationalSectionsAddCommGroup
-#print axioms AlgebraicGeometry.Scheme.rationalSectionsSMul
-#print axioms AlgebraicGeometry.Scheme.rationalSectionsModule
-#print axioms AlgebraicGeometry.Scheme.rationalSectionsModuleRingCat
-#print axioms AlgebraicGeometry.Scheme.nonemptyOfLE
 #print axioms AlgebraicGeometry.Scheme.rationalSectionsRes
 #print axioms AlgebraicGeometry.Scheme.germToFunctionField_res
 #print axioms AlgebraicGeometry.Scheme.rationalSectionsRes_smul
