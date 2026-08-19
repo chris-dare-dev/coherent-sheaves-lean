@@ -8,7 +8,8 @@ import Mathlib.CategoryTheory.Adjunction.Unique
 /-!
 # `AutQuot C` as an honest group, by quotienting
 
-`StrictAutAction.lean` bought a `MulAction` by *restricting* to autoequivalences
+`StabilityCondition/Symmetry/Autoequivalence/Slicing/Strict.lean` bought a
+`MulAction` by *restricting* to autoequivalences
 with strict inverses — isomorphisms of categories — which excludes Serre
 functors and spherical twists, i.e. the cases that actually matter downstream.
 

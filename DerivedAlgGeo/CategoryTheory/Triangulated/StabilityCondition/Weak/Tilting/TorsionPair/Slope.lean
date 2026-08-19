@@ -81,8 +81,9 @@ theorem gtProp_of_iso {t : ℝ} {E E' : C} (e : E ≅ E') (h : s.gtProp C t E) :
       simpa [CategoryTheory.Triangulated.HNFiltration.phiMinus,
         CategoryTheory.Triangulated.HNFiltration.ofIso] using hgt⟩
 
-/-- Heart membership from the two interval bounds, through the foundational library's heart
-identification. -/
+/-- Heart membership from the two interval bounds, through the slicing heart
+identification `Slicing.toTStructure_heart_iff`
+(`StabilityCondition/Foundation/Slicing/PhaseTruncation.lean`). -/
 theorem mem_heart_of_bounds {E : C} (h0 : s.gtProp C 0 E) (h1 : s.leProp C 1 E) :
     (s.toTStructure).heart E :=
   (s.toTStructure_heart_iff C E).mpr ⟨h0, h1⟩

@@ -24,10 +24,10 @@ Three ingredients close it:
 2. `relabel_intervalProp` (`StabilityCondition/Symmetry/GLTilde/Action/Slicing.lean`) — interval subcategories are
    reindexed exactly, so the relabelled window at `(t-η', t+η')` *is* the
    original at `(f⁻¹(t-η'), f⁻¹(t+η'))`.
-3. `interval_thinFiniteLength_of_inclusion_strict` — the foundational library's own shrinking
-   lemma, in `Deformation/IntervalSelection.lean`. It is stated for two
-   *different* slicings related by `intervalProp ≤ intervalProp`, which is
-   exactly the shape (2) produces.
+3. `interval_thinFiniteLength_of_inclusion_strict`
+   (`StabilityCondition/Symmetry/Autoequivalence/Foundations/FiniteLength.lean`)
+   — the shrinking lemma. It is stated for two *different* slicings related by
+   `intervalProp ≤ intervalProp`, which is exactly the shape (2) produces.
 
 Together these convert a local-finiteness witness for the original slicing
 into a uniform witness for the relabelled slicing.

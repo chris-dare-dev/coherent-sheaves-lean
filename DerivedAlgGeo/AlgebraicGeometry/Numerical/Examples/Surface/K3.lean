@@ -10,11 +10,11 @@ import DerivedAlgGeo.AlgebraicGeometry.Numerical.Examples.Surface.RankOne
 
 The first model of `NumericalVarietyData` in dimension two. Before it, every statement in
 `DerivedAlgGeo/AlgebraicGeometry/Numerical/Specializations/Surface.lean` and
-`DerivedAlgGeo/AlgebraicGeometry/Numerical/K3.lean` was conditional on a
+`DerivedAlgGeo/AlgebraicGeometry/Numerical/RiemannRoch/K3.lean` was conditional on a
 `NumericalVarietyData 2 A N` existing at all — only the dimension-zero point had been exhibited.
 
 The surface is a K3 `X` with `Pic X = ℤ·H` and `H² = 2d`. The ring, grading and degree map
-come from `Examples/RankOneSurface.lean`; all this file supplies is the Todd class
+come from `Numerical/Examples/Surface/RankOne.lean`; all this file supplies is the Todd class
 
 `td(X) = 1 + 0 + (1/d)·H²`,
 
@@ -108,7 +108,7 @@ theorem k3NumericalVariety_satisfiesHRR (d : ℕ) (hd : d ≠ 0) :
 /-- The model really is a K3: `td₁ = 0` and `∫_X td₂ = χ(O_X) = 2`.
 
 With this presentation and its two property witnesses, every theorem in
-`DerivedAlgGeo/AlgebraicGeometry/Numerical/K3.lean` — Riemann–Roch, the Mukai
+`DerivedAlgGeo/AlgebraicGeometry/Numerical/RiemannRoch/K3.lean` — Riemann–Roch, the Mukai
 self-pairing, `⟨v,v⟩ = ∫Δ − 2r²` — is a statement about an object that exists. -/
 theorem k3_isK3 (d : ℕ) (hd : d ≠ 0) :
     K3.IsK3 (k3NumericalVariety d) := by

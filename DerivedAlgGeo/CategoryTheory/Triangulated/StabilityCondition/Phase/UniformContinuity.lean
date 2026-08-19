@@ -9,7 +9,9 @@ import Mathlib.Topology.UniformSpace.Compact
 /-!
 # Uniform continuity of normalized phase shifts
 
-The foundational library's `Slicing.IsLocallyFinite` quantifies **one** radius `η` over
+`Slicing.IsLocallyFinite`
+(`StabilityCondition/Foundation/StabilityCondition.lean`) quantifies **one**
+radius `η` over
 **all** centres `t`: every window `(t - η, t + η)` must have finite-length
 objects. A normalized shift distorts windows, so transporting local finiteness
 across the action needs a *uniform* bound on that distortion, not a pointwise

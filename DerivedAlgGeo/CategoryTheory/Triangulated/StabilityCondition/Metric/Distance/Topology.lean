@@ -29,9 +29,10 @@ is installed by either module.
 The first part of the file records elimination lemmas for a strict full-
 distance bound.  They feed the **easy** direction only —
 `exists_stabilityDist_ball_subset_basisNhd`.  The hard direction,
-`exists_basisNhd_subset_stabilityDist_ball`, goes through the foundational library's
-`phiPlus_sub_lt_of_slicingDist` and `abs_log_mass_ratio_le_of_mem_basisNhd`
-and touches none of them.
+`exists_basisNhd_subset_stabilityDist_ball`, goes through
+`phiPlus_sub_lt_of_slicingDist`
+(`StabilityCondition/Foundation/Deformation/SlicingDistance.lean`) and
+`abs_log_mass_ratio_le_of_mem_basisNhd`, and touches none of them.
 -/
 
 open CategoryTheory.Triangulated
@@ -1036,7 +1037,8 @@ distance ball.  This is one of the two cofinality directions in Proposition
 
 `hε8 : ε < 1 / 8` is stronger than this proof needs: it is consumed once, to
 derive `hε1 : ε < 1` for `Real.sin_pos_of_pos_of_lt_pi`.  It is kept because
-`ε < 1/8` is the foundational library's radius convention for the whole `basisNhd` family and
+`ε < 1/8` is the radius convention of the whole `basisNhd` family
+(`StabilityCondition/Foundation/Deformation/StabilityTopology.lean`) and
 matches `basisNhdFamily`'s generating predicate; weakening it here alone would
 desynchronise this lemma from its siblings for no gain. -/
 theorem exists_stabilityDist_ball_subset_basisNhd

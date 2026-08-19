@@ -30,8 +30,8 @@ noncomputable def cplxCoord : ℂ ≃ₗ[ℝ] (Fin 2 → ℝ) :=
   Complex.basisOneI.equivFun
 
 /-- **The conventions agree.** The stability foundation writes its rays as
-`exp (i π φ)` (`StabilityCondition/Defs.lean:68`); in `basisOneI` coordinates
-that is `rayVec φ`.
+`exp (i π φ)` (`StabilityCondition/Foundation/PreStabilityCondition.lean`); in
+`basisOneI` coordinates that is `rayVec φ`.
 
 Proved through `Complex.basisOneI.repr` rather than `Basis.equivFun_apply`:
 the two are definitionally equal, and the `repr` route avoids `simp`
@@ -47,8 +47,8 @@ theorem cplxCoord_exp (φ : ℝ) :
 /-- `Compatible`, restated on the stability foundation's rays.
 
 It says `T` carries the charge-ray at phase `φ` to the charge-ray at phase
-`f φ`, entirely in the foundational library's own
-`exp (i π ·)` vocabulary. -/
+`f φ`, entirely in the `exp (i π ·)` vocabulary of
+`StabilityCondition/Foundation/PreStabilityCondition.lean`. -/
 theorem compat_exp {T : Matrix.GLPos (Fin 2) ℝ} {f : NormalizedShift}
     (h : Compatible T f) (φ : ℝ) :
     ∃ r : ℝ, 0 < r ∧
@@ -59,8 +59,8 @@ theorem compat_exp {T : Matrix.GLPos (Fin 2) ℝ} {f : NormalizedShift}
 
 /-! ## The matrix factor acting on `ℂ`
 
-The foundational library's central charge lands in `ℂ`, so this is the form in which the
-matrix factor of `G̃L⁺(2, ℝ)` has to act. Everything below is `GLTilde.mat`
+The central charge lands in `ℂ`, so this is the form in which the matrix factor
+of `G̃L⁺(2, ℝ)` has to act. Everything below is `GLTilde.mat`
 transported across `cplxCoord`.
 -/
 
@@ -91,7 +91,7 @@ theorem actC_mul (T U : Matrix.GLPos (Fin 2) ℝ) (z : ℂ) :
     actC (T * U) z = actC T (actC U z) := by
   simp [toMat_mul, ← Matrix.mulVec_mulVec]
 
-/-- `Compatible`, as a statement about `actC` on the foundational library's rays.
+/-- `Compatible`, as a statement about `actC` on the charge rays.
 
 The map `T` carries the charge ray at phase `φ` to the charge ray at phase
 `f φ`, scaled by some `r > 0`. -/

@@ -25,9 +25,25 @@ minA·(s² + t²) + 2·minB·s + 2·minC = 0
 ```
 
 where `minA, minB, minC` are the three `2 × 2` minors of the matrix with rows
-`v` and `w`. So **every numerical wall is a circle centred on the `s`-axis, or
-a vertical line** — the statement the "walls are nested semicircles" picture
-rests on.
+`v` and `w`. So **every numerical wall is cut out by a conic with no `s·t` term
+and centre on the `s`-axis** — the statement the "walls are nested semicircles"
+picture rests on.
+
+Read that as a statement about the *equation*, not about the solution set. In
+the half plane `t ≠ 0` the equation has four cases, and only the first two are
+walls in the geometric sense:
+
+* `minA ≠ 0` and `minB² - 2·minA·minC > 0` — the circle centred at
+  `(-minB/minA, 0)` with that radius squared over `minA²` (`wall_circle_eq`);
+* `minA = 0` and `minB ≠ 0` — the vertical line `s = -minC/minB`
+  (`wall_line_eq`);
+* `minA ≠ 0` and `minB² - 2·minA·minC ≤ 0`, or `minA = minB = 0 ≠ minC` —
+  **empty**. For the first: `v = (0, 1, 0)` and `w = (-1, 0, 1)` have minors
+  `(1, 0, 1)`, so the equation is `s² + t² + 2 = 0`. At `= 0` the only
+  solution has `minA·t = 0`, which `t ≠ 0` excludes;
+* `minA = minB = minC = 0` — the **whole** half plane, since `wallExpr` then
+  vanishes identically. `wall_subset_of_crossZero` and `wall_eq_of_meet`
+  exclude this case by hypothesis for exactly that reason.
 
 ## What this is a theorem about, and what it is not
 
@@ -43,15 +59,24 @@ would invoke Bogomolov–Gieseker, these statements simply carry the numerical
 hypothesis they actually use (`minA ≠ 0`, `t ≠ 0`) as an explicit hypothesis of
 the theorem. Nothing is axiomatised.
 
+The discriminant does appear in the prose at `minorCross_eq_zero_of_two_walls`
+and `wall_eq_of_meet`, to say what the charge hypothesis costs and what
+nesting would need. It is discussion, not a hypothesis: no statement below
+mentions it.
+
 ## Main results
 
 * `wallExpr_eq` — the collapse. Proved as an identity, with no side conditions.
 * `wall_iff_circle` — the circle/line form, for `t ≠ 0`.
 * `wall_circle_eq` — centre `(-minB/minA, 0)` and radius² `(minB² - 2·minA·minC)/minA²`.
 * `minA_add_smul` and friends — a wall depends only on `w` modulo `v`.
-* `charge_eq_zero_iff` — where the charge degenerates.
+* `charge_eq_zero_iff` — where the charge degenerates, hence where all walls
+  of a fixed `v` concur.
 * `eq_of_two_walls` — two walls through a common point with non-proportional
   minor vectors pin down that point uniquely.
+* `wall_eq_of_meet` — distinct walls of a fixed `v` are **disjoint**. This is
+  the separation half of Bertram's nested wall theorem; the ordering half
+  needs the discriminant and is not proved here.
 -/
 
 namespace CategoryTheory.Triangulated.StabilityCondition.Wall
@@ -191,7 +216,7 @@ theorem wallExpr_shift (s t k : ℝ) (v w : NumClass) :
 
 /-! ### The minor vector is orthogonal to `v`
 
-The fact that makes nesting true, and the one the "two walls through one
+The fact that makes disjointness true, and the one the "two walls through one
 point" section below does without.
 
 `(minA, minB, minC)` is the cross product `v × w` with its coordinates
@@ -213,9 +238,14 @@ theorem minor_orth (v w : NumClass) :
 /-! ### Degeneracy of the charge -/
 
 /-- The charge of `v` vanishes at `(s, t)`, `t ≠ 0`, exactly when `v` is the
-rank-scaled point `r · (1, s, (s² + t²)/2)`. This is the one place a wall can
-fail to be a genuine circle, and it is exactly the locus the geometric theory
-excludes. -/
+rank-scaled point `r · (1, s, (s² + t²)/2)`.
+
+This locus is **not** where a wall stops being a circle — that is governed by
+the minors, and the module docstring lists the four cases. It is where *every*
+wall of `v` passes through at once: at such a point `minor_orth` turns the
+wall equation into an identity, so no `w` is excluded and the walls of `v`
+concur. `wall_eq_of_meet_needs_charge` exhibits that failure explicitly, and it
+is the locus the geometric theory excludes. -/
 theorem charge_eq_zero_iff {s t : ℝ} (ht : t ≠ 0) (v : NumClass) :
     (reZ s t v = 0 ∧ imZ s t v = 0) ↔
       (v.deg = s * v.rk ∧ v.ch2 = ((s ^ 2 + t ^ 2) / 2) * v.rk) := by
@@ -234,9 +264,9 @@ theorem charge_eq_zero_iff {s t : ℝ} (ht : t ≠ 0) (v : NumClass) :
 
 If two walls meet at `(s, t)` and their minor vectors are **not** proportional
 in the `(A, B)` slot, then that meeting point is forced. This is the algebraic
-half of "walls for a fixed `v` are nested".
+half of "walls for a fixed `v` are disjoint".
 
-The full nesting theorem follows, and is proved in the next section. It needs
+The disjointness theorem follows, and is proved in the next section. It needs
 exactly the extra input this section lacks: that both minor vectors are cross
 products against a **common** `v`, hence both orthogonal to it. That is
 `minor_orth`, and it is a one-line `ring` identity. -/
@@ -252,10 +282,12 @@ theorem eq_of_two_walls {s t : ℝ} (ht : t ≠ 0) {v w₁ w₂ : NumClass}
   rw [eq_div_iff hD]
   linear_combination (-(minA v w₂) / 2) * h₁ + (minA v w₁ / 2) * h₂
 
-/-! ## The nested wall theorem
+/-! ## Disjointness of the walls of a fixed class
 
-Two distinct walls for the same `v` never meet — away from the one point where
+Two distinct walls for the same `v` never meet — away from the locus where
 `v`'s own charge degenerates, which `charge_eq_zero_iff` already identifies.
+This is the separation half of Bertram's nested wall theorem; the ordering
+half is discussed at `wall_eq_of_meet` and is not proved here.
 
 The proof is four linear eliminations and no geometry. Write `Aᵢ, Bᵢ, Cᵢ` for
 the minors of `(v, wᵢ)` and `u = s² + t²`. A meeting point gives two circle
@@ -310,13 +342,22 @@ theorem crossAC_swap (v w₁ w₂ : NumClass) :
 theorem crossBC_swap (v w₁ w₂ : NumClass) :
     crossBC v w₂ w₁ = -crossBC v w₁ w₂ := by simp only [crossBC]; ring
 
-/-- **The nested wall theorem, algebraic core.** Two walls for the same `v`
+/-- **The disjointness theorem, algebraic core.** Two walls for the same `v`
 that meet at a point where `v`'s charge does not vanish have proportional
 minor vectors — so they are the same wall.
 
-The charge hypothesis is not a genericity dodge: `charge_eq_zero_iff` shows the
-excluded locus is a single point of the `(s, t)` half plane for each `v` of
-nonzero rank, and it is exactly where the wall stops being a circle. -/
+The charge hypothesis is not a genericity dodge, and it costs less than it
+looks. Solving `charge_eq_zero_iff` for `v` of nonzero rank gives
+`s = deg/rk` and `t² = -(deg² - 2·rk·ch₂)/rk²`, so writing `Δ` for the
+Bogomolov–Gieseker discriminant `deg² - 2·rk·ch₂` the excluded locus is
+
+* a single point of each half plane when `Δ < 0`, and
+* **empty** when `Δ ≥ 0`.
+
+Bogomolov–Gieseker puts the geometric classes in the second case, where the
+hypothesis holds automatically. It is stated as a hypothesis rather than
+derived because `Δ ≥ 0` is a theorem about sheaves and `NumClass` is a triple;
+see the module docstring. -/
 theorem minorCross_eq_zero_of_two_walls {s t : ℝ} (ht : t ≠ 0) {v w₁ w₂ : NumClass}
     (hv : ¬(reZ s t v = 0 ∧ imZ s t v = 0))
     (h₁ : wallExpr s t v w₁ = 0) (h₂ : wallExpr s t v w₂ = 0) :
@@ -391,13 +432,24 @@ theorem wall_subset_of_crossZero {v w₁ w₂ : NumClass}
       linear_combination 2 * s * hAB + 2 * hAC + minA v w₂ * h
     exact (mul_eq_zero.mp this).resolve_left hA
 
-/-- **Bertram's nested wall theorem.** Two walls for the same numerical class
-`v` that meet at a single point, away from the degenerate locus of `v`'s own
+/-- **Disjointness of the walls of a fixed class — the separation half of
+Bertram's nested wall theorem.** Two walls for the same numerical class `v`
+that meet at a single point, away from the degenerate locus of `v`'s own
 charge, are the **same wall** — they agree at every point of the half plane.
 
-Contrapositively: distinct numerical walls for a fixed `v` are disjoint. That
-is the statement the "walls are nested semicircles" picture rests on, and the
-reason wall-crossing for a fixed class is totally ordered.
+Contrapositively: distinct numerical walls for a fixed `v` are disjoint.
+
+**Disjointness is not yet nesting**, and the gap is stated rather than
+narrated. Nesting is an ordering claim — that of any two walls one lies inside
+the other — and disjoint circles centred on a common axis can equally well sit
+side by side. What rules that out is that the walls of a fixed `v` form a
+coaxial *pencil*: `minor_orth` writes every wall of `v` of nonzero rank as
+`minA·((s² + t²) - 2·ch₂/rk) + 2·minB·(s - deg/rk) = 0`, so all of them pass
+through the base locus of `charge_eq_zero_iff`, and a coaxial pencil with no
+real base point is nested. That base point is real exactly when the
+Bogomolov–Gieseker discriminant is negative, so nesting needs the discriminant
+input this file declines to assume — see the module docstring. Only the
+disjointness clause is proved here.
 
 Both minor vectors are required to be nonzero. A zero minor vector is not a
 wall — `wallExpr` vanishes identically — so excluding it excludes nothing the
@@ -426,7 +478,11 @@ Take `v = (2, 0, 1)` and the point `(s, t) = (0, 1)`. Then `reZ = -1 + 1 = 0`
 and `imZ = 0`, so the charge degenerates there; and the wall equation
 `minA·(s² + t²) + 2·minB·s + 2·minC = 0` becomes `minA + 2·minC = 0`, which
 `minor_orth` makes automatic for **every** `w`. So at that one point *all*
-walls of `v` meet, and nesting fails as badly as it possibly could.
+walls of `v` meet, and disjointness fails as badly as it possibly could.
+
+That `v` is exactly a class the geometric theory excludes: its discriminant is
+`deg² - 2·rk·ch₂ = 0 - 2·2·1 = -4 < 0`, which no Bogomolov–Gieseker semistable
+class has. The hypothesis is load-bearing here and vacuous there.
 
 `w₁ = (0, 1, 0)` gives the unit circle and `w₂ = (1, 0, 0)` the line `s = 0`.
 They meet at `(0, 1)`, both minor vectors are nonzero, and they are different

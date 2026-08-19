@@ -50,8 +50,9 @@ Three Mathlib-level gaps blocked it and all three are closed:
   `LinearEquiv.toModuleIso` in place of `AddEquiv.toAddCommGrpIso`.
 
 The first two are general-purpose and belong upstream, so they live next door
-in `Triangulated/LinearOpposite.lean`, written in the `ForMathlib` pattern the
-foundational library uses. Only the third is here.
+in `CategoryTheory/Triangulated/LinearOpposite.lean`, written in the
+`ForMathlib` pattern this repository uses for Mathlib gaps. Only the third is
+here.
 
 ## What this file still does not provide
 

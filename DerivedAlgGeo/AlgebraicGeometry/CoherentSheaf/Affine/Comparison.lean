@@ -53,7 +53,7 @@ not rediscover them.
    to `0` and reports a type mismatch at `Type 1` rather than an ambiguity. Annotating
    `.{u, u, u}` at the use site is what fixes it — `(M := …)` does not, because the
    universes bind first. This is the gotcha already recorded in
-   `FinitePresentationOfPresentation.lean`.
+   `AlgebraicGeometry/Modules/Presentation.lean`.
 2. **Anonymous constructors do not see the expected type here.** `refine ⟨⟨?_⟩, ?_⟩` against
    a ground `Presentation.IsFinite …` goal still elaborates at universe `0`, and
    `refine Presentation.IsFinite.mk ?_ ?_` gets stuck synthesising

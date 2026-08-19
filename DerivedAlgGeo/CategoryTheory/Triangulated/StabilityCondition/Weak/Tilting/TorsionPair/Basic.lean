@@ -31,7 +31,8 @@ theory; the tilt itself is a separate, much larger obligation and is **not**
 formalised here.
 
 Nothing in this file needs algebraic geometry, a triangulated category, or the
-foundational library library. It is abelian-category theory and imports only Mathlib.
+rest of `StabilityCondition/`. It is abelian-category theory and imports only
+Mathlib.
 
 ## Main results
 

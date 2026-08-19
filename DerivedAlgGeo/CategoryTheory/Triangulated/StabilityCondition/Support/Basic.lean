@@ -19,8 +19,9 @@ negative definite on `ker Z`. This file proves the two are equivalent.
 `S` here is **an arbitrary subset** of a finite-dimensional real normed space.
 In the intended application it is the set of classes of `σ`-semistable objects,
 but that identification needs a stability condition and is not made here: no
-declaration below mentions a triangulated category, a slicing, or the foundational library
-library. Every statement is linear algebra plus one compactness argument, and
+declaration below mentions a triangulated category, a slicing, or anything
+else in `StabilityCondition/`. Every statement is linear algebra plus one
+compactness argument, and
 would hold verbatim for any other choice of `S`.
 
 The intended `W` is `ℂ`; the proofs never use anything about the target beyond

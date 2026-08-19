@@ -18,36 +18,36 @@ This file formalizes the **lattice half** of that statement, and only that.
 
 ## What is proved, and what it is a statement about
 
-The carrier is `Fin n → ℤ`, exactly as `Lattice/NumericalK.lean` uses
-`Fin 2 → ℤ`. **It is not `K₀(A)`.** Identifying the two is the Jordan–Hölder
+The carrier is `Fin n → ℤ`, exactly as `LinearAlgebra/Lattice/Numerical.lean`
+uses `Fin 2 → ℤ`. **It is not `K₀(A)`.** Identifying the two is the Jordan–Hölder
 theorem for a finite-length abelian category — that `K₀(A)` is free abelian on
 the classes of the simples — and:
 
 * **Mathlib does not have it.** There is no Jordan–Hölder or composition
   series for abelian categories at the pin; `Mathlib/Order/JordanHolder.lean`
   is about modular lattices and is not connected to `K₀` of a category.
-* **The foundational library does not have it either.** `GrothendieckGroup/` builds `K₀` as
-  a quotient of a free abelian group by a relation subgroup, and nothing there
-  or anywhere else in the foundational library says that quotient is free on the simples.
+* **This repository does not have it either.**
+  `CategoryTheory/Triangulated/GrothendieckGroup/` builds `K₀` as a quotient of
+  a free abelian group by a relation subgroup, and nothing there or anywhere
+  else in the library says that quotient is free on the simples.
 
 So the identification is an unrealized assumption, exactly like the one
-`Lattice/NumericalK.lean` records, and it is never discharged here. Every
+`LinearAlgebra/Lattice/Numerical.lean` records, and it is never discharged
+here. Every
 theorem below is a theorem about `Fin n → ℤ` and would hold if no abelian
 category existed.
 
-## Relation to the foundational library
+## Relation to the stability-function foundation
 
-`CategoryTheory.semiClosedUpperHalfPlane` and its closure under addition are the
-foundational library's, in `ForMathlib/Analysis/SpecialFunctions/Complex/ArgConvexity.lean`.
-What the foundational library does **not** have, and what is added here, is closure under
-positive scaling and closure under a nonempty finite sum — the two facts a
-positive-integer combination of simple charges needs.
+`semiClosedUpperHalfPlane` and its basic API are defined in
+`StabilityCondition/Foundation/StabilityFunction/Basic.lean`. What that module
+does **not** carry, and what is added here, is closure under positive scaling
+and closure under a nonempty finite sum — the two facts a positive-integer
+combination of simple charges needs.
 
-Those two live in this repo's own namespace rather than being injected as
-`CategoryTheory.semiClosedUpperHalfPlane_*`. The repo already carries 21
-dot-notation extensions on foundational library types, each of which is a name a future
-foundational library bump could collide with (CLAUDE.md §1); there is no reason to make that
-list longer for lemmas nothing else needs to find by dot notation.
+Those two live in this file's own namespace rather than extending the
+foundation module's, because nothing else needs to find them by dot notation
+and the foundation module is the one every stability-function consumer imports.
 
 ## Main results
 
@@ -63,7 +63,7 @@ namespace CategoryTheory.Triangulated.StabilityCondition.FiniteLength
 open CategoryTheory.Triangulated
 open CategoryTheory Complex
 
-/-! ### Two closure properties the foundational library does not carry -/
+/-! ### Two closure properties the stability-function foundation does not carry -/
 
 /-- The cone is closed under multiplication by a positive real. -/
 theorem mem_cone_smul {r : ℝ} (hr : 0 < r) {z : ℂ}

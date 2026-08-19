@@ -10,8 +10,9 @@ import Mathlib.CategoryTheory.Shift.ShiftedHomOpposite
 # `R`-linearity of the opposite category and of the opposite shift
 
 Every declaration here is the `R`-linear counterpart of an additive one Mathlib
-already has, written in the `ForMathlib` pattern the foundational library uses
-(see `LinearAlgebra/Matrix/PolarDecomposition.lean`): supplied because Mathlib
+already has, written in the `ForMathlib` pattern this repository uses for
+Mathlib gaps (see `LinearAlgebra/Matrix/PolarDecomposition.lean`): supplied
+because Mathlib
 lacks it at the pin, and written to be upstreamable rather than convenient
 here. Nothing in it mentions a stability condition or a Fourier--Mukai kernel.
 
