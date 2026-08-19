@@ -262,9 +262,8 @@ open CategoryTheory.Triangulated
 #print axioms CategoryTheory.Triangulated.Slicing.geProp_of_hn
 #print axioms CategoryTheory.Triangulated.Slicing.leProp_of_semistable
 #print axioms CategoryTheory.Triangulated.Slicing.gtProp_of_semistable
-#print axioms CategoryTheory.Triangulated.Slicing.HasPhaseTruncations
 #print axioms CategoryTheory.Triangulated.Slicing.exists_phase_truncation
-#print axioms CategoryTheory.Triangulated.Slicing.hasPhaseTruncations
+#print axioms CategoryTheory.Triangulated.Slicing.exists_phase_truncation_zero
 #print axioms CategoryTheory.Triangulated.Slicing.exists_dual_phase_truncation
 #print axioms CategoryTheory.Triangulated.Slicing.exists_upper_boundary_triangle
 #print axioms CategoryTheory.Triangulated.Slicing.exists_lower_boundary_triangle
