@@ -461,14 +461,14 @@ jobs:
           echo "using $PY311 ($("$PY311" -V 2>&1))"
           "$PY311" -m venv .mfc-venv
           .mfc-venv/bin/pip install --quiet \
-            "mfc[yaml] @ git+https://github.com/chris-dare-dev/math-formal-contract-lean@b41d9bc87371ba807e069cf8c99cf632c0ca6bda#subdirectory=contract"
+            "mfc[yaml] @ git+https://github.com/chris-dare-dev/math-formal-contract-lean@21e3b442a85c05978a70acc0b047da4a3ff22d7c#subdirectory=contract"
           MFC=.mfc-venv/bin/mfc
 
           "$MFC" validate attest/lean-emission.json
 
           "$MFC" env --repo . --out attest/environment.json \
             --axiom-allowlist propext,Quot.sound,Classical.choice \
-            --emitter-version mfc-emit/1.0.0
+            --emitter-version mfc-emit/1.1.0
           "$MFC" validate attest/environment.json
 
           "$MFC" bundle --emission attest/lean-emission.json \

@@ -7,22 +7,19 @@
   "repo": "derived-alg-geo-lean",
   "recorded_at": "2026-08-18",
   "recorded_from": "origin/main ae1424a",
-
   "lean_toolchain": "leanprover/lean4:v4.32.1",
   "mathlib_rev": "520045ab14e26149ee970e2e617ca04b09bde5d6",
   "mathlib_input_rev": "v4.32.1",
   "mathlib_is_direct_require": true,
-
   "external_bridgeland_source_dependency": false,
   "literal_source_independence_recorded_at": "2026-08-14",
-
-  "mfc_rev": "d3df38183164d86ea5661ff3c26942c2c04c39fc",
+  "mfc_rev": "21e3b442a85c05978a70acc0b047da4a3ff22d7c",
   "mfc_repo": "https://github.com/chris-dare-dev/math-formal-contract-lean",
   "mfc_has_lake_dependencies": false,
-
   "cross_repo": {
     "status": "MERGED",
     "former_peer": "bridgeland-stab-lean",
     "note": "Both owner-authored histories now share this v4.32.1 monorepo branch."
-  }
+  },
+  "mfc_cli_rev": "21e3b442a85c05978a70acc0b047da4a3ff22d7c"
 }

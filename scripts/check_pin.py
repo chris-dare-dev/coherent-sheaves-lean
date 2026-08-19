@@ -60,6 +60,32 @@ for key, pkg in (("mfc_rev", "MathFormalContract"),):
     else:
         check(key, expected, packages[pkg].get("rev"))
 
+# The SECOND pin to the same repository: CI installs the mfc CLI by pip from a
+# commit named in ci.yml, independent of the Lake dependency above. Until
+# 2026-08-19 nothing compared the two, and they drifted (2026-08-18
+# adversarial review, P3-15). The emitter (Lean) and the validator/sealer
+# (Python) must read one schema; this check keeps both pins recorded and equal
+# to each other via pins.json.
+import re
+
+ci_text = (root / ".github" / "workflows" / "ci.yml").read_text()
+cli_pins = set(re.findall(
+    r"math-formal-contract-lean@([0-9a-f]{40})", ci_text))
+expected_cli = pins.get("mfc_cli_rev")
+if expected_cli is None:
+    failures.append("mfc_cli_rev is missing from pins.json; ci.yml installs "
+                    "the mfc CLI by pip and that pin must be recorded")
+elif not cli_pins:
+    failures.append("ci.yml no longer pins the mfc CLI by commit; record how "
+                    "CI obtains mfc or restore the pinned install")
+elif cli_pins != {expected_cli}:
+    failures.append(f"mfc_cli_rev: pins.json says {expected_cli!r}, ci.yml "
+                    f"installs {sorted(cli_pins)!r}")
+elif expected_cli != pins.get("mfc_rev"):
+    failures.append(f"mfc_cli_rev {expected_cli!r} differs from mfc_rev "
+                    f"{pins.get('mfc_rev')!r}; the Lean emitter and the "
+                    f"Python validator would read different schemas")
+
 if failures:
     print(f"FAIL  {pins['repo']} pin coherence ({len(failures)} problem(s)):")
     for f in failures:
