@@ -257,8 +257,8 @@ items:
     kind: task
     parent: contract-v1-m2
     title: "Tag v0.1.0 — the decision #173 could not make"
-    status: blocked
-    summary: "#173 asked for a release and turned out to be three things: two missing producers, a wrong asset name, and a decision. The producers landed (mfc build, mfc seal, and build/1.0's `measured` block; CI now runs the twelve conformance rules on every commit at 10 passed, 0 failed, 2 not_run). The asset name was wrong -- bindings.json is not an artifact this contract defines. What is left is the decision: tagging before #134 and #178 land freezes C-08 and C-10 as not_run in a published bundle, against a corpus resolution nobody computed and a review nobody performed. Wait-and-tag-seven or tag-now-at-six are both defensible; tagging without choosing is not. Blocked by #134 and #178."
+    status: done
+    summary: "#173 asked for a release and turned out to be three things: two missing producers, a wrong asset name, and a decision. The producers landed (mfc build, mfc seal, and build/1.0's `measured` block; CI now runs the twelve conformance rules on every commit at 10 passed, 0 failed, 2 not_run). The asset name was wrong -- bindings.json is not an artifact this contract defines. What is left is the decision: tagging before #134 and #178 land freezes C-08 and C-10 as not_run in a published bundle, against a corpus resolution nobody computed and a review nobody performed. Wait-and-tag-seven or tag-now-at-six are both defensible; tagging without choosing is not. RESOLVED 2026-08-18: tagged at six of seven rather than waiting. v0.1.0 is tag object df9e6e6d at commit 7f649532, with attest/* shipped as release assets and 16002 constants recorded. C-08 and C-10 are not_run in the published bundle permanently, which is the cost that was accepted; #134 and #178 remain open and are no longer blockers for anything."
     priority: must
     size: S
     tags: [value, release, gate-owner]
