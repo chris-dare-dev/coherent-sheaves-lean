@@ -67,7 +67,9 @@ jobs:
       # already builds, and the docs package shares this package directory, so the oleans
       # fetched here are the ones it reuses.
       - name: Build DerivedAlgGeo
-        uses: leanprover/lean-action@v1
+        # Pinned to the same commit as ci.yml; `v1` is a moving tag
+        # (2026-08-18 adversarial review, P2-5).
+        uses: leanprover/lean-action@38fbc41a8c28c4cbaec22d7f7de508ec2e7c0dd9 # v1
         with:
           # The third and last call site, set for the same reason as the other
           # two even though this job gates nothing: `nanoda` defaults to off,

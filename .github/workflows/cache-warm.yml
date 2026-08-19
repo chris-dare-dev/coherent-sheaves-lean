@@ -71,7 +71,11 @@ jobs:
           restore-keys: |
             lake-build-linux-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-
 
-      - uses: leanprover/lean-action@v1
+      # Pinned to the same commit as ci.yml: `v1` is a moving tag, and this
+      # job writes the build cache the required CI lane restores, so a floating
+      # tag here is a supply-chain channel into a required check (2026-08-18
+      # adversarial review, P2-5).
+      - uses: leanprover/lean-action@38fbc41a8c28c4cbaec22d7f7de508ec2e7c0dd9 # v1
         with:
           build: true
           use-mathlib-cache: true
