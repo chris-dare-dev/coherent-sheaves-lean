@@ -21,7 +21,7 @@ rev = "v4.32.1"
 [[require]]
 name = "MathFormalContract"
 git = "https://github.com/chris-dare-dev/math-formal-contract-lean"
-rev = "21e3b442a85c05978a70acc0b047da4a3ff22d7c"
+rev = "5acddfc185bf8eae870ac5396b54edaab084b564"
 
 [[lean_lib]]
 name = "DerivedAlgGeo"
@@ -49,5 +49,15 @@ srcDir = "scripts"
 [[lean_exe]]
 name = "emit"
 root = "Emit"
+srcDir = "exe"
+supportInterpreter = true
+
+# The restate producer. `supportInterpreter` for the same reason `emit` needs
+# it: `importModules` reaches Init/Std/Lean declarations with no native
+# implementation, and omitting the flag FAILS ONLY ON LINUX -- macOS resolves
+# the symbol dynamically, so it passes locally and dies in CI.
+[[lean_exe]]
+name = "restate"
+root = "Restate"
 srcDir = "exe"
 supportInterpreter = true
