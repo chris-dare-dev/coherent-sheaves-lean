@@ -17,8 +17,8 @@ import Mathlib.Tactic
 **Mathlib has no polar decomposition for matrices at the pinned revision**
 (`8a178386`) — a search for `polarDecomposition` across the whole library
 returns nothing. This file supplies the case this repo needs, in the
-`ForMathlib` pattern the foundational library itself uses, and is written to be upstreamable
-rather than to be convenient here.
+`ForMathlib` pattern this repository uses for Mathlib gaps, and is written to be
+upstreamable rather than to be convenient here.
 
 ## Why it costs almost nothing now
 

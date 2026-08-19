@@ -25,8 +25,9 @@ cohomology of any t-structure sends distinguished triangles to exact short
 complexes, without stability-function or Harder--Narasimhan hypotheses.
 
 For objects of an HRS-tilted heart, the amplitude bounds supplied by
-`HeartCohomology.lean` also show that the first arrow is monic and the last is
-epic, giving the expected zeroes at the two ends.
+`StabilityCondition/Weak/Tilting/Cohomology/Basic.lean` also show that the
+first arrow is monic and the last is epic, giving the expected zeroes at the
+two ends.
 -/
 
 namespace CategoryTheory.Triangulated.Tilting

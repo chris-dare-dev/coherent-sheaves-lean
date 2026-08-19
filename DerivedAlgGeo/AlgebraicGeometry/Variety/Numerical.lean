@@ -22,7 +22,7 @@ The important direction of construction is encoded in the fields:
   short exact sequences;
 * Chern classes are primary data;
 * `chComp` is computed from those Chern classes by the universal formulas in
-  `Numerical/CharacteristicClasses.lean`;
+  `AlgebraicGeometry/Numerical/Core/CharacteristicClasses.lean`;
 * `toddComp` is computed from the Chern classes of the tangent bundle;
 * geometric Chern classes and Euler characteristics agree with their numerical descendants.
 

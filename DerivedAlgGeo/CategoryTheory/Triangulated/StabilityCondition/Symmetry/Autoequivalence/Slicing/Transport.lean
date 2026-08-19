@@ -56,7 +56,8 @@ autoequivalences. That is a design decision, not an oversight.
    `interval_thinFiniteLength_of_inclusion_strict` does not apply, since it
    compares two `intervalProp`s on the *same* object.
 
-## Why two `@[nolint unusedArguments]`s below, and one in `K0Functor.lean`
+## Why two `@[nolint unusedArguments]`s below, and one in
+`CategoryTheory/Triangulated/GrothendieckGroup/Functorial.lean`
 
 The environment linter reports `[F.Additive]` unused by `PostnikovTower.mapF`
 and `[Φ.inverse.Additive]` unused by `Slicing.mapEquiv`. Both are true of the

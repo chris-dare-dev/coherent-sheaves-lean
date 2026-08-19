@@ -123,7 +123,7 @@ def chainLength : List ℂ → ℝ
     chainLength (x :: y :: xs) = ‖y - x‖ + chainLength (y :: xs) := rfl
 
 /-- Inserting an extra initial vertex cannot shorten the route from a fixed
-foundational library through a chain. -/
+anchor point through a chain. -/
 private theorem chainLength_insert_front (a b : ℂ) (xs : List ℂ) :
     chainLengthFrom a xs ≤ ‖b - a‖ + chainLengthFrom b xs := by
   cases xs with
