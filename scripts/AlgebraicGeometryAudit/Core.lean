@@ -2048,3 +2048,38 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms AlgebraicGeometry.Numerical.PreservesCategoricalEuler
 #print axioms AlgebraicGeometry.Numerical.preservesEuler_of_descends
 #print axioms AlgebraicGeometry.Numerical.pairing_mukaiVector_eq_on_realized_of_categorical
+
+/-! ## The structure sheaf as a coherent sheaf, and Picard triviality -/
+
+#print axioms AlgebraicGeometry.Scheme.structureSheafCoh
+#print axioms AlgebraicGeometry.Scheme.structureSheafCoh_obj
+#print axioms AlgebraicGeometry.Scheme.structureSheafCoh_obj_eq_unit
+#print axioms AlgebraicGeometry.Scheme.Modules.LineBundleData.toPic_eq_iff
+#print axioms AlgebraicGeometry.Scheme.Modules.LineBundleData.unit_toPic
+
+/-! ## K3 surfaces
+
+A smooth projective surface with `ω_X` trivial in `Pic` and `H¹(X, O_X) = 0`.
+Nothing here constructs such a surface, and nothing here connects the geometric
+definition to the numerical `AlgebraicGeometry.Numerical.K3.IsK3` — that bridge
+is Hirzebruch--Riemann--Roch and does not exist at the pin. See the module
+docstring in `DerivedAlgGeo/AlgebraicGeometry/Surface/K3.lean`. -/
+
+#print axioms AlgebraicGeometry.SmoothProperVariety.CanonicalSheafData.canonicalClass_eq_one_iff
+#print axioms AlgebraicGeometry.SmoothProperVariety.IsK3Surface
+#print axioms AlgebraicGeometry.SmoothProperVariety.IsK3Surface.projective
+#print axioms AlgebraicGeometry.SmoothProperVariety.IsK3Surface.canonicalClass_eq_one
+#print axioms AlgebraicGeometry.SmoothProperVariety.IsK3Surface.h1_vanishing
+#print axioms AlgebraicGeometry.SmoothProperVariety.IsK3Surface.canonicalSheaf_iso
+#print axioms AlgebraicGeometry.SmoothProperVariety.IsK3Surface.antiCanonicalClass_eq_one
+#print axioms AlgebraicGeometry.K3Surface
+#print axioms AlgebraicGeometry.K3Surface.toSmoothProperVariety
+#print axioms AlgebraicGeometry.K3Surface.canonical
+#print axioms AlgebraicGeometry.K3Surface.isK3
+#print axioms AlgebraicGeometry.K3Surface.mk.inj
+#print axioms AlgebraicGeometry.K3Surface.mk.sizeOf_spec
+#print axioms AlgebraicGeometry.K3Surface.toVariety
+#print axioms AlgebraicGeometry.K3Surface.toScheme
+#print axioms AlgebraicGeometry.K3Surface.instIsProjective
+#print axioms AlgebraicGeometry.K3Surface.canonicalSheaf_iso
+#print axioms AlgebraicGeometry.K3Surface.h1_vanishing
