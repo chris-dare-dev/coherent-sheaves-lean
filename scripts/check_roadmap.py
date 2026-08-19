@@ -56,20 +56,21 @@ import sys
 REPO = "chris-dare-dev/derived-alg-geo-lean"
 LEAF_KINDS = ("deliverable", "task")
 
-#: RM-06 gaps that predate this rule's scoping, recorded rather than tolerated
-#: silently. THIS LIST MAY ONLY SHRINK: adding to it records a new gap instead
-#: of fixing one, and the next reader cannot tell those apart.
+#: RM-06 gaps recorded rather than tolerated silently. THIS LIST MAY ONLY
+#: SHRINK: adding to it records a new gap instead of fixing one, and the next
+#: reader cannot tell those apart.
 #:
-#: It was 27 entries for a few hours, and 26 of those were closed issues on
-#: CLOSED milestones -- SF0 (33 closed, description "Complete") and DG1 (7
-#: closed). Finished work that was never itemized cannot be work the roadmap
-#: loses track of, so flagging it bought nothing and cost something: a list
-#: reading "27 known gaps" invites being ignored, and #554 -- the one live gap
-#: -- was buried in it. See the scoping in RM-06 below, and #639.
-RM06_KNOWN_GAPS = {
-    554,   # SF8.5, open, on the open SF8 milestone. A real gap: give it a
-           # roadmap entry and this list is empty.
-}
+#: EMPTY as of 2026-08-19, and it took two steps to get here. It began at 27,
+#: of which 26 were closed issues on CLOSED milestones -- finished work that
+#: cannot go missing, so RM-06 was scoped to live work (#639) and they stopped
+#: being findings rather than being forgiven. That left #554, the one real gap,
+#: which had been invisible inside the 27. It now has a roadmap entry
+#: (stability-families-e14-5) and a GitHub parent, so it is referenced and the
+#: list is empty.
+#:
+#: An empty list is the intended steady state. A number appearing here again
+#: means someone chose to record a gap instead of closing it.
+RM06_KNOWN_GAPS: set[int] = set()
 
 
 def fail(rule, detail):
