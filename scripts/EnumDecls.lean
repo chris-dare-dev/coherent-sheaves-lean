@@ -56,6 +56,7 @@ repository's to audit. -/
 private def libraryOf (m : Name) : Option String :=
   let dg := `DerivedAlgGeo.CategoryTheory.DGCategory
   let triangulated := `DerivedAlgGeo.CategoryTheory.Triangulated
+  let constantSheafPullback := `DerivedAlgGeo.CategoryTheory.ConstantSheafPullback
   let equivalenceTransport := `DerivedAlgGeo.CategoryTheory.EquivalenceTransport
   let pseudofunctorObjectProperty :=
     `DerivedAlgGeo.CategoryTheory.PseudofunctorObjectProperty
@@ -66,6 +67,7 @@ private def libraryOf (m : Name) : Option String :=
   let development := `DerivedAlgGeo.Development
   if m == dg || dg.isPrefixOf m then some "DGCategory"
   else if m == triangulated || triangulated.isPrefixOf m ||
+      m == constantSheafPullback || constantSheafPullback.isPrefixOf m ||
       m == equivalenceTransport || equivalenceTransport.isPrefixOf m ||
       m == pseudofunctorObjectProperty ||
         pseudofunctorObjectProperty.isPrefixOf m ||
