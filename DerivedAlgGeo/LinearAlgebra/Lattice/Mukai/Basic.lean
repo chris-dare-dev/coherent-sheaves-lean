@@ -22,7 +22,8 @@ needs `D^b(Coh X)`, Chern characters and Hirzebruch–Riemann–Roch, none of wh
 exist in Mathlib at the pin. It is geometry, it lives in the assumption
 frontier, and nothing here discharges it or depends on it.
 
-This is the same discipline `Lattice/NumericalK.lean` applies to `Fin 2 → ℤ`:
+This is the same discipline `LinearAlgebra/Lattice/Numerical.lean` applies to
+`Fin 2 → ℤ`:
 every theorem below is a theorem about **an arbitrary symmetric bilinear
 `ℤ`-lattice**, and is true whether or not any surface exists.
 

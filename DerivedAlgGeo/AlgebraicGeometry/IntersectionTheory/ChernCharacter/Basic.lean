@@ -30,7 +30,8 @@ the triangular identities
 `tau_i(F) = sum_{a+b=i} ch_a(F) * td_b(X)`.
 
 The formulas are implemented through codimension four, the current bound of
-`Numerical/CharacteristicClasses.lean`.  Isomorphism and exact-sequence results use explicit
+`AlgebraicGeometry/Numerical/Core/CharacteristicClasses.lean`.  Isomorphism and
+exact-sequence results use explicit
 rank and Euler-polynomial comparisons.  The line-bundle theorem uses an explicit coefficient
 comparison rather than silently assuming a perfect intersection pairing or Riemann--Roch.
 -/

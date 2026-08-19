@@ -37,9 +37,11 @@ a convention problem. `chi₂_sub_chi₂_swap` computes the obstruction on a sur
 
 which is nonzero as soon as `td₁ ≠ 0` — on `ℙ²`, for instance, where `td₁ = (3/2)H`. What is
 true formally is `chi₂_symm_of_toddComp_one_eq_zero`: symmetry holds once `td₁ = 0`, hence on
-every K3 and every Calabi–Yau. The general statement `χ(E,F) = (-1)ⁿ χ(F,E)` is Serre
-duality — a Layer B theorem about `Ext`, not an identity between these integrals — so it is
-not asserted here.
+every K3 and every Calabi–Yau. What Serre duality gives in general is
+`χ(E,F) = (-1)ⁿ χ(F, E ⊗ ω_X)` — a Layer B theorem about `Ext`, not an identity between
+these integrals — so it is not asserted here. The `ω_X` is not decoration: dropping it would
+read, at `n = 2`, as exactly the symmetry disproved above, and it disappears only when
+`ω_X ≅ O_X`, which is the same Calabi–Yau hypothesis as `td₁ = 0`.
 
 ## Continued in the lattice module
 
@@ -255,7 +257,7 @@ noncomputable def mukaiPairing (E F : N) : ℚ :=
     - (V.rank E : ℚ) * mukaiS V F - (V.rank F : ℚ) * mukaiS V E
 
 /-- The Mukai pairing restricts to `mukaiSelfPairing` on the diagonal, so nothing in
-`Numerical/K3.lean` is being redefined. -/
+`Numerical/RiemannRoch/K3.lean` is being redefined. -/
 theorem mukaiPairing_self (E : N) :
     mukaiPairing V E E = mukaiSelfPairing V E := by
   rw [mukaiPairing, mukaiSelfPairing]

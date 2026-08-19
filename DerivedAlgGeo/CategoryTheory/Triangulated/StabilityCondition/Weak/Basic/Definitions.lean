@@ -32,8 +32,9 @@ properties under subobjects, quotients and extensions are proved here from
   here because it stays in the ambient category where the charge and slicing
   live.  `TStructure.heartFullSubcategory_shortExact_of_distTriang` identifies
   those heart triangles with short exact sequences in the abelian heart.
-* The paper's `K(A)` is replaced by the ambient `K₀ C`, on which the foundational library's
-  charges already live; the positivity conditions quantify over heart objects
+* The paper's `K(A)` is replaced by the ambient `K₀ C`, on which this
+  library's charges already live; the positivity conditions quantify over heart
+  objects
   only. The comparison `K(A) ≅ K(D)` for a bounded t-structure is **not**
   available at the pin and is **not** assumed — nothing here needs it.
 * Slopes take values in `WithTop ℝ`, with `μ = +∞` exactly when the charge
@@ -55,7 +56,8 @@ variable {Λ : Type*} [AddCommGroup Λ]
 
 /-! ### Definition 14.1: weak prestability conditions
 
-The same data as the foundational library's `PreStabilityCondition.WithClassMap`, with the
+The same data as `PreStabilityCondition.WithClassMap`
+(`StabilityCondition/Foundation/PreStabilityCondition.lean`), with the
 compatibility ray closed at integer phases and open elsewhere. -/
 
 /-- A weak prestability condition with respect to a class map `v : K₀ C →+ Λ`
