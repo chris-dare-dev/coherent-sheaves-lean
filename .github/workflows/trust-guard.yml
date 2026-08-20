@@ -93,9 +93,47 @@ jobs:
           ^LICENSE\.md$
           '
 
+          # The audit RECORD slices are deliberately not trust surface. They are
+          # append-only lists of `#print axioms` lines, and CLAUDE.md requires
+          # every new public declaration to be added to one -- so guarding them
+          # made this job fire on every substantive pull request, which is how a
+          # gate stops being read. They are already protected, by two gates that
+          # exist for exactly this and by nothing else:
+          #
+          #   * delete a record while its declaration lives, and
+          #     `check_audit_complete.py` sees a newly-unaudited declaration --
+          #     it fails on the ceiling AND on the absent-from-baseline identity
+          #     check;
+          #   * delete a declaration while its record lives, and
+          #     `check_audit.py` fails on the record that resolved to nothing.
+          #
+          # Both of those scripts stay guarded below, so the protection chain is
+          # intact: neutering the checks that protect the records is itself a
+          # trust-surface change.
+          #
+          # The audit UMBRELLAS (`scripts/*Audit.lean`) are NOT excluded. They
+          # carry the contract prose and the import list, so a change there
+          # changes what the audit means rather than what it records.
+          # `DGCategoryAudit.lean` is umbrella and records in one file and stays
+          # guarded for the same reason.
+          exclusions='
+          ^scripts/AlgebraicGeometryAudit/
+          ^scripts/StabilityConditionAudit/
+          '
+
           touched=""
           while IFS= read -r f; do
             [ -n "$f" ] || continue
+            skip=""
+            while IFS= read -r e; do
+              e="$(printf '%s' "$e" | tr -d '[:space:]')"
+              [ -n "$e" ] || continue
+              if printf '%s' "$f" | grep -Eq "$e"; then
+                skip="yes"
+                break
+              fi
+            done <<< "$exclusions"
+            [ -z "$skip" ] || continue
             while IFS= read -r p; do
               p="$(printf '%s' "$p" | tr -d '[:space:]')"
               [ -n "$p" ] || continue
