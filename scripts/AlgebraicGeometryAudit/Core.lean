@@ -2098,6 +2098,43 @@ all. It does NOT supply finite-dimensionality; see issue #332. -/
 #print axioms AlgebraicGeometry.Variety.cohLinear
 #print axioms AlgebraicGeometry.Variety.derivedLinear
 
+/-! ## Spherical objects on a K3 surface
+
+Huybrechts Definition 8.1, with its `E ⊗ ω_X ≅ E` clause discharged by
+triviality of the canonical class, so no derived tensor product is needed.
+`end_one` and `ext_two` are hypotheses: finite-dimensionality of `Hom` in
+`Dᵇ(Coh X)` is #332. Nothing here exhibits a spherical object, and nothing
+connects the definition to `Mukai.IsSpherical`. -/
+
+#print axioms AlgebraicGeometry.K3Surface.DerivedCat
+#print axioms AlgebraicGeometry.K3Surface.IsSphericalObject
+#print axioms AlgebraicGeometry.K3Surface.IsSphericalObject.vanishing
+#print axioms AlgebraicGeometry.K3Surface.IsSphericalObject.end_one
+#print axioms AlgebraicGeometry.K3Surface.IsSphericalObject.ext_two
+#print axioms AlgebraicGeometry.K3Surface.IsSphericalObject.not_isZero
+#print axioms AlgebraicGeometry.K3Surface.IsSphericalObject.finrank_end
+#print axioms AlgebraicGeometry.K3Surface.IsSphericalObject.finrank_ext_two
+#print axioms AlgebraicGeometry.K3Surface.IsSphericalObject.of_iso
+
+/-! ## The numerical shadow of sphericity
+
+`selfEuler_eq_two` computes `χ(E,E) = 1 - 0 + 1 = 2` from the definition of a
+spherical object. `EulerRealization` supplies Hirzebruch--Riemann--Roch — the
+agreement between the categorical Euler characteristic and the numerical one —
+and nothing here constructs one. `isSpherical_mukaiVector` is the forward
+direction only; the converse needs simplicity and Serre duality, as
+`MukaiVector.lean` records. -/
+
+#print axioms AlgebraicGeometry.K3Surface.IsSphericalObject.finrank_hom_eq_zero
+#print axioms AlgebraicGeometry.K3Surface.selfEuler
+#print axioms AlgebraicGeometry.K3Surface.IsSphericalObject.selfEuler_eq_two
+#print axioms AlgebraicGeometry.K3Surface.EulerRealization
+#print axioms AlgebraicGeometry.K3Surface.EulerRealization.cls
+#print axioms AlgebraicGeometry.K3Surface.EulerRealization.chi₂_eq
+#print axioms AlgebraicGeometry.K3Surface.EulerRealization.mk.inj
+#print axioms AlgebraicGeometry.K3Surface.EulerRealization.mk.sizeOf_spec
+#print axioms AlgebraicGeometry.K3Surface.IsSphericalObject.isSpherical_mukaiVector
+
 /-! ## `H⁰(Pⁿ, O(d)) = 0` for `d < 0` (#665, S1a)
 
 The arithmetic and homological steps first, then the two-chart step that produces the cross
