@@ -150,3 +150,242 @@ reviews:
       `stability-mass-triangle` frontier item is a separate governance question:
       that item names an "exact-head" review, and this verdict is
       specialization.
+
+  # ===========================================================================
+  # ENTRY 2 of #178. Lemma 8.2's ISOMETRY clause.
+  #
+  # Lemma 8.2 makes three claims: a right action of GL+(2,R)~, a left action BY
+  # ISOMETRIES of Aut(D), and that the two commute. This declaration is the
+  # second, and for a different group than the paper's.
+  - key: stmt:a520a8d4f877:bridgeland2007.lem-8.2
+    decl: CategoryTheory.Triangulated.AutPairQuot_smul_stabilityDist
+    reviewer:
+      name: Chris Dare
+    reviewed_at: '2026-08-19'
+    reviewed_statement_digest: d0f199340d60d9d8bd617e49893e0cbbd983a34ae97bf6c7bb146f15f77569de
+    # Captured from ci.type under the emitter's pp options with pp.explicit
+    # true, and self-verified: parsed, elaborated under withoutErrToSorry, and
+    # isDefEq against ci.type inside withLevelNames [w, u, u'] -- restateOne's
+    # exact path, with no `universe` command supplying the level context.
+    # Returns restated.
+    reviewed_statement_pp: |
+      ∀ {C : Type u} [inst : CategoryTheory.Category.{w, u} C] [inst_1 : @CategoryTheory.Limits.HasZeroObject.{w, u} C inst]
+        [inst_2 : @CategoryTheory.HasShift.{w, u, 0} C Int inst Int.instAddMonoid]
+        [inst_3 : @CategoryTheory.Preadditive.{w, u} C inst]
+        [inst_4 :
+          ∀ (n : Int),
+            @CategoryTheory.Functor.Additive.{w, u, w, u} C C inst inst inst_3 inst_3
+              (@CategoryTheory.shiftFunctor.{w, u, 0} C Int inst Int.instAddMonoid inst_2 n)]
+        [inst_5 : @CategoryTheory.Pretriangulated.{w, u} C inst inst_1 inst_2 inst_3 inst_4]
+        [inst_6 : @CategoryTheory.IsTriangulated.{w, u} C inst inst_3 inst_1 inst_2 inst_4 inst_5] {Λ : Type u'}
+        [inst_7 : AddCommGroup.{u'} Λ]
+        (v :
+          @AddMonoidHom.{u, u'} (@CategoryTheory.Triangulated.K₀.{u, w} C inst inst_1 inst_2 inst_3 inst_4 inst_5) Λ
+            (@AddZeroClass.toAddZero.{u} (@CategoryTheory.Triangulated.K₀.{u, w} C inst inst_1 inst_2 inst_3 inst_4 inst_5)
+              (@AddMonoid.toAddZeroClass.{u}
+                (@CategoryTheory.Triangulated.K₀.{u, w} C inst inst_1 inst_2 inst_3 inst_4 inst_5)
+                (@SubNegMonoid.toAddMonoid.{u}
+                  (@CategoryTheory.Triangulated.K₀.{u, w} C inst inst_1 inst_2 inst_3 inst_4 inst_5)
+                  (@AddGroup.toSubNegMonoid.{u}
+                    (@CategoryTheory.Triangulated.K₀.{u, w} C inst inst_1 inst_2 inst_3 inst_4 inst_5)
+                    (@QuotientAddGroup.Quotient.addGroup.{u} (FreeAbelianGroup.{u} C)
+                      (@AddCommGroup.toAddGroup.{u} (FreeAbelianGroup.{u} C) (instAddCommGroupFreeAbelianGroup.{u} C))
+                      (@CategoryTheory.Triangulated.GrothendieckPresentation.relationSubgroup.{u, max u w} C
+                        (@Subtype.{max (u + 1) (w + 1)} (@CategoryTheory.Pretriangulated.Triangle.{w, u} C inst inst_2)
+                          fun T =>
+                          @Membership.mem.{max u w, max u w} (@CategoryTheory.Pretriangulated.Triangle.{w, u} C inst inst_2)
+                            (Set.{max u w} (@CategoryTheory.Pretriangulated.Triangle.{w, u} C inst inst_2))
+                            (@Set.instMembership.{max u w} (@CategoryTheory.Pretriangulated.Triangle.{w, u} C inst inst_2))
+                            (@CategoryTheory.Pretriangulated.distinguishedTriangles.{w, u} C inst inst_1 inst_2 inst_3 inst_4
+                              inst_5)
+                            T)
+                        (@CategoryTheory.Triangulated.triangulatedPresentation.{u, w} C inst inst_1 inst_2 inst_3 inst_4
+                          inst_5))
+                      (@AddSubgroup.normal_of_isAddCommutative.{u} (FreeAbelianGroup.{u} C)
+                        (@AddCommGroup.toAddGroup.{u} (FreeAbelianGroup.{u} C) (instAddCommGroupFreeAbelianGroup.{u} C))
+                        (@AddCommMagma.to_isCommutative.{u} (FreeAbelianGroup.{u} C)
+                          (@AddCommSemigroup.toAddCommMagma.{u} (FreeAbelianGroup.{u} C)
+                            (@AddCommMonoid.toAddCommSemigroup.{u} (FreeAbelianGroup.{u} C)
+                              (@AddCommGroup.toAddCommMonoid.{u} (FreeAbelianGroup.{u} C)
+                                (instAddCommGroupFreeAbelianGroup.{u} C)))))
+                        (@CategoryTheory.Triangulated.GrothendieckPresentation.relationSubgroup.{u, max u w} C
+                          (@Subtype.{max (u + 1) (w + 1)} (@CategoryTheory.Pretriangulated.Triangle.{w, u} C inst inst_2)
+                            fun T =>
+                            @Membership.mem.{max u w, max u w} (@CategoryTheory.Pretriangulated.Triangle.{w, u} C inst inst_2)
+                              (Set.{max u w} (@CategoryTheory.Pretriangulated.Triangle.{w, u} C inst inst_2))
+                              (@Set.instMembership.{max u w} (@CategoryTheory.Pretriangulated.Triangle.{w, u} C inst inst_2))
+                              (@CategoryTheory.Pretriangulated.distinguishedTriangles.{w, u} C inst inst_1 inst_2 inst_3
+                                inst_4 inst_5)
+                              T)
+                          (@CategoryTheory.Triangulated.triangulatedPresentation.{u, w} C inst inst_1 inst_2 inst_3 inst_4
+                            inst_5))))))))
+            (@AddZeroClass.toAddZero.{u'} Λ
+              (@AddMonoid.toAddZeroClass.{u'} Λ
+                (@SubNegMonoid.toAddMonoid.{u'} Λ
+                  (@AddGroup.toSubNegMonoid.{u'} Λ (@AddCommGroup.toAddGroup.{u'} Λ inst_7))))))
+        (g :
+          @CategoryTheory.Triangulated.StabilityCondition.GroupAction.AutPairQuot.{w, u, u'} C inst inst_1 inst_2 inst_3
+            inst_4 inst_5 Λ inst_7 v)
+        (σ τ :
+          @CategoryTheory.Triangulated.StabilityCondition.WithClassMap.{u, w, u'} C inst inst_1 inst_2 inst_3 inst_4 inst_5 Λ
+            inst_7 v),
+        @Eq.{1} ENNReal
+          (@CategoryTheory.Triangulated.stabilityDist.{w, u, u'} C inst inst_1 inst_2 inst_3 inst_4 inst_5 Λ inst_7 v
+            (@HSMul.hSMul.{max (max u u') w, max u u', max u u'}
+              (@CategoryTheory.Triangulated.StabilityCondition.GroupAction.AutPairQuot.{w, u, u'} C inst inst_1 inst_2 inst_3
+                inst_4 inst_5 Λ inst_7 v)
+              (@CategoryTheory.Triangulated.StabilityCondition.WithClassMap.{u, w, u'} C inst inst_1 inst_2 inst_3 inst_4
+                inst_5 Λ inst_7 v)
+              (@CategoryTheory.Triangulated.StabilityCondition.WithClassMap.{u, w, u'} C inst inst_1 inst_2 inst_3 inst_4
+                inst_5 Λ inst_7 v)
+              (@instHSMul.{max (max u u') w, max u u'}
+                (@CategoryTheory.Triangulated.StabilityCondition.GroupAction.AutPairQuot.{w, u, u'} C inst inst_1 inst_2
+                  inst_3 inst_4 inst_5 Λ inst_7 v)
+                (@CategoryTheory.Triangulated.StabilityCondition.WithClassMap.{u, w, u'} C inst inst_1 inst_2 inst_3 inst_4
+                  inst_5 Λ inst_7 v)
+                (@SemigroupAction.toSMul.{max (max u u') w, max u u'}
+                  (@CategoryTheory.Triangulated.StabilityCondition.GroupAction.AutPairQuot.{w, u, u'} C inst inst_1 inst_2
+                    inst_3 inst_4 inst_5 Λ inst_7 v)
+                  (@CategoryTheory.Triangulated.StabilityCondition.WithClassMap.{u, w, u'} C inst inst_1 inst_2 inst_3 inst_4
+                    inst_5 Λ inst_7 v)
+                  (@Monoid.toSemigroup.{max (max u u') w}
+                    (@CategoryTheory.Triangulated.StabilityCondition.GroupAction.AutPairQuot.{w, u, u'} C inst inst_1 inst_2
+                      inst_3 inst_4 inst_5 Λ inst_7 v)
+                    (@DivInvMonoid.toMonoid.{max (max u u') w}
+                      (@CategoryTheory.Triangulated.StabilityCondition.GroupAction.AutPairQuot.{w, u, u'} C inst inst_1 inst_2
+                        inst_3 inst_4 inst_5 Λ inst_7 v)
+                      (@Group.toDivInvMonoid.{max (max u u') w}
+                        (@CategoryTheory.Triangulated.StabilityCondition.GroupAction.AutPairQuot.{w, u, u'} C inst inst_1
+                          inst_2 inst_3 inst_4 inst_5 Λ inst_7 v)
+                        (@CategoryTheory.Triangulated.StabilityCondition.GroupAction.AutPairQuot.group.{w, u, u'} C inst
+                          inst_1 inst_2 inst_3 inst_4 inst_5 Λ inst_7 v))))
+                  (@MulAction.toSemigroupAction.{max (max u u') w, max u u'}
+                    (@CategoryTheory.Triangulated.StabilityCondition.GroupAction.AutPairQuot.{w, u, u'} C inst inst_1 inst_2
+                      inst_3 inst_4 inst_5 Λ inst_7 v)
+                    (@CategoryTheory.Triangulated.StabilityCondition.WithClassMap.{u, w, u'} C inst inst_1 inst_2 inst_3
+                      inst_4 inst_5 Λ inst_7 v)
+                    (@DivInvMonoid.toMonoid.{max (max u u') w}
+                      (@CategoryTheory.Triangulated.StabilityCondition.GroupAction.AutPairQuot.{w, u, u'} C inst inst_1 inst_2
+                        inst_3 inst_4 inst_5 Λ inst_7 v)
+                      (@Group.toDivInvMonoid.{max (max u u') w}
+                        (@CategoryTheory.Triangulated.StabilityCondition.GroupAction.AutPairQuot.{w, u, u'} C inst inst_1
+                          inst_2 inst_3 inst_4 inst_5 Λ inst_7 v)
+                        (@CategoryTheory.Triangulated.StabilityCondition.GroupAction.AutPairQuot.group.{w, u, u'} C inst
+                          inst_1 inst_2 inst_3 inst_4 inst_5 Λ inst_7 v)))
+                    (@CategoryTheory.Triangulated.StabilityCondition.GroupAction.AutPairQuot.mulAction.{w, u, u'} C inst
+                      inst_1 inst_2 inst_3 inst_4 inst_5 inst_6 Λ inst_7 v))))
+              g σ)
+            (@HSMul.hSMul.{max (max u u') w, max u u', max u u'}
+              (@CategoryTheory.Triangulated.StabilityCondition.GroupAction.AutPairQuot.{w, u, u'} C inst inst_1 inst_2 inst_3
+                inst_4 inst_5 Λ inst_7 v)
+              (@CategoryTheory.Triangulated.StabilityCondition.WithClassMap.{u, w, u'} C inst inst_1 inst_2 inst_3 inst_4
+                inst_5 Λ inst_7 v)
+              (@CategoryTheory.Triangulated.StabilityCondition.WithClassMap.{u, w, u'} C inst inst_1 inst_2 inst_3 inst_4
+                inst_5 Λ inst_7 v)
+              (@instHSMul.{max (max u u') w, max u u'}
+                (@CategoryTheory.Triangulated.StabilityCondition.GroupAction.AutPairQuot.{w, u, u'} C inst inst_1 inst_2
+                  inst_3 inst_4 inst_5 Λ inst_7 v)
+                (@CategoryTheory.Triangulated.StabilityCondition.WithClassMap.{u, w, u'} C inst inst_1 inst_2 inst_3 inst_4
+                  inst_5 Λ inst_7 v)
+                (@SemigroupAction.toSMul.{max (max u u') w, max u u'}
+                  (@CategoryTheory.Triangulated.StabilityCondition.GroupAction.AutPairQuot.{w, u, u'} C inst inst_1 inst_2
+                    inst_3 inst_4 inst_5 Λ inst_7 v)
+                  (@CategoryTheory.Triangulated.StabilityCondition.WithClassMap.{u, w, u'} C inst inst_1 inst_2 inst_3 inst_4
+                    inst_5 Λ inst_7 v)
+                  (@Monoid.toSemigroup.{max (max u u') w}
+                    (@CategoryTheory.Triangulated.StabilityCondition.GroupAction.AutPairQuot.{w, u, u'} C inst inst_1 inst_2
+                      inst_3 inst_4 inst_5 Λ inst_7 v)
+                    (@DivInvMonoid.toMonoid.{max (max u u') w}
+                      (@CategoryTheory.Triangulated.StabilityCondition.GroupAction.AutPairQuot.{w, u, u'} C inst inst_1 inst_2
+                        inst_3 inst_4 inst_5 Λ inst_7 v)
+                      (@Group.toDivInvMonoid.{max (max u u') w}
+                        (@CategoryTheory.Triangulated.StabilityCondition.GroupAction.AutPairQuot.{w, u, u'} C inst inst_1
+                          inst_2 inst_3 inst_4 inst_5 Λ inst_7 v)
+                        (@CategoryTheory.Triangulated.StabilityCondition.GroupAction.AutPairQuot.group.{w, u, u'} C inst
+                          inst_1 inst_2 inst_3 inst_4 inst_5 Λ inst_7 v))))
+                  (@MulAction.toSemigroupAction.{max (max u u') w, max u u'}
+                    (@CategoryTheory.Triangulated.StabilityCondition.GroupAction.AutPairQuot.{w, u, u'} C inst inst_1 inst_2
+                      inst_3 inst_4 inst_5 Λ inst_7 v)
+                    (@CategoryTheory.Triangulated.StabilityCondition.WithClassMap.{u, w, u'} C inst inst_1 inst_2 inst_3
+                      inst_4 inst_5 Λ inst_7 v)
+                    (@DivInvMonoid.toMonoid.{max (max u u') w}
+                      (@CategoryTheory.Triangulated.StabilityCondition.GroupAction.AutPairQuot.{w, u, u'} C inst inst_1 inst_2
+                        inst_3 inst_4 inst_5 Λ inst_7 v)
+                      (@Group.toDivInvMonoid.{max (max u u') w}
+                        (@CategoryTheory.Triangulated.StabilityCondition.GroupAction.AutPairQuot.{w, u, u'} C inst inst_1
+                          inst_2 inst_3 inst_4 inst_5 Λ inst_7 v)
+                        (@CategoryTheory.Triangulated.StabilityCondition.GroupAction.AutPairQuot.group.{w, u, u'} C inst
+                          inst_1 inst_2 inst_3 inst_4 inst_5 Λ inst_7 v)))
+                    (@CategoryTheory.Triangulated.StabilityCondition.GroupAction.AutPairQuot.mulAction.{w, u, u'} C inst
+                      inst_1 inst_2 inst_3 inst_4 inst_5 inst_6 Λ inst_7 v))))
+              g τ))
+          (@CategoryTheory.Triangulated.stabilityDist.{w, u, u'} C inst inst_1 inst_2 inst_3 inst_4 inst_5 Λ inst_7 v σ τ)
+    reviewed_quote_sha256: a82c3230040fd724ffad1d6655c190b00b99321d3fc1ab5eb74dafdfe8c38d1f
+    reviewed_env_digest: ba5fd9e4d276facbe68631efad7f4186896dcbb789eee0fa15e39b18eb8612c8
+    faithfulness: divergent
+    relation_confirmed: specialization
+    divergences:
+      - >-
+        The action is by AutPairQuot v, NOT the paper's Aut(D). Its elements are
+        pairs of a triangulated autoequivalence and a compatible class-lattice
+        automorphism, so it carries extra lattice data and is not proved
+        equivalent to Aut(D). Recorded independently by the declaration's own
+        @[cites] note and by registry frontier autpairquot-not-aut-d.
+      - >-
+        Covers Lemma 8.2's isometry clause only. The GL+(2,R)~ right action and
+        the claim that the two actions commute are not in this statement.
+    note: >-
+      Proves that the group acts distance-preservingly, which is the substance
+      of the isometry clause. specialization rather than equivalent because the
+      group is not the paper's and the other two clauses are absent.
+
+  # ===========================================================================
+  # ENTRY 3 of #178. Part of Lemma 8.2's GL+(2,R)~ RIGHT ACTION clause.
+  #
+  # This is the GLTilde naming question #178 predicted, and it is the reason the
+  # verdict is divergent while the relation stays no_claim.
+  - key: stmt:a520a8d4f877:bridgeland2007.lem-8.2
+    decl: CategoryTheory.Triangulated.StabilityCondition.GroupAction.gltildeSlicingMulAction
+    reviewer:
+      name: Chris Dare
+    reviewed_at: '2026-08-19'
+    reviewed_statement_digest: 0af60ea26fbd8fcf28dd4dadb6024bf6df657f9e5355e7d0b4992187cb472018
+    # Same capture and same self-check as entry 2; levelParams [v, u].
+    reviewed_statement_pp: |
+      (C : Type u) →
+        [inst : CategoryTheory.Category.{v, u} C] →
+          [inst_1 : @CategoryTheory.Limits.HasZeroObject.{v, u} C inst] →
+            [inst_2 : @CategoryTheory.HasShift.{v, u, 0} C Int inst Int.instAddMonoid] →
+              [inst_3 : @CategoryTheory.Preadditive.{v, u} C inst] →
+                [inst_4 :
+                    ∀ (n : Int),
+                      @CategoryTheory.Functor.Additive.{v, u, v, u} C C inst inst inst_3 inst_3
+                        (@CategoryTheory.shiftFunctor.{v, u, 0} C Int inst Int.instAddMonoid inst_2 n)] →
+                  [inst_5 : @CategoryTheory.Pretriangulated.{v, u} C inst inst_1 inst_2 inst_3 inst_4] →
+                    @MulAction.{0, u} CategoryTheory.Triangulated.StabilityCondition.GroupAction.GLTilde
+                      (@CategoryTheory.Triangulated.Slicing.{u, v} C inst inst_1 inst_2 inst_3 inst_4 inst_5)
+                      (@DivInvMonoid.toMonoid.{0} CategoryTheory.Triangulated.StabilityCondition.GroupAction.GLTilde
+                        (@Group.toDivInvMonoid.{0} CategoryTheory.Triangulated.StabilityCondition.GroupAction.GLTilde
+                          CategoryTheory.Triangulated.StabilityCondition.GroupAction.GLTilde.group))
+    reviewed_quote_sha256: a82c3230040fd724ffad1d6655c190b00b99321d3fc1ab5eb74dafdfe8c38d1f
+    reviewed_env_digest: ba5fd9e4d276facbe68631efad7f4186896dcbb789eee0fa15e39b18eb8612c8
+    faithfulness: divergent
+    relation_confirmed: no_claim
+    divergences:
+      - >-
+        GLTilde is NAMED for the universal covering space of GL+(2,R) and that
+        property is not proved here. Mathlib has no bundled universal-cover
+        predicate at the pinned revision, so the paper's phrase cannot be
+        discharged by instantiating an upstream API. The name asserts what the
+        repository has not shown. Registry frontier gltilde-universal-cover.
+      - >-
+        The action is on Slicing C, not on Stab(D) as Lemma 8.2 states.
+      - >-
+        Covers part of the right-action clause only. The Aut(D) left action and
+        the claim that the two actions commute are not in this statement.
+    note: >-
+      A genuine MulAction is proved, so the formalization is not wrong -- it is
+      narrower than its name suggests. relation_confirmed stays no_claim
+      deliberately: asserting a correspondence to Lemma 8.2 while the covering
+      -space property is unproved would put the paper's phrase behind a name
+      rather than behind a theorem.
