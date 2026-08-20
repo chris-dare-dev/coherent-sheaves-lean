@@ -64,7 +64,7 @@ theorem polynomialVariableCechComplex_exactAt (d n : ℕ) :
   funext x
   rw [polynomialVariableCechComplex_d_apply]
   exact cechPrimitive_isPrimitive ι k (isPolynomialTwist_natShift (R := k) d) s' hs'
-    (fun hG y z => cechBlockProj_eq_zero_of_forall_mem ι k d y hG z) x
+    (fun hG y => cechBlockProj_eq_zero_of_forall_mem ι k d y hG (s' y)) x
 
 /-- The homology of the algebraic Čech complex vanishes in every positive degree. -/
 theorem polynomialVariableCechComplex_homology_isZero (d n : ℕ) :
@@ -136,7 +136,7 @@ theorem polynomialVariableIntCechComplex_exactAt [Fintype ι] (d : ℤ) (n : ℕ
   funext x
   rw [polynomialVariableIntCechComplex_d_apply]
   exact cechPrimitive_isPrimitive ι k (isPolynomialTwist_intShift (R := k) d) s' hs'
-    (fun hG y z => cechBlockProj_eq_zero_of_card_lt ι k _ hcard y hG z) x
+    (fun hG y => cechBlockProj_eq_zero_of_card_lt ι k _ hcard y hG (s' y)) x
 
 /-- The homology of the integer-twist Čech complex vanishes below the top degree. -/
 theorem polynomialVariableIntCechComplex_homology_isZero [Fintype ι] (d : ℤ) (n : ℕ)

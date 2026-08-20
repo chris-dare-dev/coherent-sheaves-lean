@@ -330,30 +330,33 @@ theorem monomial_coeff_mem_natShift {d m : ℕ} {γ : ι →₀ ℕ} {p : MvPoly
 set_option maxHeartbeats 800000 in
 /-- **A fraction splits over the monomials of its numerator**, at a fixed denominator.
 
+Stated for a twist of either sign: `IsPolynomialTwist.monomial_coeff_mem` supplies the numerator
+certificate for each monomial, and nothing else here mentions the grading.
+
 The local `hcongr` step is not decoration. `MvPolynomial.as_sum` rewrites `p`, which appears in
 the type of `awayMk`'s membership argument, so rewriting it in the goal fails on a
 non-type-correct motive. Substituting the equation and appealing to proof irrelevance sidesteps
 that; the same obstruction is why `awayMk_sum` itself descends into `LocalizedModule`. -/
-theorem awayMk_eq_sum_monomial {d m : ℕ} (γ : ι →₀ ℕ) (p : MvPolynomial ι R)
-    (hp : p ∈ natShift (polynomialGrading ι R) d (m • γ.degree)) :
-    DegreeZeroLocalization.awayMk (𝓜 := natShift (polynomialGrading ι R) d)
+theorem awayMk_eq_sum_monomial {σM : Type u} [SetLike σM (MvPolynomial ι R)]
+    [AddSubgroupClass σM (MvPolynomial ι R)] {𝓜 : ℕ → σM}
+    [SetLike.GradedSMul (polynomialGrading ι R) 𝓜] {d : ℤ} (h𝓜 : IsPolynomialTwist 𝓜 d)
+    {m : ℕ} (γ : ι →₀ ℕ) (p : MvPolynomial ι R) (hp : p ∈ 𝓜 (m • γ.degree)) :
+    DegreeZeroLocalization.awayMk (𝓜 := 𝓜)
         (monomial_one_mem_polynomialGrading (R := R) γ) m p hp =
-      ∑ β ∈ p.support, DegreeZeroLocalization.awayMk
-        (𝓜 := natShift (polynomialGrading ι R) d)
+      ∑ β ∈ p.support, DegreeZeroLocalization.awayMk (𝓜 := 𝓜)
         (monomial_one_mem_polynomialGrading (R := R) γ) m
-        (MvPolynomial.monomial β (p.coeff β)) (monomial_coeff_mem_natShift hp β) := by
-  have hcongr : ∀ (q : MvPolynomial ι R)
-      (hq : q ∈ natShift (polynomialGrading ι R) d (m • γ.degree)), p = q →
-      DegreeZeroLocalization.awayMk (𝓜 := natShift (polynomialGrading ι R) d)
+        (MvPolynomial.monomial β (p.coeff β)) (h𝓜.monomial_coeff_mem hp β) := by
+  have hcongr : ∀ (q : MvPolynomial ι R) (hq : q ∈ 𝓜 (m • γ.degree)), p = q →
+      DegreeZeroLocalization.awayMk (𝓜 := 𝓜)
         (monomial_one_mem_polynomialGrading (R := R) γ) m p hp =
-      DegreeZeroLocalization.awayMk (𝓜 := natShift (polynomialGrading ι R) d)
+      DegreeZeroLocalization.awayMk (𝓜 := 𝓜)
         (monomial_one_mem_polynomialGrading (R := R) γ) m q hq := by
     rintro q hq rfl; rfl
-  refine (hcongr _ (sum_mem fun b _ => monomial_coeff_mem_natShift hp b)
+  refine (hcongr _ (sum_mem fun b _ => h𝓜.monomial_coeff_mem hp b)
     (MvPolynomial.as_sum p)).trans ?_
   exact DegreeZeroLocalization.awayMk_sum
     (monomial_one_mem_polynomialGrading (R := R) γ) m p.support
-    (fun β => MvPolynomial.monomial β (p.coeff β)) (monomial_coeff_mem_natShift hp)
+    (fun β => MvPolynomial.monomial β (p.coeff β)) (h𝓜.monomial_coeff_mem hp)
 
 set_option maxHeartbeats 800000 in
 /-- **The monomial fractions span.** Every degree-zero fraction away from `Xᵞ` is a finite sum of
@@ -361,20 +364,20 @@ monomial fractions over a single common denominator `(Xᵞ)ᵐ`.
 
 The denominator is shared across the whole sum, which is what makes this usable: a map defined by
 its effect on monomial fractions extends without any further alignment. -/
-theorem exists_sum_awayMk_monomial [Nontrivial R] (γ : ι →₀ ℕ) (d : ℕ)
-    (z : DegreeZeroLocalization (polynomialGrading ι R)
-      (natShift (polynomialGrading ι R) d)
+theorem exists_sum_awayMk_monomial [Nontrivial R] {σM : Type u}
+    [SetLike σM (MvPolynomial ι R)] [AddSubgroupClass σM (MvPolynomial ι R)] {𝓜 : ℕ → σM}
+    [SetLike.GradedSMul (polynomialGrading ι R) 𝓜] {d : ℤ} (h𝓜 : IsPolynomialTwist 𝓜 d)
+    (γ : ι →₀ ℕ)
+    (z : DegreeZeroLocalization (polynomialGrading ι R) 𝓜
       (.powers (MvPolynomial.monomial γ (1 : R)))) :
-    ∃ (m : ℕ) (p : MvPolynomial ι R)
-      (hp : p ∈ natShift (polynomialGrading ι R) d (m • γ.degree)),
-      z = ∑ β ∈ p.support, DegreeZeroLocalization.awayMk
-        (𝓜 := natShift (polynomialGrading ι R) d)
+    ∃ (m : ℕ) (p : MvPolynomial ι R) (hp : p ∈ 𝓜 (m • γ.degree)),
+      z = ∑ β ∈ p.support, DegreeZeroLocalization.awayMk (𝓜 := 𝓜)
         (monomial_one_mem_polynomialGrading (R := R) γ) m
-        (MvPolynomial.monomial β (p.coeff β)) (monomial_coeff_mem_natShift hp β) := by
+        (MvPolynomial.monomial β (p.coeff β)) (h𝓜.monomial_coeff_mem hp β) := by
   obtain ⟨m, p, hp, rfl⟩ :=
     DegreeZeroLocalization.exists_awayMk (monomial_one_mem_polynomialGrading (R := R) γ)
       (monomial_one_pow_ne_zero γ) z
-  exact ⟨m, p, hp, awayMk_eq_sum_monomial γ p hp⟩
+  exact ⟨m, p, hp, awayMk_eq_sum_monomial h𝓜 γ p hp⟩
 
 /-- Every exponent occurring in a spanning decomposition lands in the index set: total degree the
 twist, and nonnegative off the support of `γ`.

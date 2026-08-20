@@ -2153,3 +2153,20 @@ the statement is false, and no finiteness is used. -/
 #print axioms AlgebraicGeometry.Proj.intCechComplex_ker_zero_eq_zero_of_neg
 #print axioms AlgebraicGeometry.Proj.polynomialVariableIntCechComplex_homology_zero_isZero
 #print axioms AlgebraicGeometry.Proj.polynomialIntTwisting_H_zero_subsingleton
+
+/-! ## The top degree keeps one block (#666, S1b — in progress)
+
+Below the top degree `cechPrimitive` contracts every block, because a tuple too short to meet
+every variable cannot carry the full one. At the top it can, so the full block is what survives —
+and `cechPrimitive_isPrimitive`'s block hypothesis was weakened to constrain only the cochain
+handed to it, which is what makes it usable there.
+
+`exists_fullBlock_add_coboundary` is the block half of #666: every class is carried by the full
+block. The finiteness half — that the full block is a finite-dimensional `k`-space, via
+`finite_setOf_degree_eq_of_neg` — is NOT here, so #666's acceptance criterion is not met by these
+declarations. -/
+
+#print axioms AlgebraicGeometry.Proj.cechBlockProj_cechBlockProj_self
+#print axioms AlgebraicGeometry.Proj.intCechFullBlock
+#print axioms AlgebraicGeometry.Proj.intCechFullBlock_cocycle
+#print axioms AlgebraicGeometry.Proj.exists_fullBlock_add_coboundary

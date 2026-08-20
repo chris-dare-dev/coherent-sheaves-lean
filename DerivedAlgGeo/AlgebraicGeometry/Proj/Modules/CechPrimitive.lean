@@ -306,24 +306,28 @@ With a cone point this is `cechBlockPrimitive_faces_of_exists`; without one both
 left because the per-block primitive is `0` by construction and the right by `hfull`.
 
 `hfull` is the **only** place this argument ever cared about the sign of the twist, and taking it
-as a hypothesis is what makes the computation available at either sign. Two things discharge it,
-for different reasons:
+as a hypothesis is what makes the computation available at either sign. It constrains `s` alone
+rather than every term, which is what lets the top degree use it: there the full block is not
+empty and only the given cochain can be assumed to miss it. Three things discharge it, for
+different reasons:
 
 * a nonnegative twist — `cechBlockProj_eq_zero_of_forall_mem`. Every Laurent exponent in such a
   block is negative in every variable while their total is `d ≥ 0`, so the block is empty;
 * a tuple too short to meet every variable — `cechBlockProj_eq_zero_of_card_lt`. A tuple of
   length `n + 2` has support of at most that size, so over a variable set with more elements the
-  full block is not contained in it, whatever the twist.
+  full block is not contained in it, whatever the twist;
+* a cochain already carrying no full block, whatever the twist and however long the tuple. This
+  is the top-degree use, where neither of the first two is available.
 
-The second is what carries the negative case, and it is why finiteness of the variable set enters
-the lane here and nowhere earlier. -/
+The second is what carries the negative case below the top, and it is why finiteness of the
+variable set enters the lane here and nowhere earlier. -/
 theorem cechBlockPrimitive_faces (h𝓜 : IsPolynomialTwist 𝓜 d) {n : ℕ}
     (s : ∀ x : Fin (n + 2) → ι, cechTerm ι k 𝓜 x)
     (hs : ∀ x : Fin (n + 3) → ι,
       ∑ j : Fin (n + 3), (-1 : ℤ) ^ (j : ℕ) •
         cechFace ι k 𝓜 x j (s (x ∘ j.succAbove)) = 0)
     (hfull : ∀ {G : Finset ι}, (∀ j : ι, j ∈ G) →
-      ∀ (y : Fin (n + 2) → ι) (z : cechTerm ι k 𝓜 y), cechBlockProj ι k h𝓜 y G z = 0)
+      ∀ y : Fin (n + 2) → ι, cechBlockProj ι k h𝓜 y G (s y) = 0)
     (x : Fin (n + 2) → ι) (F : Finset ι) :
     ∑ j : Fin (n + 2), (-1 : ℤ) ^ (j : ℕ) •
         cechFace ι k 𝓜 x j
@@ -334,7 +338,7 @@ theorem cechBlockPrimitive_faces (h𝓜 : IsPolynomialTwist 𝓜 d) {n : ℕ}
   · have hall : ∀ j : ι, j ∈ F := fun j => by
       by_contra hj
       exact hF ⟨j, hj⟩
-    rw [hfull hall x (s x)]
+    rw [hfull hall x]
     refine Finset.sum_eq_zero fun j _ => ?_
     rw [cechBlockPrimitive_of_forall ι k h𝓜 hF, map_zero]
     exact (AddMonoidHom.mk' (fun a : cechTerm ι k 𝓜 x =>
@@ -352,7 +356,7 @@ theorem cechPrimitive_isPrimitive (h𝓜 : IsPolynomialTwist 𝓜 d) {n : ℕ}
       ∑ j : Fin (n + 3), (-1 : ℤ) ^ (j : ℕ) •
         cechFace ι k 𝓜 x j (s (x ∘ j.succAbove)) = 0)
     (hfull : ∀ {G : Finset ι}, (∀ j : ι, j ∈ G) →
-      ∀ (y : Fin (n + 2) → ι) (z : cechTerm ι k 𝓜 y), cechBlockProj ι k h𝓜 y G z = 0)
+      ∀ y : Fin (n + 2) → ι, cechBlockProj ι k h𝓜 y G (s y) = 0)
     (x : Fin (n + 2) → ι) :
     ∑ j : Fin (n + 2), (-1 : ℤ) ^ (j : ℕ) •
         cechFace ι k 𝓜 x j (cechPrimitive ι k h𝓜 s (x ∘ j.succAbove)) =
