@@ -2215,3 +2215,19 @@ consumes. #666's acceptance criterion is not met. -/
 #print axioms AlgebraicGeometry.Proj.cechBlockProj_mem_cechBlockSpan
 #print axioms AlgebraicGeometry.Proj.fg_cechBlockSpan
 #print axioms AlgebraicGeometry.Proj.module_finite_pi_cechBlockSpan
+
+/-! ## A degree-zero element is the constant function (#666, S1b — the bridge)
+
+`Proj.toSpecZero` makes every degree-zero element a global function;
+`openToLocalization_toSpecZero_appTop` computes it, and the answer is `a / 1` at every point.
+
+This is the sheaf-theoretic half of #666's remaining step. The base-field action on cohomology is
+multiplication by such a function and acts on associated-sheaf sections pointwise on fibers, so
+identifying it with scalar multiplication on the graded localizations rests here. Wiring it
+through the five steps of `intCechTermSectionAddEquiv` is still outstanding, so #666's acceptance
+criterion is not met. -/
+
+#print axioms AlgebraicGeometry.Proj.toSpecZero_appTop_eq
+#print axioms AlgebraicGeometry.Proj.toSpecZero_transport_eq
+#print axioms AlgebraicGeometry.Proj.openToLocalization_presheaf_map
+#print axioms AlgebraicGeometry.Proj.openToLocalization_toSpecZero_appTop
