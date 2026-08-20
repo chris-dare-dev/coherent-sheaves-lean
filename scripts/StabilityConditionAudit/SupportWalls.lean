@@ -207,3 +207,31 @@ docstrings in
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.Spherical.pairing_map
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.Spherical.selfPairing_map
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.Spherical.isSpherical_map_iff
+
+/-! ## Spherical walls — local finiteness
+
+Bridgeland's Proposition 11.2. Still no K3 surface, no Néron--Severi group, no
+ample cone and no Hodge index theorem: the negative-definiteness that the
+geometric theory would get from Hodge index, and the positive lower bound on
+`q(ω,ω)` that its "bounded region" wording leaves implicit, are both fields of
+`BoundedRegion` and are supplied by the caller. Nothing here constructs one. -/
+
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.Spherical.BoundedRegion
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.Spherical.BoundedRegion.carrier
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.Spherical.BoundedRegion.bounded
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.Spherical.BoundedRegion.ampleLower
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.Spherical.BoundedRegion.ampleLower_pos
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.Spherical.BoundedRegion.ample_le
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.Spherical.BoundedRegion.coercivity
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.Spherical.BoundedRegion.coercivity_pos
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.Spherical.BoundedRegion.neg_definite
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.Spherical.BoundedRegion.mk.inj
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.Spherical.BoundedRegion.mk.sizeOf_spec
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.Spherical.BoundedRegion.key
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.Spherical.BoundedRegion.rk_sq_le
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.Spherical.BoundedRegion.normSq_sub_smul_le
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.Spherical.reconstruct
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.Spherical.wallCandidates
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.Spherical.BoundedRegion.exists_norm_fst_le
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.Spherical.BoundedRegion.wallCandidates_subset
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.Spherical.BoundedRegion.finite_wallCandidates
