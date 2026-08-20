@@ -2097,3 +2097,21 @@ all. It does NOT supply finite-dimensionality; see issue #332. -/
 #print axioms AlgebraicGeometry.Variety.smul_eq_action_comp
 #print axioms AlgebraicGeometry.Variety.cohLinear
 #print axioms AlgebraicGeometry.Variety.derivedLinear
+
+/-! ## Spherical objects on a K3 surface
+
+Huybrechts Definition 8.1, with its `E ⊗ ω_X ≅ E` clause discharged by
+triviality of the canonical class, so no derived tensor product is needed.
+`end_one` and `ext_two` are hypotheses: finite-dimensionality of `Hom` in
+`Dᵇ(Coh X)` is #332. Nothing here exhibits a spherical object, and nothing
+connects the definition to `Mukai.IsSpherical`. -/
+
+#print axioms AlgebraicGeometry.K3Surface.DerivedCat
+#print axioms AlgebraicGeometry.K3Surface.IsSphericalObject
+#print axioms AlgebraicGeometry.K3Surface.IsSphericalObject.vanishing
+#print axioms AlgebraicGeometry.K3Surface.IsSphericalObject.end_one
+#print axioms AlgebraicGeometry.K3Surface.IsSphericalObject.ext_two
+#print axioms AlgebraicGeometry.K3Surface.IsSphericalObject.not_isZero
+#print axioms AlgebraicGeometry.K3Surface.IsSphericalObject.finrank_end
+#print axioms AlgebraicGeometry.K3Surface.IsSphericalObject.finrank_ext_two
+#print axioms AlgebraicGeometry.K3Surface.IsSphericalObject.of_iso
