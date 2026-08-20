@@ -440,7 +440,6 @@ geometric witness for every scheme morphism.
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemePerfectDerivedCategory
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemePerfectDerivedCategory.ι
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemePerfectDerivedCategory.toBounded
-#print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemePerfectDerivedCategory.structureSheafCoh
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemePerfectDerivedCategory.structureSheaf_mem_generator
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemePerfectDerivedCategory.structureSheaf_mem
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Families.SchemePerfectDerivedCategory.structureSheaf

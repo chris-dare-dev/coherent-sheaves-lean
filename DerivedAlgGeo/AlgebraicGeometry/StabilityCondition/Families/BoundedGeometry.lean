@@ -6,6 +6,7 @@ import Mathlib.Algebra.Homology.DerivedCategory.ExactFunctor
 import Mathlib.CategoryTheory.Triangulated.Generators
 import Mathlib.CategoryTheory.Triangulated.TStructure.TruncLTGE
 import DerivedAlgGeo.AlgebraicGeometry.CoherentSheaf.Abelian.Basic
+import DerivedAlgGeo.AlgebraicGeometry.CoherentSheaf.StructureSheaf
 import DerivedAlgGeo.AlgebraicGeometry.Divisors.Determinant
 import DerivedAlgGeo.AlgebraicGeometry.StabilityCondition.Families.ExactPullback
 
@@ -215,29 +216,30 @@ abbrev toBounded :
     SchemePerfectDerivedCategory X ⥤ SchemeBoundedCoherentDerivedCategory X :=
   (schemePerfect X).ιOfLE (schemePerfect_le_bounded X)
 
-/-- The structure sheaf, regarded as a coherent sheaf. -/
-noncomputable def structureSheafCoh : Coh X :=
-  ⟨(Scheme.Modules.LineBundleData.unit X).line,
-    (Scheme.Modules.LineBundleData.unit X).isCoherent⟩
-
 /-- The degree-zero structure sheaf lies in the finite-locally-free generating
-property. -/
+property.
+
+`O_X` as a coherent sheaf is `Scheme.structureSheafCoh`, in `CoherentSheaf/`.
+This module used to define its own copy: the object is a line bundle and its
+coherence is `LineBundleData.isCoherent`, so it needs none of the derived
+categories, triangulated generators or t-structures that this file imports, and
+a general context could not reach it inside the stability-families namespace. -/
 theorem structureSheaf_mem_generator :
     schemeFiniteLocallyFreeGenerator X
-      ((DerivedCategory.singleFunctor (Coh X) 0).obj (structureSheafCoh X)) := by
-  refine ⟨structureSheafCoh X, 1, ⟨?_, ⟨Iso.refl _⟩⟩⟩
+      ((DerivedCategory.singleFunctor (Coh X) 0).obj (Scheme.structureSheafCoh X)) := by
+  refine ⟨Scheme.structureSheafCoh X, 1, ⟨?_, ⟨Iso.refl _⟩⟩⟩
   exact ⟨(Scheme.Modules.LineBundleData.unit X).finiteLocallyFree⟩
 
 /-- The degree-zero structure sheaf is a perfect object. -/
 theorem structureSheaf_mem :
     schemePerfect X
-      ((DerivedCategory.singleFunctor (Coh X) 0).obj (structureSheafCoh X)) :=
+      ((DerivedCategory.singleFunctor (Coh X) 0).obj (Scheme.structureSheafCoh X)) :=
   (schemeFiniteLocallyFreeGenerator X).le_triangEnvelope _
     (structureSheaf_mem_generator X)
 
 /-- A canonical object of `Perf(X)` supplied by the structure sheaf. -/
 noncomputable def structureSheaf : SchemePerfectDerivedCategory X :=
-  ⟨(DerivedCategory.singleFunctor (Coh X) 0).obj (structureSheafCoh X),
+  ⟨(DerivedCategory.singleFunctor (Coh X) 0).obj (Scheme.structureSheafCoh X),
     structureSheaf_mem X⟩
 
 /-- The finite-locally-free generating property is nonempty. -/
