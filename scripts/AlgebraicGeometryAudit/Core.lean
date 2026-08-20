@@ -2231,3 +2231,16 @@ criterion is not met. -/
 #print axioms AlgebraicGeometry.Proj.toSpecZero_transport_eq
 #print axioms AlgebraicGeometry.Proj.openToLocalization_presheaf_map
 #print axioms AlgebraicGeometry.Proj.openToLocalization_toSpecZero_appTop
+
+/-! ## The base field acting on sections of a twist (#666, S1b — the bridge, section level)
+
+`FiniteDimensionalCohomology` means `coherentScalarAction` by `Module.Finite k`; the Čech lane
+computes with `k` acting through the constants. These say the two agree on sections: the global
+function a scalar becomes has value `r / 1` everywhere, so the action on an associated sheaf is
+plain scalar multiplication in each fiber.
+
+The five steps of `intCechTermSectionAddEquiv` have NOT been shown `k`-linear, so
+`module_finite_linearCoherentH_of_cech` still cannot be fed and #666 is not closed. -/
+
+#print axioms AlgebraicGeometry.Proj.openToLocalization_baseFieldToGlobalSections
+#print axioms AlgebraicGeometry.Proj.varietyScalarAction_apply_fiber
