@@ -3,6 +3,7 @@ Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under the MIT license.
 -/
 import DerivedAlgGeo.AlgebraicGeometry.CoherentSheaf.Linear
+import DerivedAlgGeo.AlgebraicGeometry.Numerical.GrothendieckGroup.MukaiVector
 import DerivedAlgGeo.AlgebraicGeometry.Surface.K3
 
 /-!
@@ -52,11 +53,6 @@ computing a `Hom`-group.
 
 ## What is deliberately absent
 
-* **No link to `Mukai.IsSpherical`.** `isSpherical_mukaiVector_iff` says a Mukai
-  vector is spherical exactly when `χ(E,E) = 2`, and a spherical object ought to
-  have `χ(E,E) = 1 - 0 + 1 = 2`. Stating that needs the Euler pairing on `K₀`
-  against a Mukai vector — an `IntegralMukaiData` and a class map — none of which
-  this file has. It is the natural next statement and it is not made here.
 * **No spherical twist.** `T_E` needs the evaluation triangle and a functorial
   cone; cones are not functorial in a triangulated category. See the scope notes
   on the dg-enhancement route (issue #378).
@@ -73,6 +69,10 @@ computing a `Hom`-group.
   definition is not vacuous on the zero object.
 * `IsSphericalObject.finrank_end` — `dimₖ End(E) = 1`.
 * `IsSphericalObject.of_iso` — sphericity is invariant under isomorphism.
+* `IsSphericalObject.selfEuler_eq_two` — `χ(E,E) = 1 - 0 + 1 = 2`, computed
+  from the definition rather than assumed.
+* `IsSphericalObject.isSpherical_mukaiVector` — a spherical object has a
+  spherical Mukai vector, given an `EulerRealization`.
 
 ## A trap worth recording
 
@@ -165,6 +165,100 @@ theorem of_iso (e : E ≅ F) : IsSphericalObject (k := k) F where
   ext_two :=
     ⟨(Linear.homCongr k e.symm
       ((shiftFunctor (DerivedCat X) (2 : ℤ)).mapIso e.symm)).trans h.ext_two.some⟩
+
+/-! ### The numerical shadow
+
+Sphericity of an object forces its self-Euler characteristic to be `2`, which is
+exactly the numerical condition `Numerical.K3.isSpherical_mukaiVector_iff`
+characterises. Computing it needs nothing beyond the definition: the alternating
+sum has three terms, and sphericity gives all three.
+
+**Only the forward direction.** `MukaiVector.lean` is explicit that recovering
+sphericity of an *object* from `χ(E,E) = 2` needs simplicity and Serre duality;
+that converse is not attempted here and is not available. What follows is the
+easy direction, and it is the one that connects this file to the lattice theory
+in `LinearAlgebra/Lattice/Mukai/`. -/
+
+/-- Degrees other than `0` and `2` contribute nothing. -/
+theorem finrank_hom_eq_zero (i : ℤ) (hi₀ : i ≠ 0) (hi₂ : i ≠ 2) :
+    Module.finrank k (E ⟶ E⟦i⟧) = 0 := by
+  have : Subsingleton (E ⟶ E⟦i⟧) :=
+    ⟨fun f g => by rw [h.vanishing i hi₀ hi₂ f, h.vanishing i hi₀ hi₂ g]⟩
+  exact Module.finrank_zero_of_subsingleton
+
+end IsSphericalObject
+
+/-- `χ(E, E)` in the only three degrees where `Hom` can be nonzero.
+
+A definition for every object, but only the intended invariant for one whose
+`Hom`-groups vanish outside `0, 1, 2` — which on a K3 is what sphericity
+supplies. It is not claimed to agree with any numerical Euler pairing; that
+comparison is `EulerRealization`. -/
+noncomputable def selfEuler {X : K3Surface k} (E : DerivedCat X) : ℤ :=
+  (Module.finrank k (E ⟶ E) : ℤ)
+    - (Module.finrank k (E ⟶ E⟦(1 : ℤ)⟧) : ℤ)
+    + (Module.finrank k (E ⟶ E⟦(2 : ℤ)⟧) : ℤ)
+
+namespace IsSphericalObject
+
+variable {X : K3Surface k} {E : DerivedCat X} (h : IsSphericalObject E)
+
+include h
+
+/-- **A spherical object has self-Euler characteristic `2`.**
+
+`1 - 0 + 1`. Every term comes from the definition: the outer two from `end_one`
+and `ext_two`, the middle from `vanishing`. -/
+theorem selfEuler_eq_two : selfEuler E = 2 := by
+  rw [selfEuler, h.finrank_end, h.finrank_ext_two,
+    h.finrank_hom_eq_zero 1 one_ne_zero (by decide)]
+  norm_num
+
+end IsSphericalObject
+
+/-! ### Crossing to the numerical layer
+
+`Numerical.K3.isSpherical_mukaiVector_iff` lives over a `NumericalVarietyData`
+and knows nothing about `Dᵇ(Coh X)`. Crossing between them is
+Hirzebruch--Riemann--Roch: the categorical Euler characteristic of an object
+equals the numerical one of its class. That is not available at the pin, so it
+is **supplied**, in the idiom of `Duality.Serre.DerivedStatement`. -/
+
+/-- The datum that identifies a categorical Euler characteristic with a
+numerical one.
+
+`chi₂_eq` is Hirzebruch--Riemann--Roch, restricted to the spherical objects
+because `selfEuler` is only the intended invariant there. Nothing in this
+repository constructs an `EulerRealization`; producing one is the geometric
+obligation, and it is the same obligation `MukaiVector.lean` records for
+`IntegralMukaiData`. -/
+structure EulerRealization {A : Type*} {N : Type*} [CommRing A] [Algebra ℚ A]
+    [AddCommGroup N] (X : K3Surface k) (V : Numerical.NumericalVarietyData 2 A N) where
+  /-- The class of an object in the numerical Grothendieck group. -/
+  cls : DerivedCat X → N
+  /-- The two Euler characteristics agree on spherical objects. -/
+  chi₂_eq : ∀ E : DerivedCat X, IsSphericalObject E →
+    V.chi₂ (cls E) (cls E) = (selfEuler E : ℚ)
+
+namespace IsSphericalObject
+
+/-- **A spherical object has a spherical Mukai vector.**
+
+The forward direction of the correspondence between the categorical and the
+lattice-theoretic notions: `selfEuler_eq_two` computes `χ(E,E) = 2`, the
+realization carries that to the numerical layer, and
+`isSpherical_mukaiVector_iff` turns it into `⟪v(E), v(E)⟫ = -2`.
+
+The converse is the hard direction and is not proved: `MukaiVector.lean` records
+that it needs simplicity and Serre duality. -/
+theorem isSpherical_mukaiVector {A : Type*} {N : Type*} {Λ : Type*} [CommRing A]
+    [Algebra ℚ A] [AddCommGroup N] [AddCommGroup Λ] {X : K3Surface k}
+    {V : Numerical.NumericalVarietyData 2 A N} (R : EulerRealization X V)
+    (D : Numerical.K3.IntegralMukaiData V Λ) (hHRR : V.SatisfiesHRR)
+    (hK3 : Numerical.K3.IsK3 V) {E : DerivedCat X} (h : IsSphericalObject E) :
+    Mukai.IsSpherical D.b (D.mukaiVector (R.cls E)) := by
+  rw [D.isSpherical_mukaiVector_iff hHRR hK3, R.chi₂_eq E h, h.selfEuler_eq_two]
+  norm_num
 
 end IsSphericalObject
 

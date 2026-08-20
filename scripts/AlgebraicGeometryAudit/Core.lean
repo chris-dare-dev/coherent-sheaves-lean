@@ -2115,3 +2115,22 @@ connects the definition to `Mukai.IsSpherical`. -/
 #print axioms AlgebraicGeometry.K3Surface.IsSphericalObject.finrank_end
 #print axioms AlgebraicGeometry.K3Surface.IsSphericalObject.finrank_ext_two
 #print axioms AlgebraicGeometry.K3Surface.IsSphericalObject.of_iso
+
+/-! ## The numerical shadow of sphericity
+
+`selfEuler_eq_two` computes `χ(E,E) = 1 - 0 + 1 = 2` from the definition of a
+spherical object. `EulerRealization` supplies Hirzebruch--Riemann--Roch — the
+agreement between the categorical Euler characteristic and the numerical one —
+and nothing here constructs one. `isSpherical_mukaiVector` is the forward
+direction only; the converse needs simplicity and Serre duality, as
+`MukaiVector.lean` records. -/
+
+#print axioms AlgebraicGeometry.K3Surface.IsSphericalObject.finrank_hom_eq_zero
+#print axioms AlgebraicGeometry.K3Surface.selfEuler
+#print axioms AlgebraicGeometry.K3Surface.IsSphericalObject.selfEuler_eq_two
+#print axioms AlgebraicGeometry.K3Surface.EulerRealization
+#print axioms AlgebraicGeometry.K3Surface.EulerRealization.cls
+#print axioms AlgebraicGeometry.K3Surface.EulerRealization.chi₂_eq
+#print axioms AlgebraicGeometry.K3Surface.EulerRealization.mk.inj
+#print axioms AlgebraicGeometry.K3Surface.EulerRealization.mk.sizeOf_spec
+#print axioms AlgebraicGeometry.K3Surface.IsSphericalObject.isSpherical_mukaiVector
