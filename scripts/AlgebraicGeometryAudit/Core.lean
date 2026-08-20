@@ -2098,13 +2098,21 @@ all. It does NOT supply finite-dimensionality; see issue #332. -/
 #print axioms AlgebraicGeometry.Variety.cohLinear
 #print axioms AlgebraicGeometry.Variety.derivedLinear
 
-/-! ## Negative-twist prerequisites (#665, S1a)
+/-! ## `H⁰(Pⁿ, O(d)) = 0` for `d < 0` (#665, S1a)
 
-The arithmetic and homological steps of `H⁰(Pⁿ, O(d)) = 0` for `d < 0`. The remaining step —
-producing the cross equation from a Čech cocycle — is not here, so the acceptance criterion of
-#665 is NOT met by these declarations. -/
+The arithmetic and homological steps first, then the two-chart step that produces the cross
+equation from a Čech cocycle, then the statement itself. `polynomialIntTwisting_H_zero_subsingleton`
+is the acceptance criterion of #665, as an abelian group: the `k`-vector-space structure
+`FiniteDimensionalCohomology.finite` asks for is a separate matter and the comparison `AddEquiv` is
+not assumed `k`-linear. `Nontrivial ι` is the only hypothesis on the variable set — at one variable
+the statement is false, and no finiteness is used. -/
 
 #print axioms AlgebraicGeometry.Proj.intShiftPiece_eq_bot_of_neg
 #print axioms AlgebraicGeometry.Proj.eq_zero_of_X_pow_dvd_of_isHomogeneous_of_lt
 #print axioms AlgebraicGeometry.Proj.num_eq_zero_of_cross_of_neg
 #print axioms AlgebraicGeometry.Proj.intCechComplex_homology_zero_isZero_of_ker
+#print axioms AlgebraicGeometry.Proj.num_eq_zero_of_intCechFace_eq_of_neg
+#print axioms AlgebraicGeometry.Proj.intCechTerm_eq_zero_of_face_eq_of_neg
+#print axioms AlgebraicGeometry.Proj.intCechComplex_ker_zero_eq_zero_of_neg
+#print axioms AlgebraicGeometry.Proj.polynomialVariableIntCechComplex_homology_zero_isZero
+#print axioms AlgebraicGeometry.Proj.polynomialIntTwisting_H_zero_subsingleton
