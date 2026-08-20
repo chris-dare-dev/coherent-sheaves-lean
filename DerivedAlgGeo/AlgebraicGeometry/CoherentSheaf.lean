@@ -7,6 +7,7 @@ import DerivedAlgGeo.AlgebraicGeometry.CoherentSheaf.Affine
 import DerivedAlgGeo.AlgebraicGeometry.CoherentSheaf.Basic
 import DerivedAlgGeo.AlgebraicGeometry.CoherentSheaf.Descent
 import DerivedAlgGeo.AlgebraicGeometry.CoherentSheaf.Pushforward
+import DerivedAlgGeo.AlgebraicGeometry.CoherentSheaf.StructureSheaf
 
 /-! # Coherent sheaves
 

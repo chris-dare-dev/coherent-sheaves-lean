@@ -97,3 +97,36 @@ in `DerivedAlgGeo/LinearAlgebra/Lattice/Mukai/`. -/
 #print axioms Mukai.HasIsotropicClass
 #print axioms Mukai.exists_neg_selfPairing_of_isHyperbolicPair
 
+
+/-! ## Mukai lane — reflection in a spherical class
+
+Still pure lattice arithmetic. `reflect` is a map of the abstract Mukai
+extension; it is **not** the Seidel–Thomas spherical twist, and no autoequivalence
+of any derived category is constructed or asserted. -/
+
+#print axioms Mukai.reflect
+#print axioms Mukai.reflect_apply
+#print axioms Mukai.reflect_zero
+#print axioms Mukai.reflect_add
+#print axioms Mukai.reflect_smul
+#print axioms Mukai.reflect_neg
+#print axioms Mukai.reflectHom
+#print axioms Mukai.reflectHom_apply
+#print axioms Mukai.pairing_reflect_right
+#print axioms Mukai.reflect_reflect
+#print axioms Mukai.reflect_involutive
+#print axioms Mukai.reflect_bijective
+#print axioms Mukai.reflectEquiv
+#print axioms Mukai.reflectEquiv_apply
+#print axioms Mukai.reflectEquiv_symm_apply
+#print axioms Mukai.reflect_self
+#print axioms Mukai.reflect_of_pairing_eq_zero
+#print axioms Mukai.pairing_reflect_eq_zero_iff
+#print axioms Mukai.pairing_reflect_reflect
+#print axioms Mukai.selfPairing_reflect
+#print axioms Mukai.reflectIsometry
+#print axioms Mukai.reflectIsometry_apply
+#print axioms Mukai.IsSpherical.reflect
+#print axioms Mukai.IsIsotropic.reflect
+#print axioms Mukai.expectedDim_reflect
+#print axioms Mukai.reflect_neg_left
