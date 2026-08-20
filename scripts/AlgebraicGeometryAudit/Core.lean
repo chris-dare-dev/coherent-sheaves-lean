@@ -2170,3 +2170,29 @@ declarations. -/
 #print axioms AlgebraicGeometry.Proj.intCechFullBlock
 #print axioms AlgebraicGeometry.Proj.intCechFullBlock_cocycle
 #print axioms AlgebraicGeometry.Proj.exists_fullBlock_add_coboundary
+
+/-! ## The base field on a localization, and a finite block (#666, S1b — in progress)
+
+`finite_setOf_degree_eq_of_neg` counts the exponents of the full block; these declarations turn
+that count into finite generation. The `k`-action is not extra data — a constant is a degree-zero
+homogeneous element — and `awayMk_smul` is what makes it computable on fractions.
+
+`IsPolynomialTwist.smul_mem` and the generalized `awayMk_eq_sum_monomial`,
+`exists_sum_awayMk_monomial`, `awayMk_monomial_eq_iff` and `awayMk_monomial_eq_iff_laurentExponent`
+are the same statements as before at either sign of the twist; the nonnegative-only forms could
+not reach a negative twist at all.
+
+`fg_blockSpan` is one localization. Assembling the blocks of a Čech cochain and matching this
+action against `cechScalarAction` are not here, so #666's acceptance criterion is not met. -/
+
+#print axioms AlgebraicGeometry.Proj.IsPolynomialTwist.smul_mem
+#print axioms AlgebraicGeometry.Proj.polynomialToHomogeneousLocalization
+#print axioms AlgebraicGeometry.Proj.degreeZeroLocalizationModule
+#print axioms AlgebraicGeometry.Proj.awayMk_smul
+#print axioms AlgebraicGeometry.Proj.awayMk_congr
+#print axioms AlgebraicGeometry.Proj.monomial_one_mem_of_mem_support
+#print axioms AlgebraicGeometry.Proj.intNegSupport_of_mem_support_laurentFilter
+#print axioms AlgebraicGeometry.Proj.blockRep
+#print axioms AlgebraicGeometry.Proj.awayMk_eq_blockRep
+#print axioms AlgebraicGeometry.Proj.blockProj_univ_mem_span
+#print axioms AlgebraicGeometry.Proj.fg_blockSpan

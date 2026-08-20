@@ -173,14 +173,14 @@ set_option maxHeartbeats 800000 in
 /-- Two monomial fractions over powers of `Xᵞ` are equal exactly when they cross-multiply to the
 same monomial. This is `awayMk_eq_awayMk_iff` followed by `monomial_eq_monomial_iff`; the
 coefficient side of the latter is discharged by `1 ≠ 0`. -/
-theorem awayMk_monomial_eq_iff [IsDomain R] (γ : ι →₀ ℕ) (d : ℕ) {m m' : ℕ} {β β' : ι →₀ ℕ}
-    (hβ : (MvPolynomial.monomial β (1 : R)) ∈
-      natShift (polynomialGrading ι R) d (m • γ.degree))
-    (hβ' : (MvPolynomial.monomial β' (1 : R)) ∈
-      natShift (polynomialGrading ι R) d (m' • γ.degree)) :
-    DegreeZeroLocalization.awayMk (𝓜 := natShift (polynomialGrading ι R) d)
+theorem awayMk_monomial_eq_iff [IsDomain R] {σM : Type u} [SetLike σM (MvPolynomial ι R)]
+    [AddSubgroupClass σM (MvPolynomial ι R)] {𝓜 : ℕ → σM}
+    [SetLike.GradedSMul (polynomialGrading ι R) 𝓜] (γ : ι →₀ ℕ) {m m' : ℕ} {β β' : ι →₀ ℕ}
+    (hβ : (MvPolynomial.monomial β (1 : R)) ∈ 𝓜 (m • γ.degree))
+    (hβ' : (MvPolynomial.monomial β' (1 : R)) ∈ 𝓜 (m' • γ.degree)) :
+    DegreeZeroLocalization.awayMk (𝓜 := 𝓜)
         (monomial_one_mem_polynomialGrading (R := R) γ) m (MvPolynomial.monomial β 1) hβ =
-      DegreeZeroLocalization.awayMk (𝓜 := natShift (polynomialGrading ι R) d)
+      DegreeZeroLocalization.awayMk (𝓜 := 𝓜)
         (monomial_one_mem_polynomialGrading (R := R) γ) m' (MvPolynomial.monomial β' 1) hβ' ↔
       m' • γ + β = m • γ + β' := by
   rw [DegreeZeroLocalization.awayMk_eq_awayMk_iff _ (monomial_one_ne_zero (R := R) γ),
@@ -197,18 +197,17 @@ distinct fractions and identifies the ones that only differ by a common denomina
 with `degree_laurentExponent` and `laurentExponent_nonneg_of_apply_eq_zero`, it says the monomial
 fractions of the twist `d` are indexed by
 `{α : ι →₀ ℤ | α.degree = d ∧ ∀ j, γ j = 0 → 0 ≤ α j}`. -/
-theorem awayMk_monomial_eq_iff_laurentExponent [IsDomain R] (γ : ι →₀ ℕ) (d : ℕ) {m m' : ℕ}
-    {β β' : ι →₀ ℕ}
-    (hβ : (MvPolynomial.monomial β (1 : R)) ∈
-      natShift (polynomialGrading ι R) d (m • γ.degree))
-    (hβ' : (MvPolynomial.monomial β' (1 : R)) ∈
-      natShift (polynomialGrading ι R) d (m' • γ.degree)) :
-    DegreeZeroLocalization.awayMk (𝓜 := natShift (polynomialGrading ι R) d)
+theorem awayMk_monomial_eq_iff_laurentExponent [IsDomain R] {σM : Type u}
+    [SetLike σM (MvPolynomial ι R)] [AddSubgroupClass σM (MvPolynomial ι R)] {𝓜 : ℕ → σM}
+    [SetLike.GradedSMul (polynomialGrading ι R) 𝓜] (γ : ι →₀ ℕ) {m m' : ℕ} {β β' : ι →₀ ℕ}
+    (hβ : (MvPolynomial.monomial β (1 : R)) ∈ 𝓜 (m • γ.degree))
+    (hβ' : (MvPolynomial.monomial β' (1 : R)) ∈ 𝓜 (m' • γ.degree)) :
+    DegreeZeroLocalization.awayMk (𝓜 := 𝓜)
         (monomial_one_mem_polynomialGrading (R := R) γ) m (MvPolynomial.monomial β 1) hβ =
-      DegreeZeroLocalization.awayMk (𝓜 := natShift (polynomialGrading ι R) d)
+      DegreeZeroLocalization.awayMk (𝓜 := 𝓜)
         (monomial_one_mem_polynomialGrading (R := R) γ) m' (MvPolynomial.monomial β' 1) hβ' ↔
       laurentExponent γ m β = laurentExponent γ m' β' :=
-  (awayMk_monomial_eq_iff γ d hβ hβ').trans (laurentExponent_eq_iff γ m m' β β').symm
+  (awayMk_monomial_eq_iff γ hβ hβ').trans (laurentExponent_eq_iff γ m m' β β').symm
 
 /-! ## Spanning
 
@@ -292,6 +291,14 @@ theorem monomial_coeff_mem (h𝓜 : IsPolynomialTwist 𝓜 d) {n : ℕ} {p : MvP
   · have hdeg := h𝓜.degree_eq_of_mem_support hp (MvPolynomial.mem_support_iff.mpr h)
     refine (h𝓜 n _).mpr (Or.inr ⟨β.degree, hdeg, ?_⟩)
     exact MvPolynomial.isHomogeneous_monomial _ rfl
+
+/-- A twist family is closed under the base-ring action: the graded pieces it is built from are
+submodules, and the zero disjunct is closed under anything. -/
+theorem smul_mem (h𝓜 : IsPolynomialTwist 𝓜 d) {n : ℕ} (c : R) {p : MvPolynomial ι R}
+    (hp : p ∈ 𝓜 n) : c • p ∈ 𝓜 n := by
+  rcases (h𝓜 n p).mp hp with rfl | ⟨e, he, hhom⟩
+  · exact (h𝓜 n _).mpr (Or.inl (by simp))
+  · exact (h𝓜 n _).mpr (Or.inr ⟨e, he, Submodule.smul_mem _ c hhom⟩)
 
 /-- The Laurent exponent of a monomial of a numerator has total degree the twist. -/
 theorem degree_laurentExponent_of_mem_support (h𝓜 : IsPolynomialTwist 𝓜 d)
