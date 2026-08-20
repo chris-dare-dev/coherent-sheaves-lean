@@ -61,8 +61,7 @@ variable {σM : Type u} [SetLike σM (MvPolynomial ι k)]
 
 /-- The base field acting on a degree-zero homogeneous localization, by restriction of scalars
 along `polynomialToHomogeneousLocalization`. -/
-@[reducible]
-noncomputable def degreeZeroLocalizationModule (S : Submonoid (MvPolynomial ι k)) :
+noncomputable instance degreeZeroLocalizationModule (S : Submonoid (MvPolynomial ι k)) :
     Module k (DegreeZeroLocalization (polynomialGrading ι k) 𝓜 S) :=
   Module.compHom _ (polynomialToHomogeneousLocalization ι k S)
 
@@ -72,10 +71,8 @@ denominator `1`. This is what lets a spanning argument strip coefficients off mo
 theorem awayMk_smul {d : ℤ} (h𝓜 : IsPolynomialTwist 𝓜 d) {f : MvPolynomial ι k} {e : ℕ}
     (hf : f ∈ polynomialGrading ι k e) (n : ℕ) (c : k) (p : MvPolynomial ι k)
     (hp : p ∈ 𝓜 (n • e)) :
-    letI := degreeZeroLocalizationModule ι k 𝓜 (.powers f)
     c • DegreeZeroLocalization.awayMk (𝓜 := 𝓜) hf n p hp =
       DegreeZeroLocalization.awayMk (𝓜 := 𝓜) hf n (c • p) (h𝓜.smul_mem c hp) := by
-  letI := degreeZeroLocalizationModule ι k 𝓜 (.powers f)
   apply DegreeZeroLocalization.ext
   show ((polynomialToHomogeneousLocalization ι k (.powers f) c •
       DegreeZeroLocalization.awayMk (𝓜 := 𝓜) hf n p hp :
@@ -161,12 +158,10 @@ the set `finite_setOf_degree_eq_of_neg` shows is finite. -/
 theorem blockProj_univ_mem_span [Fintype ι] {d : ℤ} (h𝓜 : IsPolynomialTwist 𝓜 d) (γ : ι →₀ ℕ)
     (z : DegreeZeroLocalization (polynomialGrading ι k) 𝓜
       (.powers (MvPolynomial.monomial γ (1 : k)))) :
-    letI := degreeZeroLocalizationModule ι k 𝓜 (.powers (MvPolynomial.monomial γ (1 : k)))
     blockProj h𝓜 γ Finset.univ z ∈
       Submodule.span k (blockRep ι k 𝓜 γ ''
         {α : ι →₀ ℤ | α.degree = d ∧ ∀ j : ι, α j < 0}) := by
   classical
-  letI := degreeZeroLocalizationModule ι k 𝓜 (.powers (MvPolynomial.monomial γ (1 : k)))
   obtain ⟨m, p, hp, rfl⟩ := DegreeZeroLocalization.exists_awayMk
     (monomial_one_mem_polynomialGrading (R := k) γ) (monomial_one_pow_ne_zero γ) z
   have hfilt := h𝓜.laurentFilter_mem (F := Finset.univ) (γ := γ) (m := m) hp
@@ -196,10 +191,8 @@ theorem blockProj_univ_mem_span [Fintype ι] {d : ℤ} (h𝓜 : IsPolynomialTwis
 `finite_setOf_degree_eq_of_neg` bounds the exponents that can appear — every coordinate negative
 with a fixed total — and `blockProj_univ_mem_span` says nothing outside that family is needed. -/
 theorem fg_blockSpan [Fintype ι] {d : ℤ} (γ : ι →₀ ℕ) :
-    letI := degreeZeroLocalizationModule ι k 𝓜 (.powers (MvPolynomial.monomial γ (1 : k)))
     (Submodule.span k (blockRep ι k 𝓜 γ ''
-      {α : ι →₀ ℤ | α.degree = d ∧ ∀ j : ι, α j < 0})).FG := by
-  letI := degreeZeroLocalizationModule ι k 𝓜 (.powers (MvPolynomial.monomial γ (1 : k)))
-  exact Submodule.fg_span ((finite_setOf_degree_eq_of_neg d).image _)
+      {α : ι →₀ ℤ | α.degree = d ∧ ∀ j : ι, α j < 0})).FG :=
+  Submodule.fg_span ((finite_setOf_degree_eq_of_neg d).image _)
 
 end AlgebraicGeometry.Proj

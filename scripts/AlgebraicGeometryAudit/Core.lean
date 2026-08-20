@@ -2196,3 +2196,22 @@ action against `cechScalarAction` are not here, so #666's acceptance criterion i
 #print axioms AlgebraicGeometry.Proj.awayMk_eq_blockRep
 #print axioms AlgebraicGeometry.Proj.blockProj_univ_mem_span
 #print axioms AlgebraicGeometry.Proj.fg_blockSpan
+
+/-! ## The full blocks of a Čech degree, assembled (#666, S1b — in progress)
+
+`fg_cechBlockSpan` carries one block across the denominator comparison; `powersCongrLinear` is
+that transport, `k`-linear because it moves nothing but the name of the type.
+`module_finite_pi_cechBlockSpan` is the second, independent finiteness: a Čech index has fixed
+length over a finite `ι`, so there are finitely many tuples.
+
+Still the cochain side only — no differential, no cocycles, no cohomology, and the `k`-action is
+`degreeZeroLocalizationModule` rather than the `cechScalarAction` the finiteness interface
+consumes. #666's acceptance criterion is not met. -/
+
+#print axioms AlgebraicGeometry.Proj.powersCongrLinear
+#print axioms AlgebraicGeometry.Proj.powersCongrLinear_apply
+#print axioms AlgebraicGeometry.Proj.powersCongrLinear_symm_apply
+#print axioms AlgebraicGeometry.Proj.cechBlockSpan
+#print axioms AlgebraicGeometry.Proj.cechBlockProj_mem_cechBlockSpan
+#print axioms AlgebraicGeometry.Proj.fg_cechBlockSpan
+#print axioms AlgebraicGeometry.Proj.module_finite_pi_cechBlockSpan
