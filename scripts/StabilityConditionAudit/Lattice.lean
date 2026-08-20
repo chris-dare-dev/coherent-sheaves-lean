@@ -130,3 +130,38 @@ of any derived category is constructed or asserted. -/
 #print axioms Mukai.IsIsotropic.reflect
 #print axioms Mukai.expectedDim_reflect
 #print axioms Mukai.reflect_neg_left
+
+/-! ## Period-domain lane — a real quadratic space of signature `(2, n - 2)`
+
+Pure signature theory of a real quadratic space, in the discipline of the Mukai
+lane above: nothing here is a statement about a K3 surface, its numerical
+Grothendieck group or its period domain. See the module docstring of
+`DerivedAlgGeo/LinearAlgebra/QuadraticForm/PeriodDomain.lean`. -/
+
+#print axioms PeriodDomain.IsPositivePlane
+#print axioms PeriodDomain.IsPositivePlane.finrank_eq
+#print axioms PeriodDomain.IsPositivePlane.posDef
+#print axioms PeriodDomain.HasSignatureTwo
+#print axioms PeriodDomain.HasSignatureTwo.sigPos_eq
+#print axioms PeriodDomain.HasSignatureTwo.sigNeg_add_two
+#print axioms PeriodDomain.IsSphericalClass
+#print axioms PeriodDomain.orthogonal
+#print axioms PeriodDomain.wall
+#print axioms PeriodDomain.periodDomain
+#print axioms PeriodDomain.periodDomain₀
+#print axioms PeriodDomain.polarBilin_isRefl
+#print axioms PeriodDomain.mem_orthogonal_iff
+#print axioms PeriodDomain.isSphericalClass_iff_apply
+#print axioms PeriodDomain.mem_wall_iff_mem_orthogonal
+#print axioms PeriodDomain.notMem_of_isSphericalClass
+#print axioms PeriodDomain.restrict_nondegenerate_of_isPositivePlane
+#print axioms PeriodDomain.nondegenerate
+#print axioms PeriodDomain.isCompl_orthogonal
+#print axioms PeriodDomain.nonpos_of_mem_orthogonal
+#print axioms PeriodDomain.neg_of_mem_orthogonal
+#print axioms PeriodDomain.negDef_orthogonal
+#print axioms PeriodDomain.finrank_orthogonal
+#print axioms PeriodDomain.exists_isPositivePlane
+#print axioms PeriodDomain.periodDomain_nonempty
+#print axioms PeriodDomain.stdForm
+#print axioms PeriodDomain.stdForm_hasSignatureTwo
