@@ -156,3 +156,54 @@ rather than decorative. -/
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.degV_charge_eq_zero
 #print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.wall_eq_of_meet_needs_charge
 
+
+/-! ## Spherical walls — the `exp(β + iω)` chart
+
+Real arithmetic in a vector space with a symmetric bilinear form. Nothing here
+is a statement about a K3 surface: no Néron--Severi group, no ample cone, no
+Hodge index theorem, no stability condition. A separate structure from the
+tilt-stability walls above, sharing no declaration with them; see the module
+docstrings in
+`DerivedAlgGeo/CategoryTheory/Triangulated/StabilityCondition/Walls/`. -/
+
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.Spherical.RealMukai
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.Spherical.pairing
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.Spherical.pairing_mk
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.Spherical.selfPairing
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.Spherical.selfPairing_eq_pairing
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.Spherical.selfPairing_mk
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.Spherical.chartRe
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.Spherical.chartIm
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.Spherical.pairingRe
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.Spherical.pairingIm
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.Spherical.pairingRe_eq
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.Spherical.pairingIm_eq
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.Spherical.pairingIm_eq_of_symm
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.Spherical.two_mul_rk_mul_pairingRe
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.Spherical.pairingRe_eq_of_rk_ne_zero
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.Spherical.two_mul_rk_mul_pairingRe_of_rk_eq_zero
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.Spherical.pairingRe_of_rk_eq_zero
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.Spherical.IsSpherical
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.Spherical.isSpherical_iff
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.Spherical.sphericalPlus
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.Spherical.mem_sphericalPlus_iff
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.Spherical.isSpherical_of_mem_sphericalPlus
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.Spherical.rk_pos_of_mem_sphericalPlus
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.Spherical.corank_eq_of_isSpherical
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.Spherical.wall
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.Spherical.mem_wall_iff
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.Spherical.chamber
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.Spherical.mem_chamber_iff
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.Spherical.chamber_antitone
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.Spherical.chamber_eq_compl_iUnion
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.Spherical.mem_wall_iff_of_isSpherical
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.Spherical.IntegralComparison
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.Spherical.IntegralComparison.toFun
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.Spherical.IntegralComparison.compat
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.Spherical.IntegralComparison.mk.inj
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.Spherical.IntegralComparison.mk.sizeOf_spec
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.Spherical.IntegralComparison.map
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.Spherical.IntegralComparison.map_fst
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.Spherical.pairing_map
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.Spherical.selfPairing_map
+#print axioms CategoryTheory.Triangulated.StabilityCondition.Wall.Spherical.isSpherical_map_iff
