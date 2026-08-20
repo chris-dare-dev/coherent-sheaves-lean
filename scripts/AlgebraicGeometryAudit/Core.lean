@@ -2083,3 +2083,17 @@ docstring in `DerivedAlgGeo/AlgebraicGeometry/Surface/K3.lean`. -/
 #print axioms AlgebraicGeometry.K3Surface.instIsProjective
 #print axioms AlgebraicGeometry.K3Surface.canonicalSheaf_iso
 #print axioms AlgebraicGeometry.K3Surface.h1_vanishing
+
+/-! ## The base field acts: module sheaves and `Coh` are `k`-linear
+
+Multiplication by a global function, composed with `k → Γ(X, O_X)`, makes the
+categories `k`-linear rather than merely preadditive. Mathlib then supplies
+`Linear k (DerivedCategory (Coh X))`, which is what makes `Hom(E, F⟦i⟧)` a
+`k`-vector space and hence what makes sphericity of an object expressible at
+all. It does NOT supply finite-dimensionality; see issue #332. -/
+
+#print axioms AlgebraicGeometry.Variety.homModule
+#print axioms AlgebraicGeometry.Variety.modulesLinear
+#print axioms AlgebraicGeometry.Variety.smul_eq_action_comp
+#print axioms AlgebraicGeometry.Variety.cohLinear
+#print axioms AlgebraicGeometry.Variety.derivedLinear
