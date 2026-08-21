@@ -390,6 +390,12 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 -- sheaf-level O(d)(e) = O(d+e) is not obstructed, but it cannot be transported from here.
 #print axioms AlgebraicGeometry.Proj.mem_intShift_add_iff_of_nonneg
 #print axioms AlgebraicGeometry.Proj.eq_zero_of_mem_intShift_intShift_of_neg
+-- The algebraic half of the sheaf-level composition O(d)(e) = O(d+e) that the two lemmas above
+-- record as unobtainable from an algebraic identity: at a localization whose denominators contain
+-- a homogeneous element of positive degree the two families have the same degree-zero part.
+-- Carrying this to the sections of the associated sheaf is NOT here, so #584 is not closed.
+#print axioms AlgebraicGeometry.Proj.mem_intShift_add_of_mem_intShift_intShift
+#print axioms AlgebraicGeometry.Proj.isDegreeZero_intShift_intShift_iff
 #print axioms AlgebraicGeometry.Proj.sheafTwist
 #print axioms AlgebraicGeometry.Proj.sheafTwistZeroIso
 #print axioms AlgebraicGeometry.Proj.sheafNatTwistAddIso
@@ -2315,6 +2321,23 @@ and instance search will not assemble that on its own.
 Positive degrees only. Degree 0 has no coboundaries to absorb the remainder, and `H0` is the module
 of global sections outright rather than a subquotient; its finiteness is a separate argument. So
 `Hn(Pn, O(d))` is covered for every `n >= 1`, at either sign of `d`, and `P0` is not. -/
+
+/-! ## The twisting sheaf is invertible (#584, step 1)
+
+`Divisors/Tensor.lean` is stated for a locally free rank-one factor, so `F(d) = F (x) O(d)` cannot
+be built at all until `O(d)` is known invertible. The local triviality was already there --
+`TwistCoherence.lean` needed the same degree-one charts to prove `O(d)` coherent -- so this is
+`intShiftOverSelfIso` composed with `associatedSheafSelfIso` and handed to `of_trivializations`.
+
+Route recorded: invertibility first, rather than avoiding the tensor via the graded shift. The
+graded shift describes the twist of an *associated* sheaf only, and #570 needs an arbitrary
+coherent F; it is kept as the computational special case.
+
+The twist F(d) itself, its two coherence isomorphisms, and coherence-preservation are NOT here, so
+#584 is not closed. -/
+
+#print axioms AlgebraicGeometry.Proj.twistingSheafOverUnitIso
+#print axioms AlgebraicGeometry.Proj.twistingSheaf_isInvertible
 
 #print axioms AlgebraicGeometry.Proj.intCechCochainsDegreewiseAddEquiv_symm_smul
 #print axioms AlgebraicGeometry.Proj.intCech_d_apply_eq_zero_iff

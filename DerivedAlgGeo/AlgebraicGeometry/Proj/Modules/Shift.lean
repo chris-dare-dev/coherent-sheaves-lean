@@ -179,4 +179,71 @@ theorem eq_zero_of_mem_intShift_intShift_of_neg (d e : ℤ) (n : ℕ) (hne : (n 
   · rfl
   · exact absurd hk (by omega)
 
+/-! ## The composition, at the localization
+
+`mem_intShift_add_iff_of_nonneg` and `eq_zero_of_mem_intShift_intShift_of_neg` together say the
+double shift and the single shift are genuinely different graded submodule families, and record
+that the sheaf-level composition `O(d)(e) ≅ O(d + e)` therefore cannot be transported from an
+algebraic identity. This section supplies the algebraic half of the replacement: at a localization
+whose denominators contain a homogeneous element of positive degree, the two families have the
+*same* degree-zero part, because the degrees the double shift truncates are inverted back in.
+
+That is exactly the reading `Shift`'s note above predicted. What remains for the sheaf statement is
+to carry this from one localization to the sections of the associated sheaf, and it is not here. -/
+
+/-- The double shift always lands in the single shift.
+
+Only the converse needs the degree bound of `mem_intShift_add_iff_of_nonneg`; this direction is
+unconditional, so it is the one that gives a graded map without hypotheses. -/
+theorem mem_intShift_add_of_mem_intShift_intShift (d e : ℤ) (n : ℕ) {m : M}
+    (hm : m ∈ intShift (intShift 𝓜 d) e n) : m ∈ intShift 𝓜 (d + e) n := by
+  rcases hm with rfl | ⟨k, hk, hm⟩
+  · exact Or.inl rfl
+  · rcases hm with rfl | ⟨l, hl, hm⟩
+    · exact Or.inl rfl
+    · exact Or.inr ⟨l, by omega, hm⟩
+
+/-- **The double shift and the single shift have the same degree-zero localization**, once the
+denominators contain a homogeneous element `t` of positive degree.
+
+One direction is `mem_intShift_add_of_mem_intShift_intShift` applied to the numerator; the other is
+where the content is. A fraction certified only for `intShift 𝓜 (d + e)` is rewritten by
+multiplying numerator and denominator by a power of `t`, which raises its degree without changing
+the element, until the degree clears the bound `mem_intShift_add_iff_of_nonneg` asks for. This is
+the precise sense in which the truncated degrees are "inverted back in": they are never needed at
+a degree the localization cannot reach. -/
+theorem isDegreeZero_intShift_intShift_iff (S : Submonoid A)
+    {m : ℕ} (hm : 0 < m) {t : A} (ht : t ∈ 𝒜 m) (htS : t ∈ S) (d e : ℤ)
+    (z : LocalizedModule S M) :
+    IsDegreeZero 𝒜 (intShift (intShift 𝓜 d) e) S z ↔
+      IsDegreeZero 𝒜 (intShift 𝓜 (d + e)) S z := by
+  constructor
+  · rintro ⟨c, rfl⟩
+    exact ⟨⟨c.deg, ⟨(c.num : M),
+      mem_intShift_add_of_mem_intShift_intShift 𝓜 d e c.deg c.num.2⟩,
+      c.den, c.den_mem⟩, rfl⟩
+  · rintro ⟨c, rfl⟩
+    set k : ℕ := (-e).toNat with hk_def
+    have hkm : (0 : ℤ) ≤ ((c.deg + k * m : ℕ) : ℤ) + e := by
+      have h1 : -e ≤ (k : ℤ) := by rw [hk_def]; exact Int.self_le_toNat _
+      have h2 : k * 1 ≤ k * m := Nat.mul_le_mul_left k hm
+      push_cast
+      omega
+    refine ⟨⟨c.deg + k * m,
+      ⟨t ^ k • (c.num : M), ?_⟩,
+      ⟨t ^ k * (c.den : A), ?_⟩, ?_⟩, ?_⟩
+    · refine (mem_intShift_add_iff_of_nonneg 𝓜 d e (c.deg + k * m) hkm _).mpr ?_
+      have hnum : t ^ k • (c.num : M) ∈ intShift 𝓜 (d + e) (k * m + c.deg) :=
+        SetLike.GradedSMul.smul_mem (SetLike.pow_mem_graded k ht) c.num.2
+      rwa [add_comm (k * m) c.deg] at hnum
+    · have hden : t ^ k * (c.den : A) ∈ 𝒜 (k * m + c.deg) :=
+        SetLike.mul_mem_graded (SetLike.pow_mem_graded k ht) c.den.2
+      rwa [add_comm (k * m) c.deg] at hden
+    · exact Submonoid.mul_mem _ (Submonoid.pow_mem _ htS k) c.den_mem
+    · show LocalizedModule.mk _ _ = LocalizedModule.mk _ _
+      rw [LocalizedModule.mk_eq]
+      refine ⟨1, ?_⟩
+      simp only [one_smul, Submonoid.mk_smul, smul_smul]
+      rw [mul_comm]
+
 end AlgebraicGeometry.Proj
