@@ -2405,6 +2405,24 @@ The twist F(d) itself, its two coherence isomorphisms, and coherence-preservatio
 #print axioms AlgebraicGeometry.Proj.twistingSheafOverUnitIso
 #print axioms AlgebraicGeometry.Proj.twistingSheaf_isInvertible
 
+/-! ## The twist F(d) = F (x) O(d) (#584, deliverables 1, 2a and 4)
+
+The three deliverables that need nothing beyond the tensor product twistingSheaf_isInvertible made
+applicable. tensorObjIso is the general half: tensorObj is not a bifunctor in this tree -- the
+monoidal structure exists only on the invertible sheaves -- but tensorHom_id_id and
+tensorHom_comp_tensorHom are exactly the functoriality an isomorphism needs.
+
+F(d)(e) = F(d+e) is NOT here and cannot be got this way: tensorAssocIso requires BOTH outer factors
+invertible, and no rearrangement of (F (x) O(d)) (x) O(e) through tensorCommIso avoids leaving a
+non-invertible factor outermost. It needs the comparison with the graded shift, after which
+sheafTwistAddIso finishes it with no associator at all. Coherence preservation waits on the same
+comparison, so #584 is not closed. -/
+
+#print axioms AlgebraicGeometry.Scheme.Modules.tensorObjIso
+#print axioms AlgebraicGeometry.Proj.tensorTwist
+#print axioms AlgebraicGeometry.Proj.tensorTwistZeroIso
+#print axioms AlgebraicGeometry.Proj.associatedSelfTensorTwistIso
+
 #print axioms AlgebraicGeometry.Proj.intCechCochainsDegreewiseAddEquiv_symm_smul
 #print axioms AlgebraicGeometry.Proj.intCech_d_apply_eq_zero_iff
 #print axioms AlgebraicGeometry.Proj.intCechBlockIncl
