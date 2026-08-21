@@ -6,6 +6,7 @@ import DerivedAlgGeo.LinearAlgebra.QuadraticForm.PeriodDomain
 import DerivedAlgGeo.LinearAlgebra.QuadraticForm.SignatureAdditive
 import DerivedAlgGeo.LinearAlgebra.QuadraticForm.WallFiniteness
 import DerivedAlgGeo.LinearAlgebra.QuadraticForm.WallRegion
+import DerivedAlgGeo.LinearAlgebra.QuadraticForm.CentralCharge
 import DerivedAlgGeo.LinearAlgebra.QuadraticForm.Orientation
 
 /-! # Quadratic forms
