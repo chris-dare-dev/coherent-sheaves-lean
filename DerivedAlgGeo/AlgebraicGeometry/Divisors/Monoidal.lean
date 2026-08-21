@@ -293,6 +293,20 @@ lemma tensorHom_comp_tensorHom
     (toPresheafOfModules X).map_comp,
     (toPresheafOfModules X).map_comp]
 
+/-- Tensoring is functorial in each argument, so an isomorphism transports through it.
+
+`tensorObj` is not a bifunctor in this file — the monoidal structure is only available on the
+invertible sheaves — but the two lemmas above are exactly the functoriality an isomorphism needs,
+and transporting one factor is what a twist comparison does constantly. -/
+noncomputable def tensorObjIso {L L' M M' : X.Modules} (e : L ≅ L') (g : M ≅ M') :
+    tensorObj L M ≅ tensorObj L' M' where
+  hom := tensorHom e.hom g.hom
+  inv := tensorHom e.inv g.inv
+  hom_inv_id := by
+    rw [tensorHom_comp_tensorHom, e.hom_inv_id, g.hom_inv_id, tensorHom_id_id]
+  inv_hom_id := by
+    rw [tensorHom_comp_tensorHom, e.inv_hom_id, g.inv_hom_id, tensorHom_id_id]
+
 private lemma comparisonLeft_counit (L M : X.Modules)
     [SheafOfModules.IsInvertible.{u, u, u}
       (show SheafOfModules X.ringCatSheaf from L)] :
