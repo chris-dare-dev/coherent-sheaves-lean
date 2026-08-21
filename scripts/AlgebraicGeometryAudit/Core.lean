@@ -2316,6 +2316,23 @@ Positive degrees only. Degree 0 has no coboundaries to absorb the remainder, and
 of global sections outright rather than a subquotient; its finiteness is a separate argument. So
 `Hn(Pn, O(d))` is covered for every `n >= 1`, at either sign of `d`, and `P0` is not. -/
 
+/-! ## The twisting sheaf is invertible (#584, step 1)
+
+`Divisors/Tensor.lean` is stated for a locally free rank-one factor, so `F(d) = F (x) O(d)` cannot
+be built at all until `O(d)` is known invertible. The local triviality was already there --
+`TwistCoherence.lean` needed the same degree-one charts to prove `O(d)` coherent -- so this is
+`intShiftOverSelfIso` composed with `associatedSheafSelfIso` and handed to `of_trivializations`.
+
+Route recorded: invertibility first, rather than avoiding the tensor via the graded shift. The
+graded shift describes the twist of an *associated* sheaf only, and #570 needs an arbitrary
+coherent F; it is kept as the computational special case.
+
+The twist F(d) itself, its two coherence isomorphisms, and coherence-preservation are NOT here, so
+#584 is not closed. -/
+
+#print axioms AlgebraicGeometry.Proj.twistingSheafOverUnitIso
+#print axioms AlgebraicGeometry.Proj.twistingSheaf_isInvertible
+
 #print axioms AlgebraicGeometry.Proj.intCechCochainsDegreewiseAddEquiv_symm_smul
 #print axioms AlgebraicGeometry.Proj.intCech_d_apply_eq_zero_iff
 #print axioms AlgebraicGeometry.Proj.intCechBlockIncl
