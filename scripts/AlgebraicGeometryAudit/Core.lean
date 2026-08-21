@@ -491,6 +491,9 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 #print axioms CategoryTheory.cechTermFamily
 #print axioms CategoryTheory.cechComplexFunctor_delta_π
 #print axioms CategoryTheory.cechComplexFunctor_d_π
+-- The same projection statement for the map a morphism of presheaves induces, which is what
+-- carries the base-field action from one Cech index up to a whole degree.
+#print axioms CategoryTheory.cechComplexFunctor_map_f_π
 -- The complex-level form (#340). The differential is carried across the degreewise comparison
 -- rather than defined as an alternating sum, so d-squared and the comparison isomorphism are
 -- both free; the alternating-sum formula is a separate lemma about this complex.
@@ -2279,3 +2282,17 @@ Degreewise linearity and the homology statement are NOT here, so #666 is not clo
 #print axioms AlgebraicGeometry.Proj.eqToIso_transport_varietyScalarAction
 #print axioms AlgebraicGeometry.Proj.intCechTermSectionAddEquiv_symm_varietyScalarAction
 #print axioms AlgebraicGeometry.Proj.intCechIndexEquiv_smul
+
+/-! ## The degreewise Cech comparison is `k`-linear (#666, step 5b)
+
+Degree `n` is the product of the indices over tuples, so this is `intCechIndexEquiv_smul` read one
+projection at a time. `intTwistScalarHom` names the endomorphism of the twist presheaf that
+`cechScalarAction` induces, and the fact that it elaborates with `intTwistPresheaf` on both sides is
+the reconciliation between the sheaf-side complex and the explicit algebraic one.
+
+The homology statement, the surjection from the full blocks, and the
+`module_finite_linearCoherentH_of_cech` wiring are NOT here, so #666 is not closed. -/
+
+#print axioms AlgebraicGeometry.Proj.intTwistScalarHom
+#print axioms AlgebraicGeometry.Proj.intCechScalar_proj
+#print axioms AlgebraicGeometry.Proj.intCechCochainsDegreewiseAddEquiv_smul
