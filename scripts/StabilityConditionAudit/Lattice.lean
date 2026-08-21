@@ -148,7 +148,9 @@ Grothendieck group or its period domain. See the module docstring of
 #print axioms PeriodDomain.orthogonal
 #print axioms PeriodDomain.wall
 #print axioms PeriodDomain.periodDomain
+#print axioms PeriodDomain.sphericalClasses
 #print axioms PeriodDomain.periodDomain₀
+#print axioms PeriodDomain.periodDomain₀_sphericalClasses_univ_eq_empty
 #print axioms PeriodDomain.polarBilin_isRefl
 #print axioms PeriodDomain.mem_orthogonal_iff
 #print axioms PeriodDomain.isSphericalClass_iff_apply
@@ -343,8 +345,10 @@ support property. `expCharge` is Bridgeland's `Z(β,ω)`. -/
 #print axioms PeriodDomain.centralCharge_ne_zero_of_nonneg
 #print axioms PeriodDomain.mem_wall_iff_centralCharge_eq_zero
 #print axioms PeriodDomain.isCompl_ker_centralCharge
+#print axioms PeriodDomain.mem_periodDomain₀_iff_centralCharge_ne_zero
 #print axioms Mukai.expCharge
 #print axioms Mukai.expCharge_apply
 #print axioms Mukai.neg_of_expCharge_eq_zero
 #print axioms Mukai.expCharge_ne_zero_of_nonneg
 #print axioms Mukai.mem_wall_iff_expCharge_eq_zero
+#print axioms Mukai.mem_periodDomain₀_iff_expCharge_ne_zero
