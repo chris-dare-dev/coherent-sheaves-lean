@@ -2260,6 +2260,22 @@ Still outstanding for #666: carrying this up from a single term to the Čech com
 
 #print axioms AlgebraicGeometry.Proj.smul_mk
 #print axioms AlgebraicGeometry.Proj.mapOfLE_smul
+#print axioms AlgebraicGeometry.Proj.constSectionOn
+#print axioms AlgebraicGeometry.Proj.constSectionOn_basicOpen
 #print axioms AlgebraicGeometry.Proj.constSection
+#print axioms AlgebraicGeometry.Proj.varietyScalarAction_app_eq
 #print axioms AlgebraicGeometry.Proj.moduleAwayToSection_smul
 #print axioms AlgebraicGeometry.Proj.intCechTermSectionAddEquiv_smul
+
+/-! ## The per-index Čech comparison is `k`-linear (#666, step 5)
+
+`intCechIndexEquiv` is the term comparison plus one transport, because a Čech index names sections
+over a categorical product of charts while the term comparison is stated over a basic open. The
+transport is `subst`; it is stated against the sheaf endomorphism rather than `•` because a `•`
+over `Γ(Proj 𝒜, W)` leaves instance search stuck.
+
+Degreewise linearity and the homology statement are NOT here, so #666 is not closed. -/
+
+#print axioms AlgebraicGeometry.Proj.eqToIso_transport_varietyScalarAction
+#print axioms AlgebraicGeometry.Proj.intCechTermSectionAddEquiv_symm_varietyScalarAction
+#print axioms AlgebraicGeometry.Proj.intCechIndexEquiv_smul
