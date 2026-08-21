@@ -15,9 +15,10 @@ linearity is the per-index statement read off one projection at a time.
 
 ## The endomorphism, named once
 
-The Čech lane takes a presheaf; the scalar action is defined on a sheaf of modules. `cechScalarAction`
-crosses that gap by pushing `varietyScalarAction` through `Scheme.Modules.toSheaf` and then
-`sheafToPresheaf`, and `intTwistScalarHom` is exactly that composite named at the twist. Naming it
+The Čech lane takes a presheaf; the scalar action is defined on a sheaf of modules.
+`cechScalarAction` crosses that gap by pushing `varietyScalarAction` through
+`Scheme.Modules.toSheaf` and then `sheafToPresheaf`, and `intTwistScalarHom` is exactly that
+composite named at the twist. Naming it
 is what makes the reconciliation visible: its source and target elaborate as `intTwistPresheaf`,
 which is the presheaf the explicit complex is built from, so no transport is needed between the two
 descriptions of degree `n`.
@@ -37,8 +38,9 @@ for `intCechIndexEquiv_smul`.
 
 ## Scope
 
-Degreewise only. The homology statement `r • [s] = [r • s]`, the surjection from the full blocks,
-and the `module_finite_linearCoherentH_of_cech` wiring are not here, so `#666` is not closed.
+Degreewise only. The homology statement, the surjection from the full blocks, and the
+`module_finite_linearCoherentH_of_cech` wiring are in
+`Cohomology/Finiteness/ProjectiveSpaceTopFinite.lean`, which consumes this file.
 -/
 
 universe u
