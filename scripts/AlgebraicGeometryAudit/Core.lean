@@ -396,6 +396,36 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 -- Carrying this to the sections of the associated sheaf is NOT here, so #584 is not closed.
 #print axioms AlgebraicGeometry.Proj.mem_intShift_add_of_mem_intShift_intShift
 #print axioms AlgebraicGeometry.Proj.isDegreeZero_intShift_intShift_iff
+
+/-! ## The twists compose, on the sheaf side (#584)
+
+Shift.lean proves the graded identity M(d)(e) = M(d+e) FALSE and says the sheaf-level version
+"has to be proved on the sheaf side". This is that proof. The comparison is pointwise the identity
+-- Fiber is a submodule of LocalizedModule S M, whose ambient does not mention the grading, so
+degreeZeroSubmodule_intShift_intShift says the carriers coincide and nothing is transported.
+
+The two directions of the local-fraction condition are not symmetric. Forward, only the numerator's
+certificate is rebuilt. Backward, a fraction certified for the single shift is rewritten as
+t^k r / t^k s, raising its degree until the double shift can certify it, and the neighbourhood
+shrinks to V n D+(t) so that ONE t serves every point -- a per-point choice would not give the
+single fraction isLocallyFraction demands. exists_homogeneous_pos_not_mem supplies that t, and is
+where the geometry enters: a point of Proj is a relevant prime.
+
+Relating this to the TENSOR product is a separate comparison and is NOT here, so #584 is not
+closed. -/
+
+#print axioms AlgebraicGeometry.Proj.exists_homogeneous_pos_not_mem
+#print axioms AlgebraicGeometry.Proj.mem_primeCompl_of_not_mem
+#print axioms AlgebraicGeometry.Proj.degreeZeroSubmodule_intShift_intShift
+#print axioms AlgebraicGeometry.Proj.fiberIntShiftAddEquiv
+#print axioms AlgebraicGeometry.Proj.fiberIntShiftAddEquiv_coe
+#print axioms AlgebraicGeometry.Proj.pred_intShift_intShift_of_pred
+#print axioms AlgebraicGeometry.Proj.pred_intShift_add_of_pred
+#print axioms AlgebraicGeometry.Proj.sectionAddEquivIntShiftAdd
+#print axioms AlgebraicGeometry.Proj.sectionLinearEquivIntShiftAdd
+#print axioms AlgebraicGeometry.Proj.associatedSheafIntShiftAddIso
+#print axioms AlgebraicGeometry.Proj.sheafTwistAddIso
+#print axioms AlgebraicGeometry.Proj.twistingSheafAddIso
 #print axioms AlgebraicGeometry.Proj.sheafTwist
 #print axioms AlgebraicGeometry.Proj.sheafTwistZeroIso
 #print axioms AlgebraicGeometry.Proj.sheafNatTwistAddIso
