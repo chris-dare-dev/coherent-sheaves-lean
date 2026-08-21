@@ -2,7 +2,7 @@
 Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under the MIT license.
 -/
-import DerivedAlgGeo.LinearAlgebra.Lattice.Mukai.RealForm
+import DerivedAlgGeo.LinearAlgebra.Lattice.Mukai.RealFormSignature
 import DerivedAlgGeo.LinearAlgebra.QuadraticForm.WallFiniteness
 
 /-!
@@ -186,6 +186,20 @@ theorem mem_periodDomainPlus_exp_of_sameCone
     · exact hgt
   refine ⟨isPositivePair_exp b β' ω' hb hω', ?_⟩
   rwa [← pathDet_one b β ω β' ω']
+
+/-- **The same statement resting on the Hodge index hypotheses alone.**
+
+`hasSignatureTwo_realForm` discharges the signature hypothesis, so with
+`V = NS(X) ⊗ ℝ` the inputs are: the Hodge index signature of `V`, and two classes
+in the same component of its positive cone. -/
+theorem mem_periodDomainPlus_exp_of_sameCone_of_sigPos (hb : ∀ x y : V, b x y = b y x)
+    (hsigPos : sigPos (LinearMap.BilinMap.toQuadraticMap b) = 1)
+    (hsigNeg : sigNeg (LinearMap.BilinMap.toQuadraticMap b) + 1 = Module.finrank ℝ V)
+    (hω : 0 < b ω ω) (hω' : 0 < b ω' ω') (hcone : 0 < b ω ω') :
+    (expRe b β' ω', expIm b β' ω') ∈
+      PeriodDomain.periodDomainPlus (realForm b) (expRe b β ω) (expIm b β ω) :=
+  mem_periodDomainPlus_exp_of_sameCone b β ω β' ω'
+    (hasSignatureTwo_realForm b hb hsigPos hsigNeg) hb hω hω' hcone
 
 end Path
 
