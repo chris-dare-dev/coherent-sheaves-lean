@@ -54,6 +54,9 @@ theory, `Q.polarBilin` **is** the pairing, `IsSphericalClass` is stated as
   A wall does **not** meet its plane in a proper subspace: `W ⊆ δ^⊥` is exactly
   the wall condition, and it is compatible with `δ ∉ W` because `δ` lies in
   `Wᗮ`.
+* `periodDomain₀_sphericalClasses_univ_eq_empty` — the cut must be taken by a
+  *set* of classes: cutting by every real class of square `-2` empties the
+  domain. Bridgeland cuts by the lattice `Δ(X)`, which is discrete.
 * `exists_isPositivePlane` and `stdForm_hasSignatureTwo` — the hypothesis is
   inhabited and its period domain is nonempty, so nothing above is vacuous.
   `sigPos Q = 2` carries its own positive plane; `stdForm` is `x₀² + x₁² - x₂²`
@@ -118,10 +121,20 @@ def wall (δ : M) : Set (Submodule ℝ M) :=
 /-- The **period domain**: all positive planes. -/
 def periodDomain : Set (Submodule ℝ M) := {W | IsPositivePlane Q W}
 
-/-- The **cut period domain**, `P₀`: the positive planes lying on no spherical
-wall. -/
-def periodDomain₀ : Set (Submodule ℝ M) :=
-  {W ∈ periodDomain Q | ∀ δ : M, IsSphericalClass Q δ → W ∉ wall Q δ}
+/-- The spherical classes of a set of classes — Bridgeland's `Δ(X)` when the
+set is the Mukai lattice. -/
+def sphericalClasses (Λ : Set M) : Set M := {δ ∈ Λ | IsSphericalClass Q δ}
+
+/-- The **cut period domain**, `P₀`: the positive planes lying on no wall of a
+class in `Δ`.
+
+`Δ` is a parameter, and it must be: cutting by *every* real class of square `-2`
+deletes the whole domain, since the negative definite `Wᗮ` of any positive plane
+contains such a class. That is `periodDomain₀_sphericalClasses_univ_eq_empty`
+below, and it is why Bridgeland cuts by the lattice `Δ(X)`, which is discrete.
+The intended argument is `sphericalClasses Q Λ` for a lattice `Λ`. -/
+def periodDomain₀ (Δ : Set M) : Set (Submodule ℝ M) :=
+  {W ∈ periodDomain Q | ∀ δ ∈ Δ, W ∉ wall Q δ}
 
 end Defs
 
@@ -347,6 +360,45 @@ theorem finrank_orthogonal {W : Submodule ℝ M} (hW : IsPositivePlane Q W) :
   rw [hW.finrank_eq] at h
   omega
 
+
+/-- **Cutting by every real class of square `-2` deletes the whole domain.**
+
+The orthogonal complement of a positive plane is negative definite and, once the
+space has dimension at least three, nonzero; scaling any vector of it to square
+`-1` produces a real spherical class orthogonal to the plane. So every positive
+plane lies on such a wall.
+
+This is why `periodDomain₀` takes the class set as a parameter, and why
+Bridgeland cuts by the discrete `Δ(X)` rather than by all of `{δ | ⟪δ,δ⟫ = -2}`.
+-/
+theorem periodDomain₀_sphericalClasses_univ_eq_empty (hsig : HasSignatureTwo Q)
+    (hdim : 3 ≤ Module.finrank ℝ M) :
+    periodDomain₀ Q (sphericalClasses Q Set.univ) = ∅ := by
+  rw [Set.eq_empty_iff_forall_notMem]
+  rintro W ⟨hW, hcut⟩
+  have hWpos : IsPositivePlane Q W := hW
+  -- the complement is nonzero
+  have hrank : Module.finrank ℝ (orthogonal Q W) + 2 = Module.finrank ℝ M :=
+    finrank_orthogonal hWpos
+  have hpos : 0 < Module.finrank ℝ (orthogonal Q W) := by omega
+  have hnt : Nontrivial (orthogonal Q W) := (Module.finrank_pos_iff).mp hpos
+  obtain ⟨u, hu0⟩ := exists_ne (0 : orthogonal Q W)
+  have humem : (u : M) ∈ orthogonal Q W := u.2
+  have hune : (u : M) ≠ 0 := by simpa using hu0
+  have hQu : Q (u : M) < 0 := neg_of_mem_orthogonal hsig hWpos humem hune
+  -- scale it to square `-1`, i.e. to a spherical class
+  have hQne : Q (u : M) ≠ 0 := ne_of_lt hQu
+  have hfrac : 0 < -1 / Q (u : M) := div_pos_of_neg_of_neg (by norm_num) hQu
+  set c : ℝ := Real.sqrt (-1 / Q (u : M)) with hc
+  have hcsq : c * c = -1 / Q (u : M) := Real.mul_self_sqrt hfrac.le
+  set δ : M := c • (u : M) with hδ
+  have hQδ : Q δ = -1 := by
+    rw [hδ, QuadraticMap.map_smul, smul_eq_mul, hcsq]
+    field_simp
+  have hsph : IsSphericalClass Q δ := by
+    rw [isSphericalClass_iff_apply, hQδ]
+  have hmem : δ ∈ orthogonal Q W := Submodule.smul_mem _ _ humem
+  exact hcut δ ⟨Set.mem_univ δ, hsph⟩ ((mem_wall_iff_mem_orthogonal hWpos).mpr hmem)
 
 /-- **The period domain of a signature `(2, n - 2)` space is nonempty.**
 

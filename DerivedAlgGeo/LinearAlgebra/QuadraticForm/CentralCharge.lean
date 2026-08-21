@@ -34,6 +34,8 @@ stability condition rather than as facts about a quadratic space.
   kernel, so there are no walls in the positive cone.
 * `mem_wall_iff_centralCharge_eq_zero` — for a spherical class, a wall is a
   vanishing charge.
+* `mem_periodDomain₀_iff_centralCharge_ne_zero` — **the cut period domain is
+  exactly the locus where the charge is nondegenerate** on the cutting classes.
 * `isCompl_ker_centralCharge` — `M = W ⊕ ker Z`.
 
 ## What a central charge is not
@@ -124,6 +126,22 @@ wall exactly when the class has charge zero. -/
 theorem mem_wall_iff_centralCharge_eq_zero {x y : M} (hxy : IsPositivePair Q x y) {δ : M} :
     pairSpan x y ∈ wall Q δ ↔ centralCharge Q x y δ = 0 := by
   rw [mem_wall_iff_mem_orthogonal hxy, centralCharge_eq_zero_iff]
+
+omit [FiniteDimensional ℝ M] in
+/-- **The cut domain is exactly where the charge is nondegenerate.**
+
+A positive pair lies off every wall of `Δ` precisely when no class of `Δ` has
+vanishing charge. This is the property Bridgeland's construction consumes, and
+it is why the cut is taken by a class set — see
+`periodDomain₀_sphericalClasses_univ_eq_empty`. -/
+theorem mem_periodDomain₀_iff_centralCharge_ne_zero {x y : M} (hxy : IsPositivePair Q x y)
+    (Δ : Set M) :
+    pairSpan x y ∈ periodDomain₀ Q Δ ↔ ∀ δ ∈ Δ, centralCharge Q x y δ ≠ 0 := by
+  constructor
+  · rintro ⟨-, hcut⟩ δ hδ hz
+    exact hcut δ hδ ((mem_wall_iff_centralCharge_eq_zero hxy).mpr hz)
+  · intro h
+    exact ⟨hxy, fun δ hδ hw => h δ hδ ((mem_wall_iff_centralCharge_eq_zero hxy).mp hw)⟩
 
 /-- **The charge splits the space**: `M = W ⊕ ker Z`. -/
 theorem isCompl_ker_centralCharge {x y : M} (hxy : IsPositivePair Q x y) :
