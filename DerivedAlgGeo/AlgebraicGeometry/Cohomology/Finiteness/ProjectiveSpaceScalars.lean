@@ -93,4 +93,63 @@ theorem varietyScalarAction_apply_fiber (r : k)
     rw [openToLocalization_presheaf_map, openToLocalization_baseFieldToGlobalSections]
   exact congrArg (fun c => c • (m.1 ⟨x, hx⟩)) h2
 
+/-- The restriction of the constant `r` to a chart, at the type the sections module wants. -/
+noncomputable def constSection (f : MvPolynomial ι k) (r : k) :
+    (ProjectiveSpectrum.Proj.structureSheaf (polynomialGrading ι k)).1.obj
+      (op (ProjectiveSpectrum.basicOpen (polynomialGrading ι k) f)) :=
+  (Proj (polynomialGrading ι k)).presheaf.map
+    (homOfLE (le_top : ProjectiveSpectrum.basicOpen (polynomialGrading ι k) f ≤ ⊤)).op
+    (Cohomology.baseFieldToGlobalSections (projectiveSpaceVariety ι k) r)
+
+/-- **The canonical fraction-to-section map is `k`-linear.** It is pointwise `mapOfLE`, and the
+constant `r` restricted to the chart has value `r / 1` at every point, so both sides scale the
+same fiber by the same scalar. -/
+theorem moduleAwayToSection_smul {d : ℤ} (h𝓜 : IsPolynomialTwist 𝓜 d)
+    (f : MvPolynomial ι k) (r : k)
+    (z : DegreeZeroLocalization (polynomialGrading ι k) 𝓜 (.powers f)) :
+    moduleAwayToSection (polynomialGrading ι k) 𝓜 f (r • z) =
+      constSection ι k f r • moduleAwayToSection (polynomialGrading ι k) 𝓜 f z := by
+  apply Subtype.ext
+  funext x
+  have hsc : (openToLocalization (polynomialGrading ι k)
+      (ProjectiveSpectrum.basicOpen (polynomialGrading ι k) f) x.1 x.2).hom
+        (constSection ι k f r) =
+      polynomialToHomogeneousLocalization ι k
+        x.1.asHomogeneousIdeal.toIdeal.primeCompl r :=
+    (openToLocalization_presheaf_map (polynomialGrading ι k)
+      (ProjectiveSpectrum.basicOpen (polynomialGrading ι k) f) ⊤ (homOfLE le_top)
+      x.1 x.2 _).trans (openToLocalization_baseFieldToGlobalSections ι k r x.1)
+  have hle : (Submonoid.powers f) ≤ x.1.asHomogeneousIdeal.toIdeal.primeCompl :=
+    Submonoid.powers_le.mpr x.2
+  show DegreeZeroLocalization.mapOfLE (𝒜 := polynomialGrading ι k) (𝓜 := 𝓜)
+      hle (r • z) =
+    (openToLocalization (polynomialGrading ι k)
+      (ProjectiveSpectrum.basicOpen (polynomialGrading ι k) f) x.1 x.2).hom
+        (constSection ι k f r) •
+      DegreeZeroLocalization.mapOfLE (𝒜 := polynomialGrading ι k) (𝓜 := 𝓜) hle z
+  rw [hsc, mapOfLE_smul ι k 𝓜 h𝓜]
+  rfl
+
+/-- **The Čech comparison is `k`-linear.**
+
+The five-step composite never has to be taken apart: `intCechTermSectionAddEquiv_apply_mk`
+already identifies it with `moduleAwayToSection` on every `mk`, and `mk` is surjective. So the
+linearity of the whole chain is the linearity of one pointwise `mapOfLE`.
+
+This is what lets a spanning set computed in the graded localizations be read as a spanning set
+for the action `module_finite_linearCoherentH_of_cech` consumes. -/
+theorem intCechTermSectionAddEquiv_smul (d : ℤ) {n : ℕ} (x : Fin (n + 1) → ι) (r : k)
+    (z : polynomialVariableIntCechTerm ι k d n x) :
+    intCechTermSectionAddEquiv ι k d x (r • z) =
+      constSection ι k (polynomialVariableCechDenominator ι k x) r •
+        intCechTermSectionAddEquiv ι k d x z := by
+  obtain ⟨c, rfl⟩ := DegreeZeroLocalization.mk_surjective z
+  have h1 : intCechTermSectionAddEquiv ι k d x (r • DegreeZeroLocalization.mk c) =
+      moduleAwayToSection (polynomialGrading ι k) (intShift (polynomialGrading ι k) d)
+        (polynomialVariableCechDenominator ι k x) (r • DegreeZeroLocalization.mk c) := by
+    rw [smul_mk ι k _ (isPolynomialTwist_intShift (R := k) d)]
+    exact intCechTermSectionAddEquiv_apply_mk ι k d x _
+  rw [h1, intCechTermSectionAddEquiv_apply_mk,
+    moduleAwayToSection_smul ι k _ (isPolynomialTwist_intShift (R := k) d)]
+
 end AlgebraicGeometry.Proj

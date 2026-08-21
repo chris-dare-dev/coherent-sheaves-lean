@@ -2244,3 +2244,22 @@ The five steps of `intCechTermSectionAddEquiv` have NOT been shown `k`-linear, s
 
 #print axioms AlgebraicGeometry.Proj.openToLocalization_baseFieldToGlobalSections
 #print axioms AlgebraicGeometry.Proj.varietyScalarAction_apply_fiber
+
+/-! ## The Čech comparison is `k`-linear (#666, S1b — the bridge, closed)
+
+`intCechTermSectionAddEquiv_smul` says the comparison between a Čech term and its sections
+respects the base-field action: the one the Čech lane computes with (scaling a numerator) and the
+one `FiniteDimensionalCohomology` means (multiplying by the global function a scalar becomes).
+
+The five-step composite is never taken apart. `intCechTermSectionAddEquiv_apply_mk` already
+identifies it with `moduleAwayToSection` on every `mk`, and `mk` is surjective, so the whole chain
+inherits the linearity of one pointwise `mapOfLE`.
+
+Still outstanding for #666: carrying this up from a single term to the Čech complex, and the
+`module_finite_linearCoherentH_of_cech` wiring. -/
+
+#print axioms AlgebraicGeometry.Proj.smul_mk
+#print axioms AlgebraicGeometry.Proj.mapOfLE_smul
+#print axioms AlgebraicGeometry.Proj.constSection
+#print axioms AlgebraicGeometry.Proj.moduleAwayToSection_smul
+#print axioms AlgebraicGeometry.Proj.intCechTermSectionAddEquiv_smul
