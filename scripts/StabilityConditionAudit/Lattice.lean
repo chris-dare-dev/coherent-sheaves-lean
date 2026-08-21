@@ -202,3 +202,27 @@ inhabits the field, and `empty` is the degenerate witness kept for contrast. -/
 #print axioms PeriodDomain.PlaneRegion.finite_wallClasses_inter
 #print axioms PeriodDomain.PlaneRegion.ofCompactPairs
 #print axioms PeriodDomain.PlaneRegion.empty
+
+/-! ### Oriented positive pairs — the sign invariant that models `P⁺`
+
+The ordered form of the period domain and the two halves the pairing determinant
+cuts it into. "Component" is modeled by the sign, not proved to be one; see the
+module docstring of `QuadraticForm/Orientation.lean`. -/
+
+#print axioms PeriodDomain.pairSpan
+#print axioms PeriodDomain.IsPositivePair
+#print axioms PeriodDomain.pairingDet
+#print axioms PeriodDomain.isPositivePlane_pairSpan
+#print axioms PeriodDomain.combination_ne_zero
+#print axioms PeriodDomain.pairingDet_ne_zero
+#print axioms PeriodDomain.pairingDet_swap
+#print axioms PeriodDomain.pairingDet_swap_ref
+#print axioms PeriodDomain.SameOrientation
+#print axioms PeriodDomain.sameOrientation_refl
+#print axioms PeriodDomain.sameOrientation_symm
+#print axioms PeriodDomain.sameOrientation_trans
+#print axioms PeriodDomain.periodDomainPlus
+#print axioms PeriodDomain.periodDomainMinus
+#print axioms PeriodDomain.disjoint_periodDomainPlus_minus
+#print axioms PeriodDomain.union_periodDomainPlus_minus
+#print axioms PeriodDomain.swap_mem_of_mem_periodDomainPlus
