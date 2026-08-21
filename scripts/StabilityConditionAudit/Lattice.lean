@@ -172,6 +172,7 @@ The `QuadraticMap` records extend Mathlib's own API and are stated for an
 arbitrary finite-dimensional real normed space; the `PeriodDomain` records are
 the pointwise wall count. Neither says anything about a K3 surface. -/
 
+#print axioms QuadraticMap.continuous_polar
 #print axioms QuadraticMap.continuous_of_finiteDimensional
 #print axioms QuadraticMap.PosDef.exists_pos_mul_norm_sq_le
 #print axioms QuadraticMap.PosDef.isBounded_setOf_eq
@@ -179,3 +180,25 @@ the pointwise wall count. Neither says anything about a K3 surface. -/
 #print axioms PeriodDomain.isBounded_sphericalOrthogonal
 #print axioms PeriodDomain.finite_sphericalOrthogonal_inter
 #print axioms PeriodDomain.finite_walls_through
+
+/-! ### Regions of positive planes — the uniform constant and the wall count
+
+`PlaneRegion` carries its coercivity constant as a field because a bounded
+family of planes does not supply one; `ofCompactPairs` is the criterion that
+inhabits the field, and `empty` is the degenerate witness kept for contrast. -/
+
+#print axioms PeriodDomain.mem_orthogonal_span_pair_iff
+#print axioms PeriodDomain.exists_uniform_coercivity
+#print axioms PeriodDomain.PlaneRegion
+#print axioms PeriodDomain.PlaneRegion.mk.inj
+#print axioms PeriodDomain.PlaneRegion.mk.sizeOf_spec
+#print axioms PeriodDomain.PlaneRegion.carrier
+#print axioms PeriodDomain.PlaneRegion.isPositivePlane
+#print axioms PeriodDomain.PlaneRegion.coercivity
+#print axioms PeriodDomain.PlaneRegion.coercivity_pos
+#print axioms PeriodDomain.PlaneRegion.uniform
+#print axioms PeriodDomain.PlaneRegion.wallClasses
+#print axioms PeriodDomain.PlaneRegion.isBounded_wallClasses
+#print axioms PeriodDomain.PlaneRegion.finite_wallClasses_inter
+#print axioms PeriodDomain.PlaneRegion.ofCompactPairs
+#print axioms PeriodDomain.PlaneRegion.empty
