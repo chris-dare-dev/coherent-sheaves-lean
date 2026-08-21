@@ -93,6 +93,13 @@ theorem varietyScalarAction_apply_fiber (r : k)
     rw [openToLocalization_presheaf_map, openToLocalization_baseFieldToGlobalSections]
   exact congrArg (fun c => c • (m.1 ⟨x, hx⟩)) h2
 
+/-- The constant `r` restricted to any open, at the type the sections module wants. -/
+noncomputable def constSectionOn (U : Opens (ProjectiveSpectrum.top (polynomialGrading ι k)))
+    (r : k) :
+    (ProjectiveSpectrum.Proj.structureSheaf (polynomialGrading ι k)).1.obj (op U) :=
+  (Proj (polynomialGrading ι k)).presheaf.map (homOfLE (le_top : U ≤ ⊤)).op
+    (Cohomology.baseFieldToGlobalSections (projectiveSpaceVariety ι k) r)
+
 /-- The restriction of the constant `r` to a chart, at the type the sections module wants. -/
 noncomputable def constSection (f : MvPolynomial ι k) (r : k) :
     (ProjectiveSpectrum.Proj.structureSheaf (polynomialGrading ι k)).1.obj
@@ -100,6 +107,22 @@ noncomputable def constSection (f : MvPolynomial ι k) (r : k) :
   (Proj (polynomialGrading ι k)).presheaf.map
     (homOfLE (le_top : ProjectiveSpectrum.basicOpen (polynomialGrading ι k) f ≤ ⊤)).op
     (Cohomology.baseFieldToGlobalSections (projectiveSpaceVariety ι k) r)
+
+/-- It agrees with the chart-level `constSection`. -/
+theorem constSectionOn_basicOpen (f : MvPolynomial ι k) (r : k) :
+    constSectionOn ι k (ProjectiveSpectrum.basicOpen (polynomialGrading ι k) f) r =
+      constSection ι k f r := rfl
+
+/-- The sheaf endomorphism is multiplication by the restricted constant, on any open. -/
+theorem varietyScalarAction_app_eq (r : k)
+    (U : Opens (ProjectiveSpectrum.top (polynomialGrading ι k)))
+    (m : (associatedSheafInType (polynomialGrading ι k) 𝓜).1.obj (op U)) :
+    (((Cohomology.varietyScalarAction (projectiveSpaceVariety ι k)
+        (associatedSheaf (polynomialGrading ι k) 𝓜) r).val.app (op U)).hom m :
+        (associatedSheafInType (polynomialGrading ι k) 𝓜).1.obj (op U)) =
+      constSectionOn ι k U r • m :=
+  Cohomology.globalSectionSmul_app (associatedSheaf (polynomialGrading ι k) 𝓜)
+    (Cohomology.baseFieldToGlobalSections (projectiveSpaceVariety ι k) r) U m
 
 /-- **The canonical fraction-to-section map is `k`-linear.** It is pointwise `mapOfLE`, and the
 constant `r` restricted to the chart has value `r / 1` at every point, so both sides scale the

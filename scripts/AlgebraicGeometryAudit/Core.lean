@@ -2260,6 +2260,9 @@ Still outstanding for #666: carrying this up from a single term to the Čech com
 
 #print axioms AlgebraicGeometry.Proj.smul_mk
 #print axioms AlgebraicGeometry.Proj.mapOfLE_smul
+#print axioms AlgebraicGeometry.Proj.constSectionOn
+#print axioms AlgebraicGeometry.Proj.constSectionOn_basicOpen
 #print axioms AlgebraicGeometry.Proj.constSection
+#print axioms AlgebraicGeometry.Proj.varietyScalarAction_app_eq
 #print axioms AlgebraicGeometry.Proj.moduleAwayToSection_smul
 #print axioms AlgebraicGeometry.Proj.intCechTermSectionAddEquiv_smul
