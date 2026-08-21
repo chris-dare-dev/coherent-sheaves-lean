@@ -3,6 +3,8 @@ import DerivedAlgGeo.AlgebraicGeometry.Cohomology.Finiteness.LinearCech
 import DerivedAlgGeo.AlgebraicGeometry.Cohomology.Finiteness.ProjectiveSpace
 import DerivedAlgGeo.AlgebraicGeometry.Cohomology.Finiteness.ProjectiveSpaceScalars
 import DerivedAlgGeo.AlgebraicGeometry.Cohomology.Finiteness.ProjectiveSpaceCechScalars
+import DerivedAlgGeo.AlgebraicGeometry.Cohomology.Finiteness.ProjectiveSpaceCechHomology
+import DerivedAlgGeo.AlgebraicGeometry.Cohomology.Finiteness.ProjectiveSpaceTopFinite
 import DerivedAlgGeo.AlgebraicGeometry.Cohomology.Finiteness.Boundedness
 
 /-! # Finiteness interfaces for sheaf cohomology -/

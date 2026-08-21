@@ -20,7 +20,9 @@ construction, so they live in Mathlib's namespace.
 
 * `cechComplexFunctor_delta_π` — the `j`-th coface, projected at `x`, is the projection at the
   face `x ∘ j.succAbove` followed by the presheaf on the face inclusion;
-* `cechComplexFunctor_d_π` — the differential, projected at `x`, is the alternating sum of those.
+* `cechComplexFunctor_d_π` — the differential, projected at `x`, is the alternating sum of those;
+* `cechComplexFunctor_map_f_π` — the map induced by a morphism of presheaves, projected at `x`, is
+  the projection at `x` followed by that morphism on the intersection.
 
 ## Implementation notes
 
@@ -74,6 +76,27 @@ theorem cechComplexFunctor_delta_π {n : ℕ} (j : Fin (n + 2))
         P.map (((cechNerve U).map (SimplexCategory.δ j).op).φ x).op := by
   rw [CosimplicialObject.δ, Limits.FormalCoproduct.cosimplicialObjectFunctor_obj_map]
   exact Limits.Pi.lift_π _ _
+
+/-- The map a morphism of presheaves induces on Čech cochains, projected at the index `x`, is the
+projection at `x` followed by the morphism on that intersection.
+
+`evalOp` sends a morphism to `Pi.map` componentwise, so once the two sides are recognised as a
+`Pi.map` and its projection this is `Pi.map_π`. The recognition is `rfl` rather than a rewrite:
+`cechComplexFunctor` reaches `evalOp` through two functor compositions, and only definitional
+unfolding crosses them.
+
+Unlike `cechComplexFunctor_delta_π` this cannot omit `Preadditive A`: it names
+`cechComplexFunctor` itself, whose target `CochainComplex A ℕ` needs the zero morphisms. -/
+theorem cechComplexFunctor_map_f_π {F G : Cᵒᵖ ⥤ A} (φ : F ⟶ G) (n : ℕ)
+    (x : ToType (SimplexCategory.mk n) → ι) :
+    ((cechComplexFunctor U).map φ).f n ≫ Pi.π (cechTermFamily U G n) x =
+      Pi.π (cechTermFamily U F n) x ≫
+        φ.app (op (((cechNerve U).obj (op (SimplexCategory.mk n))).obj x)) := by
+  have h : ((cechComplexFunctor U).map φ).f n =
+      Limits.Pi.map (fun i : ToType (SimplexCategory.mk n) → ι =>
+        φ.app (op (((cechNerve U).obj (op (SimplexCategory.mk n))).obj i))) := rfl
+  rw [h]
+  exact Limits.Pi.map_π _ _
 
 /-- The Čech differential, projected at the index `x`, is the alternating sum of the face
 restrictions. This is the formula a concrete computation of `Hⁱ` consumes. -/
