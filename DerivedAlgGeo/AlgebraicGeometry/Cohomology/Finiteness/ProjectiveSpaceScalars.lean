@@ -1,0 +1,96 @@
+/-
+Copyright (c) 2026 Chris Dare. All rights reserved.
+Released under the MIT license.
+-/
+import DerivedAlgGeo.AlgebraicGeometry.Proj.StructureSections
+import DerivedAlgGeo.AlgebraicGeometry.Cohomology.Finiteness.LinearCech
+import DerivedAlgGeo.AlgebraicGeometry.Proj.Modules.LaurentFinite
+
+/-!
+# The base field acting on sections of a twist
+
+`FiniteDimensionalCohomology` asks for `Module.Finite k`, and the `k`-action it means is
+`coherentScalarAction`: multiplication by the global function a scalar becomes under the
+structure morphism. The Čech lane, by contrast, computes in graded localizations, where `k` acts
+through the constants (`polynomialToHomogeneousLocalization`). Nothing so far says these are the
+same action, and #666's finiteness statement is meaningless until they are.
+
+This file closes that gap at the level of sections.
+
+* `openToLocalization_baseFieldToGlobalSections` — the global function a scalar becomes has value
+  `r / 1` at every point. This is `openToLocalization_toSpecZero_appTop` composed with the
+  surjection `k → 𝒜 0`, since the structure morphism of `Pⁿ` is `Proj.toSpecZero` followed by the
+  spectrum of that surjection.
+* `varietyScalarAction_apply_fiber` — hence the action on sections of an associated sheaf is
+  plain scalar multiplication in each fiber. The structure-sheaf action on those sections is
+  pointwise by construction (`sectionsSubmodule`), so this is the previous lemma plus
+  `globalSectionSmul_app` and nothing else.
+
+## What is still missing
+
+The comparison `intCechTermSectionAddEquiv` between a Čech term and these sections is five steps,
+and none has been shown `k`-linear yet. Two of them are already `LinearEquiv`s over
+`HomogeneousLocalization`, two are pointwise linear, and one is a `RingEquiv`; the content of this
+file is what makes each of those statements true rather than merely plausible. Until that is done,
+`module_finite_linearCoherentH_of_cech` cannot be fed and #666 is not closed.
+-/
+
+universe u
+
+open CategoryTheory AlgebraicGeometry Opposite TopologicalSpace
+
+namespace AlgebraicGeometry.Proj
+
+attribute [local instance] MvPolynomial.gradedAlgebra
+
+variable (ι k : Type u) [Field k] [Finite ι] [Nonempty ι]
+variable {σM : Type u} [SetLike σM (MvPolynomial ι k)]
+  [AddSubgroupClass σM (MvPolynomial ι k)] (𝓜 : ℕ → σM)
+  [SetLike.GradedSMul (polynomialGrading ι k) 𝓜]
+
+/-- **The base field acts through the constants.** The global function a scalar becomes on
+projective space has value `r / 1` at every point, which is exactly the map
+`polynomialToHomogeneousLocalization` that the graded localizations are `k`-modules by.
+
+This is `openToLocalization_toSpecZero_appTop` composed with the surjection `k → 𝒜 0`: the
+structure morphism of `Pⁿ` is `Proj.toSpecZero` followed by the spectrum of that surjection. -/
+theorem openToLocalization_baseFieldToGlobalSections (r : k)
+    (x : ProjectiveSpectrum.top (polynomialGrading ι k)) :
+    (openToLocalization (polynomialGrading ι k) ⊤ x trivial).hom
+        (Cohomology.baseFieldToGlobalSections (projectiveSpaceVariety ι k) r) =
+      polynomialToHomogeneousLocalization ι k _ r := by
+  show (openToLocalization (polynomialGrading ι k) ⊤ x trivial).hom
+      (((Scheme.ΓSpecIso (CommRingCat.of k)).inv ≫
+        (projectiveSpaceToSpec ι k).appTop).hom r) = _
+  rw [projectiveSpaceToSpec, Scheme.Hom.comp_appTop, ← Category.assoc,
+    ← Scheme.ΓSpecIso_inv_naturality, Category.assoc]
+  exact openToLocalization_toSpecZero_appTop (polynomialGrading ι k)
+    (algebraMap k ↥(polynomialGrading ι k 0) r) x
+
+/-- **The base-field action on sections is scalar multiplication, fiber by fiber.**
+
+`varietyScalarAction` is multiplication by the global function attached to the scalar, and the
+structure-sheaf action on an associated sheaf is pointwise on fibers by construction. Combining
+those with the previous lemma leaves plain scalar multiplication in each fiber — which is what
+lets the Čech lane's `k`-action be compared against the one the finiteness interface consumes. -/
+theorem varietyScalarAction_apply_fiber (r : k)
+    (U : Opens (ProjectiveSpectrum.top (polynomialGrading ι k)))
+    (m : (associatedSheafInType (polynomialGrading ι k) 𝓜).1.obj (op U))
+    (x : ProjectiveSpectrum.top (polynomialGrading ι k)) (hx : x ∈ U) :
+    ((((Cohomology.varietyScalarAction (projectiveSpaceVariety ι k)
+        (associatedSheaf (polynomialGrading ι k) 𝓜) r).val.app (op U)).hom m) :
+          (associatedSheafInType (polynomialGrading ι k) 𝓜).1.obj (op U)).1 ⟨x, hx⟩ =
+      polynomialToHomogeneousLocalization ι k
+          x.asHomogeneousIdeal.toIdeal.primeCompl r • (m.1 ⟨x, hx⟩) := by
+  have h := Cohomology.globalSectionSmul_app (associatedSheaf (polynomialGrading ι k) 𝓜)
+    (Cohomology.baseFieldToGlobalSections (projectiveSpaceVariety ι k) r) U m
+  refine Eq.trans (congrArg
+    (fun z : (associatedSheafInType (polynomialGrading ι k) 𝓜).1.obj (op U) => z.1 ⟨x, hx⟩) h) ?_
+  have h2 : (openToLocalization (polynomialGrading ι k) U x hx).hom
+      ((Proj (polynomialGrading ι k)).presheaf.map (homOfLE (le_top : U ≤ ⊤)).op
+        (Cohomology.baseFieldToGlobalSections (projectiveSpaceVariety ι k) r)) =
+      polynomialToHomogeneousLocalization ι k x.asHomogeneousIdeal.toIdeal.primeCompl r := by
+    rw [openToLocalization_presheaf_map, openToLocalization_baseFieldToGlobalSections]
+  exact congrArg (fun c => c • (m.1 ⟨x, hx⟩)) h2
+
+end AlgebraicGeometry.Proj

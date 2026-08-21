@@ -234,6 +234,14 @@ theorem sum_cechBlockProj (h𝓜 : IsPolynomialTwist 𝓜 d) {n : ℕ} (x : Fin 
         rfl
     _ = z := by rw [h, AddEquiv.symm_apply_apply]
 
+/-- The block projections are idempotent, transported from `blockProj_blockProj_self`. -/
+theorem cechBlockProj_cechBlockProj_self (h𝓜 : IsPolynomialTwist 𝓜 d) {n : ℕ}
+    (x : Fin (n + 1) → ι) (F : Finset ι) (z : cechTerm ι k 𝓜 x) :
+    cechBlockProj ι k h𝓜 x F (cechBlockProj ι k h𝓜 x F z) =
+      cechBlockProj ι k h𝓜 x F z := by
+  rw [cechBlockProj_apply, cechBlockProj_apply, AddEquiv.apply_symm_apply,
+    blockProj_blockProj_self]
+
 /-- A block off the tuple's support is zero. -/
 theorem cechBlockProj_eq_zero_of_not_subset (h𝓜 : IsPolynomialTwist 𝓜 d) {n : ℕ}
     (x : Fin (n + 1) → ι)
