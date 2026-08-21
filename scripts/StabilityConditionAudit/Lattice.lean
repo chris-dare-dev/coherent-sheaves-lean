@@ -290,3 +290,22 @@ Step 2 of the additivity work. -/
 #print axioms Mukai.comp_hyperbolicIncl_apply
 #print axioms Mukai.comp_middleIncl_apply
 #print axioms Mukai.hasSignatureTwo_realForm
+
+/-! ### `P⁺` is named by the cone, not by a class inside it
+
+The case of the projection-sign cocycle that route (A) needs, proved by a path
+along the segment rather than by the cocycle itself. See the module docstring of
+`Mukai/ExponentialOrientation.lean` for what is and is not settled. -/
+
+#print axioms Mukai.continuous_bilin
+#print axioms Mukai.pairingDet_exp
+#print axioms Mukai.segment
+#print axioms Mukai.segment_zero
+#print axioms Mukai.segment_one
+#print axioms Mukai.pos_segment
+#print axioms Mukai.pathDet
+#print axioms Mukai.continuous_pathDet
+#print axioms Mukai.pathDet_zero
+#print axioms Mukai.pathDet_one
+#print axioms Mukai.mem_periodDomainPlus_exp_of_sameCone
+#print axioms Mukai.mem_periodDomainPlus_exp_of_sameCone_of_sigPos
