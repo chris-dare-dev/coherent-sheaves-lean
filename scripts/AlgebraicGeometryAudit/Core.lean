@@ -2153,3 +2153,94 @@ the statement is false, and no finiteness is used. -/
 #print axioms AlgebraicGeometry.Proj.intCechComplex_ker_zero_eq_zero_of_neg
 #print axioms AlgebraicGeometry.Proj.polynomialVariableIntCechComplex_homology_zero_isZero
 #print axioms AlgebraicGeometry.Proj.polynomialIntTwisting_H_zero_subsingleton
+
+/-! ## The top degree keeps one block (#666, S1b — in progress)
+
+Below the top degree `cechPrimitive` contracts every block, because a tuple too short to meet
+every variable cannot carry the full one. At the top it can, so the full block is what survives —
+and `cechPrimitive_isPrimitive`'s block hypothesis was weakened to constrain only the cochain
+handed to it, which is what makes it usable there.
+
+`exists_fullBlock_add_coboundary` is the block half of #666: every class is carried by the full
+block. The finiteness half — that the full block is a finite-dimensional `k`-space, via
+`finite_setOf_degree_eq_of_neg` — is NOT here, so #666's acceptance criterion is not met by these
+declarations. -/
+
+#print axioms AlgebraicGeometry.Proj.cechBlockProj_cechBlockProj_self
+#print axioms AlgebraicGeometry.Proj.intCechFullBlock
+#print axioms AlgebraicGeometry.Proj.intCechFullBlock_cocycle
+#print axioms AlgebraicGeometry.Proj.exists_fullBlock_add_coboundary
+
+/-! ## The base field on a localization, and a finite block (#666, S1b — in progress)
+
+`finite_setOf_degree_eq_of_neg` counts the exponents of the full block; these declarations turn
+that count into finite generation. The `k`-action is not extra data — a constant is a degree-zero
+homogeneous element — and `awayMk_smul` is what makes it computable on fractions.
+
+`IsPolynomialTwist.smul_mem` and the generalized `awayMk_eq_sum_monomial`,
+`exists_sum_awayMk_monomial`, `awayMk_monomial_eq_iff` and `awayMk_monomial_eq_iff_laurentExponent`
+are the same statements as before at either sign of the twist; the nonnegative-only forms could
+not reach a negative twist at all.
+
+`fg_blockSpan` is one localization. Assembling the blocks of a Čech cochain and matching this
+action against `cechScalarAction` are not here, so #666's acceptance criterion is not met. -/
+
+#print axioms AlgebraicGeometry.Proj.IsPolynomialTwist.smul_mem
+#print axioms AlgebraicGeometry.Proj.polynomialToHomogeneousLocalization
+#print axioms AlgebraicGeometry.Proj.degreeZeroLocalizationModule
+#print axioms AlgebraicGeometry.Proj.awayMk_smul
+#print axioms AlgebraicGeometry.Proj.awayMk_congr
+#print axioms AlgebraicGeometry.Proj.monomial_one_mem_of_mem_support
+#print axioms AlgebraicGeometry.Proj.intNegSupport_of_mem_support_laurentFilter
+#print axioms AlgebraicGeometry.Proj.blockRep
+#print axioms AlgebraicGeometry.Proj.awayMk_eq_blockRep
+#print axioms AlgebraicGeometry.Proj.blockProj_univ_mem_span
+#print axioms AlgebraicGeometry.Proj.fg_blockSpan
+
+/-! ## The full blocks of a Čech degree, assembled (#666, S1b — in progress)
+
+`fg_cechBlockSpan` carries one block across the denominator comparison; `powersCongrLinear` is
+that transport, `k`-linear because it moves nothing but the name of the type.
+`module_finite_pi_cechBlockSpan` is the second, independent finiteness: a Čech index has fixed
+length over a finite `ι`, so there are finitely many tuples.
+
+Still the cochain side only — no differential, no cocycles, no cohomology, and the `k`-action is
+`degreeZeroLocalizationModule` rather than the `cechScalarAction` the finiteness interface
+consumes. #666's acceptance criterion is not met. -/
+
+#print axioms AlgebraicGeometry.Proj.powersCongrLinear
+#print axioms AlgebraicGeometry.Proj.powersCongrLinear_apply
+#print axioms AlgebraicGeometry.Proj.powersCongrLinear_symm_apply
+#print axioms AlgebraicGeometry.Proj.cechBlockSpan
+#print axioms AlgebraicGeometry.Proj.cechBlockProj_mem_cechBlockSpan
+#print axioms AlgebraicGeometry.Proj.fg_cechBlockSpan
+#print axioms AlgebraicGeometry.Proj.module_finite_pi_cechBlockSpan
+
+/-! ## A degree-zero element is the constant function (#666, S1b — the bridge)
+
+`Proj.toSpecZero` makes every degree-zero element a global function;
+`openToLocalization_toSpecZero_appTop` computes it, and the answer is `a / 1` at every point.
+
+This is the sheaf-theoretic half of #666's remaining step. The base-field action on cohomology is
+multiplication by such a function and acts on associated-sheaf sections pointwise on fibers, so
+identifying it with scalar multiplication on the graded localizations rests here. Wiring it
+through the five steps of `intCechTermSectionAddEquiv` is still outstanding, so #666's acceptance
+criterion is not met. -/
+
+#print axioms AlgebraicGeometry.Proj.toSpecZero_appTop_eq
+#print axioms AlgebraicGeometry.Proj.toSpecZero_transport_eq
+#print axioms AlgebraicGeometry.Proj.openToLocalization_presheaf_map
+#print axioms AlgebraicGeometry.Proj.openToLocalization_toSpecZero_appTop
+
+/-! ## The base field acting on sections of a twist (#666, S1b — the bridge, section level)
+
+`FiniteDimensionalCohomology` means `coherentScalarAction` by `Module.Finite k`; the Čech lane
+computes with `k` acting through the constants. These say the two agree on sections: the global
+function a scalar becomes has value `r / 1` everywhere, so the action on an associated sheaf is
+plain scalar multiplication in each fiber.
+
+The five steps of `intCechTermSectionAddEquiv` have NOT been shown `k`-linear, so
+`module_finite_linearCoherentH_of_cech` still cannot be fed and #666 is not closed. -/
+
+#print axioms AlgebraicGeometry.Proj.openToLocalization_baseFieldToGlobalSections
+#print axioms AlgebraicGeometry.Proj.varietyScalarAction_apply_fiber
