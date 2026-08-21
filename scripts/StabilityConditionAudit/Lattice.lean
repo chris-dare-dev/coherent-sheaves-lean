@@ -165,3 +165,17 @@ Grothendieck group or its period domain. See the module docstring of
 #print axioms PeriodDomain.periodDomain_nonempty
 #print axioms PeriodDomain.stdForm
 #print axioms PeriodDomain.stdForm_hasSignatureTwo
+
+/-! ### Wall finiteness — coercivity, bounded level sets, and the lattice count
+
+The `QuadraticMap` records extend Mathlib's own API and are stated for an
+arbitrary finite-dimensional real normed space; the `PeriodDomain` records are
+the pointwise wall count. Neither says anything about a K3 surface. -/
+
+#print axioms QuadraticMap.continuous_of_finiteDimensional
+#print axioms QuadraticMap.PosDef.exists_pos_mul_norm_sq_le
+#print axioms QuadraticMap.PosDef.isBounded_setOf_eq
+#print axioms PeriodDomain.sphericalOrthogonal
+#print axioms PeriodDomain.isBounded_sphericalOrthogonal
+#print axioms PeriodDomain.finite_sphericalOrthogonal_inter
+#print axioms PeriodDomain.finite_walls_through
