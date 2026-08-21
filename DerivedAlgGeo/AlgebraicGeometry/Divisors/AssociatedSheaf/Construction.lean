@@ -688,47 +688,6 @@ private lemma tensorEquationHom_mem_W (D E : CartierDivisor X)
   letI := tensorEquationHom_isLocallySurjective D E U f hf g hg
   exact ((_root_.Opens.grothendieckTopology X).over U).W_of_isLocallyBijective _
 
-private lemma isLocallySurjective_of_coversTop'
-    {P Q : X.Opensᵒᵖ ⥤ AddCommGrpCat.{u}} (p : P ⟶ Q)
-    {ι : Type*} (Y : ι → X.Opens)
-    (hY : (_root_.Opens.grothendieckTopology X).CoversTop Y)
-    (h : ∀ i, Presheaf.IsLocallySurjective
-      ((_root_.Opens.grothendieckTopology X).over (Y i))
-        (Functor.whiskerLeft (Over.forget (Y i)).op p)) :
-    Presheaf.IsLocallySurjective (_root_.Opens.grothendieckTopology X) p := by
-  let K := _root_.Opens.grothendieckTopology X
-  constructor
-  intro U s
-  apply K.transitive (hY U) (Presheaf.imageSieve p s)
-  intro V k hk
-  obtain ⟨i, ⟨b⟩⟩ := (Sieve.mem_ofObjects_iff ..).mp hk
-  let Z : Over (Y i) := Over.mk b
-  let p' := Functor.whiskerLeft (Over.forget (Y i)).op p
-  let s' := Q.map k.op s
-  change ToType (((Over.forget (Y i)).op ⋙ Q).obj (.op Z)) at s'
-  letI : Presheaf.IsLocallySurjective (K.over (Y i)) p' := h i
-  have hcover := Presheaf.imageSieve_mem (K.over (Y i)) p' s'
-  rw [GrothendieckTopology.mem_over_iff] at hcover
-  change Sieve.overEquiv Z (Presheaf.imageSieve p' s') ∈ K V at hcover
-  have heq : Sieve.overEquiv Z (Presheaf.imageSieve p' s') =
-      Sieve.pullback k (Presheaf.imageSieve p s) := by
-    ext W a
-    rw [Sieve.overEquiv_iff]
-    constructor
-    · rintro ⟨t, ht⟩
-      refine ⟨t, ?_⟩
-      change p.app (.op W) t = Q.map (a ≫ k).op s
-      change p.app (.op W) t = Q.map a.op (Q.map k.op s) at ht
-      simpa only [op_comp, Q.map_comp, ConcreteCategory.comp_apply]
-    · rintro ⟨t, ht⟩
-      refine ⟨t, ?_⟩
-      change p.app (.op W) t = Q.map a.op (Q.map k.op s)
-      rw [op_comp, Q.map_comp] at ht
-      change p.app (.op W) t = Q.map a.op (Q.map k.op s) at ht
-      exact ht
-  rw [heq] at hcover
-  exact hcover
-
 private lemma restrictedMultiplicationHom_mem_W (D E : CartierDivisor X)
     (U : X.Opens) (f : Additive X.functionFieldˣ) (hf : IsEquationOn D U f)
     (g : Additive X.functionFieldˣ) (hg : IsEquationOn E U g) :
@@ -799,15 +758,7 @@ private lemma multiplicationHom_mem_W (D E : CartierDivisor X) :
           (F := Over.forget (Y q)) (𝟙 (X.ringCatSheaf.over (Y q)).obj)).map
             (multiplicationHom D E)))
     exact hw
-  letI : Presheaf.IsLocallyInjective K p := by
-    apply Presheaf.isLocallyInjective_of_coversTop p Y hY
-    intro q
-    exact (hlocal q).isLocallyInjective
-  letI : Presheaf.IsLocallySurjective K p := by
-    apply isLocallySurjective_of_coversTop' p Y hY
-    intro q
-    exact (hlocal q).isLocallySurjective
-  exact K.W_of_isLocallyBijective p
+  exact Presheaf.W_of_coversTop p Y hY hlocal
 
 private lemma isIso_sheafification_map_multiplicationHom (D E : CartierDivisor X) :
     IsIso ((PresheafOfModules.sheafification (𝟙 X.ringCatSheaf.obj)).map
@@ -1053,23 +1004,10 @@ private lemma fractionalToAssociatedTensorHom_mem_W (D E : CartierDivisor X) :
     (fractionalToAssociatedTensorHom D E)
   let Y := commonEquationOpen D E
   have hY : K.CoversTop Y := commonEquationOpen_coversTop D E
-  letI : Presheaf.IsLocallyInjective K p := by
-    apply Presheaf.isLocallyInjective_of_coversTop p Y hY
-    intro q
-    let f := localEquation D q.1
-    let g := localEquation E q.2
-    exact (restrictedFractionalToAssociatedTensorHom_mem_W D E (Y q) f
-      ((localEquation_isEquationOn D q.1).mono inf_le_left) g
-      ((localEquation_isEquationOn E q.2).mono inf_le_right)).isLocallyInjective
-  letI : Presheaf.IsLocallySurjective K p := by
-    apply isLocallySurjective_of_coversTop' p Y hY
-    intro q
-    let f := localEquation D q.1
-    let g := localEquation E q.2
-    exact (restrictedFractionalToAssociatedTensorHom_mem_W D E (Y q) f
-      ((localEquation_isEquationOn D q.1).mono inf_le_left) g
-      ((localEquation_isEquationOn E q.2).mono inf_le_right)).isLocallySurjective
-  exact K.W_of_isLocallyBijective p
+  refine Presheaf.W_of_coversTop p Y hY (fun q => ?_)
+  exact restrictedFractionalToAssociatedTensorHom_mem_W D E (Y q) (localEquation D q.1)
+    ((localEquation_isEquationOn D q.1).mono inf_le_left) (localEquation E q.2)
+    ((localEquation_isEquationOn E q.2).mono inf_le_right)
 
 private lemma isIso_sheafification_map_fractionalToAssociatedTensorHom
     (D E : CartierDivisor X) :
@@ -1136,15 +1074,7 @@ private lemma globalEquationHom_mem_W (D : CartierDivisor X)
             (globalEquationHom D f hf)))
     rw [restrictGlobalEquationHom]
     exact equationHom_mem_W D ⊤ f hf
-  letI : Presheaf.IsLocallyInjective K p := by
-    apply Presheaf.isLocallyInjective_of_coversTop p Y hY
-    intro i
-    exact hlocal.isLocallyInjective
-  letI : Presheaf.IsLocallySurjective K p := by
-    apply isLocallySurjective_of_coversTop' p Y hY
-    intro i
-    exact hlocal.isLocallySurjective
-  exact K.W_of_isLocallyBijective p
+  exact Presheaf.W_of_coversTop p Y hY (fun _ => hlocal)
 
 private lemma isIso_sheafification_map_globalEquationHom
     (D : CartierDivisor X) (f : Additive X.functionFieldˣ)
