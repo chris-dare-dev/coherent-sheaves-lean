@@ -17,15 +17,33 @@ two opens are *equal*. This file carries the linearity across that transport.
 ## The transport is the whole content
 
 `eqToIso_transport_varietyScalarAction` is `subst h; rfl` — moving sections along an equality of
-opens cannot fail to commute with anything. What makes it worth stating separately is that it has
-to be phrased against the **sheaf endomorphism** rather than against `•`: a `•` whose left factor
-is `Γ(Proj 𝒜, W)` leaves instance search stuck, because that type and the structure sheaf's
-sections at `W` are defeq without guiding search to the same `Module`. Stating both sides with
-`varietyScalarAction`'s `app` sidesteps it, and `varietyScalarAction_app_eq` converts back
-afterwards.
+opens cannot fail to commute with anything. All the difficulty is in getting the statement to
+elaborate, and that difficulty has a single diagnosed cause.
 
-That friction has now appeared four times in this lane — `cechBlockSpan`, `constSection`,
-`constSectionOn`, and here.
+## The scalar-type rule, and why it is not a diamond to be fixed
+
+`Γ(Proj 𝒜, U)` and `(ProjectiveSpectrum.Proj.structureSheaf 𝒜).1.obj (op U)` are **definitionally
+equal at default transparency and not at reducible transparency**. Instance search runs at
+reducible. The `Module` instance on associated-sheaf sections is stated over the second, so a `•`
+whose left factor is written as the first leaves `HSMul` unsolved — even though the two are the
+same type.
+
+That is the same shape as #662, where `Coh X` carries two `Preadditive` instances defeq at default
+but not at reducible. So the obvious repair — adding a second `Module` instance over
+`(Proj 𝒜).presheaf.obj` — would **reproduce that bug** rather than fix this one: lemmas stated
+against one instance would stop applying to goals carrying the other.
+
+The rule instead is a convention, and it costs nothing:
+
+* **state** scalar actions on sections with `varietyScalarAction`'s `app`, never with `•`. That
+  form always elaborates, and it is the definitionally canonical one anyway;
+* **convert** to `•` with `varietyScalarAction_app_eq` only inside a proof, where the expected
+  type is already fixed and search has what it needs;
+* when a scalar genuinely has to be named, give it a definition with an explicit result type —
+  `constSectionOn` is that, and it is the only such definition needed so far.
+
+Occurrences before the rule was written down: `cechBlockSpan` (#670), `constSection` and
+`constSectionOn` (#674), and the transport here.
 
 ## Next
 
