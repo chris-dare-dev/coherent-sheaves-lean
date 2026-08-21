@@ -176,6 +176,57 @@ jobs:
           restore-keys: |
             lake-build-linux-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-
 
+      # Orphaned artifacts, and why a stale restore is NOT merely slow.
+      #
+      # The restore comment above says "a stale restore is safe rather than
+      # merely tolerable ... the failure mode is a slower run, never a wrong
+      # one." That is true of the BUILD -- lake's traces rebuild anything out of
+      # date -- and false of everything downstream that reads `.lake/build` as a
+      # description of what exists. lake never deletes the artifacts of a source
+      # that is gone, so a `.lake/build` restored from `main` keeps `.ilean`
+      # files for modules this branch does not have.
+      #
+      # `mfc check-ilean-coverage` reads exactly those files, so it reports them
+      # as "built by lake, absent from the emission" and fails I-03/I-04 -- a red
+      # run caused by the cache rather than by the diff. Observed on #698 and
+      # #699, where the reported set tracked whatever `main` had merged most
+      # recently (TwistAdd and IntegralBridge, then the CentralCharge pair) and
+      # never mentioned anything either branch touched.
+      #
+      # Deleting `.lake/build` outright would fix it and cost the whole point of
+      # the cache: 9 minutes warm against 30 cold, measured above. So prune the
+      # orphans instead -- an artifact whose `.lean` no longer exists cannot be
+      # wanted by anything, and if this is ever wrong the effect is a rebuild,
+      # not a wrong answer.
+      #
+      # Scoped to `DerivedAlgGeo/`, where the artifact path maps to the source
+      # path directly. `Emit.ilean` and the `*Audit.ilean` come from `exe/` and
+      # `scripts/` via srcDir, so a root-relative existence test would prune them
+      # wrongly; they are left alone.
+      #
+      # Runs on both lanes. The self-hosted Mac keeps its own `.lake` across
+      # runs and accumulates orphans the same way -- measured 42 in one working
+      # tree, left by an old layering refactor -- so restricting this to the
+      # restoring lane would leave a known latent failure on the other.
+      - name: Prune orphaned build artifacts
+        run: |
+          set -euo pipefail
+          root=.lake/build/lib/lean/DerivedAlgGeo
+          if [ ! -d "$root" ]; then
+            echo "no build output yet; nothing to prune"
+            exit 0
+          fi
+          pruned=0
+          while IFS= read -r -d '' art; do
+            src="DerivedAlgGeo/${art#"$root"/}"
+            src="${src%.ilean}.lean"
+            if [ ! -f "$src" ]; then
+              rm -f "$art" "${art%.ilean}.olean"
+              pruned=$((pruned + 1))
+            fi
+          done < <(find "$root" -name '*.ilean' -print0)
+          echo "pruned $pruned orphaned artifact pair(s)"
+
       # use-github-cache is OFF (2026-08-15). Left at its default of `true` it
       # writes all of `.lake` -- 2.4 GB per entry -- and every one of those
       # entries was unreadable:
