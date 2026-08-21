@@ -3,6 +3,7 @@ Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under the MIT license.
 -/
 import DerivedAlgGeo.LinearAlgebra.QuadraticForm.PeriodDomain
+import DerivedAlgGeo.LinearAlgebra.QuadraticForm.SignatureAdditive
 import DerivedAlgGeo.LinearAlgebra.QuadraticForm.WallFiniteness
 import DerivedAlgGeo.LinearAlgebra.QuadraticForm.WallRegion
 import DerivedAlgGeo.LinearAlgebra.QuadraticForm.Orientation
