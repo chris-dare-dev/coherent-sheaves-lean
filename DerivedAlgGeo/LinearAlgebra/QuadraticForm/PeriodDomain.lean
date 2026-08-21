@@ -46,6 +46,9 @@ theory, `Q.polarBilin` **is** the pairing, `IsSphericalClass` is stated as
   eventually rests on this, since it is what makes the pairing definite on the
   space where the wall classes live.
 * `notMem_of_isSphericalClass` — a spherical class lies in no positive plane.
+* `mem_orthogonal_span_pair_iff` — orthogonality to a plane spanned by two
+  vectors is orthogonality to both, which is what makes it a closed condition
+  downstream.
 * `mem_wall_iff_mem_orthogonal` — a positive plane lies on the wall of `δ`
   exactly when `δ` is orthogonal to it, which is how the previous item is used.
   A wall does **not** meet its plane in a proper subspace: `W ⊆ δ^⊥` is exactly
@@ -132,6 +135,21 @@ theorem polarBilin_isRefl : Q.polarBilin.IsRefl := fun x y h => by
 theorem mem_orthogonal_iff {W : Submodule ℝ M} {u : M} :
     u ∈ orthogonal Q W ↔ ∀ w ∈ W, polar (⇑Q) w u = 0 := by
   simp [orthogonal, LinearMap.BilinForm.mem_orthogonal_iff]
+
+/-- Orthogonality to a plane spanned by two vectors is orthogonality to both,
+which is what makes it a closed condition. -/
+theorem mem_orthogonal_span_pair_iff {x y u : M} :
+    u ∈ orthogonal Q (Submodule.span ℝ ({x, y} : Set M)) ↔
+      polar (⇑Q) x u = 0 ∧ polar (⇑Q) y u = 0 := by
+  rw [mem_orthogonal_iff]
+  constructor
+  · intro h
+    exact ⟨h x (Submodule.subset_span (by simp)), h y (Submodule.subset_span (by simp))⟩
+  · rintro ⟨hx, hy⟩ w hw
+    have hle : Submodule.span ℝ ({x, y} : Set M) ≤ LinearMap.ker (Q.polarBilin.flip u) := by
+      rw [Submodule.span_le]
+      rintro z (rfl | rfl) <;> simp [LinearMap.mem_ker, hx, hy]
+    simpa [LinearMap.mem_ker] using hle hw
 
 /-- A spherical class is one with `Q δ = -1`; the factor two is the difference
 between the pairing and its quadratic form. -/
