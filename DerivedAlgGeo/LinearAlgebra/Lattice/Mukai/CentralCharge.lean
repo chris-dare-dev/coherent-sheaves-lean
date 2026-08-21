@@ -1,0 +1,79 @@
+/-
+Copyright (c) 2026 Chris Dare. All rights reserved.
+Released under the MIT license.
+-/
+import DerivedAlgGeo.LinearAlgebra.Lattice.Mukai.RealForm
+import DerivedAlgGeo.LinearAlgebra.QuadraticForm.CentralCharge
+
+/-!
+# `Z(β,ω)` on the Mukai extension
+
+The central charge of the exponential pair, written out. For `v = (r, c, s)`:
+
+```
+Z (r, c, s) = (b β c - s - r * (b β β - b ω ω) / 2) + i * (b ω c - r * b β ω)
+```
+
+which is Bridgeland's `Z(β,ω)` — his `⟪exp(β + iω), v⟫`, with the pairing read
+on the real and imaginary parts rather than on a complexified space.
+
+The support property comes with it: the classes of vanishing charge are exactly
+the orthogonal complement of the plane, where the form is negative definite. On
+the Mukai extension that is the statement that the walls are cut out by the
+vanishing of `Z`.
+
+`V` is an arbitrary real bilinear space; no geometry is asserted, and `v(E)` for
+an object `E` is not defined here.
+-/
+
+open QuadraticMap
+
+namespace Mukai
+
+variable {V : Type*} [AddCommGroup V] [Module ℝ V] (b : V →ₗ[ℝ] V →ₗ[ℝ] ℝ) (β ω : V)
+
+/-- **`Z(β,ω)`**: the central charge of the exponential pair. -/
+noncomputable def expCharge (v : RealExtension V) : ℂ :=
+  PeriodDomain.centralCharge (realForm b) (expRe b β ω) (expIm b β ω) v
+
+/-- The charge written out on a triple. This is Bridgeland's formula. -/
+theorem expCharge_apply (hb : ∀ x y : V, b x y = b y x) (r : ℝ) (c : V) (s : ℝ) :
+    expCharge b β ω (r, c, s)
+      = Complex.ofReal (b β c - s - r * (b β β - b ω ω) / 2)
+        + Complex.ofReal (b ω c - r * b β ω) * Complex.I := by
+  refine Complex.ext ?_ ?_
+  · simp [expCharge, PeriodDomain.centralCharge, polar_realForm b hb, realPairing, expRe, expIm]
+    ring
+  · simp [expCharge, PeriodDomain.centralCharge, polar_realForm b hb, realPairing, expRe, expIm]
+
+section FiniteDimensional
+
+variable [FiniteDimensional ℝ V]
+
+/-- **The support property for `Z(β,ω)`**: a nonzero class of vanishing charge has
+negative square. -/
+theorem neg_of_expCharge_eq_zero
+    (hsig : PeriodDomain.HasSignatureTwo (realForm b)) (hb : ∀ x y : V, b x y = b y x)
+    (hω : 0 < b ω ω) {v : RealExtension V} (hv : expCharge b β ω v = 0) (hv0 : v ≠ 0) :
+    realForm b v < 0 :=
+  PeriodDomain.neg_of_centralCharge_eq_zero hsig (isPositivePair_exp b β ω hb hω) hv hv0
+
+/-- **No class of nonnegative square is killed by `Z(β,ω)`** — there are no walls
+in the positive cone. -/
+theorem expCharge_ne_zero_of_nonneg
+    (hsig : PeriodDomain.HasSignatureTwo (realForm b)) (hb : ∀ x y : V, b x y = b y x)
+    (hω : 0 < b ω ω) {v : RealExtension V} (hv : 0 ≤ realForm b v) (hv0 : v ≠ 0) :
+    expCharge b β ω v ≠ 0 :=
+  PeriodDomain.centralCharge_ne_zero_of_nonneg hsig (isPositivePair_exp b β ω hb hω) hv hv0
+
+omit [FiniteDimensional ℝ V] in
+/-- **A spherical wall is a vanishing charge.** -/
+theorem mem_wall_iff_expCharge_eq_zero (hb : ∀ x y : V, b x y = b y x) (hω : 0 < b ω ω)
+    {δ : RealExtension V} :
+    PeriodDomain.pairSpan (expRe b β ω) (expIm b β ω) ∈ PeriodDomain.wall (realForm b) δ ↔
+      expCharge b β ω δ = 0 :=
+  PeriodDomain.mem_wall_iff_centralCharge_eq_zero (isPositivePair_exp b β ω hb hω)
+
+end FiniteDimensional
+
+end Mukai

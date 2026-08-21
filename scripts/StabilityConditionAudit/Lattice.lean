@@ -324,3 +324,27 @@ integral classes rather than about an abstract `ZSpan`. -/
 #print axioms Mukai.isSphericalClass_extendMap
 #print axioms Mukai.finite_sphericalOrthogonal_integralExtension
 #print axioms Mukai.finite_wallClasses_integralExtension
+
+/-! ### The central charge of a positive pair
+
+Route (A) re-read in the language stability conditions are stated in: the kernel
+of `Z` is the orthogonal complement, and negative definiteness there is the
+support property. `expCharge` is Bridgeland's `Z(β,ω)`. -/
+
+#print axioms PeriodDomain.centralCharge
+#print axioms PeriodDomain.centralCharge_re
+#print axioms PeriodDomain.centralCharge_im
+#print axioms PeriodDomain.centralCharge_add
+#print axioms PeriodDomain.centralCharge_smul
+#print axioms PeriodDomain.centralCharge_zero
+#print axioms PeriodDomain.centralCharge_eq_zero_iff
+#print axioms PeriodDomain.ker_centralCharge_eq
+#print axioms PeriodDomain.neg_of_centralCharge_eq_zero
+#print axioms PeriodDomain.centralCharge_ne_zero_of_nonneg
+#print axioms PeriodDomain.mem_wall_iff_centralCharge_eq_zero
+#print axioms PeriodDomain.isCompl_ker_centralCharge
+#print axioms Mukai.expCharge
+#print axioms Mukai.expCharge_apply
+#print axioms Mukai.neg_of_expCharge_eq_zero
+#print axioms Mukai.expCharge_ne_zero_of_nonneg
+#print axioms Mukai.mem_wall_iff_expCharge_eq_zero
