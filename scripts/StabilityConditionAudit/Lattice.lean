@@ -255,3 +255,14 @@ it does in the source; see the module docstring of `Mukai/RealForm.lean`. -/
 #print axioms Mukai.isPositivePair_exp
 #print axioms Mukai.pairingDet_exp_self
 #print axioms Mukai.mem_periodDomainPlus_exp
+
+/-! ### Additivity of the signature over an orthogonal decomposition
+
+Missing from Mathlib at the pin. Only the easy inequality is proved, twice; the
+counting identity turns it into an equality. See the module docstring of
+`QuadraticForm/SignatureAdditive.lean`. -/
+
+#print axioms QuadraticMap.sigPos_add_le
+#print axioms QuadraticMap.sigNeg_add_le
+#print axioms QuadraticMap.nondegenerate_of_isCompl
+#print axioms QuadraticMap.sigPos_eq_add
