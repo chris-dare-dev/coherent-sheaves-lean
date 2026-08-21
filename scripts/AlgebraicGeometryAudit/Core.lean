@@ -440,8 +440,9 @@ bookkeeping is GradedSMul.smul_mem where the ring case used mul_mem_graded, and 
 the algebraMap into Localization S, because the HomogeneousLocalization action is Module.compHom
 along it and the two commute only once that is visible.
 
-The SECTION and .over halves are NOT here, so the tensor comparison is not yet possible and #584 is
-not closed. -/
+The section and .over halves follow below, completing the module trivialization and with it the
+prerequisite the tensor comparison was blocked on. The comparison itself is still missing, so #584
+is not closed. -/
 
 #print axioms Proj.DegreeZeroLocalization.pow_smul_mem_intShift_zero
 #print axioms Proj.DegreeZeroLocalization.pow_smul_mem_intShift
@@ -449,6 +450,17 @@ not closed. -/
 #print axioms Proj.DegreeZeroLocalization.intShiftZeroModuleLinearEquiv_apply_mk
 #print axioms Proj.DegreeZeroLocalization.intShiftZeroModuleLinearEquiv_symm_apply_mk
 #print axioms AlgebraicGeometry.Proj.intShiftModuleFiberLinearEquivOfMem
+-- The section and .over halves, which complete the module trivialization and with it the
+-- prerequisite the tensor comparison was blocked on. Ports of intShiftSectionToZeroOn and
+-- intShiftOverIso at an arbitrary graded module; the numerator becomes f ^ k . r rather than
+-- r * f ^ k, matching the order LocalizedModule.mk_smul_mk produces.
+#print axioms AlgebraicGeometry.Proj.intShiftModuleSectionToZeroOn
+#print axioms AlgebraicGeometry.Proj.intShiftModuleSectionFromZeroOn
+#print axioms AlgebraicGeometry.Proj.intShiftModuleSectionAddEquivOn
+#print axioms AlgebraicGeometry.Proj.intShiftModuleSectionLinearEquivOn
+#print axioms AlgebraicGeometry.Proj.intShiftModuleOverIso
+#print axioms AlgebraicGeometry.Proj.intShiftModuleZeroIso
+#print axioms AlgebraicGeometry.Proj.intShiftModuleOverSelfIso
 #print axioms AlgebraicGeometry.Proj.intShiftModuleFiberLinearEquiv
 #print axioms AlgebraicGeometry.Proj.sheafTwist
 #print axioms AlgebraicGeometry.Proj.sheafTwistZeroIso
