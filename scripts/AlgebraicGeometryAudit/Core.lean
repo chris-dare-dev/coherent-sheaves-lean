@@ -426,6 +426,30 @@ closed. -/
 #print axioms AlgebraicGeometry.Proj.associatedSheafIntShiftAddIso
 #print axioms AlgebraicGeometry.Proj.sheafTwistAddIso
 #print axioms AlgebraicGeometry.Proj.twistingSheafAddIso
+
+/-! ## The twist trivialization, for a graded module (#584)
+
+TwistLocalization.lean and TwistChart.lean are stated for A as a module over itself, which is all
+the twisting sheaf needs -- #688's invertibility only needed that case. The tensor comparison
+F (x) O(d) = F(d) needs an ARBITRARY graded module, and there was no module analogue in the tree at
+all. This is the localization and fiber halves of it.
+
+Nothing in the construction resists: intTwistScalar lives in Localization S and acts on
+LocalizedModule S M exactly as on LocalizedModule S A. Only two things are new -- the degree
+bookkeeping is GradedSMul.smul_mem where the ring case used mul_mem_graded, and map_smul' must name
+the algebraMap into Localization S, because the HomogeneousLocalization action is Module.compHom
+along it and the two commute only once that is visible.
+
+The SECTION and .over halves are NOT here, so the tensor comparison is not yet possible and #584 is
+not closed. -/
+
+#print axioms Proj.DegreeZeroLocalization.pow_smul_mem_intShift_zero
+#print axioms Proj.DegreeZeroLocalization.pow_smul_mem_intShift
+#print axioms Proj.DegreeZeroLocalization.intShiftZeroModuleLinearEquiv
+#print axioms Proj.DegreeZeroLocalization.intShiftZeroModuleLinearEquiv_apply_mk
+#print axioms Proj.DegreeZeroLocalization.intShiftZeroModuleLinearEquiv_symm_apply_mk
+#print axioms AlgebraicGeometry.Proj.intShiftModuleFiberLinearEquivOfMem
+#print axioms AlgebraicGeometry.Proj.intShiftModuleFiberLinearEquiv
 #print axioms AlgebraicGeometry.Proj.sheafTwist
 #print axioms AlgebraicGeometry.Proj.sheafTwistZeroIso
 #print axioms AlgebraicGeometry.Proj.sheafNatTwistAddIso

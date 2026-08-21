@@ -454,4 +454,39 @@ theorem moduleAwayToSection_natShift_degreeOne_bijective {f : A}
     (natShiftBasicOpenSectionAddEquiv_apply_mk 𝒜 hf d)]
   exact (natShiftBasicOpenSectionAddEquiv 𝒜 hf d).bijective
 
+/-! ## The same trivialization, for a graded module
+
+`TwistLocalization.lean`'s `GradedModule` section trivializes an integer twist of an arbitrary
+graded module on any localization containing a degree-one element. The fiber at a point of `D₊(f)`
+is such a localization, so the pointwise statement costs nothing beyond naming it — exactly as
+`intShiftFiberLinearEquivOfMem` costs nothing over `intShiftZeroLinearEquiv`.
+
+Everything above this section is `𝒜` as a module over itself, which is all the twisting sheaf
+needs. `#584`'s tensor comparison `F ⊗ O(d) ≅ F(d)` needs the module case, and this is the fiber
+half of it. The section and `.over` halves are not here.
+-/
+
+section GradedModule
+
+variable {M σM : Type u} [AddCommGroup M] [Module A M] [SetLike σM M] [AddSubgroupClass σM M]
+variable (𝓜 : ℕ → σM) [SetLike.GradedSMul 𝒜 𝓜]
+
+/-- The pointwise trivialization of `M(d)` at a point lying in `D₊(f)`, for an integer twist. -/
+noncomputable def intShiftModuleFiberLinearEquivOfMem {f : A} (hf : f ∈ 𝒜 1) (d : ℤ)
+    {x : ProjectiveSpectrum 𝒜} (hx : x ∈ ProjectiveSpectrum.basicOpen 𝒜 f) :
+    Fiber 𝒜 (intShift 𝓜 d) x ≃ₗ[
+      HomogeneousLocalization 𝒜 x.asHomogeneousIdeal.toIdeal.primeCompl]
+        Fiber 𝒜 (intShift 𝓜 0) x :=
+  DegreeZeroLocalization.intShiftZeroModuleLinearEquiv 𝒜 𝓜 hf d hx
+
+/-- The pointwise trivialization of `M(d)` at a point of `D₊(f)`, for an integer twist. -/
+noncomputable def intShiftModuleFiberLinearEquiv {f : A} (hf : f ∈ 𝒜 1) (d : ℤ)
+    (x : ProjectiveSpectrum.basicOpen 𝒜 f) :
+    Fiber 𝒜 (intShift 𝓜 d) x.1 ≃ₗ[
+      HomogeneousLocalization 𝒜 x.1.asHomogeneousIdeal.toIdeal.primeCompl]
+        Fiber 𝒜 (intShift 𝓜 0) x.1 :=
+  intShiftModuleFiberLinearEquivOfMem 𝒜 𝓜 hf d x.2
+
+end GradedModule
+
 end AlgebraicGeometry.Proj
