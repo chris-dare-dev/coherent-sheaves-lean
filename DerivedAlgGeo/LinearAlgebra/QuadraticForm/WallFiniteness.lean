@@ -18,6 +18,8 @@ the walls through `W`.
 
 ## Main results
 
+* `QuadraticMap.continuous_polar` — the polar form is jointly continuous, which
+  is what makes orthogonality a closed condition.
 * `QuadraticMap.PosDef.exists_pos_mul_norm_sq_le` — a positive definite form on
   a finite-dimensional real normed space is coercive: `c * ‖x‖ ^ 2 ≤ Q x` for
   some `c > 0`. The pinned Mathlib has no such lemma; it is proved here from
@@ -52,24 +54,28 @@ namespace QuadraticMap
 
 variable {M : Type*} [NormedAddCommGroup M] [NormedSpace ℝ M] [FiniteDimensional ℝ M]
 
-/-- A quadratic form on a finite-dimensional real normed space is continuous:
-it is the diagonal of its polar form, which is a linear map into the operator
-space and so continuous, composed with the (bounded bilinear) evaluation. -/
-theorem continuous_of_finiteDimensional (Q : QuadraticForm ℝ M) : Continuous ⇑Q := by
+/-- **The polar form is jointly continuous** on a finite-dimensional real
+normed space: it is a linear map into the operator space, and evaluation is a
+bounded bilinear map. -/
+theorem continuous_polar (Q : QuadraticForm ℝ M) :
+    Continuous fun p : M × M => polar (⇑Q) p.1 p.2 := by
   set f : M →ₗ[ℝ] (M →L[ℝ] ℝ) :=
     (LinearMap.toContinuousLinearMap : (M →ₗ[ℝ] ℝ) ≃ₗ[ℝ] (M →L[ℝ] ℝ)).toLinearMap.comp
       Q.polarBilin with hf
-  have hcont : Continuous fun x : M => (f x) x :=
-    isBoundedBilinearMap_apply.continuous.comp
-      ((LinearMap.continuous_of_finiteDimensional f).prodMk continuous_id)
-  have hEq : (fun x : M => ((f x) x) / 2) = ⇑Q := by
+  exact isBoundedBilinearMap_apply.continuous.comp
+    (((LinearMap.continuous_of_finiteDimensional f).comp continuous_fst).prodMk continuous_snd)
+
+/-- A quadratic form on a finite-dimensional real normed space is continuous:
+it is half the diagonal of its polar form. -/
+theorem continuous_of_finiteDimensional (Q : QuadraticForm ℝ M) : Continuous ⇑Q := by
+  have hdiag : Continuous fun x : M => polar (⇑Q) x x :=
+    (Q.continuous_polar).comp (continuous_id.prodMk continuous_id)
+  have hEq : (fun x : M => (polar (⇑Q) x x) / 2) = ⇑Q := by
     funext x
-    have hx : (f x) x = Q x + Q x := by
-      have hpolar : (f x) x = polar (⇑Q) x x := rfl
-      rw [hpolar, polar_self, two_nsmul]
-    rw [hx]; ring
+    rw [polar_self, two_nsmul]
+    ring
   rw [← hEq]
-  exact hcont.div_const 2
+  exact hdiag.div_const 2
 
 /-- **A positive definite form on a finite-dimensional real space is coercive.**
 
