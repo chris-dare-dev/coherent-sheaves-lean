@@ -390,6 +390,45 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 -- sheaf-level O(d)(e) = O(d+e) is not obstructed, but it cannot be transported from here.
 #print axioms AlgebraicGeometry.Proj.mem_intShift_add_iff_of_nonneg
 #print axioms AlgebraicGeometry.Proj.eq_zero_of_mem_intShift_intShift_of_neg
+
+/-! ## The twisted multiplication A(d) (x) M -> M(d) (#584)
+
+The map half of the comparison F (x) O(d) = F(d), at one localization. It is short because of a
+fact about the model rather than a construction: DegreeZeroLocalization is a submodule of
+LocalizedModule S M, and for the ring itself that ambient IS Localization S -- so an element of
+DegreeZeroLocalization A (intShift A d) S is already a scalar acting on LocalizedModule S M. No
+multiplication is defined on representatives and no well-definedness argument is needed; only the
+certificate that the product lands in the right submodule, which is smul_mem_intShift on the
+numerator and mul_mem_graded on the denominator.
+
+twistMul_smul_right is the one thing that does not come free: SMulCommClass between
+HomogeneousLocalization A S and LocalizedModule S A is not an instance, and the action is
+Module.compHom along algebraMap, so that map has to be named. Same gap as #695's map_smul'.
+
+The section map, the presheaf map through tensorLift, and the isomorphism proof are NOT here, so
+#584 is not closed. -/
+
+#print axioms AlgebraicGeometry.Proj.smul_mem_intShift
+#print axioms AlgebraicGeometry.Proj.twistMul
+#print axioms AlgebraicGeometry.Proj.coe_twistMul
+#print axioms AlgebraicGeometry.Proj.twistMul_mk
+#print axioms AlgebraicGeometry.Proj.twistMul_add_left
+#print axioms AlgebraicGeometry.Proj.twistMul_add_right
+#print axioms AlgebraicGeometry.Proj.twistMul_smul_left
+#print axioms AlgebraicGeometry.Proj.twistMul_smul_right
+-- ...and the same product on sections and as a map of presheaves of modules. The local-fraction
+-- certificate is the product of the two factors' certificates on the intersection of their opens,
+-- rebuilt by twistMul_mk. twistMultiplicationHom is tensorLift fed the four mk2 laws; the scalar
+-- changes ring between the levels, so the two smul laws push it through openToLocalization and the
+-- argument order flips with it. That this map is an ISOMORPHISM is not here.
+#print axioms AlgebraicGeometry.Proj.monoidalCategoryAssociatedPresheaf
+#print axioms AlgebraicGeometry.Proj.sectionTwistMul
+#print axioms AlgebraicGeometry.Proj.sectionTwistMul_apply
+#print axioms AlgebraicGeometry.Proj.sectionTwistMul_add_left
+#print axioms AlgebraicGeometry.Proj.sectionTwistMul_add_right
+#print axioms AlgebraicGeometry.Proj.sectionTwistMul_smul_left
+#print axioms AlgebraicGeometry.Proj.sectionTwistMul_smul_right
+#print axioms AlgebraicGeometry.Proj.twistMultiplicationHom
 -- The algebraic half of the sheaf-level composition O(d)(e) = O(d+e) that the two lemmas above
 -- record as unobtainable from an algebraic identity: at a localization whose denominators contain
 -- a homogeneous element of positive degree the two families have the same degree-zero part.
