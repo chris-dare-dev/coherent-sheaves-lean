@@ -226,3 +226,32 @@ module docstring of `QuadraticForm/Orientation.lean`. -/
 #print axioms PeriodDomain.disjoint_periodDomainPlus_minus
 #print axioms PeriodDomain.union_periodDomainPlus_minus
 #print axioms PeriodDomain.swap_mem_of_mem_periodDomainPlus
+
+/-! ### The real Mukai extension, bundled — and the exponential chart
+
+The bridge from the bare pairing of the Mukai lane to the bundled quadratic form
+the period domain is stated over. `realForm` is HALF the self-pairing, which is
+what makes `polar (realForm b) = realPairing b` and keeps `⟪δ,δ⟫ = -2` reading as
+it does in the source; see the module docstring of `Mukai/RealForm.lean`. -/
+
+#print axioms Mukai.RealExtension
+#print axioms Mukai.realPairing
+#print axioms Mukai.realPairing_apply
+#print axioms Mukai.realPairing_comm
+#print axioms Mukai.realBilin
+#print axioms Mukai.realBilin_apply
+#print axioms Mukai.realForm
+#print axioms Mukai.realForm_apply
+#print axioms Mukai.realForm_mk
+#print axioms Mukai.polar_realForm
+#print axioms Mukai.expRe
+#print axioms Mukai.expIm
+#print axioms Mukai.realPairing_expRe_expRe
+#print axioms Mukai.realPairing_expIm_expIm
+#print axioms Mukai.realPairing_expRe_expIm
+#print axioms Mukai.realPairing_expIm_expRe
+#print axioms Mukai.realForm_smul_add_smul
+#print axioms Mukai.expRe_ne_zero
+#print axioms Mukai.isPositivePair_exp
+#print axioms Mukai.pairingDet_exp_self
+#print axioms Mukai.mem_periodDomainPlus_exp
