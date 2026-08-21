@@ -62,7 +62,8 @@ theorem isPositivePair_iff (x y : M) :
     by_contra hdisc
     push Not at hdisc
     set t : ℝ := -(polar (⇑Q) x y) / (2 * Q x) with ht
-    have hcomb : Q (t • x + (1 : ℝ) • y) = 0 + (4 * Q x * Q y - (polar (⇑Q) x y) ^ 2) / (4 * Q x) := by
+    have hcomb : Q (t • x + (1 : ℝ) • y)
+        = 0 + (4 * Q x * Q y - (polar (⇑Q) x y) ^ 2) / (4 * Q x) := by
       rw [apply_smul_add_smul, ht]
       field_simp
       ring

@@ -118,14 +118,21 @@ def wallPairs (δ : N) : Submodule ℝ (N × N) :=
 variable {Q}
 
 omit [FiniteDimensional ℝ N] in
+/-- Membership unfolded: a pair is on the wall of `δ` when `δ` is orthogonal to
+both entries, which is the form the Baire argument and `mem_wall_iff_mem_orthogonal`
+both consume. -/
 @[simp]
 theorem mem_wallPairs_iff {δ : N} {p : N × N} :
     p ∈ wallPairs Q δ ↔ polar (⇑Q) δ p.1 = 0 ∧ polar (⇑Q) δ p.2 = 0 := by
   simp [wallPairs, LinearMap.mem_ker]
 
 omit [FiniteDimensional ℝ N] in
-/-- For a nonzero class the wall is a **proper** subspace: nondegeneracy provides
-a vector it does not annihilate. -/
+/-- For a nonzero class the wall is a **proper** subspace of `M × M`.
+
+Nondegeneracy is what supplies a vector the class does not annihilate, and
+properness is the whole content: it is what gives the wall empty interior, and
+hence a dense complement for Baire to intersect. Without nondegeneracy a class
+could pair to zero with everything and its wall would be all of `M × M`. -/
 theorem wallPairs_ne_top (hnd : Q.Nondegenerate) {δ : N} (hδ : δ ≠ 0) :
     wallPairs Q δ ≠ ⊤ := by
   intro htop
@@ -144,7 +151,11 @@ theorem wallPairs_ne_top (hnd : Q.Nondegenerate) {δ : N} (hδ : δ ≠ 0) :
   exact hδ hrad
 
 omit [FiniteDimensional ℝ N] in
-/-- Hence its complement is dense. -/
+/-- Hence its complement is dense.
+
+A proper subspace of a normed space has empty interior — otherwise a ball inside
+it would generate the whole space — and a set with empty interior has dense
+complement. This is the input Baire consumes, one class at a time. -/
 theorem dense_compl_wallPairs (hnd : Q.Nondegenerate) {δ : N} (hδ : δ ≠ 0) :
     Dense ((wallPairs Q δ : Set (N × N))ᶜ) := by
   rw [← interior_eq_empty_iff_dense_compl]
