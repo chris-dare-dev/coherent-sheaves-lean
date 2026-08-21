@@ -390,6 +390,12 @@ open AlgebraicGeometry AlgebraicGeometry.Numerical
 -- sheaf-level O(d)(e) = O(d+e) is not obstructed, but it cannot be transported from here.
 #print axioms AlgebraicGeometry.Proj.mem_intShift_add_iff_of_nonneg
 #print axioms AlgebraicGeometry.Proj.eq_zero_of_mem_intShift_intShift_of_neg
+-- The algebraic half of the sheaf-level composition O(d)(e) = O(d+e) that the two lemmas above
+-- record as unobtainable from an algebraic identity: at a localization whose denominators contain
+-- a homogeneous element of positive degree the two families have the same degree-zero part.
+-- Carrying this to the sections of the associated sheaf is NOT here, so #584 is not closed.
+#print axioms AlgebraicGeometry.Proj.mem_intShift_add_of_mem_intShift_intShift
+#print axioms AlgebraicGeometry.Proj.isDegreeZero_intShift_intShift_iff
 #print axioms AlgebraicGeometry.Proj.sheafTwist
 #print axioms AlgebraicGeometry.Proj.sheafTwistZeroIso
 #print axioms AlgebraicGeometry.Proj.sheafNatTwistAddIso
