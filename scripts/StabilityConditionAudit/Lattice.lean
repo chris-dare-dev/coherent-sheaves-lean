@@ -309,3 +309,18 @@ along the segment rather than by the cocycle itself. See the module docstring of
 #print axioms Mukai.pathDet_one
 #print axioms Mukai.mem_periodDomainPlus_exp_of_sameCone
 #print axioms Mukai.mem_periodDomainPlus_exp_of_sameCone_of_sigPos
+
+/-! ### The integral Mukai lattice inside the real extension
+
+The `ℤ`-span of the extended basis is the integral Mukai extension, and the two
+pairings agree under a map of middles — so wall finiteness is a statement about
+integral classes rather than about an abstract `ZSpan`. -/
+
+#print axioms Mukai.extendBasis
+#print axioms Mukai.integralExtension
+#print axioms Mukai.span_range_extendBasis
+#print axioms Mukai.extendMap
+#print axioms Mukai.realPairing_extendMap
+#print axioms Mukai.isSphericalClass_extendMap
+#print axioms Mukai.finite_sphericalOrthogonal_integralExtension
+#print axioms Mukai.finite_wallClasses_integralExtension
