@@ -195,4 +195,38 @@ theorem fg_blockSpan [Fintype ι] {d : ℤ} (γ : ι →₀ ℕ) :
       {α : ι →₀ ℤ | α.degree = d ∧ ∀ j : ι, α j < 0})).FG :=
   Submodule.fg_span ((finite_setOf_degree_eq_of_neg d).image _)
 
+/-- **Scaling a fraction scales its numerator**, at a general homogeneous denominator. The
+`awayMk` form is the special case the spanning argument uses; this is the one the section
+comparison needs, where the denominator is not a power. -/
+theorem smul_mk {d : ℤ} (h𝓜 : IsPolynomialTwist 𝓜 d) (S : Submonoid (MvPolynomial ι k))
+    (c : NumDenSameDeg (polynomialGrading ι k) 𝓜 S) (r : k) :
+    r • DegreeZeroLocalization.mk c =
+      DegreeZeroLocalization.mk
+        { deg := c.deg
+          num := ⟨r • (c.num : MvPolynomial ι k), h𝓜.smul_mem r c.num.2⟩
+          den := c.den
+          den_mem := c.den_mem } := by
+  apply DegreeZeroLocalization.ext
+  have hval : (polynomialToHomogeneousLocalization ι k S r).val =
+      Localization.mk (MvPolynomial.C r) 1 := by
+    show (HomogeneousLocalization.mk _).val = _
+    rw [HomogeneousLocalization.val_mk]
+    rfl
+  show (polynomialToHomogeneousLocalization ι k S r).val •
+      LocalizedModule.mk (c.num : MvPolynomial ι k) ⟨(c.den : MvPolynomial ι k), c.den_mem⟩ = _
+  rw [hval, LocalizedModule.mk_smul_mk, one_mul]
+  congr 1
+  exact (MvPolynomial.smul_eq_C_mul _ r).symm
+
+/-- **Enlarging the denominator submonoid is `k`-linear.** Both sides are the same fraction with
+the same numerator scaled; `mapOfLE_mk` makes that visible. -/
+theorem mapOfLE_smul {d : ℤ} (h𝓜 : IsPolynomialTwist 𝓜 d)
+    {S T : Submonoid (MvPolynomial ι k)} (h : S ≤ T) (r : k)
+    (z : DegreeZeroLocalization (polynomialGrading ι k) 𝓜 S) :
+    DegreeZeroLocalization.mapOfLE (𝒜 := polynomialGrading ι k) (𝓜 := 𝓜) h (r • z) =
+      r • DegreeZeroLocalization.mapOfLE (𝒜 := polynomialGrading ι k) (𝓜 := 𝓜) h z := by
+  obtain ⟨c, rfl⟩ := DegreeZeroLocalization.mk_surjective z
+  rw [smul_mk ι k 𝓜 h𝓜, DegreeZeroLocalization.mapOfLE_mk,
+    DegreeZeroLocalization.mapOfLE_mk, smul_mk ι k 𝓜 h𝓜]
+
 end AlgebraicGeometry.Proj
