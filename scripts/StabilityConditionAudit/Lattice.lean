@@ -266,3 +266,27 @@ counting identity turns it into an equality. See the module docstring of
 #print axioms QuadraticMap.sigNeg_add_le
 #print axioms QuadraticMap.nondegenerate_of_isCompl
 #print axioms QuadraticMap.sigPos_eq_add
+
+/-! ### The signature of the real Mukai extension
+
+`HasSignatureTwo` for `realForm b` from the signature of `b` — with
+`V = NS(X) ⊗ ℝ` that is the Hodge index theorem, so the hypothesis every
+period-domain result carries stops being an assumption about the Mukai lattice.
+Step 2 of the additivity work. -/
+
+#print axioms QuadraticMap.rangeIsometry
+#print axioms QuadraticMap.sigPos_smul_of_pos
+#print axioms QuadraticMap.sigNeg_smul_of_pos
+#print axioms Mukai.hyperbolicIncl
+#print axioms Mukai.middleIncl
+#print axioms Mukai.hyperbolicIncl_injective
+#print axioms Mukai.middleIncl_injective
+#print axioms Mukai.hyperbolic
+#print axioms Mukai.middle
+#print axioms Mukai.mem_hyperbolic_iff
+#print axioms Mukai.mem_middle_iff
+#print axioms Mukai.isCompl_hyperbolic_middle
+#print axioms Mukai.orthogonal_hyperbolic_middle
+#print axioms Mukai.comp_hyperbolicIncl_apply
+#print axioms Mukai.comp_middleIncl_apply
+#print axioms Mukai.hasSignatureTwo_realForm
