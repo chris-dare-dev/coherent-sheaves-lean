@@ -487,6 +487,91 @@ noncomputable def intShiftModuleFiberLinearEquiv {f : A} (hf : f ∈ 𝒜 1) (d 
         Fiber 𝒜 (intShift 𝓜 0) x.1 :=
   intShiftModuleFiberLinearEquivOfMem 𝒜 𝓜 hf d x.2
 
+/-! ### The same, on sections
+
+The section-level port of the fiber trivialization above. The shape is
+`intShiftSectionToZeroOn`'s exactly: apply the fiber equivalence pointwise, then rebuild the
+local-fraction certificate with the `_apply_mk` rule. The numerator becomes `f ^ k • r` rather than
+`r * f ^ k`, which is the order `LocalizedModule.mk_smul_mk` produces; the denominator is
+unchanged, because it lives in `𝒜` either way. -/
+
+/-- Divide a locally fractional section of `M(d)~` by `f ^ d`, over any open inside `D₊(f)`. -/
+noncomputable def intShiftModuleSectionToZeroOn {f : A} (hf : f ∈ 𝒜 1) (d : ℤ)
+    {U : Opens X} (hU : U ≤ ProjectiveSpectrum.basicOpen 𝒜 f)
+    (s : (associatedSheafInType 𝒜 (intShift 𝓜 d)).1.obj (op U)) :
+    (associatedSheafInType 𝒜 (intShift 𝓜 0)).1.obj (op U) := by
+  refine ⟨fun x => intShiftModuleFiberLinearEquivOfMem 𝒜 𝓜 hf d (hU x.2) (s.1 x), ?_⟩
+  intro x
+  obtain ⟨V, hxV, i, e, r, t, ht, h⟩ := s.2 x
+  refine ⟨V, hxV, i, e + d.toNat,
+    ⟨f ^ (-d).toNat • (r : M),
+      DegreeZeroLocalization.pow_smul_mem_intShift_zero 𝒜 𝓜 hf d e (r : M) r.2⟩,
+    ⟨(t : A) * f ^ d.toNat,
+      by simpa using SetLike.mul_mem_graded t.2 (SetLike.pow_mem_graded d.toNat hf)⟩,
+    (fun y => y.1.asHomogeneousIdeal.toIdeal.primeCompl.mul_mem
+      (ht y) (y.1.asHomogeneousIdeal.toIdeal.primeCompl.pow_mem (hU (i y).2) d.toNat)),
+    fun y => ?_⟩
+  change intShiftModuleFiberLinearEquivOfMem 𝒜 𝓜 hf d (hU (i y).2) (s.1 (i y)) = _
+  have hy := h y
+  change s.1 (i y) = _ at hy
+  rw [hy]
+  exact DegreeZeroLocalization.intShiftZeroModuleLinearEquiv_apply_mk 𝒜 𝓜 hf d (hU (i y).2) _
+
+/-- The inverse trivialization on sections, over any open contained in `D₊(f)`. -/
+noncomputable def intShiftModuleSectionFromZeroOn {f : A} (hf : f ∈ 𝒜 1) (d : ℤ)
+    {U : Opens X} (hU : U ≤ ProjectiveSpectrum.basicOpen 𝒜 f)
+    (s : (associatedSheafInType 𝒜 (intShift 𝓜 0)).1.obj (op U)) :
+    (associatedSheafInType 𝒜 (intShift 𝓜 d)).1.obj (op U) := by
+  refine ⟨fun x => (intShiftModuleFiberLinearEquivOfMem 𝒜 𝓜 hf d (hU x.2)).symm (s.1 x), ?_⟩
+  intro x
+  obtain ⟨V, hxV, i, e, r, t, ht, h⟩ := s.2 x
+  refine ⟨V, hxV, i, e + (-d).toNat,
+    ⟨f ^ d.toNat • (r : M),
+      DegreeZeroLocalization.pow_smul_mem_intShift 𝒜 𝓜 hf d e (r : M) r.2⟩,
+    ⟨(t : A) * f ^ (-d).toNat,
+      by simpa using SetLike.mul_mem_graded t.2 (SetLike.pow_mem_graded (-d).toNat hf)⟩,
+    (fun y => y.1.asHomogeneousIdeal.toIdeal.primeCompl.mul_mem
+      (ht y) (y.1.asHomogeneousIdeal.toIdeal.primeCompl.pow_mem (hU (i y).2) (-d).toNat)),
+    fun y => ?_⟩
+  change (intShiftModuleFiberLinearEquivOfMem 𝒜 𝓜 hf d (hU (i y).2)).symm (s.1 (i y)) = _
+  have hy := h y
+  change s.1 (i y) = _ at hy
+  rw [hy]
+  exact DegreeZeroLocalization.intShiftZeroModuleLinearEquiv_symm_apply_mk
+    𝒜 𝓜 hf d (hU (i y).2) _
+
+/-- Over any open contained in `D₊(f)`, an integer twist of a module is trivial on sections. -/
+noncomputable def intShiftModuleSectionAddEquivOn {f : A} (hf : f ∈ 𝒜 1) (d : ℤ)
+    {U : Opens X} (hU : U ≤ ProjectiveSpectrum.basicOpen 𝒜 f) :
+    (associatedSheafInType 𝒜 (intShift 𝓜 d)).1.obj (op U) ≃+
+      (associatedSheafInType 𝒜 (intShift 𝓜 0)).1.obj (op U) where
+  toFun := intShiftModuleSectionToZeroOn 𝒜 𝓜 hf d hU
+  invFun := intShiftModuleSectionFromZeroOn 𝒜 𝓜 hf d hU
+  left_inv s := by
+    apply section_ext
+    funext x
+    exact (intShiftModuleFiberLinearEquivOfMem 𝒜 𝓜 hf d (hU x.2)).symm_apply_apply (s.1 x)
+  right_inv s := by
+    apply section_ext
+    funext x
+    exact (intShiftModuleFiberLinearEquivOfMem 𝒜 𝓜 hf d (hU x.2)).apply_symm_apply (s.1 x)
+  map_add' s t := by
+    apply section_ext
+    funext x
+    exact (intShiftModuleFiberLinearEquivOfMem 𝒜 𝓜 hf d (hU x.2)).map_add (s.1 x) (t.1 x)
+
+/-- The module chart trivialization is linear over the structure-sheaf sections. -/
+noncomputable def intShiftModuleSectionLinearEquivOn {f : A} (hf : f ∈ 𝒜 1) (d : ℤ)
+    {U : Opens X} (hU : U ≤ ProjectiveSpectrum.basicOpen 𝒜 f) :
+    (associatedSheafInType 𝒜 (intShift 𝓜 d)).1.obj (op U) ≃ₗ[𝒪.1.obj (op U)]
+      (associatedSheafInType 𝒜 (intShift 𝓜 0)).1.obj (op U) :=
+  { intShiftModuleSectionAddEquivOn 𝒜 𝓜 hf d hU with
+    map_smul' := fun r s => by
+      apply section_ext
+      funext x
+      exact (intShiftModuleFiberLinearEquivOfMem 𝒜 𝓜 hf d (hU x.2)).map_smul
+        (AlgebraicGeometry.openToLocalization 𝒜 U x.1 x.2 r) (s.1 x) }
+
 end GradedModule
 
 end AlgebraicGeometry.Proj

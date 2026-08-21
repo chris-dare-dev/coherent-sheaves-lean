@@ -369,6 +369,45 @@ noncomputable def intShiftOverIso {f : A} (hf : f ∈ 𝒜 1) (d : ℤ)
         funext x
         rfl)
 
+/-! ### The same, for a graded module
+
+`intShiftOverIso` and the chart trivializations under it are stated for `𝒜` as a module over
+itself, which is all quasi-coherence and coherence of `O(d)` ever need. `#584`'s tensor comparison
+`F ⊗ O(d) ≅ F(d)` needs an arbitrary graded module, and the port is direct now that
+`intShiftModuleSectionLinearEquivOn` exists: the same three steps, at `𝓜` instead of `𝒜`. -/
+
+/-- Trivializing an integer twist of a graded module over an open inside a degree-one chart. -/
+noncomputable def intShiftModuleOverIso {f : A} (hf : f ∈ 𝒜 1) (d : ℤ)
+    {V : (AlgebraicGeometry.Proj 𝒜).Opens}
+    (hV : V ≤ ProjectiveSpectrum.basicOpen 𝒜 f) :
+    (associatedSheaf 𝒜 (intShift 𝓜 d)).over V ≅
+      (associatedSheaf 𝒜 (intShift 𝓜 0)).over V :=
+  (SheafOfModules.fullyFaithfulForget _).preimageIso <|
+    PresheafOfModules.isoMk
+      (fun W ↦ (intShiftModuleSectionLinearEquivOn 𝒜 𝓜 hf d
+        ((leOfHom W.unop.hom).trans hV)).toModuleIso)
+      (by
+        intro W W' g
+        ext s
+        apply section_ext
+        funext x
+        rfl)
+
+/-- The zero twist of a graded module is the module itself, as associated sheaves. -/
+noncomputable def intShiftModuleZeroIso :
+    associatedSheaf 𝒜 (intShift 𝓜 0) ≅ associatedSheaf 𝒜 𝓜 :=
+  associatedIsoOfPiecewiseIff (𝓜 := intShift 𝓜 0) 𝒜 𝓜
+    (fun i m => mem_intShift_zero_iff 𝓜 i m)
+
+/-- On a degree-one chart, an integer twist of a graded module is the module itself. -/
+noncomputable def intShiftModuleOverSelfIso {f : A} (hf : f ∈ 𝒜 1) (d : ℤ)
+    {V : (AlgebraicGeometry.Proj 𝒜).Opens}
+    (hV : V ≤ ProjectiveSpectrum.basicOpen 𝒜 f) :
+    (associatedSheaf 𝒜 (intShift 𝓜 d)).over V ≅ (associatedSheaf 𝒜 𝓜).over V :=
+  intShiftModuleOverIso 𝒜 𝓜 hf d hV ≪≫
+    (SheafOfModules.overFunctor (AlgebraicGeometry.Proj 𝒜).ringCatSheaf V).mapIso
+      (intShiftModuleZeroIso 𝒜 𝓜)
+
 /-- The zero twist is the structure module, as associated sheaves. -/
 noncomputable def intShiftZeroIso :
     associatedSheaf 𝒜 (intShift 𝒜 0) ≅ associatedSheaf 𝒜 𝒜 :=
