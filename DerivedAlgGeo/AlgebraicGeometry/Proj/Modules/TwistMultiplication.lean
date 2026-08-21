@@ -3,6 +3,7 @@ Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under the MIT license.
 -/
 import DerivedAlgGeo.AlgebraicGeometry.Proj.Modules.Shift
+import DerivedAlgGeo.AlgebraicGeometry.Proj.Modules.TwistLocalization
 import Mathlib.Algebra.Category.ModuleCat.Presheaf.Monoidal
 
 /-!
@@ -48,10 +49,22 @@ scalar lives in `Γ(U, 𝒪)` and a fibre-level one in `HomogeneousLocalization 
 the two `smul` laws push it through `openToLocalization`. The argument order flips with it —
 section-level *left* linearity is fibre-level `twistMul_*_right`.
 
+## What the chart sees
+
+`intShiftZeroModuleLinearEquiv_twistMul` is the identity the isomorphism proof turns on. On a
+localization containing a degree-one `f`, the module trivialization and the ring trivialization are
+multiplication by the *same* scalar, so they commute with the product by associativity of that
+action and nothing else. Read the other way: over a degree-one chart the twisted multiplication
+*is* the untwisted one, conjugated by two isomorphisms — which is why the local half of
+`Presheaf.W_of_coversTop` should not need the generator machinery
+`Divisors/AssociatedSheaf/Construction.lean` builds for the corresponding Cartier statement.
+
 ## Scope
 
-The map only. That it is an **isomorphism** is not here, and `#584` is not closed. The route is
-`Presheaf.W_of_coversTop` against the degree-one chart trivializations, both of which exist.
+The map, and what it looks like on a chart. That it is an **isomorphism** is not here, and `#584`
+is not closed. What remains is to lift that identity to sections, to identify the untwisted
+multiplication with the right unitor, and to feed the result to `Presheaf.W_of_coversTop` over
+`degreeOneCharts_coversTop`.
 -/
 
 noncomputable section
@@ -253,5 +266,22 @@ noncomputable def twistMultiplicationHom :
     apply section_ext
     funext x
     rfl
+
+/-- **The chart trivializations intertwine the twisted multiplication.**
+
+Both are multiplication by the same scalar, so this is associativity of that action and nothing
+more. Over a degree-one chart it says the twisted multiplication is the untwisted one conjugated by
+the two trivializations, which is the local statement the comparison's isomorphism proof needs. -/
+theorem intShiftZeroModuleLinearEquiv_twistMul {f : A} (hf : f ∈ 𝒜 1) (hfS : f ∈ S)
+    (w : DegreeZeroLocalization 𝒜 (intShift 𝒜 d) S)
+    (z : DegreeZeroLocalization 𝒜 𝓜 S) :
+    DegreeZeroLocalization.intShiftZeroModuleLinearEquiv 𝒜 𝓜 hf d hfS
+        (twistMul 𝒜 𝓜 S d w z) =
+      twistMul 𝒜 𝓜 S 0 (DegreeZeroLocalization.intShiftZeroLinearEquiv 𝒜 hf d hfS w) z := by
+  apply DegreeZeroLocalization.ext
+  show _ • ((w : LocalizedModule S A) • (z : LocalizedModule S M)) =
+    ((_ • (w : LocalizedModule S A) : LocalizedModule S A)) • (z : LocalizedModule S M)
+  rw [← mul_smul]
+  rfl
 
 end AlgebraicGeometry.Proj

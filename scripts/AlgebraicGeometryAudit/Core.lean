@@ -429,6 +429,10 @@ The section map, the presheaf map through tensorLift, and the isomorphism proof 
 #print axioms AlgebraicGeometry.Proj.sectionTwistMul_smul_left
 #print axioms AlgebraicGeometry.Proj.sectionTwistMul_smul_right
 #print axioms AlgebraicGeometry.Proj.twistMultiplicationHom
+-- What the twisted multiplication looks like on a degree-one chart: the untwisted one, conjugated
+-- by the two trivializations. Both are multiplication by the same scalar, so the proof is
+-- associativity of that action. This is the local statement the isomorphism proof needs.
+#print axioms AlgebraicGeometry.Proj.intShiftZeroModuleLinearEquiv_twistMul
 -- The algebraic half of the sheaf-level composition O(d)(e) = O(d+e) that the two lemmas above
 -- record as unobtainable from an algebraic identity: at a localization whose denominators contain
 -- a homogeneous element of positive degree the two families have the same degree-zero part.
