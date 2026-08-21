@@ -74,6 +74,18 @@ theorem mem_wall_iff_expCharge_eq_zero (hb : ∀ x y : V, b x y = b y x) (hω : 
       expCharge b β ω δ = 0 :=
   PeriodDomain.mem_wall_iff_centralCharge_eq_zero (isPositivePair_exp b β ω hb hω)
 
+omit [FiniteDimensional ℝ V] in
+/-- **`P₀` for the exponential pair is where `Z(β,ω)` kills nothing in `Δ`.**
+With `Δ` the spherical classes of the Mukai lattice this is Bridgeland's cut
+period domain. -/
+theorem mem_periodDomain₀_iff_expCharge_ne_zero (hb : ∀ x y : V, b x y = b y x)
+    (hω : 0 < b ω ω) (Δ : Set (RealExtension V)) :
+    PeriodDomain.pairSpan (expRe b β ω) (expIm b β ω) ∈
+        PeriodDomain.periodDomain₀ (realForm b) Δ ↔
+      ∀ δ ∈ Δ, expCharge b β ω δ ≠ 0 :=
+  PeriodDomain.mem_periodDomain₀_iff_centralCharge_ne_zero
+    (isPositivePair_exp b β ω hb hω) Δ
+
 end FiniteDimensional
 
 end Mukai
