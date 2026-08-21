@@ -37,7 +37,8 @@ which keeps everything inside the linear algebra already in the tree.
 ## Main results
 
 * `exists_uniform_coercivity` — a compact family of positive planes has a
-  uniform coercivity constant.
+  uniform coercivity constant. Its closedness input, `mem_orthogonal_span_pair_iff`,
+  is pure algebra and lives in `PeriodDomain.lean`.
 * `PlaneRegion.finite_wallClasses_inter` — **finitely many spherical classes of a
   lattice have a wall meeting the region.**
 * `PlaneRegion.ofCompactPairs` — the criterion, packaged; and `PlaneRegion.empty`
@@ -53,22 +54,6 @@ namespace PeriodDomain
 
 variable {M : Type*} [NormedAddCommGroup M] [NormedSpace ℝ M] [FiniteDimensional ℝ M]
 variable {Q : QuadraticForm ℝ M}
-
-omit [FiniteDimensional ℝ M] in
-/-- Orthogonality to a plane spanned by two vectors is orthogonality to both,
-which is what makes it a closed condition. -/
-theorem mem_orthogonal_span_pair_iff {x y u : M} :
-    u ∈ orthogonal Q (Submodule.span ℝ ({x, y} : Set M)) ↔
-      polar (⇑Q) x u = 0 ∧ polar (⇑Q) y u = 0 := by
-  rw [mem_orthogonal_iff]
-  constructor
-  · intro h
-    exact ⟨h x (Submodule.subset_span (by simp)), h y (Submodule.subset_span (by simp))⟩
-  · rintro ⟨hx, hy⟩ w hw
-    have hle : Submodule.span ℝ ({x, y} : Set M) ≤ LinearMap.ker (Q.polarBilin.flip u) := by
-      rw [Submodule.span_le]
-      rintro z (rfl | rfl) <;> simp [LinearMap.mem_ker, hx, hy]
-    simpa [LinearMap.mem_ker] using hle hw
 
 omit [FiniteDimensional ℝ M] in
 /-- The scaling step shared by the two coercivity arguments: a bound on the
