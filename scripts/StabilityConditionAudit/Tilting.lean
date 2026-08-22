@@ -242,3 +242,26 @@ from `Splitting.lean`. This is the abelian counterpart of the slicing pair in
 #print axioms CategoryTheory.Triangulated.StabilityFunction.hnTorsionPair
 #print axioms CategoryTheory.Triangulated.StabilityFunction.hnTorsionPair_tors
 #print axioms CategoryTheory.Triangulated.StabilityFunction.hnTorsionPair_free
+
+/-! ## From the abelian torsion pair to the HRS input
+
+`TorsionPair/Basic.lean` and `TorsionPair/Heart.lean` state the same notion in
+the heart and in the ambient category, and each says the other is not derived
+from it. `ofTorsionPair` derives the second from the first: the classes travel
+by `ambientProperty` and the decomposition by
+`heartFullSubcategory_shortExact_triangle`. `hnTilt` is the whole chain — a
+stability function on the heart, a cutoff, and a t-structure out. -/
+
+#print axioms CategoryTheory.Triangulated.Tilting.ambientProperty
+#print axioms CategoryTheory.Triangulated.Tilting.ambientProperty_of_obj
+#print axioms CategoryTheory.Triangulated.Tilting.heart_of_ambientProperty
+#print axioms CategoryTheory.Triangulated.Tilting.isLE_of_ambientProperty
+#print axioms CategoryTheory.Triangulated.Tilting.isGE_of_ambientProperty
+#print axioms CategoryTheory.Triangulated.Tilting.ambientProperty_isClosedUnderIsomorphisms
+#print axioms CategoryTheory.Triangulated.Tilting.HeartTorsionPair.ofTorsionPair
+#print axioms CategoryTheory.Triangulated.Tilting.HeartTorsionPair.ofTorsionPair_tors
+#print axioms CategoryTheory.Triangulated.Tilting.HeartTorsionPair.ofTorsionPair_free
+#print axioms CategoryTheory.Triangulated.StabilityFunction.hnHeartTorsionPair
+#print axioms CategoryTheory.Triangulated.StabilityFunction.hnHeartTorsionPair_tors
+#print axioms CategoryTheory.Triangulated.StabilityFunction.hnHeartTorsionPair_free
+#print axioms CategoryTheory.Triangulated.StabilityFunction.hnTilt

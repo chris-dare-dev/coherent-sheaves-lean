@@ -7,5 +7,6 @@ import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Weak.Tilting
 import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Weak.Tilting.TorsionPair.Slope
 import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Weak.Tilting.TorsionPair.SourceSlope
 import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Weak.Tilting.TorsionPair.StabilityFunction
+import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Weak.Tilting.TorsionPair.HeartAdapter
 
 /-! # Torsion pairs used in tilting -/
