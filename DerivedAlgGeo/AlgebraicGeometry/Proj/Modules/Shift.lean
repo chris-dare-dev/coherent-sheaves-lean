@@ -179,6 +179,21 @@ theorem eq_zero_of_mem_intShift_intShift_of_neg (d e : ℤ) (n : ℕ) (hne : (n 
   · rfl
   · exact absurd hk (by omega)
 
+omit [GradedRing 𝒜] in
+/-- **Degree bookkeeping for the twisted multiplication.**
+
+A ring element of the degree-`d` shift scales a module element of degree `j` into the degree-`d`
+shift of the module. This is what makes `A(d) ⊗ M → M(d)` land where it should, and it is the
+`SetLike.GradedSMul` analogue of the fact that `𝒜 i · 𝓜 j ⊆ 𝓜 (i + j)`. -/
+theorem smul_mem_intShift (d : ℤ) (i j : ℕ) {a : A} {m : M}
+    (ha : a ∈ intShift 𝒜 d i) (hm : m ∈ 𝓜 j) :
+    a • m ∈ intShift 𝓜 d (i + j) := by
+  simp only [intShift_apply, mem_intShiftPiece] at ha ⊢
+  rcases ha with rfl | ⟨k, hk, ha⟩
+  · exact Or.inl (zero_smul _ _)
+  · refine Or.inr ⟨k + j, by push_cast at hk ⊢; omega, ?_⟩
+    exact SetLike.GradedSMul.smul_mem ha hm
+
 /-! ## The composition, at the localization
 
 `mem_intShift_add_iff_of_nonneg` and `eq_zero_of_mem_intShift_intShift_of_neg` together say the
