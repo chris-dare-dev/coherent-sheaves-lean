@@ -228,3 +228,17 @@ of all six terms and unconditional exactness plus endpoint mono/epi. -/
 #print axioms Tilting.HeartTorsionPair.originalHMinusOneIsoOfFreeShift
 #print axioms Tilting.HeartTorsionPair.exists_original_triangle_of_torsion_subobject_free_shift
 
+/-! ## The abelian torsion pair of a stability function
+
+`T β` and `F β` of `Foundation/StabilityFunction/Cutoff.lean` satisfy both
+torsion-pair axioms: Hom-vanishing from `PhaseMonotone.lean`, and the splitting
+from `Splitting.lean`. This is the abelian counterpart of the slicing pair in
+`TorsionPair/Slope.lean`, and the form Bridgeland's §6 uses on `Coh X`. -/
+
+#print axioms CategoryTheory.Triangulated.StabilityFunction.hnTorsProperty
+#print axioms CategoryTheory.Triangulated.StabilityFunction.hnFreeProperty
+#print axioms CategoryTheory.Triangulated.StabilityFunction.hnTorsProperty_isClosedUnderIsomorphisms
+#print axioms CategoryTheory.Triangulated.StabilityFunction.hnFreeProperty_isClosedUnderIsomorphisms
+#print axioms CategoryTheory.Triangulated.StabilityFunction.hnTorsionPair
+#print axioms CategoryTheory.Triangulated.StabilityFunction.hnTorsionPair_tors
+#print axioms CategoryTheory.Triangulated.StabilityFunction.hnTorsionPair_free

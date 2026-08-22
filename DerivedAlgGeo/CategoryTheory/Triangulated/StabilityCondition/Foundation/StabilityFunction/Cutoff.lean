@@ -2,7 +2,7 @@
 Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under the MIT license.
 -/
-import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Foundation.StabilityFunction.Uniqueness.Extrema
+import DerivedAlgGeo.CategoryTheory.Triangulated.StabilityCondition.Foundation.StabilityFunction.PhaseMonotone
 
 /-!
 # The two classes at a phase cutoff
@@ -24,26 +24,24 @@ T β = {E | every HN phase of E exceeds β}      F β = {E | every HN phase is a
   witness.
 * `isZero_of_mem_hnTors_of_mem_hnFree` — the two classes meet only in zero,
   which is `φ⁻ ≤ φ⁺` and nothing else.
-* `hom_eq_zero_of_mem_hnTors_of_semistable` — **the Hom-vanishing, for a
-  semistable target.**
+* `hom_eq_zero_of_mem_hnTors_of_semistable` — the Hom-vanishing, for a
+  semistable target.
+* `hom_eq_zero_of_mem_hnTors_of_mem_hnFree` — **the Hom-vanishing, for a
+  general target.** The image of a map is a quotient of the source and a
+  subobject of the target, so the monotonicity of `PhaseMonotone.lean` traps it:
+  `β < φ⁻(image) ≤ φ⁺(image) ≤ β`, which leaves the image zero.
 
 ## What is deliberately not here
 
-Two further steps stand between this and a torsion pair, and neither is implied
-by anything below.
+One step still stands between this and a torsion pair, and it is not implied by
+anything below.
 
-* **Hom-vanishing for a general target.** The argument is the usual one — the
-  image of a map is a quotient of the source and a subobject of the target, so
-  `β < φ⁻(image) ≤ φ⁺(image) ≤ β` — but it needs `φ⁺` to decrease under monos
-  and `φ⁻` to increase under epis, and the tree has neither. `Uniqueness/` has
-  the semistable special cases and the maximal destabilizing subobject; it does
-  not have these.
 * **The splitting.** Every object sitting in a short exact sequence with a
   torsion sub and a torsion-free quotient, obtained by cutting the HN chain at
   the crossing index. `Uniqueness/Tail.lean` removes one factor at a time and is
   the machinery this would induct over.
 
-Until both exist, these are two classes with a Hom-vanishing property, not a
+Until it exists, these are two classes with a Hom-vanishing property, not a
 torsion pair, and nothing here calls them one.
 -/
 
@@ -127,6 +125,42 @@ theorem hom_eq_zero_of_mem_hnTors_of_semistable {E B : A}
     · exact h
   exact AbelianHNFiltration.hom_eq_zero_to_semistable_of_phase_lt_phiMinus F hB
     (by linarith) f
+
+/-- **Hom-vanishing.** A map from an object whose HN phases all exceed `β` to
+an object whose HN phases are all at most `β` is zero: its image is a quotient
+of the source and a subobject of the target, so `β < φ⁻(image)` and
+`φ⁺(image) ≤ β`, which `phiMinus_le_phiPlus` contradicts unless the image is
+zero.
+
+The HN property is needed for the image, which is neither of the two given
+objects. -/
+theorem hom_eq_zero_of_mem_hnTors_of_mem_hnFree (hHN : Z.HasHNProperty)
+    {E B : A} (hT : E ∈ hnTors Z β) (hFr : B ∈ hnFree Z β) (f : E ⟶ B) :
+    f = 0 := by
+  by_cases hE : IsZero E
+  · exact hE.eq_zero_of_src f
+  by_cases hI : IsZero ((imageSubobject f : A))
+  · rw [← imageSubobject_arrow_comp f, hI.eq_zero_of_src (imageSubobject f).arrow,
+      comp_zero]
+  have hB : ¬IsZero B := by
+    intro hzero
+    apply hI
+    rw [hzero.eq_zero_of_tgt f, imageSubobject_zero]
+    simp
+  obtain ⟨F, hmin⟩ : ∃ F : AbelianHNFiltration Z E, β < F.phiMinus := by
+    rcases hT with h0 | h; · exact absurd h0 hE
+    · exact h
+  obtain ⟨G, hmax⟩ : ∃ G : AbelianHNFiltration Z B, G.phiPlus ≤ β := by
+    rcases hFr with h0 | h; · exact absurd h0 hB
+    · exact h
+  obtain ⟨K⟩ := hHN _ hI
+  have hquot : F.phiMinus ≤ K.phiMinus :=
+    F.phiMinus_le_of_epi K (factorThruImageSubobject f)
+  have hsub : K.phiPlus ≤ G.phiPlus :=
+    K.phiPlus_le_of_mono G (imageSubobject f).arrow
+  have hKrange := K.phiMinus_le_phiPlus
+  exfalso
+  linarith
 
 end StabilityFunction
 

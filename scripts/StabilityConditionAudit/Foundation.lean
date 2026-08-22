@@ -947,3 +947,45 @@ docstring for the two steps still missing. -/
 #print axioms CategoryTheory.Triangulated.StabilityFunction.mem_hnFree_iff_forall
 #print axioms CategoryTheory.Triangulated.StabilityFunction.isZero_of_mem_hnTors_of_mem_hnFree
 #print axioms CategoryTheory.Triangulated.StabilityFunction.hom_eq_zero_of_mem_hnTors_of_semistable
+
+/-! ## Monotonicity of the extremal phases, and Hom-vanishing in general
+
+`φ⁺` cannot rise along a monomorphism and `φ⁻` cannot fall along an
+epimorphism. Applied to the image of a map — a quotient of the source and a
+subobject of the target — the two bound `T β`'s Hom into `F β` to zero, which
+is the Hom-vanishing half of Bridgeland's torsion pair. -/
+
+#print axioms CategoryTheory.Triangulated.AbelianHNFiltration.exists_epi_to_semistable_phase_phiMinus
+#print axioms CategoryTheory.Triangulated.AbelianHNFiltration.phiPlus_le_of_mono
+#print axioms CategoryTheory.Triangulated.AbelianHNFiltration.phiMinus_le_of_epi
+#print axioms CategoryTheory.Triangulated.StabilityFunction.hom_eq_zero_of_mem_hnTors_of_mem_hnFree
+
+/-! ## Cutting an HN filtration, and the splitting at a cutoff
+
+`tail` generalizes to `tailAt`, which cuts above any index; `restrict` is the
+other half, the chain below an index as a filtration of the term there; `ofIso`
+transports a filtration along an isomorphism. Cutting at the crossing index
+named by `exists_crossIndex` puts every object in a short exact sequence with a
+sub in `T β` and a quotient in `F β`. -/
+
+#print axioms CategoryTheory.Triangulated.AbelianHNFiltration.tailAt
+#print axioms CategoryTheory.Triangulated.AbelianHNFiltration.tailAt_n
+#print axioms CategoryTheory.Triangulated.AbelianHNFiltration.tailAt_phase
+#print axioms CategoryTheory.Triangulated.AbelianHNFiltration.tailAt_phiPlus
+#print axioms CategoryTheory.Triangulated.AbelianHNFiltration.tailAt_phiMinus
+#print axioms CategoryTheory.Triangulated.AbelianHNFiltration.restrictChain
+#print axioms CategoryTheory.Triangulated.AbelianHNFiltration.restrictChain.congr_simp
+#print axioms CategoryTheory.Triangulated.AbelianHNFiltration.map_restrictChain
+#print axioms CategoryTheory.Triangulated.AbelianHNFiltration.restrictChain_le
+#print axioms CategoryTheory.Triangulated.AbelianHNFiltration.restrict
+#print axioms CategoryTheory.Triangulated.AbelianHNFiltration.restrict_n
+#print axioms CategoryTheory.Triangulated.AbelianHNFiltration.restrict_phiPlus
+#print axioms CategoryTheory.Triangulated.AbelianHNFiltration.restrict_phiMinus
+#print axioms CategoryTheory.Triangulated.AbelianHNFiltration.ofIso
+#print axioms CategoryTheory.Triangulated.AbelianHNFiltration.ofIso_phiPlus
+#print axioms CategoryTheory.Triangulated.AbelianHNFiltration.ofIso_phiMinus
+#print axioms CategoryTheory.Triangulated.AbelianHNFiltration.exists_crossIndex
+#print axioms CategoryTheory.Triangulated.StabilityFunction.hnTors_of_iso
+#print axioms CategoryTheory.Triangulated.StabilityFunction.hnFree_of_iso
+#print axioms CategoryTheory.Triangulated.StabilityFunction.exists_subobject_hnTors_cokernel_hnFree
+#print axioms CategoryTheory.Triangulated.StabilityFunction.exists_shortExact_hnTors_hnFree
