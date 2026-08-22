@@ -116,6 +116,15 @@ variable {N : Type*} [AddCommGroup N] {V : Type*} [AddCommGroup V] [Module ℝ V
 def extendMap (f : N →ₗ[ℤ] V) (u : MukaiLattice N) : RealExtension V :=
   ((u.1 : ℝ), f u.2.1, (u.2.2 : ℝ))
 
+omit [Module ℝ V] in
+/-- The induced map is additive: `MukaiLattice` addition is componentwise and
+each coordinate map is. -/
+theorem extendMap_add (f : N →ₗ[ℤ] V) (u w : MukaiLattice N) :
+    extendMap f (u + w) = extendMap f u + extendMap f w := by
+  simp only [extendMap, Prod.fst_add, Prod.snd_add, map_add, Prod.mk_add_mk]
+  push_cast
+  rfl
+
 /-- **The two pairings agree.** For a map of middles that respects the forms, the
 integral Mukai pairing is the real one, cast. -/
 theorem realPairing_extendMap (bZ : N →ₗ[ℤ] N →ₗ[ℤ] ℤ) (bR : V →ₗ[ℝ] V →ₗ[ℝ] ℝ)

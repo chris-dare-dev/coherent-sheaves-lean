@@ -2499,3 +2499,17 @@ comparison, so #584 is not closed. -/
 #print axioms AlgebraicGeometry.Proj.intCechBlockClassLinear
 #print axioms AlgebraicGeometry.Proj.module_finite_cechCohomology_intTwist
 #print axioms AlgebraicGeometry.Proj.module_finite_linearCoherentH_projectiveSpaceTwist
+
+/-! ### `Z(β,ω)` on a numerical class
+
+The central charge composed with the Mukai vector, so route (A)'s conclusions —
+the support property above all — become statements about classes rather than
+about a quadratic space. -/
+
+#print axioms AlgebraicGeometry.Numerical.K3.AdditiveMukaiData.numericalCharge
+#print axioms AlgebraicGeometry.Numerical.K3.AdditiveMukaiData.numericalCharge_apply
+#print axioms AlgebraicGeometry.Numerical.K3.AdditiveMukaiData.numericalCharge_add
+#print axioms AlgebraicGeometry.Numerical.K3.AdditiveMukaiData.realForm_extendMap_mukaiVector
+#print axioms AlgebraicGeometry.Numerical.K3.AdditiveMukaiData.mukaiForm_neg_of_numericalCharge_eq_zero
+#print axioms AlgebraicGeometry.Numerical.K3.AdditiveMukaiData.numericalCharge_ne_zero_of_nonneg
+#print axioms AlgebraicGeometry.Numerical.K3.AdditiveMukaiData.mem_wall_iff_numericalCharge_eq_zero
