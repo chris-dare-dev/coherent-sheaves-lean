@@ -352,3 +352,19 @@ support property. `expCharge` is Bridgeland's `Z(β,ω)`. -/
 #print axioms Mukai.expCharge_ne_zero_of_nonneg
 #print axioms Mukai.mem_wall_iff_expCharge_eq_zero
 #print axioms Mukai.mem_periodDomain₀_iff_expCharge_ne_zero
+
+/-! ### The cut period domain is nonempty
+
+A Sylvester criterion makes the positive pairs an open set; each wall of a
+nonzero class is a proper closed subspace of `M × M`; Baire avoids countably many
+of them at once. This answers the question #700 left open. -/
+
+#print axioms PeriodDomain.apply_smul_add_smul
+#print axioms PeriodDomain.isPositivePair_iff
+#print axioms PeriodDomain.isOpen_setOf_isPositivePair
+#print axioms PeriodDomain.exists_isPositivePair
+#print axioms PeriodDomain.wallPairs
+#print axioms PeriodDomain.mem_wallPairs_iff
+#print axioms PeriodDomain.wallPairs_ne_top
+#print axioms PeriodDomain.dense_compl_wallPairs
+#print axioms PeriodDomain.nonempty_periodDomain₀
