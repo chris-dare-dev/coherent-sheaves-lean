@@ -1322,6 +1322,22 @@ is not closed. -/
 #print axioms Scheme.coherent_isClosedUnderKernels
 #print axioms Scheme.coherent_isClosedUnderCokernels
 
+-- Layer B stage 1, quasi-coherent half: the same closure with every noetherian
+-- hypothesis deleted. This is what makes the inclusion of quasi-coherent sheaves
+-- into all module sheaves exact, and it is the first half of the weak Serre
+-- property `Dqc(X)` needs for its triangulated structure (#720).
+#print axioms AlgebraicGeometry.Scheme.Hom.isQuasicoherent_over_of_restrict
+#print axioms AlgebraicGeometry.Scheme.Hom.isQuasicoherent_restrict
+#print axioms AlgebraicGeometry.Scheme.Hom.isQuasicoherent_over_iff_restrict
+#print axioms AlgebraicGeometry.Scheme.Modules.isQuasicoherent_of_affineOpenCover
+#print axioms AlgebraicGeometry.Scheme.Modules.isQuasicoherent_iff_restrict_affineOpenCover
+#print axioms AlgebraicGeometry.Scheme.Modules.isQuasicoherent_kernel_affine
+#print axioms AlgebraicGeometry.Scheme.Modules.isQuasicoherent_cokernel_affine
+#print axioms AlgebraicGeometry.Scheme.Modules.isQuasicoherent_kernel
+#print axioms AlgebraicGeometry.Scheme.Modules.isQuasicoherent_cokernel
+#print axioms AlgebraicGeometry.quasicoherent_isClosedUnderKernels
+#print axioms AlgebraicGeometry.quasicoherent_isClosedUnderCokernels
+
 -- Layer B stage 1: extensions. Local lifts of finite generators and relations produce a
 -- finite horseshoe presentation of the middle term, without a noetherian hypothesis.
 #print axioms SheafOfModules.IsFinitePresentation.middle_of_shortExact
@@ -2649,3 +2665,24 @@ about a quadratic space. -/
 #print axioms AlgebraicGeometry.Numerical.K3.AdditiveMukaiData.mukaiForm_neg_of_numericalCharge_eq_zero
 #print axioms AlgebraicGeometry.Numerical.K3.AdditiveMukaiData.numericalCharge_ne_zero_of_nonneg
 #print axioms AlgebraicGeometry.Numerical.K3.AdditiveMukaiData.mem_wall_iff_numericalCharge_eq_zero
+
+-- #720 groundwork: the functor-level exactness the quasi-coherent extension
+-- argument consumes. `tilde` exact is the kernel closure above, packaged.
+#print axioms AlgebraicGeometry.quasicoherentι_preservesFiniteLimits
+#print axioms AlgebraicGeometry.tilde_preservesFiniteLimits
+#print axioms AlgebraicGeometry.qcι_preservesKernel
+#print axioms AlgebraicGeometry.qcHasFiniteProducts
+#print axioms AlgebraicGeometry.qcHasBinaryBiproducts
+#print axioms AlgebraicGeometry.qcAbelian
+#print axioms AlgebraicGeometry.moduleSpecSectionsFunctor
+#print axioms AlgebraicGeometry.moduleSpecSectionsFunctor_preservesFiniteLimits
+#print axioms AlgebraicGeometry.moduleSpecSectionsFunctor_preservesZeroMorphisms
+#print axioms AlgebraicGeometry.affineΓ
+#print axioms AlgebraicGeometry.shortExact_map_affineΓ
+#print axioms AlgebraicGeometry.fromTildeΓShortComplexHom
+#print axioms AlgebraicGeometry.fromTildeΓShortComplexHom_τ₁
+#print axioms AlgebraicGeometry.fromTildeΓShortComplexHom_τ₂
+#print axioms AlgebraicGeometry.fromTildeΓShortComplexHom_τ₃
+#print axioms AlgebraicGeometry.isQuasicoherent_middle_affine
+#print axioms AlgebraicGeometry.isQuasicoherent_middle
+#print axioms AlgebraicGeometry.quasicoherent_isClosedUnderExtensions

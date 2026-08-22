@@ -59,6 +59,7 @@ private def libraryOf (m : Name) : Option String :=
   let constantSheafPullback := `DerivedAlgGeo.CategoryTheory.ConstantSheafPullback
   let extDimensionShift := `DerivedAlgGeo.CategoryTheory.ExtDimensionShift
   let equivalenceTransport := `DerivedAlgGeo.CategoryTheory.EquivalenceTransport
+  let sites := `DerivedAlgGeo.CategoryTheory.Sites
   let pseudofunctorObjectProperty :=
     `DerivedAlgGeo.CategoryTheory.PseudofunctorObjectProperty
   let linearAlgebra := `DerivedAlgGeo.LinearAlgebra
@@ -71,6 +72,7 @@ private def libraryOf (m : Name) : Option String :=
       m == constantSheafPullback || constantSheafPullback.isPrefixOf m ||
       m == extDimensionShift || extDimensionShift.isPrefixOf m ||
       m == equivalenceTransport || equivalenceTransport.isPrefixOf m ||
+      m == sites || sites.isPrefixOf m ||
       m == pseudofunctorObjectProperty ||
         pseudofunctorObjectProperty.isPrefixOf m ||
       m == linearAlgebra || linearAlgebra.isPrefixOf m then
