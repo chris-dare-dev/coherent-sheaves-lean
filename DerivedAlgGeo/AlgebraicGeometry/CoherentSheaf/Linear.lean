@@ -55,8 +55,7 @@ finiteness this file does not supply.
   with multiplication by the corresponding global function, which is the only
   fact a caller needs in order to compute with it.
 * `Variety.derivedLinear` — `Dᵇ(Coh X)` is `k`-linear, so `Hom(E, F⟦i⟧)` is a
-  `k`-vector space. Stated explicitly rather than inferred; the section comment
-  above it records the instance diamond that stops search finding it.
+  `k`-vector space.
 -/
 
 universe u
@@ -135,32 +134,24 @@ noncomputable instance cohLinear : Linear k (Coh Y.toScheme) :=
 
 /-! ### Propagation to the derived category
 
-Mathlib's `DerivedCategory.instLinear` should fire on its own here, and does
-not. The reason is a latent instance diamond in `Coh`, and it is worth stating
-because it will block every Mathlib abelian-category instance that wants
-`[Abelian C]` and `[Linear R C]` at once, not just this one.
+Mathlib's `DerivedCategory.instLinear` fires on its own, and the `inferInstance`
+below is the whole of it. That was not always true: `Coh.abelian` used to obtain
+its `toPreadditive` from the full subcategory's `Abelian` instance rather than
+from `Coh.preadditive`, and search could not cross the gap, so this term had to
+supply `cohLinear` by hand. Issue #662 closed that by pinning the field in
+`CoherentSheaf/Abelian/Basic.lean`; see the docstring there for why the two are
+not interchangeable and what keeps them pinned. -/
 
-`Coh.preadditive` is `inferInstanceAs (Preadditive …FullSubcategory)`, while
-`Coh.abelian` is built by `change … ; infer_instance`, so its `toPreadditive`
-is the preadditive field *of the full subcategory's `Abelian` instance*. The two
-are defeq — `rfl` proves them equal — but **not at reducible transparency**,
-which is the transparency instance search runs at. So `cohLinear`, whose type
-mentions `Coh.preadditive`, does not match a goal whose `Preadditive` argument
-came out of `Abelian`.
+/-- Regression test for #662, in the shape that found it: search must reach
+`cohLinear` from a `Preadditive` argument that arrived via `Abelian`. -/
+noncomputable example :
+    @Linear k _ (Coh Y.toScheme) _ (Coh.abelian Y.toScheme).toPreadditive :=
+  inferInstance
 
-Supplying the argument explicitly resolves it, because elaboration checks that
-application at default transparency. That is a workaround, not a fix: the fix is
-to make the two instances reducibly equal, which means changing `Coh` or
-`Coh.abelian` in `CoherentSheaf/Abelian/Basic.lean` and is deliberately not done
-in the change that discovers the problem. -/
-
-/-- The derived category of coherent sheaves on a variety is `k`-linear.
-
-Stated explicitly rather than inferred; see the section comment for why search
-cannot find it, and note that the workaround is confined to this one term. -/
+/-- The derived category of coherent sheaves on a variety is `k`-linear. -/
 noncomputable instance derivedLinear :
     Linear k (DerivedCategory (Coh Y.toScheme)) :=
-  @DerivedCategory.instLinear k _ (Coh Y.toScheme) _ _ (cohLinear Y) _
+  inferInstance
 
 end Variety
 

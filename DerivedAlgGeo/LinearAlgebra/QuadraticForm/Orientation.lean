@@ -42,8 +42,9 @@ would be wrong:
   reference pair, "positive half" means only what its definition says.
 
 Reference-independence of the *partition* — that changing the reference either
-preserves every sign or flips every sign — is **not** proved here either; see the
-note at `SameOrientation`.
+preserves every sign or flips every sign — is not proved *here*, but it is
+proved: it is the cocycle of `QuadraticForm/OrientationCocycle.lean`, which
+imports this file.
 -/
 
 open QuadraticMap
@@ -178,9 +179,10 @@ the reference agree in sign.
 The relation is stated against a fixed reference on purpose. That changing the
 reference either preserves every sign or flips every one — so that the
 *partition* is reference-free — is a genuine further statement: it is the cocycle
-identity for the projection signs, and the usual proof runs through connectedness
-of the Grassmannian of positive planes. It is not proved here and must not be
-assumed. -/
+identity for the projection signs. It is proved downstream, in
+`QuadraticForm/OrientationCocycle.lean`, as `sameOrientation_iff_of_reference`;
+the proof there interpolates through positive pairs rather than importing
+connectedness of the Grassmannian. -/
 def SameOrientation (Q : QuadraticForm ℝ M) (x₀ y₀ : M) (p q : M × M) : Prop :=
   0 < pairingDet Q x₀ y₀ p.1 p.2 * pairingDet Q x₀ y₀ q.1 q.2
 
