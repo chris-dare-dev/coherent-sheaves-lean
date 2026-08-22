@@ -4,6 +4,7 @@ Released under the MIT license.
 -/
 import Mathlib.CategoryTheory.ObjectProperty.Kernels
 import Mathlib.CategoryTheory.Preadditive.LeftExact
+import DerivedAlgGeo.AlgebraicGeometry.CoherentSheaf.Quasicoherent.Kernels
 import DerivedAlgGeo.AlgebraicGeometry.Modules.Affine.Comparison
 import DerivedAlgGeo.AlgebraicGeometry.StabilityCondition.Families.Dqc.AffineDerivedEquivalence
 
@@ -36,66 +37,35 @@ private abbrev affineQuasicoherentProperty (R : CommRingCat.{u}) :=
   SheafOfModules.isQuasicoherent (Spec R).ringCatSheaf
 
 /-- On an affine spectrum, an ambient kernel of a morphism between
-quasi-coherent module sheaves is quasi-coherent. -/
+quasi-coherent module sheaves is quasi-coherent.
+
+The proof moved to `CoherentSheaf/Quasicoherent/Kernels.lean` when #720 needed it
+for an arbitrary scheme; this name survives as the moduli lane's entry point. -/
 theorem affineQuasicoherent_kernel {R : CommRingCat.{u}}
     {M N : (Spec R).Modules} (g : M ⟶ N)
     (hM : M.IsQuasicoherent) (hN : N.IsQuasicoherent) :
-    (kernel g).IsQuasicoherent := by
-  letI : M.IsQuasicoherent := hM
-  letI : N.IsQuasicoherent := hN
-  haveI (f : R) : IsLocalizedModule (Submonoid.powers f)
-      (Scheme.Modules.basicOpenRestriction (kernel g) f).hom :=
-    Scheme.Modules.isLocalizedModule_basicOpenRestriction_kernel g f
-  letI : IsIso (Scheme.Modules.fromTildeΓ (kernel g)) :=
-    (Scheme.Modules.isIso_fromTildeΓ_iff_isLocalizedModule (kernel g)).mpr
-      fun _ ↦ inferInstance
-  exact (isQuasicoherent_iff_isIso_fromTildeΓ (kernel g)).mpr inferInstance
+    (kernel g).IsQuasicoherent :=
+  Scheme.Modules.isQuasicoherent_kernel_affine g hM hN
 
 /-- Quasi-coherent module sheaves on an affine spectrum are closed under
 ambient kernels. -/
 instance affineQuasicoherent_isClosedUnderKernels (R : CommRingCat.{u}) :
-    (affineQuasicoherentProperty R).IsClosedUnderKernels where
-  kernels_le := by
-    intro K hK
-    cases hK with
-    | @of_isLimit M N g k hk hMN =>
-      obtain ⟨hM, hN⟩ := hMN
-      exact (affineQuasicoherentProperty R).prop_of_iso
-        (IsLimit.conePointUniqueUpToIso (kernelIsKernel g) hk)
-        (affineQuasicoherent_kernel g hM hN)
+    (affineQuasicoherentProperty R).IsClosedUnderKernels :=
+  AlgebraicGeometry.quasicoherent_isClosedUnderKernels (Spec R)
 
 /-- On an affine spectrum, an ambient cokernel of a morphism between
 quasi-coherent module sheaves is quasi-coherent. -/
 theorem affineQuasicoherent_cokernel {R : CommRingCat.{u}}
     {M N : (Spec R).Modules} (g : M ⟶ N)
     (hM : M.IsQuasicoherent) (hN : N.IsQuasicoherent) :
-    (cokernel g).IsQuasicoherent := by
-  letI : M.IsQuasicoherent := hM
-  letI : N.IsQuasicoherent := hN
-  letI hMIso : IsIso (Scheme.Modules.fromTildeΓ M) :=
-    Scheme.Modules.isIso_fromTildeΓ_of_isQuasicoherent M
-  letI hNIso : IsIso (Scheme.Modules.fromTildeΓ N) :=
-    Scheme.Modules.isIso_fromTildeΓ_of_isQuasicoherent N
-  let e : tilde (cokernel (moduleSpecΓFunctor.map g)) ≅ cokernel g :=
-    PreservesCokernel.iso (tilde.functor R) (moduleSpecΓFunctor.map g) ≪≫
-      cokernel.mapIso ((tilde.functor R).map (moduleSpecΓFunctor.map g)) g
-        (@asIso _ _ _ _ (Scheme.Modules.fromTildeΓ M) hMIso)
-        (@asIso _ _ _ _ (Scheme.Modules.fromTildeΓ N) hNIso)
-        (Scheme.Modules.fromTildeΓNatTrans.naturality g)
-  exact (affineQuasicoherentProperty R).prop_of_iso e inferInstance
+    (cokernel g).IsQuasicoherent :=
+  Scheme.Modules.isQuasicoherent_cokernel_affine g hM hN
 
 /-- Quasi-coherent module sheaves on an affine spectrum are closed under
 ambient cokernels. -/
 instance affineQuasicoherent_isClosedUnderCokernels (R : CommRingCat.{u}) :
-    (affineQuasicoherentProperty R).IsClosedUnderCokernels where
-  cokernels_le := by
-    intro K hK
-    cases hK with
-    | @of_isColimit M N g k hk hMN =>
-      obtain ⟨hM, hN⟩ := hMN
-      exact (affineQuasicoherentProperty R).prop_of_iso
-        (IsColimit.coconePointUniqueUpToIso (cokernelIsCokernel g) hk)
-        (affineQuasicoherent_cokernel g hM hN)
+    (affineQuasicoherentProperty R).IsClosedUnderCokernels :=
+  AlgebraicGeometry.quasicoherent_isClosedUnderCokernels (Spec R)
 
 /-- The inclusion of affine quasi-coherent sheaves into all module sheaves. -/
 abbrev affineQuasicoherentSheavesInclusion (R : CommRingCat.{u}) :
