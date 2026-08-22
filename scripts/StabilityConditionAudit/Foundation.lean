@@ -931,3 +931,19 @@ of the interface the phase and Harder–Narasimhan machinery is already built on
 #print axioms CategoryTheory.Triangulated.SlopeData.charge_ne_zero_of_rank_pos
 #print axioms CategoryTheory.Triangulated.SlopeData.arg_pos_of_rank_pos
 #print axioms CategoryTheory.Triangulated.SlopeData.phase_le_iff_slope_le
+
+/-! ## The two classes at a phase cutoff
+
+`T β` and `F β` for a stability function, and what the Harder–Narasimhan
+machinery already gives: intrinsic membership, trivial intersection, and
+Hom-vanishing to a semistable target. Not yet a torsion pair — see the module
+docstring for the two steps still missing. -/
+
+#print axioms CategoryTheory.Triangulated.StabilityFunction.hnTors
+#print axioms CategoryTheory.Triangulated.StabilityFunction.hnFree
+#print axioms CategoryTheory.Triangulated.StabilityFunction.isZero_mem_hnTors
+#print axioms CategoryTheory.Triangulated.StabilityFunction.isZero_mem_hnFree
+#print axioms CategoryTheory.Triangulated.StabilityFunction.mem_hnTors_iff_forall
+#print axioms CategoryTheory.Triangulated.StabilityFunction.mem_hnFree_iff_forall
+#print axioms CategoryTheory.Triangulated.StabilityFunction.isZero_of_mem_hnTors_of_mem_hnFree
+#print axioms CategoryTheory.Triangulated.StabilityFunction.hom_eq_zero_of_mem_hnTors_of_semistable
