@@ -1322,6 +1322,20 @@ is not closed. -/
 #print axioms Scheme.coherent_isClosedUnderKernels
 #print axioms Scheme.coherent_isClosedUnderCokernels
 
+-- Layer B stage 1, quasi-coherent half: the same closure with every noetherian
+-- hypothesis deleted. This is what makes the inclusion of quasi-coherent sheaves
+-- into all module sheaves exact, and it is the first half of the weak Serre
+-- property `Dqc(X)` needs for its triangulated structure (#720).
+#print axioms AlgebraicGeometry.Scheme.Hom.isQuasicoherent_over_iff_restrict
+#print axioms AlgebraicGeometry.Scheme.Modules.isQuasicoherent_of_affineOpenCover
+#print axioms AlgebraicGeometry.Scheme.Modules.isQuasicoherent_iff_restrict_affineOpenCover
+#print axioms AlgebraicGeometry.Scheme.Modules.isQuasicoherent_kernel_affine
+#print axioms AlgebraicGeometry.Scheme.Modules.isQuasicoherent_cokernel_affine
+#print axioms AlgebraicGeometry.Scheme.Modules.isQuasicoherent_kernel
+#print axioms AlgebraicGeometry.Scheme.Modules.isQuasicoherent_cokernel
+#print axioms AlgebraicGeometry.quasicoherent_isClosedUnderKernels
+#print axioms AlgebraicGeometry.quasicoherent_isClosedUnderCokernels
+
 -- Layer B stage 1: extensions. Local lifts of finite generators and relations produce a
 -- finite horseshoe presentation of the middle term, without a noetherian hypothesis.
 #print axioms SheafOfModules.IsFinitePresentation.middle_of_shortExact
