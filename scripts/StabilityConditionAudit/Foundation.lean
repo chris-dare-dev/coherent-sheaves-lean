@@ -899,3 +899,35 @@ open CategoryTheory.Triangulated
 #print axioms CategoryTheory.Triangulated.StabilityFunction.phiMinus_le_phiPlus
 #print axioms CategoryTheory.Triangulated.StabilityFunction.isSemistable_iff_phiPlus_eq_phiMinus
 
+
+/-! ## Slope stability as a stability function
+
+Rank and degree data give the charge `-degree + i * rank`, and that charge is a
+`StabilityFunction`: μ-slope stability is not a parallel theory but an instance
+of the interface the phase and Harder–Narasimhan machinery is already built on.
+`phase_le_iff_slope_le` is the order bridge. -/
+
+#print axioms CategoryTheory.Triangulated.SlopeData
+#print axioms CategoryTheory.Triangulated.SlopeData.mk.inj
+#print axioms CategoryTheory.Triangulated.SlopeData.mk.sizeOf_spec
+#print axioms CategoryTheory.Triangulated.SlopeData.rank
+#print axioms CategoryTheory.Triangulated.SlopeData.degree
+#print axioms CategoryTheory.Triangulated.SlopeData.rank_nonneg
+#print axioms CategoryTheory.Triangulated.SlopeData.rank_zero
+#print axioms CategoryTheory.Triangulated.SlopeData.degree_zero
+#print axioms CategoryTheory.Triangulated.SlopeData.rank_iso
+#print axioms CategoryTheory.Triangulated.SlopeData.degree_iso
+#print axioms CategoryTheory.Triangulated.SlopeData.rank_additive
+#print axioms CategoryTheory.Triangulated.SlopeData.degree_additive
+#print axioms CategoryTheory.Triangulated.SlopeData.degree_pos_of_rank_zero
+#print axioms CategoryTheory.Triangulated.SlopeData.charge
+#print axioms CategoryTheory.Triangulated.SlopeData.charge_re
+#print axioms CategoryTheory.Triangulated.SlopeData.charge_im
+#print axioms CategoryTheory.Triangulated.SlopeData.charge_mem_semiClosedUpperHalfPlane
+#print axioms CategoryTheory.Triangulated.SlopeData.toStabilityFunction
+#print axioms CategoryTheory.Triangulated.SlopeData.toStabilityFunction_charge
+#print axioms CategoryTheory.Triangulated.SlopeData.slope
+#print axioms CategoryTheory.Triangulated.SlopeData.phaseCross_charge
+#print axioms CategoryTheory.Triangulated.SlopeData.charge_ne_zero_of_rank_pos
+#print axioms CategoryTheory.Triangulated.SlopeData.arg_pos_of_rank_pos
+#print axioms CategoryTheory.Triangulated.SlopeData.phase_le_iff_slope_le
