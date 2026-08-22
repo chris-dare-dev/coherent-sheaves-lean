@@ -1326,6 +1326,8 @@ is not closed. -/
 -- hypothesis deleted. This is what makes the inclusion of quasi-coherent sheaves
 -- into all module sheaves exact, and it is the first half of the weak Serre
 -- property `Dqc(X)` needs for its triangulated structure (#720).
+#print axioms AlgebraicGeometry.Scheme.Hom.isQuasicoherent_over_of_restrict
+#print axioms AlgebraicGeometry.Scheme.Hom.isQuasicoherent_restrict
 #print axioms AlgebraicGeometry.Scheme.Hom.isQuasicoherent_over_iff_restrict
 #print axioms AlgebraicGeometry.Scheme.Modules.isQuasicoherent_of_affineOpenCover
 #print axioms AlgebraicGeometry.Scheme.Modules.isQuasicoherent_iff_restrict_affineOpenCover
