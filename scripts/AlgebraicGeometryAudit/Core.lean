@@ -2598,6 +2598,38 @@ F(n) are NOT here, so #585 is not closed. -/
 #print axioms AlgebraicGeometry.Scheme.Modules.tildeΓSectionEquiv_symm_res
 #print axioms AlgebraicGeometry.Scheme.Modules.exists_pow_smul_res_eq_zero_of_isQuasicoherent
 
+/-! ## The degree-one chart, as seen by the affine extension lemma (#585 chart step)
+
+A section of a quasi-coherent F over D+(g) inf D+(f) extends to D+(g) after clearing a power of
+f/g. The algebra is the affine lemma above; here is the geometry that lets it be applied, and the
+naming that lets it elaborate.
+
+The geometry is two rewrites: the chart covers exactly D+(g), and meets D+(f) in D+(g) inf D+(f).
+Both fall out of image_preimage_eq_opensRange_inf and opensRange_awayi, with
+awayi_preimage_basicOpen naming the element -- for f and g both of degree one it is exactly f/g.
+Translating sections across the chart is free, because restrictAppIso is Iso.refl.
+
+The naming is NOT cosmetic. Stated inline, IsIso (F.restrict (degreeOneChart)).fromTildeGamma does
+not elaborate: isDefEq runs past 1.6M heartbeats and gives up, and pinning arguments explicitly
+(instance-transparency technique 7) does not rescue it. Technique 5 fixes it in two steps, and the
+second is easy to miss: chartRestrict names the restriction at an explicit result type, which by
+itself converts the timeout into a fast precise mismatch -- fromTildeGamma quantifies over
+Spec (.of (coe R)) with R : CommRingCat and Lean cannot invert the coercion -- and the result type
+is then written through chartRing, a reducible abbrev for the bundled ring, so R matches
+syntactically. That diagnostic shift is the real argument for the technique.
+
+Choosing one n across a finite cover, and the passage to multiplication into F(n), are NOT here,
+so #585 is not closed. -/
+
+#print axioms AlgebraicGeometry.Proj.degreeOneChart
+#print axioms AlgebraicGeometry.Proj.degreeOneChart_image_top
+#print axioms AlgebraicGeometry.Proj.degreeOneChart_image_basicOpen
+#print axioms AlgebraicGeometry.Proj.chartRing
+#print axioms AlgebraicGeometry.Proj.chartRestrict
+#print axioms AlgebraicGeometry.Proj.chartRestrict_isQuasicoherent
+#print axioms AlgebraicGeometry.Proj.isIso_fromTildeΓ_chartRestrict
+#print axioms AlgebraicGeometry.Proj.exists_pow_smul_eq_res_chart
+
 #print axioms AlgebraicGeometry.Proj.intCechCochainsDegreewiseAddEquiv_symm_smul
 #print axioms AlgebraicGeometry.Proj.intCech_d_apply_eq_zero_iff
 #print axioms AlgebraicGeometry.Proj.intCechBlockIncl
