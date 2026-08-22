@@ -368,3 +368,5 @@ of them at once. This answers the question #700 left open. -/
 #print axioms PeriodDomain.wallPairs_ne_top
 #print axioms PeriodDomain.dense_compl_wallPairs
 #print axioms PeriodDomain.nonempty_periodDomain₀
+
+#print axioms Mukai.extendMap_add
