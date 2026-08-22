@@ -2468,12 +2468,57 @@ F(d)(e) = F(d+e) is NOT here and cannot be got this way: tensorAssocIso requires
 invertible, and no rearrangement of (F (x) O(d)) (x) O(e) through tensorCommIso avoids leaving a
 non-invertible factor outermost. It needs the comparison with the graded shift, after which
 sheafTwistAddIso finishes it with no associator at all. Coherence preservation waits on the same
-comparison, so #584 is not closed. -/
+comparison. Both land in the next section, on TwistComparison.lean. -/
 
 #print axioms AlgebraicGeometry.Scheme.Modules.tensorObjIso
 #print axioms AlgebraicGeometry.Proj.tensorTwist
 #print axioms AlgebraicGeometry.Proj.tensorTwistZeroIso
 #print axioms AlgebraicGeometry.Proj.associatedSelfTensorTwistIso
+
+/-! ## The comparison F (x) O(d) = F(d), and deliverables 2b and 3 (#584)
+
+The generator route Divisors/AssociatedSheaf/Construction.lean runs for the Cartier statement is
+unavailable here: it needs BOTH tensor factors invertible so that the unit generates the tensor,
+and F is arbitrary. What replaces it is stronger. Over an open inside a degree-one chart A(d) IS
+the structure sheaf, so the twisted multiplication is already BIJECTIVE on sections, not merely a
+local weak equivalence -- twistMultiplicationHom_app_eq factors it as (1 (x) psi), the right
+unitor, and phi inverse, for the two chart trivializations. So the local input to W_of_coversTop
+is an isomorphism and no local injectivity or surjectivity is proved by hand.
+
+The content of that factorization is one identity on sections, and it is four lines on top of
+intShiftZeroModuleLinearEquiv_twistMul: both trivializations are multiplication by the same
+scalar, so what is left is associativity of that action.
+
+sectionLinearEquivOfMemIff is the section-level counterpart of linearEquivOfMemIff -- both
+trivializations land at the (0)-twist rather than at the module, and intShift 0 has the same
+members, so the underlying element never moves and only the certificate is rebuilt.
+
+With the comparison, F(d)(e) = F(d+e) is sheafTwistAddIso and needs no associator, and coherence
+preservation goes through the graded side, where intShiftModuleOverSelfIso trivializes the twist
+on a chart -- it is not visible through the tensor, which is why it waited.
+
+SCOPE: F is an ASSOCIATED sheaf. Identifying an arbitrary coherent sheaf on Proj with an
+associated one is Serre's theorem, which is downstream; TwistInvertible.lean records the same
+boundary. -/
+
+#print axioms AlgebraicGeometry.Proj.sectionLinearEquivOfMemIff
+#print axioms AlgebraicGeometry.Proj.twistMul_zero_eq_smul
+#print axioms AlgebraicGeometry.Proj.chartRingTwistSectionEquiv
+#print axioms AlgebraicGeometry.Proj.chartModuleTwistSectionEquiv
+#print axioms AlgebraicGeometry.Proj.chartModuleTwistSectionEquiv_sectionTwistMul
+#print axioms AlgebraicGeometry.Proj.chartTensorEquiv
+#print axioms AlgebraicGeometry.Proj.twistMultiplicationHom_app_eq
+#print axioms AlgebraicGeometry.Proj.isIso_twistMultiplicationHom_app
+#print axioms AlgebraicGeometry.Proj.isIso_toPresheaf_map_twistMultiplicationHom_app
+#print axioms AlgebraicGeometry.Proj.twistMultiplicationHom_mem_W
+#print axioms AlgebraicGeometry.Proj.isIso_sheafification_map_twistMultiplicationHom
+#print axioms AlgebraicGeometry.Proj.tensorTwistIso
+#print axioms AlgebraicGeometry.Proj.tensorTwistAddIso
+#print axioms AlgebraicGeometry.Proj.intShiftModule_isCoherent
+#print axioms AlgebraicGeometry.Proj.tensorObj_twistingSheaf_isCoherent
+#print axioms AlgebraicGeometry.Proj.associatedTensorTwistIso
+#print axioms AlgebraicGeometry.Proj.associatedTensorTwistAddIso
+#print axioms AlgebraicGeometry.Proj.tensorTwist_isCoherent
 
 #print axioms AlgebraicGeometry.Proj.intCechCochainsDegreewiseAddEquiv_symm_smul
 #print axioms AlgebraicGeometry.Proj.intCech_d_apply_eq_zero_iff

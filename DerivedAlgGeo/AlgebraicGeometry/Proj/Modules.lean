@@ -20,5 +20,6 @@ import DerivedAlgGeo.AlgebraicGeometry.Proj.Modules.TwistLocalization
 import DerivedAlgGeo.AlgebraicGeometry.Proj.Modules.TwistingSheaf
 import DerivedAlgGeo.AlgebraicGeometry.Proj.Modules.TwistMultiplication
 import DerivedAlgGeo.AlgebraicGeometry.Proj.Modules.TwistAdd
+import DerivedAlgGeo.AlgebraicGeometry.Proj.Modules.TwistComparison
 
 /-! # Graded modules and their sheaves on `Proj` -/

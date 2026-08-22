@@ -61,9 +61,9 @@ action and nothing else. Read the other way: over a degree-one chart the twisted
 
 ## Scope
 
-The map, and what it looks like on a chart. That it is an **isomorphism** is not here, and `#584`
-is not closed. What remains is to lift that identity to sections, to identify the untwisted
-multiplication with the right unitor, and to feed the result to `Presheaf.W_of_coversTop` over
+The map, and what it looks like on a chart. That it is an **isomorphism** is not here:
+`TwistComparison.lean` lifts the chart identity to sections, reads the untwisted multiplication as
+the right unitor, and feeds the result to `Presheaf.W_of_coversTop` over
 `degreeOneCharts_coversTop`.
 -/
 
