@@ -947,3 +947,15 @@ docstring for the two steps still missing. -/
 #print axioms CategoryTheory.Triangulated.StabilityFunction.mem_hnFree_iff_forall
 #print axioms CategoryTheory.Triangulated.StabilityFunction.isZero_of_mem_hnTors_of_mem_hnFree
 #print axioms CategoryTheory.Triangulated.StabilityFunction.hom_eq_zero_of_mem_hnTors_of_semistable
+
+/-! ## Monotonicity of the extremal phases, and Hom-vanishing in general
+
+`φ⁺` cannot rise along a monomorphism and `φ⁻` cannot fall along an
+epimorphism. Applied to the image of a map — a quotient of the source and a
+subobject of the target — the two bound `T β`'s Hom into `F β` to zero, which
+is the Hom-vanishing half of Bridgeland's torsion pair. -/
+
+#print axioms CategoryTheory.Triangulated.AbelianHNFiltration.exists_epi_to_semistable_phase_phiMinus
+#print axioms CategoryTheory.Triangulated.AbelianHNFiltration.phiPlus_le_of_mono
+#print axioms CategoryTheory.Triangulated.AbelianHNFiltration.phiMinus_le_of_epi
+#print axioms CategoryTheory.Triangulated.StabilityFunction.hom_eq_zero_of_mem_hnTors_of_mem_hnFree
