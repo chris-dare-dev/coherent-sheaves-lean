@@ -2520,6 +2520,36 @@ boundary. -/
 #print axioms AlgebraicGeometry.Proj.associatedTensorTwistAddIso
 #print axioms AlgebraicGeometry.Proj.tensorTwist_isCoherent
 
+/-! ## Homogeneous elements as sections of the twist (#585 prerequisite)
+
+#585 asks that f^n . s extend to a global section of F(n). That statement could not be WRITTEN
+against the tree: multiplying a section of an arbitrary F by a homogeneous element needs a map
+F -> F(n) and none existed. #584 gave the twist; these give the multiplication into it.
+
+A degree-n element of the module is a GLOBAL section of M(n)~, not one over a basic open: the
+fraction is m/1, the denominator 1 has degree 0, and a degree-n element lies in degree 0 of the
+shifted grading. Nothing is inverted, so the fraction is valid everywhere and restriction does not
+move it -- which is why the compatibility is rfl and no basicOpen_one transport appears.
+
+unitToTwist reads that family through unitHomEquiv (a global section IS a map out of the unit) and
+twistBy tensors with F and cancels the unit. F is ARBITRARY -- not an associated sheaf. #584's
+comparison stops at associated sheaves and #585 may not inherit that limit; its acceptance criteria
+forbid the hypothesis outright, and nothing here uses the comparison.
+
+unitToTwist_app_one is load-bearing, not decoration: unitHomEquiv.symm is an equivalence's inverse,
+so a wrong sectionsOfMem would typecheck and go unnoticed at every use site. It pins 1 |-> m/1.
+
+The extension theorem itself is NOT here, so #585 is not closed. It needs the degree-one chart
+cover, quasi-coherence on each chart, and exists_pow_smul_mem_of_isLocalized_radical. -/
+
+#print axioms AlgebraicGeometry.Proj.mem_intShift_zero_of_mem
+#print axioms AlgebraicGeometry.Proj.sectionOfMem
+#print axioms AlgebraicGeometry.Proj.sectionOfMem_apply
+#print axioms AlgebraicGeometry.Proj.sectionsOfMem
+#print axioms AlgebraicGeometry.Proj.unitToTwist
+#print axioms AlgebraicGeometry.Proj.unitToTwist_app_one
+#print axioms AlgebraicGeometry.Proj.twistBy
+
 #print axioms AlgebraicGeometry.Proj.intCechCochainsDegreewiseAddEquiv_symm_smul
 #print axioms AlgebraicGeometry.Proj.intCech_d_apply_eq_zero_iff
 #print axioms AlgebraicGeometry.Proj.intCechBlockIncl
