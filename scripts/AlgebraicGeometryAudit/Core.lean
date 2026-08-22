@@ -2520,6 +2520,35 @@ boundary. -/
 #print axioms AlgebraicGeometry.Proj.associatedTensorTwistAddIso
 #print axioms AlgebraicGeometry.Proj.tensorTwist_isCoherent
 
+/-! ## Clearing a denominator on an affine (#585 chart-local engine)
+
+A section of a quasi-coherent sheaf over D(r), times a high enough power of r, is the restriction
+of a GLOBAL section. On Proj a degree-one chart is Spec of the degree-zero away ring, D+(f) meets
+it in the basic open of f/g, and this clears that denominator.
+
+Six lines, by an instance rather than an argument: Mathlib carries IsLocalizedModule.Away f on
+tilde.toOpen, so sections over D(r) ARE the localization M_r and clearing the denominator is
+IsLocalizedModule.surj -- a section is m/r^n by the definition of the localization, not by a
+theorem about it. The passage to a global section is toOpen_res, which is rfl.
+
+Recorded against the plan #585 was written to: exists_pow_smul_mem_of_isLocalized_radical, which
+was extracted into Algebra/Module/LocalizedRadical.lean for this issue, is NOT needed here. It
+stays the tool for reconciling two charts on their overlap, where radical membership is what makes
+the cover a cover.
+
+The isQuasicoherent form drops the tilde hypothesis by transporting across fromTildeGamma, which
+quasi-coherence makes an isomorphism. Four of its six lines are spelling: modulesSpecToSheaf lands
+in an INDUCED category so .val does not project; presheaf.map has two syntactic spellings and rw
+matches syntactically; and map_smul inside the Scheme.Modules namespace resolves to a different
+lemma, needing _root_.map_smul.
+
+The Proj chart application, one n across a finite cover, and the passage to multiplication into
+F(n) are NOT here, so #585 is not closed. -/
+
+#print axioms AlgebraicGeometry.tilde.exists_pow_smul_eq_toOpen
+#print axioms AlgebraicGeometry.tilde.exists_pow_smul_eq_res_of_top
+#print axioms AlgebraicGeometry.Scheme.Modules.exists_pow_smul_eq_res_of_top_of_isQuasicoherent
+
 #print axioms AlgebraicGeometry.Proj.intCechCochainsDegreewiseAddEquiv_symm_smul
 #print axioms AlgebraicGeometry.Proj.intCech_d_apply_eq_zero_iff
 #print axioms AlgebraicGeometry.Proj.intCechBlockIncl
