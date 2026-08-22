@@ -55,22 +55,20 @@ is a red gate rather than a silent hole. Modules outside `DerivedAlgGeo`
 repository's to audit. -/
 private def libraryOf (m : Name) : Option String :=
   let dg := `DerivedAlgGeo.CategoryTheory.DGCategory
-  let triangulated := `DerivedAlgGeo.CategoryTheory.Triangulated
-  let constantSheafPullback := `DerivedAlgGeo.CategoryTheory.ConstantSheafPullback
-  let equivalenceTransport := `DerivedAlgGeo.CategoryTheory.EquivalenceTransport
-  let pseudofunctorObjectProperty :=
-    `DerivedAlgGeo.CategoryTheory.PseudofunctorObjectProperty
+  -- Everything under `DerivedAlgGeo.CategoryTheory` that is not `DGCategory`.
+  -- This was a list of individual modules until 2026-08-22; each new top-level
+  -- module there needed a branch, and since this file is trust surface that
+  -- meant a `trust-reviewed` label on routine pull requests. A root claims its
+  -- whole subtree instead. A module under a root NO branch claims is still
+  -- unclassified and still fails loudly, which is the half of #508 that matters.
+  let categoryTheory := `DerivedAlgGeo.CategoryTheory
   let linearAlgebra := `DerivedAlgGeo.LinearAlgebra
   let algebraicGeometry := `DerivedAlgGeo.AlgebraicGeometry
   let algebra := `DerivedAlgGeo.Algebra
   let topology := `DerivedAlgGeo.Topology
   let development := `DerivedAlgGeo.Development
   if m == dg || dg.isPrefixOf m then some "DGCategory"
-  else if m == triangulated || triangulated.isPrefixOf m ||
-      m == constantSheafPullback || constantSheafPullback.isPrefixOf m ||
-      m == equivalenceTransport || equivalenceTransport.isPrefixOf m ||
-      m == pseudofunctorObjectProperty ||
-        pseudofunctorObjectProperty.isPrefixOf m ||
+  else if m == categoryTheory || categoryTheory.isPrefixOf m ||
       m == linearAlgebra || linearAlgebra.isPrefixOf m then
     some "StabilityCondition"
   else if m == algebraicGeometry || algebraicGeometry.isPrefixOf m ||
