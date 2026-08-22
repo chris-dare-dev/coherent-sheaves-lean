@@ -30,9 +30,10 @@ outer factors to be invertible, and `F` is an arbitrary module sheaf; commuting 
 non-invertible factor on an outer slot. So the monoidal structure cannot deliver it.
 
 What can is the comparison identifying `F ⊗ O(d)` with the *graded shift* `sheafTwist 𝒜 𝓜 d`,
-after which the composition is `sheafTwistAddIso` and needs no associator at all. That comparison
-is the remaining structural piece of `#584`; coherence preservation waits on it for the same
-reason, since coherence of `F(d)` is visible on the graded side and not through the tensor.
+after which the composition is `sheafTwistAddIso` and needs no associator at all. Coherence
+preservation waits on it for the same reason, since coherence of `F(d)` is visible on the graded
+side and not through the tensor. `TwistComparison.lean` proves that comparison for `F` an
+associated sheaf and reads both off it.
 -/
 
 universe u
