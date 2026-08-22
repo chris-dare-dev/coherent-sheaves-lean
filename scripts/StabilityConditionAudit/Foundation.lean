@@ -989,3 +989,14 @@ sub in `T β` and a quotient in `F β`. -/
 #print axioms CategoryTheory.Triangulated.StabilityFunction.hnFree_of_iso
 #print axioms CategoryTheory.Triangulated.StabilityFunction.exists_subobject_hnTors_cokernel_hnFree
 #print axioms CategoryTheory.Triangulated.StabilityFunction.exists_shortExact_hnTors_hnFree
+
+/-! ## Where the rank-zero objects go
+
+The charge `-degree + i·rank` puts a nonzero object of rank zero on the negative
+real axis, so its phase is one. Rank zero passes to every Harder--Narasimhan
+factor, so `φ⁻` is one too and such an object is torsion at every cutoff below
+one -- the torsion sheaves, in the geometric case. -/
+
+#print axioms CategoryTheory.Triangulated.SlopeData.rank_eq_zero_of_shortExact
+#print axioms CategoryTheory.Triangulated.SlopeData.phase_eq_one_of_rank_zero
+#print axioms CategoryTheory.Triangulated.SlopeData.mem_hnTors_of_rank_zero
