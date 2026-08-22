@@ -370,3 +370,30 @@ of them at once. This answers the question #700 left open. -/
 #print axioms PeriodDomain.nonempty_periodDomain₀
 
 #print axioms Mukai.extendMap_add
+
+/-! ## The projection-sign cocycle
+
+The orientation partition of `Orientation.lean` does not depend on its
+reference pair. The proof interpolates a positive pair into the reference plane
+along a segment that stays positive, so the only analytic input is the
+intermediate value theorem on a quadratic polynomial — connectedness of the
+Grassmannian of positive planes is not used. -/
+
+#print axioms PeriodDomain.pairingDet_comm
+#print axioms PeriodDomain.pairingDet_ref_comb
+#print axioms PeriodDomain.pairingDet_self
+#print axioms PeriodDomain.pairingDet_self_pos
+#print axioms PeriodDomain.isPositivePair_iff_forall_combination
+#print axioms PeriodDomain.projCoeffFst
+#print axioms PeriodDomain.projCoeffSnd
+#print axioms PeriodDomain.proj
+#print axioms PeriodDomain.polar_proj_fst
+#print axioms PeriodDomain.polar_proj_snd
+#print axioms PeriodDomain.proj_mem_pairSpan
+#print axioms PeriodDomain.sub_proj_mem_orthogonal
+#print axioms PeriodDomain.pairingDet_proj
+#print axioms PeriodDomain.pos_mul_endpoints_of_ne_zero
+#print axioms PeriodDomain.isPositivePair_interp
+#print axioms PeriodDomain.pairingDet_proj_mul_pos
+#print axioms PeriodDomain.pairingDet_cocycle
+#print axioms PeriodDomain.sameOrientation_iff_of_reference

@@ -265,3 +265,13 @@ stability function on the heart, a cutoff, and a t-structure out. -/
 #print axioms CategoryTheory.Triangulated.StabilityFunction.hnHeartTorsionPair_tors
 #print axioms CategoryTheory.Triangulated.StabilityFunction.hnHeartTorsionPair_free
 #print axioms CategoryTheory.Triangulated.StabilityFunction.hnTilt
+
+/-! ## What the tilted heart of a stability function is
+
+The Happel--Reiten--Smalo description specialised to `hnTilt`: the tilted heart
+is the extensions of `T β` by `F β ⟦1⟧`, with the two generating families as the
+ends of that triangle. -/
+
+#print axioms CategoryTheory.Triangulated.StabilityFunction.hnTilt_heart_iff
+#print axioms CategoryTheory.Triangulated.StabilityFunction.mem_hnTilt_heart_of_hnTors
+#print axioms CategoryTheory.Triangulated.StabilityFunction.shift_mem_hnTilt_heart_of_hnFree
