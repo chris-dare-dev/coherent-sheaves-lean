@@ -2638,9 +2638,19 @@ about a quadratic space. -/
 -- argument consumes. `tilde` exact is the kernel closure above, packaged.
 #print axioms AlgebraicGeometry.quasicoherentι_preservesFiniteLimits
 #print axioms AlgebraicGeometry.tilde_preservesFiniteLimits
-#print axioms AlgebraicGeometry.moduleSpecΓFunctor_preservesFiniteLimits
-#print axioms AlgebraicGeometry.moduleSpecΓFunctor_preservesZeroMorphisms
 #print axioms AlgebraicGeometry.qcι_preservesKernel
 #print axioms AlgebraicGeometry.qcHasFiniteProducts
 #print axioms AlgebraicGeometry.qcHasBinaryBiproducts
 #print axioms AlgebraicGeometry.qcAbelian
+#print axioms AlgebraicGeometry.moduleSpecSectionsFunctor
+#print axioms AlgebraicGeometry.moduleSpecSectionsFunctor_preservesFiniteLimits
+#print axioms AlgebraicGeometry.moduleSpecSectionsFunctor_preservesZeroMorphisms
+#print axioms AlgebraicGeometry.affineΓ
+#print axioms AlgebraicGeometry.shortExact_map_affineΓ
+#print axioms AlgebraicGeometry.fromTildeΓShortComplexHom
+#print axioms AlgebraicGeometry.fromTildeΓShortComplexHom_τ₁
+#print axioms AlgebraicGeometry.fromTildeΓShortComplexHom_τ₂
+#print axioms AlgebraicGeometry.fromTildeΓShortComplexHom_τ₃
+#print axioms AlgebraicGeometry.isQuasicoherent_middle_affine
+#print axioms AlgebraicGeometry.isQuasicoherent_middle
+#print axioms AlgebraicGeometry.quasicoherent_isClosedUnderExtensions

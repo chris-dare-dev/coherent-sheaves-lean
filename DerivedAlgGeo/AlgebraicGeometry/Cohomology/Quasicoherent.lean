@@ -2,10 +2,9 @@
 Copyright (c) 2026 Chris Dare. All rights reserved.
 Released under the MIT license.
 -/
-import DerivedAlgGeo.AlgebraicGeometry.Cohomology.Quasicoherent.TildeExact
+import DerivedAlgGeo.AlgebraicGeometry.Cohomology.Quasicoherent.Extensions
 
 /-! # Quasi-coherence and affine cohomology
 
-The functor-level exactness facts that the quasi-coherent extension argument
-consumes.
+Closure of quasi-coherence under extensions, completing the weak Serre property.
 -/
