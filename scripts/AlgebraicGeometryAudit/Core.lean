@@ -2633,3 +2633,14 @@ about a quadratic space. -/
 #print axioms AlgebraicGeometry.Numerical.K3.AdditiveMukaiData.mukaiForm_neg_of_numericalCharge_eq_zero
 #print axioms AlgebraicGeometry.Numerical.K3.AdditiveMukaiData.numericalCharge_ne_zero_of_nonneg
 #print axioms AlgebraicGeometry.Numerical.K3.AdditiveMukaiData.mem_wall_iff_numericalCharge_eq_zero
+
+-- #720 groundwork: the functor-level exactness the quasi-coherent extension
+-- argument consumes. `tilde` exact is the kernel closure above, packaged.
+#print axioms AlgebraicGeometry.quasicoherentι_preservesFiniteLimits
+#print axioms AlgebraicGeometry.tilde_preservesFiniteLimits
+#print axioms AlgebraicGeometry.moduleSpecΓFunctor_preservesFiniteLimits
+#print axioms AlgebraicGeometry.moduleSpecΓFunctor_preservesZeroMorphisms
+#print axioms AlgebraicGeometry.qcι_preservesKernel
+#print axioms AlgebraicGeometry.qcHasFiniteProducts
+#print axioms AlgebraicGeometry.qcHasBinaryBiproducts
+#print axioms AlgebraicGeometry.qcAbelian
